@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_images.dart';
+import 'package:restore/core/constants/app_strings.dart';
+import 'package:restore/modules/auth/auth_layout.dart';
+import 'package:restore/modules/auth/bloc/auth_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth_event.dart';
+import 'package:restore/modules/auth/bloc/login/login_bloc.dart';
+import 'package:restore/modules/auth/bloc/login/login_event.dart';
+import 'package:restore/modules/auth/bloc/login/login_state.dart';
 import 'package:restore/modules/widgets/social_login_button.dart';
-import '../../../core/constants/app_strings.dart';
-import '../../../core/constants/app_colors.dart';
-import '../auth_layout.dart';
-import '../bloc/login/login_bloc.dart';
-import '../bloc/login/login_event.dart';
-import '../bloc/login/login_state.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../../../shared/widgets/custom_text_field.dart';
-import '../../../shared/widgets/primary_button.dart';
+import 'package:restore/shared/widgets/custom_text_field.dart';
+import 'package:restore/shared/widgets/primary_button.dart';
 
-class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+class LoginMobileView extends StatelessWidget {
+  const LoginMobileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,40 +39,39 @@ class LoginView extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 1. Logo tạm thời
-              const FlutterLogo(size: 80),
-              const SizedBox(height: 24),
+              FlutterLogo(size: 80.w),
+              SizedBox(height: 24.h),
 
-              // 2. Tiêu đề
-              const Text(
+              Text(
                 AppStrings.appName,
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 28.sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: 8.h),
+              Text(
                 AppStrings.login,
-                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: AppColors.textSecondary,
+                ),
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: 40.h),
 
-              // 3. Form nhập liệu
               CustomTextField(
                 label: AppStrings.email,
                 controller: emailController,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               CustomTextField(
                 label: AppStrings.password,
                 controller: passwordController,
                 isPassword: true,
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
 
-              // 4. Nút đăng nhập
               PrimaryButton(
                 text: 'Sign in',
                 isLoading: state is LoginLoading,
@@ -85,50 +85,49 @@ class LoginView extends StatelessWidget {
                 },
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
 
-              // 5. Đường kẻ chia cắt
               Row(
                 children: [
                   Expanded(child: Divider(color: Colors.grey.shade300)),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Text(
                       'Or sign in with',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(color: Colors.grey, fontSize: 12.sp),
                     ),
                   ),
                   Expanded(child: Divider(color: Colors.grey.shade300)),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
-              // 6. Nút Google
               SocialLoginButton(
                 text: 'Google',
                 imagePath: AppImages.appLogos.gmailLogo,
-                onPressed: () {
-                  // Gọi event đăng nhập Google
-                },
+                onPressed: () {},
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
 
-              // 7. Chuyển hướng đăng ký
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Don't have an account? ",
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 14.sp,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => context.go('/register'),
-                    child: const Text(
+                    child: Text(
                       'Sign up',
                       style: TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ),

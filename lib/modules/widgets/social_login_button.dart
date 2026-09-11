@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SocialLoginButton extends StatelessWidget {
   final String text;
-  final String imagePath; // Chuyển từ IconData sang đường dẫn ảnh
+  final String imagePath;
   final VoidCallback onPressed;
 
   const SocialLoginButton({
@@ -16,23 +17,25 @@ class SocialLoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size(double.infinity, 50),
+        minimumSize: Size(double.infinity, 50.h),
         backgroundColor: Colors.white,
         side: BorderSide(color: Colors.grey.shade300),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
         elevation: 0,
       ),
       onPressed: onPressed,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(imagePath, height: 24, width: 24),
-          const SizedBox(width: 12),
+          Image.asset(imagePath, height: 24.h, width: 24.w),
+          SizedBox(width: 12.w),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.black87,
-              fontSize: 15,
+              fontSize: 15.sp, 
               fontWeight: FontWeight.w600,
             ),
           ),
