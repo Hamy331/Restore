@@ -41,7 +41,12 @@ class LoginMobileView extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              FlutterLogo(size: 80.w),
+              Image.asset(
+                AppImages.appLogos.appLogo,
+                width: 90.w,
+                height: 90.w,
+                fit: BoxFit.contain,
+              ),
               SizedBox(height: 24.h),
 
               Text(
