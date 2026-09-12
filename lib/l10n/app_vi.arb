@@ -1,0 +1,10 @@
+{
+  "appName": "ReStore",
+  "loginTitle": "Đăng nhập vào tài khoản",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "signIn": "Đăng nhập",
+  "orSignInWith": "Hoặc đăng nhập bằng",
+  "dontHaveAccount": "Bạn chưa có tài khoản?",
+  "signUp": "Đăng ký"
+}

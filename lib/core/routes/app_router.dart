@@ -1,7 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../modules/auth/views/login/login_view.dart';
-import '../../modules/auth/bloc/login/login_bloc.dart';
+import 'package:restore/modules/auth/bloc/login/login_bloc.dart';
+import 'package:restore/modules/auth/views/login/login_view.dart';
+import 'package:restore/modules/home/views/home_view.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/login',
@@ -15,5 +16,7 @@ final appRouter = GoRouter(
         );
       },
     ),
+
+    GoRoute(path: '/home', builder: (context, state) => const HomeView()),
   ],
 );

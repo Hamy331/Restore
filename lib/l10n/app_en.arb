@@ -1,0 +1,10 @@
+{
+  "appName": "ReStore",
+  "loginTitle": "Login to your Account",
+  "email": "Email",
+  "password": "Password",
+  "signIn": "Sign in",
+  "orSignInWith": "Or sign in with",
+  "dontHaveAccount": "Don't have an account?",
+  "signUp": "Sign up"
+}
