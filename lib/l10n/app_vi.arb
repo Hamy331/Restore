@@ -6,5 +6,13 @@
   "signIn": "Đăng nhập",
   "orSignInWith": "Hoặc đăng nhập bằng",
   "dontHaveAccount": "Bạn chưa có tài khoản?",
-  "signUp": "Đăng ký"
+  "signUp": "Đăng ký",
+  "successTitle": "Thành công",
+  "errorTitle": "Đã xảy ra lỗi",
+  "warningTitle": "Cảnh báo",
+  "infoTitle": "Thông tin",
+  "deviceNotSupported": "Thiết bị không được hỗ trợ",
+  "deviceNotSupportedDesc": "Ứng dụng ReStore hiện tại chỉ được thiết kế và tối ưu cho trải nghiệm trên màn hình điện thoại di động cầm tay.",
+  "loginSuccessMsg": "Đăng nhập vào hệ thống thành công.",
+  "loginErrorMsg": "Sai tài khoản hoặc mật khẩu."
 }

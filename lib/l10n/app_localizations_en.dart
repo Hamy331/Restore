@@ -31,4 +31,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signUp => 'Sign up';
+
+  @override
+  String get successTitle => 'Success';
+
+  @override
+  String get errorTitle => 'Error occurred';
+
+  @override
+  String get warningTitle => 'Warning';
+
+  @override
+  String get infoTitle => 'Information';
+
+  @override
+  String get deviceNotSupported => 'Device not supported';
+
+  @override
+  String get deviceNotSupportedDesc =>
+      'The ReStore application is currently designed and optimized exclusively for mobile handheld experiences.';
+
+  @override
+  String get loginSuccessMsg => 'Successfully logged into the system.';
+
+  @override
+  String get loginErrorMsg => 'Invalid email or password.';
 }

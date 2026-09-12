@@ -145,6 +145,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign up'**
   String get signUp;
+
+  /// No description provided for @successTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get successTitle;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error occurred'**
+  String get errorTitle;
+
+  /// No description provided for @warningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warningTitle;
+
+  /// No description provided for @infoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Information'**
+  String get infoTitle;
+
+  /// No description provided for @deviceNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Device not supported'**
+  String get deviceNotSupported;
+
+  /// No description provided for @deviceNotSupportedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The ReStore application is currently designed and optimized exclusively for mobile handheld experiences.'**
+  String get deviceNotSupportedDesc;
+
+  /// No description provided for @loginSuccessMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully logged into the system.'**
+  String get loginSuccessMsg;
+
+  /// No description provided for @loginErrorMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email or password.'**
+  String get loginErrorMsg;
 }
 
 class _AppLocalizationsDelegate
