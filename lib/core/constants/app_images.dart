@@ -7,6 +7,6 @@ class AppImages {
 
 class AppLogos {
   const AppLogos();
-  final String gmailLogo =
-      'assets/images/gmail-logo.png';
+  final String appLogo = 'assets/images/app-logo.png';
+  final String gmailLogo = 'assets/images/gmail-logo.png';
 }

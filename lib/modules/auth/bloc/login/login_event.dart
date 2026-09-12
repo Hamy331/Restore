@@ -7,7 +7,6 @@ abstract class LoginEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// Sự kiện khi người dùng bấm nút "Đăng nhập"
 class SubmitLoginEvent extends LoginEvent {
   final String email;
   final String password;

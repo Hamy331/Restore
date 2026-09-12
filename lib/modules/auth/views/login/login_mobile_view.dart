@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_images.dart';
-import 'package:restore/core/constants/app_strings.dart';
+import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/auth/auth_layout.dart';
 import 'package:restore/modules/auth/bloc/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth_event.dart';
@@ -20,6 +20,8 @@ class LoginMobileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
 
@@ -43,7 +45,7 @@ class LoginMobileView extends StatelessWidget {
               SizedBox(height: 24.h),
 
               Text(
-                AppStrings.appName,
+                l10n.appName,
                 style: TextStyle(
                   fontSize: 28.sp,
                   fontWeight: FontWeight.bold,
@@ -52,7 +54,7 @@ class LoginMobileView extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               Text(
-                AppStrings.login,
+                l10n.loginTitle,
                 style: TextStyle(
                   fontSize: 16.sp,
                   color: AppColors.textSecondary,
@@ -60,20 +62,17 @@ class LoginMobileView extends StatelessWidget {
               ),
               SizedBox(height: 40.h),
 
-              CustomTextField(
-                label: AppStrings.email,
-                controller: emailController,
-              ),
+              CustomTextField(label: l10n.email, controller: emailController),
               SizedBox(height: 16.h),
               CustomTextField(
-                label: AppStrings.password,
+                label: l10n.password,
                 controller: passwordController,
                 isPassword: true,
               ),
               SizedBox(height: 32.h),
 
               PrimaryButton(
-                text: 'Sign in',
+                text: l10n.signIn,
                 isLoading: state is LoginLoading,
                 onPressed: () {
                   context.read<LoginBloc>().add(
@@ -93,7 +92,7 @@ class LoginMobileView extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Text(
-                      'Or sign in with',
+                      l10n.orSignInWith,
                       style: TextStyle(color: Colors.grey, fontSize: 12.sp),
                     ),
                   ),
@@ -114,7 +113,7 @@ class LoginMobileView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    "${l10n.dontHaveAccount} ",
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 14.sp,
@@ -123,7 +122,7 @@ class LoginMobileView extends StatelessWidget {
                   GestureDetector(
                     onTap: () => context.go('/register'),
                     child: Text(
-                      'Sign up',
+                      l10n.signUp,
                       style: TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:device_preview/device_preview.dart';
-
+import 'package:restore/core/blocs/language/language_bloc.dart';
+import 'package:restore/core/blocs/language/language_state.dart';
+import 'package:restore/l10n/app_localizations.dart';
 import 'core/theme/theme.dart';
-import 'core/constants/app_strings.dart';
 import 'core/routes/app_router.dart';
 import 'modules/auth/bloc/auth_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(
@@ -21,19 +23,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => AuthBloc())],
+      providers: [
+        BlocProvider(create: (context) => AuthBloc()),
+        BlocProvider(create: (context) => LanguageBloc()),
+      ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
         minTextAdapt: true,
         splitScreenMode: false,
         builder: (context, child) {
-          return MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            locale: DevicePreview.locale(context),
-            builder: DevicePreview.appBuilder,
-            title: AppStrings.appName,
-            theme: AppTheme.lightTheme,
-            routerConfig: appRouter,
+          return BlocBuilder<LanguageBloc, LanguageState>(
+            builder: (context, languageState) {
+              return MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                locale: languageState.locale,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en'), Locale('vi')],
+                theme: AppTheme.lightTheme,
+                routerConfig: appRouter,
+              );
+            },
           );
         },
       ),
