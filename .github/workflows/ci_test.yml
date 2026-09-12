@@ -1,0 +1,51 @@
+name: ReStore CI Test
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test_and_build:
+    name: Analyze & Build Test APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.4"
+          channel: "stable"
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate Localization files
+        run: flutter gen-l10n
+
+      - name: Analyze source code
+        run: flutter analyze
+
+      # - name: Run unit tests
+      #   run: flutter test
+
+      - name: Build Android APK (Debug)
+        run: flutter build apk --debug
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: restore-test-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
