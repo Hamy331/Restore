@@ -31,4 +31,29 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get signUp => 'Đăng ký';
+
+  @override
+  String get successTitle => 'Thành công';
+
+  @override
+  String get errorTitle => 'Đã xảy ra lỗi';
+
+  @override
+  String get warningTitle => 'Cảnh báo';
+
+  @override
+  String get infoTitle => 'Thông tin';
+
+  @override
+  String get deviceNotSupported => 'Thiết bị không được hỗ trợ';
+
+  @override
+  String get deviceNotSupportedDesc =>
+      'Ứng dụng ReStore hiện tại chỉ được thiết kế và tối ưu cho trải nghiệm trên màn hình điện thoại di động cầm tay.';
+
+  @override
+  String get loginSuccessMsg => 'Đăng nhập vào hệ thống thành công.';
+
+  @override
+  String get loginErrorMsg => 'Sai tài khoản hoặc mật khẩu.';
 }

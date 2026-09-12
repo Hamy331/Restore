@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:restore/core/constants/app_dimesions.dart';
+import 't_size_error_layout.dart';
 
 class TResponsiveLayout extends StatelessWidget {
   final Widget mobile;
@@ -21,8 +22,7 @@ class TResponsiveLayout extends StatelessWidget {
     final double width = MediaQuery.sizeOf(context).width;
 
     if (kIsWeb || isAlwaysAllowed) {
-      final Widget desktopWidget =
-          desktop ?? _buildDefaultPlaceholder("Desktop");
+      final Widget desktopWidget = desktop ?? const TSizeErrorLayout();
       final Widget tabletWidget = tablet ?? desktopWidget;
 
       if (width >= AppDimesions.desktopWidth) return desktopWidget;
@@ -30,15 +30,9 @@ class TResponsiveLayout extends StatelessWidget {
       return mobile;
     } else {
       if (width >= AppDimesions.mobileWidth) {
-        return const Scaffold(
-          body: Center(child: Text("App chỉ hỗ trợ trên thiết bị di động")),
-        );
+        return const TSizeErrorLayout();
       }
       return mobile;
     }
-  }
-
-  Widget _buildDefaultPlaceholder(String platform) {
-    return Scaffold(body: Center(child: Text("$platform Version Coming Soon")));
   }
 }

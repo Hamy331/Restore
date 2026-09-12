@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_images.dart';
+import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/auth/auth_layout.dart';
 import 'package:restore/modules/auth/bloc/auth_bloc.dart';
@@ -21,7 +22,6 @@ class LoginMobileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
 
@@ -29,10 +29,16 @@ class LoginMobileView extends StatelessWidget {
       child: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+            // Thay thế ScaffoldMessenger cũ bằng Helper Lỗi
+            TSnackBarHelper.showError(
+              context,
+              message: state.error.isNotEmpty
+                  ? state.error
+                  : l10n.loginErrorMsg,
             );
           } else if (state is LoginSuccess) {
+            // Sử dụng Helper Thành công, bỏ qua title để nó tự lấy l10n.successTitle
+            TSnackBarHelper.showSuccess(context, message: l10n.loginSuccessMsg);
             context.read<AuthBloc>().add(LoggedIn());
             context.go('/home');
           }
@@ -43,8 +49,8 @@ class LoginMobileView extends StatelessWidget {
             children: [
               Image.asset(
                 AppImages.appLogos.appLogo,
-                width: 90.w,
-                height: 90.w,
+                width: 80.w,
+                height: 80.w,
                 fit: BoxFit.contain,
               ),
               SizedBox(height: 24.h),
@@ -108,7 +114,7 @@ class LoginMobileView extends StatelessWidget {
 
               SocialLoginButton(
                 text: 'Google',
-                imagePath: AppImages.appLogos.gmailLogo,
+                imagePath: AppImages.appIcons.gmailLogo,
                 onPressed: () {},
               ),
 
@@ -133,6 +139,48 @@ class LoginMobileView extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: 14.sp,
                       ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 40.h),
+
+              // KHU VỰC TEST NHANH SNACKBAR (Xóa đi khi release)
+              Divider(color: Colors.grey.shade300),
+              Text(
+                'Test SnackBar Tool',
+                style: TextStyle(color: Colors.grey, fontSize: 12.sp),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.check_circle, color: AppColors.success),
+                    onPressed: () => TSnackBarHelper.showSuccess(
+                      context,
+                      message: 'Test thành công',
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.error, color: AppColors.error),
+                    onPressed: () => TSnackBarHelper.showError(
+                      context,
+                      message: 'Test lỗi hệ thống',
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.warning, color: AppColors.warning),
+                    onPressed: () => TSnackBarHelper.showWarning(
+                      context,
+                      message: 'Test cảnh báo rủi ro',
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.info, color: AppColors.info),
+                    onPressed: () => TSnackBarHelper.showInfo(
+                      context,
+                      message: 'Test thông tin người dùng',
                     ),
                   ),
                 ],
