@@ -1,0 +1,18 @@
+{
+  "appName": "ReStore",
+  "loginTitle": "Login to your Account",
+  "email": "Email",
+  "password": "Password",
+  "signIn": "Sign in",
+  "orSignInWith": "Or sign in with",
+  "dontHaveAccount": "Don't have an account?",
+  "signUp": "Sign up",
+  "successTitle": "Success",
+  "errorTitle": "Error occurred",
+  "warningTitle": "Warning",
+  "infoTitle": "Information",
+  "deviceNotSupported": "Device not supported",
+  "deviceNotSupportedDesc": "The ReStore application is currently designed and optimized exclusively for mobile handheld experiences.",
+  "loginSuccessMsg": "Successfully logged into the system.",
+  "loginErrorMsg": "Invalid email or password."
+}
