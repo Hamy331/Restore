@@ -43,3 +43,16 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# env
+*.env
+
+# Widget Preview related
+.widget_preview/
+android/app/google-services.json
+android/app/google-services.json
+android/app/google-services.json
+*.json
+android/app/google-services.json
+android/app/google-services.json
+android/app/google-services.json
