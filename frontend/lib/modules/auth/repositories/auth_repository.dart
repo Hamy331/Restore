@@ -28,11 +28,41 @@ class AuthRepository {
       return null;
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
-        throw Exception(e.response?.data['error'] ?? 'Đăng nhập thất bại.');
+        throw Exception(e.response?.data['error'] ?? 'Sign in failed.');
       }
-      throw Exception('Lỗi kết nối máy chủ.');
+      throw Exception('Server connection error.');
     } catch (e) {
-      throw Exception('Đã xảy ra lỗi hệ thống.');
+      throw Exception('A system error occurred.');
+    }
+  }
+
+  Future<void> register({
+    required String email,
+    required String password,
+    required String username,
+    required String fullName,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/auth/register',
+        data: {
+          'email': email.trim(),
+          'password': password,
+          'username': username.trim(),
+          'fullName': fullName.trim(),
+        },
+      );
+
+      if (response.statusCode != 201) {
+        throw Exception('Registration failed.');
+      }
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        throw Exception(e.response?.data['error'] ?? 'Registration failed.');
+      }
+      throw Exception('Server connection error.');
+    } catch (e) {
+      throw Exception('A system error occurred.');
     }
   }
 
