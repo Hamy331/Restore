@@ -1,10 +1,16 @@
-name: ReStore CI Test
+name: Frontend CI Test
 
 on:
   push:
     branches: ["main", "dev"]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/ci_test.yml" 
   pull_request:
     branches: ["main"]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/ci_test.yml"
 
 jobs:
   test_and_build:
