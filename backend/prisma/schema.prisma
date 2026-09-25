@@ -6,3 +6,65 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  password       String?       
+  fullName       String
+  username       String        @unique
+  phone          String?
+  avatarUrl      String?
+  role           Role          @default(USER)
+  status         AccountStatus @default(ACTIVE)
+  ratingAverage  Float         @default(0.0)
+  ratingCount    Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  listings       Listing[]
+}
+
+enum ListingCondition {
+  NEW
+  LIKE_NEW
+  USED_GOOD
+  USED_FAIR
+  FOR_PARTS
+}
+
+enum ListingStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  EXCHANGED
+}
+
+model Listing {
+  id            String           @id @default(uuid())
+  ownerId       String
+  owner         User             @relation(fields: [ownerId], references: [id])
+  title         String
+  description   String
+  price         Decimal
+  isNegotiable  Boolean          @default(true)
+  condition     ListingCondition
+  status        ListingStatus    @default(AVAILABLE)
+  allowSale     Boolean          @default(true)
+  allowExchange Boolean          @default(false)
+  images        String[]         
+  viewCount     Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}

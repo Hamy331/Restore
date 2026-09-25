@@ -1,13 +1,15 @@
 import express from 'express';
+import { apiLogger } from './middlewares/logger.middleware.js';
+import authRouter from './modules/auth/auth.route.js';
 
 const app = express();
 
 app.use(express.json());
+app.use(apiLogger); 
 
-app.get('/', (req, res) => {
-  res.send('Restore Backend is running!');
-});
+app.use('/api/v1/auth', authRouter);
 
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Restore Backend đang chạy tại http://localhost:${PORT}`);
 });
