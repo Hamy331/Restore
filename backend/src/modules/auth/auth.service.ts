@@ -10,17 +10,17 @@ export const loginUser = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
   
   if (!user) {
-    throw new Error('Email không tồn tại trong hệ thống.');
+    throw new Error('Email does not exist in the system.');
   }
 
   if (user.status !== 'ACTIVE') {
-    throw new Error('Tài khoản của bạn đã bị khóa hoặc vô hiệu hóa.');
+    throw new Error('Your account is suspended or disabled.');
   }
 
   // 2. So sánh mật khẩu bằng bcrypt
   const isMatch = await bcrypt.compare(password, user.password as string);
   if (!isMatch) {
-    throw new Error('Mật khẩu không chính xác.');
+    throw new Error('Incorrect password.');
   }
 
   // 3. Tạo JWT Token chứa thông tin phân quyền (RBAC)
@@ -47,7 +47,7 @@ export const registerUser = async (data: { email: string; password: string; user
     });
   
     if (existingUser) {
-      throw new Error('Email hoặc Tên đăng nhập đã được sử dụng.');
+      throw new Error('Email or Username is already in use.');
     }
   
     // 2. Mã hóa mật khẩu
