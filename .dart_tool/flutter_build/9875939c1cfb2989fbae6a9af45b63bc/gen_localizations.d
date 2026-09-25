@@ -1,1 +1,0 @@
- D:\\DartProject\\restore\\lib\\l10n\\app_localizations_en.dart D:\\DartProject\\restore\\lib\\l10n\\app_localizations_vi.dart D:\\DartProject\\restore\\lib\\l10n\\app_localizations.dart:  D:\\DartProject\\restore\\l10n.yaml D:\\DartProject\\restore\\lib\\l10n\\app_en.arb D:\\DartProject\\restore\\lib\\l10n\\app_vi.arb
