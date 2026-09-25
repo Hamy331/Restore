@@ -1,0 +1,46 @@
+name: Backend CI Test
+
+on:
+  push:
+    branches: ["main", "dev"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_ci.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_ci.yml"
+
+jobs:
+  build_and_test:
+    name: Build & Verify Node.js
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "./backend/package-lock.json"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      # Nếu dự án có setup linter (eslint), hãy uncomment dòng dưới
+      # - name: Run Linter
+      #   run: npm run lint
+
+      - name: Build TypeScript to JavaScript
+        run: npm run build
