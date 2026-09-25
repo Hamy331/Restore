@@ -1,15 +1,25 @@
-name: ReStore CI Test
+name: Frontend CI Test
 
 on:
   push:
     branches: ["main", "dev"]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/ci_test.yml" 
   pull_request:
     branches: ["main"]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/ci_test.yml"
 
 jobs:
   test_and_build:
     name: Analyze & Build Test APK
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./frontend
 
     steps:
       - name: Checkout repository
@@ -51,5 +61,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: restore-test-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: frontend/build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 7
