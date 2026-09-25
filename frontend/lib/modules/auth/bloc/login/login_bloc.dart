@@ -14,7 +14,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     SubmitLoginEvent event,
     Emitter<LoginState> emit,
   ) async {
-    // Kiểm tra dữ liệu rỗng
     if (event.email.isEmpty || event.password.isEmpty) {
       emit(LoginFailure('Vui lòng nhập đầy đủ email và mật khẩu.'));
       return;
@@ -23,13 +22,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(LoginLoading());
 
     try {
-      // Gọi Firebase Authentication
       await _authRepository.loginWithEmailAndPassword(
         event.email,
         event.password,
       );
 
-      // Nếu không văng lỗi (catch), nghĩa là thành công
       emit(LoginSuccess());
     } catch (e) {
       final errorMessage = e.toString().replaceAll('Exception: ', '');
