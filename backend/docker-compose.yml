@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: restore_db_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: restore_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - restore_pgdata:/var/lib/postgresql/data
+
+volumes:
+  restore_pgdata:
