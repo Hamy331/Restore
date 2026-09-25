@@ -1,0 +1,19 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.2",
+    "dotenv": "^18.0.3",
+    "prisma": "^5.22.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "scripts": {
+    "postinstall": "prisma skills sync || exit 0",
+    "dev": "tsx watch src/index.ts"
+  }
+}
