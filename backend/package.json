@@ -18,6 +18,8 @@
   },
   "scripts": {
     "postinstall": "prisma skills sync || exit 0",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
   }
 }
