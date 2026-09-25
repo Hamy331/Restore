@@ -1,33 +1,42 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dio/dio.dart';
+import '../../../core/network/api_client.dart';
 
 class AuthRepository {
-  final FirebaseAuth _firebaseAuth;
+  final ApiClient _apiClient;
 
-  AuthRepository({FirebaseAuth? firebaseAuth})
-    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  AuthRepository({ApiClient? apiClient})
+    : _apiClient = apiClient ?? ApiClient();
 
-  Future<User?> loginWithEmailAndPassword(String email, String password) async {
+  Future<Map<String, dynamic>?> loginWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
     try {
-      final credential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
+      final response = await _apiClient.dio.post(
+        '/auth/login',
+        data: {'email': email.trim(), 'password': password},
       );
-      return credential.user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' ||
-          e.code == 'wrong-password' ||
-          e.code == 'invalid-credential') {
-        throw Exception('Sai email hoặc mật khẩu.');
-      } else if (e.code == 'invalid-email') {
-        throw Exception('Định dạng email không hợp lệ.');
+
+      if (response.statusCode == 200) {
+        final data = response.data['data'];
+        final token = data['token'];
+
+        await _apiClient.secureStorage.write(key: 'jwt_token', value: token);
+
+        return data['user'];
       }
-      throw Exception(e.message ?? 'Đăng nhập thất bại.');
+      return null;
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        throw Exception(e.response?.data['error'] ?? 'Đăng nhập thất bại.');
+      }
+      throw Exception('Lỗi kết nối máy chủ.');
     } catch (e) {
       throw Exception('Đã xảy ra lỗi hệ thống.');
     }
   }
 
   Future<void> logout() async {
-    await _firebaseAuth.signOut();
+    await _apiClient.secureStorage.delete(key: 'jwt_token');
   }
 }
