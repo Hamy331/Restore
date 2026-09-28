@@ -1,195 +1,159 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:restore/shared/widgets/primary_button.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_images.dart';
 import '../../../../core/utils/helpers/t_snackbar_helper.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../auth_layout.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../bloc/auth_bloc.dart';
 import '../../bloc/auth_event.dart';
 import '../../bloc/login/login_bloc.dart';
 import '../../bloc/login/login_event.dart';
 import '../../bloc/login/login_state.dart';
-import '../../../widgets/social_login_button.dart';
-import '../../../../shared/widgets/custom_text_field.dart';
+import '../../widgets/auth_primitives.dart';
+import '../../widgets/auth_screen.dart';
+import '../../widgets/auth_text_field.dart';
 
-
-class LoginMobileView extends StatelessWidget {
+class LoginMobileView extends StatefulWidget {
   const LoginMobileView({super.key});
 
   @override
+  State<LoginMobileView> createState() => _LoginMobileViewState();
+}
+
+class _LoginMobileViewState extends State<LoginMobileView> {
+  final _formKey = GlobalKey<FormState>();
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-
-    return AuthLayout(
-      child: BlocConsumer<LoginBloc, LoginState>(
-        listener: (context, state) {
-          if (state is LoginFailure) {
-            // Thay thế ScaffoldMessenger cũ bằng Helper Lỗi
-            TSnackBarHelper.showError(
-              context,
-              message: state.error.isNotEmpty
-                  ? state.error
-                  : l10n.loginErrorMsg,
-            );
-          } else if (state is LoginSuccess) {
-            // Sử dụng Helper Thành công, bỏ qua title để nó tự lấy l10n.successTitle
-            TSnackBarHelper.showSuccess(context, message: l10n.loginSuccessMsg);
-            context.read<AuthBloc>().add(LoggedIn());
-            context.go('/home');
-          }
-        },
-        builder: (context, state) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+    return BlocConsumer<LoginBloc, LoginState>(
+      listener: (context, state) {
+        if (state is LoginSuccess) {
+          context.read<AuthBloc>().add(LoggedIn());
+          context.go('/home');
+        }
+      },
+      builder: (context, state) => AuthScreen(
+        title: 'Đăng nhập',
+        onBack: () => context.go('/welcome'),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                AppImages.appLogos.appLogo,
-                width: 80.w,
-                height: 80.w,
-                fit: BoxFit.contain,
+              const Text(
+                'Chào mừng trở lại',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
               ),
-              SizedBox(height: 24.h),
-
-              Text(
-                l10n.appName,
-                style: TextStyle(
-                  fontSize: 28.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
+              const SizedBox(height: 13),
+              const Text(
+                'Đăng nhập để lưu tin, nhắn tin và đăng bán.',
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
-              SizedBox(height: 8.h),
-              Text(
-                l10n.loginTitle,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: AppColors.textSecondary,
-                ),
+              const SizedBox(height: 13),
+              AuthTextField(
+                label: 'Email',
+                hintText: 'email@example.com',
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                validator: _validateEmail,
               ),
-              SizedBox(height: 40.h),
-
-              CustomTextField(label: l10n.email, controller: emailController),
-              SizedBox(height: 16.h),
-              CustomTextField(
-                label: l10n.password,
-                controller: passwordController,
-                isPassword: true,
+              const SizedBox(height: 13),
+              AuthTextField(
+                label: 'Mật khẩu',
+                hintText: '••••••••',
+                controller: _password,
+                obscureText: true,
               ),
-              SizedBox(height: 32.h),
-
-              PrimaryButton(
-                text: l10n.signIn,
-                isLoading: state is LoginLoading,
-                onPressed: () {
-                  context.read<LoginBloc>().add(
-                    SubmitLoginEvent(
-                      email: emailController.text,
-                      password: passwordController.text,
-                    ),
-                  );
-                },
-              ),
-
-              SizedBox(height: 32.h),
-
-              Row(
-                children: [
-                  Expanded(child: Divider(color: Colors.grey.shade300)),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Text(
-                      l10n.orSignInWith,
-                      style: TextStyle(color: Colors.grey, fontSize: 12.sp),
-                    ),
+              const SizedBox(height: 6),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => context.push('/forgot-password'),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 14),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  Expanded(child: Divider(color: Colors.grey.shade300)),
-                ],
+                  child: const Text(
+                    'Quên mật khẩu?',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                  ),
+                ),
               ),
-              SizedBox(height: 24.h),
-
-              SocialLoginButton(
-                text: 'Google',
-                imagePath: AppImages.appIcons.gmailLogo,
-                onPressed: () {},
+              if (state is LoginFailure) ...[
+                const SizedBox(height: 13),
+                AuthFeedback(
+                  message: state.error.isEmpty
+                      ? 'Email hoặc mật khẩu chưa đúng. Vui lòng thử lại.'
+                      : state.error,
+                ),
+              ],
+              const SizedBox(height: 13),
+              AppButton(
+                label: state is LoginLoading ? 'Đang xử lý…' : 'Đăng nhập',
+                isLoading: state is LoginLoading,
+                onPressed: _submit,
               ),
-
-              SizedBox(height: 32.h),
-
+              const SizedBox(height: 13),
+              const AuthDivider(),
+              const SizedBox(height: 13),
+              AuthGoogleButton(
+                onPressed: () => TSnackBarHelper.showInfo(
+                  context,
+                  message: 'Google Sign-In chưa được kết nối.',
+                ),
+              ),
+              const SizedBox(height: 13),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "${l10n.dontHaveAccount} ",
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 14.sp,
-                    ),
+                  const Text(
+                    'Chưa có tài khoản?',
+                    style: TextStyle(fontSize: 13),
                   ),
-                  GestureDetector(
-                    onTap: () => context.go('/register'),
-                    child: Text(
-                      l10n.signUp,
+                  TextButton(
+                    onPressed: () => context.go('/register'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.only(left: 8),
+                      minimumSize: const Size(0, 24),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text(
+                      'Đăng ký',
                       style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.sp,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ],
               ),
-
-              SizedBox(height: 40.h),
-
-              // KHU VỰC TEST NHANH SNACKBAR (Xóa đi khi release)
-              Divider(color: Colors.grey.shade300),
-              Text(
-                'Test SnackBar Tool',
-                style: TextStyle(color: Colors.grey, fontSize: 12.sp),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.check_circle, color: AppColors.success),
-                    onPressed: () => TSnackBarHelper.showSuccess(
-                      context,
-                      message: 'Test thành công',
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.error, color: AppColors.error),
-                    onPressed: () => TSnackBarHelper.showError(
-                      context,
-                      message: 'Test lỗi hệ thống',
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.warning, color: AppColors.warning),
-                    onPressed: () => TSnackBarHelper.showWarning(
-                      context,
-                      message: 'Test cảnh báo rủi ro',
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.info, color: AppColors.info),
-                    onPressed: () => TSnackBarHelper.showInfo(
-                      context,
-                      message: 'Test thông tin người dùng',
-                    ),
-                  ),
-                ],
-              ),
             ],
-          );
-        },
+          ),
+        ),
       ),
+    );
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Vui lòng nhập email.';
+    final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value.trim());
+    return valid ? null : 'Email chưa đúng định dạng.';
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    context.read<LoginBloc>().add(
+      SubmitLoginEvent(email: _email.text, password: _password.text),
     );
   }
 }

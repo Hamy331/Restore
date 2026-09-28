@@ -21,7 +21,7 @@ class AuthRepository {
         final data = response.data['data'];
         final token = data['token'];
 
-        await _apiClient.secureStorage.write(key: 'jwt_token', value: token);
+        await _apiClient.tokenStorage.writeAccessToken(token);
 
         return data['user'];
       }
@@ -67,6 +67,6 @@ class AuthRepository {
   }
 
   Future<void> logout() async {
-    await _apiClient.secureStorage.delete(key: 'jwt_token');
+    await _apiClient.tokenStorage.clear();
   }
 }
