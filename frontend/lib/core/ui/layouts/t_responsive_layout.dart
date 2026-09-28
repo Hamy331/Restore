@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../constants/app_dimesions.dart';
-import 't_size_error_layout.dart';
 
 class TResponsiveLayout extends StatelessWidget {
   final Widget mobile;
@@ -21,18 +19,12 @@ class TResponsiveLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
 
-    if (kIsWeb || isAlwaysAllowed) {
-      final Widget desktopWidget = desktop ?? const TSizeErrorLayout();
-      final Widget tabletWidget = tablet ?? desktopWidget;
-
-      if (width >= AppDimesions.desktopWidth) return desktopWidget;
-      if (width >= AppDimesions.mobileWidth) return tabletWidget;
-      return mobile;
-    } else {
-      if (width >= AppDimesions.mobileWidth) {
-        return const TSizeErrorLayout();
-      }
-      return mobile;
+    if (width >= AppDimesions.desktopWidth) {
+      return desktop ?? tablet ?? mobile;
     }
+    if (width >= AppDimesions.mobileWidth) {
+      return tablet ?? mobile;
+    }
+    return mobile;
   }
 }

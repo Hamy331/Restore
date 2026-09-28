@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,17 +15,24 @@ import 'core/routes/app_router.dart';
 import 'modules/auth/bloc/auth_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() async {
-
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   runApp(
     DevicePreview(enabled: !kReleaseMode, builder: (context) => const MyApp()),
   );
+
+  unawaited(_initializeFirebase());
+}
+
+Future<void> _initializeFirebase() async {
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ).timeout(const Duration(seconds: 8));
+  } catch (error) {
+    debugPrint('Firebase initialization skipped: $error');
+  }
 }
 
 class MyApp extends StatelessWidget {
