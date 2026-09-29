@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
+import '../../repositories/auth_repository.dart';
 import '../../widgets/auth_screen.dart';
 import '../../widgets/auth_primitives.dart';
 import '../../widgets/auth_text_field.dart';
 
 class ResetPasswordView extends StatefulWidget {
-  const ResetPasswordView({super.key});
+  const ResetPasswordView({
+    required this.email,
+    required this.otp,
+    super.key,
+  });
+  final String email;
+  final String otp;
 
   @override
   State<ResetPasswordView> createState() => _ResetPasswordViewState();
@@ -17,6 +24,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   final _formKey = GlobalKey<FormState>();
   final _password = TextEditingController();
   final _confirmation = TextEditingController();
+  final _authRepository = AuthRepository();
+  bool _isLoading = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -75,15 +85,40 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
             '• Mật khẩu xác nhận phải trùng khớp',
             style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
+          if (_error != null) ...[
+            const SizedBox(height: 13),
+            AuthFeedback(message: _error!),
+          ],
           const SizedBox(height: 26),
-          AppButton(label: 'Đặt lại mật khẩu', onPressed: _submit),
+          AppButton(
+            label: _isLoading ? 'Đang xử lý...' : 'Đặt lại mật khẩu',
+            isLoading: _isLoading,
+            onPressed: _isLoading ? null : _submit,
+          ),
         ],
       ),
     ),
   );
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    context.go('/password-reset-success');
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      await _authRepository.resetPassword(
+        widget.email,
+        widget.otp,
+        _password.text,
+      );
+      if (mounted) context.go('/password-reset-success');
+    } catch (e) {
+      setState(() => _error = e.toString().replaceAll('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 }

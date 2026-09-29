@@ -81,7 +81,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/reset-password',
-      builder: (_, _) => const ResetPasswordView(),
+      builder: (_, state) => ResetPasswordView(
+        email: state.uri.queryParameters['email'] ?? '',
+        otp: state.uri.queryParameters['otp'] ?? '',
+      ),
     ),
     GoRoute(
       path: '/password-reset-success',

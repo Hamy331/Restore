@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../bloc/otp/otp_cubit.dart';
 import '../../bloc/otp/otp_state.dart';
+import '../../repositories/auth_repository.dart';
 import '../../widgets/auth_primitives.dart';
 import '../../widgets/auth_screen.dart';
 import '../../widgets/otp_input.dart';
@@ -36,10 +37,12 @@ class _ForgotPasswordOtpViewBodyState
     extends State<_ForgotPasswordOtpViewBody> {
   String _otp = '';
   String? _error;
+  bool _isLoading = false;
+  final _authRepository = AuthRepository();
 
   @override
   Widget build(BuildContext context) {
-    final email = widget.email.isEmpty ? 'phat.ngo@email.com' : widget.email;
+    final email = widget.email.isEmpty ? '' : widget.email;
     final l10n = AppLocalizations.of(context)!;
 
     return AuthScreen(
@@ -88,8 +91,9 @@ class _ForgotPasswordOtpViewBodyState
           BlocBuilder<OtpCubit, OtpState>(
             builder: (context, state) {
               return AppButton(
-                label: l10n.verifyOtpButton,
-                onPressed: state.isExpired ? null : () => _verify(l10n),
+                label: _isLoading ? 'Đang xác thực...' : l10n.verifyOtpButton,
+                isLoading: _isLoading,
+                onPressed: (state.isExpired || _isLoading) ? null : () => _verify(l10n),
               );
             },
           ),
@@ -99,7 +103,7 @@ class _ForgotPasswordOtpViewBodyState
               return Center(
                 child: TextButton(
                   onPressed: state.isExpired
-                      ? () => context.read<OtpCubit>().resetTimer()
+                      ? () => _resendOtp()
                       : null,
                   child: Text(
                     l10n.resendOtp,
@@ -121,11 +125,40 @@ class _ForgotPasswordOtpViewBodyState
     );
   }
 
-  void _verify(AppLocalizations l10n) {
+  Future<void> _verify(AppLocalizations l10n) async {
     if (_otp.length != 6) {
       setState(() => _error = l10n.invalidOtpError);
       return;
     }
-    context.push('/reset-password');
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      await _authRepository.verifyForgotPasswordOtp(widget.email, _otp);
+      if (mounted) {
+        context.push(
+          '/reset-password?email=${Uri.encodeComponent(widget.email)}&otp=${Uri.encodeComponent(_otp)}',
+        );
+      }
+    } catch (e) {
+      setState(() => _error = e.toString().replaceAll('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    try {
+      await _authRepository.forgotPassword(widget.email);
+      if (mounted) {
+        context.read<OtpCubit>().resetTimer();
+        setState(() => _error = null);
+      }
+    } catch (e) {
+      setState(() => _error = e.toString().replaceAll('Exception: ', ''));
+    }
   }
 }
