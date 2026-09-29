@@ -19,11 +19,14 @@ class EmailVerificationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authRepository = AuthRepository();
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => OtpCubit()..startTimer()),
         BlocProvider(
-          create: (context) => VerifyEmailCubit(context.read<AuthRepository>()),
+          create: (_) => OtpCubit(authRepository)..startTimer(),
+        ),
+        BlocProvider(
+          create: (_) => VerifyEmailCubit(authRepository),
         ),
       ],
       child: _EmailVerificationViewBody(email: email),
@@ -123,7 +126,11 @@ class _EmailVerificationViewBodyState
                   return Center(
                     child: TextButton(
                       onPressed: state.isExpired
-                          ? () => context.read<OtpCubit>().resetTimer()
+                          ? () async {
+                              try {
+                                await context.read<OtpCubit>().resendOtp(email);
+                              } catch (_) {}
+                            }
                           : null,
                       child: Text(
                         l10n.resendOtp,

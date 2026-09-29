@@ -101,4 +101,22 @@ class AuthRepository {
       throw Exception('A system error occurred.');
     }
   }
+  Future<void> resendRegistrationOtp(String email) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/auth/resend-registration-otp',
+        data: {'email': email.trim()},
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to resend OTP.');
+      }
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        throw Exception(e.response?.data['error'] ?? 'Failed to resend OTP.');
+      }
+      throw Exception('Server connection error.');
+    } catch (e) {
+      throw Exception('A system error occurred.');
+    }
+  }
 }

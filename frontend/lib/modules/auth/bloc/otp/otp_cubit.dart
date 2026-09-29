@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../repositories/auth_repository.dart';
 import 'otp_state.dart';
 
 class OtpCubit extends Cubit<OtpState> {
-  OtpCubit() : super(const OtpState(secondsRemaining: 900)); // 15 mins
+  final AuthRepository? _authRepository;
+
+  OtpCubit([this._authRepository]) : super(const OtpState(secondsRemaining: 300)); // 5 mins
 
   Timer? _timer;
 
-  void startTimer({int duration = 900}) {
+  void startTimer({int duration = 300}) {
     _timer?.cancel();
     emit(OtpState(secondsRemaining: duration));
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -19,7 +22,10 @@ class OtpCubit extends Cubit<OtpState> {
     });
   }
 
-  void resetTimer() {
+  void resetTimer() => startTimer();
+
+  Future<void> resendOtp(String email) async {
+    await _authRepository!.resendRegistrationOtp(email);
     startTimer();
   }
 
