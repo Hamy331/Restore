@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getMe, login, register } from './auth.controller.js';
+import { getMe, login, register, verifyRegistrationOtp, forgotPassword, verifyOtp, resetPassword } from './auth.controller.js';
 import { verifyToken } from '../../middlewares/auth.middleware.js';
 
 const authRouter = Router();
@@ -7,5 +7,9 @@ const authRouter = Router();
 authRouter.get('/me', verifyToken, getMe);
 authRouter.post('/login', login);
 authRouter.post('/register', register); 
+authRouter.post('/verify-registration-otp', verifyRegistrationOtp);
+authRouter.post('/forgot-password', forgotPassword);
+authRouter.post('/verify-otp', verifyOtp);
+authRouter.post('/reset-password', resetPassword);
 
 export default authRouter;

@@ -1,0 +1,45 @@
+import { Resend } from 'resend';
+
+export const sendOtpEmail = async (to: string, otp: string) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.EMAIL_FROM;
+
+  if (!apiKey || !fromEmail) {
+    console.error('Resend configuration is missing.');
+    throw new Error('Email service is not properly configured.');
+  }
+
+  const resend = new Resend(apiKey);
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `ReStore <${fromEmail}>`,
+      to: [to],
+      subject: 'Mã xác thực OTP - ReStore',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+          <h2 style="color: #1E3A8A; text-align: center;">Mã xác thực OTP</h2>
+          <p style="font-size: 16px; color: #333;">Chào bạn,</p>
+          <p style="font-size: 16px; color: #333;">Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản ReStore. Dưới đây là mã OTP của bạn:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <span style="display: inline-block; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1E3A8A; background-color: #F3F4F6; padding: 10px 20px; border-radius: 8px;">${otp}</span>
+          </div>
+          <p style="font-size: 16px; color: #333;">Mã OTP này sẽ hết hạn trong <strong>15 phút</strong>.</p>
+          <p style="font-size: 14px; color: #666; margin-top: 30px;">Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
+          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
+          <p style="font-size: 12px; color: #999; text-align: center;">© 2026 ReStore. All rights reserved.</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error('Lỗi khi gửi email OTP (Resend):', error);
+      throw new Error('Không thể gửi email lúc này. Vui lòng thử lại sau.');
+    }
+
+    console.log(`Email OTP đã được gửi đến ${to} via Resend`, data);
+  } catch (error: any) {
+    console.error('Lỗi khi gửi email OTP (Resend):', error);
+    throw new Error('Không thể gửi email lúc này. Vui lòng thử lại sau.');
+  }
+};

@@ -13,6 +13,7 @@ enum Role {
 }
 
 enum AccountStatus {
+  UNVERIFIED
   ACTIVE
   SUSPENDED
   BANNED
@@ -27,9 +28,11 @@ model User {
   phone          String?
   avatarUrl      String?
   role           Role          @default(USER)
-  status         AccountStatus @default(ACTIVE)
+  status         AccountStatus @default(UNVERIFIED)
   ratingAverage  Float         @default(0.0)
   ratingCount    Int           @default(0)
+  otpCode        String?
+  otpExpires     DateTime?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
