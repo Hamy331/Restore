@@ -119,4 +119,69 @@ class AuthRepository {
       throw Exception('A system error occurred.');
     }
   }
+
+  Future<void> forgotPassword(String email) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/auth/forgot-password',
+        data: {'email': email.trim()},
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to send OTP.');
+      }
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        throw Exception(e.response?.data['error'] ?? 'Failed to send OTP.');
+      }
+      throw Exception('Server connection error.');
+    } catch (e) {
+      throw Exception('A system error occurred.');
+    }
+  }
+
+  Future<void> verifyForgotPasswordOtp(String email, String otp) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/auth/verify-otp',
+        data: {'email': email.trim(), 'otp': otp.trim()},
+      );
+      if (response.statusCode != 200) {
+        throw Exception('OTP verification failed.');
+      }
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        throw Exception(
+          e.response?.data['error'] ?? 'OTP verification failed.',
+        );
+      }
+      throw Exception('Server connection error.');
+    } catch (e) {
+      throw Exception('A system error occurred.');
+    }
+  }
+
+  Future<void> resetPassword(String email, String otp, String newPassword) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/auth/reset-password',
+        data: {
+          'email': email.trim(),
+          'otp': otp.trim(),
+          'newPassword': newPassword,
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Password reset failed.');
+      }
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        throw Exception(
+          e.response?.data['error'] ?? 'Password reset failed.',
+        );
+      }
+      throw Exception('Server connection error.');
+    } catch (e) {
+      throw Exception('A system error occurred.');
+    }
+  }
 }

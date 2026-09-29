@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
+import '../../repositories/auth_repository.dart';
 import '../../widgets/auth_primitives.dart';
 import '../../widgets/auth_screen.dart';
 import '../../widgets/auth_text_field.dart';
@@ -15,7 +16,10 @@ class ForgotPasswordView extends StatefulWidget {
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final _formKey = GlobalKey<FormState>();
-  final _email = TextEditingController(text: 'phat.ngo@email.com');
+  final _email = TextEditingController();
+  final _authRepository = AuthRepository();
+  bool _isLoading = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -49,8 +53,16 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             controller: _email,
             keyboardType: TextInputType.emailAddress,
           ),
+          if (_error != null) ...[
+            const SizedBox(height: 13),
+            AuthFeedback(message: _error!),
+          ],
           const SizedBox(height: 13),
-          AppButton(label: 'Gửi mã OTP', onPressed: _submit),
+          AppButton(
+            label: _isLoading ? 'Đang gửi...' : 'Gửi mã OTP',
+            isLoading: _isLoading,
+            onPressed: _isLoading ? null : _submit,
+          ),
           const SizedBox(height: 13),
           Center(
             child: TextButton(
@@ -66,10 +78,25 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     ),
   );
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    context.push(
-      '/forgot-password/otp?email=${Uri.encodeComponent(_email.text)}',
-    );
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      await _authRepository.forgotPassword(_email.text);
+      if (mounted) {
+        context.push(
+          '/forgot-password/otp?email=${Uri.encodeComponent(_email.text)}',
+        );
+      }
+    } catch (e) {
+      setState(() => _error = e.toString().replaceAll('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 }
