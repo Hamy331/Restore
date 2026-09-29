@@ -74,7 +74,7 @@ export const registerUser = async (data: { email: string; password: string; user
     });
   
     // 4. Gửi OTP qua email
-    await sendOtpEmail(email, otpCode);
+    await sendOtpEmail(email, otpCode, 'register');
 
     // 5. Trả về thông tin user (giấu mật khẩu)
     const { password: _, ...userWithoutPassword } = newUser;
@@ -97,7 +97,7 @@ export const resendRegistrationOtp = async (email: string) => {
     data: { otpCode, otpExpires },
   });
 
-  await sendOtpEmail(email, otpCode);
+  await sendOtpEmail(email, otpCode, 'register');
   return { message: 'OTP mới đã được gửi đến email của bạn.' };
 };
 
@@ -151,7 +151,7 @@ export const forgotPassword = async (email: string) => {
     data: { otpCode, otpExpires },
   });
 
-  await sendOtpEmail(email, otpCode);
+  await sendOtpEmail(email, otpCode, 'forgot-password');
   return { message: 'OTP đã được gửi đến email của bạn.' };
 };
 
