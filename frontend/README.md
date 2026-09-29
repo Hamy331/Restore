@@ -1,6 +1,6 @@
 # Restore - Second-Hand Marketplace (Frontend Mobile App)
 
-Đây là mã nguồn ứng dụng di động (Frontend) của dự án **Restore** — nền tảng C2C chuyên mua bán, thương lượng và trao đổi các sản phẩm thủy sinh đã qua sử dụng.
+Đây là mã nguồn ứng dụng di động (Frontend) của dự án **Restore** — nền tảng C2C chuyên mua bán, thương lượng và trao đổi các sản phẩm đã qua sử dụng.
 
 Ứng dụng được xây dựng bằng **Flutter**, áp dụng kiến trúc phân lớp rõ ràng nhằm tách biệt giao diện (UI), quản lý trạng thái (State), dữ liệu (Data) và các dịch vụ ngoại vi (Services).
 
