@@ -49,6 +49,18 @@ export const register = async (req: Request, res: Response) => {
     }
   };
 
+export const resendRegistrationOtp = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required.' });
+
+    const result = await authService.resendRegistrationOtp(email);
+    return res.status(200).json({ success: true, ...result });
+  } catch (error: any) {
+    return res.status(400).json({ success: false, error: error.message });
+  }
+};
+
 export const verifyRegistrationOtp = async (req: Request, res: Response) => {
   try {
     const { email, otp } = req.body;

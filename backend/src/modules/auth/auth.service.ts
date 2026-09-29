@@ -81,6 +81,26 @@ export const registerUser = async (data: { email: string; password: string; user
     return userWithoutPassword;
   };
 
+export const resendRegistrationOtp = async (email: string) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) throw new Error('Không tìm thấy tài khoản.');
+
+  if (user.status !== 'UNVERIFIED') {
+    throw new Error('Tài khoản đã được xác thực.');
+  }
+
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { otpCode, otpExpires },
+  });
+
+  await sendOtpEmail(email, otpCode);
+  return { message: 'OTP mới đã được gửi đến email của bạn.' };
+};
+
 export const verifyRegistrationOtp = async (email: string, otp: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw new Error('Không tìm thấy tài khoản.');
