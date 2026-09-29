@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/ui/responsive/responsive_content.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/listing_grid.dart';
 import '../../../chat/views/chat_conversation_view.dart';
 import '../fixtures/figma_preview_listings.dart';
@@ -11,14 +12,17 @@ class ProductDetailView extends StatelessWidget {
   const ProductDetailView({
     required this.listingId,
     this.isPreview = false,
+    this.previewSource = 'create',
     super.key,
   });
 
   final String listingId;
   final bool isPreview;
+  final String previewSource;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final listing = figmaPreviewListings.firstWhere(
       (item) => item.id == listingId,
       orElse: () => figmaPreviewListings.first,
@@ -28,10 +32,19 @@ class ProductDetailView extends StatelessWidget {
       appBar: AppBar(
         titleSpacing: 0,
         centerTitle: false,
-        title: Text(isPreview ? 'Xem trước tin đăng' : 'Chi tiết tin đăng'),
+        title: Text(
+          isPreview ? l10n.listingPreviewTitle : l10n.listingDetailTitle,
+        ),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.ios_share)),
           IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border)),
+          if (!isPreview)
+            PopupMenuButton<String>(
+              onSelected: (_) => context.push('/report/listing/$listingId'),
+              itemBuilder: (_) => [
+                PopupMenuItem(value: 'report', child: Text(l10n.reportListing)),
+              ],
+            ),
         ],
       ),
       body: SingleChildScrollView(
@@ -57,9 +70,9 @@ class ProductDetailView extends StatelessWidget {
                           color: AppColors.textPrimary.withValues(alpha: .78),
                           borderRadius: BorderRadius.circular(13),
                         ),
-                        child: const Text(
-                          '1 / 5',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.galleryPosition(1, 5),
+                          style: const TextStyle(
                             fontSize: 11,
                             color: AppColors.surface,
                           ),
@@ -80,55 +93,55 @@ class ProductDetailView extends StatelessWidget {
                   children: [
                     const SizedBox(height: 14),
                     Text(
-                      'Máy ảnh film Canon AE-1 + lens 50mm',
+                      l10n.reportedListingTitle,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      '2.450.000 đ',
-                      style: TextStyle(
+                    Text(
+                      l10n.canonPrice,
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryDark,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      '⌖ Quận 1, TP. Hồ Chí Minh  ·  Đăng 2 giờ trước',
-                      style: TextStyle(
+                    Text(
+                      l10n.listingLocationMeta,
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
                     ),
                     const Divider(height: 22),
-                    const _InfoRow(
-                      label: 'Tình trạng',
-                      value: 'Đã qua sử dụng · Còn tốt',
+                    _InfoRow(
+                      label: l10n.condition,
+                      value: l10n.usedGoodCondition,
                     ),
                     const Divider(height: 18),
-                    const Text(
-                      'Mô tả sản phẩm',
-                      style: TextStyle(
+                    Text(
+                      l10n.productDescription,
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Canon AE-1 hoạt động tốt, đo sáng chuẩn. Kèm lens FD 50mm f/1.8, dây đeo và bao da. Có thể xem máy trực tiếp tại Quận 1.',
-                      style: TextStyle(fontSize: 13),
+                    Text(
+                      l10n.canonDescription,
+                      style: const TextStyle(fontSize: 13),
                     ),
                     const Divider(height: 22),
-                    const _SellerRow(),
+                    _SellerRow(l10n: l10n),
                     const Divider(height: 22),
                     Row(
                       children: [
-                        const Text(
-                          'Tin tương tự',
-                          style: TextStyle(
+                        Text(
+                          l10n.similarListings,
+                          style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                           ),
@@ -136,9 +149,9 @@ class ProductDetailView extends StatelessWidget {
                         const Spacer(),
                         TextButton(
                           onPressed: () => context.go('/search'),
-                          child: const Text(
-                            'Xem thêm  ›',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.seeMore,
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.primaryDark,
                             ),
@@ -169,76 +182,85 @@ class ProductDetailView extends StatelessWidget {
           child: Align(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 728),
-              child: Row(
-                children: isPreview
-                    ? _previewActions(context)
-                    : _buyerActions(context),
-              ),
+              child: isPreview
+                  ? _PreviewActions(previewSource: previewSource, l10n: l10n)
+                  : _BuyerActions(l10n: l10n),
             ),
           ),
         ),
       ),
     );
   }
+}
 
-  List<Widget> _buyerActions(BuildContext context) => [
-    Expanded(
-      child: SizedBox(
-        height: 48,
-        child: ElevatedButton.icon(
-          onPressed: () => context.push('/messages/minh-anh'),
-          icon: const Icon(Icons.chat_bubble_outline, size: 20),
-          label: const Text('Chat'),
-        ),
-      ),
-    ),
-    const SizedBox(width: 10),
-    SizedBox(
-      width: 116,
-      height: 48,
-      child: OutlinedButton(
-        onPressed: () => showMakeOfferSheet(context),
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: AppColors.primary),
-          foregroundColor: AppColors.primaryDark,
-        ),
-        child: const Text('Trả giá'),
-      ),
-    ),
-  ];
+class _BuyerActions extends StatelessWidget {
+  const _BuyerActions({required this.l10n});
+  final AppLocalizations l10n;
 
-  List<Widget> _previewActions(BuildContext context) => [
-    SizedBox(
-      width: 116,
-      height: 48,
-      child: OutlinedButton(
-        onPressed: () => context.go('/edit-listing'),
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: AppColors.primary),
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Expanded(
+        child: SizedBox(
+          height: 48,
+          child: ElevatedButton.icon(
+            onPressed: () => context.push('/messages/minh-anh'),
+            icon: const Icon(Icons.chat_bubble_outline, size: 20),
+            label: Text(l10n.chat),
+          ),
         ),
-        child: const Text('Chỉnh sửa'),
       ),
-    ),
-    const SizedBox(width: 10),
-    Expanded(
-      child: SizedBox(
+      const SizedBox(width: 10),
+      SizedBox(
+        width: 116,
         height: 48,
-        child: ElevatedButton(
-          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Đăng tin sẽ được nối API ở phase tính năng.'),
+        child: OutlinedButton(
+          onPressed: () => showMakeOfferSheet(context),
+          child: Text(l10n.makeOffer),
+        ),
+      ),
+    ],
+  );
+}
+
+class _PreviewActions extends StatelessWidget {
+  const _PreviewActions({required this.previewSource, required this.l10n});
+  final String previewSource;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      SizedBox(
+        width: 116,
+        height: 48,
+        child: OutlinedButton(
+          onPressed: () => context.go(
+            previewSource == 'edit'
+                ? '/edit-listing/camera'
+                : '/create-listing',
+          ),
+          child: Text(previewSource == 'edit' ? l10n.editListing : l10n.back),
+        ),
+      ),
+      const SizedBox(width: 10),
+      Expanded(
+        child: SizedBox(
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () => context.go('/manage-listings'),
+            child: Text(
+              previewSource == 'edit' ? l10n.saveChanges : l10n.publishListing,
             ),
           ),
-          child: const Text('Đăng tin'),
         ),
       ),
-    ),
-  ];
+    ],
+  );
 }
 
 class _InfoRow extends StatelessWidget {
   const _InfoRow({required this.label, required this.value});
-
   final String label;
   final String value;
 
@@ -259,40 +281,50 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _SellerRow extends StatelessWidget {
-  const _SellerRow();
+  const _SellerRow({required this.l10n});
+  final AppLocalizations l10n;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      const CircleAvatar(
-        radius: 24,
-        backgroundColor: AppColors.infoBg,
-        child: Text(
-          'MA',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1E3A8A),
+  Widget build(BuildContext context) => InkWell(
+    onTap: () => context.push('/seller/minh-anh'),
+    child: Row(
+      children: [
+        const CircleAvatar(
+          radius: 24,
+          backgroundColor: AppColors.infoBg,
+          child: Text(
+            'MA',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1E3A8A),
+            ),
           ),
         ),
-      ),
-      const SizedBox(width: 10),
-      const Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Minh Anh',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-            ),
-            SizedBox(height: 3),
-            Text(
-              '★ 4,9  ·  48 đánh giá  ·  Phản hồi nhanh',
-              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
-            ),
-          ],
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.sellerName,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                l10n.sellerRatingMeta,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      const Icon(Icons.chevron_right, color: AppColors.textSecondary),
-    ],
+        const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+      ],
+    ),
   );
 }
