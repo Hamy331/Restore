@@ -10,6 +10,8 @@ class AppButton extends StatelessWidget {
     this.variant = AppButtonVariant.primary,
     this.isLoading = false,
     this.icon,
+    this.borderRadius = 8,
+    this.height = 48,
     super.key,
   });
 
@@ -18,6 +20,8 @@ class AppButton extends StatelessWidget {
   final AppButtonVariant variant;
   final bool isLoading;
   final IconData? icon;
+  final double borderRadius;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +55,15 @@ class AppButton extends StatelessWidget {
     final callback = isLoading ? null : onPressed;
     return SizedBox(
       width: double.infinity,
-      height: 48,
+      height: height,
       child: switch (variant) {
         AppButtonVariant.primary => ElevatedButton(
           onPressed: callback,
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
+            ),
+          ),
           child: child,
         ),
         AppButtonVariant.secondary => OutlinedButton(
@@ -63,7 +72,7 @@ class AppButton extends StatelessWidget {
             side: const BorderSide(color: AppColors.primary),
             foregroundColor: AppColors.primaryDark,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
           ),
           child: child,
