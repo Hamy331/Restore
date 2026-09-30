@@ -26,7 +26,7 @@
       }
     }
   },
-  "otpValidFor": "Code valid for {time}",
+  "otpValidFor": "You can resend the code in {time}",
   "@otpValidFor": {
     "placeholders": {
       "time": {
@@ -40,7 +40,7 @@
   "verifyOtpButton": "Verify OTP",
   "verifyEmailButton": "Verify email",
   "resendOtp": "Didn't receive code? Resend OTP",
-  "otpExpireInfo": "The code is for one-time use and expires in 15 minutes.",
+  "otpExpireInfo": "The code is for one-time use and expires in 5 minutes.",
   "emailVerifyInfo": "You can continue browsing after verifying your email.",
   "invalidOtpError": "Invalid OTP. Please check and try again.",
   "accountTitle": "Account",

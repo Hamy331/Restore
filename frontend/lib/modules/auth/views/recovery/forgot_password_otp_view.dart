@@ -88,23 +88,17 @@ class _ForgotPasswordOtpViewBodyState
             AuthFeedback(message: _error!),
           ],
           const SizedBox(height: 13),
-          BlocBuilder<OtpCubit, OtpState>(
-            builder: (context, state) {
-              return AppButton(
-                label: _isLoading ? 'Đang xác thực...' : l10n.verifyOtpButton,
-                isLoading: _isLoading,
-                onPressed: (state.isExpired || _isLoading) ? null : () => _verify(l10n),
-              );
-            },
+          AppButton(
+            label: _isLoading ? 'Đang xác thực...' : l10n.verifyOtpButton,
+            isLoading: _isLoading,
+            onPressed: _isLoading ? null : () => _verify(l10n),
           ),
           const SizedBox(height: 13),
           BlocBuilder<OtpCubit, OtpState>(
             builder: (context, state) {
               return Center(
                 child: TextButton(
-                  onPressed: state.isExpired
-                      ? () => _resendOtp()
-                      : null,
+                  onPressed: state.isExpired ? () => _resendOtp() : null,
                   child: Text(
                     l10n.resendOtp,
                     style: TextStyle(
@@ -137,11 +131,12 @@ class _ForgotPasswordOtpViewBodyState
     });
 
     try {
-      await _authRepository.verifyForgotPasswordOtp(widget.email, _otp);
+      final resetToken = await _authRepository.verifyForgotPasswordOtp(
+        widget.email,
+        _otp,
+      );
       if (mounted) {
-        context.push(
-          '/reset-password?email=${Uri.encodeComponent(widget.email)}&otp=${Uri.encodeComponent(_otp)}',
-        );
+        context.push('/reset-password', extra: resetToken);
       }
     } catch (e) {
       setState(() => _error = e.toString().replaceAll('Exception: ', ''));

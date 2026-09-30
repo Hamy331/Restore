@@ -30,12 +30,18 @@ import '../../modules/listings/presentation/views/search_view.dart';
 import '../../modules/listings/presentation/bloc/listing_form_cubit.dart';
 import '../../modules/listings/presentation/bloc/manage_listings_cubit.dart';
 import '../../modules/shell/views/main_shell.dart';
+import '../../modules/auth/bloc/auth_bloc.dart';
+import '../../modules/auth/auth_route_guard.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/welcome',
+  redirect: (context, state) {
+    final authState = context.read<AuthBloc>().state;
+    return authRouteRedirect(authState, state.uri.path);
+  },
   routes: [
     GoRoute(path: '/welcome', builder: (_, _) => const WelcomeView()),
     GoRoute(
@@ -67,6 +73,7 @@ final appRouter = GoRouter(
         actionLabel: 'Tiếp tục khám phá',
         destination: '/home',
         note: 'Một tài khoản cho cả mua và bán',
+        authenticateOnContinue: true,
       ),
     ),
     GoRoute(
@@ -82,8 +89,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/reset-password',
       builder: (_, state) => ResetPasswordView(
-        email: state.uri.queryParameters['email'] ?? '',
-        otp: state.uri.queryParameters['otp'] ?? '',
+        resetToken: state.extra is String ? state.extra! as String : '',
       ),
     ),
     GoRoute(

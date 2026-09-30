@@ -15,12 +15,8 @@ class VerifyEmailCubit extends Cubit<VerifyEmailState> {
 
     emit(VerifyEmailLoading());
     try {
-      final user = await _authRepository.verifyRegistrationOtp(email, otp);
-      if (user != null) {
-        emit(VerifyEmailSuccess());
-      } else {
-        emit(const VerifyEmailFailure('Xác thực thất bại.'));
-      }
+      await _authRepository.verifyRegistrationOtp(email, otp);
+      emit(VerifyEmailSuccess());
     } catch (e) {
       emit(VerifyEmailFailure(e.toString().replaceAll('Exception: ', '')));
     }

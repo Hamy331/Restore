@@ -5,6 +5,7 @@ class TokenStorage {
     : _storage = storage ?? const FlutterSecureStorage();
 
   static const _accessTokenKey = 'access_token';
+  static const _refreshTokenKey = 'refresh_token';
   static const _legacyTokenKey = 'jwt_token';
   final FlutterSecureStorage _storage;
 
@@ -16,8 +17,22 @@ class TokenStorage {
   Future<void> writeAccessToken(String token) =>
       _storage.write(key: _accessTokenKey, value: token);
 
+  Future<String?> readRefreshToken() => _storage.read(key: _refreshTokenKey);
+
+  Future<void> writeTokens({
+    required String accessToken,
+    required String refreshToken,
+  }) async {
+    await Future.wait([
+      _storage.write(key: _accessTokenKey, value: accessToken),
+      _storage.write(key: _refreshTokenKey, value: refreshToken),
+      _storage.delete(key: _legacyTokenKey),
+    ]);
+  }
+
   Future<void> clear() async {
     await _storage.delete(key: _accessTokenKey);
+    await _storage.delete(key: _refreshTokenKey);
     await _storage.delete(key: _legacyTokenKey);
   }
 }

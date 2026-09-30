@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -6,15 +7,13 @@ import '../../repositories/auth_repository.dart';
 import '../../widgets/auth_screen.dart';
 import '../../widgets/auth_primitives.dart';
 import '../../widgets/auth_text_field.dart';
+import '../../auth_validators.dart';
+import '../../bloc/auth_bloc.dart';
+import '../../bloc/auth_event.dart';
 
 class ResetPasswordView extends StatefulWidget {
-  const ResetPasswordView({
-    required this.email,
-    required this.otp,
-    super.key,
-  });
-  final String email;
-  final String otp;
+  const ResetPasswordView({required this.resetToken, super.key});
+  final String resetToken;
 
   @override
   State<ResetPasswordView> createState() => _ResetPasswordViewState();
@@ -61,9 +60,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
             hintText: 'Tối thiểu 8 ký tự',
             controller: _password,
             obscureText: true,
-            validator: (value) => value == null || value.length < 8
-                ? 'Mật khẩu cần ít nhất 8 ký tự.'
-                : null,
+            validator: AuthValidators.password,
+            autofillHints: const [AutofillHints.newPassword],
+            textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 13),
           AuthTextField(
@@ -71,13 +70,15 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
             hintText: 'Nhập lại mật khẩu mới',
             controller: _confirmation,
             obscureText: true,
-            validator: (value) => value != _password.text
-                ? 'Mật khẩu xác nhận chưa trùng khớp.'
-                : null,
+            validator: (value) =>
+                AuthValidators.confirmation(value, _password.text),
+            autofillHints: const [AutofillHints.newPassword],
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) => _submit(),
           ),
           const SizedBox(height: 13),
           const Text(
-            '• Ít nhất 8 ký tự',
+            '• 8-72 ký tự, có chữ hoa, chữ thường và số',
             style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 3),
@@ -109,12 +110,11 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     });
 
     try {
-      await _authRepository.resetPassword(
-        widget.email,
-        widget.otp,
-        _password.text,
-      );
-      if (mounted) context.go('/password-reset-success');
+      await _authRepository.resetPassword(widget.resetToken, _password.text);
+      if (mounted) {
+        context.read<AuthBloc>().add(LoggedOut());
+        context.go('/password-reset-success');
+      }
     } catch (e) {
       setState(() => _error = e.toString().replaceAll('Exception: ', ''));
     } finally {

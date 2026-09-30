@@ -70,7 +70,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String otpValidFor(String time) {
-    return 'Mã có hiệu lực trong $time';
+    return 'Có thể gửi lại mã sau $time';
   }
 
   @override
@@ -89,7 +89,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get resendOtp => 'Chưa nhận được mã? Gửi lại OTP';
 
   @override
-  String get otpExpireInfo => 'Mã chỉ dùng một lần và hết hạn sau 15 phút.';
+  String get otpExpireInfo => 'Mã chỉ dùng một lần và hết hạn sau 5 phút.';
 
   @override
   String get emailVerifyInfo =>

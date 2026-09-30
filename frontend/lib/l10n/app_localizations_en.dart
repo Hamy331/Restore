@@ -70,7 +70,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String otpValidFor(String time) {
-    return 'Code valid for $time';
+    return 'You can resend the code in $time';
   }
 
   @override
@@ -90,7 +90,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otpExpireInfo =>
-      'The code is for one-time use and expires in 15 minutes.';
+      'The code is for one-time use and expires in 5 minutes.';
 
   @override
   String get emailVerifyInfo =>
