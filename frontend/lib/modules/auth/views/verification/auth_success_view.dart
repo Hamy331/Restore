@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../widgets/auth_screen.dart';
+import '../../bloc/auth_bloc.dart';
+import '../../bloc/auth_event.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthSuccessView extends StatelessWidget {
   const AuthSuccessView({
@@ -11,6 +14,7 @@ class AuthSuccessView extends StatelessWidget {
     required this.actionLabel,
     required this.destination,
     this.note,
+    this.authenticateOnContinue = false,
     super.key,
   });
 
@@ -19,6 +23,7 @@ class AuthSuccessView extends StatelessWidget {
   final String actionLabel;
   final String destination;
   final String? note;
+  final bool authenticateOnContinue;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +62,13 @@ class AuthSuccessView extends StatelessWidget {
           const SizedBox(height: 13),
           AppButton(
             label: actionLabel,
-            onPressed: () => context.go(destination),
+            onPressed: () {
+              if (authenticateOnContinue) {
+                context.read<AuthBloc>().add(const LoggedIn(role: 'USER'));
+              } else {
+                context.go(destination);
+              }
+            },
           ),
           if (note != null) ...[
             const SizedBox(height: 10),

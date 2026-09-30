@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/bloc/auth_event.dart';
 
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
@@ -121,7 +124,7 @@ class AccountView extends StatelessWidget {
                       _AccountItem(
                         icon: Icons.logout,
                         label: l10n.logout,
-                        onTap: () => context.go('/welcome'),
+                        onTap: () => context.read<AuthBloc>().add(LoggedOut()),
                       ),
                     ],
                   ),

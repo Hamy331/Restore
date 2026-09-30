@@ -215,7 +215,7 @@ abstract class AppLocalizations {
   /// No description provided for @otpValidFor.
   ///
   /// In en, this message translates to:
-  /// **'Code valid for {time}'**
+  /// **'You can resend the code in {time}'**
   String otpValidFor(String time);
 
   /// No description provided for @verifyEmailTitle.
@@ -251,7 +251,7 @@ abstract class AppLocalizations {
   /// No description provided for @otpExpireInfo.
   ///
   /// In en, this message translates to:
-  /// **'The code is for one-time use and expires in 15 minutes.'**
+  /// **'The code is for one-time use and expires in 5 minutes.'**
   String get otpExpireInfo;
 
   /// No description provided for @emailVerifyInfo.

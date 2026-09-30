@@ -26,7 +26,7 @@
       }
     }
   },
-  "otpValidFor": "Mã có hiệu lực trong {time}",
+  "otpValidFor": "Có thể gửi lại mã sau {time}",
   "@otpValidFor": {
     "placeholders": {
       "time": {
@@ -40,7 +40,7 @@
   "verifyOtpButton": "Xác minh OTP",
   "verifyEmailButton": "Xác minh email",
   "resendOtp": "Chưa nhận được mã? Gửi lại OTP",
-  "otpExpireInfo": "Mã chỉ dùng một lần và hết hạn sau 15 phút.",
+  "otpExpireInfo": "Mã chỉ dùng một lần và hết hạn sau 5 phút.",
   "emailVerifyInfo": "Bạn có thể tiếp tục xem tin sau khi xác minh email.",
   "invalidOtpError": "Mã OTP không đúng. Kiểm tra và thử lại.",
   "accountTitle": "Tài khoản",

@@ -6,11 +6,12 @@ import 'otp_state.dart';
 class OtpCubit extends Cubit<OtpState> {
   final AuthRepository? _authRepository;
 
-  OtpCubit([this._authRepository]) : super(const OtpState(secondsRemaining: 300)); // 5 mins
+  OtpCubit([this._authRepository])
+    : super(const OtpState(secondsRemaining: 60));
 
   Timer? _timer;
 
-  void startTimer({int duration = 300}) {
+  void startTimer({int duration = 60}) {
     _timer?.cancel();
     emit(OtpState(secondsRemaining: duration));
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {

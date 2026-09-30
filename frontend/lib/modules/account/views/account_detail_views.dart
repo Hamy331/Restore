@@ -7,6 +7,8 @@ import '../../../core/ui/responsive/responsive_content.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/listing_grid.dart';
 import '../../listings/presentation/fixtures/figma_preview_listings.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/bloc/auth_event.dart';
 import '../bloc/account_ui_cubit.dart';
 
 class EditProfileView extends StatelessWidget {
@@ -138,7 +140,7 @@ class SettingsView extends StatelessWidget {
           _SettingsItem(
             icon: Icons.logout,
             label: l10n.logout,
-            onTap: () => context.go('/welcome'),
+            onTap: () => context.read<AuthBloc>().add(LoggedOut()),
           ),
         ],
       ),

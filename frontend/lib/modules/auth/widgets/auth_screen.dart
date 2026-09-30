@@ -8,6 +8,7 @@ class AuthScreen extends StatelessWidget {
     this.onBack,
     this.centerContent = false,
     this.bottom,
+    this.backgroundColor = AppColors.surface,
     super.key,
   });
 
@@ -16,6 +17,7 @@ class AuthScreen extends StatelessWidget {
   final VoidCallback? onBack;
   final bool centerContent;
   final Widget? bottom;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class AuthScreen extends StatelessWidget {
     final height = MediaQuery.sizeOf(context).height;
     final tablet = width >= 600;
     final body = Material(
-      color: AppColors.surface,
+      color: backgroundColor,
       borderRadius: tablet ? BorderRadius.circular(16) : BorderRadius.zero,
       clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
@@ -74,7 +76,7 @@ class AuthScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: tablet ? AppColors.background : AppColors.surface,
+      backgroundColor: tablet ? AppColors.background : backgroundColor,
       body: SafeArea(
         child: tablet
             ? Center(

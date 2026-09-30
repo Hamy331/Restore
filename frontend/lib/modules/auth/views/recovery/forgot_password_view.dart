@@ -6,6 +6,7 @@ import '../../repositories/auth_repository.dart';
 import '../../widgets/auth_primitives.dart';
 import '../../widgets/auth_screen.dart';
 import '../../widgets/auth_text_field.dart';
+import '../../auth_validators.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
@@ -52,6 +53,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             label: 'Email',
             controller: _email,
             keyboardType: TextInputType.emailAddress,
+            validator: AuthValidators.email,
+            autofillHints: const [AutofillHints.email],
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) => _submit(),
           ),
           if (_error != null) ...[
             const SizedBox(height: 13),

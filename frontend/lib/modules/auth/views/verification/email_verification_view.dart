@@ -22,12 +22,8 @@ class EmailVerificationView extends StatelessWidget {
     final authRepository = AuthRepository();
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => OtpCubit(authRepository)..startTimer(),
-        ),
-        BlocProvider(
-          create: (_) => VerifyEmailCubit(authRepository),
-        ),
+        BlocProvider(create: (_) => OtpCubit(authRepository)..startTimer()),
+        BlocProvider(create: (_) => VerifyEmailCubit(authRepository)),
       ],
       child: _EmailVerificationViewBody(email: email),
     );
@@ -50,7 +46,7 @@ class _EmailVerificationViewBodyState
 
   @override
   Widget build(BuildContext context) {
-    final email = widget.email.isEmpty ? 'phat.ngo@email.com' : widget.email;
+    final email = widget.email;
     final l10n = AppLocalizations.of(context)!;
 
     return BlocConsumer<VerifyEmailCubit, VerifyEmailState>(
@@ -109,16 +105,14 @@ class _EmailVerificationViewBodyState
                 AuthFeedback(message: verifyState.error),
               ],
               const SizedBox(height: 13),
-              BlocBuilder<OtpCubit, OtpState>(
-                builder: (context, otpState) {
-                  return AppButton(
-                    label: verifyState is VerifyEmailLoading
-                        ? 'Đang xử lý...'
-                        : l10n.verifyEmailButton,
-                    isLoading: verifyState is VerifyEmailLoading,
-                    onPressed: otpState.isExpired ? null : () => _verify(l10n),
-                  );
-                },
+              AppButton(
+                label: verifyState is VerifyEmailLoading
+                    ? 'Đang xử lý...'
+                    : l10n.verifyEmailButton,
+                isLoading: verifyState is VerifyEmailLoading,
+                onPressed: verifyState is VerifyEmailLoading
+                    ? null
+                    : () => _verify(l10n),
               ),
               const SizedBox(height: 13),
               BlocBuilder<OtpCubit, OtpState>(
@@ -129,7 +123,14 @@ class _EmailVerificationViewBodyState
                           ? () async {
                               try {
                                 await context.read<OtpCubit>().resendOtp(email);
-                              } catch (_) {}
+                                if (mounted) setState(() => _localError = null);
+                              } catch (error) {
+                                if (mounted) {
+                                  setState(
+                                    () => _localError = error.toString(),
+                                  );
+                                }
+                              }
                             }
                           : null,
                       child: Text(
