@@ -1,25 +1,21 @@
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 class AppSizes {
   AppSizes._();
 
-  // Padding & Margin (Dùng .w cho chiều ngang, .h cho chiều dọc)
-  static final double p8 = 8.w;
-  static final double p16 = 16.w;
-  static final double p24 = 24.w;
-
-  // Radius bo góc (Dùng .r để bo đều các góc)
-  static final double radius8 = 8.r;
-  static final double radius12 = 12.r;
-
-  // Icon Sizes
-  static final double iconSm = 16.w;
-  static final double iconMd = 24.w;
-  static final double iconLg = 32.w;
-
-  // Font Sizes (Dùng .sp để scale theo tỷ lệ màn hình và cấu hình chữ của hệ điều hành)
-  static final double fontSm = 12.sp;
-  static final double fontMd = 14.sp;
-  static final double fontLg = 16.sp;
-  static final double fontXl = 28.sp;
+  static const double p4 = 4;
+  static const double p8 = 8;
+  static const double p12 = 12;
+  static const double p16 = 16;
+  static const double p20 = 20;
+  static const double p24 = 24;
+  static const double radius4 = 4;
+  static const double radius8 = 8;
+  static const double radius12 = 12;
+  static const double radius16 = 16;
+  static const double iconSm = 16;
+  static const double iconMd = 24;
+  static const double iconLg = 32;
+  static const double fontSm = 12;
+  static const double fontMd = 14;
+  static const double fontLg = 16;
+  static const double fontXl = 28;
 }
