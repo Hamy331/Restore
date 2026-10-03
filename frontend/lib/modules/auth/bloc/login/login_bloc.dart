@@ -22,12 +22,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(LoginLoading());
 
     try {
-      await _authRepository.loginWithEmailAndPassword(
+      final user = await _authRepository.loginWithEmailAndPassword(
         event.email,
         event.password,
       );
 
-      emit(LoginSuccess());
+      emit(LoginSuccess(user['role'] as String? ?? 'USER'));
+    } on AuthException catch (e) {
+      emit(LoginFailure(e.message, code: e.code));
     } catch (e) {
       final errorMessage = e.toString().replaceAll('Exception: ', '');
       emit(LoginFailure(errorMessage));

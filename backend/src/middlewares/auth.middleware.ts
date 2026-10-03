@@ -1,37 +1,71 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { NextFunction, Request, Response } from 'express';
+import { verifyAccessToken } from '../modules/auth/token.service.js';
+import { Role } from '@prisma/client';
+import { findAuthUserById } from '../modules/auth/auth.repository.js';
 
 export interface AuthRequest extends Request {
-  user?: any;
+  user?: { userId: string; email: string; role: Role };
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
+export const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: 'Vui lòng đăng nhập để tiếp tục.',
+      code: 'AUTH_REQUIRED',
+    });
+  }
 
-export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+  let claims;
   try {
-    // 1. Lấy token từ header 'Authorization'
-    const authHeader = req.headers.authorization;
-    
-    // Chuẩn là: "Bearer eyJhbGciOiJIUz..."
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Token not found or invalid authorization format.' });
+    claims = verifyAccessToken(authHeader.slice(7));
+  } catch {
+    return res.status(401).json({
+      success: false,
+      error: 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn.',
+      code: 'INVALID_ACCESS_TOKEN',
+    });
+  }
+
+  try {
+    const user = await findAuthUserById(claims.userId);
+    if (!user || user.status !== 'ACTIVE') {
+      return res.status(401).json({
+        success: false,
+        error: 'Tài khoản không còn khả dụng.',
+        code: 'ACCOUNT_UNAVAILABLE',
+      });
     }
-
-    // 2. Cắt lấy đúng phần chuỗi token (bỏ chữ Bearer và dấu cách)
-    const token = authHeader.split(' ')[1];
-
-    // 3. Giải mã và kiểm tra tính hợp lệ của Token
-    const decoded = jwt.verify(token, JWT_SECRET);
-
-    // 4. Nhét thông tin user (id, role...) vào request để các Controller phía sau dùng
-    req.user = decoded;
-
-    // 5. Cho phép đi tiếp vào Controller
+    if (claims.authVersion !== user.authVersion) {
+      return res.status(401).json({
+        success: false,
+        error: 'Phiên đăng nhập đã bị thu hồi. Vui lòng đăng nhập lại.',
+        code: 'SESSION_REVOKED',
+      });
+    }
+    req.user = { userId: user.id, email: user.email, role: user.role };
     next();
-  } catch (error: any) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Session expired. Please login again.' });
-    }
-    return res.status(401).json({ error: 'Invalid token.' });
+  } catch (error) {
+    next(error);
   }
 };
+
+export const authorizeRoles = (...allowedRoles: Role[]) =>
+  (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Vui lòng đăng nhập để tiếp tục.',
+        code: 'AUTH_REQUIRED',
+      });
+    }
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Bạn không có quyền thực hiện thao tác này.',
+        code: 'FORBIDDEN',
+      });
+    }
+    next();
+  };
