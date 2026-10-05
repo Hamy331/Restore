@@ -310,5 +310,15 @@
   "sellerRatingMeta": "★ 4,9 · 48 đánh giá · Phản hồi nhanh",
   "similarListings": "Tin tương tự",
   "seeMore": "Xem thêm ›",
-  "makeOffer": "Trả giá"
+  "makeOffer": "Trả giá",
+  "chooseCategoryTitle": "Chọn danh mục",
+  "chooseCategorySubtitle": "Bạn muốn đăng bán món đồ gì?",
+  "categoryElectronicsTitle": "Đồ điện tử",
+  "categoryElectronicsDesc": "Điện thoại, Laptop, Máy ảnh,...",
+  "categoryVehiclesTitle": "Xe cộ",
+  "categoryVehiclesDesc": "Xe máy, Xe đạp, Ô tô, Phụ tùng,...",
+  "categoryFashionTitle": "Thời trang",
+  "categoryFashionDesc": "Quần áo, Giày dép, Túi xách,...",
+  "categoryHomeTitle": "Gia dụng",
+  "categoryHomeDesc": "Nội thất, Đèn, Đồ bếp, Trang trí,..."
 }

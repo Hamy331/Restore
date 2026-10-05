@@ -310,5 +310,15 @@
   "sellerRatingMeta": "★ 4.9 · 48 ratings · Quick response",
   "similarListings": "Similar listings",
   "seeMore": "See more ›",
-  "makeOffer": "Make offer"
+  "makeOffer": "Make offer",
+  "chooseCategoryTitle": "Choose category",
+  "chooseCategorySubtitle": "What do you want to sell?",
+  "categoryElectronicsTitle": "Electronics",
+  "categoryElectronicsDesc": "Phones, Laptops, Cameras,...",
+  "categoryVehiclesTitle": "Vehicles",
+  "categoryVehiclesDesc": "Motorbikes, Bicycles, Cars, Parts,...",
+  "categoryFashionTitle": "Fashion",
+  "categoryFashionDesc": "Clothes, Shoes, Bags,...",
+  "categoryHomeTitle": "Home Appliances",
+  "categoryHomeDesc": "Furniture, Lighting, Kitchenware, Decor,..."
 }
