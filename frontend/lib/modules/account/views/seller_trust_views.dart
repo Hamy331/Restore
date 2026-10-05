@@ -1,397 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/listing_grid.dart';
 import '../../listings/presentation/fixtures/figma_preview_listings.dart';
+import '../bloc/account_ui_cubit.dart';
 
 class SellerProfileView extends StatelessWidget {
   const SellerProfileView({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.background,
-    appBar: AppBar(
-      title: const Text('Người bán'),
-      actions: [
-        PopupMenuButton<String>(
-          onSelected: (value) {
-            if (value == 'report') context.push('/report/user/minh-anh');
-          },
-          itemBuilder: (_) => const [
-            PopupMenuItem(value: 'report', child: Text('Báo cáo người bán')),
-          ],
-        ),
-      ],
-    ),
-    body: SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: ResponsiveContent(
-        maxWidth: 760,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: Text(l10n.sellerTitle),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (_) => context.push('/report/user/minh-anh'),
+            itemBuilder: (_) => [
+              PopupMenuItem(value: 'report', child: Text(l10n.reportSeller)),
+            ],
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: ResponsiveContent(
+          maxWidth: 760,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _SellerIdentity(l10n: l10n),
+              const SizedBox(height: 14),
+              Row(
                 children: [
-                  const Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 32,
-                        backgroundColor: AppColors.infoBg,
-                        child: Text(
-                          'MA',
-                          style: TextStyle(
-                            color: Color(0xFF1E3A8A),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Minh Anh',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Quận 1, TP. Hồ Chí Minh',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            SizedBox(height: 3),
-                            Text(
-                              'Thành viên từ 2022',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  Text(
+                    l10n.sellingListings,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  const Row(
-                    children: [
-                      Expanded(child: _SellerMetric('★ 4,9', '48 đánh giá')),
-                      Expanded(child: _SellerMetric('3', 'Tin đang bán')),
-                      Expanded(child: _SellerMetric('12', 'Tin đã bán')),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 42,
-                          child: ElevatedButton(
-                            onPressed: () => context.push('/messages/minh-anh'),
-                            child: const Text('Chat'),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: SizedBox(
-                          height: 42,
-                          child: OutlinedButton(
-                            onPressed: () {},
-                            child: const Text('Xem tin đăng'),
-                          ),
-                        ),
-                      ),
-                    ],
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(l10n.listingCountShort(3)),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                const Text(
-                  'Tin đang bán',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text('3 tin  ›'),
-                ),
-              ],
-            ),
-            ListingGrid(listings: figmaPreviewListings.take(4).toList()),
-          ],
+              ListingGrid(listings: figmaPreviewListings.take(4).toList()),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class RatingsView extends StatelessWidget {
   const RatingsView({super.key});
 
-  static const _reviews = [
-    ('TN', 'Thảo Nguyễn', '20/09/2026', 5, 'Máy đúng mô tả, người bán trả lời nhanh. Hẹn xem hàng thuận tiện.'),
-    ('QH', 'Quốc Hưng', '15/09/2026', 5, 'Trao đổi rõ ràng và rất đúng giờ.'),
-    ('BT', 'Bảo Trâm', '02/09/2026', 4, 'Sản phẩm còn tốt, hình đăng sát thực tế.'),
-  ];
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.background,
-    appBar: AppBar(title: const Text('Đánh giá người bán')),
-    body: SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: ResponsiveContent(
-        maxWidth: 720,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _RatingSummary(),
-            const SizedBox(height: 15),
-            const Row(
-              children: [
-                Text(
-                  'Nhận xét từ cộng đồng',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                ),
-                Spacer(),
-                Text(
-                  '48 nhận xét',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            ..._reviews.map((review) => _ReviewCard(review: review)),
-          ],
-        ),
-      ),
-    ),
-    bottomNavigationBar: _BottomAction(
-      label: 'Viết đánh giá',
-      onPressed: () => context.push('/seller/minh-anh/review'),
-    ),
-  );
-}
-
-class LeaveReviewView extends StatefulWidget {
-  const LeaveReviewView({super.key});
-
-  @override
-  State<LeaveReviewView> createState() => _LeaveReviewViewState();
-}
-
-class _LeaveReviewViewState extends State<LeaveReviewView> {
-  int _rating = 5;
-  final _comment = TextEditingController();
-
-  @override
-  void dispose() {
-    _comment.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.background,
-    appBar: AppBar(title: const Text('Viết đánh giá')),
-    body: SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: ResponsiveContent(
-        maxWidth: 720,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _SellerSummary(),
-            const SizedBox(height: 12),
-            _WhiteCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Bạn đánh giá người bán thế nào?',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    children: List.generate(
-                      5,
-                      (index) => IconButton(
-                        tooltip: '${index + 1} sao',
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 31,
-                          height: 36,
-                        ),
-                        onPressed: () => setState(() => _rating = index + 1),
-                        icon: Icon(
-                          index < _rating ? Icons.star : Icons.star_border,
-                          color: AppColors.primary,
-                          size: 30,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '$_rating sao · ${_rating == 5 ? 'Rất tốt' : 'Đã chọn'}',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            _WhiteCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Nhận xét (không bắt buộc)',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _comment,
-                    minLines: 4,
-                    maxLines: 4,
-                    decoration: const InputDecoration(
-                      hintText: 'Chia sẻ trải nghiệm trao đổi của bạn...',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(11),
-              decoration: BoxDecoration(
-                color: AppColors.primarySoft,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                'Đánh giá giúp cộng đồng hiểu về người bán. Hãy chia sẻ trải nghiệm trao đổi của bạn.',
-                style: TextStyle(fontSize: 11),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-    bottomNavigationBar: _BottomAction(
-      label: 'Gửi đánh giá',
-      onPressed: () => _showPending(context, 'Đánh giá'),
-    ),
-  );
-}
-
-enum ReportTarget { listing, user }
-
-class ReportView extends StatefulWidget {
-  const ReportView({required this.target, super.key});
-
-  final ReportTarget target;
-
-  @override
-  State<ReportView> createState() => _ReportViewState();
-}
-
-class _ReportViewState extends State<ReportView> {
-  String _reason = 'Thông tin sai lệch';
-  bool _submitted = false;
-  final _description = TextEditingController();
-
-  static const _reasons = [
-    'Nội dung không phù hợp',
-    'Có dấu hiệu lừa đảo',
-    'Sản phẩm bị cấm',
-    'Thông tin sai lệch',
-    'Spam',
-    'Lý do khác',
-  ];
-
-  @override
-  void dispose() {
-    _description.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_submitted) {
-      return Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(title: const Text('Báo cáo')),
-        body: ResponsiveContent(
-          maxWidth: 560,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircleAvatar(
-                  radius: 34,
-                  backgroundColor: AppColors.successBg,
-                  child: Icon(
-                    Icons.check_circle_outline,
-                    color: AppColors.success,
-                    size: 40,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                const Text(
-                  'Đã gửi báo cáo',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Cảm ơn bạn đã giúp ReStore an toàn hơn. Đội ngũ kiểm duyệt sẽ xem xét nội dung này.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: 22),
-                ElevatedButton(
-                  onPressed: () => context.pop(),
-                  child: const Text('Quay lại'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
+    final l10n = AppLocalizations.of(context)!;
+    final reviews = [
+      const _ReviewData('TN', 'Thảo Nguyễn', '20/09/2026', 5),
+      const _ReviewData('QH', 'Quốc Hưng', '15/09/2026', 5),
+      const _ReviewData('BT', 'Bảo Trâm', '02/09/2026', 4),
+    ];
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          widget.target == ReportTarget.listing
-              ? 'Báo cáo tin đăng'
-              : 'Báo cáo người dùng',
-        ),
-      ),
+      appBar: AppBar(title: Text(l10n.sellerRatingsTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: ResponsiveContent(
@@ -399,61 +83,391 @@ class _ReportViewState extends State<ReportView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              widget.target == ReportTarget.listing
-                  ? const _ReportedListing()
-                  : const _SellerSummary(),
-              const SizedBox(height: 12),
-              const Text(
-                'Lý do báo cáo',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              RadioGroup<String>(
-                groupValue: _reason,
-                onChanged: (value) {
-                  if (value != null) setState(() => _reason = value);
-                },
-                child: Column(
-                  children: _reasons.map(
-                    (reason) => Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: RadioListTile<String>(
-                        dense: true,
-                        value: reason,
-                        activeColor: AppColors.primary,
-                        title: Text(reason, style: const TextStyle(fontSize: 12)),
-                      ),
+              _RatingSummary(l10n: l10n),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  Text(
+                    l10n.communityReviews,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
                     ),
-                  ).toList(),
-                ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    l10n.reviewCount(48),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
               ),
-              const Text(
-                'Mô tả thêm (không bắt buộc)',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _description,
-                minLines: 3,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  hintText: 'Thêm thông tin để chúng tôi kiểm tra...',
-                ),
-              ),
+              const SizedBox(height: 10),
+              ...reviews.map((review) => _ReviewCard(review: review)),
             ],
           ),
         ),
       ),
       bottomNavigationBar: _BottomAction(
-        label: 'Gửi báo cáo',
-        onPressed: () => setState(() => _submitted = true),
+        label: l10n.writeReview,
+        onPressed: () => context.push('/seller/minh-anh/review'),
       ),
     );
   }
+}
+
+class LeaveReviewView extends StatelessWidget {
+  const LeaveReviewView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return BlocListener<ReviewCubit, ReviewState>(
+      listenWhen: (previous, current) =>
+          !previous.submitted && current.submitted,
+      listener: (context, state) => context.pop(),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(title: Text(l10n.leaveReviewTitle)),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: ResponsiveContent(
+            maxWidth: 720,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _SellerSummary(l10n: l10n),
+                const SizedBox(height: 12),
+                BlocBuilder<ReviewCubit, ReviewState>(
+                  builder: (context, state) => _WhiteCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.reviewQuestion,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Wrap(
+                          children: List.generate(
+                            5,
+                            (index) => IconButton(
+                              tooltip: l10n.starSelection(
+                                index + 1,
+                                l10n.selected,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints.tightFor(
+                                width: 31,
+                                height: 36,
+                              ),
+                              onPressed: () => context
+                                  .read<ReviewCubit>()
+                                  .ratingChanged(index + 1),
+                              icon: Icon(
+                                index < state.rating
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                color: AppColors.primary,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.starSelection(
+                            state.rating,
+                            state.rating == 5 ? l10n.veryGood : l10n.selected,
+                          ),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.primaryDark,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _WhiteCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.optionalReview,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        onChanged: context.read<ReviewCubit>().commentChanged,
+                        minLines: 4,
+                        maxLines: 4,
+                        decoration: InputDecoration(hintText: l10n.reviewHint),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(11),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySoft,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    l10n.reviewGuidance,
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        bottomNavigationBar: _BottomAction(
+          label: l10n.submitReview,
+          onPressed: context.read<ReviewCubit>().submitted,
+        ),
+      ),
+    );
+  }
+}
+
+enum ReportTarget { listing, user }
+
+class ReportView extends StatelessWidget {
+  const ReportView({required this.target, super.key});
+
+  final ReportTarget target;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final reasons = {
+      'inappropriate': l10n.inappropriateContent,
+      'fraud': l10n.suspectedFraud,
+      'prohibited': l10n.prohibitedProduct,
+      'misleading': l10n.misleadingInformation,
+      'spam': l10n.spam,
+      'other': l10n.otherReason,
+    };
+    return BlocBuilder<ReportCubit, ReportState>(
+      builder: (context, state) => state.submitted
+          ? _ReportSuccess(l10n: l10n)
+          : Scaffold(
+              backgroundColor: AppColors.background,
+              appBar: AppBar(
+                title: Text(
+                  target == ReportTarget.listing
+                      ? l10n.reportListing
+                      : l10n.reportUser,
+                ),
+              ),
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: ResponsiveContent(
+                  maxWidth: 720,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      target == ReportTarget.listing
+                          ? _ReportedListing(l10n: l10n)
+                          : _SellerSummary(l10n: l10n),
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n.reportReason,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...reasons.entries.map(
+                        (reason) => Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
+                            onTap: () => context
+                                .read<ReportCubit>()
+                                .reasonChanged(reason.key),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 11,
+                                vertical: 12,
+                              ),
+                              child: Row(
+                                children: [
+                                  _SelectionCircle(
+                                    selected: state.reason == reason.key,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      reason.value,
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        l10n.optionalDescription,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        onChanged: context
+                            .read<ReportCubit>()
+                            .descriptionChanged,
+                        minLines: 3,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: l10n.reportDescriptionHint,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              bottomNavigationBar: _BottomAction(
+                label: l10n.submitReport,
+                onPressed: context.read<ReportCubit>().submitted,
+              ),
+            ),
+    );
+  }
+}
+
+class _SellerIdentity extends StatelessWidget {
+  const _SellerIdentity({required this.l10n});
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) => _WhiteCard(
+    child: Column(
+      children: [
+        Row(
+          children: [
+            const CircleAvatar(
+              radius: 32,
+              backgroundColor: AppColors.infoBg,
+              child: Text(
+                'MA',
+                style: TextStyle(
+                  color: Color(0xFF1E3A8A),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.sellerName,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.sellerArea,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    l10n.sellerMemberSince,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              child: _SellerMetric(l10n.ratingValue, l10n.ratingCount(48)),
+            ),
+            Expanded(child: _SellerMetric(3.toString(), l10n.sellingListings)),
+            Expanded(child: _SellerMetric(12.toString(), l10n.soldListings)),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 42,
+                child: ElevatedButton(
+                  onPressed: () => context.push('/messages/minh-anh'),
+                  child: Text(l10n.chat),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: SizedBox(
+                height: 42,
+                child: OutlinedButton(
+                  onPressed: () {},
+                  child: Text(l10n.viewListings),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+class _SelectionCircle extends StatelessWidget {
+  const _SelectionCircle({required this.selected});
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 19,
+    height: 19,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: selected ? AppColors.primary : AppColors.surface,
+      border: Border.all(
+        color: selected ? AppColors.primary : AppColors.border,
+      ),
+    ),
+    child: selected
+        ? const Icon(Icons.circle, size: 7, color: AppColors.surface)
+        : null,
+  );
 }
 
 class _SellerMetric extends StatelessWidget {
@@ -482,31 +496,44 @@ class _SellerMetric extends StatelessWidget {
 }
 
 class _RatingSummary extends StatelessWidget {
-  const _RatingSummary();
+  const _RatingSummary({required this.l10n});
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) => _WhiteCard(
     child: Row(
       children: [
-        const SizedBox(
+        SizedBox(
           width: 100,
           child: Column(
             children: [
-              Text('4,9', style: TextStyle(fontSize: 38, fontWeight: FontWeight.w700)),
-              Text('★★★★★', style: TextStyle(color: AppColors.primary, fontSize: 18)),
-              Text('48 đánh giá', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+              const Text(
+                '4,9',
+                style: TextStyle(fontSize: 38, fontWeight: FontWeight.w700),
+              ),
+              const Text(
+                '★★★★★',
+                style: TextStyle(color: AppColors.primary, fontSize: 18),
+              ),
+              Text(
+                l10n.ratingCount(48),
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ],
           ),
         ),
         const SizedBox(width: 14),
-        Expanded(
+        const Expanded(
           child: Column(
-            children: const [
-              _RatingBar(label: '5★', value: .88, count: '42'),
-              _RatingBar(label: '4★', value: .12, count: '5'),
-              _RatingBar(label: '3★', value: .04, count: '1'),
-              _RatingBar(label: '2★', value: 0, count: '0'),
-              _RatingBar(label: '1★', value: 0, count: '0'),
+            children: [
+              _RatingBar(label: '5★', value: .88, count: 42),
+              _RatingBar(label: '4★', value: .12, count: 5),
+              _RatingBar(label: '3★', value: .04, count: 1),
+              _RatingBar(label: '2★', value: 0, count: 0),
+              _RatingBar(label: '1★', value: 0, count: 0),
             ],
           ),
         ),
@@ -516,17 +543,24 @@ class _RatingSummary extends StatelessWidget {
 }
 
 class _RatingBar extends StatelessWidget {
-  const _RatingBar({required this.label, required this.value, required this.count});
+  const _RatingBar({
+    required this.label,
+    required this.value,
+    required this.count,
+  });
   final String label;
   final double value;
-  final String count;
+  final int count;
 
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 4),
     child: Row(
       children: [
-        SizedBox(width: 24, child: Text(label, style: const TextStyle(fontSize: 10))),
+        SizedBox(
+          width: 24,
+          child: Text(label, style: const TextStyle(fontSize: 10)),
+        ),
         Expanded(
           child: LinearProgressIndicator(
             value: value,
@@ -536,74 +570,114 @@ class _RatingBar extends StatelessWidget {
             color: AppColors.primary,
           ),
         ),
-        SizedBox(width: 20, child: Text(count, textAlign: TextAlign.end, style: const TextStyle(fontSize: 9))),
+        SizedBox(
+          width: 20,
+          child: Text(
+            count.toString(),
+            textAlign: TextAlign.end,
+            style: const TextStyle(fontSize: 9),
+          ),
+        ),
       ],
     ),
   );
 }
 
+class _ReviewData {
+  const _ReviewData(this.initials, this.name, this.date, this.stars);
+  final String initials;
+  final String name;
+  final String date;
+  final int stars;
+}
+
 class _ReviewCard extends StatelessWidget {
   const _ReviewCard({required this.review});
-  final (String, String, String, int, String) review;
+  final _ReviewData review;
 
   @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
+  Widget build(BuildContext context) => _WhiteCard(
     margin: const EdgeInsets.only(bottom: 12),
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(9),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    child: Row(
       children: [
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 17,
-              backgroundColor: AppColors.infoBg,
-              child: Text(review.$1, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(review.$2, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-                  Text(review.$3, style: const TextStyle(fontSize: 9, color: AppColors.textSecondary)),
-                ],
-              ),
-            ),
-            Text('★' * review.$4, style: const TextStyle(color: AppColors.primary, fontSize: 12)),
-          ],
+        CircleAvatar(
+          radius: 17,
+          backgroundColor: AppColors.infoBg,
+          child: Text(
+            review.initials,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+          ),
         ),
-        const SizedBox(height: 10),
-        Text(review.$5, style: const TextStyle(fontSize: 11)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                review.name,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                review.date,
+                style: const TextStyle(
+                  fontSize: 9,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Text(
+          List.filled(review.stars, '★').join(),
+          style: const TextStyle(color: AppColors.primary, fontSize: 12),
+        ),
       ],
     ),
   );
 }
 
 class _SellerSummary extends StatelessWidget {
-  const _SellerSummary();
+  const _SellerSummary({required this.l10n});
+  final AppLocalizations l10n;
+
   @override
-  Widget build(BuildContext context) => const _WhiteCard(
+  Widget build(BuildContext context) => _WhiteCard(
     child: Row(
       children: [
-        CircleAvatar(
+        const CircleAvatar(
           radius: 32,
           backgroundColor: AppColors.infoBg,
-          child: Text('MA', style: TextStyle(color: Color(0xFF1E3A8A), fontWeight: FontWeight.w700)),
+          child: Text(
+            'MA',
+            style: TextStyle(
+              color: Color(0xFF1E3A8A),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Minh Anh', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-              SizedBox(height: 5),
-              Text('Người bán · Quận 1, TP.HCM', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+              Text(
+                l10n.sellerName,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                l10n.sellerRoleArea,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ],
           ),
         ),
@@ -613,23 +687,42 @@ class _SellerSummary extends StatelessWidget {
 }
 
 class _ReportedListing extends StatelessWidget {
-  const _ReportedListing();
+  const _ReportedListing({required this.l10n});
+  final AppLocalizations l10n;
+
   @override
   Widget build(BuildContext context) => _WhiteCard(
     child: Row(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(7),
-          child: Image.asset('assets/images/marketplace/listing-camera.png', width: 54, height: 54, fit: BoxFit.cover),
+          child: Image.asset(
+            'assets/images/marketplace/listing-camera.png',
+            width: 54,
+            height: 54,
+            fit: BoxFit.cover,
+          ),
         ),
         const SizedBox(width: 10),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Máy ảnh Canon AE-1 + lens 50mm', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-              SizedBox(height: 4),
-              Text('Tin đăng của Minh Anh · Quận 1', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+              Text(
+                l10n.reportedListingTitle,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.reportedListingMeta,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ],
           ),
         ),
@@ -638,14 +731,66 @@ class _ReportedListing extends StatelessWidget {
   );
 }
 
+class _ReportSuccess extends StatelessWidget {
+  const _ReportSuccess({required this.l10n});
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: AppColors.background,
+    appBar: AppBar(title: Text(l10n.report)),
+    body: ResponsiveContent(
+      maxWidth: 560,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircleAvatar(
+              radius: 34,
+              backgroundColor: AppColors.successBg,
+              child: Icon(
+                Icons.check_circle_outline,
+                color: AppColors.success,
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              l10n.reportSuccessTitle,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.reportSuccessDescription,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 22),
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: Text(l10n.goBack),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 class _WhiteCard extends StatelessWidget {
-  const _WhiteCard({required this.child});
+  const _WhiteCard({required this.child, this.margin});
   final Widget child;
+  final EdgeInsets? margin;
+
   @override
   Widget build(BuildContext context) => Container(
     width: double.infinity,
+    margin: margin,
     padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(9)),
+    decoration: BoxDecoration(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(9),
+    ),
     child: child,
   );
 }
@@ -654,21 +799,25 @@ class _BottomAction extends StatelessWidget {
   const _BottomAction({required this.label, required this.onPressed});
   final String label;
   final VoidCallback onPressed;
+
   @override
   Widget build(BuildContext context) => SafeArea(
     top: false,
     child: Container(
       padding: const EdgeInsets.all(8),
-      decoration: const BoxDecoration(color: AppColors.surface, border: Border(top: BorderSide(color: AppColors.border))),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.border)),
+      ),
       child: ResponsiveContent(
         maxWidth: 720,
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: SizedBox(height: 48, width: double.infinity, child: ElevatedButton(onPressed: onPressed, child: Text(label))),
+        child: SizedBox(
+          height: 48,
+          width: double.infinity,
+          child: ElevatedButton(onPressed: onPressed, child: Text(label)),
+        ),
       ),
     ),
   );
-}
-
-void _showPending(BuildContext context, String action) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$action sẽ được kết nối API ở phase tính năng.')));
 }

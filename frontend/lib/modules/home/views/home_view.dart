@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_search_field.dart';
 import '../../../shared/widgets/listing_grid.dart';
 import '../../listings/presentation/fixtures/figma_preview_listings.dart';
@@ -20,6 +21,7 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: CustomScrollView(
         slivers: [
@@ -53,14 +55,24 @@ class HomeView extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        tooltip: 'Thông báo',
-                        onPressed: () {},
+                        tooltip: l10n.notifications,
+                        onPressed: () => context.push('/notifications'),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints.tightFor(
                           width: 40,
                           height: 40,
                         ),
                         icon: const Icon(Icons.notifications_none, size: 23),
+                      ),
+                      IconButton(
+                        tooltip: l10n.restoreAi,
+                        onPressed: () => context.push('/ai-assistant'),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints.tightFor(
+                          width: 40,
+                          height: 40,
+                        ),
+                        icon: const Icon(Icons.auto_awesome_outlined, size: 21),
                       ),
                       IconButton(
                         tooltip: 'Tin nhắn',

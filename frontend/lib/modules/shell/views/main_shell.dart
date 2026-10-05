@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 
 class MainShell extends StatelessWidget {
   const MainShell({required this.navigationShell, super.key});
@@ -15,6 +16,7 @@ class MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isWide = MediaQuery.sizeOf(context).width >= 840;
     if (isWide) {
       return Scaffold(
@@ -36,37 +38,37 @@ class MainShell extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: IconButton(
-                      tooltip: 'Đăng tin',
+                      tooltip: l10n.createListing,
                       onPressed: () => _select(2),
                       icon: const Icon(Icons.add),
                     ),
                   ),
                 ),
-                destinations: const [
+                destinations: [
                   NavigationRailDestination(
-                    icon: Icon(Icons.home_outlined),
-                    selectedIcon: Icon(Icons.home),
-                    label: Text('Trang chủ'),
+                    icon: const Icon(Icons.home_outlined),
+                    selectedIcon: const Icon(Icons.home),
+                    label: Text(l10n.homeTitle),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.inventory_2_outlined),
-                    selectedIcon: Icon(Icons.inventory_2),
-                    label: Text('Quản lý tin'),
+                    icon: const Icon(Icons.inventory_2_outlined),
+                    selectedIcon: const Icon(Icons.inventory_2),
+                    label: Text(l10n.manageListings),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.add_box_outlined),
-                    selectedIcon: Icon(Icons.add_box),
-                    label: Text('Đăng tin'),
+                    icon: const Icon(Icons.add_box_outlined),
+                    selectedIcon: const Icon(Icons.add_box),
+                    label: Text(l10n.createListing),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.chat_bubble_outline),
-                    selectedIcon: Icon(Icons.chat_bubble),
-                    label: Text('Tin nhắn'),
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    selectedIcon: const Icon(Icons.chat_bubble),
+                    label: Text(l10n.messagesTitle),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.person_outline),
-                    selectedIcon: Icon(Icons.person),
-                    label: Text('Tài khoản'),
+                    icon: const Icon(Icons.person_outline),
+                    selectedIcon: const Icon(Icons.person),
+                    label: Text(l10n.accountTitle),
                   ),
                 ],
               ),
@@ -97,16 +99,16 @@ class _MarketplaceBottomNavigation extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
-  static const _items = <(IconData, IconData, String)>[
-    (Icons.home_outlined, Icons.home, 'Trang chủ'),
-    (Icons.inventory_2_outlined, Icons.inventory_2, 'Quản lý tin'),
-    (Icons.add, Icons.add, 'Đăng tin'),
-    (Icons.chat_bubble_outline, Icons.chat_bubble, 'Tin nhắn'),
-    (Icons.person_outline, Icons.person, 'Tài khoản'),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final items = <(IconData, IconData, String)>[
+      (Icons.home_outlined, Icons.home, l10n.homeTitle),
+      (Icons.inventory_2_outlined, Icons.inventory_2, l10n.manageListings),
+      (Icons.add, Icons.add, l10n.createListing),
+      (Icons.chat_bubble_outline, Icons.chat_bubble, l10n.messagesTitle),
+      (Icons.person_outline, Icons.person, l10n.accountTitle),
+    ];
     return SafeArea(
       top: false,
       child: Container(
@@ -117,8 +119,8 @@ class _MarketplaceBottomNavigation extends StatelessWidget {
           border: Border(top: BorderSide(color: AppColors.border)),
         ),
         child: Row(
-          children: List.generate(_items.length, (index) {
-            final item = _items[index];
+          children: List.generate(items.length, (index) {
+            final item = items[index];
             final selected = index == selectedIndex;
             return Expanded(
               child: Semantics(

@@ -37,19 +37,31 @@ class AuthDivider extends StatelessWidget {
 }
 
 class AuthGoogleButton extends StatelessWidget {
-  const AuthGoogleButton({required this.onPressed, super.key});
+  const AuthGoogleButton({
+    required this.onPressed,
+    this.borderRadius = 8,
+    this.height = 48,
+    super.key,
+  });
   final VoidCallback onPressed;
+  final double borderRadius;
+  final double height;
 
   @override
   Widget build(BuildContext context) => SizedBox(
     width: double.infinity,
-    height: 48,
+    height: height,
     child: OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.textPrimary,
-        side: const BorderSide(color: AppColors.border),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        side: BorderSide(
+          color: borderRadius > 8 ? AppColors.primary : AppColors.border,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
       ),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -59,7 +71,7 @@ class AuthGoogleButton extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.primaryDark,
+              color: Color(0xFF4285F4),
             ),
           ),
           SizedBox(width: 9),

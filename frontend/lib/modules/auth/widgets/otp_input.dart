@@ -39,11 +39,22 @@ class _OtpInputState extends State<OtpInput> {
               child: TextField(
                 controller: _controllers[index],
                 focusNode: _focusNodes[index],
+                autofillHints: index == 0
+                    ? const [AutofillHints.oneTimeCode]
+                    : null,
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(1),
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    if (newValue.text.length > 1) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) _fillFrom(index, newValue.text);
+                      });
+                      return oldValue;
+                    }
+                    return newValue;
+                  }),
                 ],
                 style: const TextStyle(
                   fontSize: 22,
@@ -75,5 +86,20 @@ class _OtpInputState extends State<OtpInput> {
         );
       },
     );
+  }
+
+  void _fillFrom(int startIndex, String value) {
+    final digits = value.replaceAll(RegExp(r'\D'), '');
+    if (digits.isEmpty) return;
+    for (
+      var offset = 0;
+      offset < digits.length && startIndex + offset < _controllers.length;
+      offset++
+    ) {
+      _controllers[startIndex + offset].text = digits[offset];
+    }
+    final nextIndex = (startIndex + digits.length).clamp(0, 5);
+    _focusNodes[nextIndex].requestFocus();
+    widget.onChanged?.call(_controllers.map((item) => item.text).join());
   }
 }

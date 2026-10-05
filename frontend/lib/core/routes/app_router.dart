@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../modules/admin/presentation/admin_workspace.dart';
+import '../../modules/account/bloc/account_ui_cubit.dart';
+import '../../modules/account/views/account_detail_views.dart';
+import '../../modules/account/views/account_view.dart';
+import '../../modules/account/views/seller_trust_views.dart';
+import '../../modules/ai/bloc/ai_assistant_cubit.dart';
+import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
 import '../../modules/auth/bloc/register/register_bloc.dart';
 import '../../modules/auth/repositories/auth_repository.dart';
@@ -16,19 +22,28 @@ import '../../modules/auth/views/verification/email_verification_view.dart';
 import '../../modules/auth/views/welcome/welcome_view.dart';
 import '../../modules/chat/views/chat_conversation_view.dart';
 import '../../modules/chat/views/messages_view.dart';
+import '../../modules/boost/bloc/boost_listing_cubit.dart';
+import '../../modules/boost/views/boost_listing_view.dart';
 import '../../modules/home/views/home_view.dart';
 import '../../modules/listings/presentation/views/create_listing_view.dart';
 import '../../modules/listings/presentation/views/manage_listings_view.dart';
 import '../../modules/listings/presentation/views/product_detail_view.dart';
 import '../../modules/listings/presentation/views/search_view.dart';
-import '../../modules/shell/views/foundation_placeholder_view.dart';
+import '../../modules/listings/presentation/bloc/listing_form_cubit.dart';
+import '../../modules/listings/presentation/bloc/manage_listings_cubit.dart';
 import '../../modules/shell/views/main_shell.dart';
+import '../../modules/auth/bloc/auth_bloc.dart';
+import '../../modules/auth/auth_route_guard.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/welcome',
+  redirect: (context, state) {
+    final authState = context.read<AuthBloc>().state;
+    return authRouteRedirect(authState, state.uri.path);
+  },
   routes: [
     if (kDebugMode || const bool.fromEnvironment('ENABLE_ADMIN_PREVIEW'))
       GoRoute(
@@ -66,6 +81,7 @@ final appRouter = GoRouter(
         actionLabel: 'Tiếp tục khám phá',
         destination: '/home',
         note: 'Một tài khoản cho cả mua và bán',
+        authenticateOnContinue: true,
       ),
     ),
     GoRoute(
@@ -80,7 +96,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/reset-password',
-      builder: (_, _) => const ResetPasswordView(),
+      builder: (_, state) => ResetPasswordView(
+        resetToken: state.extra is String ? state.extra! as String : '',
+      ),
     ),
     GoRoute(
       path: '/password-reset-success',
@@ -105,7 +123,10 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/manage-listings',
-              builder: (_, _) => const ManageListingsView(),
+              builder: (_, _) => BlocProvider(
+                create: (_) => ManageListingsCubit(),
+                child: const ManageListingsView(),
+              ),
             ),
           ],
         ),
@@ -113,7 +134,10 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/create-listing',
-              builder: (_, _) => const CreateListingView(),
+              builder: (_, _) => BlocProvider(
+                create: (_) => ListingFormCubit(editing: false),
+                child: const CreateListingView(),
+              ),
             ),
           ],
         ),
@@ -124,15 +148,7 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/account',
-              builder: (_, _) => const FoundationPlaceholderView(
-                title: 'Tài khoản',
-                message:
-                    'Thông tin hồ sơ và cài đặt sẽ được triển khai ở giai đoạn tính năng.',
-                icon: Icons.person_outline,
-              ),
-            ),
+            GoRoute(path: '/account', builder: (_, _) => const AccountView()),
           ],
         ),
       ],
@@ -163,13 +179,103 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/create-listing/preview',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) =>
-          const ProductDetailView(listingId: 'camera', isPreview: true),
+      builder: (_, state) => ProductDetailView(
+        listingId: 'camera',
+        isPreview: true,
+        previewSource: state.uri.queryParameters['source'] ?? 'create',
+      ),
     ),
     GoRoute(
       path: '/edit-listing',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const CreateListingView(editing: true),
+      builder: (_, _) => BlocProvider(
+        create: (_) => ListingFormCubit(editing: true),
+        child: const CreateListingView(),
+      ),
+    ),
+    GoRoute(
+      path: '/edit-listing/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => BlocProvider(
+        create: (_) => ListingFormCubit(editing: true),
+        child: const CreateListingView(),
+      ),
+    ),
+    GoRoute(
+      path: '/account/edit',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => BlocProvider(
+        create: (_) => EditProfileCubit(),
+        child: const EditProfileView(),
+      ),
+    ),
+    GoRoute(
+      path: '/settings',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => BlocProvider(
+        create: (_) => SettingsCubit(),
+        child: const SettingsView(),
+      ),
+    ),
+    GoRoute(
+      path: '/favorites',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const FavoritesView(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const NotificationsView(),
+    ),
+    GoRoute(
+      path: '/seller/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const SellerProfileView(),
+    ),
+    GoRoute(
+      path: '/seller/:id/reviews',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const RatingsView(),
+    ),
+    GoRoute(
+      path: '/seller/:id/review',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => BlocProvider(
+        create: (_) => ReviewCubit(),
+        child: const LeaveReviewView(),
+      ),
+    ),
+    GoRoute(
+      path: '/report/listing/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => BlocProvider(
+        create: (_) => ReportCubit(),
+        child: const ReportView(target: ReportTarget.listing),
+      ),
+    ),
+    GoRoute(
+      path: '/report/user/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => BlocProvider(
+        create: (_) => ReportCubit(),
+        child: const ReportView(target: ReportTarget.user),
+      ),
+    ),
+    GoRoute(
+      path: '/ai-assistant',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => BlocProvider(
+        create: (_) => AiAssistantCubit(),
+        child: const AiAssistantView(),
+      ),
+    ),
+    GoRoute(
+      path: '/boost/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => BlocProvider(
+        create: (_) => BoostListingCubit(),
+        child: const BoostListingView(),
+      ),
     ),
   ],
 );

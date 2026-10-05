@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/bloc/auth_event.dart';
 
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: Column(
         children: [
@@ -18,13 +23,16 @@ class AccountView extends StatelessWidget {
               height: 56,
               child: Row(
                 children: [
-                  const Text(
-                    'Tài khoản',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                  Text(
+                    l10n.accountTitle,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const Spacer(),
                   IconButton(
-                    tooltip: 'Cài đặt',
+                    tooltip: l10n.settingsTitle,
                     onPressed: () => context.push('/settings'),
                     icon: const Icon(Icons.settings_outlined),
                   ),
@@ -50,25 +58,25 @@ class AccountView extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _MetricCard(
-                              value: '3',
-                              label: 'Tin đang đăng',
+                              value: 3.toString(),
+                              label: l10n.activeListings,
                               onTap: () => context.go('/manage-listings'),
                             ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: _MetricCard(
-                              value: '12',
-                              label: 'Tin đã bán',
+                              value: 12.toString(),
+                              label: l10n.soldListings,
                               onTap: () => context.go('/manage-listings'),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      const Text(
-                        'Tài khoản của tôi',
-                        style: TextStyle(
+                      Text(
+                        l10n.myAccount,
+                        style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textSecondary,
@@ -77,46 +85,46 @@ class AccountView extends StatelessWidget {
                       const SizedBox(height: 7),
                       _AccountItem(
                         icon: Icons.favorite_border,
-                        label: 'Tin đã lưu',
-                        trailing: '4',
+                        label: l10n.savedListings,
+                        trailing: 4.toString(),
                         onTap: () => context.push('/favorites'),
                       ),
                       _AccountItem(
                         icon: Icons.star_border,
-                        label: 'Đánh giá',
-                        trailing: '48',
+                        label: l10n.reviews,
+                        trailing: 48.toString(),
                         onTap: () => context.push('/seller/minh-anh/reviews'),
                       ),
                       _AccountItem(
                         icon: Icons.notifications_none,
-                        label: 'Thông báo',
-                        trailing: '2 mới',
+                        label: l10n.notifications,
+                        trailing: l10n.newCount(2),
                         onTap: () => context.push('/notifications'),
                       ),
                       _AccountItem(
                         icon: Icons.location_on_outlined,
-                        label: 'Địa chỉ / Khu vực',
-                        onTap: () => _foundationNotice(context),
+                        label: l10n.addressArea,
+                        onTap: () => context.push('/account/edit'),
                       ),
                       _AccountItem(
                         icon: Icons.auto_awesome_outlined,
-                        label: 'ReStore AI',
+                        label: l10n.restoreAi,
                         onTap: () => context.push('/ai-assistant'),
                       ),
                       _AccountItem(
                         icon: Icons.settings_outlined,
-                        label: 'Cài đặt',
+                        label: l10n.settingsTitle,
                         onTap: () => context.push('/settings'),
                       ),
                       _AccountItem(
                         icon: Icons.help_outline,
-                        label: 'Trợ giúp',
-                        onTap: () => _foundationNotice(context),
+                        label: l10n.help,
+                        onTap: () => context.push('/settings'),
                       ),
                       _AccountItem(
                         icon: Icons.logout,
-                        label: 'Đăng xuất',
-                        onTap: () => context.go('/welcome'),
+                        label: l10n.logout,
+                        onTap: () => context.read<AuthBloc>().add(LoggedOut()),
                       ),
                     ],
                   ),
@@ -128,12 +136,6 @@ class AccountView extends StatelessWidget {
       ),
     );
   }
-
-  static void _foundationNotice(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Tính năng sẽ được kết nối ở bước API.')),
-    );
-  }
 }
 
 class _IdentityCard extends StatelessWidget {
@@ -142,65 +144,77 @@ class _IdentityCard extends StatelessWidget {
   final VoidCallback onEdit;
 
   @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Row(
-      children: [
-        const CircleAvatar(
-          radius: 32,
-          backgroundColor: AppColors.infoBg,
-          child: Text(
-            'TP',
-            style: TextStyle(
-              color: Color(0xFF1E3A8A),
-              fontWeight: FontWeight.w700,
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          const CircleAvatar(
+            radius: 32,
+            backgroundColor: AppColors.infoBg,
+            child: Text(
+              'TP',
+              style: TextStyle(
+                color: Color(0xFF1E3A8A),
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Ngô Tường Phát',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 3),
-              const Text(
-                'Thành viên từ 2022',
-                style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 3),
-              const Text(
-                '090 ••• 1234 · Quận 1, TP.HCM',
-                style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
-              ),
-              InkWell(
-                onTap: onEdit,
-                child: const Padding(
-                  padding: EdgeInsets.only(top: 5),
-                  child: Text(
-                    'Chỉnh sửa hồ sơ  ›',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.primaryDark,
-                      fontWeight: FontWeight.w700,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.profileName,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  l10n.memberSince2022,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  l10n.maskedPhoneArea,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                InkWell(
+                  onTap: onEdit,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Text(
+                      '${l10n.editProfile}  ›',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.primaryDark,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 class _MetricCard extends StatelessWidget {
@@ -220,23 +234,31 @@ class _MetricCard extends StatelessWidget {
     borderRadius: BorderRadius.circular(9),
     child: Ink(
       height: 68,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(9),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             value,
             style: const TextStyle(
               fontSize: 20,
+              height: 1,
               fontWeight: FontWeight.w700,
               color: AppColors.primaryDark,
             ),
           ),
-          Text(label, style: const TextStyle(fontSize: 12)),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, height: 1.1),
+          ),
         ],
       ),
     ),
