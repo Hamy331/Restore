@@ -329,7 +329,7 @@ Future<T?> adminDialog<T>(
                 ),
                 IconButton(
                   tooltip: 'Đóng',
-                  onPressed: () => Navigator.pop(dialogContext),
+                  onPressed: () => Navigator.maybePop(dialogContext),
                   icon: const Icon(Icons.close),
                 ),
               ],

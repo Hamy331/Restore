@@ -156,6 +156,77 @@ void main() {
     expect(find.text('Nhập số nguyên lớn hơn 0.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets('closing a dirty article preserves the draft until confirmed', (
+    tester,
+  ) async {
+    await setAdminTestSize(tester, const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: const AdminWorkspace(initialSection: 6),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Viết bài mới'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Tiêu đề bài viết'),
+      'Bài viết thử nghiệm',
+    );
+    await tester.pump();
+    await tester.tap(find.byTooltip('Đóng'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bỏ thay đổi chưa lưu?'), findsOneWidget);
+    await tester.tap(find.text('Tiếp tục viết'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bài viết thử nghiệm'), findsOneWidget);
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Nội dung'),
+      'Kiểm tra sản phẩm trước khi giao dịch.',
+    );
+    await tester.ensureVisible(find.text('Lưu bài viết mẫu'));
+    await tester.tap(find.text('Lưu bài viết mẫu'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bài viết thử nghiệm'), findsOneWidget);
+    expect(find.text('Lưu bài viết mẫu'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('preview feedback does not discard catalog edits', (
+    tester,
+  ) async {
+    await setAdminTestSize(tester, const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: const AdminWorkspace(initialSection: 4),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Thêm danh mục'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Tên'),
+      'Đồ thể thao',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Mô tả'),
+      'Dụng cụ tập luyện',
+    );
+    await tester.tap(find.text('Lưu bản mẫu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Trạng thái mẫu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Lỗi tải'));
+    await tester.pumpAndSettle();
+    expect(find.text('Không thể tải dữ liệu'), findsOneWidget);
+    await tester.tap(find.text('Trở lại bản mẫu'));
+    await tester.pumpAndSettle();
+    expect(find.text('Đồ thể thao'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Future<void> setAdminTestSize(WidgetTester tester, Size size) async {

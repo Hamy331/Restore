@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../modules/admin/presentation/admin_workspace.dart';
+import '../../modules/admin/presentation/admin_commerce.dart';
 import '../../modules/account/bloc/account_ui_cubit.dart';
 import '../../modules/account/views/account_detail_views.dart';
 import '../../modules/account/views/account_view.dart';
@@ -22,8 +23,8 @@ import '../../modules/auth/views/verification/email_verification_view.dart';
 import '../../modules/auth/views/welcome/welcome_view.dart';
 import '../../modules/chat/views/chat_conversation_view.dart';
 import '../../modules/chat/views/messages_view.dart';
-import '../../modules/boost/bloc/boost_listing_cubit.dart';
-import '../../modules/boost/views/boost_listing_view.dart';
+import '../../modules/stores/views/promotion_view.dart';
+import '../../modules/stores/views/store_view.dart';
 import '../../modules/home/views/home_view.dart';
 import '../../modules/listings/presentation/views/create_listing_view.dart';
 import '../../modules/listings/presentation/views/manage_listings_view.dart';
@@ -275,12 +276,25 @@ final appRouter = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/admin/commerce',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const AdminCommerceView(),
+    ),
+    GoRoute(
+      path: '/store',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const StoreView(),
+    ),
+    GoRoute(
+      path: '/promotions',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const PromotionView(),
+    ),
+    GoRoute(
       path: '/boost/:id',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => BoostListingCubit(),
-        child: const BoostListingView(),
-      ),
+      builder: (_, state) =>
+          PromotionView(initialListingId: state.pathParameters['id']),
     ),
   ],
 );

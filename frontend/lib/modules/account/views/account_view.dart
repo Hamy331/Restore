@@ -7,6 +7,7 @@ import '../../../core/ui/responsive/responsive_content.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
+import '../../auth/bloc/auth_state.dart';
 
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
@@ -14,6 +15,8 @@ class AccountView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authState = context.watch<AuthBloc>().state;
+    final isAdmin = authState is AuthAuthenticated && authState.isAdmin;
     return SafeArea(
       child: Column(
         children: [
@@ -106,6 +109,22 @@ class AccountView extends StatelessWidget {
                         label: l10n.addressArea,
                         onTap: () => context.push('/account/edit'),
                       ),
+                      if (!isAdmin) _AccountItem(
+                        icon: Icons.storefront_outlined,
+                        label: 'Gói cửa hàng Basic / Pro',
+                        onTap: () => context.push('/store'),
+                      ),
+                      if (!isAdmin) _AccountItem(
+                        icon: Icons.campaign_outlined,
+                        label: 'Đẩy Tin và Tin Ưu Tiên',
+                        onTap: () => context.push('/promotions'),
+                      ),
+                      if (isAdmin)
+                        _AccountItem(
+                          icon: Icons.admin_panel_settings_outlined,
+                          label: 'Xác nhận đơn cửa hàng và quảng cáo',
+                          onTap: () => context.push('/admin/commerce'),
+                        ),
                       _AccountItem(
                         icon: Icons.auto_awesome_outlined,
                         label: l10n.restoreAi,
