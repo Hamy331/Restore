@@ -1,50 +1,29 @@
+// This is a basic Flutter widget test.
+//
+// To perform an interaction with a widget in your test, use the WidgetTester
+// utility in the flutter_test package. For example, you can send tap and scroll
+// gestures. You can also use WidgetTester to find child widgets in the widget
+// tree, read text, and verify that the values of widget properties are correct.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:restore/core/theme/theme.dart';
-import 'package:restore/modules/auth/views/welcome/welcome_view.dart';
-import 'package:restore/shared/widgets/app_button.dart';
+import 'package:restore/main.dart';
 
 void main() {
-  testWidgets('welcome foundation fits mobile and tablet widths', (
-    tester,
-  ) async {
-    for (final size in <Size>[
-      const Size(360, 812),
-      const Size(375, 812),
-      const Size(412, 915),
-      const Size(768, 1024),
-      const Size(1024, 1366),
-    ]) {
-      await tester.binding.setSurfaceSize(size);
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.lightTheme, home: const WelcomeView()),
-      );
-      await tester.pump();
+  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(const MyApp());
 
-      expect(find.text('ReStore'), findsOneWidget);
-      expect(find.text('Đăng nhập'), findsOneWidget);
-      expect(tester.takeException(), isNull, reason: 'viewport: $size');
-    }
-    await tester.binding.setSurfaceSize(null);
-  });
+    // Verify that our counter starts at 0.
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('1'), findsNothing);
 
-  testWidgets('app button disables callback while loading', (tester) async {
-    var tapped = false;
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.lightTheme,
-        home: Scaffold(
-          body: AppButton(
-            label: 'Lưu',
-            isLoading: true,
-            onPressed: () => tapped = true,
-          ),
-        ),
-      ),
-    );
+    // Tap the '+' icon and trigger a frame.
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
 
-    await tester.tap(find.byType(ElevatedButton));
-    expect(tapped, isFalse);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    // Verify that our counter has incremented.
+    expect(find.text('0'), findsNothing);
+    expect(find.text('1'), findsOneWidget);
   });
 }

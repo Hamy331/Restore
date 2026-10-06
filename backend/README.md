@@ -1,6 +1,6 @@
 # Restore - Second-Hand Marketplace Backend API
 
-Backend API cho dự án **Restore** — nền tảng C2C (Customer-to-Customer) dành cho việc **mua bán, trao đổi các sản phẩm cũ/đã qua sử dụng**.
+Backend API cho dự án **Restore** — nền tảng C2C (Customer-to-Customer) dành cho việc **mua bán, trao đổi các sản phẩm thủy sinh cũ/đã qua sử dụng**.
 
 Hệ thống được xây dựng theo hướng **Modular/Clean Architecture**, cung cấp RESTful API phục vụ quản lý người dùng, bài đăng, thương lượng giá, trao đổi sản phẩm, nhắn tin thời gian thực và kiểm duyệt nội dung.
 
