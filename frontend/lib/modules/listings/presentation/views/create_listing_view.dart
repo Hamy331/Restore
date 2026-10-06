@@ -5,25 +5,36 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/ui/responsive/responsive_content.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../stores/data/store_repository.dart';
 import '../bloc/listing_form_cubit.dart';
 
-class CreateListingView extends StatelessWidget {
-  const CreateListingView({super.key});
+class CreateListingView extends StatefulWidget {
+  const CreateListingView({this.storeRepository, super.key});
+  final StoreRepository? storeRepository;
+
+  @override
+  State<CreateListingView> createState() => _CreateListingViewState();
+}
+
+class _CreateListingViewState extends State<CreateListingView> {
+  late final Future<List<StoreCategory>> _categories =
+      (widget.storeRepository ?? StoreRepository()).categories();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<ListingFormCubit, ListingFormState>(
       listenWhen: (previous, current) =>
-          previous.submitted != current.submitted ||
-          previous.photoRequestVersion != current.photoRequestVersion,
+          previous.createdId != current.createdId,
       listener: (context, state) {
-        if (state.submitted) {
-          context.go('/manage-listings');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.featureApiPending(l10n.addPhotos))),
-          );
+        if (state.createdId.isNotEmpty) {
+          if (state.editing) {
+            context.go(
+              '/manage-listings?refresh=${DateTime.now().microsecondsSinceEpoch}',
+            );
+          } else {
+            context.go('/listings/${state.createdId}');
+          }
         }
       },
       builder: (context, state) => Scaffold(
@@ -82,16 +93,47 @@ class CreateListingView extends StatelessWidget {
                 ],
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: ResponsiveContent(
-                    maxWidth: 680,
-                    child: state.step == 1
-                        ? _StepOne(state: state, l10n: l10n)
-                        : _StepTwo(state: state, l10n: l10n),
+                child: state.editing && !state.isLoaded
+                    ? Center(
+                        child: state.isLoading
+                            ? const CircularProgressIndicator()
+                            : TextButton(
+                                onPressed: context
+                                    .read<ListingFormCubit>()
+                                    .load,
+                                child: const Text(
+                                  'Không tải được tin. Thử lại',
+                                ),
+                              ),
+                      )
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: ResponsiveContent(
+                          maxWidth: 680,
+                          child: state.step == 1
+                              ? _StepOne(
+                                  state: state,
+                                  l10n: l10n,
+                                  categories: _categories,
+                                )
+                              : _StepTwo(state: state, l10n: l10n),
+                        ),
+                      ),
+              ),
+              if (state.error.isNotEmpty)
+                ResponsiveContent(
+                  maxWidth: 680,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                    child: Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        state.error,
+                        style: const TextStyle(color: Colors.red, fontSize: 13),
+                      ),
+                    ),
                   ),
                 ),
-              ),
               _ListingFooter(state: state, l10n: l10n),
             ],
           ),
@@ -102,79 +144,60 @@ class CreateListingView extends StatelessWidget {
 }
 
 class _StepOne extends StatelessWidget {
-  const _StepOne({required this.state, required this.l10n});
+  const _StepOne({
+    required this.state,
+    required this.l10n,
+    required this.categories,
+  });
   final ListingFormState state;
   final AppLocalizations l10n;
+  final Future<List<StoreCategory>> categories;
 
   @override
   Widget build(BuildContext context) {
-    final conditions = {'new': l10n.newCondition, 'used': l10n.usedCondition};
+    final conditions = {
+      'NEW': l10n.newCondition,
+      'LIKE_NEW': 'Như mới',
+      'USED_GOOD': l10n.usedCondition,
+      'USED_FAIR': 'Đã sử dụng',
+      'FOR_PARTS': 'Dùng lấy linh kiện',
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.productPhotosCount(2),
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 7),
-        SizedBox(
-          height: 78,
-          child: Row(
-            children: [
-              const _PhotoTile(order: 1),
-              const SizedBox(width: 8),
-              const _PhotoTile(order: 2),
-              const SizedBox(width: 8),
-              InkWell(
-                onTap: context.read<ListingFormCubit>().photosRequested,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  width: 78,
-                  height: 78,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.primary),
+        FutureBuilder<List<StoreCategory>>(
+          future: categories,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Text(
+                'Không tải được danh mục. Vui lòng mở lại màn hình.',
+              );
+            }
+            if (!snapshot.hasData) return const LinearProgressIndicator();
+            return DropdownButtonFormField<String>(
+              key: const ValueKey('listing-category'),
+              initialValue: state.categoryId.isEmpty ? null : state.categoryId,
+              decoration: const InputDecoration(labelText: 'Danh mục'),
+              items: [
+                for (final category in snapshot.data!)
+                  DropdownMenuItem(
+                    value: category.id,
+                    child: Text(category.name),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.add_photo_alternate_outlined,
-                        color: AppColors.primaryDark,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        l10n.addPhotos,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: AppColors.primaryDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 7),
-        Text(
-          l10n.firstPhotoHint,
-          style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  context.read<ListingFormCubit>().categoryChanged(value);
+                }
+              },
+            );
+          },
         ),
         const SizedBox(height: 15),
         _ListingField(
           label: l10n.productName,
           initialValue: state.title,
           onChanged: context.read<ListingFormCubit>().titleChanged,
-        ),
-        const SizedBox(height: 15),
-        _ListingField(
-          label: l10n.category,
-          initialValue: l10n.electronicsCamera,
-          readOnly: true,
-          onChanged: context.read<ListingFormCubit>().categoryChanged,
         ),
         const SizedBox(height: 15),
         Text(
@@ -204,7 +227,9 @@ class _StepOne extends StatelessWidget {
               .toList(),
         ),
         const SizedBox(height: 20),
-        _WarmNote(text: l10n.photoTip),
+        const _WarmNote(
+          text: 'Bạn có thể đăng tin chưa có ảnh. Tải ảnh sẽ được bổ sung sau.',
+        ),
       ],
     );
   }
@@ -217,7 +242,6 @@ class _StepTwo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contacts = {'chat': l10n.chat, 'phone': l10n.phone};
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -261,38 +285,6 @@ class _StepTwo extends StatelessWidget {
           lines: 4,
           onChanged: context.read<ListingFormCubit>().descriptionChanged,
         ),
-        const SizedBox(height: 15),
-        _ListingField(
-          label: l10n.location,
-          initialValue: state.location,
-          onChanged: context.read<ListingFormCubit>().locationChanged,
-        ),
-        const SizedBox(height: 15),
-        Text(
-          l10n.contactPreference,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 7),
-        Wrap(
-          spacing: 8,
-          children: contacts.entries
-              .map(
-                (item) => ChoiceChip(
-                  label: Text(item.value),
-                  selected: state.contact == item.key,
-                  showCheckmark: false,
-                  selectedColor: AppColors.primarySoft,
-                  side: BorderSide(
-                    color: state.contact == item.key
-                        ? AppColors.primary
-                        : AppColors.border,
-                  ),
-                  onSelected: (_) =>
-                      context.read<ListingFormCubit>().contactChanged(item.key),
-                ),
-              )
-              .toList(),
-        ),
         const SizedBox(height: 26),
         Text(
           l10n.directArrangementNote,
@@ -322,33 +314,28 @@ class _ListingFooter extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 648),
           child: Row(
             children: [
-              if (state.step == 2) ...[
-                SizedBox(
-                  width: 116,
-                  height: 48,
-                  child: OutlinedButton(
-                    onPressed: () => context.push(
-                      '/create-listing/preview?source=${state.editing ? 'edit' : 'create'}',
-                    ),
-                    child: Text(l10n.preview),
-                  ),
-                ),
-                const SizedBox(width: 10),
-              ],
               Expanded(
                 child: SizedBox(
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: state.step == 1
+                    onPressed: state.isSubmitting || !state.isLoaded
+                        ? null
+                        : state.step == 1
                         ? context.read<ListingFormCubit>().nextStep
-                        : context.read<ListingFormCubit>().submitted,
-                    child: Text(
-                      state.step == 1
-                          ? l10n.continueAction
-                          : state.editing
-                          ? l10n.saveChanges
-                          : l10n.publishListing,
-                    ),
+                        : context.read<ListingFormCubit>().submit,
+                    child: state.isSubmitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(
+                            state.step == 1
+                                ? l10n.continueAction
+                                : state.editing
+                                ? l10n.saveChanges
+                                : l10n.publishListing,
+                          ),
                   ),
                 ),
               ),
@@ -360,52 +347,6 @@ class _ListingFooter extends StatelessWidget {
   );
 }
 
-class _PhotoTile extends StatelessWidget {
-  const _PhotoTile({required this.order});
-  final int order;
-
-  @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.asset(
-          'assets/images/marketplace/listing-camera.png',
-          width: 78,
-          height: 78,
-          fit: BoxFit.cover,
-        ),
-      ),
-      const Positioned(
-        right: 4,
-        top: 4,
-        child: CircleAvatar(
-          radius: 10,
-          backgroundColor: AppColors.surface,
-          child: Icon(Icons.close, size: 15),
-        ),
-      ),
-      Positioned(
-        left: 4,
-        bottom: 4,
-        child: Container(
-          width: 22,
-          height: 19,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Text(
-            order.toString(),
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 class _ListingField extends StatelessWidget {
   const _ListingField({
     required this.label,
@@ -413,7 +354,6 @@ class _ListingField extends StatelessWidget {
     required this.onChanged,
     this.helper,
     this.lines = 1,
-    this.readOnly = false,
     this.keyboardType,
   });
 
@@ -422,7 +362,6 @@ class _ListingField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final String? helper;
   final int lines;
-  final bool readOnly;
   final TextInputType? keyboardType;
 
   @override
@@ -436,16 +375,11 @@ class _ListingField extends StatelessWidget {
       const SizedBox(height: 6),
       TextFormField(
         initialValue: initialValue,
-        readOnly: readOnly,
         minLines: lines,
         maxLines: lines,
         keyboardType: keyboardType,
         onChanged: onChanged,
-        decoration: InputDecoration(
-          suffixIcon: readOnly
-              ? const Icon(Icons.chevron_right, size: 20)
-              : null,
-        ),
+        decoration: const InputDecoration(),
       ),
       if (helper != null) ...[
         const SizedBox(height: 6),
