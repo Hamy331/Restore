@@ -3,7 +3,7 @@ paths:
     post:
       tags: [Listings]
       summary: Đăng tin bán hàng
-      description: Tài khoản USER đang hoạt động có thể đăng tin. Tin mới hiển thị ngay; tải ảnh chưa được hỗ trợ.
+      description: Tài khoản USER đang hoạt động có thể đăng tin. Sau khi tạo, chủ tin tải tối đa 6 ảnh qua endpoint ảnh.
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
@@ -48,6 +48,18 @@ paths:
           name: q
           description: Tìm trong tiêu đề, không phân biệt chữ hoa/thường.
           schema: { type: string, maxLength: 100 }
+        - in: query
+          name: categoryId
+          schema: { type: string, maxLength: 100 }
+        - in: query
+          name: condition
+          schema: { type: string, enum: [NEW, LIKE_NEW, USED_GOOD, USED_FAIR, FOR_PARTS] }
+        - in: query
+          name: minPrice
+          schema: { type: string, pattern: '^[0-9]{1,12}$' }
+        - in: query
+          name: maxPrice
+          schema: { type: string, pattern: '^[0-9]{1,12}$' }
       responses:
         200:
           description: Danh sách và thông tin phân trang
@@ -99,6 +111,61 @@ paths:
         200: { description: Tin đã được cập nhật }
         404: { description: Tin không thuộc người dùng }
         409: { description: Tin không còn sửa được hoặc đã thay đổi }
+  /api/v1/listings/drafts:
+    post:
+      tags: [Listings]
+      summary: Tạo bản nháp tin đăng
+      description: Có thể lưu nháp thiếu tên, giá, mô tả hoặc danh mục. Bản nháp chỉ hiện trong Tin của tôi và không tính hạn mức đăng tin.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ListingDraftInput' }
+      responses:
+        201: { description: Đã lưu bản nháp }
+        400: { description: Dữ liệu nháp không hợp lệ }
+  /api/v1/listings/drafts/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    put:
+      tags: [Listings]
+      summary: Cập nhật bản nháp của mình
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ListingDraftInput' }
+      responses:
+        200: { description: Bản nháp đã cập nhật }
+        404: { description: Không tìm thấy bản nháp của mình }
+        409: { description: Tin không còn là bản nháp }
+    delete:
+      tags: [Listings]
+      summary: Xóa bản nháp của mình
+      security: [{ bearerAuth: [] }]
+      responses:
+        204: { description: Đã xóa bản nháp và ảnh của nó }
+        404: { description: Không tìm thấy bản nháp của mình }
+  /api/v1/listings/drafts/{id}/publish:
+    post:
+      tags: [Listings]
+      summary: Đăng bản nháp
+      description: Kiểm tra dữ liệu tin đăng đầy đủ và hạn mức tại lúc đăng; sau đó tin xuất hiện công khai.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200: { description: Bản nháp đã được đăng }
+        400: { description: Tin chưa đủ thông tin để đăng }
+        409: { description: Tin đã thay đổi hoặc vượt hạn mức }
   /api/v1/listings/mine:
     get:
       tags: [Listings]
@@ -107,7 +174,7 @@ paths:
       parameters:
         - in: query
           name: status
-          schema: { type: string, enum: [AVAILABLE, HIDDEN, RESERVED, SOLD, EXCHANGED] }
+          schema: { type: string, enum: [DRAFT, AVAILABLE, HIDDEN, RESERVED, SOLD, EXCHANGED] }
         - in: query
           name: page
           schema: { type: integer, minimum: 1, default: 1 }
@@ -119,7 +186,7 @@ paths:
   /api/v1/listings/mine/{id}:
     get:
       tags: [Listings]
-      summary: Chi tiết tin của chính người dùng, kể cả tin đã ẩn hoặc bán
+      summary: Chi tiết tin của chính người dùng, kể cả nháp, tin đã ẩn hoặc bán
       security: [{ bearerAuth: [] }]
       responses:
         200: { description: Chi tiết tin }
@@ -144,8 +211,75 @@ paths:
         200: { description: Tin đã đổi trạng thái }
         404: { description: Tin không thuộc người dùng }
         409: { description: Chuyển trạng thái không hợp lệ hoặc đã hết hạn mức }
+  /api/v1/listings/{id}/images:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Listings]
+      summary: Tải ảnh lên tin của mình
+      description: Gửi trực tiếp bytes JPEG, PNG hoặc WebP, tối đa 5 MB/ảnh và 6 ảnh/tin. Tin phải là nháp, đang hiển thị hoặc đã ẩn.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          image/jpeg:
+            schema: { type: string, format: binary }
+          image/png:
+            schema: { type: string, format: binary }
+          image/webp:
+            schema: { type: string, format: binary }
+      responses:
+        201: { description: URL ảnh vừa tải lên }
+        400: { description: Ảnh sai định dạng hoặc quá dung lượng }
+        404: { description: Tin không thuộc người dùng }
+        409: { description: Tin không thể sửa hoặc đã đủ 6 ảnh }
+    put:
+      tags: [Listings]
+      summary: Đổi thứ tự hoặc xóa ảnh tin của mình
+      description: Danh sách mới chỉ được chứa URL đã gắn với tin. Phần tử đầu tiên là ảnh bìa.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [images]
+              properties:
+                images:
+                  type: array
+                  maxItems: 6
+                  items: { type: string }
+      responses:
+        200: { description: Danh sách ảnh đã được cập nhật }
+        404: { description: Tin không thuộc người dùng }
+  /api/v1/listings/media/{filename}:
+    get:
+      tags: [Listings]
+      summary: Xem ảnh tin đăng
+      parameters:
+        - in: path
+          name: filename
+          required: true
+          schema: { type: string }
+      responses:
+        200: { description: Nội dung ảnh }
+        404: { description: Không tìm thấy ảnh }
 components:
   schemas:
+    ListingDraftInput:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, maxLength: 120 }
+        description: { type: string, maxLength: 5000 }
+        price: { type: string, pattern: '^(0|[1-9][0-9]{0,11})$', description: Để trống hoặc 0 nếu chưa chọn giá }
+        condition: { type: string, enum: [NEW, LIKE_NEW, USED_GOOD, USED_FAIR, FOR_PARTS] }
+        categoryId: { type: string, nullable: true }
+        isNegotiable: { type: boolean }
     ListingPublic:
       type: object
       required: [id, title, description, price, isNegotiable, condition, images, createdAt, owner]
@@ -164,8 +298,9 @@ components:
             name: { type: string }
         images:
           type: array
-          items: { type: string, format: uri }
+          items: { type: string, description: Đường dẫn ảnh tương đối từ gốc backend }
         createdAt: { type: string, format: date-time }
+        publishedAt: { type: string, format: date-time, nullable: true }
         owner:
           type: object
           properties:
