@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/ui/responsive/responsive_content.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/listing_preview.dart';
 import '../bloc/manage_listings_cubit.dart';
 
 class ManageListingsView extends StatelessWidget {
@@ -13,201 +14,270 @@ class ManageListingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cubit = context.read<ManageListingsCubit>();
     return BlocConsumer<ManageListingsCubit, ManageListingsState>(
-      listenWhen: (previous, current) =>
-          previous.markSoldRequestVersion != current.markSoldRequestVersion,
-      listener: (context, state) {
-        final item = state.selectedItem;
-        if (item == null) return;
-        showModalBottomSheet<void>(
-          context: context,
-          isScrollControlled: true,
-          builder: (sheetContext) => _MarkSoldSheet(
-            item: item,
-            l10n: l10n,
-            onConfirm: () {
-              context.read<ManageListingsCubit>().markSoldConfirmed();
-              sheetContext.pop();
-            },
-          ),
-        );
-      },
-      builder: (context, state) {
-        final cubit = context.read<ManageListingsCubit>();
-        final items = cubit.visibleItems;
-        final statusLabels = <ManagedListingStatus, String>{
-          ManagedListingStatus.visible: l10n.visibleStatus,
-          ManagedListingStatus.pending: l10n.pendingStatus,
-          ManagedListingStatus.hidden: l10n.hiddenStatus,
-          ManagedListingStatus.sold: l10n.soldStatus,
-        };
-        final statusNotes = <ManagedListingStatus, String>{
-          ManagedListingStatus.visible: '',
-          ManagedListingStatus.pending: l10n.pendingStatusNote,
-          ManagedListingStatus.hidden: l10n.hiddenStatusNote,
-          ManagedListingStatus.sold: l10n.soldStatusNote,
-        };
-        return SafeArea(
-          child: Column(
-            children: [
-              ResponsiveContent(
-                maxWidth: 760,
-                child: SizedBox(
-                  height: 56,
-                  child: Row(
-                    children: [
-                      Text(
+      listenWhen: (before, after) =>
+          after.error.isNotEmpty && before.error != after.error,
+      listener: (context, state) => ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(state.error))),
+      builder: (context, state) => SafeArea(
+        child: Column(
+          children: [
+            ResponsiveContent(
+              maxWidth: 760,
+              child: SizedBox(
+                height: 56,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
                         l10n.manageListings,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 21,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const Spacer(),
-                      IconButton.filled(
-                        tooltip: l10n.newListing,
-                        onPressed: () => context.go('/create-listing'),
-                        style: IconButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.textPrimary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(9),
+                    ),
+                    IconButton(
+                      tooltip: 'Tải lại',
+                      onPressed: () => cubit.load(),
+                      icon: const Icon(Icons.refresh),
+                    ),
+                    IconButton.filled(
+                      tooltip: l10n.newListing,
+                      onPressed: () => context.go('/create-listing'),
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.textPrimary,
+                      ),
+                      icon: const Icon(Icons.add),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ResponsiveContent(
+              maxWidth: 760,
+              padding: EdgeInsets.zero,
+              child: SizedBox(
+                height: 48,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  children: [
+                    for (final status in ManagedListingStatus.values)
+                      TextButton(
+                        onPressed: () => cubit.statusChanged(status),
+                        child: Text(
+                          _tabLabel(status, l10n),
+                          style: TextStyle(
+                            fontWeight: state.status == status
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: state.status == status
+                                ? AppColors.primaryDark
+                                : AppColors.textSecondary,
                           ),
                         ),
-                        icon: const Icon(Icons.add, size: 24),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: ColoredBox(
+                color: AppColors.background,
+                child: RefreshIndicator(
+                  onRefresh: () => cubit.load(),
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    children: [
+                      ResponsiveContent(
+                        maxWidth: 760,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (state.isLoading && state.items.isEmpty)
+                              const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(32),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            if (!state.isLoading && state.items.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 32,
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    children: [
+                                      const Icon(
+                                        Icons.inventory_2_outlined,
+                                        size: 40,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        state.error.isEmpty
+                                            ? 'Chưa có tin trong mục này.'
+                                            : 'Không tải được tin.',
+                                      ),
+                                      if (state.error.isNotEmpty)
+                                        TextButton(
+                                          onPressed: () => cubit.load(),
+                                          child: const Text('Thử lại'),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            for (final item in state.items)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _ListingCard(
+                                  item: item,
+                                  busy: state.busyId != null,
+                                  onEdit: () =>
+                                      context.push('/edit-listing/${item.id}'),
+                                  onBoost: () =>
+                                      context.push('/boost/${item.id}'),
+                                  onHide: () =>
+                                      cubit.changeStatus(item, 'HIDDEN'),
+                                  onShow: () =>
+                                      cubit.changeStatus(item, 'AVAILABLE'),
+                                  onSold: () =>
+                                      _confirmSold(context, item, cubit),
+                                ),
+                              ),
+                            if (state.hasMore)
+                              Center(
+                                child: TextButton(
+                                  onPressed: state.isLoading
+                                      ? null
+                                      : () => cubit.load(more: true),
+                                  child: Text(
+                                    state.isLoading
+                                        ? 'Đang tải...'
+                                        : 'Xem thêm tin',
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-              ResponsiveContent(
-                maxWidth: 760,
-                padding: EdgeInsets.zero,
-                child: SizedBox(
-                  height: 48,
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    scrollDirection: Axis.horizontal,
-                    children: ManagedListingStatus.values
-                        .map(
-                          (status) => TextButton(
-                            onPressed: () => cubit.statusChanged(status),
-                            child: Text(
-                              statusLabels[status]!,
-                              style: TextStyle(
-                                fontSize: state.status == status ? 12 : 11,
-                                fontWeight: state.status == status
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                                color: state.status == status
-                                    ? AppColors.primaryDark
-                                    : AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _tabLabel(ManagedListingStatus status, AppLocalizations l10n) =>
+      switch (status) {
+        ManagedListingStatus.all => 'Tất cả',
+        ManagedListingStatus.visible => l10n.visibleStatus,
+        ManagedListingStatus.hidden => l10n.hiddenStatus,
+        ManagedListingStatus.sold => l10n.soldStatus,
+      };
+
+  Future<void> _confirmSold(
+    BuildContext context,
+    ListingPreview item,
+    ManageListingsCubit cubit,
+  ) async {
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Đánh dấu đã bán?',
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-              Expanded(
-                child: ColoredBox(
-                  color: AppColors.background,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: ResponsiveContent(
-                      maxWidth: 760,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.listingStatusCount(
-                              items.length,
-                              statusLabels[state.status]!.toLowerCase(),
-                            ),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          ...items.map(
-                            (item) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: _ManagedListingCard(
-                                item: item,
-                                status: state.status,
-                                statusLabel: statusLabels[state.status]!,
-                                l10n: l10n,
-                              ),
-                            ),
-                          ),
-                          if (state.status != ManagedListingStatus.visible)
-                            _StatusNote(text: statusNotes[state.status]!),
-                        ],
-                      ),
-                    ),
+              const SizedBox(height: 8),
+              Text(item.title),
+              const SizedBox(height: 8),
+              const Text('Tin sẽ ngừng hiển thị và không thể mở bán lại.'),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(sheetContext, false),
+                    child: const Text('Hủy'),
                   ),
-                ),
+                  const Spacer(),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(sheetContext, true),
+                    child: const Text('Đã bán'),
+                  ),
+                ],
               ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
+    if (confirmed == true && !cubit.isClosed) {
+      await cubit.changeStatus(item, 'SOLD');
+    }
   }
 }
 
-class _ManagedListingCard extends StatelessWidget {
-  const _ManagedListingCard({
+class _ListingCard extends StatelessWidget {
+  const _ListingCard({
     required this.item,
-    required this.status,
-    required this.statusLabel,
-    required this.l10n,
+    required this.busy,
+    required this.onEdit,
+    required this.onBoost,
+    required this.onHide,
+    required this.onShow,
+    required this.onSold,
   });
-
-  final ManagedListingItem item;
-  final ManagedListingStatus status;
-  final String statusLabel;
-  final AppLocalizations l10n;
+  final ListingPreview item;
+  final bool busy;
+  final VoidCallback onEdit;
+  final VoidCallback onBoost;
+  final VoidCallback onHide;
+  final VoidCallback onShow;
+  final VoidCallback onSold;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<ManageListingsCubit>();
-    final actions = switch (status) {
-      ManagedListingStatus.visible => <_ListingAction>[
-        _ListingAction(
-          l10n.editAction,
-          () => context.push('/edit-listing/${item.id}'),
-        ),
-        _ListingAction(
-          l10n.boostListing,
-          () => context.push('/boost/${item.id}'),
-          emphasized: true,
-        ),
-        _ListingAction(l10n.hideListing, cubit.listingHidden),
-        _ListingAction(
-          l10n.markAsSold,
-          () => cubit.markSoldRequested(item),
-          emphasized: true,
-        ),
+    final l10n = AppLocalizations.of(context)!;
+    final actions = switch (item.status) {
+      'AVAILABLE' => <(String, VoidCallback)>[
+        (l10n.editAction, onEdit),
+        (l10n.boostListing, onBoost),
+        (l10n.hideListing, onHide),
+        (l10n.markAsSold, onSold),
       ],
-      ManagedListingStatus.pending => <_ListingAction>[
-        _ListingAction(
-          l10n.editAction,
-          () => context.push('/edit-listing/${item.id}'),
-        ),
-        _ListingAction(l10n.deleteListing, () {}),
+      'HIDDEN' => <(String, VoidCallback)>[
+        (l10n.editAction, onEdit),
+        (l10n.showAgain, onShow),
+        (l10n.markAsSold, onSold),
       ],
-      ManagedListingStatus.hidden => <_ListingAction>[
-        _ListingAction(l10n.showAgain, cubit.listingShown),
-        _ListingAction(l10n.deleteListing, () {}),
-      ],
-      ManagedListingStatus.sold => <_ListingAction>[
-        _ListingAction(l10n.deleteListing, () {}),
-      ],
+      _ => <(String, VoidCallback)>[],
     };
-
+    final statusText = switch (item.status) {
+      'AVAILABLE' => l10n.visibleStatus,
+      'HIDDEN' => l10n.hiddenStatus,
+      'SOLD' => l10n.soldStatus,
+      'RESERVED' => 'Đã đặt trước',
+      'EXCHANGED' => 'Đã trao đổi',
+      _ => item.status,
+    };
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -221,11 +291,17 @@ class _ManagedListingCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(7),
-                child: Image.asset(
-                  item.image,
+                child: SizedBox(
                   width: 86,
                   height: 86,
-                  fit: BoxFit.cover,
+                  child: item.imageUrl == null
+                      ? const Icon(Icons.image_outlined, size: 32)
+                      : Image.network(
+                          item.imageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, error, stackTrace) =>
+                              const Icon(Icons.image_not_supported_outlined),
+                        ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -253,16 +329,15 @@ class _ManagedListingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      statusLabel,
+                      statusText,
                       style: const TextStyle(
-                        fontSize: 10,
+                        fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: AppColors.success,
                       ),
                     ),
-                    const SizedBox(height: 3),
                     Text(
-                      item.meta,
+                      item.location,
                       style: const TextStyle(
                         fontSize: 10,
                         color: AppColors.textSecondary,
@@ -273,196 +348,25 @@ class _ManagedListingCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: actions
-                .map(
-                  (action) => SizedBox(
-                    height: 35,
-                    child: OutlinedButton(
-                      onPressed: action.onPressed,
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: action.emphasized
-                            ? AppColors.primarySoft
-                            : AppColors.surface,
-                        side: BorderSide(
-                          color: action.emphasized
-                              ? AppColors.primary
-                              : AppColors.border,
-                        ),
-                      ),
-                      child: Text(
-                        action.label,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: action.emphasized
-                              ? AppColors.primaryDark
-                              : AppColors.textPrimary,
-                        ),
-                      ),
+          if (actions.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final action in actions)
+                  OutlinedButton(
+                    onPressed: busy ? null : action.$2,
+                    child: Text(
+                      action.$1,
+                      style: const TextStyle(fontSize: 11),
                     ),
                   ),
-                )
-                .toList(),
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
-}
-
-class _MarkSoldSheet extends StatelessWidget {
-  const _MarkSoldSheet({
-    required this.item,
-    required this.l10n,
-    required this.onConfirm,
-  });
-
-  final ManagedListingItem item;
-  final AppLocalizations l10n;
-  final VoidCallback onConfirm;
-
-  @override
-  Widget build(BuildContext context) => SafeArea(
-    child: Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        10,
-        16,
-        12 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 38,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.markSoldTitle,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(Icons.close),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(7),
-                child: Image.asset(
-                  item.image,
-                  width: 52,
-                  height: 52,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      item.price,
-                      style: const TextStyle(
-                        color: AppColors.primaryDark,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(l10n.markSoldDescription),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.primarySoft,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              l10n.platformNoOrderPayment,
-              style: const TextStyle(fontSize: 11),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              SizedBox(
-                width: 104,
-                height: 46,
-                child: OutlinedButton(
-                  onPressed: () => context.pop(),
-                  child: Text(l10n.cancel),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: SizedBox(
-                  height: 46,
-                  child: ElevatedButton(
-                    onPressed: onConfirm,
-                    child: Text(l10n.markAsSold),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-class _StatusNote extends StatelessWidget {
-  const _StatusNote({required this.text});
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(11),
-    decoration: BoxDecoration(
-      color: AppColors.primarySoft,
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Text(text, style: const TextStyle(fontSize: 12)),
-  );
-}
-
-class _ListingAction {
-  const _ListingAction(this.label, this.onPressed, {this.emphasized = false});
-  final String label;
-  final VoidCallback onPressed;
-  final bool emphasized;
 }

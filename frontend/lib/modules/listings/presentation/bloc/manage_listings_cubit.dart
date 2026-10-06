@@ -1,98 +1,134 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum ManagedListingStatus { visible, pending, hidden, sold }
+import '../../data/listing_repository.dart';
+import '../../domain/entities/listing_preview.dart';
 
-class ManagedListingItem {
-  const ManagedListingItem({
-    required this.id,
-    required this.title,
-    required this.price,
-    required this.image,
-    required this.meta,
-  });
+enum ManagedListingStatus { all, visible, hidden, sold }
 
-  final String id;
-  final String title;
-  final String price;
-  final String image;
-  final String meta;
+extension on ManagedListingStatus {
+  String? get apiStatus => switch (this) {
+    ManagedListingStatus.all => null,
+    ManagedListingStatus.visible => 'AVAILABLE',
+    ManagedListingStatus.hidden => 'HIDDEN',
+    ManagedListingStatus.sold => 'SOLD',
+  };
 }
 
 class ManageListingsState {
   const ManageListingsState({
-    this.status = ManagedListingStatus.visible,
-    this.markSoldRequestVersion = 0,
-    this.selectedItem,
+    this.status = ManagedListingStatus.all,
+    this.items = const [],
+    this.isLoading = false,
+    this.busyId,
+    this.error = '',
+    this.page = 0,
+    this.hasMore = false,
   });
 
   final ManagedListingStatus status;
-  final int markSoldRequestVersion;
-  final ManagedListingItem? selectedItem;
-
-  ManageListingsState copyWith({
-    ManagedListingStatus? status,
-    int? markSoldRequestVersion,
-    ManagedListingItem? selectedItem,
-  }) => ManageListingsState(
-    status: status ?? this.status,
-    markSoldRequestVersion:
-        markSoldRequestVersion ?? this.markSoldRequestVersion,
-    selectedItem: selectedItem ?? this.selectedItem,
-  );
+  final List<ListingPreview> items;
+  final bool isLoading;
+  final String? busyId;
+  final String error;
+  final int page;
+  final bool hasMore;
 }
 
 class ManageListingsCubit extends Cubit<ManageListingsState> {
-  ManageListingsCubit() : super(const ManageListingsState());
+  ManageListingsCubit({ListingRepository? repository})
+    : _repository = repository ?? ListingRepository(),
+      super(const ManageListingsState());
 
-  static const activeItems = <ManagedListingItem>[
-    ManagedListingItem(
-      id: 'camera',
-      title: 'Máy ảnh Canon AE-1 + lens 50mm',
-      price: '2.450.000 đ',
-      image: 'assets/images/marketplace/listing-camera.png',
-      meta: 'Đăng 2 giờ trước · 128 lượt xem',
-    ),
-    ManagedListingItem(
-      id: 'lamp',
-      title: 'Đèn bàn đồng vintage',
-      price: '590.000 đ',
-      image: 'assets/images/marketplace/listing-lamp.png',
-      meta: 'Đăng hôm qua · 76 lượt xem',
-    ),
-    ManagedListingItem(
-      id: 'chair',
-      title: 'Ghế gỗ sồi Bắc Âu',
-      price: '1.200.000 đ',
-      image: 'assets/images/marketplace/listing-chair.png',
-      meta: 'Đăng 3 ngày trước · 204 lượt xem',
-    ),
-  ];
+  final ListingRepository _repository;
+  int _requestVersion = 0;
 
-  List<ManagedListingItem> get visibleItems =>
-      state.status == ManagedListingStatus.visible
-      ? activeItems
-      : state.status == ManagedListingStatus.pending
-      ? [activeItems[1]]
-      : state.status == ManagedListingStatus.hidden
-      ? [activeItems[2]]
-      : [activeItems[0]];
+  Future<void> statusChanged(ManagedListingStatus status) async {
+    if (status == state.status) return;
+    emit(ManageListingsState(status: status));
+    await load();
+  }
 
-  void statusChanged(ManagedListingStatus value) =>
-      emit(state.copyWith(status: value));
+  Future<void> load({bool more = false}) async {
+    if (more && (state.isLoading || !state.hasMore)) return;
+    final version = ++_requestVersion;
+    final previous = state;
+    emit(
+      ManageListingsState(
+        status: previous.status,
+        items: more ? previous.items : const [],
+        isLoading: true,
+        busyId: previous.busyId,
+        page: more ? previous.page : 0,
+        hasMore: previous.hasMore,
+      ),
+    );
+    try {
+      final page = more ? previous.page + 1 : 1;
+      final result = await _repository.mine(
+        page: page,
+        status: previous.status.apiStatus,
+      );
+      if (isClosed || version != _requestVersion) return;
+      emit(
+        ManageListingsState(
+          status: previous.status,
+          items: [if (more) ...previous.items, ...result.items],
+          page: page,
+          hasMore: page < result.totalPages,
+        ),
+      );
+    } catch (error) {
+      if (isClosed || version != _requestVersion) return;
+      emit(
+        ManageListingsState(
+          status: previous.status,
+          items: previous.items,
+          page: previous.page,
+          hasMore: previous.hasMore,
+          error: _message(error),
+        ),
+      );
+    }
+  }
 
-  void markSoldRequested(ManagedListingItem item) => emit(
-    state.copyWith(
-      selectedItem: item,
-      markSoldRequestVersion: state.markSoldRequestVersion + 1,
-    ),
-  );
+  Future<bool> changeStatus(ListingPreview item, String target) async {
+    if (state.busyId != null) return false;
+    emit(
+      ManageListingsState(
+        status: state.status,
+        items: state.items,
+        page: state.page,
+        hasMore: state.hasMore,
+        busyId: item.id,
+      ),
+    );
+    try {
+      await _repository.changeStatus(item.id, target);
+      if (isClosed) return false;
+      await load();
+      return true;
+    } catch (error) {
+      if (!isClosed) {
+        emit(
+          ManageListingsState(
+            status: state.status,
+            items: state.items,
+            page: state.page,
+            hasMore: state.hasMore,
+            error: _message(error),
+          ),
+        );
+      }
+      return false;
+    }
+  }
 
-  void markSoldConfirmed() =>
-      emit(state.copyWith(status: ManagedListingStatus.sold));
-
-  void listingHidden() =>
-      emit(state.copyWith(status: ManagedListingStatus.hidden));
-
-  void listingShown() =>
-      emit(state.copyWith(status: ManagedListingStatus.visible));
+  String _message(Object error) {
+    if (error is DioException && error.response?.data is Map<String, dynamic>) {
+      final message = (error.response!.data as Map<String, dynamic>)['error'];
+      if (message is String) return message;
+    }
+    return 'Không tải hoặc cập nhật được tin. Kiểm tra kết nối rồi thử lại.';
+  }
 }

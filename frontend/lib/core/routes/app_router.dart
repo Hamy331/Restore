@@ -115,7 +115,11 @@ final appRouter = GoRouter(
       branches: [
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/home', builder: (_, _) => const HomeView()),
+            GoRoute(
+              path: '/home',
+              builder: (_, state) =>
+                  HomeView(key: ValueKey(state.uri.queryParameters['refresh'])),
+            ),
             GoRoute(path: '/search', builder: (_, _) => const SearchView()),
           ],
         ),
@@ -123,8 +127,9 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/manage-listings',
-              builder: (_, _) => BlocProvider(
-                create: (_) => ManageListingsCubit(),
+              builder: (_, state) => BlocProvider(
+                key: ValueKey(state.uri.queryParameters['refresh']),
+                create: (_) => ManageListingsCubit()..load(),
                 child: const ManageListingsView(),
               ),
             ),
@@ -188,16 +193,16 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/edit-listing',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => ListingFormCubit(editing: true),
-        child: const CreateListingView(),
-      ),
+      redirect: (_, _) => '/manage-listings',
     ),
     GoRoute(
       path: '/edit-listing/:id',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => ListingFormCubit(editing: true),
+      builder: (_, state) => BlocProvider(
+        create: (_) => ListingFormCubit(
+          editing: true,
+          listingId: state.pathParameters['id']!,
+        )..load(),
         child: const CreateListingView(),
       ),
     ),
