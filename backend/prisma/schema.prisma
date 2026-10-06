@@ -47,6 +47,10 @@ model User {
 
   listings       Listing[]
   authSessions   AuthSession[]
+  storeSubscription StoreSubscription?
+  storeOrders    StoreOrder[]
+  promotions     Promotion[]
+  promotionOrders PromotionOrder[]
 }
 
 model AuthSession {
@@ -71,7 +75,9 @@ enum ListingCondition {
 }
 
 enum ListingStatus {
+  DRAFT
   AVAILABLE
+  HIDDEN
   RESERVED
   SOLD
   EXCHANGED
@@ -81,6 +87,8 @@ model Listing {
   id            String           @id @default(uuid())
   ownerId       String
   owner         User             @relation(fields: [ownerId], references: [id])
+  categoryId    String?
+  category      Category?        @relation(fields: [categoryId], references: [id])
   title         String
   description   String
   price         Decimal
@@ -92,5 +100,130 @@ model Listing {
   images        String[]         
   viewCount     Int              @default(0)
   createdAt     DateTime         @default(now())
+  publishedAt   DateTime?
   updatedAt     DateTime         @updatedAt
+  promotions    Promotion[]
+  promotionOrders PromotionOrder[]
+
+  @@index([ownerId, publishedAt])
+}
+
+model Category {
+  id             String              @id
+  name           String
+  listings       Listing[]
+  subscriptions  StoreSubscription[]
+  storeOrders    StoreOrder[]
+}
+
+enum StoreTier {
+  PERSONAL
+  BASIC
+  PRO
+}
+
+model StorePackage {
+  id                    String              @id
+  tier                  StoreTier           @unique
+  name                  String
+  monthlyPrice          Decimal
+  dailyListingLimit     Int
+  activeListingLimit    Int
+  monthlyPromotionQuota Int
+  priorityLevel         Int
+  subscriptions         StoreSubscription[]
+  orders                StoreOrder[]
+}
+
+model StoreSubscription {
+  id        String       @id @default(uuid())
+  userId    String       @unique
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  packageId String
+  package   StorePackage @relation(fields: [packageId], references: [id])
+  categoryId String
+  category   Category     @relation(fields: [categoryId], references: [id])
+  startsAt  DateTime     @default(now())
+  endsAt    DateTime
+  updatedAt DateTime     @updatedAt
+}
+
+enum PurchaseStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
+model StoreOrder {
+  id         String           @id @default(uuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  packageId  String
+  package    StorePackage     @relation(fields: [packageId], references: [id])
+  categoryId String
+  category   Category         @relation(fields: [categoryId], references: [id])
+  amount     Decimal
+  status     PurchaseStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  decidedAt  DateTime?
+
+  @@index([userId, status])
+}
+
+model PromotionPackage {
+  id           String      @id
+  name         String
+  kind         PromotionKind
+  durationDays Int
+  price        Decimal
+  priority     Int
+  active       Boolean     @default(true)
+  promotions   Promotion[]
+  orders       PromotionOrder[]
+}
+
+enum PromotionKind {
+  BUMP
+  FEATURED
+}
+
+enum PromotionSource {
+  INCLUDED
+  PURCHASED
+}
+
+model Promotion {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing          @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  packageId String
+  package   PromotionPackage @relation(fields: [packageId], references: [id])
+  source    PromotionSource  @default(INCLUDED)
+  orderId   String?          @unique
+  order     PromotionOrder?  @relation(fields: [orderId], references: [id])
+  startsAt  DateTime         @default(now())
+  endsAt    DateTime
+  createdAt DateTime         @default(now())
+
+  @@index([userId, createdAt])
+  @@index([listingId, endsAt])
+}
+
+model PromotionOrder {
+  id         String           @id @default(uuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId  String
+  listing    Listing          @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  packageId  String
+  package    PromotionPackage @relation(fields: [packageId], references: [id])
+  amount     Decimal
+  status     PurchaseStatus   @default(PENDING)
+  createdAt  DateTime         @default(now())
+  decidedAt  DateTime?
+  promotion  Promotion?
+
+  @@index([userId, status])
 }
