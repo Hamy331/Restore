@@ -6,10 +6,23 @@ import '../../../core/ui/responsive/responsive_content.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_search_field.dart';
 import '../../../shared/widgets/listing_grid.dart';
-import '../../listings/presentation/fixtures/figma_preview_listings.dart';
+import '../../../shared/widgets/feedback_view.dart';
+import '../../listings/data/listing_repository.dart';
 
-class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+class HomeView extends StatefulWidget {
+  const HomeView({this.repository, super.key});
+  final ListingRepository? repository;
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  late final ListingRepository _repository =
+      widget.repository ?? ListingRepository();
+  late Future<ListingPage> _listings = _repository.list();
+
+  void _reload() => setState(() => _listings = _repository.list());
 
   static const _categories = <(IconData, String)>[
     (Icons.phone_android, 'Điện thoại'),
@@ -23,177 +36,214 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: ResponsiveContent(
-              maxWidth: 840,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 7),
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Row(
-                          children: [
-                            Icon(Icons.my_location, size: 15),
-                            SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                'TP. Hồ Chí Minh',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            Icon(Icons.keyboard_arrow_down, size: 17),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: l10n.notifications,
-                        onPressed: () => context.push('/notifications'),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 40,
-                          height: 40,
-                        ),
-                        icon: const Icon(Icons.notifications_none, size: 23),
-                      ),
-                      IconButton(
-                        tooltip: l10n.restoreAi,
-                        onPressed: () => context.push('/ai-assistant'),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 40,
-                          height: 40,
-                        ),
-                        icon: const Icon(Icons.auto_awesome_outlined, size: 21),
-                      ),
-                      IconButton(
-                        tooltip: 'Tin nhắn',
-                        onPressed: () => context.go('/messages'),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 40,
-                          height: 40,
-                        ),
-                        icon: const Icon(Icons.chat_bubble_outline, size: 21),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  AppSearchField(onTap: () => context.go('/search')),
-                  const SizedBox(height: 20),
-                  Container(
-                    width: double.infinity,
-                    height: 78,
-                    padding: const EdgeInsets.fromLTRB(14, 9, 12, 9),
-                    decoration: BoxDecoration(
-                      color: AppColors.primarySoft,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
+      child: RefreshIndicator(
+        onRefresh: () async {
+          _reload();
+          try {
+            await _listings;
+          } catch (_) {
+            // The FutureBuilder displays the retry state.
+          }
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: ResponsiveContent(
+                maxWidth: 840,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 7),
+                    Row(
                       children: [
                         const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
                             children: [
-                              Text(
-                                'Đồ tốt đổi chủ',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Đăng tin miễn phí, bán nhanh hôm nay',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary,
+                              Icon(Icons.my_location, size: 15),
+                              SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  'Toàn quốc',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: AppColors.surface,
-                              width: 2,
-                            ),
+                        IconButton(
+                          tooltip: l10n.notifications,
+                          onPressed: () => context.push('/notifications'),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints.tightFor(
+                            width: 40,
+                            height: 40,
                           ),
+                          icon: const Icon(Icons.notifications_none, size: 23),
+                        ),
+                        IconButton(
+                          tooltip: l10n.restoreAi,
+                          onPressed: () => context.push('/ai-assistant'),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints.tightFor(
+                            width: 40,
+                            height: 40,
+                          ),
+                          icon: const Icon(
+                            Icons.auto_awesome_outlined,
+                            size: 21,
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: 'Tin nhắn',
+                          onPressed: () => context.go('/messages'),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints.tightFor(
+                            width: 40,
+                            height: 40,
+                          ),
+                          icon: const Icon(Icons.chat_bubble_outline, size: 21),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    children: _categories
-                        .map(
-                          (item) => Expanded(
-                            child: InkWell(
-                              onTap: () => context.go('/search'),
-                              borderRadius: BorderRadius.circular(12),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 28,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.cream,
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    child: Icon(item.$1, size: 23),
+                    const SizedBox(height: 4),
+                    AppSearchField(onTap: () => context.go('/search')),
+                    const SizedBox(height: 20),
+                    Container(
+                      width: double.infinity,
+                      height: 78,
+                      padding: const EdgeInsets.fromLTRB(14, 9, 12, 9),
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Đồ tốt đổi chủ',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    item.$2,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.fade,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  'Đăng tin miễn phí, bán nhanh hôm nay',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary,
                                   ),
-                                ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.surface,
+                                width: 2,
                               ),
                             ),
                           ),
-                        )
-                        .toList(),
-                  ),
-                  const SizedBox(height: 20),
-                  _SectionHeading(
-                    title: 'Dành cho bạn',
-                    action: 'Xem tất cả  ›',
-                    onTap: () => context.go('/search'),
-                  ),
-                  const SizedBox(height: 10),
-                  ListingGrid(listings: figmaPreviewListings),
-                  const SizedBox(height: 22),
-                  _SectionHeading(
-                    title: 'Tin đăng mới',
-                    action: 'Xem thêm  ›',
-                    onTap: () => context.go('/search'),
-                  ),
-                  const SizedBox(height: 10),
-                  ListingGrid(listings: figmaPreviewListings.reversed.toList()),
-                  const SizedBox(height: 20),
-                ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: _categories
+                          .map(
+                            (item) => Expanded(
+                              child: InkWell(
+                                onTap: () => context.go('/search'),
+                                borderRadius: BorderRadius.circular(12),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: 45,
+                                      height: 28,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.cream,
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Icon(item.$1, size: 23),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      item.$2,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.fade,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    _SectionHeading(
+                      title: 'Tin đăng mới',
+                      action: 'Xem tất cả  ›',
+                      onTap: () => context.go('/search'),
+                    ),
+                    const SizedBox(height: 10),
+                    FutureBuilder<ListingPage>(
+                      future: _listings,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState != ConnectionState.done) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return FeedbackView(
+                            icon: Icons.wifi_off_outlined,
+                            title: 'Không tải được tin đăng',
+                            message: 'Kiểm tra kết nối rồi thử lại.',
+                            action: TextButton(
+                              onPressed: _reload,
+                              child: const Text('Thử lại'),
+                            ),
+                          );
+                        }
+                        final items = snapshot.data!.items;
+                        if (items.isEmpty) {
+                          return const FeedbackView(
+                            icon: Icons.inventory_2_outlined,
+                            title: 'Chưa có tin đăng',
+                            message: 'Tin mới sẽ xuất hiện tại đây.',
+                          );
+                        }
+                        return ListingGrid(listings: items);
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

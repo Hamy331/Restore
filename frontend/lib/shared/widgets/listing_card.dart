@@ -33,7 +33,17 @@ class ListingCard extends StatelessWidget {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.asset(listing.imageAsset, fit: BoxFit.cover),
+                      if (listing.imageUrl != null)
+                        Image.network(
+                          listing.imageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.image_not_supported_outlined),
+                        )
+                      else if (listing.imageAsset.isNotEmpty)
+                        Image.asset(listing.imageAsset, fit: BoxFit.cover)
+                      else
+                        const Icon(Icons.image_outlined, size: 40),
                       const Positioned(
                         top: 8,
                         right: 8,
@@ -69,8 +79,10 @@ class ListingCard extends StatelessWidget {
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.location_on_outlined,
+                        Icon(
+                          listing.sellerId.isNotEmpty
+                              ? Icons.access_time_outlined
+                              : Icons.location_on_outlined,
                           size: 13,
                           color: AppColors.textSecondary,
                         ),
