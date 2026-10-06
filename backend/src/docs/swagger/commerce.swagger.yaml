@@ -1,0 +1,123 @@
+paths:
+  /api/v1/stores/categories:
+    get:
+      tags: [Stores]
+      summary: Danh mục có thể chọn khi đăng tin hoặc mua gói cửa hàng
+      responses:
+        200: { description: Danh sách danh mục }
+  /api/v1/stores/packages:
+    get:
+      tags: [Stores]
+      summary: Giá và hạn mức gói Basic/Pro
+      responses:
+        200: { description: Danh sách gói }
+  /api/v1/stores/me:
+    get:
+      tags: [Stores]
+      summary: Gói hiện tại, danh mục trọng tâm và mức sử dụng
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Quyền lợi hiện hành }
+  /api/v1/stores/orders:
+    post:
+      tags: [Stores]
+      summary: Tạo đơn mua gói 30 ngày, chờ admin xác nhận thanh toán
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [packageId, categoryId]
+              properties:
+                packageId: { type: string }
+                categoryId: { type: string }
+      responses:
+        201: { description: Đơn chờ xác nhận }
+  /api/v1/stores/admin/orders:
+    get:
+      tags: [Stores]
+      summary: Đơn gói cửa hàng đang chờ (ADMIN)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Danh sách đơn }
+  /api/v1/stores/admin/orders/{id}/confirm:
+    post:
+      tags: [Stores]
+      summary: Xác nhận đã nhận tiền và kích hoạt gói (ADMIN)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Đã kích hoạt hoặc gia hạn }
+  /api/v1/stores/admin/orders/{id}/reject:
+    post:
+      tags: [Stores]
+      summary: Từ chối đơn gói cửa hàng (ADMIN)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Đã từ chối }
+  /api/v1/promotions/packages:
+    get:
+      tags: [Promotions]
+      summary: Gói Đẩy Tin và Tin Ưu Tiên
+      responses:
+        200: { description: Danh sách gói quảng cáo }
+    post:
+      tags: [Promotions]
+      summary: Tạo gói quảng cáo (ADMIN)
+      security: [{ bearerAuth: [] }]
+      responses:
+        201: { description: Gói mới }
+  /api/v1/promotions/packages/{id}:
+    put:
+      tags: [Promotions]
+      summary: Sửa gói quảng cáo (ADMIN)
+      description: Sau khi có giao dịch chỉ được sửa tên, giá và trạng thái bán.
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Gói đã sửa }
+  /api/v1/promotions/redeem:
+    post:
+      tags: [Promotions]
+      summary: Dùng lượt quảng cáo kèm gói trong danh mục trọng tâm
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [listingId, packageId]
+              properties:
+                listingId: { type: string }
+                packageId: { type: string }
+      responses:
+        201: { description: Quảng cáo được kích hoạt }
+  /api/v1/promotions/orders:
+    post:
+      tags: [Promotions]
+      summary: Tạo đơn quảng cáo riêng, chờ admin xác nhận
+      security: [{ bearerAuth: [] }]
+      responses:
+        201: { description: Đơn chờ xác nhận }
+  /api/v1/promotions/admin/orders:
+    get:
+      tags: [Promotions]
+      summary: Đơn quảng cáo đang chờ (ADMIN)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Danh sách đơn }
+  /api/v1/promotions/admin/orders/{id}/confirm:
+    post:
+      tags: [Promotions]
+      summary: Xác nhận đã nhận tiền và kích hoạt quảng cáo (ADMIN)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Quảng cáo đã kích hoạt hoặc xếp lịch }
+  /api/v1/promotions/admin/orders/{id}/reject:
+    post:
+      tags: [Promotions]
+      summary: Từ chối đơn quảng cáo (ADMIN)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Đã từ chối }
