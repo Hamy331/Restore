@@ -1,0 +1,175 @@
+paths:
+  /api/v1/listings:
+    post:
+      tags: [Listings]
+      summary: Đăng tin bán hàng
+      description: Tài khoản USER đang hoạt động có thể đăng tin. Tin mới hiển thị ngay; tải ảnh chưa được hỗ trợ.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [title, description, price, condition, categoryId, isNegotiable]
+              properties:
+                title: { type: string, minLength: 5, maxLength: 120 }
+                description: { type: string, minLength: 20, maxLength: 5000 }
+                price: { type: string, pattern: '^[1-9][0-9]{0,11}$', description: Số nguyên VND }
+                condition: { type: string, enum: [NEW, LIKE_NEW, USED_GOOD, USED_FAIR, FOR_PARTS] }
+                categoryId: { type: string, description: ID từ GET /api/v1/stores/categories }
+                isNegotiable: { type: boolean }
+      responses:
+        201:
+          description: Tin vừa được tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { $ref: '#/components/schemas/ListingPublic' }
+        400: { description: Dữ liệu tin không hợp lệ }
+        401: { description: Chưa đăng nhập hoặc phiên hết hạn }
+        403: { description: Tài khoản không có quyền đăng tin }
+    get:
+      tags: [Listings]
+      summary: Danh sách tin đang hiển thị
+      description: Chỉ trả tin AVAILABLE của người bán ACTIVE. Tin Ưu Tiên, ưu tiên cửa hàng trong danh mục trọng tâm, rồi thời điểm Đẩy Tin được xếp trước.
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, minimum: 1, maximum: 50, default: 12 }
+        - in: query
+          name: q
+          description: Tìm trong tiêu đề, không phân biệt chữ hoa/thường.
+          schema: { type: string, maxLength: 100 }
+      responses:
+        200:
+          description: Danh sách và thông tin phân trang
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ListingPublic' }
+                  pagination:
+                    type: object
+                    properties:
+                      page: { type: integer }
+                      pageSize: { type: integer }
+                      totalItems: { type: integer }
+                      totalPages: { type: integer }
+        400:
+          description: Tham số tìm kiếm/phân trang không hợp lệ
+  /api/v1/listings/{id}:
+    get:
+      tags: [Listings]
+      summary: Chi tiết một tin đang hiển thị
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Chi tiết tin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { $ref: '#/components/schemas/ListingPublic' }
+        404:
+          description: Không tồn tại hoặc tin không còn hiển thị
+    put:
+      tags: [Listings]
+      summary: Sửa tin đang hiển thị hoặc đã ẩn của chính người dùng
+      description: Dùng cùng các trường bắt buộc với POST /api/v1/listings. Không sửa được tin đã bán.
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Tin đã được cập nhật }
+        404: { description: Tin không thuộc người dùng }
+        409: { description: Tin không còn sửa được hoặc đã thay đổi }
+  /api/v1/listings/mine:
+    get:
+      tags: [Listings]
+      summary: Tin của người dùng đang đăng nhập
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string, enum: [AVAILABLE, HIDDEN, RESERVED, SOLD, EXCHANGED] }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        200: { description: Danh sách tin và thông tin phân trang }
+  /api/v1/listings/mine/{id}:
+    get:
+      tags: [Listings]
+      summary: Chi tiết tin của chính người dùng, kể cả tin đã ẩn hoặc bán
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Chi tiết tin }
+        404: { description: Tin không tồn tại hoặc không thuộc người dùng }
+  /api/v1/listings/{id}/status:
+    patch:
+      tags: [Listings]
+      summary: Ẩn, hiện lại hoặc đánh dấu đã bán tin của chính người dùng
+      description: AVAILABLE → HIDDEN/SOLD; HIDDEN → AVAILABLE/SOLD; SOLD không thể mở lại. Hiện lại phải còn hạn mức tin hoạt động.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [status]
+              properties:
+                status: { type: string, enum: [AVAILABLE, HIDDEN, SOLD] }
+      responses:
+        200: { description: Tin đã đổi trạng thái }
+        404: { description: Tin không thuộc người dùng }
+        409: { description: Chuyển trạng thái không hợp lệ hoặc đã hết hạn mức }
+components:
+  schemas:
+    ListingPublic:
+      type: object
+      required: [id, title, description, price, isNegotiable, condition, images, createdAt, owner]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        description: { type: string }
+        price: { type: string, description: Giá trị thập phân dạng chuỗi }
+        isNegotiable: { type: boolean }
+        condition: { type: string, enum: [NEW, LIKE_NEW, USED_GOOD, USED_FAIR, FOR_PARTS] }
+        category:
+          type: object
+          nullable: true
+          properties:
+            id: { type: string }
+            name: { type: string }
+        images:
+          type: array
+          items: { type: string, format: uri }
+        createdAt: { type: string, format: date-time }
+        owner:
+          type: object
+          properties:
+            id: { type: string, format: uuid }
+            fullName: { type: string }
+            ratingAverage: { type: number }
+            ratingCount: { type: integer }

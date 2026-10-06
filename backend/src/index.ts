@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.js';
 import { apiLogger } from './middlewares/logger.middleware.js';
 import authRouter from './modules/auth/auth.route.js';
+import listingRouter from './modules/listings/listing.route.js';
 import storeRouter from './modules/stores/store.route.js';
 import promotionRouter from './modules/promotions/promotion.route.js';
 import { validateEnvironment } from './config/env.js';
@@ -42,6 +43,7 @@ app.use(apiLogger);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/listings', listingRouter);
 app.use('/api/v1/stores', storeRouter);
 app.use('/api/v1/promotions', promotionRouter);
 app.use(notFoundHandler);
