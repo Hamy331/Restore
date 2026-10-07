@@ -7,6 +7,7 @@ import 'package:restore/modules/chat/views/messages_view.dart';
 import 'package:restore/modules/home/views/home_view.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
 import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
+import 'package:restore/modules/listings/views/upload_photos/upload_photos_view.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
@@ -95,29 +96,19 @@ final appRouter = GoRouter(
         destination: '/login',
       ),
     ),
-    GoRoute(
-      path: '/create-listing/choose-category',
-      parentNavigatorKey: _rootNavigatorKey,
-      pageBuilder: (context, state) => CustomTransitionPage(
-        key: state.pageKey,
-        child: BlocProvider(
-          create: (_) => CreateListingBloc(),
-          child: const ChooseCategoryView(),
+    ShellRoute(
+      builder: (context, state, child) =>
+          BlocProvider(create: (_) => CreateListingBloc(), child: child),
+      routes: [
+        GoRoute(
+          path: '/create-listing/choose-category',
+          builder: (_, _) => const ChooseCategoryView(),
         ),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0.0, 1.0);
-          const end = Offset.zero;
-          const curve = Curves.easeOutQuart;
-          var tween = Tween(
-            begin: begin,
-            end: end,
-          ).chain(CurveTween(curve: curve));
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-      ),
+        GoRoute(
+          path: '/create-listing/upload-photos',
+          builder: (_, _) => const UploadPhotosView(),
+        ),
+      ],
     ),
     StatefulShellRoute.indexedStack(
       builder: (_, _, navigationShell) =>

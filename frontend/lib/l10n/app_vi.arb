@@ -320,5 +320,14 @@
   "categoryFashionTitle": "Thời trang",
   "categoryFashionDesc": "Quần áo, Giày dép, Túi xách,...",
   "categoryHomeTitle": "Gia dụng",
-  "categoryHomeDesc": "Nội thất, Đèn, Đồ bếp, Trang trí,..."
+  "categoryHomeDesc": "Nội thất, Đèn, Đồ bếp, Trang trí,...",
+  "step1Title": "Ảnh & Sản phẩm",
+  "productPhotosInfo": "Ảnh sản phẩm · {count}/10",
+  "@productPhotosInfo": {"placeholders": {"count": {"type": "int"}}},
+  "coverImageHint": "Ảnh đầu là ảnh bìa · Chạm vào ảnh để đặt làm bìa",
+  "productNameLabel": "Tên sản phẩm",
+  "productNameMinLengthError": "Tên sản phẩm tối thiểu 5 ký tự",
+  "categoryLabel": "Danh mục",
+  "conditionLabel": "Tình trạng",
+  "continueBtn": "Tiếp tục"
 }
