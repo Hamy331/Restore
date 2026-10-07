@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../modules/account/bloc/account_ui_cubit.dart';
-import '../../modules/account/views/account_detail_views.dart';
-import '../../modules/account/views/account_view.dart';
-import '../../modules/account/views/seller_trust_views.dart';
+import 'package:restore/core/ui/layouts/t_foundation_placeholder_layout.dart';
+import 'package:restore/modules/account/views/account_view.dart';
+import 'package:restore/modules/chat/views/messages_view.dart';
+import 'package:restore/modules/home/views/home_view.dart';
+import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
+import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
+import 'package:restore/modules/listings/views/upload_photos/upload_photos_view.dart';
+import 'package:restore/modules/shell/views/main_shell.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -19,17 +23,8 @@ import '../../modules/auth/views/verification/auth_success_view.dart';
 import '../../modules/auth/views/verification/email_verification_view.dart';
 import '../../modules/auth/views/welcome/welcome_view.dart';
 import '../../modules/chat/views/chat_conversation_view.dart';
-import '../../modules/chat/views/messages_view.dart';
 import '../../modules/boost/bloc/boost_listing_cubit.dart';
 import '../../modules/boost/views/boost_listing_view.dart';
-import '../../modules/home/views/home_view.dart';
-import '../../modules/listings/presentation/views/create_listing_view.dart';
-import '../../modules/listings/presentation/views/manage_listings_view.dart';
-import '../../modules/listings/presentation/views/product_detail_view.dart';
-import '../../modules/listings/presentation/views/search_view.dart';
-import '../../modules/listings/presentation/bloc/listing_form_cubit.dart';
-import '../../modules/listings/presentation/bloc/manage_listings_cubit.dart';
-import '../../modules/shell/views/main_shell.dart';
 import '../../modules/auth/bloc/auth_bloc.dart';
 import '../../modules/auth/auth_route_guard.dart';
 
@@ -101,34 +96,35 @@ final appRouter = GoRouter(
         destination: '/login',
       ),
     ),
+    ShellRoute(
+      builder: (context, state, child) =>
+          BlocProvider(create: (_) => CreateListingBloc(), child: child),
+      routes: [
+        GoRoute(
+          path: '/create-listing/choose-category',
+          builder: (_, _) => const ChooseCategoryView(),
+        ),
+        GoRoute(
+          path: '/create-listing/upload-photos',
+          builder: (_, _) => const UploadPhotosView(),
+        ),
+      ],
+    ),
     StatefulShellRoute.indexedStack(
       builder: (_, _, navigationShell) =>
           MainShell(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(
-          routes: [
-            GoRoute(path: '/home', builder: (_, _) => const HomeView()),
-            GoRoute(path: '/search', builder: (_, _) => const SearchView()),
-          ],
+          routes: [GoRoute(path: '/home', builder: (_, _) => const HomeView())],
         ),
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: '/manage-listings',
-              builder: (_, _) => BlocProvider(
-                create: (_) => ManageListingsCubit(),
-                child: const ManageListingsView(),
-              ),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/create-listing',
-              builder: (_, _) => BlocProvider(
-                create: (_) => ListingFormCubit(editing: false),
-                child: const CreateListingView(),
+              builder: (_, _) => const TFoundationPlaceholderLayout(
+                title: 'Quản lý tin',
+                message: 'Tính năng đang được phát triển',
+                icon: Icons.inventory_2_outlined,
               ),
             ),
           ],
@@ -146,12 +142,6 @@ final appRouter = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/listings/:id',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, state) =>
-          ProductDetailView(listingId: state.pathParameters['id']!),
-    ),
-    GoRoute(
       path: '/messages/:id',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (_, _) => const ChatConversationView(),
@@ -166,91 +156,6 @@ final appRouter = GoRouter(
           'agreed' => ChatOfferStage.agreed,
           _ => ChatOfferStage.conversation,
         },
-      ),
-    ),
-    GoRoute(
-      path: '/create-listing/preview',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, state) => ProductDetailView(
-        listingId: 'camera',
-        isPreview: true,
-        previewSource: state.uri.queryParameters['source'] ?? 'create',
-      ),
-    ),
-    GoRoute(
-      path: '/edit-listing',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => ListingFormCubit(editing: true),
-        child: const CreateListingView(),
-      ),
-    ),
-    GoRoute(
-      path: '/edit-listing/:id',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => ListingFormCubit(editing: true),
-        child: const CreateListingView(),
-      ),
-    ),
-    GoRoute(
-      path: '/account/edit',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => EditProfileCubit(),
-        child: const EditProfileView(),
-      ),
-    ),
-    GoRoute(
-      path: '/settings',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => SettingsCubit(),
-        child: const SettingsView(),
-      ),
-    ),
-    GoRoute(
-      path: '/favorites',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const FavoritesView(),
-    ),
-    GoRoute(
-      path: '/notifications',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const NotificationsView(),
-    ),
-    GoRoute(
-      path: '/seller/:id',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const SellerProfileView(),
-    ),
-    GoRoute(
-      path: '/seller/:id/reviews',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const RatingsView(),
-    ),
-    GoRoute(
-      path: '/seller/:id/review',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => ReviewCubit(),
-        child: const LeaveReviewView(),
-      ),
-    ),
-    GoRoute(
-      path: '/report/listing/:id',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => ReportCubit(),
-        child: const ReportView(target: ReportTarget.listing),
-      ),
-    ),
-    GoRoute(
-      path: '/report/user/:id',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => ReportCubit(),
-        child: const ReportView(target: ReportTarget.user),
       ),
     ),
     GoRoute(

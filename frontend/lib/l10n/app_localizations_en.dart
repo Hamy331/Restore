@@ -927,4 +927,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get makeOffer => 'Make offer';
+
+  @override
+  String get chooseCategoryTitle => 'Choose category';
+
+  @override
+  String get chooseCategorySubtitle => 'What do you want to sell?';
+
+  @override
+  String get categoryElectronicsTitle => 'Electronics';
+
+  @override
+  String get categoryElectronicsDesc => 'Phones, Laptops, Cameras,...';
+
+  @override
+  String get categoryVehiclesTitle => 'Vehicles';
+
+  @override
+  String get categoryVehiclesDesc => 'Motorbikes, Bicycles, Cars, Parts,...';
+
+  @override
+  String get categoryFashionTitle => 'Fashion';
+
+  @override
+  String get categoryFashionDesc => 'Clothes, Shoes, Bags,...';
+
+  @override
+  String get categoryHomeTitle => 'Home Appliances';
+
+  @override
+  String get categoryHomeDesc => 'Furniture, Lighting, Kitchenware, Decor,...';
+
+  @override
+  String get step1Title => 'Photos & Product';
+
+  @override
+  String productPhotosInfo(int count) {
+    return 'Product photos · $count/10';
+  }
+
+  @override
+  String get coverImageHint =>
+      'First photo is cover · Tap a photo to set as cover';
+
+  @override
+  String get productNameLabel => 'Product name';
+
+  @override
+  String get productNameMinLengthError =>
+      'Product name must be at least 5 characters';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get conditionLabel => 'Condition';
+
+  @override
+  String get continueBtn => 'Continue';
 }
