@@ -6,6 +6,8 @@
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
 		<string>ReStore</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Chọn ảnh sản phẩm để đăng tin bán trên ReStore.</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
