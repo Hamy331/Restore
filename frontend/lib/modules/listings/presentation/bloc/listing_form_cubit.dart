@@ -1,7 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:typed_data';
 
 import '../../data/listing_repository.dart';
+
+class ListingFormImage {
+  const ListingFormImage({this.url, this.bytes, this.contentType});
+  final String? url;
+  final Uint8List? bytes;
+  final String? contentType;
+}
 
 class ListingFormState {
   const ListingFormState({
@@ -19,6 +27,9 @@ class ListingFormState {
     this.error = '',
     this.isSubmitting = false,
     this.createdId = '',
+    this.savedId = '',
+    this.images = const [],
+    this.imagesChanged = false,
   });
 
   final bool editing;
@@ -35,6 +46,9 @@ class ListingFormState {
   final String error;
   final bool isSubmitting;
   final String createdId;
+  final String savedId;
+  final List<ListingFormImage> images;
+  final bool imagesChanged;
 
   ListingFormState copyWith({
     int? step,
@@ -49,6 +63,9 @@ class ListingFormState {
     String? error,
     bool? isSubmitting,
     String? createdId,
+    String? savedId,
+    List<ListingFormImage>? images,
+    bool? imagesChanged,
   }) => ListingFormState(
     editing: editing,
     listingId: listingId,
@@ -64,6 +81,9 @@ class ListingFormState {
     error: error ?? this.error,
     isSubmitting: isSubmitting ?? this.isSubmitting,
     createdId: createdId ?? this.createdId,
+    savedId: savedId ?? this.savedId,
+    images: images ?? this.images,
+    imagesChanged: imagesChanged ?? this.imagesChanged,
   );
 }
 
@@ -99,6 +119,9 @@ class ListingFormCubit extends Cubit<ListingFormState> {
           categoryId: listing.categoryId,
           condition: listing.conditionCode,
           negotiable: listing.isNegotiable,
+          images: listing.images
+              .map((url) => ListingFormImage(url: url))
+              .toList(),
         ),
       );
     } on DioException catch (error) {
@@ -138,6 +161,91 @@ class ListingFormCubit extends Cubit<ListingFormState> {
   void descriptionChanged(String value) =>
       emit(state.copyWith(description: value, error: ''));
 
+  void addImage(Uint8List bytes) {
+    if (state.images.length >= 6) {
+      emit(state.copyWith(error: 'Mỗi tin được tối đa 6 ảnh.'));
+      return;
+    }
+    if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
+      emit(state.copyWith(error: 'Mỗi ảnh phải nhỏ hơn 5 MB.'));
+      return;
+    }
+    final contentType =
+        bytes.length >= 3 &&
+            bytes[0] == 0xff &&
+            bytes[1] == 0xd8 &&
+            bytes[2] == 0xff
+        ? 'image/jpeg'
+        : bytes.length >= 8 &&
+              bytes[0] == 137 &&
+              bytes[1] == 80 &&
+              bytes[2] == 78 &&
+              bytes[3] == 71
+        ? 'image/png'
+        : bytes.length >= 12 &&
+              String.fromCharCodes(bytes.sublist(0, 4)) == 'RIFF' &&
+              String.fromCharCodes(bytes.sublist(8, 12)) == 'WEBP'
+        ? 'image/webp'
+        : null;
+    if (contentType == null) {
+      emit(state.copyWith(error: 'Chỉ hỗ trợ ảnh JPEG, PNG hoặc WebP.'));
+      return;
+    }
+    emit(
+      state.copyWith(
+        images: [
+          ...state.images,
+          ListingFormImage(bytes: bytes, contentType: contentType),
+        ],
+        imagesChanged: true,
+        error: '',
+      ),
+    );
+  }
+
+  void removeImage(int index) {
+    final images = [...state.images]..removeAt(index);
+    emit(state.copyWith(images: images, imagesChanged: true, error: ''));
+  }
+
+  void moveImage(int index, int offset) {
+    final target = index + offset;
+    if (target < 0 || target >= state.images.length) return;
+    final images = [...state.images];
+    final image = images.removeAt(index);
+    images.insert(target, image);
+    emit(state.copyWith(images: images, imagesChanged: true));
+  }
+
+  void imageError(String message) => emit(state.copyWith(error: message));
+
+  Future<void> _saveImages(String id) async {
+    if (!state.imagesChanged) return;
+    final desiredExisting = state.images
+        .where((image) => image.url != null)
+        .map((image) => image.url!)
+        .toList();
+    await _repository.replaceImages(id, desiredExisting);
+    for (var index = 0; index < state.images.length; index++) {
+      final image = state.images[index];
+      if (image.bytes == null) continue;
+      final url = await _repository.uploadImage(
+        id,
+        image.bytes!,
+        image.contentType!,
+      );
+      if (isClosed) return;
+      final images = [...state.images];
+      images[index] = ListingFormImage(url: url);
+      emit(state.copyWith(images: images));
+    }
+    if (isClosed) return;
+    await _repository.replaceImages(
+      id,
+      state.images.map((image) => image.url!).toList(),
+    );
+  }
+
   Future<void> submit() async {
     if (state.isSubmitting || state.createdId.isNotEmpty || !state.isLoaded) {
       return;
@@ -162,9 +270,9 @@ class ListingFormCubit extends Cubit<ListingFormState> {
     }
     emit(state.copyWith(isSubmitting: true, error: ''));
     try {
-      final listing = state.editing
+      final listing = state.editing || state.savedId.isNotEmpty
           ? await _repository.update(
-              state.listingId,
+              state.savedId.isNotEmpty ? state.savedId : state.listingId,
               title: state.title.trim(),
               description: state.description.trim(),
               price: price,
@@ -183,7 +291,15 @@ class ListingFormCubit extends Cubit<ListingFormState> {
       if (isClosed) {
         return;
       }
-      emit(state.copyWith(isSubmitting: false, createdId: listing.id));
+      emit(state.copyWith(savedId: listing.id));
+      await _saveImages(listing.id);
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          createdId: listing.id,
+        ),
+      );
     } on DioException catch (error) {
       if (isClosed) {
         return;

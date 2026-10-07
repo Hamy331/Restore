@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'dart:typed_data';
 import '../../../core/network/api_client.dart';
 import '../domain/entities/listing_preview.dart';
 
@@ -12,6 +13,28 @@ class ListingPage {
 class ListingRepository {
   ListingRepository({Dio? dio}) : _dio = dio ?? ApiClient().dio;
   final Dio _dio;
+
+  Future<String> uploadImage(
+    String id,
+    Uint8List bytes,
+    String contentType,
+  ) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/listings/${Uri.encodeComponent(id)}/images',
+      data: bytes,
+      options: Options(contentType: contentType),
+    );
+    return ListingPreview.resolveImage(
+      (response.data!['data'] as Map<String, dynamic>)['url'] as String,
+    );
+  }
+
+  Future<void> replaceImages(String id, List<String> urls) async {
+    await _dio.put<void>(
+      '/listings/${Uri.encodeComponent(id)}/images',
+      data: {'images': urls.map((url) => Uri.parse(url).path).toList()},
+    );
+  }
 
   Future<ListingPage> list({int page = 1, String query = ''}) =>
       search(page: page, query: query);

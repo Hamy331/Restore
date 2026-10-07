@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import '../../../../core/config/app_environment.dart';
 
 class ListingPreview {
   const ListingPreview({
@@ -8,6 +9,7 @@ class ListingPreview {
     required this.location,
     this.imageAsset = '',
     this.imageUrl,
+    this.images = const [],
     this.condition = 'Đã qua sử dụng',
     this.description = '',
     this.sellerName = '',
@@ -27,6 +29,7 @@ class ListingPreview {
   final String location;
   final String imageAsset;
   final String? imageUrl;
+  final List<String> images;
   final String condition;
   final String description;
   final String sellerName;
@@ -39,6 +42,10 @@ class ListingPreview {
   final String rawPrice;
   final String conditionCode;
 
+  static String resolveImage(String url) => url.startsWith('/')
+      ? '${Uri.parse(AppEnvironment.apiBaseUrl).origin}$url'
+      : url;
+
   factory ListingPreview.fromJson(Map<String, dynamic> json) {
     final images = (json['images'] as List).whereType<String>().toList();
     final owner = json['owner'] as Map<String, dynamic>;
@@ -50,7 +57,8 @@ class ListingPreview {
       title: json['title'] as String,
       price: '${NumberFormat.decimalPattern('vi').format(amount)} đ',
       location: 'Đăng ${DateFormat('dd/MM/yyyy').format(createdAt)}',
-      imageUrl: images.isEmpty ? null : images.first,
+      imageUrl: images.isEmpty ? null : resolveImage(images.first),
+      images: images.map(resolveImage).toList(),
       imageCount: images.length,
       isNegotiable: json['isNegotiable'] == true,
       categoryId: category?['id'] as String? ?? '',

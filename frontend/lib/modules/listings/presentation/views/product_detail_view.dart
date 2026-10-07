@@ -32,6 +32,7 @@ class _ProductDetailViewState extends State<ProductDetailView> {
   late final ListingRepository _repository =
       widget.repository ?? ListingRepository();
   Future<ListingPreview>? _detail;
+  int _imageIndex = 0;
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _ProductDetailViewState extends State<ProductDetailView> {
     super.didUpdateWidget(oldWidget);
     if (widget.listingId != oldWidget.listingId ||
         widget.isPreview != oldWidget.isPreview) {
+      _imageIndex = 0;
       _detail = widget.isPreview ? null : _repository.get(widget.listingId);
     }
   }
@@ -125,13 +127,22 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    if (listing.imageUrl != null)
-                      Image.network(
-                        listing.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.image_not_supported_outlined),
+                    if (listing.images.isNotEmpty)
+                      PageView.builder(
+                        itemCount: listing.images.length,
+                        onPageChanged: (index) =>
+                            setState(() => _imageIndex = index),
+                        itemBuilder: (context, index) => Image.network(
+                          listing.images[index],
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Center(
+                                child: Icon(Icons.image_not_supported_outlined),
+                              ),
+                        ),
                       ),
+                    if (listing.images.isEmpty && listing.imageUrl != null)
+                      Image.network(listing.imageUrl!, fit: BoxFit.cover),
                     if (listing.imageUrl == null &&
                         listing.imageAsset.isNotEmpty)
                       Image.asset(listing.imageAsset, fit: BoxFit.cover),
@@ -151,7 +162,10 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                             borderRadius: BorderRadius.circular(13),
                           ),
                           child: Text(
-                            l10n.galleryPosition(1, listing.imageCount),
+                            l10n.galleryPosition(
+                              _imageIndex + 1,
+                              listing.imageCount,
+                            ),
                             style: const TextStyle(
                               fontSize: 11,
                               color: AppColors.surface,

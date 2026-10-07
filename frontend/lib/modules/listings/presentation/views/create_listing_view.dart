@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/ui/responsive/responsive_content.dart';
@@ -19,6 +20,29 @@ class CreateListingView extends StatefulWidget {
 class _CreateListingViewState extends State<CreateListingView> {
   late final Future<List<StoreCategory>> _categories =
       (widget.storeRepository ?? StoreRepository()).categories();
+
+  Future<void> _pickImages() async {
+    try {
+      final files = await ImagePicker().pickMultiImage();
+      if (!mounted) return;
+      final form = context.read<ListingFormCubit>();
+      for (final file in files) {
+        if (await file.length() > 5 * 1024 * 1024) {
+          form.imageError('Mỗi ảnh phải nhỏ hơn 5 MB.');
+          continue;
+        }
+        final bytes = await file.readAsBytes();
+        if (!mounted) return;
+        form.addImage(bytes);
+      }
+    } catch (_) {
+      if (mounted) {
+        context.read<ListingFormCubit>().imageError(
+          'Không đọc được ảnh. Vui lòng thử lại.',
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +139,7 @@ class _CreateListingViewState extends State<CreateListingView> {
                                   state: state,
                                   l10n: l10n,
                                   categories: _categories,
+                                  onPickImages: _pickImages,
                                 )
                               : _StepTwo(state: state, l10n: l10n),
                         ),
@@ -148,10 +173,12 @@ class _StepOne extends StatelessWidget {
     required this.state,
     required this.l10n,
     required this.categories,
+    required this.onPickImages,
   });
   final ListingFormState state;
   final AppLocalizations l10n;
   final Future<List<StoreCategory>> categories;
+  final VoidCallback onPickImages;
 
   @override
   Widget build(BuildContext context) {
@@ -227,12 +254,97 @@ class _StepOne extends StatelessWidget {
               .toList(),
         ),
         const SizedBox(height: 20),
-        const _WarmNote(
-          text: 'Bạn có thể đăng tin chưa có ảnh. Tải ảnh sẽ được bổ sung sau.',
+        Text(
+          'Ảnh sản phẩm (${state.images.length}/6)',
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (var i = 0; i < state.images.length; i++)
+              _ImageTile(
+                image: state.images[i],
+                index: i,
+                count: state.images.length,
+              ),
+            if (state.images.length < 6)
+              OutlinedButton.icon(
+                onPressed: onPickImages,
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                label: const Text('Thêm ảnh'),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Ảnh đầu tiên là ảnh bìa. JPEG, PNG hoặc WebP, tối đa 5 MB mỗi ảnh.',
+          style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
         ),
       ],
     );
   }
+}
+
+class _ImageTile extends StatelessWidget {
+  const _ImageTile({
+    required this.image,
+    required this.index,
+    required this.count,
+  });
+  final ListingFormImage image;
+  final int index;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 132,
+    child: Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: SizedBox(
+            width: 132,
+            height: 100,
+            child: image.bytes != null
+                ? Image.memory(image.bytes!, fit: BoxFit.cover)
+                : Image.network(
+                    image.url!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) =>
+                        const Icon(Icons.broken_image_outlined),
+                  ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              tooltip: 'Chuyển ảnh sang trái',
+              onPressed: index == 0
+                  ? null
+                  : () => context.read<ListingFormCubit>().moveImage(index, -1),
+              icon: const Icon(Icons.arrow_back, size: 18),
+            ),
+            IconButton(
+              tooltip: 'Xóa ảnh',
+              onPressed: () =>
+                  context.read<ListingFormCubit>().removeImage(index),
+              icon: const Icon(Icons.close, size: 18),
+            ),
+            IconButton(
+              tooltip: 'Chuyển ảnh sang phải',
+              onPressed: index == count - 1
+                  ? null
+                  : () => context.read<ListingFormCubit>().moveImage(index, 1),
+              icon: const Icon(Icons.arrow_forward, size: 18),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
 }
 
 class _StepTwo extends StatelessWidget {
@@ -389,21 +501,5 @@ class _ListingField extends StatelessWidget {
         ),
       ],
     ],
-  );
-}
-
-class _WarmNote extends StatelessWidget {
-  const _WarmNote({required this.text});
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(11),
-    decoration: BoxDecoration(
-      color: AppColors.primarySoft,
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Text(text, style: const TextStyle(fontSize: 12)),
   );
 }
