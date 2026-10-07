@@ -13,13 +13,27 @@ class ListingRepository {
   ListingRepository({Dio? dio}) : _dio = dio ?? ApiClient().dio;
   final Dio _dio;
 
-  Future<ListingPage> list({int page = 1, String query = ''}) async {
+  Future<ListingPage> list({int page = 1, String query = ''}) =>
+      search(page: page, query: query);
+
+  Future<ListingPage> search({
+    int page = 1,
+    String query = '',
+    String categoryId = '',
+    String condition = '',
+    String minPrice = '',
+    String maxPrice = '',
+  }) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/listings',
       queryParameters: {
         'page': page,
         'pageSize': 12,
         if (query.trim().isNotEmpty) 'q': query.trim(),
+        if (categoryId.isNotEmpty) 'categoryId': categoryId,
+        if (condition.isNotEmpty) 'condition': condition,
+        if (minPrice.isNotEmpty) 'minPrice': minPrice,
+        if (maxPrice.isNotEmpty) 'maxPrice': maxPrice,
       },
     );
     final body = response.data!;

@@ -8,10 +8,12 @@ import '../../../shared/widgets/app_search_field.dart';
 import '../../../shared/widgets/listing_grid.dart';
 import '../../../shared/widgets/feedback_view.dart';
 import '../../listings/data/listing_repository.dart';
+import '../../stores/data/store_repository.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({this.repository, super.key});
+  const HomeView({this.repository, this.storeRepository, super.key});
   final ListingRepository? repository;
+  final StoreRepository? storeRepository;
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -21,15 +23,17 @@ class _HomeViewState extends State<HomeView> {
   late final ListingRepository _repository =
       widget.repository ?? ListingRepository();
   late Future<ListingPage> _listings = _repository.list();
+  late Future<List<StoreCategory>> _categories =
+      (widget.storeRepository ?? StoreRepository()).categories();
 
   void _reload() => setState(() => _listings = _repository.list());
 
-  static const _categories = <(IconData, String)>[
-    (Icons.phone_android, 'Điện thoại'),
-    (Icons.two_wheeler, 'Xe cộ'),
-    (Icons.chair_outlined, 'Nội thất'),
-    (Icons.laptop_mac, 'Điện tử'),
-    (Icons.checkroom, 'Thời trang'),
+  static const _categoryIcons = [
+    Icons.category_outlined,
+    Icons.chair_outlined,
+    Icons.devices_outlined,
+    Icons.checkroom,
+    Icons.more_horiz,
   ];
 
   @override
@@ -162,40 +166,67 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    Row(
-                      children: _categories
-                          .map(
-                            (item) => Expanded(
-                              child: InkWell(
-                                onTap: () => context.go('/search'),
-                                borderRadius: BorderRadius.circular(12),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      width: 45,
-                                      height: 28,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.cream,
-                                        borderRadius: BorderRadius.circular(14),
+                    FutureBuilder<List<StoreCategory>>(
+                      future: _categories,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return TextButton(
+                            onPressed: () => setState(
+                              () => _categories =
+                                  (widget.storeRepository ?? StoreRepository())
+                                      .categories(),
+                            ),
+                            child: const Text(
+                              'Không tải được danh mục. Thử lại',
+                            ),
+                          );
+                        }
+                        if (!snapshot.hasData) {
+                          return const LinearProgressIndicator();
+                        }
+                        final categories = snapshot.data!.take(5).toList();
+                        return Row(
+                          children: [
+                            for (var i = 0; i < categories.length; i++)
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () => context.go(
+                                    '/search?categoryId=${Uri.encodeComponent(categories[i].id)}',
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: 45,
+                                        height: 28,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.cream,
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          _categoryIcons[i],
+                                          size: 23,
+                                        ),
                                       ),
-                                      child: Icon(item.$1, size: 23),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      item.$2,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.fade,
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        categories[i].name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
-                          .toList(),
+                          ],
+                        );
+                      },
                     ),
                     const SizedBox(height: 20),
                     _SectionHeading(

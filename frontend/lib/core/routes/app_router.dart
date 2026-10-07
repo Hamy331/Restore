@@ -121,7 +121,13 @@ final appRouter = GoRouter(
               builder: (_, state) =>
                   HomeView(key: ValueKey(state.uri.queryParameters['refresh'])),
             ),
-            GoRoute(path: '/search', builder: (_, _) => const SearchView()),
+            GoRoute(
+              path: '/search',
+              builder: (_, state) => SearchView(
+                initialCategoryId:
+                    state.uri.queryParameters['categoryId'] ?? '',
+              ),
+            ),
           ],
         ),
         StatefulShellBranch(

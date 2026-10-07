@@ -9,6 +9,15 @@ import 'package:restore/modules/listings/data/listing_repository.dart';
 import 'package:restore/modules/listings/domain/entities/listing_preview.dart';
 import 'package:restore/modules/listings/presentation/views/product_detail_view.dart';
 import 'package:restore/modules/listings/presentation/views/search_view.dart';
+import 'package:restore/modules/stores/data/store_repository.dart';
+
+class _FakeCategories extends StoreRepository {
+  _FakeCategories() : super(dio: Dio());
+  @override
+  Future<List<StoreCategory>> categories() async => const [
+    StoreCategory(id: 'furniture', name: 'Nội thất'),
+  ];
+}
 
 class _FakeListings extends ListingRepository {
   _FakeListings() : super(dio: Dio());
@@ -32,6 +41,19 @@ class _FakeListings extends ListingRepository {
   }
 
   @override
+  Future<ListingPage> search({
+    int page = 1,
+    String query = '',
+    String categoryId = '',
+    String condition = '',
+    String minPrice = '',
+    String maxPrice = '',
+  }) async {
+    queries.add('$query|$categoryId|$condition|$minPrice|$maxPrice');
+    return const ListingPage([item], 1, 1);
+  }
+
+  @override
   Future<ListingPreview> get(String id) async {
     if (id != item.id) throw StateError('wrong listing ID: $id');
     return item;
@@ -39,6 +61,41 @@ class _FakeListings extends ListingRepository {
 }
 
 void main() {
+  test('search sends category, condition and price range to API', () async {
+    final dio = Dio(BaseOptions(baseUrl: 'http://localhost/api/v1'));
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          expect(
+            options.queryParameters,
+            containsPair('categoryId', 'furniture'),
+          );
+          expect(
+            options.queryParameters,
+            containsPair('condition', 'USED_GOOD'),
+          );
+          expect(options.queryParameters, containsPair('minPrice', '100000'));
+          expect(options.queryParameters, containsPair('maxPrice', '500000'));
+          handler.resolve(
+            Response(
+              requestOptions: options,
+              data: {
+                'data': <Map<String, dynamic>>[],
+                'pagination': {'totalItems': 0, 'totalPages': 0},
+              },
+            ),
+          );
+        },
+      ),
+    );
+    final result = await ListingRepository(dio: dio).search(
+      categoryId: 'furniture',
+      condition: 'USED_GOOD',
+      minPrice: '100000',
+      maxPrice: '500000',
+    );
+    expect(result.items, isEmpty);
+  });
   test('repository reads the paginated API payload and detail by ID', () async {
     final dio = Dio(BaseOptions(baseUrl: 'http://localhost/api/v1'));
     final payload = {
@@ -81,7 +138,12 @@ void main() {
       routes: [
         GoRoute(
           path: '/home',
-          builder: (_, _) => Scaffold(body: HomeView(repository: repository)),
+          builder: (_, _) => Scaffold(
+            body: HomeView(
+              repository: repository,
+              storeRepository: _FakeCategories(),
+            ),
+          ),
         ),
         GoRoute(
           path: '/listings/:id',
@@ -118,20 +180,94 @@ void main() {
     expect(find.text('Lan Nguyễn'), findsOneWidget);
   });
 
+  testWidgets('home category opens search with its real category ID', (
+    tester,
+  ) async {
+    final router = GoRouter(
+      initialLocation: '/home',
+      routes: [
+        GoRoute(
+          path: '/home',
+          builder: (_, _) => Scaffold(
+            body: HomeView(
+              repository: _FakeListings(),
+              storeRepository: _FakeCategories(),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/search',
+          builder: (_, state) => Scaffold(
+            body: Text('Danh mục: ${state.uri.queryParameters['categoryId']}'),
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        locale: const Locale('vi'),
+        supportedLocales: const [Locale('vi')],
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Nội thất'));
+    await tester.pumpAndSettle();
+    expect(find.text('Danh mục: furniture'), findsOneWidget);
+  });
+
   testWidgets('search sends the entered title to the listings API', (
     tester,
   ) async {
     final repository = _FakeListings();
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(body: SearchView(repository: repository)),
+        home: Scaffold(
+          body: SearchView(
+            repository: repository,
+            storeRepository: _FakeCategories(),
+          ),
+        ),
       ),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'bàn gỗ');
+    await tester.enterText(find.byType(TextField).first, 'bàn gỗ');
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pumpAndSettle();
-    expect(repository.queries.last, 'bàn gỗ');
+    expect(repository.queries.last, 'bàn gỗ||||');
+  });
+
+  testWidgets('search filters by selected category and price', (tester) async {
+    final repository = _FakeListings();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SearchView(
+            repository: repository,
+            storeRepository: _FakeCategories(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('search-category')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Nội thất').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('search-min-price')),
+      '100000',
+    );
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(repository.queries.last, '|furniture||100000|');
   });
 
   testWidgets('missing listing shows an error instead of another item', (
