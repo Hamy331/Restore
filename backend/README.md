@@ -201,11 +201,16 @@ Sau khi cấu hình `.env`, chạy:
 npx prisma generate
 ```
 
-### Push Database Schema
+### Áp dụng migrations và dữ liệu mẫu
 
 ```bash
-npx prisma db push
+npx prisma migrate deploy
+npx prisma generate
 ```
+
+Migration tạo bảng và nạp danh mục/gói mẫu; `db push` chỉ đồng bộ schema nên không đủ cho tính năng này.
+
+Gói mẫu: Personal miễn phí (3 tin/ngày, 10 tin hoạt động), Basic 99.000 đ/30 ngày (10/30, 2 lượt quảng cáo/tháng), Pro 299.000 đ/30 ngày (30/100, 10 lượt/tháng). Một cửa hàng chọn một danh mục trọng tâm; ưu tiên hiển thị và lượt quảng cáo kèm gói chỉ dùng trong danh mục này. Đẩy Tin và Tin Ưu Tiên có gói 1/3/7 ngày. Đơn mua riêng và đơn gói cửa hàng chỉ kích hoạt sau khi ADMIN xác nhận thanh toán tại `/admin/commerce` trong ứng dụng Flutter.
 
 Database lúc này sẽ được đồng bộ theo schema trong:
 
@@ -444,8 +449,8 @@ npm start
 # Generate Prisma Client
 npx prisma generate
 
-# Sync database schema
-npx prisma db push
+# Áp dụng migration và gói mẫu
+npx prisma migrate deploy
 ```
 
 ---
