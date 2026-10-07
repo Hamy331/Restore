@@ -151,6 +151,8 @@ class ManageListingsView extends StatelessWidget {
                                       cubit.changeStatus(item, 'AVAILABLE'),
                                   onSold: () =>
                                       _confirmSold(context, item, cubit),
+                                  onDeleteDraft: () =>
+                                      _confirmDeleteDraft(context, item, cubit),
                                 ),
                               ),
                             if (state.hasMore)
@@ -183,6 +185,7 @@ class ManageListingsView extends StatelessWidget {
   String _tabLabel(ManagedListingStatus status, AppLocalizations l10n) =>
       switch (status) {
         ManagedListingStatus.all => 'Tất cả',
+        ManagedListingStatus.draft => 'Bản nháp',
         ManagedListingStatus.visible => l10n.visibleStatus,
         ManagedListingStatus.hidden => l10n.hiddenStatus,
         ManagedListingStatus.sold => l10n.soldStatus,
@@ -233,6 +236,31 @@ class ManageListingsView extends StatelessWidget {
       await cubit.changeStatus(item, 'SOLD');
     }
   }
+
+  Future<void> _confirmDeleteDraft(
+    BuildContext context,
+    ListingPreview item,
+    ManageListingsCubit cubit,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Xóa bản nháp?'),
+        content: Text(item.title.isEmpty ? 'Tin chưa đặt tên' : item.title),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Xóa nháp'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && !cubit.isClosed) await cubit.deleteDraft(item);
+  }
 }
 
 class _ListingCard extends StatelessWidget {
@@ -244,6 +272,7 @@ class _ListingCard extends StatelessWidget {
     required this.onHide,
     required this.onShow,
     required this.onSold,
+    required this.onDeleteDraft,
   });
   final ListingPreview item;
   final bool busy;
@@ -252,11 +281,16 @@ class _ListingCard extends StatelessWidget {
   final VoidCallback onHide;
   final VoidCallback onShow;
   final VoidCallback onSold;
+  final VoidCallback onDeleteDraft;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final actions = switch (item.status) {
+      'DRAFT' => <(String, VoidCallback)>[
+        ('Tiếp tục', onEdit),
+        ('Xóa nháp', onDeleteDraft),
+      ],
       'AVAILABLE' => <(String, VoidCallback)>[
         (l10n.editAction, onEdit),
         (l10n.boostListing, onBoost),
@@ -271,6 +305,7 @@ class _ListingCard extends StatelessWidget {
       _ => <(String, VoidCallback)>[],
     };
     final statusText = switch (item.status) {
+      'DRAFT' => 'Bản nháp',
       'AVAILABLE' => l10n.visibleStatus,
       'HIDDEN' => l10n.hiddenStatus,
       'SOLD' => l10n.soldStatus,
@@ -310,7 +345,7 @@ class _ListingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.title,
+                      item.title.isEmpty ? 'Tin chưa đặt tên' : item.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(

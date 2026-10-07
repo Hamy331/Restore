@@ -52,19 +52,28 @@ class ListingPreview {
     final category = json['category'] as Map<String, dynamic>?;
     final amount = num.parse(json['price'] as String);
     final createdAt = DateTime.parse(json['createdAt'] as String).toLocal();
+    final status = json['status'] as String? ?? 'AVAILABLE';
+    final publishedAt = json['publishedAt'] == null
+        ? createdAt
+        : DateTime.parse(json['publishedAt'] as String).toLocal();
+    final isUnpricedDraft = status == 'DRAFT' && amount == 0;
     return ListingPreview(
       id: json['id'] as String,
       title: json['title'] as String,
-      price: '${NumberFormat.decimalPattern('vi').format(amount)} đ',
-      location: 'Đăng ${DateFormat('dd/MM/yyyy').format(createdAt)}',
+      price: isUnpricedDraft
+          ? 'Chưa có giá'
+          : '${NumberFormat.decimalPattern('vi').format(amount)} đ',
+      location: status == 'DRAFT'
+          ? 'Lưu nháp ${DateFormat('dd/MM/yyyy').format(createdAt)}'
+          : 'Đăng ${DateFormat('dd/MM/yyyy').format(publishedAt)}',
       imageUrl: images.isEmpty ? null : resolveImage(images.first),
       images: images.map(resolveImage).toList(),
       imageCount: images.length,
       isNegotiable: json['isNegotiable'] == true,
       categoryId: category?['id'] as String? ?? '',
       categoryName: category?['name'] as String? ?? '',
-      status: json['status'] as String? ?? 'AVAILABLE',
-      rawPrice: json['price'] as String,
+      status: status,
+      rawPrice: isUnpricedDraft ? '' : json['price'] as String,
       conditionCode: json['condition'] as String,
       condition: switch (json['condition'] as String) {
         'NEW' => 'Mới',

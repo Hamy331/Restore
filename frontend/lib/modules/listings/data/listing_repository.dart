@@ -103,6 +103,47 @@ class ListingRepository {
     );
   }
 
+  Future<ListingPreview> saveDraft({
+    String? id,
+    required String title,
+    required String description,
+    required String price,
+    required String condition,
+    required String categoryId,
+    required bool isNegotiable,
+  }) async {
+    final body = {
+      'title': title,
+      'description': description,
+      'price': price,
+      'condition': condition,
+      'categoryId': categoryId,
+      'isNegotiable': isNegotiable,
+    };
+    final response = id == null
+        ? await _dio.post<Map<String, dynamic>>('/listings/drafts', data: body)
+        : await _dio.put<Map<String, dynamic>>(
+            '/listings/drafts/${Uri.encodeComponent(id)}',
+            data: body,
+          );
+    return ListingPreview.fromJson(
+      response.data!['data'] as Map<String, dynamic>,
+    );
+  }
+
+  Future<ListingPreview> publishDraft(String id) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/listings/drafts/${Uri.encodeComponent(id)}/publish',
+    );
+    return ListingPreview.fromJson(
+      response.data!['data'] as Map<String, dynamic>,
+    );
+  }
+
+  Future<void> deleteDraft(String id) async {
+    await _dio.delete<void>('/listings/drafts/${Uri.encodeComponent(id)}');
+  }
+
   Future<List<ListingPreview>> mineAvailable() async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/listings/mine',

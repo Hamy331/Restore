@@ -49,8 +49,15 @@ class _CreateListingViewState extends State<CreateListingView> {
     final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<ListingFormCubit, ListingFormState>(
       listenWhen: (previous, current) =>
-          previous.createdId != current.createdId,
+          previous.createdId != current.createdId ||
+          previous.finishedAsDraft != current.finishedAsDraft,
       listener: (context, state) {
+        if (state.finishedAsDraft) {
+          context.go(
+            '/manage-listings?refresh=${DateTime.now().microsecondsSinceEpoch}',
+          );
+          return;
+        }
         if (state.createdId.isNotEmpty) {
           if (state.editing) {
             context.go(
@@ -82,7 +89,11 @@ class _CreateListingViewState extends State<CreateListingView> {
                         icon: const Icon(Icons.arrow_back, size: 23),
                       ),
                       Text(
-                        state.editing ? l10n.editListing : l10n.createListing,
+                        state.listingStatus == 'DRAFT'
+                            ? 'Tiếp tục bản nháp'
+                            : state.editing
+                            ? l10n.editListing
+                            : l10n.createListing,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -426,6 +437,18 @@ class _ListingFooter extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 648),
           child: Row(
             children: [
+              if (!state.editing || state.listingStatus == 'DRAFT') ...[
+                SizedBox(
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: state.isSubmitting || !state.isLoaded
+                        ? null
+                        : context.read<ListingFormCubit>().saveDraft,
+                    child: const Text('Lưu nháp'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
               Expanded(
                 child: SizedBox(
                   height: 48,
@@ -444,7 +467,8 @@ class _ListingFooter extends StatelessWidget {
                         : Text(
                             state.step == 1
                                 ? l10n.continueAction
-                                : state.editing
+                                : state.editing &&
+                                      state.listingStatus != 'DRAFT'
                                 ? l10n.saveChanges
                                 : l10n.publishListing,
                           ),

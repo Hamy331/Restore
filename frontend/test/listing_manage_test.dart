@@ -25,6 +25,7 @@ class _OwnedRepository extends ListingRepository {
   String? lastFilter;
   String? lastChangedTo;
   String? savedTitle;
+  bool deletedDraft = false;
 
   @override
   Future<ListingPage> mine({int page = 1, String? status}) async {
@@ -41,6 +42,13 @@ class _OwnedRepository extends ListingRepository {
     lastChangedTo = status;
     this.status = status;
     return ListingPreview.fromJson(_item(status));
+  }
+
+  @override
+  Future<void> deleteDraft(String id) async {
+    expect(id, 'mine-1');
+    deletedDraft = true;
+    status = 'DELETED';
   }
 
   @override
@@ -65,6 +73,17 @@ class _OwnedRepository extends ListingRepository {
 }
 
 void main() {
+  test('draft tab filters and deletion refreshes the list', () async {
+    final repository = _OwnedRepository()..status = 'DRAFT';
+    final cubit = ManageListingsCubit(repository: repository);
+    addTearDown(cubit.close);
+    await cubit.statusChanged(ManagedListingStatus.draft);
+    expect(repository.lastFilter, 'DRAFT');
+    expect(cubit.state.items.single.status, 'DRAFT');
+    expect(await cubit.deleteDraft(cubit.state.items.single), true);
+    expect(repository.deletedDraft, true);
+    expect(cubit.state.items, isEmpty);
+  });
   test(
     'my listings load real status filters and refresh after hiding',
     () async {

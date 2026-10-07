@@ -30,6 +30,8 @@ class ListingFormState {
     this.savedId = '',
     this.images = const [],
     this.imagesChanged = false,
+    this.listingStatus = 'NEW',
+    this.finishedAsDraft = false,
   });
 
   final bool editing;
@@ -49,6 +51,8 @@ class ListingFormState {
   final String savedId;
   final List<ListingFormImage> images;
   final bool imagesChanged;
+  final String listingStatus;
+  final bool finishedAsDraft;
 
   ListingFormState copyWith({
     int? step,
@@ -66,6 +70,8 @@ class ListingFormState {
     String? savedId,
     List<ListingFormImage>? images,
     bool? imagesChanged,
+    String? listingStatus,
+    bool? finishedAsDraft,
   }) => ListingFormState(
     editing: editing,
     listingId: listingId,
@@ -84,6 +90,8 @@ class ListingFormState {
     savedId: savedId ?? this.savedId,
     images: images ?? this.images,
     imagesChanged: imagesChanged ?? this.imagesChanged,
+    listingStatus: listingStatus ?? this.listingStatus,
+    finishedAsDraft: finishedAsDraft ?? this.finishedAsDraft,
   );
 }
 
@@ -119,6 +127,7 @@ class ListingFormCubit extends Cubit<ListingFormState> {
           categoryId: listing.categoryId,
           condition: listing.conditionCode,
           negotiable: listing.isNegotiable,
+          listingStatus: listing.status,
           images: listing.images
               .map((url) => ListingFormImage(url: url))
               .toList(),
@@ -219,6 +228,54 @@ class ListingFormCubit extends Cubit<ListingFormState> {
 
   void imageError(String message) => emit(state.copyWith(error: message));
 
+  Future<void> saveDraft() async {
+    if (state.isSubmitting ||
+        state.finishedAsDraft ||
+        !state.isLoaded ||
+        (state.editing && state.listingStatus != 'DRAFT') ||
+        state.listingStatus == 'AVAILABLE') {
+      return;
+    }
+    final price = state.price.trim();
+    if (price.isNotEmpty && !RegExp(r'^[1-9]\d{0,11}$').hasMatch(price)) {
+      emit(state.copyWith(error: 'Giá nháp phải là số nguyên VND hợp lệ.'));
+      return;
+    }
+    emit(state.copyWith(isSubmitting: true, error: ''));
+    try {
+      final id = state.savedId.isNotEmpty
+          ? state.savedId
+          : (state.editing ? state.listingId : null);
+      final draft = await _repository.saveDraft(
+        id: id,
+        title: state.title.trim(),
+        description: state.description.trim(),
+        price: price,
+        condition: state.condition,
+        categoryId: state.categoryId,
+        isNegotiable: state.negotiable,
+      );
+      if (isClosed) return;
+      emit(state.copyWith(savedId: draft.id, listingStatus: 'DRAFT'));
+      await _saveImages(draft.id);
+      if (isClosed) return;
+      emit(state.copyWith(isSubmitting: false, finishedAsDraft: true));
+    } on DioException catch (error) {
+      if (!isClosed) {
+        emit(state.copyWith(isSubmitting: false, error: _errorMessage(error)));
+      }
+    } catch (_) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            error: 'Không lưu được bản nháp. Vui lòng thử lại.',
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _saveImages(String id) async {
     if (!state.imagesChanged) return;
     final desiredExisting = state.images
@@ -270,7 +327,17 @@ class ListingFormCubit extends Cubit<ListingFormState> {
     }
     emit(state.copyWith(isSubmitting: true, error: ''));
     try {
-      final listing = state.editing || state.savedId.isNotEmpty
+      final listing = state.listingStatus == 'DRAFT'
+          ? await _repository.saveDraft(
+              id: state.savedId.isNotEmpty ? state.savedId : state.listingId,
+              title: state.title.trim(),
+              description: state.description.trim(),
+              price: price,
+              condition: state.condition,
+              categoryId: state.categoryId,
+              isNegotiable: state.negotiable,
+            )
+          : state.editing || state.savedId.isNotEmpty
           ? await _repository.update(
               state.savedId.isNotEmpty ? state.savedId : state.listingId,
               title: state.title.trim(),
@@ -291,13 +358,18 @@ class ListingFormCubit extends Cubit<ListingFormState> {
       if (isClosed) {
         return;
       }
-      emit(state.copyWith(savedId: listing.id));
+      emit(state.copyWith(savedId: listing.id, listingStatus: listing.status));
       await _saveImages(listing.id);
+      if (isClosed) return;
+      if (state.listingStatus == 'DRAFT') {
+        await _repository.publishDraft(listing.id);
+      }
       if (isClosed) return;
       emit(
         state.copyWith(
           isSubmitting: false,
           createdId: listing.id,
+          listingStatus: 'AVAILABLE',
         ),
       );
     } on DioException catch (error) {

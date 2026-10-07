@@ -4,11 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/listing_repository.dart';
 import '../../domain/entities/listing_preview.dart';
 
-enum ManagedListingStatus { all, visible, hidden, sold }
+enum ManagedListingStatus { all, draft, visible, hidden, sold }
 
 extension on ManagedListingStatus {
   String? get apiStatus => switch (this) {
     ManagedListingStatus.all => null,
+    ManagedListingStatus.draft => 'DRAFT',
     ManagedListingStatus.visible => 'AVAILABLE',
     ManagedListingStatus.hidden => 'HIDDEN',
     ManagedListingStatus.sold => 'SOLD',
@@ -105,6 +106,38 @@ class ManageListingsCubit extends Cubit<ManageListingsState> {
     );
     try {
       await _repository.changeStatus(item.id, target);
+      if (isClosed) return false;
+      await load();
+      return true;
+    } catch (error) {
+      if (!isClosed) {
+        emit(
+          ManageListingsState(
+            status: state.status,
+            items: state.items,
+            page: state.page,
+            hasMore: state.hasMore,
+            error: _message(error),
+          ),
+        );
+      }
+      return false;
+    }
+  }
+
+  Future<bool> deleteDraft(ListingPreview item) async {
+    if (state.busyId != null) return false;
+    emit(
+      ManageListingsState(
+        status: state.status,
+        items: state.items,
+        page: state.page,
+        hasMore: state.hasMore,
+        busyId: item.id,
+      ),
+    );
+    try {
+      await _repository.deleteDraft(item.id);
       if (isClosed) return false;
       await load();
       return true;
