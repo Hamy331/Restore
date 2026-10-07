@@ -320,5 +320,14 @@
   "categoryFashionTitle": "Fashion",
   "categoryFashionDesc": "Clothes, Shoes, Bags,...",
   "categoryHomeTitle": "Home Appliances",
-  "categoryHomeDesc": "Furniture, Lighting, Kitchenware, Decor,..."
+  "categoryHomeDesc": "Furniture, Lighting, Kitchenware, Decor,...",
+  "step1Title": "Photos & Product",
+  "productPhotosInfo": "Product photos · {count}/10",
+  "@productPhotosInfo": {"placeholders": {"count": {"type": "int"}}},
+  "coverImageHint": "First photo is cover · Tap a photo to set as cover",
+  "productNameLabel": "Product name",
+  "productNameMinLengthError": "Product name must be at least 5 characters",
+  "categoryLabel": "Category",
+  "conditionLabel": "Condition",
+  "continueBtn": "Continue"
 }

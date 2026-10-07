@@ -951,4 +951,31 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get categoryHomeDesc => 'Nội thất, Đèn, Đồ bếp, Trang trí,...';
+
+  @override
+  String get step1Title => 'Ảnh & Sản phẩm';
+
+  @override
+  String productPhotosInfo(int count) {
+    return 'Ảnh sản phẩm · $count/10';
+  }
+
+  @override
+  String get coverImageHint =>
+      'Ảnh đầu là ảnh bìa · Chạm vào ảnh để đặt làm bìa';
+
+  @override
+  String get productNameLabel => 'Tên sản phẩm';
+
+  @override
+  String get productNameMinLengthError => 'Tên sản phẩm tối thiểu 5 ký tự';
+
+  @override
+  String get categoryLabel => 'Danh mục';
+
+  @override
+  String get conditionLabel => 'Tình trạng';
+
+  @override
+  String get continueBtn => 'Tiếp tục';
 }
