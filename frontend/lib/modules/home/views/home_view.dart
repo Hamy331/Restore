@@ -5,8 +5,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_search_field.dart';
-import '../../../shared/widgets/listing_grid.dart';
-import '../../listings/presentation/fixtures/figma_preview_listings.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -179,7 +177,6 @@ class HomeView extends StatelessWidget {
                     onTap: () => context.go('/search'),
                   ),
                   const SizedBox(height: 10),
-                  ListingGrid(listings: figmaPreviewListings),
                   const SizedBox(height: 22),
                   _SectionHeading(
                     title: 'Tin đăng mới',
@@ -187,7 +184,6 @@ class HomeView extends StatelessWidget {
                     onTap: () => context.go('/search'),
                   ),
                   const SizedBox(height: 10),
-                  ListingGrid(listings: figmaPreviewListings.reversed.toList()),
                   const SizedBox(height: 20),
                 ],
               ),

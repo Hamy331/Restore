@@ -1807,6 +1807,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Make offer'**
   String get makeOffer;
+
+  /// No description provided for @chooseCategoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose category'**
+  String get chooseCategoryTitle;
+
+  /// No description provided for @chooseCategorySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to sell?'**
+  String get chooseCategorySubtitle;
+
+  /// No description provided for @categoryElectronicsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronics'**
+  String get categoryElectronicsTitle;
+
+  /// No description provided for @categoryElectronicsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Phones, Laptops, Cameras,...'**
+  String get categoryElectronicsDesc;
+
+  /// No description provided for @categoryVehiclesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicles'**
+  String get categoryVehiclesTitle;
+
+  /// No description provided for @categoryVehiclesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Motorbikes, Bicycles, Cars, Parts,...'**
+  String get categoryVehiclesDesc;
+
+  /// No description provided for @categoryFashionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fashion'**
+  String get categoryFashionTitle;
+
+  /// No description provided for @categoryFashionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clothes, Shoes, Bags,...'**
+  String get categoryFashionDesc;
+
+  /// No description provided for @categoryHomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Appliances'**
+  String get categoryHomeTitle;
+
+  /// No description provided for @categoryHomeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Furniture, Lighting, Kitchenware, Decor,...'**
+  String get categoryHomeDesc;
+
+  /// No description provided for @step1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos & Product'**
+  String get step1Title;
+
+  /// No description provided for @productPhotosInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Product photos · {count}/10'**
+  String productPhotosInfo(int count);
+
+  /// No description provided for @coverImageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'First photo is cover · Tap a photo to set as cover'**
+  String get coverImageHint;
+
+  /// No description provided for @productNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name'**
+  String get productNameLabel;
+
+  /// No description provided for @productNameMinLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name must be at least 5 characters'**
+  String get productNameMinLengthError;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get categoryLabel;
+
+  /// No description provided for @conditionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get conditionLabel;
+
+  /// No description provided for @continueBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueBtn;
 }
 
 class _AppLocalizationsDelegate
