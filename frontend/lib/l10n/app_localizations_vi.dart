@@ -921,4 +921,61 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get makeOffer => 'Trả giá';
+
+  @override
+  String get chooseCategoryTitle => 'Chọn danh mục';
+
+  @override
+  String get chooseCategorySubtitle => 'Bạn muốn đăng bán món đồ gì?';
+
+  @override
+  String get categoryElectronicsTitle => 'Đồ điện tử';
+
+  @override
+  String get categoryElectronicsDesc => 'Điện thoại, Laptop, Máy ảnh,...';
+
+  @override
+  String get categoryVehiclesTitle => 'Xe cộ';
+
+  @override
+  String get categoryVehiclesDesc => 'Xe máy, Xe đạp, Ô tô, Phụ tùng,...';
+
+  @override
+  String get categoryFashionTitle => 'Thời trang';
+
+  @override
+  String get categoryFashionDesc => 'Quần áo, Giày dép, Túi xách,...';
+
+  @override
+  String get categoryHomeTitle => 'Gia dụng';
+
+  @override
+  String get categoryHomeDesc => 'Nội thất, Đèn, Đồ bếp, Trang trí,...';
+
+  @override
+  String get step1Title => 'Ảnh & Sản phẩm';
+
+  @override
+  String productPhotosInfo(int count) {
+    return 'Ảnh sản phẩm · $count/10';
+  }
+
+  @override
+  String get coverImageHint =>
+      'Ảnh đầu là ảnh bìa · Chạm vào ảnh để đặt làm bìa';
+
+  @override
+  String get productNameLabel => 'Tên sản phẩm';
+
+  @override
+  String get productNameMinLengthError => 'Tên sản phẩm tối thiểu 5 ký tự';
+
+  @override
+  String get categoryLabel => 'Danh mục';
+
+  @override
+  String get conditionLabel => 'Tình trạng';
+
+  @override
+  String get continueBtn => 'Tiếp tục';
 }
