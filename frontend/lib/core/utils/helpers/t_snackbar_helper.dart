@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../constants/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:toastification/toastification.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 class TSnackBarHelper {
   TSnackBarHelper._();
@@ -20,7 +21,7 @@ class TSnackBarHelper {
       type: ToastificationType.success,
       primaryColor: AppColors.success,
       backgroundColor: AppColors.successBg,
-      icon: Icons.check_rounded,
+      icon: AppIcons.check,
     );
   }
 
@@ -37,7 +38,7 @@ class TSnackBarHelper {
       type: ToastificationType.error,
       primaryColor: AppColors.error,
       backgroundColor: AppColors.errorBg,
-      icon: Icons.error_outline_rounded,
+      icon: AppIcons.error,
     );
   }
 
@@ -54,7 +55,7 @@ class TSnackBarHelper {
       type: ToastificationType.warning,
       primaryColor: AppColors.warning,
       backgroundColor: AppColors.warningBg,
-      icon: Icons.warning_amber_rounded,
+      icon: AppIcons.warning,
     );
   }
 
@@ -71,7 +72,7 @@ class TSnackBarHelper {
       type: ToastificationType.info,
       primaryColor: AppColors.info,
       backgroundColor: AppColors.infoBg,
-      icon: Icons.info_outline_rounded,
+      icon: AppIcons.info,
     );
   }
 

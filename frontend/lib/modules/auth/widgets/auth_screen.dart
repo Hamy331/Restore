@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../core/constants/app_colors.dart';
 
 class AuthScreen extends StatelessWidget {
@@ -41,7 +42,7 @@ class AuthScreen extends StatelessWidget {
                     IconButton(
                       tooltip: 'Quay lại',
                       onPressed: onBack ?? () => Navigator.maybePop(context),
-                      icon: const Icon(Icons.arrow_back, size: 23),
+                      icon: const Icon(AppIcons.back, size: 23),
                     ),
                     Text(
                       title!,

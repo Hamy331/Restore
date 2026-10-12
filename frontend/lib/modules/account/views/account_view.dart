@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
@@ -34,7 +35,7 @@ class AccountView extends StatelessWidget {
                   IconButton(
                     tooltip: l10n.settingsTitle,
                     onPressed: () => context.push('/settings'),
-                    icon: const Icon(Icons.settings_outlined),
+                    icon: const Icon(AppIcons.settings),
                   ),
                 ],
               ),
@@ -84,45 +85,45 @@ class AccountView extends StatelessWidget {
                       ),
                       const SizedBox(height: 7),
                       _AccountItem(
-                        icon: Icons.favorite_border,
+                        icon: AppIcons.favorite,
                         label: l10n.savedListings,
                         trailing: 4.toString(),
                         onTap: () => context.push('/favorites'),
                       ),
                       _AccountItem(
-                        icon: Icons.star_border,
+                        icon: AppIcons.star,
                         label: l10n.reviews,
                         trailing: 48.toString(),
                         onTap: () => context.push('/seller/minh-anh/reviews'),
                       ),
                       _AccountItem(
-                        icon: Icons.notifications_none,
+                        icon: AppIcons.notification,
                         label: l10n.notifications,
                         trailing: l10n.newCount(2),
                         onTap: () => context.push('/notifications'),
                       ),
                       _AccountItem(
-                        icon: Icons.location_on_outlined,
+                        icon: AppIcons.location,
                         label: l10n.addressArea,
                         onTap: () => context.push('/account/edit'),
                       ),
                       _AccountItem(
-                        icon: Icons.auto_awesome_outlined,
+                        icon: AppIcons.sparkle,
                         label: l10n.restoreAi,
                         onTap: () => context.push('/ai-assistant'),
                       ),
                       _AccountItem(
-                        icon: Icons.settings_outlined,
+                        icon: AppIcons.settings,
                         label: l10n.settingsTitle,
                         onTap: () => context.push('/settings'),
                       ),
                       _AccountItem(
-                        icon: Icons.help_outline,
+                        icon: AppIcons.help,
                         label: l10n.help,
                         onTap: () => context.push('/settings'),
                       ),
                       _AccountItem(
-                        icon: Icons.logout,
+                        icon: AppIcons.logout,
                         label: l10n.logout,
                         onTap: () => context.read<AuthBloc>().add(LoggedOut()),
                       ),
@@ -314,7 +315,7 @@ class _AccountItem extends StatelessWidget {
               ),
             const SizedBox(width: 10),
             const Icon(
-              Icons.chevron_right,
+              AppIcons.chevronRight,
               size: 19,
               color: AppColors.textSecondary,
             ),

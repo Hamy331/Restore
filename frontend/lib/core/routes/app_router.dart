@@ -5,10 +5,22 @@ import 'package:restore/core/ui/layouts/t_foundation_placeholder_layout.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 import 'package:restore/modules/chat/views/messages_view.dart';
 import 'package:restore/modules/home/views/home_view.dart';
+import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
+import 'package:restore/modules/listings/bloc/create_listing/create_listing_event.dart';
+import 'package:restore/modules/listings/repositories/category_repository.dart';
+import 'package:restore/modules/listings/models/create_listing_step.dart';
+import 'package:restore/modules/listings/repositories/listings_repository.dart';
+import 'package:restore/modules/listings/views/basic_info/basic_info_view.dart';
 import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
-import 'package:restore/modules/listings/views/upload_photos/upload_photos_view.dart';
+import 'package:restore/modules/listings/views/listing_details/listing_details_view.dart';
+import 'package:restore/modules/listings/views/listing_preview/listing_preview_view.dart';
+import 'package:restore/modules/location/repositories/location_repository.dart';
+import 'package:restore/services/device_location_service.dart';
+import 'package:restore/services/media_picker_service.dart';
+import 'package:restore/core/utils/animations/app_page_transitions.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -96,17 +108,58 @@ final appRouter = GoRouter(
         destination: '/login',
       ),
     ),
+    // Luồng đăng tin: các bước dùng chung một CreateListingBloc
     ShellRoute(
-      builder: (context, state, child) =>
-          BlocProvider(create: (_) => CreateListingBloc(), child: child),
+      builder: (context, state, child) => MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider(create: (_) => MediaPickerService()),
+          RepositoryProvider(create: (_) => DeviceLocationService()),
+          RepositoryProvider<LocationRepository>(
+            create: (_) => AppEnvironment.useMockData
+                ? MockLocationRepository()
+                : ApiLocationRepository(),
+          ),
+        ],
+        child: BlocProvider(
+          create: (_) => CreateListingBloc(
+            listingsRepository: AppEnvironment.useMockData
+                ? MockListingsRepository()
+                : ApiListingsRepository(),
+            categoryRepository: AppEnvironment.useMockData
+                ? MockCategoryRepository()
+                : ApiCategoryRepository(),
+          )..add(const CategoriesRequested()),
+          child: child,
+        ),
+      ),
       routes: [
         GoRoute(
-          path: '/create-listing/choose-category',
-          builder: (_, _) => const ChooseCategoryView(),
+          path: CreateListingStep.category.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const ChooseCategoryView(),
+          ),
         ),
         GoRoute(
-          path: '/create-listing/upload-photos',
-          builder: (_, _) => const UploadPhotosView(),
+          path: CreateListingStep.basicInfo.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const BasicInfoView(),
+          ),
+        ),
+        GoRoute(
+          path: CreateListingStep.details.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const ListingDetailsView(),
+          ),
+        ),
+        GoRoute(
+          path: createListingPreviewPath,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const ListingPreviewView(),
+          ),
         ),
       ],
     ),
@@ -124,7 +177,7 @@ final appRouter = GoRouter(
               builder: (_, _) => const TFoundationPlaceholderLayout(
                 title: 'Quản lý tin',
                 message: 'Tính năng đang được phát triển',
-                icon: Icons.inventory_2_outlined,
+                icon: AppIcons.listings,
               ),
             ),
           ],

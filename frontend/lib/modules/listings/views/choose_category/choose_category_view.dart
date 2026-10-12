@@ -7,11 +7,6 @@ class ChooseCategoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const TResponsiveLayout(
-      mobile: ChooseCategoryMobileView(),
-      // Nếu có thiết kế riêng cho tablet/desktop, bạn có thể truyền vào đây
-      // tablet: ChooseCategoryTabletView(),
-      // desktop: ChooseCategoryDesktopView(),
-    );
+    return const TResponsiveLayout(mobile: ChooseCategoryMobileView());
   }
 }

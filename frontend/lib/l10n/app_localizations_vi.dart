@@ -932,7 +932,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get categoryElectronicsTitle => 'Đồ điện tử';
 
   @override
-  String get categoryElectronicsDesc => 'Điện thoại, Laptop, Máy ảnh,...';
+  String get categoryElectronicsDesc => 'Laptop, Máy ảnh, Tai nghe,...';
 
   @override
   String get categoryVehiclesTitle => 'Xe cộ';
@@ -978,4 +978,327 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get continueBtn => 'Tiếp tục';
+
+  @override
+  String get completeListingTitle => 'Hoàn thiện tin đăng';
+
+  @override
+  String get saveDraft => 'Lưu nháp';
+
+  @override
+  String get draftSaved => 'Đã lưu nháp';
+
+  @override
+  String listingPhotosLabel(int max) {
+    return 'Hình ảnh (Tối đa $max ảnh)';
+  }
+
+  @override
+  String photoCount(int count, int max) {
+    return '$count/$max';
+  }
+
+  @override
+  String get coverPhotoBadge => 'Bìa';
+
+  @override
+  String get photosRequiredError => 'Vui lòng thêm ít nhất 1 ảnh';
+
+  @override
+  String get detailedDescriptionLabel => 'Mô tả chi tiết';
+
+  @override
+  String get listingDescriptionHint =>
+      '- Tình trạng, thời gian đã sử dụng\n- Phụ kiện đi kèm, lỗi nhỏ nếu có\n- Lý do bán, hình thức giao nhận';
+
+  @override
+  String characterCount(int count, int max) {
+    return '$count/$max ký tự';
+  }
+
+  @override
+  String descriptionMinLengthError(int min) {
+    return 'Mô tả cần ít nhất $min ký tự';
+  }
+
+  @override
+  String get listingTitleLabel => 'Tiêu đề tin đăng';
+
+  @override
+  String get listingTitleHint => 'VD: Piaggio Vespa Sprint 2024 15.000 km';
+
+  @override
+  String listingTitleMinLengthError(int min) {
+    return 'Tiêu đề cần ít nhất $min ký tự';
+  }
+
+  @override
+  String get priceRequiredError => 'Vui lòng nhập giá bán';
+
+  @override
+  String get addressLabel => 'Địa chỉ';
+
+  @override
+  String get youAreLabel => 'Bạn là';
+
+  @override
+  String get sellerPersonal => 'Cá nhân';
+
+  @override
+  String get sellerBusiness => 'Bán chuyên';
+
+  @override
+  String get detailedInfoTitle => 'Thông tin chi tiết';
+
+  @override
+  String categoryWithName(String name) {
+    return 'Danh mục: $name';
+  }
+
+  @override
+  String get fieldRequiredError => 'Vui lòng nhập thông tin này';
+
+  @override
+  String get fieldSelectRequiredError => 'Vui lòng chọn một giá trị';
+
+  @override
+  String get missingRequiredFields =>
+      'Vui lòng điền đầy đủ các thông tin bắt buộc';
+
+  @override
+  String get listingSubmitted =>
+      'Tin đăng của bạn đã được gửi và đang chờ duyệt';
+
+  @override
+  String get previewNotice => 'Đây là cách người mua sẽ thấy tin đăng của bạn';
+
+  @override
+  String get noPhotosYet => 'Chưa có ảnh';
+
+  @override
+  String get stepBasicInfoTitle => 'Ảnh, mô tả & giá bán';
+
+  @override
+  String get takePhoto => 'Chụp ảnh';
+
+  @override
+  String get chooseFromGallery => 'Chọn từ thư viện';
+
+  @override
+  String photoLimitReached(int max) {
+    return 'Bạn chỉ có thể thêm tối đa $max ảnh';
+  }
+
+  @override
+  String get photoPickFailed =>
+      'Không thể mở ảnh. Vui lòng kiểm tra quyền truy cập ảnh và camera của ứng dụng.';
+
+  @override
+  String get draftSaveFailed => 'Lưu nháp thất bại, vui lòng thử lại';
+
+  @override
+  String get publishFailed => 'Đăng tin thất bại, vui lòng thử lại';
+
+  @override
+  String get tradeTypeLabel => 'Hình thức';
+
+  @override
+  String get tradeSell => 'Bán';
+
+  @override
+  String get tradeExchange => 'Trao đổi';
+
+  @override
+  String get tradeSellOrExchange => 'Cả hai';
+
+  @override
+  String get tradeExchangeAccepted => 'Nhận trao đổi';
+
+  @override
+  String get exchangeWishLabel => 'Muốn đổi lấy';
+
+  @override
+  String get exchangeWishHint => 'VD: iPhone 13 hoặc máy tính bảng';
+
+  @override
+  String get selectAddressHint => 'Chọn khu vực';
+
+  @override
+  String get stepShortCategory => 'Danh mục';
+
+  @override
+  String get stepShortBasicInfo => 'Thông tin';
+
+  @override
+  String get stepShortDetails => 'Chi tiết';
+
+  @override
+  String stepProgressLabel(int current, int total) {
+    return 'Bước $current/$total';
+  }
+
+  @override
+  String nextStepLabel(String name) {
+    return 'Tiếp theo: $name';
+  }
+
+  @override
+  String get conditionSectionTitle => 'Tình trạng sản phẩm';
+
+  @override
+  String get conditionNew => 'Mới';
+
+  @override
+  String get conditionLikeNew => 'Như mới';
+
+  @override
+  String get conditionUsedGood => 'Đã dùng - còn tốt';
+
+  @override
+  String get conditionUsedFair => 'Đã dùng - có hao mòn';
+
+  @override
+  String get conditionForParts => 'Hỏng / bán lấy linh kiện';
+
+  @override
+  String get conditionNewDesc => 'Chưa qua sử dụng, còn nguyên tem hộp';
+
+  @override
+  String get conditionLikeNewDesc => 'Dùng rất ít, không trầy xước';
+
+  @override
+  String get conditionUsedGoodDesc => 'Hoạt động tốt, có vài vết sử dụng nhỏ';
+
+  @override
+  String get conditionUsedFairDesc =>
+      'Vẫn dùng được, có trầy xước hoặc lỗi nhỏ';
+
+  @override
+  String get conditionForPartsDesc => 'Không còn hoạt động bình thường';
+
+  @override
+  String get categoryAttributesTitle => 'Thông tin theo danh mục';
+
+  @override
+  String get categoryAttributesHint =>
+      'Các trường bên dưới thay đổi theo danh mục';
+
+  @override
+  String get selectOptionHint => 'Chọn';
+
+  @override
+  String numberRangeError(String min, String max) {
+    return 'Giá trị phải từ $min đến $max';
+  }
+
+  @override
+  String get yes => 'Có';
+
+  @override
+  String get no => 'Không';
+
+  @override
+  String get loadCategoriesFailedTitle => 'Không tải được danh mục';
+
+  @override
+  String get loadCategoriesFailedMessage => 'Kiểm tra kết nối mạng rồi thử lại';
+
+  @override
+  String get negotiableHint => 'Người mua có thể trả giá khi nhắn tin';
+
+  @override
+  String get addressNearbyHint => 'Giúp người mua gần bạn tìm thấy tin';
+
+  @override
+  String privateStreetAddress(String street) {
+    return '$street (không công khai)';
+  }
+
+  @override
+  String get addressSheetTitle => 'Địa chỉ của món đồ';
+
+  @override
+  String get useCurrentLocation => 'Dùng vị trí hiện tại';
+
+  @override
+  String get useCurrentLocationHint => 'Tự điền tỉnh/thành và phường/xã';
+
+  @override
+  String get locatingLabel => 'Đang lấy vị trí...';
+
+  @override
+  String get locationDetected => 'Đã lấy vị trí của bạn';
+
+  @override
+  String get orChooseManually => 'hoặc chọn thủ công';
+
+  @override
+  String get provinceLabel => 'Tỉnh/Thành phố';
+
+  @override
+  String get selectProvinceHint => 'Chọn tỉnh/thành phố';
+
+  @override
+  String get wardLabel => 'Phường/Xã';
+
+  @override
+  String get selectWardHint => 'Chọn phường/xã';
+
+  @override
+  String get selectProvinceFirst => 'Chọn tỉnh/thành phố trước';
+
+  @override
+  String get streetAddressLabel => 'Số nhà, tên đường';
+
+  @override
+  String get streetAddressHint => 'VD: 12 Nguyễn Huệ';
+
+  @override
+  String get streetAddressHelper => 'Không bắt buộc, không hiển thị công khai';
+
+  @override
+  String get addressPrivacyNote =>
+      'Người mua chỉ thấy phường/xã và tỉnh/thành. Vị trí được dùng để gợi ý tin đăng gần bạn.';
+
+  @override
+  String get confirmAddress => 'Xác nhận địa chỉ';
+
+  @override
+  String get loadingLocations => 'Đang tải danh sách...';
+
+  @override
+  String get loadLocationsFailed => 'Không tải được danh sách, chạm để thử lại';
+
+  @override
+  String get locationServiceDisabled => 'Hãy bật định vị (GPS) để lấy vị trí';
+
+  @override
+  String get locationPermissionDenied => 'Bạn chưa cho phép truy cập vị trí';
+
+  @override
+  String get locationPermissionDeniedForever =>
+      'Quyền vị trí đã bị chặn, hãy bật lại trong Cài đặt';
+
+  @override
+  String get locationUnavailable => 'Không lấy được vị trí, hãy chọn thủ công';
+
+  @override
+  String get locationOutOfCoverage =>
+      'Vị trí của bạn chưa khớp với phường/xã nào. Bạn chọn thủ công ở bên dưới nhé.';
+
+  @override
+  String get searchOptionHint => 'Tìm kiếm (gõ không dấu cũng được)';
+
+  @override
+  String get noMatchingOptions => 'Không có kết quả phù hợp';
+
+  @override
+  String get locationOutsideVietnamTitle => 'Bạn đang ở ngoài Việt Nam?';
+
+  @override
+  String get locationOutsideVietnamBody =>
+      'ReStore hiện chỉ hỗ trợ địa chỉ tại Việt Nam. Bạn chọn tỉnh/thành và phường/xã ở bên dưới nhé.';
+
+  @override
+  String get locationOutOfCoverageTitle => 'Chưa nhận ra khu vực này';
 }

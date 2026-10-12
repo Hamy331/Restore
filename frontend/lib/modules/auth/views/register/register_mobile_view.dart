@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/helpers/t_snackbar_helper.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -84,7 +85,7 @@ class _RegisterMobileViewState extends State<RegisterMobileView> {
                                     alignment: Alignment.centerLeft,
                                     onPressed: () => context.go('/welcome'),
                                     icon: const Icon(
-                                      Icons.arrow_back,
+                                      AppIcons.back,
                                       size: 23,
                                     ),
                                   ),

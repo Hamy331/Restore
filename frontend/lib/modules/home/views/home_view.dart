@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
@@ -10,11 +11,11 @@ class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   static const _categories = <(IconData, String)>[
-    (Icons.phone_android, 'Điện thoại'),
-    (Icons.two_wheeler, 'Xe cộ'),
-    (Icons.chair_outlined, 'Nội thất'),
-    (Icons.laptop_mac, 'Điện tử'),
-    (Icons.checkroom, 'Thời trang'),
+    (AppIcons.categoryPhone, 'Điện thoại'),
+    (AppIcons.categoryVehicle, 'Xe cộ'),
+    (AppIcons.categoryHome, 'Nội thất'),
+    (AppIcons.categoryElectronics, 'Điện tử'),
+    (AppIcons.categoryFashion, 'Thời trang'),
   ];
 
   @override
@@ -35,7 +36,7 @@ class HomeView extends StatelessWidget {
                       const Expanded(
                         child: Row(
                           children: [
-                            Icon(Icons.my_location, size: 15),
+                            Icon(AppIcons.myLocation, size: 15),
                             SizedBox(width: 4),
                             Flexible(
                               child: Text(
@@ -48,7 +49,7 @@ class HomeView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Icon(Icons.keyboard_arrow_down, size: 17),
+                            Icon(AppIcons.chevronDown, size: 17),
                           ],
                         ),
                       ),
@@ -60,7 +61,7 @@ class HomeView extends StatelessWidget {
                           width: 40,
                           height: 40,
                         ),
-                        icon: const Icon(Icons.notifications_none, size: 23),
+                        icon: const Icon(AppIcons.notification, size: 23),
                       ),
                       IconButton(
                         tooltip: l10n.restoreAi,
@@ -70,7 +71,7 @@ class HomeView extends StatelessWidget {
                           width: 40,
                           height: 40,
                         ),
-                        icon: const Icon(Icons.auto_awesome_outlined, size: 21),
+                        icon: const Icon(AppIcons.sparkle, size: 21),
                       ),
                       IconButton(
                         tooltip: 'Tin nhắn',
@@ -80,7 +81,7 @@ class HomeView extends StatelessWidget {
                           width: 40,
                           height: 40,
                         ),
-                        icon: const Icon(Icons.chat_bubble_outline, size: 21),
+                        icon: const Icon(AppIcons.chat, size: 21),
                       ),
                     ],
                   ),
@@ -151,7 +152,7 @@ class HomeView extends StatelessWidget {
                                       color: AppColors.cream,
                                       borderRadius: BorderRadius.circular(14),
                                     ),
-                                    child: Icon(item.$1, size: 23),
+                                    child: Icon(item.$1, size: 24),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(

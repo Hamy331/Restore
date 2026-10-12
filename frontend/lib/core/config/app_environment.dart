@@ -8,6 +8,14 @@ class AppEnvironment {
     defaultValue: '',
   );
 
+  /// Dùng dữ liệu mẫu thay cho API ở các tính năng backend chưa làm xong
+  /// (danh mục, địa chỉ, tin đăng). Chạy với
+  /// `--dart-define=USE_MOCK_DATA=false` để gọi API thật.
+  static const bool useMockData = bool.fromEnvironment(
+    'USE_MOCK_DATA',
+    defaultValue: true,
+  );
+
   static String get apiBaseUrl {
     if (_configuredApiBaseUrl.isNotEmpty) return _configuredApiBaseUrl;
 
