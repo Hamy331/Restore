@@ -60,7 +60,13 @@
   "help": "Trợ giúp",
   "logout": "Đăng xuất",
   "newCount": "{count} mới",
-  "@newCount": {"placeholders": {"count": {"type": "int"}}},
+  "@newCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "editProfileTitle": "Chỉnh sửa hồ sơ",
   "changeAvatar": "Đổi ảnh đại diện",
   "fullName": "Họ và tên",
@@ -81,7 +87,13 @@
   "helpSupport": "Trợ giúp / Hỗ trợ",
   "termsPolicies": "Điều khoản & chính sách",
   "savedCount": "{count} tin đã lưu",
-  "@savedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@savedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tapHeartToRemove": "Chạm ♡ để bỏ lưu",
   "emptySavedTitle": "Chưa có tin đã lưu",
   "emptySavedDescription": "Lưu tin bạn quan tâm để xem lại nhanh hơn.",
@@ -107,23 +119,50 @@
   "sellerMemberSince": "Thành viên từ 2022",
   "ratingValue": "★ 4,9",
   "ratingCount": "{count} đánh giá",
-  "@ratingCount": {"placeholders": {"count": {"type": "int"}}},
+  "@ratingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sellingListings": "Tin đang bán",
   "chat": "Chat",
   "viewListings": "Xem tin đăng",
   "listingCountShort": "{count} tin ›",
-  "@listingCountShort": {"placeholders": {"count": {"type": "int"}}},
+  "@listingCountShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportSeller": "Báo cáo người bán",
   "sellerRatingsTitle": "Đánh giá người bán",
   "communityReviews": "Nhận xét từ cộng đồng",
   "reviewCount": "{count} nhận xét",
-  "@reviewCount": {"placeholders": {"count": {"type": "int"}}},
+  "@reviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "writeReview": "Viết đánh giá",
   "leaveReviewTitle": "Viết đánh giá",
   "sellerRoleArea": "Người bán · Quận 1, TP.HCM",
   "reviewQuestion": "Bạn đánh giá người bán thế nào?",
   "starSelection": "{count} sao · {label}",
-  "@starSelection": {"placeholders": {"count": {"type": "int"}, "label": {"type": "String"}}},
+  "@starSelection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "veryGood": "Rất tốt",
   "selected": "Đã chọn",
   "optionalReview": "Nhận xét (không bắt buộc)",
@@ -197,15 +236,36 @@
   "aiErrorDescription": "Nội dung cuộc trò chuyện vẫn được giữ. Bạn có thể thử lại mà không cần nhập lại từ đầu.",
   "retry": "Thử lại",
   "featureApiPending": "{action} sẽ được kết nối ở bước API.",
-  "@featureApiPending": {"placeholders": {"action": {"type": "String"}}},
+  "@featureApiPending": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "createListing": "Đăng tin",
   "editListing": "Chỉnh sửa tin",
   "close": "Đóng",
   "back": "Quay lại",
   "stepCount": "{current}/{total}",
-  "@stepCount": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
+  "@stepCount": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "productPhotosCount": "Ảnh sản phẩm · {count}/10",
-  "@productPhotosCount": {"placeholders": {"count": {"type": "int"}}},
+  "@productPhotosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "addPhotos": "Thêm ảnh",
   "firstPhotoHint": "Ảnh đầu là ảnh bìa · Giữ và kéo để đổi thứ tự",
   "productName": "Tên sản phẩm",
@@ -284,7 +344,16 @@
   "hiddenStatus": "Đã ẩn",
   "soldStatus": "Đã bán",
   "listingStatusCount": "{count} {status}",
-  "@listingStatusCount": {"placeholders": {"count": {"type": "int"}, "status": {"type": "String"}}},
+  "@listingStatusCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "editAction": "Chỉnh sửa",
   "hideListing": "Ẩn tin",
   "markAsSold": "Đánh dấu đã bán",
@@ -302,7 +371,16 @@
   "listingDetailTitle": "Chi tiết tin đăng",
   "listingPreviewTitle": "Xem trước tin đăng",
   "galleryPosition": "{current} / {total}",
-  "@galleryPosition": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
+  "@galleryPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "listingLocationMeta": "⌖ Quận 1, TP. Hồ Chí Minh · Đăng 2 giờ trước",
   "usedGoodCondition": "Đã qua sử dụng · Còn tốt",
   "productDescription": "Mô tả sản phẩm",
@@ -314,7 +392,7 @@
   "chooseCategoryTitle": "Chọn danh mục",
   "chooseCategorySubtitle": "Bạn muốn đăng bán món đồ gì?",
   "categoryElectronicsTitle": "Đồ điện tử",
-  "categoryElectronicsDesc": "Điện thoại, Laptop, Máy ảnh,...",
+  "categoryElectronicsDesc": "Laptop, Máy ảnh, Tai nghe,...",
   "categoryVehiclesTitle": "Xe cộ",
   "categoryVehiclesDesc": "Xe máy, Xe đạp, Ô tô, Phụ tùng,...",
   "categoryFashionTitle": "Thời trang",
@@ -323,11 +401,169 @@
   "categoryHomeDesc": "Nội thất, Đèn, Đồ bếp, Trang trí,...",
   "step1Title": "Ảnh & Sản phẩm",
   "productPhotosInfo": "Ảnh sản phẩm · {count}/10",
-  "@productPhotosInfo": {"placeholders": {"count": {"type": "int"}}},
+  "@productPhotosInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coverImageHint": "Ảnh đầu là ảnh bìa · Chạm vào ảnh để đặt làm bìa",
   "productNameLabel": "Tên sản phẩm",
   "productNameMinLengthError": "Tên sản phẩm tối thiểu 5 ký tự",
   "categoryLabel": "Danh mục",
   "conditionLabel": "Tình trạng",
-  "continueBtn": "Tiếp tục"
+  "continueBtn": "Tiếp tục",
+  "completeListingTitle": "Hoàn thiện tin đăng",
+  "saveDraft": "Lưu nháp",
+  "draftSaved": "Đã lưu nháp",
+  "listingPhotosLabel": "Hình ảnh (Tối đa {max} ảnh)",
+  "@listingPhotosLabel": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "photoCount": "{count}/{max}",
+  "@photoCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "coverPhotoBadge": "Bìa",
+  "photosRequiredError": "Vui lòng thêm ít nhất 1 ảnh",
+  "detailedDescriptionLabel": "Mô tả chi tiết",
+  "listingDescriptionHint": "- Tình trạng, thời gian đã sử dụng\n- Phụ kiện đi kèm, lỗi nhỏ nếu có\n- Lý do bán, hình thức giao nhận",
+  "characterCount": "{count}/{max} ký tự",
+  "@characterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "descriptionMinLengthError": "Mô tả cần ít nhất {min} ký tự",
+  "@descriptionMinLengthError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "listingTitleLabel": "Tiêu đề tin đăng",
+  "listingTitleHint": "VD: Piaggio Vespa Sprint 2024 15.000 km",
+  "listingTitleMinLengthError": "Tiêu đề cần ít nhất {min} ký tự",
+  "@listingTitleMinLengthError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "priceRequiredError": "Vui lòng nhập giá bán",
+  "addressLabel": "Địa chỉ",
+  "youAreLabel": "Bạn là",
+  "sellerPersonal": "Cá nhân",
+  "sellerBusiness": "Bán chuyên",
+  "detailedInfoTitle": "Thông tin chi tiết",
+  "categoryWithName": "Danh mục: {name}",
+  "@categoryWithName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldRequiredError": "Vui lòng nhập thông tin này",
+  "fieldSelectRequiredError": "Vui lòng chọn một giá trị",
+  "missingRequiredFields": "Vui lòng điền đầy đủ các thông tin bắt buộc",
+  "listingSubmitted": "Tin đăng của bạn đã được gửi và đang chờ duyệt",
+  "previewNotice": "Đây là cách người mua sẽ thấy tin đăng của bạn",
+  "noPhotosYet": "Chưa có ảnh",
+  "stepBasicInfoTitle": "Ảnh, mô tả & giá bán",
+  "takePhoto": "Chụp ảnh",
+  "chooseFromGallery": "Chọn từ thư viện",
+  "photoLimitReached": "Bạn chỉ có thể thêm tối đa {max} ảnh",
+  "@photoLimitReached": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "photoPickFailed": "Không thể mở ảnh. Vui lòng kiểm tra quyền truy cập ảnh và camera của ứng dụng.",
+  "draftSaveFailed": "Lưu nháp thất bại, vui lòng thử lại",
+  "publishFailed": "Đăng tin thất bại, vui lòng thử lại",
+  "tradeTypeLabel": "Hình thức",
+  "tradeSell": "Bán",
+  "tradeExchange": "Trao đổi",
+  "tradeSellOrExchange": "Cả hai",
+  "tradeExchangeAccepted": "Nhận trao đổi",
+  "exchangeWishLabel": "Muốn đổi lấy",
+  "exchangeWishHint": "VD: iPhone 13 hoặc máy tính bảng",
+  "selectAddressHint": "Chọn khu vực",
+  "stepShortCategory": "Danh mục",
+  "stepShortBasicInfo": "Thông tin",
+  "stepShortDetails": "Chi tiết",
+  "stepProgressLabel": "Bước {current}/{total}",
+  "nextStepLabel": "Tiếp theo: {name}",
+  "conditionSectionTitle": "Tình trạng sản phẩm",
+  "conditionNew": "Mới",
+  "conditionLikeNew": "Như mới",
+  "conditionUsedGood": "Đã dùng - còn tốt",
+  "conditionUsedFair": "Đã dùng - có hao mòn",
+  "conditionForParts": "Hỏng / bán lấy linh kiện",
+  "conditionNewDesc": "Chưa qua sử dụng, còn nguyên tem hộp",
+  "conditionLikeNewDesc": "Dùng rất ít, không trầy xước",
+  "conditionUsedGoodDesc": "Hoạt động tốt, có vài vết sử dụng nhỏ",
+  "conditionUsedFairDesc": "Vẫn dùng được, có trầy xước hoặc lỗi nhỏ",
+  "conditionForPartsDesc": "Không còn hoạt động bình thường",
+  "categoryAttributesTitle": "Thông tin theo danh mục",
+  "categoryAttributesHint": "Các trường bên dưới thay đổi theo danh mục",
+  "selectOptionHint": "Chọn",
+  "numberRangeError": "Giá trị phải từ {min} đến {max}",
+  "yes": "Có",
+  "no": "Không",
+  "loadCategoriesFailedTitle": "Không tải được danh mục",
+  "loadCategoriesFailedMessage": "Kiểm tra kết nối mạng rồi thử lại",
+  "negotiableHint": "Người mua có thể trả giá khi nhắn tin",
+  "addressNearbyHint": "Giúp người mua gần bạn tìm thấy tin",
+  "privateStreetAddress": "{street} (không công khai)",
+  "addressSheetTitle": "Địa chỉ của món đồ",
+  "useCurrentLocation": "Dùng vị trí hiện tại",
+  "useCurrentLocationHint": "Tự điền tỉnh/thành và phường/xã",
+  "locatingLabel": "Đang lấy vị trí...",
+  "locationDetected": "Đã lấy vị trí của bạn",
+  "orChooseManually": "hoặc chọn thủ công",
+  "provinceLabel": "Tỉnh/Thành phố",
+  "selectProvinceHint": "Chọn tỉnh/thành phố",
+  "wardLabel": "Phường/Xã",
+  "selectWardHint": "Chọn phường/xã",
+  "selectProvinceFirst": "Chọn tỉnh/thành phố trước",
+  "streetAddressLabel": "Số nhà, tên đường",
+  "streetAddressHint": "VD: 12 Nguyễn Huệ",
+  "streetAddressHelper": "Không bắt buộc, không hiển thị công khai",
+  "addressPrivacyNote": "Người mua chỉ thấy phường/xã và tỉnh/thành. Vị trí được dùng để gợi ý tin đăng gần bạn.",
+  "confirmAddress": "Xác nhận địa chỉ",
+  "loadingLocations": "Đang tải danh sách...",
+  "loadLocationsFailed": "Không tải được danh sách, chạm để thử lại",
+  "locationServiceDisabled": "Hãy bật định vị (GPS) để lấy vị trí",
+  "locationPermissionDenied": "Bạn chưa cho phép truy cập vị trí",
+  "locationPermissionDeniedForever": "Quyền vị trí đã bị chặn, hãy bật lại trong Cài đặt",
+  "locationUnavailable": "Không lấy được vị trí, hãy chọn thủ công",
+  "locationOutOfCoverage": "Vị trí của bạn chưa khớp với phường/xã nào. Bạn chọn thủ công ở bên dưới nhé.",
+  "searchOptionHint": "Tìm kiếm (gõ không dấu cũng được)",
+  "noMatchingOptions": "Không có kết quả phù hợp",
+  "locationOutsideVietnamTitle": "Bạn đang ở ngoài Việt Nam?",
+  "locationOutsideVietnamBody": "ReStore hiện chỉ hỗ trợ địa chỉ tại Việt Nam. Bạn chọn tỉnh/thành và phường/xã ở bên dưới nhé.",
+  "locationOutOfCoverageTitle": "Chưa nhận ra khu vực này"
 }

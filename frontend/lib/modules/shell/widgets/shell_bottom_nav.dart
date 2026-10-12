@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 
 class ShellBottomNav extends StatelessWidget {
@@ -16,11 +17,11 @@ class ShellBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final items = <(IconData, IconData, String)>[
-      (Icons.home_outlined, Icons.home, l10n.homeTitle),
-      (Icons.inventory_2_outlined, Icons.inventory_2, l10n.manageListings),
-      (Icons.add, Icons.add, l10n.createListing),
-      (Icons.chat_bubble_outline, Icons.chat_bubble, l10n.messagesTitle),
-      (Icons.person_outline, Icons.person, l10n.accountTitle),
+      (AppIcons.home, AppIcons.homeActive, l10n.homeTitle),
+      (AppIcons.listings, AppIcons.listingsActive, l10n.manageListings),
+      (AppIcons.add, AppIcons.add, l10n.createListing),
+      (AppIcons.chat, AppIcons.chatActive, l10n.messagesTitle),
+      (AppIcons.user, AppIcons.userActive, l10n.accountTitle),
     ];
 
     return SafeArea(
@@ -198,7 +199,7 @@ class ShellBottomNav extends StatelessWidget {
                       ],
                     ),
                     child: const Icon(
-                      Icons.add,
+                      AppIcons.add,
                       size: 32,
                       color: AppColors.textPrimary,
                     ),

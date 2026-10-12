@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/modules/listings/models/create_listing_step.dart';
 import '../widgets/shell_bottom_nav.dart';
 import '../widgets/shell_nav_rail.dart';
 
@@ -19,7 +20,7 @@ class MainShell extends StatelessWidget {
   void _select(BuildContext context, int index) {
     // Nếu bấm nút (+) Đăng tin -> Push hẳn trang mới, giữ nguyên Tab hiện tại ở nền
     if (index == 2) {
-      context.push('/create-listing/choose-category');
+      context.push(CreateListingStep.category.path);
       return;
     }
 

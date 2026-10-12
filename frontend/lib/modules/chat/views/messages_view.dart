@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
@@ -99,7 +100,7 @@ class _MessagesViewState extends State<MessagesView> {
                   IconButton(
                     tooltip: 'Tìm cuộc trò chuyện',
                     onPressed: () {},
-                    icon: const Icon(Icons.search, size: 23),
+                    icon: const Icon(AppIcons.search, size: 23),
                   ),
                 ],
               ),
