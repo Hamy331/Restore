@@ -338,6 +338,8 @@
   "boostPaymentPending": "Payment verification pending",
   "tryPaymentAgain": "Try payment again",
   "manageListings": "Manage listings",
+  "feedsTitle": "Feeds",
+  "feedsComingSoon": "Feeds are coming soon",
   "newListing": "New listing",
   "visibleStatus": "Visible",
   "pendingStatus": "Pending",

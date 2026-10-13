@@ -44,9 +44,9 @@ class ShellNavRail extends StatelessWidget {
           label: Text(l10n.homeTitle),
         ),
         NavigationRailDestination(
-          icon: const Icon(AppIcons.listings),
-          selectedIcon: const Icon(AppIcons.listingsActive),
-          label: Text(l10n.manageListings),
+          icon: const Icon(AppIcons.feeds),
+          selectedIcon: const Icon(AppIcons.feedsActive),
+          label: Text(l10n.feedsTitle),
         ),
         NavigationRailDestination(
           icon: const Icon(AppIcons.post),

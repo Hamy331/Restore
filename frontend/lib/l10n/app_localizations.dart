@@ -1622,6 +1622,18 @@ abstract class AppLocalizations {
   /// **'Manage listings'**
   String get manageListings;
 
+  /// No description provided for @feedsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeds'**
+  String get feedsTitle;
+
+  /// No description provided for @feedsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeds are coming soon'**
+  String get feedsComingSoon;
+
   /// No description provided for @newListing.
   ///
   /// In en, this message translates to:
