@@ -1,59 +1,204 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../models/listing_draft.dart';
+import '../../repositories/category_repository.dart';
+import '../../repositories/listings_repository.dart';
 import 'create_listing_event.dart';
 import 'create_listing_state.dart';
 
 class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
-  CreateListingBloc() : super(const CreateListingState()) {
-    on<SelectCategoryEvent>((event, emit) {
+  CreateListingBloc({
+    required ListingsRepository listingsRepository,
+    required CategoryRepository categoryRepository,
+  }) : _repository = listingsRepository,
+       _categoryRepository = categoryRepository,
+       super(const CreateListingState()) {
+    on<CategoriesRequested>(_onCategoriesRequested);
+    on<CategorySelected>(_onCategorySelected);
+    on<PhotosAdded>(_onPhotosAdded);
+    on<PhotoRemoved>(_onPhotoRemoved);
+    on<CoverPhotoSet>(_onCoverPhotoSet);
+    on<DescriptionChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(description: event.description),
+      ),
+    );
+    on<TitleChanged>(
+      (event, emit) =>
+          _updateDraft(emit, (draft) => draft.copyWith(title: event.title)),
+    );
+    on<TradeTypeChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(tradeType: event.tradeType),
+      ),
+    );
+    on<PriceChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(price: () => event.price),
+      ),
+    );
+    on<NegotiableChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(isNegotiable: event.isNegotiable),
+      ),
+    );
+    on<ExchangeWishChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(exchangeWish: event.exchangeWish),
+      ),
+    );
+    on<AddressChanged>(
+      (event, emit) =>
+          _updateDraft(emit, (draft) => draft.copyWith(address: event.address)),
+    );
+    on<SellerTypeChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(sellerType: event.sellerType),
+      ),
+    );
+    on<ConditionChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(condition: event.condition),
+      ),
+    );
+    on<AttributeChanged>(_onAttributeChanged);
+    on<BasicInfoSubmitted>(
+      (event, emit) => emit(state.copyWith(showBasicInfoErrors: true)),
+    );
+    on<DraftSaveRequested>(_onDraftSaveRequested);
+    on<PublishRequested>(_onPublishRequested);
+  }
+
+  final ListingsRepository _repository;
+  final CategoryRepository _categoryRepository;
+
+  void _updateDraft(
+    Emitter<CreateListingState> emit,
+    ListingDraft Function(ListingDraft draft) update,
+  ) {
+    emit(state.copyWith(draft: update(state.draft)));
+  }
+
+  Future<void> _onCategoriesRequested(
+    CategoriesRequested event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    if (state.categoriesStatus == RequestStatus.loading) return;
+    emit(state.copyWith(categoriesStatus: RequestStatus.loading));
+    try {
+      final categories = await _categoryRepository.getCategories();
       emit(
         state.copyWith(
+          categories: categories,
+          categoriesStatus: RequestStatus.success,
+        ),
+      );
+    } catch (_) {
+      emit(state.copyWith(categoriesStatus: RequestStatus.failure));
+    }
+  }
+
+  void _onCategorySelected(
+    CategorySelected event,
+    Emitter<CreateListingState> emit,
+  ) {
+    if (event.categoryId == state.draft.categoryId) return;
+    // Mỗi danh mục có bộ thông tin chi tiết riêng nên cần làm mới
+    emit(
+      state.copyWith(
+        draft: state.draft.copyWith(
           categoryId: event.categoryId,
-          categoryName: event.categoryName,
+          attributes: const {},
         ),
-      );
-    });
+        showDetailErrors: false,
+      ),
+    );
+  }
 
-    on<AddImagesEvent>((event, emit) {
-      final updatedImages = List<String>.from(state.images)
-        ..addAll(event.newImages);
-      if (updatedImages.length > 10) {
-        updatedImages.removeRange(10, updatedImages.length);
-      }
-      emit(state.copyWith(images: updatedImages));
-    });
+  void _onPhotosAdded(PhotosAdded event, Emitter<CreateListingState> emit) {
+    final images = [
+      ...state.draft.images,
+      ...event.paths.where((path) => !state.draft.images.contains(path)),
+    ].take(ListingDraft.maxImages).toList();
+    _updateDraft(emit, (draft) => draft.copyWith(images: images));
+  }
 
-    on<RemoveImageEvent>((event, emit) {
-      final updatedImages = List<String>.from(state.images)
-        ..removeAt(event.index);
-      emit(state.copyWith(images: updatedImages));
-    });
+  void _onPhotoRemoved(PhotoRemoved event, Emitter<CreateListingState> emit) {
+    final images = [...state.draft.images]..removeAt(event.index);
+    _updateDraft(emit, (draft) => draft.copyWith(images: images));
+  }
 
-    on<SetCoverImageEvent>((event, emit) {
-      if (event.index == 0) return;
-      final updatedImages = List<String>.from(state.images);
-      final selectedImage = updatedImages.removeAt(event.index);
-      updatedImages.insert(0, selectedImage);
-      emit(state.copyWith(images: updatedImages));
-    });
+  void _onCoverPhotoSet(CoverPhotoSet event, Emitter<CreateListingState> emit) {
+    if (event.index == 0) return;
+    final images = [...state.draft.images];
+    images.insert(0, images.removeAt(event.index));
+    _updateDraft(emit, (draft) => draft.copyWith(images: images));
+  }
 
-    on<UpdateTitleEvent>((event, emit) {
-      final isValid = event.title.trim().length >= 5;
+  void _onAttributeChanged(
+    AttributeChanged event,
+    Emitter<CreateListingState> emit,
+  ) {
+    final attributes = {...state.draft.attributes, event.key: event.value};
+    _updateDraft(emit, (draft) => draft.copyWith(attributes: attributes));
+  }
+
+  Future<void> _onDraftSaveRequested(
+    DraftSaveRequested event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    if (state.saveDraftStatus == RequestStatus.loading) return;
+    emit(state.copyWith(saveDraftStatus: RequestStatus.loading));
+    final sent = state.draft;
+    try {
+      final saved = await _repository.saveDraft(sent, state.category);
+      // Chỉ lấy id (và URL ảnh nếu bộ ảnh chưa đổi) để không ghi đè
+      // những gì người dùng vừa nhập trong lúc chờ lưu
+      final imagesUnchanged = state.draft.images == sent.images;
       emit(
         state.copyWith(
-          title: event.title,
-          isTitleValid: isValid,
-          showError: false,
+          draft: state.draft.copyWith(
+            id: saved.id,
+            images: imagesUnchanged ? saved.images : null,
+          ),
+          saveDraftStatus: RequestStatus.success,
         ),
       );
-    });
+    } catch (_) {
+      emit(state.copyWith(saveDraftStatus: RequestStatus.failure));
+    }
+  }
 
-    on<UpdateConditionEvent>((event, emit) {
-      emit(state.copyWith(condition: event.condition));
-    });
+  Future<void> _onPublishRequested(
+    PublishRequested event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    if (state.publishStatus == RequestStatus.loading) return;
+    if (!state.isReadyToPublish) {
+      emit(
+        state.copyWith(
+          showBasicInfoErrors: true,
+          showDetailErrors: true,
+          invalidPublishAttempts: state.invalidPublishAttempts + 1,
+        ),
+      );
+      return;
+    }
 
-    on<ValidateStep1Event>((event, emit) {
-      final isValid = state.title.trim().length >= 5 && state.images.isNotEmpty;
-      emit(state.copyWith(showError: !isValid));
-    });
+    emit(state.copyWith(publishStatus: RequestStatus.loading));
+    try {
+      final published = await _repository.publish(state.draft, state.category);
+      emit(
+        state.copyWith(draft: published, publishStatus: RequestStatus.success),
+      );
+    } catch (_) {
+      emit(state.copyWith(publishStatus: RequestStatus.failure));
+    }
   }
 }

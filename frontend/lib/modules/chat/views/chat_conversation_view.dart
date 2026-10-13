@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 import '../../../core/constants/app_colors.dart';
 
@@ -87,7 +88,7 @@ Future<void> showMakeOfferSheet(BuildContext context) async {
                   IconButton(
                     tooltip: 'Đóng',
                     onPressed: () => Navigator.pop(sheetContext),
-                    icon: const Icon(Icons.close, size: 22),
+                    icon: const Icon(AppIcons.close, size: 22),
                   ),
                 ],
               ),
@@ -158,7 +159,7 @@ class _ConversationHeader extends StatelessWidget {
         IconButton(
           tooltip: 'Quay lại',
           onPressed: onBack,
-          icon: const Icon(Icons.arrow_back, size: 23),
+          icon: const Icon(AppIcons.back, size: 23),
         ),
         const CircleAvatar(
           radius: 24,
@@ -192,7 +193,7 @@ class _ConversationHeader extends StatelessWidget {
         IconButton(
           tooltip: 'Tùy chọn',
           onPressed: () {},
-          icon: const Icon(Icons.more_vert, size: 23),
+          icon: const Icon(AppIcons.more, size: 23),
         ),
       ],
     ),
@@ -257,7 +258,7 @@ class _RelatedProduct extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+          const Icon(AppIcons.chevronRight, color: AppColors.textSecondary),
         ],
       ),
     ),
@@ -736,7 +737,7 @@ class _MessageComposer extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           onPressed: () {},
           icon: const Icon(
-            Icons.add_photo_alternate_outlined,
+            AppIcons.addPhoto,
             color: AppColors.textSecondary,
           ),
         ),
@@ -778,7 +779,7 @@ class _MessageComposer extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           onPressed: () {},
           icon: const Icon(
-            Icons.send_outlined,
+            AppIcons.send,
             size: 22,
             color: AppColors.primaryDark,
           ),

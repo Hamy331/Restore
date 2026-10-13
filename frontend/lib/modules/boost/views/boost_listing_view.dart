@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
@@ -82,7 +83,7 @@ class _BoostContent extends StatelessWidget {
     BoostStep.payment => _PaymentConfirmation(l10n: l10n),
     BoostStep.success => _PaymentSuccess(l10n: l10n),
     BoostStep.active => _StatusContent(
-      icon: Icons.trending_up,
+      icon: AppIcons.trendUp,
       color: AppColors.success,
       background: AppColors.successBg,
       title: l10n.activeBoost,
@@ -90,7 +91,7 @@ class _BoostContent extends StatelessWidget {
       l10n: l10n,
     ),
     BoostStep.expired => _StatusContent(
-      icon: Icons.schedule,
+      icon: AppIcons.clock,
       color: AppColors.warning,
       background: AppColors.warningBg,
       title: l10n.expiredBoost,
@@ -98,7 +99,7 @@ class _BoostContent extends StatelessWidget {
       l10n: l10n,
     ),
     BoostStep.unavailable => _StatusContent(
-      icon: Icons.block,
+      icon: AppIcons.block,
       color: AppColors.textSecondary,
       background: AppColors.surface,
       title: l10n.boostUnavailable,
@@ -292,7 +293,7 @@ class _PaymentConfirmation extends StatelessWidget {
         child: Row(
           children: [
             const Icon(
-              Icons.account_balance_wallet_outlined,
+              AppIcons.wallet,
               color: AppColors.primaryDark,
             ),
             const SizedBox(width: 10),
@@ -338,7 +339,7 @@ class _PaymentSuccess extends StatelessWidget {
         child: Column(
           children: [
             const Icon(
-              Icons.check_circle_outline,
+              AppIcons.checkCircle,
               color: AppColors.success,
               size: 38,
             ),
@@ -445,8 +446,8 @@ class _PaymentState extends StatelessWidget {
       _ => l10n.boostPaymentPending,
     };
     final icon = state == BoostStep.pending
-        ? Icons.schedule
-        : Icons.error_outline;
+        ? AppIcons.clock
+        : AppIcons.error;
     return _StatusContent(
       icon: icon,
       color: state == BoostStep.pending ? AppColors.warning : AppColors.error,

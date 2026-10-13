@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
@@ -82,6 +83,7 @@ class _MessagesViewState extends State<MessagesView> {
     }).toList();
 
     return SafeArea(
+      bottom: false,
       child: ResponsiveContent(
         maxWidth: 760,
         padding: EdgeInsets.zero,
@@ -99,7 +101,7 @@ class _MessagesViewState extends State<MessagesView> {
                   IconButton(
                     tooltip: 'Tìm cuộc trò chuyện',
                     onPressed: () {},
-                    icon: const Icon(Icons.search, size: 23),
+                    icon: const Icon(AppIcons.search, size: 23),
                   ),
                 ],
               ),
@@ -134,6 +136,10 @@ class _MessagesViewState extends State<MessagesView> {
             ),
             Expanded(
               child: ListView.separated(
+                // Chừa chỗ cho thanh điều hướng kính nổi phía dưới
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.paddingOf(context).bottom,
+                ),
                 itemCount: visible.length,
                 separatorBuilder: (_, _) => const Divider(height: 1),
                 itemBuilder: (_, index) => _ConversationTile(

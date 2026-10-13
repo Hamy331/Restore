@@ -1,217 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import '../../../../core/constants/app_colors.dart';
+import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
+import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/glass/app_glass_container.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../bloc/create_listing/create_listing_bloc.dart';
 import '../../bloc/create_listing/create_listing_event.dart';
 import '../../bloc/create_listing/create_listing_state.dart';
-import '../../widgets/category_card.dart';
+import '../../models/create_listing_step.dart';
+import 'package:restore/data/models/category_model.dart';
+import '../../widgets/create_listing_scaffold.dart';
+import 'widgets/category_card.dart';
+import 'widgets/category_list_skeleton.dart';
 
-class ChooseCategoryMobileView extends StatefulWidget {
+/// Bước 1: Chọn danh mục (danh sách lấy từ API / dữ liệu mẫu)
+class ChooseCategoryMobileView extends StatelessWidget {
   const ChooseCategoryMobileView({super.key});
 
-  @override
-  State<ChooseCategoryMobileView> createState() =>
-      _ChooseCategoryMobileViewState();
-}
-
-class _ChooseCategoryMobileViewState extends State<ChooseCategoryMobileView>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-
-  @override
-  void initState() {
-    super.initState();
-    // Tạo hiệu ứng Bounce chạy trong 800ms
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
+  void _onSelect(BuildContext context, CategoryModel category) {
+    context.read<CreateListingBloc>().add(CategorySelected(category.id));
+    // Điều hướng ngay khi chạm, không chờ state đổi: nếu chọn lại đúng
+    // danh mục cũ thì state không đổi và trang sẽ "đứng" (lỗi cũ)
+    context.push(CreateListingStep.basicInfo.path);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: AppColors.cream, // Nền ngoài cùng là Cream
-      appBar: AppBar(
-        backgroundColor: AppColors.cream,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () {
-            if (context.canPop()) context.pop();
-          },
-        ),
-        title: Text(
-          l10n.createListing,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: BlocListener<CreateListingBloc, CreateListingState>(
-        listenWhen: (previous, current) =>
-            previous.categoryId != current.categoryId,
-        listener: (context, state) {
-          if (state.categoryId.isNotEmpty) {
-            context.push('/create-listing/upload-photos');
-          }
-        },
-        child: Column(
-          children: [
-            const SizedBox(height: 12.0),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                // Cách đều 2 bên một chút để tạo viền cho khối nội dung
-                margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                decoration: BoxDecoration(
-                  color: AppColors.surface, // Màu trắng của thẻ chứa danh sách
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(32.0),
-                    topRight: Radius.circular(32.0),
-                  ),
-                  // Viền cam/xám mỏng bao quanh phần thẻ trắng
-                  border: Border.all(color: AppColors.border, width: 1.0),
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(32.0),
-                    topRight: Radius.circular(32.0),
-                  ),
-                  child: ListView(
-                    padding: const EdgeInsets.only(top: 32.0, bottom: 24.0),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Text(
-                          l10n.chooseCategoryTitle,
-                          style: const TextStyle(
-                            fontSize: 28.0,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.textPrimary,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Text(
-                          l10n.chooseCategorySubtitle,
-                          style: const TextStyle(
-                            fontSize: 15.0,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24.0),
-                      const Divider(height: 1, color: AppColors.border),
-
-                      // Bọc các item vào Animation để tạo hiệu ứng nảy
-                      _buildAnimatedCard(
-                        index: 0,
-                        child: CategoryCard(
-                          title: l10n.categoryElectronicsTitle,
-                          description: l10n.categoryElectronicsDesc,
-                          fallbackIcon: Icons.devices,
-                          onTap: () => context.read<CreateListingBloc>().add(
-                            SelectCategoryEvent(
-                              'electronics',
-                              l10n.categoryElectronicsTitle,
-                            ),
-                          ),
-                        ),
-                      ),
-                      _buildAnimatedCard(
-                        index: 1,
-                        child: CategoryCard(
-                          title: l10n.categoryVehiclesTitle,
-                          description: l10n.categoryVehiclesDesc,
-                          fallbackIcon: Icons.two_wheeler,
-                          onTap: () => context.read<CreateListingBloc>().add(
-                            SelectCategoryEvent(
-                              'vehicles',
-                              l10n.categoryVehiclesTitle,
-                            ),
-                          ),
-                        ),
-                      ),
-                      _buildAnimatedCard(
-                        index: 2,
-                        child: CategoryCard(
-                          title: l10n.categoryFashionTitle,
-                          description: l10n.categoryFashionDesc,
-                          fallbackIcon: Icons.checkroom,
-                          onTap: () => context.read<CreateListingBloc>().add(
-                            SelectCategoryEvent(
-                              'fashion',
-                              l10n.categoryFashionTitle,
-                            ),
-                          ),
-                        ),
-                      ),
-                      _buildAnimatedCard(
-                        index: 3,
-                        child: CategoryCard(
-                          title: l10n.categoryHomeTitle,
-                          description: l10n.categoryHomeDesc,
-                          fallbackIcon: Icons.chair,
-                          showBottomBorder: false,
-                          onTap: () => context.read<CreateListingBloc>().add(
-                            SelectCategoryEvent('home', l10n.categoryHomeTitle),
-                          ),
-                        ),
-                      ),
-                    ],
+    return CreateListingScaffold(
+      title: l10n.createListing,
+      step: CreateListingStep.category,
+      showSaveDraft: false,
+      children: [
+        AppGlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                child: Text(
+                  l10n.chooseCategorySubtitle,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ),
-            ),
-          ],
+              BlocBuilder<CreateListingBloc, CreateListingState>(
+                buildWhen: (previous, current) =>
+                    previous.categoriesStatus != current.categoriesStatus ||
+                    previous.categories != current.categories,
+                builder: (context, state) => AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: switch (state.categoriesStatus) {
+                    RequestStatus.success => _CategoryList(
+                      categories: state.categories,
+                      onSelect: (category) => _onSelect(context, category),
+                    ),
+                    RequestStatus.failure => FeedbackView(
+                      icon: AppIcons.offline,
+                      title: l10n.loadCategoriesFailedTitle,
+                      message: l10n.loadCategoriesFailedMessage,
+                      action: FilledButton(
+                        onPressed: () => context.read<CreateListingBloc>().add(
+                          const CategoriesRequested(),
+                        ),
+                        child: Text(l10n.retry),
+                      ),
+                    ),
+                    _ => const CategoryListSkeleton(),
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
+}
 
-  // Hàm tạo hiệu ứng trượt từ dưới lên kèm theo Bounce
-  Widget _buildAnimatedCard({required int index, required Widget child}) {
-    // Delay theo thứ tự index để tạo hiệu ứng chạy nối tiếp nhau (Staggered Animation)
-    final delay = index * 0.1;
-    final animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Interval(
-        delay,
-        1.0,
-        curve: Curves.elasticOut,
-      ), // Curve elasticOut tạo độ "nảy" (bounce)
-    );
+class _CategoryList extends StatelessWidget {
+  final List<CategoryModel> categories;
+  final ValueChanged<CategoryModel> onSelect;
 
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, childWidget) {
-        return Transform.translate(
-          // Trượt từ vị trí 100px ở dưới lên 0
-          offset: Offset(0, 100 * (1 - animation.value)),
-          child: Opacity(
-            // Tăng dần độ mờ từ 0 lên 1
-            opacity: animation.value.clamp(0.0, 1.0),
-            child: childWidget,
+  const _CategoryList({required this.categories, required this.onSelect});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < categories.length; i++)
+          FadeSlideIn(
+            index: i,
+            child: CategoryCard(
+              title: categories[i].name.of(context),
+              description: categories[i].description.of(context),
+              imagePath: categories[i].imageUrl,
+              fallbackIcon: AppIcons.forCategory(categories[i].iconKey),
+              showBottomBorder: i < categories.length - 1,
+              onTap: () => onSelect(categories[i]),
+            ),
           ),
-        );
-      },
-      child: child,
+      ],
     );
   }
 }
