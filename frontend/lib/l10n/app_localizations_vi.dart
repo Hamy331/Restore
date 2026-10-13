@@ -1309,4 +1309,105 @@ class AppLocalizationsVi extends AppLocalizations {
   String unreadMessagesCount(int count) {
     return '$count tin nhắn chưa đọc';
   }
+
+  @override
+  String get homeGreeting => 'Chào bạn 👋';
+
+  @override
+  String get homeHeadline => 'Hôm nay bạn muốn săn gì?';
+
+  @override
+  String get homeSearchHint => 'Tìm đồ cũ, đồ trao đổi...';
+
+  @override
+  String get homeChangeArea => 'Đổi khu vực';
+
+  @override
+  String get homeForYouTitle => 'Dành cho bạn';
+
+  @override
+  String get homeLatestTitle => 'Tin đăng mới';
+
+  @override
+  String get homeSeeAll => 'Xem tất cả';
+
+  @override
+  String get homeFeaturedTag => 'Nổi bật';
+
+  @override
+  String get homeExchangeTag => 'Đổi được';
+
+  @override
+  String get homeExchangeOnly => 'Chỉ trao đổi';
+
+  @override
+  String get homeSaveListing => 'Lưu tin';
+
+  @override
+  String get homeUnsaveListing => 'Bỏ lưu tin';
+
+  @override
+  String get homeLoadErrorTitle => 'Chưa tải được trang chủ';
+
+  @override
+  String get homeLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get timeJustNow => 'Vừa xong';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '$count phút trước';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '$count giờ trước';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '$count ngày trước';
+  }
+
+  @override
+  String get featureComingSoon => 'Tính năng này đang được phát triển';
+
+  @override
+  String homeGreetingName(String name) {
+    return 'Chào $name 👋';
+  }
+
+  @override
+  String get homeLatestEmpty => 'Chưa có tin nào ở mục này';
+
+  @override
+  String get homeEndOfList => 'Bạn đã xem hết tin rồi';
+
+  @override
+  String get homeQuickNearby => 'Gần bạn';
+
+  @override
+  String get homeQuickNearbyDesc => 'Quanh đây trong 5 km';
+
+  @override
+  String get homeQuickWanted => 'Báo khi có hàng';
+
+  @override
+  String get homeQuickWantedDesc => 'Đặt trước món bạn cần';
+
+  @override
+  String get homeQuickTrustedShops => 'Shop uy tín';
+
+  @override
+  String get homeQuickTrustedShopsDesc => 'Đã xác minh, đánh giá tốt';
+
+  @override
+  String get homeQuickFollowing => 'Đang theo dõi';
+
+  @override
+  String get homeQuickFollowingDesc => 'Shop và người bạn theo dõi';
+
+  @override
+  String get homeBannerTooltip => 'Banner khuyến mãi';
 }

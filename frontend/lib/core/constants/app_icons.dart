@@ -48,6 +48,7 @@ class AppIcons {
   static const IconData settings = LucideIcons.settings300;
   static const IconData notification = LucideIcons.bell300;
   static const IconData favorite = LucideIcons.heart300;
+  static const IconData favoriteActive = LucideIcons.heart500;
   static const IconData star = LucideIcons.star300;
   static const IconData visible = LucideIcons.eye300;
   static const IconData hidden = LucideIcons.eyeOff300;
@@ -89,6 +90,10 @@ class AppIcons {
   static const IconData offline = LucideIcons.cloudOff300;
   static const IconData clock = LucideIcons.clock300;
   static const IconData shield = LucideIcons.shieldCheck300;
+  static const IconData verified = LucideIcons.badgeCheck300;
+  static const IconData wantedAlert = LucideIcons.bellPlus300;
+  static const IconData following = LucideIcons.userRoundCheck300;
+  static const IconData nearby = LucideIcons.radar300;
 
   // Tài khoản / xác thực
   static const IconData mail = LucideIcons.mail300;
@@ -127,4 +132,13 @@ class AppIcons {
   /// Icon theo khoá `icon` của danh mục từ API (VD "phone"); khoá lạ dùng
   /// icon chung. Backend thêm danh mục mới chỉ cần dùng một khoá có ở đây.
   static IconData forCategory(String? key) => _categoryIcons[key] ?? category;
+
+  static const Map<String, IconData> _bannerIcons = {
+    'post': post,
+    'swap': swap,
+    'ai': sparkle,
+  };
+
+  /// Icon minh hoạ banner trang chủ theo khoá `icon` từ API
+  static IconData forBanner(String? key) => _bannerIcons[key] ?? sparkle;
 }

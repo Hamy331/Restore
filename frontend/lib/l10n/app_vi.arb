@@ -574,5 +574,64 @@
         "type": "int"
       }
     }
-  }
+  },
+  "homeGreeting": "Chào bạn 👋",
+  "homeHeadline": "Hôm nay bạn muốn săn gì?",
+  "homeSearchHint": "Tìm đồ cũ, đồ trao đổi...",
+  "homeChangeArea": "Đổi khu vực",
+  "homeForYouTitle": "Dành cho bạn",
+  "homeLatestTitle": "Tin đăng mới",
+  "homeSeeAll": "Xem tất cả",
+  "homeFeaturedTag": "Nổi bật",
+  "homeExchangeTag": "Đổi được",
+  "homeExchangeOnly": "Chỉ trao đổi",
+  "homeSaveListing": "Lưu tin",
+  "homeUnsaveListing": "Bỏ lưu tin",
+  "homeLoadErrorTitle": "Chưa tải được trang chủ",
+  "homeLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "timeJustNow": "Vừa xong",
+  "timeMinutesAgo": "{count} phút trước",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHoursAgo": "{count} giờ trước",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDaysAgo": "{count} ngày trước",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "featureComingSoon": "Tính năng này đang được phát triển",
+  "homeGreetingName": "Chào {name} 👋",
+  "@homeGreetingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLatestEmpty": "Chưa có tin nào ở mục này",
+  "homeEndOfList": "Bạn đã xem hết tin rồi",
+  "homeQuickNearby": "Gần bạn",
+  "homeQuickNearbyDesc": "Quanh đây trong 5 km",
+  "homeQuickWanted": "Báo khi có hàng",
+  "homeQuickWantedDesc": "Đặt trước món bạn cần",
+  "homeQuickTrustedShops": "Shop uy tín",
+  "homeQuickTrustedShopsDesc": "Đã xác minh, đánh giá tốt",
+  "homeQuickFollowing": "Đang theo dõi",
+  "homeQuickFollowingDesc": "Shop và người bạn theo dõi",
+  "homeBannerTooltip": "Banner khuyến mãi"
 }
