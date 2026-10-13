@@ -608,5 +608,64 @@
         "type": "int"
       }
     }
-  }
+  },
+  "homeGreeting": "Hi there 👋",
+  "homeHeadline": "What are you hunting for today?",
+  "homeSearchHint": "Search pre-loved and swap items...",
+  "homeChangeArea": "Change area",
+  "homeForYouTitle": "Picked for you",
+  "homeLatestTitle": "Fresh listings",
+  "homeSeeAll": "See all",
+  "homeFeaturedTag": "Featured",
+  "homeExchangeTag": "Swappable",
+  "homeExchangeOnly": "Swap only",
+  "homeSaveListing": "Save listing",
+  "homeUnsaveListing": "Remove from saved",
+  "homeLoadErrorTitle": "Couldn't load the home page",
+  "homeLoadErrorBody": "Check your connection and try again.",
+  "timeJustNow": "Just now",
+  "timeMinutesAgo": "{count} min ago",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHoursAgo": "{count} h ago",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDaysAgo": "{count} d ago",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "featureComingSoon": "This feature is coming soon",
+  "homeGreetingName": "Hi there, {name} 👋",
+  "@homeGreetingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLatestEmpty": "No listings here yet",
+  "homeEndOfList": "You're all caught up",
+  "homeQuickNearby": "Near me",
+  "homeQuickNearbyDesc": "Within 5 km",
+  "homeQuickWanted": "Wanted alerts",
+  "homeQuickWantedDesc": "Get notified when listed",
+  "homeQuickTrustedShops": "Trusted shops",
+  "homeQuickTrustedShopsDesc": "Verified and top rated",
+  "homeQuickFollowing": "Following",
+  "homeQuickFollowingDesc": "Shops and people you follow",
+  "homeBannerTooltip": "Promotion banner"
 }

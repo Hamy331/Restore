@@ -2509,6 +2509,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} unread messages'**
   String unreadMessagesCount(int count);
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi there 👋'**
+  String get homeGreeting;
+
+  /// No description provided for @homeHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you hunting for today?'**
+  String get homeHeadline;
+
+  /// No description provided for @homeSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search pre-loved and swap items...'**
+  String get homeSearchHint;
+
+  /// No description provided for @homeChangeArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Change area'**
+  String get homeChangeArea;
+
+  /// No description provided for @homeForYouTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked for you'**
+  String get homeForYouTitle;
+
+  /// No description provided for @homeLatestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh listings'**
+  String get homeLatestTitle;
+
+  /// No description provided for @homeSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get homeSeeAll;
+
+  /// No description provided for @homeFeaturedTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured'**
+  String get homeFeaturedTag;
+
+  /// No description provided for @homeExchangeTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Swappable'**
+  String get homeExchangeTag;
+
+  /// No description provided for @homeExchangeOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap only'**
+  String get homeExchangeOnly;
+
+  /// No description provided for @homeSaveListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Save listing'**
+  String get homeSaveListing;
+
+  /// No description provided for @homeUnsaveListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from saved'**
+  String get homeUnsaveListing;
+
+  /// No description provided for @homeLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the home page'**
+  String get homeLoadErrorTitle;
+
+  /// No description provided for @homeLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get homeLoadErrorBody;
+
+  /// No description provided for @timeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get timeJustNow;
+
+  /// No description provided for @timeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String timeMinutesAgo(int count);
+
+  /// No description provided for @timeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h ago'**
+  String timeHoursAgo(int count);
+
+  /// No description provided for @timeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} d ago'**
+  String timeDaysAgo(int count);
+
+  /// No description provided for @featureComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is coming soon'**
+  String get featureComingSoon;
+
+  /// No description provided for @homeGreetingName.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi there, {name} 👋'**
+  String homeGreetingName(String name);
+
+  /// No description provided for @homeLatestEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings here yet'**
+  String get homeLatestEmpty;
+
+  /// No description provided for @homeEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get homeEndOfList;
+
+  /// No description provided for @homeQuickNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get homeQuickNearby;
+
+  /// No description provided for @homeQuickNearbyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Within 5 km'**
+  String get homeQuickNearbyDesc;
+
+  /// No description provided for @homeQuickWanted.
+  ///
+  /// In en, this message translates to:
+  /// **'Wanted alerts'**
+  String get homeQuickWanted;
+
+  /// No description provided for @homeQuickWantedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when listed'**
+  String get homeQuickWantedDesc;
+
+  /// No description provided for @homeQuickTrustedShops.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted shops'**
+  String get homeQuickTrustedShops;
+
+  /// No description provided for @homeQuickTrustedShopsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified and top rated'**
+  String get homeQuickTrustedShopsDesc;
+
+  /// No description provided for @homeQuickFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get homeQuickFollowing;
+
+  /// No description provided for @homeQuickFollowingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops and people you follow'**
+  String get homeQuickFollowingDesc;
+
+  /// No description provided for @homeBannerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotion banner'**
+  String get homeBannerTooltip;
 }
 
 class _AppLocalizationsDelegate

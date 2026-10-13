@@ -1316,4 +1316,105 @@ class AppLocalizationsEn extends AppLocalizations {
   String unreadMessagesCount(int count) {
     return '$count unread messages';
   }
+
+  @override
+  String get homeGreeting => 'Hi there 👋';
+
+  @override
+  String get homeHeadline => 'What are you hunting for today?';
+
+  @override
+  String get homeSearchHint => 'Search pre-loved and swap items...';
+
+  @override
+  String get homeChangeArea => 'Change area';
+
+  @override
+  String get homeForYouTitle => 'Picked for you';
+
+  @override
+  String get homeLatestTitle => 'Fresh listings';
+
+  @override
+  String get homeSeeAll => 'See all';
+
+  @override
+  String get homeFeaturedTag => 'Featured';
+
+  @override
+  String get homeExchangeTag => 'Swappable';
+
+  @override
+  String get homeExchangeOnly => 'Swap only';
+
+  @override
+  String get homeSaveListing => 'Save listing';
+
+  @override
+  String get homeUnsaveListing => 'Remove from saved';
+
+  @override
+  String get homeLoadErrorTitle => 'Couldn\'t load the home page';
+
+  @override
+  String get homeLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get timeJustNow => 'Just now';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '$count h ago';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '$count d ago';
+  }
+
+  @override
+  String get featureComingSoon => 'This feature is coming soon';
+
+  @override
+  String homeGreetingName(String name) {
+    return 'Hi there, $name 👋';
+  }
+
+  @override
+  String get homeLatestEmpty => 'No listings here yet';
+
+  @override
+  String get homeEndOfList => 'You\'re all caught up';
+
+  @override
+  String get homeQuickNearby => 'Near me';
+
+  @override
+  String get homeQuickNearbyDesc => 'Within 5 km';
+
+  @override
+  String get homeQuickWanted => 'Wanted alerts';
+
+  @override
+  String get homeQuickWantedDesc => 'Get notified when listed';
+
+  @override
+  String get homeQuickTrustedShops => 'Trusted shops';
+
+  @override
+  String get homeQuickTrustedShopsDesc => 'Verified and top rated';
+
+  @override
+  String get homeQuickFollowing => 'Following';
+
+  @override
+  String get homeQuickFollowingDesc => 'Shops and people you follow';
+
+  @override
+  String get homeBannerTooltip => 'Promotion banner';
 }

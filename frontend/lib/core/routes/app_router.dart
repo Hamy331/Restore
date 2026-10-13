@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/ui/layouts/t_foundation_placeholder_layout.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 import 'package:restore/modules/chat/views/messages_view.dart';
-import 'package:restore/modules/home/views/home_view.dart';
+import 'package:restore/modules/home/views/home/home_view.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_event.dart';
