@@ -1622,6 +1622,18 @@ abstract class AppLocalizations {
   /// **'Manage listings'**
   String get manageListings;
 
+  /// No description provided for @feedsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeds'**
+  String get feedsTitle;
+
+  /// No description provided for @feedsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeds are coming soon'**
+  String get feedsComingSoon;
+
   /// No description provided for @newListing.
   ///
   /// In en, this message translates to:
@@ -1829,7 +1841,7 @@ abstract class AppLocalizations {
   /// No description provided for @categoryElectronicsDesc.
   ///
   /// In en, this message translates to:
-  /// **'Phones, Laptops, Cameras,...'**
+  /// **'Laptops, Cameras, Headphones,...'**
   String get categoryElectronicsDesc;
 
   /// No description provided for @categoryVehiclesTitle.
@@ -1859,7 +1871,7 @@ abstract class AppLocalizations {
   /// No description provided for @categoryHomeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Home Appliances'**
+  /// **'Household'**
   String get categoryHomeTitle;
 
   /// No description provided for @categoryHomeDesc.
@@ -1915,6 +1927,786 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue'**
   String get continueBtn;
+
+  /// No description provided for @completeListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete listing'**
+  String get completeListingTitle;
+
+  /// No description provided for @saveDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get saveDraft;
+
+  /// No description provided for @draftSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft saved'**
+  String get draftSaved;
+
+  /// No description provided for @listingPhotosLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos (up to {max} photos)'**
+  String listingPhotosLabel(int max);
+
+  /// No description provided for @photoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/{max}'**
+  String photoCount(int count, int max);
+
+  /// No description provided for @coverPhotoBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover'**
+  String get coverPhotoBadge;
+
+  /// No description provided for @photosRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add at least 1 photo'**
+  String get photosRequiredError;
+
+  /// No description provided for @detailedDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed description'**
+  String get detailedDescriptionLabel;
+
+  /// No description provided for @listingDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'- Condition, how long it has been used\n- Included accessories, minor defects if any\n- Reason for selling, delivery method'**
+  String get listingDescriptionHint;
+
+  /// No description provided for @characterCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/{max} characters'**
+  String characterCount(int count, int max);
+
+  /// No description provided for @descriptionMinLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Description must be at least {min} characters'**
+  String descriptionMinLengthError(int min);
+
+  /// No description provided for @listingTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing title'**
+  String get listingTitleLabel;
+
+  /// No description provided for @listingTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Piaggio Vespa Sprint 2024 15,000 km'**
+  String get listingTitleHint;
+
+  /// No description provided for @listingTitleMinLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Title must be at least {min} characters'**
+  String listingTitleMinLengthError(int min);
+
+  /// No description provided for @priceRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a sale price'**
+  String get priceRequiredError;
+
+  /// No description provided for @addressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get addressLabel;
+
+  /// No description provided for @youAreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You are'**
+  String get youAreLabel;
+
+  /// No description provided for @sellerPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get sellerPersonal;
+
+  /// No description provided for @sellerBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get sellerBusiness;
+
+  /// No description provided for @detailedInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed information'**
+  String get detailedInfoTitle;
+
+  /// No description provided for @categoryWithName.
+  ///
+  /// In en, this message translates to:
+  /// **'Category: {name}'**
+  String categoryWithName(String name);
+
+  /// No description provided for @fieldRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in this field'**
+  String get fieldRequiredError;
+
+  /// No description provided for @fieldSelectRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an option'**
+  String get fieldSelectRequiredError;
+
+  /// No description provided for @missingRequiredFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete all required fields'**
+  String get missingRequiredFields;
+
+  /// No description provided for @listingSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing has been submitted and is waiting for review'**
+  String get listingSubmitted;
+
+  /// No description provided for @previewNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This is how buyers will see your listing'**
+  String get previewNotice;
+
+  /// No description provided for @noPhotosYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No photos yet'**
+  String get noPhotosYet;
+
+  /// No description provided for @stepBasicInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos, description & price'**
+  String get stepBasicInfoTitle;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @photoLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add up to {max} photos'**
+  String photoLimitReached(int max);
+
+  /// No description provided for @photoPickFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open your photos. Please check the app\'s photo and camera permissions.'**
+  String get photoPickFailed;
+
+  /// No description provided for @draftSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the draft, please try again'**
+  String get draftSaveFailed;
+
+  /// No description provided for @publishFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t publish the listing, please try again'**
+  String get publishFailed;
+
+  /// No description provided for @tradeTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trade type'**
+  String get tradeTypeLabel;
+
+  /// No description provided for @tradeSell.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell'**
+  String get tradeSell;
+
+  /// No description provided for @tradeExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange'**
+  String get tradeExchange;
+
+  /// No description provided for @tradeSellOrExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'Both'**
+  String get tradeSellOrExchange;
+
+  /// No description provided for @tradeExchangeAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Open to exchange'**
+  String get tradeExchangeAccepted;
+
+  /// No description provided for @exchangeWishLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to exchange for'**
+  String get exchangeWishLabel;
+
+  /// No description provided for @exchangeWishHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. iPhone 13 or a tablet'**
+  String get exchangeWishHint;
+
+  /// No description provided for @selectAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an area'**
+  String get selectAddressHint;
+
+  /// No description provided for @stepShortCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get stepShortCategory;
+
+  /// No description provided for @stepShortBasicInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Basics'**
+  String get stepShortBasicInfo;
+
+  /// No description provided for @stepShortDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get stepShortDetails;
+
+  /// No description provided for @stepProgressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current}/{total}'**
+  String stepProgressLabel(int current, int total);
+
+  /// No description provided for @nextStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {name}'**
+  String nextStepLabel(String name);
+
+  /// No description provided for @conditionSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Item condition'**
+  String get conditionSectionTitle;
+
+  /// No description provided for @conditionNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get conditionNew;
+
+  /// No description provided for @conditionLikeNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Like new'**
+  String get conditionLikeNew;
+
+  /// No description provided for @conditionUsedGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Used - good'**
+  String get conditionUsedGood;
+
+  /// No description provided for @conditionUsedFair.
+  ///
+  /// In en, this message translates to:
+  /// **'Used - fair'**
+  String get conditionUsedFair;
+
+  /// No description provided for @conditionForParts.
+  ///
+  /// In en, this message translates to:
+  /// **'For parts / not working'**
+  String get conditionForParts;
+
+  /// No description provided for @conditionNewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Never used, original packaging'**
+  String get conditionNewDesc;
+
+  /// No description provided for @conditionLikeNewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Barely used, no visible marks'**
+  String get conditionLikeNewDesc;
+
+  /// No description provided for @conditionUsedGoodDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Works well, minor signs of use'**
+  String get conditionUsedGoodDesc;
+
+  /// No description provided for @conditionUsedFairDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Usable, visible wear or minor faults'**
+  String get conditionUsedFairDesc;
+
+  /// No description provided for @conditionForPartsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not work properly'**
+  String get conditionForPartsDesc;
+
+  /// No description provided for @categoryAttributesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Category details'**
+  String get categoryAttributesTitle;
+
+  /// No description provided for @categoryAttributesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Fields below depend on the category'**
+  String get categoryAttributesHint;
+
+  /// No description provided for @selectOptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get selectOptionHint;
+
+  /// No description provided for @numberRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be between {min} and {max}'**
+  String numberRangeError(String min, String max);
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @loadCategoriesFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load categories'**
+  String get loadCategoriesFailedTitle;
+
+  /// No description provided for @loadCategoriesFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again'**
+  String get loadCategoriesFailedMessage;
+
+  /// No description provided for @negotiableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyers can make offers in chat'**
+  String get negotiableHint;
+
+  /// No description provided for @addressNearbyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Helps nearby buyers find your listing'**
+  String get addressNearbyHint;
+
+  /// No description provided for @privateStreetAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'{street} (private)'**
+  String privateStreetAddress(String street);
+
+  /// No description provided for @addressSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Item location'**
+  String get addressSheetTitle;
+
+  /// No description provided for @useCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my current location'**
+  String get useCurrentLocation;
+
+  /// No description provided for @useCurrentLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in province and ward automatically'**
+  String get useCurrentLocationHint;
+
+  /// No description provided for @locatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your location...'**
+  String get locatingLabel;
+
+  /// No description provided for @locationDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Location detected'**
+  String get locationDetected;
+
+  /// No description provided for @orChooseManually.
+  ///
+  /// In en, this message translates to:
+  /// **'or choose manually'**
+  String get orChooseManually;
+
+  /// No description provided for @provinceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Province/City'**
+  String get provinceLabel;
+
+  /// No description provided for @selectProvinceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select province/city'**
+  String get selectProvinceHint;
+
+  /// No description provided for @wardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ward/Commune'**
+  String get wardLabel;
+
+  /// No description provided for @selectWardHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select ward/commune'**
+  String get selectWardHint;
+
+  /// No description provided for @selectProvinceFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a province first'**
+  String get selectProvinceFirst;
+
+  /// No description provided for @streetAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'House number, street'**
+  String get streetAddressLabel;
+
+  /// No description provided for @streetAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 12 Nguyen Hue'**
+  String get streetAddressHint;
+
+  /// No description provided for @streetAddressHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional, never shown publicly'**
+  String get streetAddressHelper;
+
+  /// No description provided for @addressPrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyers only see the ward and province. Your location is used to show listings near you.'**
+  String get addressPrivacyNote;
+
+  /// No description provided for @confirmAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm address'**
+  String get confirmAddress;
+
+  /// No description provided for @loadingLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loadingLocations;
+
+  /// No description provided for @loadLocationsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the list, tap to retry'**
+  String get loadLocationsFailed;
+
+  /// No description provided for @locationServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location services to continue'**
+  String get locationServiceDisabled;
+
+  /// No description provided for @locationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission was denied'**
+  String get locationPermissionDenied;
+
+  /// No description provided for @locationPermissionDeniedForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is blocked, enable it in Settings'**
+  String get locationPermissionDeniedForever;
+
+  /// No description provided for @locationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t get your location, please choose manually'**
+  String get locationUnavailable;
+
+  /// No description provided for @locationOutOfCoverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location didn’t match any ward. Please choose it manually below.'**
+  String get locationOutOfCoverage;
+
+  /// No description provided for @searchOptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchOptionHint;
+
+  /// No description provided for @noMatchingOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching results'**
+  String get noMatchingOptions;
+
+  /// No description provided for @locationOutsideVietnamTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like you’re outside Vietnam'**
+  String get locationOutsideVietnamTitle;
+
+  /// No description provided for @locationOutsideVietnamBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore only supports addresses in Vietnam for now. Please pick your province and ward below.'**
+  String get locationOutsideVietnamBody;
+
+  /// No description provided for @locationOutOfCoverageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We don’t recognise this area yet'**
+  String get locationOutOfCoverageTitle;
+
+  /// No description provided for @aiBubbleTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with ReStore AI'**
+  String get aiBubbleTooltip;
+
+  /// No description provided for @unreadMessagesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unread messages'**
+  String unreadMessagesCount(int count);
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi there 👋'**
+  String get homeGreeting;
+
+  /// No description provided for @homeHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you hunting for today?'**
+  String get homeHeadline;
+
+  /// No description provided for @homeSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search pre-loved and swap items...'**
+  String get homeSearchHint;
+
+  /// No description provided for @homeChangeArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Change area'**
+  String get homeChangeArea;
+
+  /// No description provided for @homeForYouTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked for you'**
+  String get homeForYouTitle;
+
+  /// No description provided for @homeLatestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh listings'**
+  String get homeLatestTitle;
+
+  /// No description provided for @homeSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get homeSeeAll;
+
+  /// No description provided for @homeFeaturedTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured'**
+  String get homeFeaturedTag;
+
+  /// No description provided for @homeExchangeTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Swappable'**
+  String get homeExchangeTag;
+
+  /// No description provided for @homeExchangeOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap only'**
+  String get homeExchangeOnly;
+
+  /// No description provided for @homeSaveListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Save listing'**
+  String get homeSaveListing;
+
+  /// No description provided for @homeUnsaveListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from saved'**
+  String get homeUnsaveListing;
+
+  /// No description provided for @homeLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the home page'**
+  String get homeLoadErrorTitle;
+
+  /// No description provided for @homeLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get homeLoadErrorBody;
+
+  /// No description provided for @timeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get timeJustNow;
+
+  /// No description provided for @timeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String timeMinutesAgo(int count);
+
+  /// No description provided for @timeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h ago'**
+  String timeHoursAgo(int count);
+
+  /// No description provided for @timeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} d ago'**
+  String timeDaysAgo(int count);
+
+  /// No description provided for @featureComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is coming soon'**
+  String get featureComingSoon;
+
+  /// No description provided for @homeGreetingName.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi there, {name} 👋'**
+  String homeGreetingName(String name);
+
+  /// No description provided for @homeLatestEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings here yet'**
+  String get homeLatestEmpty;
+
+  /// No description provided for @homeEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get homeEndOfList;
+
+  /// No description provided for @homeQuickNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get homeQuickNearby;
+
+  /// No description provided for @homeQuickNearbyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Within 5 km'**
+  String get homeQuickNearbyDesc;
+
+  /// No description provided for @homeQuickWanted.
+  ///
+  /// In en, this message translates to:
+  /// **'Wanted alerts'**
+  String get homeQuickWanted;
+
+  /// No description provided for @homeQuickWantedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when listed'**
+  String get homeQuickWantedDesc;
+
+  /// No description provided for @homeQuickTrustedShops.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted shops'**
+  String get homeQuickTrustedShops;
+
+  /// No description provided for @homeQuickTrustedShopsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified and top rated'**
+  String get homeQuickTrustedShopsDesc;
+
+  /// No description provided for @homeQuickFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get homeQuickFollowing;
+
+  /// No description provided for @homeQuickFollowingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops and people you follow'**
+  String get homeQuickFollowingDesc;
+
+  /// No description provided for @homeBannerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotion banner'**
+  String get homeBannerTooltip;
 }
 
 class _AppLocalizationsDelegate

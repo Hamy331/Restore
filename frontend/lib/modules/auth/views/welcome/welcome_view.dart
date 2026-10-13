@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 
@@ -48,7 +49,7 @@ class WelcomeView extends StatelessWidget {
                               color: AppColors.primary,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.autorenew, size: 22),
+                            child: const Icon(AppIcons.renew, size: 22),
                           ),
                           const SizedBox(width: 10),
                           const Text(
@@ -123,7 +124,7 @@ class WelcomeView extends StatelessWidget {
                         child: const Row(
                           children: [
                             Icon(
-                              Icons.swap_horiz,
+                              AppIcons.swap,
                               size: 19,
                               color: AppColors.primaryDark,
                             ),
@@ -225,7 +226,7 @@ class _MarketplaceHero extends StatelessWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.circle, size: 8, color: AppColors.primary),
+                  Icon(AppIcons.dot, size: 8, color: AppColors.primary),
                   SizedBox(width: 6),
                   Text(
                     '1,2 km · Đang thương lượng',

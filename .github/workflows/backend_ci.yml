@@ -3,14 +3,8 @@ name: Backend CI Test
 on:
   push:
     branches: ["main", "dev"]
-    paths:
-      - "backend/**"
-      - ".github/workflows/backend_ci.yml"
   pull_request:
     branches: ["main"]
-    paths:
-      - "backend/**"
-      - ".github/workflows/backend_ci.yml"
 
 jobs:
   build_and_test:
@@ -25,7 +19,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Detect backend changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            backend:
+              - "backend/**"
+              - ".github/workflows/backend_ci.yml"
+
       - name: Setup Node.js
+        if: steps.changes.outputs.backend == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -33,9 +37,11 @@ jobs:
           cache-dependency-path: "./backend/package-lock.json"
 
       - name: Install dependencies
+        if: steps.changes.outputs.backend == 'true'
         run: npm install
 
       - name: Generate Prisma Client
+        if: steps.changes.outputs.backend == 'true'
         run: npx prisma generate
 
       # Nếu dự án có setup linter (eslint), hãy uncomment dòng dưới
@@ -43,4 +49,5 @@ jobs:
       #   run: npm run lint
 
       - name: Build TypeScript to JavaScript
+        if: steps.changes.outputs.backend == 'true'
         run: npm run build

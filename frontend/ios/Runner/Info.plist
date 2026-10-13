@@ -47,5 +47,11 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSCameraUsageDescription</key>
+		<string>ReStore cần quyền truy cập camera để chụp ảnh sản phẩm khi đăng tin.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>ReStore cần quyền truy cập thư viện ảnh để chọn ảnh sản phẩm khi đăng tin.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>ReStore dùng vị trí của bạn để điền địa chỉ đăng tin và gợi ý món đồ ở gần bạn.</string>
 	</dict>
 </plist>

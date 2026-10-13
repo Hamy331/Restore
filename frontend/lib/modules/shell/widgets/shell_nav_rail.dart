@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 
 class ShellNavRail extends StatelessWidget {
@@ -32,34 +33,34 @@ class ShellNavRail extends StatelessWidget {
           child: IconButton(
             tooltip: l10n.createListing,
             onPressed: () => onSelected(2),
-            icon: const Icon(Icons.add),
+            icon: const Icon(AppIcons.add),
           ),
         ),
       ),
       destinations: [
         NavigationRailDestination(
-          icon: const Icon(Icons.home_outlined),
-          selectedIcon: const Icon(Icons.home),
+          icon: const Icon(AppIcons.home),
+          selectedIcon: const Icon(AppIcons.homeActive),
           label: Text(l10n.homeTitle),
         ),
         NavigationRailDestination(
-          icon: const Icon(Icons.inventory_2_outlined),
-          selectedIcon: const Icon(Icons.inventory_2),
-          label: Text(l10n.manageListings),
+          icon: const Icon(AppIcons.feeds),
+          selectedIcon: const Icon(AppIcons.feedsActive),
+          label: Text(l10n.feedsTitle),
         ),
         NavigationRailDestination(
-          icon: const Icon(Icons.add_box_outlined),
-          selectedIcon: const Icon(Icons.add_box),
+          icon: const Icon(AppIcons.post),
+          selectedIcon: const Icon(AppIcons.postActive),
           label: Text(l10n.createListing),
         ),
         NavigationRailDestination(
-          icon: const Icon(Icons.chat_bubble_outline),
-          selectedIcon: const Icon(Icons.chat_bubble),
+          icon: const Icon(AppIcons.chat),
+          selectedIcon: const Icon(AppIcons.chatActive),
           label: Text(l10n.messagesTitle),
         ),
         NavigationRailDestination(
-          icon: const Icon(Icons.person_outline),
-          selectedIcon: const Icon(Icons.person),
+          icon: const Icon(AppIcons.user),
+          selectedIcon: const Icon(AppIcons.userActive),
           label: Text(l10n.accountTitle),
         ),
       ],

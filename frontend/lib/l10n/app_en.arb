@@ -60,7 +60,13 @@
   "help": "Help",
   "logout": "Log out",
   "newCount": "{count} new",
-  "@newCount": {"placeholders": {"count": {"type": "int"}}},
+  "@newCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "editProfileTitle": "Edit profile",
   "changeAvatar": "Change profile photo",
   "fullName": "Full name",
@@ -81,7 +87,13 @@
   "helpSupport": "Help / Support",
   "termsPolicies": "Terms & policies",
   "savedCount": "{count} saved listings",
-  "@savedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@savedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tapHeartToRemove": "Tap ♡ to remove",
   "emptySavedTitle": "No saved listings yet",
   "emptySavedDescription": "Save listings you like to find them faster later.",
@@ -107,23 +119,50 @@
   "sellerMemberSince": "Member since 2022",
   "ratingValue": "★ 4.9",
   "ratingCount": "{count} ratings",
-  "@ratingCount": {"placeholders": {"count": {"type": "int"}}},
+  "@ratingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sellingListings": "Listings for sale",
   "chat": "Chat",
   "viewListings": "View listings",
   "listingCountShort": "{count} listings ›",
-  "@listingCountShort": {"placeholders": {"count": {"type": "int"}}},
+  "@listingCountShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportSeller": "Report seller",
   "sellerRatingsTitle": "Seller ratings",
   "communityReviews": "Community reviews",
   "reviewCount": "{count} reviews",
-  "@reviewCount": {"placeholders": {"count": {"type": "int"}}},
+  "@reviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "writeReview": "Write a review",
   "leaveReviewTitle": "Write review",
   "sellerRoleArea": "Seller · District 1, HCMC",
   "reviewQuestion": "How would you rate the seller?",
   "starSelection": "{count} stars · {label}",
-  "@starSelection": {"placeholders": {"count": {"type": "int"}, "label": {"type": "String"}}},
+  "@starSelection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "veryGood": "Very good",
   "selected": "Selected",
   "optionalReview": "Review (optional)",
@@ -197,15 +236,36 @@
   "aiErrorDescription": "Your conversation is preserved. You can retry without entering it again.",
   "retry": "Retry",
   "featureApiPending": "{action} will be connected in the API phase.",
-  "@featureApiPending": {"placeholders": {"action": {"type": "String"}}},
+  "@featureApiPending": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "createListing": "Create listing",
   "editListing": "Edit listing",
   "close": "Close",
   "back": "Back",
   "stepCount": "{current}/{total}",
-  "@stepCount": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
+  "@stepCount": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "productPhotosCount": "Product photos · {count}/10",
-  "@productPhotosCount": {"placeholders": {"count": {"type": "int"}}},
+  "@productPhotosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "addPhotos": "Add photos",
   "firstPhotoHint": "The first photo is the cover · Hold and drag to reorder",
   "productName": "Product name",
@@ -278,13 +338,24 @@
   "boostPaymentPending": "Payment verification pending",
   "tryPaymentAgain": "Try payment again",
   "manageListings": "Manage listings",
+  "feedsTitle": "Feeds",
+  "feedsComingSoon": "Feeds are coming soon",
   "newListing": "New listing",
   "visibleStatus": "Visible",
   "pendingStatus": "Pending",
   "hiddenStatus": "Hidden",
   "soldStatus": "Sold",
   "listingStatusCount": "{count} {status}",
-  "@listingStatusCount": {"placeholders": {"count": {"type": "int"}, "status": {"type": "String"}}},
+  "@listingStatusCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "editAction": "Edit",
   "hideListing": "Hide",
   "markAsSold": "Mark as sold",
@@ -302,7 +373,16 @@
   "listingDetailTitle": "Listing details",
   "listingPreviewTitle": "Listing preview",
   "galleryPosition": "{current} / {total}",
-  "@galleryPosition": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
+  "@galleryPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "listingLocationMeta": "⌖ District 1, Ho Chi Minh City · Posted 2 hours ago",
   "usedGoodCondition": "Used · Good condition",
   "productDescription": "Product description",
@@ -314,20 +394,280 @@
   "chooseCategoryTitle": "Choose category",
   "chooseCategorySubtitle": "What do you want to sell?",
   "categoryElectronicsTitle": "Electronics",
-  "categoryElectronicsDesc": "Phones, Laptops, Cameras,...",
+  "categoryElectronicsDesc": "Laptops, Cameras, Headphones,...",
   "categoryVehiclesTitle": "Vehicles",
   "categoryVehiclesDesc": "Motorbikes, Bicycles, Cars, Parts,...",
   "categoryFashionTitle": "Fashion",
   "categoryFashionDesc": "Clothes, Shoes, Bags,...",
-  "categoryHomeTitle": "Home Appliances",
+  "categoryHomeTitle": "Household",
   "categoryHomeDesc": "Furniture, Lighting, Kitchenware, Decor,...",
   "step1Title": "Photos & Product",
   "productPhotosInfo": "Product photos · {count}/10",
-  "@productPhotosInfo": {"placeholders": {"count": {"type": "int"}}},
+  "@productPhotosInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coverImageHint": "First photo is cover · Tap a photo to set as cover",
   "productNameLabel": "Product name",
   "productNameMinLengthError": "Product name must be at least 5 characters",
   "categoryLabel": "Category",
   "conditionLabel": "Condition",
-  "continueBtn": "Continue"
+  "continueBtn": "Continue",
+  "completeListingTitle": "Complete listing",
+  "saveDraft": "Save draft",
+  "draftSaved": "Draft saved",
+  "listingPhotosLabel": "Photos (up to {max} photos)",
+  "@listingPhotosLabel": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "photoCount": "{count}/{max}",
+  "@photoCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "coverPhotoBadge": "Cover",
+  "photosRequiredError": "Please add at least 1 photo",
+  "detailedDescriptionLabel": "Detailed description",
+  "listingDescriptionHint": "- Condition, how long it has been used\n- Included accessories, minor defects if any\n- Reason for selling, delivery method",
+  "characterCount": "{count}/{max} characters",
+  "@characterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "descriptionMinLengthError": "Description must be at least {min} characters",
+  "@descriptionMinLengthError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "listingTitleLabel": "Listing title",
+  "listingTitleHint": "e.g. Piaggio Vespa Sprint 2024 15,000 km",
+  "listingTitleMinLengthError": "Title must be at least {min} characters",
+  "@listingTitleMinLengthError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "priceRequiredError": "Please enter a sale price",
+  "addressLabel": "Address",
+  "youAreLabel": "You are",
+  "sellerPersonal": "Personal",
+  "sellerBusiness": "Business",
+  "detailedInfoTitle": "Detailed information",
+  "categoryWithName": "Category: {name}",
+  "@categoryWithName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldRequiredError": "Please fill in this field",
+  "fieldSelectRequiredError": "Please select an option",
+  "missingRequiredFields": "Please complete all required fields",
+  "listingSubmitted": "Your listing has been submitted and is waiting for review",
+  "previewNotice": "This is how buyers will see your listing",
+  "noPhotosYet": "No photos yet",
+  "stepBasicInfoTitle": "Photos, description & price",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "Choose from gallery",
+  "photoLimitReached": "You can add up to {max} photos",
+  "@photoLimitReached": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "photoPickFailed": "Couldn't open your photos. Please check the app's photo and camera permissions.",
+  "draftSaveFailed": "Couldn't save the draft, please try again",
+  "publishFailed": "Couldn't publish the listing, please try again",
+  "tradeTypeLabel": "Trade type",
+  "tradeSell": "Sell",
+  "tradeExchange": "Exchange",
+  "tradeSellOrExchange": "Both",
+  "tradeExchangeAccepted": "Open to exchange",
+  "exchangeWishLabel": "Want to exchange for",
+  "exchangeWishHint": "e.g. iPhone 13 or a tablet",
+  "selectAddressHint": "Choose an area",
+  "stepShortCategory": "Category",
+  "stepShortBasicInfo": "Basics",
+  "stepShortDetails": "Details",
+  "stepProgressLabel": "Step {current}/{total}",
+  "@stepProgressLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "nextStepLabel": "Next: {name}",
+  "@nextStepLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "conditionSectionTitle": "Item condition",
+  "conditionNew": "New",
+  "conditionLikeNew": "Like new",
+  "conditionUsedGood": "Used - good",
+  "conditionUsedFair": "Used - fair",
+  "conditionForParts": "For parts / not working",
+  "conditionNewDesc": "Never used, original packaging",
+  "conditionLikeNewDesc": "Barely used, no visible marks",
+  "conditionUsedGoodDesc": "Works well, minor signs of use",
+  "conditionUsedFairDesc": "Usable, visible wear or minor faults",
+  "conditionForPartsDesc": "Does not work properly",
+  "categoryAttributesTitle": "Category details",
+  "categoryAttributesHint": "Fields below depend on the category",
+  "selectOptionHint": "Select",
+  "numberRangeError": "Value must be between {min} and {max}",
+  "@numberRangeError": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "yes": "Yes",
+  "no": "No",
+  "loadCategoriesFailedTitle": "Couldn't load categories",
+  "loadCategoriesFailedMessage": "Check your connection and try again",
+  "negotiableHint": "Buyers can make offers in chat",
+  "addressNearbyHint": "Helps nearby buyers find your listing",
+  "privateStreetAddress": "{street} (private)",
+  "@privateStreetAddress": {
+    "placeholders": {
+      "street": {
+        "type": "String"
+      }
+    }
+  },
+  "addressSheetTitle": "Item location",
+  "useCurrentLocation": "Use my current location",
+  "useCurrentLocationHint": "Fill in province and ward automatically",
+  "locatingLabel": "Getting your location...",
+  "locationDetected": "Location detected",
+  "orChooseManually": "or choose manually",
+  "provinceLabel": "Province/City",
+  "selectProvinceHint": "Select province/city",
+  "wardLabel": "Ward/Commune",
+  "selectWardHint": "Select ward/commune",
+  "selectProvinceFirst": "Select a province first",
+  "streetAddressLabel": "House number, street",
+  "streetAddressHint": "e.g. 12 Nguyen Hue",
+  "streetAddressHelper": "Optional, never shown publicly",
+  "addressPrivacyNote": "Buyers only see the ward and province. Your location is used to show listings near you.",
+  "confirmAddress": "Confirm address",
+  "loadingLocations": "Loading...",
+  "loadLocationsFailed": "Couldn't load the list, tap to retry",
+  "locationServiceDisabled": "Turn on location services to continue",
+  "locationPermissionDenied": "Location permission was denied",
+  "locationPermissionDeniedForever": "Location access is blocked, enable it in Settings",
+  "locationUnavailable": "Couldn't get your location, please choose manually",
+  "locationOutOfCoverage": "Your location didn’t match any ward. Please choose it manually below.",
+  "searchOptionHint": "Search",
+  "noMatchingOptions": "No matching results",
+  "locationOutsideVietnamTitle": "Looks like you’re outside Vietnam",
+  "locationOutsideVietnamBody": "ReStore only supports addresses in Vietnam for now. Please pick your province and ward below.",
+  "locationOutOfCoverageTitle": "We don’t recognise this area yet",
+  "aiBubbleTooltip": "Chat with ReStore AI",
+  "unreadMessagesCount": "{count} unread messages",
+  "@unreadMessagesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGreeting": "Hi there 👋",
+  "homeHeadline": "What are you hunting for today?",
+  "homeSearchHint": "Search pre-loved and swap items...",
+  "homeChangeArea": "Change area",
+  "homeForYouTitle": "Picked for you",
+  "homeLatestTitle": "Fresh listings",
+  "homeSeeAll": "See all",
+  "homeFeaturedTag": "Featured",
+  "homeExchangeTag": "Swappable",
+  "homeExchangeOnly": "Swap only",
+  "homeSaveListing": "Save listing",
+  "homeUnsaveListing": "Remove from saved",
+  "homeLoadErrorTitle": "Couldn't load the home page",
+  "homeLoadErrorBody": "Check your connection and try again.",
+  "timeJustNow": "Just now",
+  "timeMinutesAgo": "{count} min ago",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHoursAgo": "{count} h ago",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDaysAgo": "{count} d ago",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "featureComingSoon": "This feature is coming soon",
+  "homeGreetingName": "Hi there, {name} 👋",
+  "@homeGreetingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLatestEmpty": "No listings here yet",
+  "homeEndOfList": "You're all caught up",
+  "homeQuickNearby": "Near me",
+  "homeQuickNearbyDesc": "Within 5 km",
+  "homeQuickWanted": "Wanted alerts",
+  "homeQuickWantedDesc": "Get notified when listed",
+  "homeQuickTrustedShops": "Trusted shops",
+  "homeQuickTrustedShopsDesc": "Verified and top rated",
+  "homeQuickFollowing": "Following",
+  "homeQuickFollowingDesc": "Shops and people you follow",
+  "homeBannerTooltip": "Promotion banner"
 }
