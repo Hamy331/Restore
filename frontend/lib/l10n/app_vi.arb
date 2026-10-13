@@ -565,5 +565,14 @@
   "noMatchingOptions": "Không có kết quả phù hợp",
   "locationOutsideVietnamTitle": "Bạn đang ở ngoài Việt Nam?",
   "locationOutsideVietnamBody": "ReStore hiện chỉ hỗ trợ địa chỉ tại Việt Nam. Bạn chọn tỉnh/thành và phường/xã ở bên dưới nhé.",
-  "locationOutOfCoverageTitle": "Chưa nhận ra khu vực này"
+  "locationOutOfCoverageTitle": "Chưa nhận ra khu vực này",
+  "aiBubbleTooltip": "Chat với ReStore AI",
+  "unreadMessagesCount": "{count} tin nhắn chưa đọc",
+  "@unreadMessagesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -21,7 +21,10 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // Chừa chỗ cho thanh điều hướng kính nổi phía dưới
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
     return SafeArea(
+      bottom: false,
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -185,7 +188,7 @@ class HomeView extends StatelessWidget {
                     onTap: () => context.go('/search'),
                   ),
                   const SizedBox(height: 10),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20 + bottomInset),
                 ],
               ),
             ),

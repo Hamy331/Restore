@@ -599,5 +599,14 @@
   "noMatchingOptions": "No matching results",
   "locationOutsideVietnamTitle": "Looks like you’re outside Vietnam",
   "locationOutsideVietnamBody": "ReStore only supports addresses in Vietnam for now. Please pick your province and ward below.",
-  "locationOutOfCoverageTitle": "We don’t recognise this area yet"
+  "locationOutOfCoverageTitle": "We don’t recognise this area yet",
+  "aiBubbleTooltip": "Chat with ReStore AI",
+  "unreadMessagesCount": "{count} unread messages",
+  "@unreadMessagesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -2497,6 +2497,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We don’t recognise this area yet'**
   String get locationOutOfCoverageTitle;
+
+  /// No description provided for @aiBubbleTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with ReStore AI'**
+  String get aiBubbleTooltip;
+
+  /// No description provided for @unreadMessagesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unread messages'**
+  String unreadMessagesCount(int count);
 }
 
 class _AppLocalizationsDelegate

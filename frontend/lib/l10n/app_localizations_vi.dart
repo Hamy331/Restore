@@ -1301,4 +1301,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get locationOutOfCoverageTitle => 'Chưa nhận ra khu vực này';
+
+  @override
+  String get aiBubbleTooltip => 'Chat với ReStore AI';
+
+  @override
+  String unreadMessagesCount(int count) {
+    return '$count tin nhắn chưa đọc';
+  }
 }
