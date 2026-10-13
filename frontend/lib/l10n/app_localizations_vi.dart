@@ -821,6 +821,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get manageListings => 'Quản lý tin';
 
   @override
+  String get feedsTitle => 'Bảng tin';
+
+  @override
+  String get feedsComingSoon => 'Bảng tin đang được phát triển';
+
+  @override
   String get newListing => 'Đăng tin mới';
 
   @override

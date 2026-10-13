@@ -23,6 +23,7 @@ import 'package:restore/modules/shell/views/main_shell.dart';
 import 'package:restore/modules/shell/bloc/shell_badges_cubit.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/l10n/app_localizations.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -47,6 +48,9 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/welcome',
+  // Đường dẫn chưa có trang (VD tính năng chưa làm) thì đưa về trang chủ;
+  // bộ chặn đăng nhập sẽ tự chuyển sang /login nếu chưa đăng nhập
+  onException: (_, _, router) => router.go('/home'),
   redirect: (context, state) {
     final authState = context.read<AuthBloc>().state;
     return authRouteRedirect(authState, state.uri.path);
@@ -181,12 +185,15 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/manage-listings',
-              builder: (_, _) => const TFoundationPlaceholderLayout(
-                title: 'Quản lý tin',
-                message: 'Tính năng đang được phát triển',
-                icon: AppIcons.listings,
-              ),
+              path: '/feeds',
+              builder: (context, _) {
+                final l10n = AppLocalizations.of(context)!;
+                return TFoundationPlaceholderLayout(
+                  title: l10n.feedsTitle,
+                  message: l10n.feedsComingSoon,
+                  icon: AppIcons.feeds,
+                );
+              },
             ),
           ],
         ),

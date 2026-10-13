@@ -338,6 +338,8 @@
   "boostPaymentPending": "Đang xác nhận phí dịch vụ",
   "tryPaymentAgain": "Thử thanh toán lại",
   "manageListings": "Quản lý tin",
+  "feedsTitle": "Bảng tin",
+  "feedsComingSoon": "Bảng tin đang được phát triển",
   "newListing": "Đăng tin mới",
   "visibleStatus": "Đang hiển thị",
   "pendingStatus": "Chờ duyệt",

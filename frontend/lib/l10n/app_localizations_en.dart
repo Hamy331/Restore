@@ -825,6 +825,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageListings => 'Manage listings';
 
   @override
+  String get feedsTitle => 'Feeds';
+
+  @override
+  String get feedsComingSoon => 'Feeds are coming soon';
+
+  @override
   String get newListing => 'New listing';
 
   @override

@@ -76,12 +76,7 @@ class ShellBottomNav extends StatelessWidget {
             child: Row(
               children: [
                 item(0, AppIcons.home, AppIcons.homeActive, l10n.homeTitle),
-                item(
-                  1,
-                  AppIcons.listings,
-                  AppIcons.listingsActive,
-                  l10n.manageListings,
-                ),
+                item(1, AppIcons.feeds, AppIcons.feedsActive, l10n.feedsTitle),
                 // Chừa chỗ cho nút Đăng tin nằm trong phần lồi
                 const Expanded(child: SizedBox()),
                 item(
@@ -237,7 +232,7 @@ class _CurvedShadowPainter extends CustomPainter {
   bool shouldRepaint(_CurvedShadowPainter oldDelegate) => false;
 }
 
-class _NavItem extends StatelessWidget {
+class _NavItem extends StatefulWidget {
   final IconData icon;
   final IconData activeIcon;
   final String label;
@@ -256,79 +251,171 @@ class _NavItem extends StatelessWidget {
     required this.onTap,
   });
 
+  @override
+  State<_NavItem> createState() => _NavItemState();
+}
+
+/// Mục điều hướng: khi chọn thì icon phát sáng cam (quầng sáng mờ phía sau,
+/// vệt đèn trên mép thanh). Nhấn hoặc giữ thì thu nhỏ lại và quầng sáng
+/// loé lên, thả tay thì nảy về.
+class _NavItemState extends State<_NavItem> {
   static const _duration = Duration(milliseconds: 320);
+
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed != value) setState(() => _pressed = value);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final selected = widget.selected;
     final color = selected ? AppColors.primaryDark : AppColors.textSecondary;
+    final glow = selected ? 1.0 : (_pressed ? 0.55 : 0.0);
+
     return Semantics(
       button: true,
       selected: selected,
-      label: semanticLabel,
+      label: widget.semanticLabel,
       excludeSemantics: true,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: widget.onTap,
+        onTapDown: (_) => _setPressed(true),
+        onTapUp: (_) => _setPressed(false),
+        onTapCancel: () => _setPressed(false),
+        onLongPressStart: (_) {
+          // Nhận giữ thì cử chỉ nhấn bị huỷ, bật lại trạng thái đang nhấn
+          HapticFeedback.lightImpact();
+          _setPressed(true);
+        },
+        onLongPressEnd: (_) {
+          _setPressed(false);
+          widget.onTap();
+        },
         behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.topCenter,
           children: [
-            SizedBox(
-              width: 34,
-              height: 30,
-              child: Stack(
-                clipBehavior: Clip.none,
+            // Luồng sáng hắt từ vệt đèn xuống icon
+            Positioned(
+              top: 0,
+              child: IgnorePointer(
+                child: AnimatedOpacity(
+                  opacity: selected ? 1 : 0,
+                  duration: _duration,
+                  child: const CustomPaint(
+                    size: Size(56, 46),
+                    painter: _LightBeamPainter(),
+                  ),
+                ),
+              ),
+            ),
+            // Vệt đèn nhỏ trên mép thanh, ngay trên mục đang chọn
+            Positioned(
+              top: 0,
+              child: AnimatedContainer(
+                duration: _duration,
+                curve: Curves.easeOutCubic,
+                width: selected ? 22 : 0,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.75),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(3),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(
+                        alpha: selected ? 0.35 : 0,
+                      ),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            AnimatedScale(
+              scale: _pressed ? 0.86 : 1,
+              duration: _pressed
+                  ? const Duration(milliseconds: 110)
+                  : const Duration(milliseconds: 380),
+              curve: _pressed ? Curves.easeOut : Curves.easeOutBack,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Đốm kính màu cam lấp ló sau icon khi được chọn
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: AnimatedScale(
-                      scale: selected ? 1 : 0,
-                      duration: _duration,
-                      curve: selected ? Curves.easeOutBack : Curves.easeIn,
-                      alignment: Alignment.bottomRight,
-                      child: const _GlassDot(size: 18),
+                  SizedBox(
+                    width: 44,
+                    height: 32,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        // Quầng sáng mờ phía sau icon
+                        AnimatedOpacity(
+                          opacity: glow,
+                          duration: _duration,
+                          child: AnimatedScale(
+                            scale: _pressed ? 1.25 : 1,
+                            duration: _duration,
+                            curve: Curves.easeOutCubic,
+                            child: const _GlowHalo(size: 54),
+                          ),
+                        ),
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(end: selected ? 1 : 0),
+                          duration: _duration,
+                          curve: Curves.easeOutCubic,
+                          builder: (context, t, _) => Transform.translate(
+                            offset: Offset(0, -1.5 * t),
+                            child: Icon(
+                              selected ? widget.activeIcon : widget.icon,
+                              size: 24,
+                              color: color,
+                              shadows: [
+                                Shadow(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.35 * t,
+                                  ),
+                                  blurRadius: 12 * t,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (widget.badge > 0)
+                          Positioned(
+                            right: 0,
+                            top: -6,
+                            child: _CountBadge(count: widget.badge),
+                          ),
+                      ],
                     ),
                   ),
-                  Positioned(
-                    left: 2,
-                    top: 1,
-                    child: AnimatedSlide(
-                      offset: selected ? const Offset(0, -0.06) : Offset.zero,
-                      duration: _duration,
-                      curve: Curves.easeOutCubic,
-                      child: Icon(
-                        selected ? activeIcon : icon,
-                        size: 24,
-                        color: color,
+                  const SizedBox(height: 3),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: AnimatedDefaultTextStyle(
+                        duration: _duration,
+                        style: TextStyle(
+                          fontSize: 11,
+                          letterSpacing: 0.2,
+                          fontWeight: selected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: color,
+                          fontFamily: DefaultTextStyle.of(
+                            context,
+                          ).style.fontFamily,
+                        ),
+                        child: Text(widget.label, maxLines: 1),
                       ),
                     ),
                   ),
-                  if (badge > 0)
-                    Positioned(
-                      right: -6,
-                      top: -6,
-                      child: _CountBadge(count: badge),
-                    ),
                 ],
-              ),
-            ),
-            const SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: AnimatedDefaultTextStyle(
-                  duration: _duration,
-                  style: TextStyle(
-                    fontSize: 11,
-                    letterSpacing: 0.2,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                    color: color,
-                    fontFamily: DefaultTextStyle.of(context).style.fontFamily,
-                  ),
-                  child: Text(label, maxLines: 1),
-                ),
               ),
             ),
           ],
@@ -338,11 +425,43 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-/// Đốm tròn gradient cam trong mờ với viền sáng, như viên kính màu
-class _GlassDot extends StatelessWidget {
+/// Hình thang loe xuống, cam nhạt mờ dần: ánh đèn từ mép thanh rọi xuống
+class _LightBeamPainter extends CustomPainter {
+  const _LightBeamPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const topHalf = 11.0;
+    final cx = size.width / 2;
+    final path = Path()
+      ..moveTo(cx - topHalf, 0)
+      ..lineTo(cx + topHalf, 0)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+    canvas.drawPath(
+      path,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            AppColors.primary.withValues(alpha: 0.15),
+            AppColors.primary.withValues(alpha: 0),
+          ],
+        ).createShader(Offset.zero & size),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_LightBeamPainter oldDelegate) => false;
+}
+
+/// Quầng sáng tròn cam mờ dần ra mép, như đèn hắt sau icon
+class _GlowHalo extends StatelessWidget {
   final double size;
 
-  const _GlassDot({required this.size});
+  const _GlowHalo({required this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -351,17 +470,13 @@ class _GlassDot extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        gradient: RadialGradient(
           colors: [
-            const Color(0xFFFFD27A).withValues(alpha: 0.95),
-            AppColors.primary.withValues(alpha: 0.75),
+            AppColors.primary.withValues(alpha: 0.24),
+            AppColors.primary.withValues(alpha: 0.09),
+            AppColors.primary.withValues(alpha: 0),
           ],
-        ),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.9),
-          width: 1.2,
+          stops: const [0, 0.5, 1],
         ),
       ),
     );
