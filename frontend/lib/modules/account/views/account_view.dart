@@ -16,6 +16,7 @@ class AccountView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return SafeArea(
+      bottom: false,
       child: Column(
         children: [
           ResponsiveContent(
@@ -45,7 +46,11 @@ class AccountView extends StatelessWidget {
             child: ColoredBox(
               color: AppColors.background,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                // Chừa chỗ cho thanh điều hướng kính nổi phía dưới
+                padding: EdgeInsets.only(
+                  top: 12,
+                  bottom: 12 + MediaQuery.paddingOf(context).bottom,
+                ),
                 child: ResponsiveContent(
                   maxWidth: 720,
                   child: Column(

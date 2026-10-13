@@ -83,6 +83,7 @@ class _MessagesViewState extends State<MessagesView> {
     }).toList();
 
     return SafeArea(
+      bottom: false,
       child: ResponsiveContent(
         maxWidth: 760,
         padding: EdgeInsets.zero,
@@ -135,6 +136,10 @@ class _MessagesViewState extends State<MessagesView> {
             ),
             Expanded(
               child: ListView.separated(
+                // Chừa chỗ cho thanh điều hướng kính nổi phía dưới
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.paddingOf(context).bottom,
+                ),
                 itemCount: visible.length,
                 separatorBuilder: (_, _) => const Divider(height: 1),
                 itemBuilder: (_, index) => _ConversationTile(

@@ -1308,4 +1308,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationOutOfCoverageTitle => 'We don’t recognise this area yet';
+
+  @override
+  String get aiBubbleTooltip => 'Chat with ReStore AI';
+
+  @override
+  String unreadMessagesCount(int count) {
+    return '$count unread messages';
+  }
 }

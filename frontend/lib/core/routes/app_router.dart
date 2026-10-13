@@ -20,6 +20,8 @@ import 'package:restore/services/device_location_service.dart';
 import 'package:restore/services/media_picker_service.dart';
 import 'package:restore/core/utils/animations/app_page_transitions.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
+import 'package:restore/modules/shell/bloc/shell_badges_cubit.dart';
+import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
@@ -164,8 +166,14 @@ final appRouter = GoRouter(
       ],
     ),
     StatefulShellRoute.indexedStack(
-      builder: (_, _, navigationShell) =>
-          MainShell(navigationShell: navigationShell),
+      builder: (_, _, navigationShell) => BlocProvider(
+        create: (_) => ShellBadgesCubit(
+          chatRepository: AppEnvironment.useMockData
+              ? MockChatRepository()
+              : ApiChatRepository(),
+        )..refresh(),
+        child: MainShell(navigationShell: navigationShell),
+      ),
       branches: [
         StatefulShellBranch(
           routes: [GoRoute(path: '/home', builder: (_, _) => const HomeView())],
