@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../core/constants/app_colors.dart';
 
 class AuthContextIcon extends StatelessWidget {
@@ -100,7 +101,7 @@ class AuthInfoBox extends StatelessWidget {
     ),
     child: Row(
       children: [
-        const Icon(Icons.info_outline, size: 19, color: AppColors.primaryDark),
+        const Icon(AppIcons.info, size: 19, color: AppColors.primaryDark),
         const SizedBox(width: 9),
         Expanded(child: Text(message, style: const TextStyle(fontSize: 12))),
       ],
@@ -123,7 +124,7 @@ class AuthFeedback extends StatelessWidget {
     ),
     child: Row(
       children: [
-        const Icon(Icons.error_outline, size: 19, color: AppColors.error),
+        const Icon(AppIcons.error, size: 19, color: AppColors.error),
         const SizedBox(width: 9),
         Expanded(
           child: Text(

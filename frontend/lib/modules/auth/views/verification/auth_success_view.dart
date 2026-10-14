@@ -6,6 +6,7 @@ import '../../widgets/auth_screen.dart';
 import '../../bloc/auth_bloc.dart';
 import '../../bloc/auth_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 class AuthSuccessView extends StatelessWidget {
   const AuthSuccessView({
@@ -41,7 +42,7 @@ class AuthSuccessView extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              Icons.check_circle_outline,
+              AppIcons.checkCircle,
               size: 42,
               color: AppColors.primaryDark,
             ),

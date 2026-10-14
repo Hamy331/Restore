@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -51,7 +52,7 @@ class _ForgotPasswordOtpViewBodyState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AuthContextIcon(Icons.mail_lock_outlined),
+          const AuthContextIcon(AppIcons.mail),
           const SizedBox(height: 13),
           Text(
             l10n.checkYourEmail,
