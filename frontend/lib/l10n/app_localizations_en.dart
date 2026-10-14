@@ -825,6 +825,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageListings => 'Manage listings';
 
   @override
+  String get feedsTitle => 'Feeds';
+
+  @override
+  String get feedsComingSoon => 'Feeds are coming soon';
+
+  @override
   String get newListing => 'New listing';
 
   @override
@@ -938,7 +944,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryElectronicsTitle => 'Electronics';
 
   @override
-  String get categoryElectronicsDesc => 'Phones, Laptops, Cameras,...';
+  String get categoryElectronicsDesc => 'Laptops, Cameras, Headphones,...';
 
   @override
   String get categoryVehiclesTitle => 'Vehicles';
@@ -953,7 +959,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryFashionDesc => 'Clothes, Shoes, Bags,...';
 
   @override
-  String get categoryHomeTitle => 'Home Appliances';
+  String get categoryHomeTitle => 'Household';
 
   @override
   String get categoryHomeDesc => 'Furniture, Lighting, Kitchenware, Decor,...';
@@ -985,4 +991,436 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueBtn => 'Continue';
+
+  @override
+  String get completeListingTitle => 'Complete listing';
+
+  @override
+  String get saveDraft => 'Save draft';
+
+  @override
+  String get draftSaved => 'Draft saved';
+
+  @override
+  String listingPhotosLabel(int max) {
+    return 'Photos (up to $max photos)';
+  }
+
+  @override
+  String photoCount(int count, int max) {
+    return '$count/$max';
+  }
+
+  @override
+  String get coverPhotoBadge => 'Cover';
+
+  @override
+  String get photosRequiredError => 'Please add at least 1 photo';
+
+  @override
+  String get detailedDescriptionLabel => 'Detailed description';
+
+  @override
+  String get listingDescriptionHint =>
+      '- Condition, how long it has been used\n- Included accessories, minor defects if any\n- Reason for selling, delivery method';
+
+  @override
+  String characterCount(int count, int max) {
+    return '$count/$max characters';
+  }
+
+  @override
+  String descriptionMinLengthError(int min) {
+    return 'Description must be at least $min characters';
+  }
+
+  @override
+  String get listingTitleLabel => 'Listing title';
+
+  @override
+  String get listingTitleHint => 'e.g. Piaggio Vespa Sprint 2024 15,000 km';
+
+  @override
+  String listingTitleMinLengthError(int min) {
+    return 'Title must be at least $min characters';
+  }
+
+  @override
+  String get priceRequiredError => 'Please enter a sale price';
+
+  @override
+  String get addressLabel => 'Address';
+
+  @override
+  String get youAreLabel => 'You are';
+
+  @override
+  String get sellerPersonal => 'Personal';
+
+  @override
+  String get sellerBusiness => 'Business';
+
+  @override
+  String get detailedInfoTitle => 'Detailed information';
+
+  @override
+  String categoryWithName(String name) {
+    return 'Category: $name';
+  }
+
+  @override
+  String get fieldRequiredError => 'Please fill in this field';
+
+  @override
+  String get fieldSelectRequiredError => 'Please select an option';
+
+  @override
+  String get missingRequiredFields => 'Please complete all required fields';
+
+  @override
+  String get listingSubmitted =>
+      'Your listing has been submitted and is waiting for review';
+
+  @override
+  String get previewNotice => 'This is how buyers will see your listing';
+
+  @override
+  String get noPhotosYet => 'No photos yet';
+
+  @override
+  String get stepBasicInfoTitle => 'Photos, description & price';
+
+  @override
+  String get takePhoto => 'Take a photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from gallery';
+
+  @override
+  String photoLimitReached(int max) {
+    return 'You can add up to $max photos';
+  }
+
+  @override
+  String get photoPickFailed =>
+      'Couldn\'t open your photos. Please check the app\'s photo and camera permissions.';
+
+  @override
+  String get draftSaveFailed => 'Couldn\'t save the draft, please try again';
+
+  @override
+  String get publishFailed => 'Couldn\'t publish the listing, please try again';
+
+  @override
+  String get tradeTypeLabel => 'Trade type';
+
+  @override
+  String get tradeSell => 'Sell';
+
+  @override
+  String get tradeExchange => 'Exchange';
+
+  @override
+  String get tradeSellOrExchange => 'Both';
+
+  @override
+  String get tradeExchangeAccepted => 'Open to exchange';
+
+  @override
+  String get exchangeWishLabel => 'Want to exchange for';
+
+  @override
+  String get exchangeWishHint => 'e.g. iPhone 13 or a tablet';
+
+  @override
+  String get selectAddressHint => 'Choose an area';
+
+  @override
+  String get stepShortCategory => 'Category';
+
+  @override
+  String get stepShortBasicInfo => 'Basics';
+
+  @override
+  String get stepShortDetails => 'Details';
+
+  @override
+  String stepProgressLabel(int current, int total) {
+    return 'Step $current/$total';
+  }
+
+  @override
+  String nextStepLabel(String name) {
+    return 'Next: $name';
+  }
+
+  @override
+  String get conditionSectionTitle => 'Item condition';
+
+  @override
+  String get conditionNew => 'New';
+
+  @override
+  String get conditionLikeNew => 'Like new';
+
+  @override
+  String get conditionUsedGood => 'Used - good';
+
+  @override
+  String get conditionUsedFair => 'Used - fair';
+
+  @override
+  String get conditionForParts => 'For parts / not working';
+
+  @override
+  String get conditionNewDesc => 'Never used, original packaging';
+
+  @override
+  String get conditionLikeNewDesc => 'Barely used, no visible marks';
+
+  @override
+  String get conditionUsedGoodDesc => 'Works well, minor signs of use';
+
+  @override
+  String get conditionUsedFairDesc => 'Usable, visible wear or minor faults';
+
+  @override
+  String get conditionForPartsDesc => 'Does not work properly';
+
+  @override
+  String get categoryAttributesTitle => 'Category details';
+
+  @override
+  String get categoryAttributesHint => 'Fields below depend on the category';
+
+  @override
+  String get selectOptionHint => 'Select';
+
+  @override
+  String numberRangeError(String min, String max) {
+    return 'Value must be between $min and $max';
+  }
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get loadCategoriesFailedTitle => 'Couldn\'t load categories';
+
+  @override
+  String get loadCategoriesFailedMessage =>
+      'Check your connection and try again';
+
+  @override
+  String get negotiableHint => 'Buyers can make offers in chat';
+
+  @override
+  String get addressNearbyHint => 'Helps nearby buyers find your listing';
+
+  @override
+  String privateStreetAddress(String street) {
+    return '$street (private)';
+  }
+
+  @override
+  String get addressSheetTitle => 'Item location';
+
+  @override
+  String get useCurrentLocation => 'Use my current location';
+
+  @override
+  String get useCurrentLocationHint =>
+      'Fill in province and ward automatically';
+
+  @override
+  String get locatingLabel => 'Getting your location...';
+
+  @override
+  String get locationDetected => 'Location detected';
+
+  @override
+  String get orChooseManually => 'or choose manually';
+
+  @override
+  String get provinceLabel => 'Province/City';
+
+  @override
+  String get selectProvinceHint => 'Select province/city';
+
+  @override
+  String get wardLabel => 'Ward/Commune';
+
+  @override
+  String get selectWardHint => 'Select ward/commune';
+
+  @override
+  String get selectProvinceFirst => 'Select a province first';
+
+  @override
+  String get streetAddressLabel => 'House number, street';
+
+  @override
+  String get streetAddressHint => 'e.g. 12 Nguyen Hue';
+
+  @override
+  String get streetAddressHelper => 'Optional, never shown publicly';
+
+  @override
+  String get addressPrivacyNote =>
+      'Buyers only see the ward and province. Your location is used to show listings near you.';
+
+  @override
+  String get confirmAddress => 'Confirm address';
+
+  @override
+  String get loadingLocations => 'Loading...';
+
+  @override
+  String get loadLocationsFailed => 'Couldn\'t load the list, tap to retry';
+
+  @override
+  String get locationServiceDisabled => 'Turn on location services to continue';
+
+  @override
+  String get locationPermissionDenied => 'Location permission was denied';
+
+  @override
+  String get locationPermissionDeniedForever =>
+      'Location access is blocked, enable it in Settings';
+
+  @override
+  String get locationUnavailable =>
+      'Couldn\'t get your location, please choose manually';
+
+  @override
+  String get locationOutOfCoverage =>
+      'Your location didn’t match any ward. Please choose it manually below.';
+
+  @override
+  String get searchOptionHint => 'Search';
+
+  @override
+  String get noMatchingOptions => 'No matching results';
+
+  @override
+  String get locationOutsideVietnamTitle => 'Looks like you’re outside Vietnam';
+
+  @override
+  String get locationOutsideVietnamBody =>
+      'ReStore only supports addresses in Vietnam for now. Please pick your province and ward below.';
+
+  @override
+  String get locationOutOfCoverageTitle => 'We don’t recognise this area yet';
+
+  @override
+  String get aiBubbleTooltip => 'Chat with ReStore AI';
+
+  @override
+  String unreadMessagesCount(int count) {
+    return '$count unread messages';
+  }
+
+  @override
+  String get homeGreeting => 'Hi there 👋';
+
+  @override
+  String get homeHeadline => 'What are you hunting for today?';
+
+  @override
+  String get homeSearchHint => 'Search pre-loved and swap items...';
+
+  @override
+  String get homeChangeArea => 'Change area';
+
+  @override
+  String get homeForYouTitle => 'Picked for you';
+
+  @override
+  String get homeLatestTitle => 'Fresh listings';
+
+  @override
+  String get homeSeeAll => 'See all';
+
+  @override
+  String get homeFeaturedTag => 'Featured';
+
+  @override
+  String get homeExchangeTag => 'Swappable';
+
+  @override
+  String get homeExchangeOnly => 'Swap only';
+
+  @override
+  String get homeSaveListing => 'Save listing';
+
+  @override
+  String get homeUnsaveListing => 'Remove from saved';
+
+  @override
+  String get homeLoadErrorTitle => 'Couldn\'t load the home page';
+
+  @override
+  String get homeLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get timeJustNow => 'Just now';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '$count h ago';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '$count d ago';
+  }
+
+  @override
+  String get featureComingSoon => 'This feature is coming soon';
+
+  @override
+  String homeGreetingName(String name) {
+    return 'Hi there, $name 👋';
+  }
+
+  @override
+  String get homeLatestEmpty => 'No listings here yet';
+
+  @override
+  String get homeEndOfList => 'You\'re all caught up';
+
+  @override
+  String get homeQuickNearby => 'Near me';
+
+  @override
+  String get homeQuickNearbyDesc => 'Within 5 km';
+
+  @override
+  String get homeQuickWanted => 'Wanted alerts';
+
+  @override
+  String get homeQuickWantedDesc => 'Get notified when listed';
+
+  @override
+  String get homeQuickTrustedShops => 'Trusted shops';
+
+  @override
+  String get homeQuickTrustedShopsDesc => 'Verified and top rated';
+
+  @override
+  String get homeQuickFollowing => 'Following';
+
+  @override
+  String get homeQuickFollowingDesc => 'Shops and people you follow';
+
+  @override
+  String get homeBannerTooltip => 'Promotion banner';
 }

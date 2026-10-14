@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
+import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/shared/widgets/app_local_image.dart';
 
+/// Một dòng danh mục: ảnh bo góc, tên, mô tả ngắn và mũi tên
 class CategoryCard extends StatelessWidget {
   final String title;
   final String description;
@@ -13,40 +15,49 @@ class CategoryCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.description,
-    this.imagePath,
     required this.fallbackIcon,
     required this.onTap,
+    this.imagePath,
     this.showBottomBorder = true,
   });
+
+  static const double imageSize = 64;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          // Viền đáy mảnh để phân tách các danh mục[cite: 69]
           border: showBottomBorder
-              ? const Border(
-                  bottom: BorderSide(color: AppColors.border, width: 1.0),
-                )
+              ? const Border(bottom: BorderSide(color: AppColors.border))
               : null,
         ),
         child: Row(
           children: [
-            // Khung ảnh nền viền mỏng bo tròn[cite: 69]
             Container(
-              width: 72,
-              height: 72,
+              width: imageSize,
+              height: imageSize,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(18),
                 color: AppColors.cream,
-                border: Border.all(color: AppColors.primarySoft, width: 2.0),
+                border: Border.all(color: AppColors.primarySoft, width: 2),
               ),
-              child: _buildImageOrIcon(),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: imagePath == null
+                    ? Icon(fallbackIcon, color: AppColors.primaryDark, size: 32)
+                    : AppLocalImage(
+                        path: imagePath!,
+                        fallbackIcon: fallbackIcon,
+                        cacheWidth:
+                            (imageSize * MediaQuery.devicePixelRatioOf(context))
+                                .round(),
+                      ),
+              ),
             ),
-            const SizedBox(width: 20.0),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,47 +65,29 @@ class CategoryCard extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 18.0,
+                      fontSize: 17,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 6.0),
+                  const SizedBox(height: 4),
                   Text(
                     description,
-                    style: const TextStyle(
-                      fontSize: 13.0,
-                      color: AppColors.textSecondary,
-                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8.0),
-            const Icon(
-              Icons.chevron_right,
-              color: AppColors.primaryDark,
-            ), // Mũi tên màu nâu cam[cite: 69]
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, color: AppColors.primaryDark),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildImageOrIcon() {
-    if (imagePath != null && imagePath!.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(18.0),
-        child: Image.asset(
-          imagePath!,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              Icon(fallbackIcon, color: AppColors.primaryDark, size: 36),
-        ),
-      );
-    }
-    return Icon(fallbackIcon, color: AppColors.primaryDark, size: 36);
   }
 }

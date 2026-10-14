@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
@@ -96,7 +97,7 @@ class _Composer extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: context.read<AiAssistantCubit>().draftSubmitted,
                 style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
-                child: const Icon(Icons.arrow_upward, size: 20),
+                child: const Icon(AppIcons.arrowUp, size: 20),
               ),
             ),
           ],
@@ -121,14 +122,14 @@ class _AiContent extends StatelessWidget {
     ),
     AiAssistantStatus.comparison => _ComparisonState(l10n: l10n),
     AiAssistantStatus.empty => _MessageState(
-      icon: Icons.search_off,
+      icon: AppIcons.searchEmpty,
       title: l10n.aiEmptyTitle,
       message: l10n.aiEmptyDescription,
       actionLabel: l10n.adjustRequest,
       status: AiAssistantStatus.welcome,
     ),
     AiAssistantStatus.error => _MessageState(
-      icon: Icons.refresh,
+      icon: AppIcons.refresh,
       title: l10n.aiErrorTitle,
       message: l10n.aiErrorDescription,
       actionLabel: l10n.retry,
@@ -160,7 +161,7 @@ class _WelcomeState extends StatelessWidget {
               Row(
                 children: [
                   const Icon(
-                    Icons.auto_awesome,
+                    AppIcons.sparkleActive,
                     color: AppColors.primaryDark,
                     size: 20,
                   ),
@@ -197,7 +198,7 @@ class _WelcomeState extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: () =>
                   context.read<AiAssistantCubit>().submitted(prompt),
-              icon: const Icon(Icons.search, size: 18),
+              icon: const Icon(AppIcons.search, size: 18),
               label: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(prompt),
@@ -285,7 +286,7 @@ class _ResultsState extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Icon(
-              Icons.auto_awesome,
+              AppIcons.sparkleActive,
               color: AppColors.primaryDark,
               size: 18,
             ),
@@ -337,14 +338,14 @@ class _ResultsState extends StatelessWidget {
       OutlinedButton.icon(
         onPressed: () =>
             context.read<AiAssistantCubit>().submitted(l10n.canonOnly),
-        icon: const Icon(Icons.search, size: 18),
+        icon: const Icon(AppIcons.search, size: 18),
         label: Text(l10n.canonOnly),
       ),
       const SizedBox(height: 8),
       OutlinedButton.icon(
         onPressed: () =>
             context.read<AiAssistantCubit>().submitted(l10n.compareTheseTwo),
-        icon: const Icon(Icons.search, size: 18),
+        icon: const Icon(AppIcons.search, size: 18),
         label: Text(l10n.compareTheseTwo),
       ),
     ],
@@ -369,7 +370,7 @@ class _ComparisonState extends StatelessWidget {
         child: Row(
           children: [
             const Icon(
-              Icons.auto_awesome,
+              AppIcons.sparkleActive,
               color: AppColors.primaryDark,
               size: 18,
             ),
@@ -574,7 +575,7 @@ class _AiListing extends StatelessWidget {
             ],
           ),
         ),
-        const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+        const Icon(AppIcons.chevronRight, color: AppColors.textSecondary),
       ],
     ),
   );
