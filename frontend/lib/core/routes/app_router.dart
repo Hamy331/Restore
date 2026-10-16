@@ -15,6 +15,8 @@ import 'package:restore/modules/listings/views/basic_info/basic_info_view.dart';
 import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
 import 'package:restore/modules/listings/views/listing_details/listing_details_view.dart';
 import 'package:restore/modules/listings/views/listing_preview/listing_preview_view.dart';
+import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
+import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/services/device_location_service.dart';
 import 'package:restore/services/media_picker_service.dart';
@@ -232,6 +234,20 @@ final appRouter = GoRouter(
       builder: (_, _) => BlocProvider(
         create: (_) => AiAssistantCubit(),
         child: const AiAssistantView(),
+      ),
+    ),
+    // Chi tiết sản phẩm; extra là ListingModel của thẻ vừa bấm (tuỳ chọn)
+    GoRoute(
+      path: '/listings/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
+        state: state,
+        child: ProductDetailView(
+          listingId: state.pathParameters['id']!,
+          preview: state.extra is ListingModel
+              ? state.extra! as ListingModel
+              : null,
+        ),
       ),
     ),
     GoRoute(

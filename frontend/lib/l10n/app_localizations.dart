@@ -2707,6 +2707,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Promotion banner'**
   String get homeBannerTooltip;
+
+  /// No description provided for @productDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product details'**
+  String get productDetailTitle;
+
+  /// No description provided for @productLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this listing'**
+  String get productLoadErrorTitle;
+
+  /// No description provided for @productLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The listing may have been removed, or your connection is unstable. Please try again.'**
+  String get productLoadErrorBody;
+
+  /// No description provided for @productViewCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} views'**
+  String productViewCount(int count);
+
+  /// No description provided for @productUnavailableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This item can no longer be bought.'**
+  String get productUnavailableHint;
+
+  /// No description provided for @listingStatusDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get listingStatusDraft;
+
+  /// No description provided for @listingStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get listingStatusPending;
+
+  /// No description provided for @listingStatusAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get listingStatusAvailable;
+
+  /// No description provided for @listingStatusReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved'**
+  String get listingStatusReserved;
+
+  /// No description provided for @listingStatusSold.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold'**
+  String get listingStatusSold;
+
+  /// No description provided for @listingStatusExchanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchanged'**
+  String get listingStatusExchanged;
+
+  /// No description provided for @listingStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get listingStatusExpired;
+
+  /// No description provided for @productSellerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller'**
+  String get productSellerTitle;
+
+  /// No description provided for @productSellerVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get productSellerVerified;
+
+  /// No description provided for @productSellerNoReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get productSellerNoReviews;
+
+  /// No description provided for @productSellerJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {date}'**
+  String productSellerJoined(String date);
+
+  /// No description provided for @productSellerListings.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} listings'**
+  String productSellerListings(int count);
+
+  /// No description provided for @productSellerProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View profile'**
+  String get productSellerProfile;
+
+  /// No description provided for @productReadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get productReadMore;
+
+  /// No description provided for @productReadLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get productReadLess;
+
+  /// No description provided for @productSafetyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop safely'**
+  String get productSafetyTitle;
+
+  /// No description provided for @productSafetyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet in a public place, check the item before paying and never send a deposit to someone you don\'t know.'**
+  String get productSafetyBody;
+
+  /// No description provided for @productReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report listing'**
+  String get productReport;
+
+  /// No description provided for @productChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get productChat;
+
+  /// No description provided for @productMakeOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Make offer'**
+  String get productMakeOffer;
+
+  /// No description provided for @productBuyNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy now'**
+  String get productBuyNow;
+
+  /// No description provided for @productProposeExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose a swap'**
+  String get productProposeExchange;
+
+  /// No description provided for @productEditListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit listing'**
+  String get productEditListing;
+
+  /// No description provided for @productBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost'**
+  String get productBoost;
+
+  /// No description provided for @productOfferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Make an offer'**
+  String get productOfferTitle;
+
+  /// No description provided for @productOfferSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listed at {price}'**
+  String productOfferSubtitle(String price);
+
+  /// No description provided for @productOfferAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your offer'**
+  String get productOfferAmountLabel;
+
+  /// No description provided for @productOfferAmountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount'**
+  String get productOfferAmountHint;
+
+  /// No description provided for @productOfferInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than 0'**
+  String get productOfferInvalid;
+
+  /// No description provided for @productOfferTooHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Your offer can be at most twice the asking price'**
+  String get productOfferTooHigh;
+
+  /// No description provided for @productOfferSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send offer'**
+  String get productOfferSubmit;
+
+  /// No description provided for @productOfferSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer sent. Continue the conversation with the seller here.'**
+  String get productOfferSent;
+
+  /// No description provided for @productOfferBelow.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} below the asking price (-{difference})'**
+  String productOfferBelow(String percent, String difference);
+
+  /// No description provided for @productOfferAbove.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} above the asking price (+{difference})'**
+  String productOfferAbove(String percent, String difference);
+
+  /// No description provided for @productOfferEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as the asking price'**
+  String get productOfferEqual;
+
+  /// No description provided for @productLiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing just updated'**
+  String get productLiveTitle;
+
+  /// No description provided for @productLiveUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This item is now {status} and can no longer be ordered.'**
+  String productLiveUnavailable(String status);
+
+  /// No description provided for @productLiveAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This item is available again.'**
+  String get productLiveAvailable;
+
+  /// No description provided for @productLivePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller changed the price from {previous} to {current}.'**
+  String productLivePrice(String previous, String current);
+
+  /// No description provided for @productLivePriceGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller updated the price, please review before sending.'**
+  String get productLivePriceGeneric;
+
+  /// No description provided for @productLiveInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller just edited this listing.'**
+  String get productLiveInfo;
+
+  /// No description provided for @productLiveIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Live updates on'**
+  String get productLiveIndicator;
+
+  /// No description provided for @productBuyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request to buy'**
+  String get productBuyTitle;
+
+  /// No description provided for @productBuySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller confirms and arranges the handover with you in chat.'**
+  String get productBuySubtitle;
+
+  /// No description provided for @productBuyPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get productBuyPriceLabel;
+
+  /// No description provided for @productBuyNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Note for the seller'**
+  String get productBuyNoteLabel;
+
+  /// No description provided for @productBuyNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I can pick it up this evening'**
+  String get productBuyNoteHint;
+
+  /// No description provided for @productBuySubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get productBuySubmit;
+
+  /// No description provided for @productBuySent.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase request sent. The seller will reply in chat.'**
+  String get productBuySent;
+
+  /// No description provided for @productActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send. Please try again.'**
+  String get productActionFailed;
+
+  /// No description provided for @galleryOpenFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'View photos full screen'**
+  String get galleryOpenFullscreen;
 }
 
 class _AppLocalizationsDelegate

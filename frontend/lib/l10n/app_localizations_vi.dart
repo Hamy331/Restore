@@ -1416,4 +1416,195 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get homeBannerTooltip => 'Banner khuyến mãi';
+
+  @override
+  String get productDetailTitle => 'Chi tiết sản phẩm';
+
+  @override
+  String get productLoadErrorTitle => 'Không tải được tin đăng';
+
+  @override
+  String get productLoadErrorBody =>
+      'Tin có thể đã bị gỡ hoặc kết nối mạng chưa ổn định. Vui lòng thử lại.';
+
+  @override
+  String productViewCount(int count) {
+    return '$count lượt xem';
+  }
+
+  @override
+  String get productUnavailableHint => 'Sản phẩm này hiện không thể đặt mua.';
+
+  @override
+  String get listingStatusDraft => 'Bản nháp';
+
+  @override
+  String get listingStatusPending => 'Đang chờ duyệt';
+
+  @override
+  String get listingStatusAvailable => 'Đang bán';
+
+  @override
+  String get listingStatusReserved => 'Đã có người đặt';
+
+  @override
+  String get listingStatusSold => 'Đã bán';
+
+  @override
+  String get listingStatusExchanged => 'Đã trao đổi';
+
+  @override
+  String get listingStatusExpired => 'Đã hết hạn';
+
+  @override
+  String get productSellerTitle => 'Người bán';
+
+  @override
+  String get productSellerVerified => 'Đã xác minh';
+
+  @override
+  String get productSellerNoReviews => 'Chưa có đánh giá';
+
+  @override
+  String productSellerJoined(String date) {
+    return 'Tham gia $date';
+  }
+
+  @override
+  String productSellerListings(int count) {
+    return '$count tin đang bán';
+  }
+
+  @override
+  String get productSellerProfile => 'Xem trang';
+
+  @override
+  String get productReadMore => 'Xem thêm';
+
+  @override
+  String get productReadLess => 'Thu gọn';
+
+  @override
+  String get productSafetyTitle => 'Mua bán an toàn';
+
+  @override
+  String get productSafetyBody =>
+      'Hẹn gặp ở nơi công cộng, kiểm tra hàng trước khi trả tiền và không chuyển tiền đặt cọc cho người lạ.';
+
+  @override
+  String get productReport => 'Báo cáo tin';
+
+  @override
+  String get productChat => 'Nhắn tin';
+
+  @override
+  String get productMakeOffer => 'Trả giá';
+
+  @override
+  String get productBuyNow => 'Mua ngay';
+
+  @override
+  String get productProposeExchange => 'Đề nghị đổi';
+
+  @override
+  String get productEditListing => 'Sửa tin';
+
+  @override
+  String get productBoost => 'Đẩy tin';
+
+  @override
+  String get productOfferTitle => 'Trả giá với người bán';
+
+  @override
+  String productOfferSubtitle(String price) {
+    return 'Giá đang bán: $price';
+  }
+
+  @override
+  String get productOfferAmountLabel => 'Giá bạn đề nghị';
+
+  @override
+  String get productOfferAmountHint => 'Nhập số tiền';
+
+  @override
+  String get productOfferInvalid => 'Nhập số tiền lớn hơn 0';
+
+  @override
+  String get productOfferTooHigh =>
+      'Giá đề nghị không được vượt quá 2 lần giá đang bán';
+
+  @override
+  String get productOfferSubmit => 'Gửi đề nghị';
+
+  @override
+  String get productOfferSent =>
+      'Đã gửi đề nghị, tiếp tục trao đổi với người bán tại đây.';
+
+  @override
+  String productOfferBelow(String percent, String difference) {
+    return 'Thấp hơn giá gốc $percent (-$difference)';
+  }
+
+  @override
+  String productOfferAbove(String percent, String difference) {
+    return 'Cao hơn giá gốc $percent (+$difference)';
+  }
+
+  @override
+  String get productOfferEqual => 'Bằng giá gốc';
+
+  @override
+  String get productLiveTitle => 'Tin vừa được cập nhật';
+
+  @override
+  String productLiveUnavailable(String status) {
+    return 'Sản phẩm hiện $status, bạn không thể đặt mua nữa.';
+  }
+
+  @override
+  String get productLiveAvailable => 'Sản phẩm vừa được mở bán trở lại.';
+
+  @override
+  String productLivePrice(String previous, String current) {
+    return 'Người bán vừa đổi giá từ $previous thành $current.';
+  }
+
+  @override
+  String get productLivePriceGeneric =>
+      'Người bán vừa cập nhật giá, bạn xem lại trước khi gửi nhé.';
+
+  @override
+  String get productLiveInfo => 'Người bán vừa sửa thông tin tin đăng.';
+
+  @override
+  String get productLiveIndicator => 'Đang cập nhật trực tiếp';
+
+  @override
+  String get productBuyTitle => 'Yêu cầu mua';
+
+  @override
+  String get productBuySubtitle =>
+      'Người bán sẽ xác nhận và hẹn giao nhận với bạn qua tin nhắn.';
+
+  @override
+  String get productBuyPriceLabel => 'Giá';
+
+  @override
+  String get productBuyNoteLabel => 'Lời nhắn cho người bán';
+
+  @override
+  String get productBuyNoteHint => 'VD: Mình có thể qua lấy vào tối nay';
+
+  @override
+  String get productBuySubmit => 'Gửi yêu cầu';
+
+  @override
+  String get productBuySent =>
+      'Đã gửi yêu cầu mua, người bán sẽ phản hồi qua tin nhắn.';
+
+  @override
+  String get productActionFailed => 'Gửi chưa được, vui lòng thử lại.';
+
+  @override
+  String get galleryOpenFullscreen => 'Xem ảnh toàn màn hình';
 }

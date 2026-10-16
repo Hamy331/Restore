@@ -1,5 +1,6 @@
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/user_model.dart';
+import 'package:restore/modules/listings/data/mock_favorite_store.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
 import '../data/home_mock_data.dart';
@@ -35,14 +36,11 @@ class MockHomeRepository implements HomeRepository {
 
   final Duration latency;
 
-  /// Tin đã lưu, giữ trong bộ nhớ suốt phiên
-  static final Set<String> _favorites = {};
-
   List<HomeListingItem> _items() => [
     for (final json in HomeMockData.listings(DateTime.now()))
       HomeListingItem.fromJson(
         json,
-      ).copyWith(isFavorite: _favorites.contains('${json['id']}')),
+      ).copyWith(isFavorite: MockFavoriteStore.contains('${json['id']}')),
   ];
 
   @override
@@ -94,7 +92,7 @@ class MockHomeRepository implements HomeRepository {
 
   @override
   Future<void> setFavorite(String listingId, bool favorite) async {
-    favorite ? _favorites.add(listingId) : _favorites.remove(listingId);
+    MockFavoriteStore.set(listingId, favorite);
   }
 }
 

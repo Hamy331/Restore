@@ -669,5 +669,126 @@
   "homeQuickTrustedShopsDesc": "Verified and top rated",
   "homeQuickFollowing": "Following",
   "homeQuickFollowingDesc": "Shops and people you follow",
-  "homeBannerTooltip": "Promotion banner"
+  "homeBannerTooltip": "Promotion banner",
+  "productDetailTitle": "Product details",
+  "productLoadErrorTitle": "Couldn't load this listing",
+  "productLoadErrorBody": "The listing may have been removed, or your connection is unstable. Please try again.",
+  "productViewCount": "{count} views",
+  "@productViewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productUnavailableHint": "This item can no longer be bought.",
+  "listingStatusDraft": "Draft",
+  "listingStatusPending": "Pending review",
+  "listingStatusAvailable": "Available",
+  "listingStatusReserved": "Reserved",
+  "listingStatusSold": "Sold",
+  "listingStatusExchanged": "Exchanged",
+  "listingStatusExpired": "Expired",
+  "productSellerTitle": "Seller",
+  "productSellerVerified": "Verified",
+  "productSellerNoReviews": "No reviews yet",
+  "productSellerJoined": "Joined {date}",
+  "@productSellerJoined": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "productSellerListings": "{count} listings",
+  "@productSellerListings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productSellerProfile": "View profile",
+  "productReadMore": "Show more",
+  "productReadLess": "Show less",
+  "productSafetyTitle": "Shop safely",
+  "productSafetyBody": "Meet in a public place, check the item before paying and never send a deposit to someone you don't know.",
+  "productReport": "Report listing",
+  "productChat": "Chat",
+  "productMakeOffer": "Make offer",
+  "productBuyNow": "Buy now",
+  "productProposeExchange": "Propose a swap",
+  "productEditListing": "Edit listing",
+  "productBoost": "Boost",
+  "productOfferTitle": "Make an offer",
+  "productOfferSubtitle": "Listed at {price}",
+  "@productOfferSubtitle": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferAmountLabel": "Your offer",
+  "productOfferAmountHint": "Enter an amount",
+  "productOfferInvalid": "Enter an amount greater than 0",
+  "productOfferTooHigh": "Your offer can be at most twice the asking price",
+  "productOfferSubmit": "Send offer",
+  "productOfferSent": "Offer sent. Continue the conversation with the seller here.",
+  "productOfferBelow": "{percent} below the asking price (-{difference})",
+  "@productOfferBelow": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferAbove": "{percent} above the asking price (+{difference})",
+  "@productOfferAbove": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferEqual": "Same as the asking price",
+  "productLiveTitle": "Listing just updated",
+  "productLiveUnavailable": "This item is now {status} and can no longer be ordered.",
+  "@productLiveUnavailable": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "productLiveAvailable": "This item is available again.",
+  "productLivePrice": "The seller changed the price from {previous} to {current}.",
+  "@productLivePrice": {
+    "placeholders": {
+      "previous": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "productLivePriceGeneric": "The seller updated the price, please review before sending.",
+  "productLiveInfo": "The seller just edited this listing.",
+  "productLiveIndicator": "Live updates on",
+  "productBuyTitle": "Request to buy",
+  "productBuySubtitle": "The seller confirms and arranges the handover with you in chat.",
+  "productBuyPriceLabel": "Price",
+  "productBuyNoteLabel": "Note for the seller",
+  "productBuyNoteHint": "e.g. I can pick it up this evening",
+  "productBuySubmit": "Send request",
+  "productBuySent": "Purchase request sent. The seller will reply in chat.",
+  "productActionFailed": "Couldn't send. Please try again.",
+  "galleryOpenFullscreen": "View photos full screen"
 }
