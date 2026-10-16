@@ -1423,4 +1423,195 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeBannerTooltip => 'Promotion banner';
+
+  @override
+  String get productDetailTitle => 'Product details';
+
+  @override
+  String get productLoadErrorTitle => 'Couldn\'t load this listing';
+
+  @override
+  String get productLoadErrorBody =>
+      'The listing may have been removed, or your connection is unstable. Please try again.';
+
+  @override
+  String productViewCount(int count) {
+    return '$count views';
+  }
+
+  @override
+  String get productUnavailableHint => 'This item can no longer be bought.';
+
+  @override
+  String get listingStatusDraft => 'Draft';
+
+  @override
+  String get listingStatusPending => 'Pending review';
+
+  @override
+  String get listingStatusAvailable => 'Available';
+
+  @override
+  String get listingStatusReserved => 'Reserved';
+
+  @override
+  String get listingStatusSold => 'Sold';
+
+  @override
+  String get listingStatusExchanged => 'Exchanged';
+
+  @override
+  String get listingStatusExpired => 'Expired';
+
+  @override
+  String get productSellerTitle => 'Seller';
+
+  @override
+  String get productSellerVerified => 'Verified';
+
+  @override
+  String get productSellerNoReviews => 'No reviews yet';
+
+  @override
+  String productSellerJoined(String date) {
+    return 'Joined $date';
+  }
+
+  @override
+  String productSellerListings(int count) {
+    return '$count listings';
+  }
+
+  @override
+  String get productSellerProfile => 'View profile';
+
+  @override
+  String get productReadMore => 'Show more';
+
+  @override
+  String get productReadLess => 'Show less';
+
+  @override
+  String get productSafetyTitle => 'Shop safely';
+
+  @override
+  String get productSafetyBody =>
+      'Meet in a public place, check the item before paying and never send a deposit to someone you don\'t know.';
+
+  @override
+  String get productReport => 'Report listing';
+
+  @override
+  String get productChat => 'Chat';
+
+  @override
+  String get productMakeOffer => 'Make offer';
+
+  @override
+  String get productBuyNow => 'Buy now';
+
+  @override
+  String get productProposeExchange => 'Propose a swap';
+
+  @override
+  String get productEditListing => 'Edit listing';
+
+  @override
+  String get productBoost => 'Boost';
+
+  @override
+  String get productOfferTitle => 'Make an offer';
+
+  @override
+  String productOfferSubtitle(String price) {
+    return 'Listed at $price';
+  }
+
+  @override
+  String get productOfferAmountLabel => 'Your offer';
+
+  @override
+  String get productOfferAmountHint => 'Enter an amount';
+
+  @override
+  String get productOfferInvalid => 'Enter an amount greater than 0';
+
+  @override
+  String get productOfferTooHigh =>
+      'Your offer can be at most twice the asking price';
+
+  @override
+  String get productOfferSubmit => 'Send offer';
+
+  @override
+  String get productOfferSent =>
+      'Offer sent. Continue the conversation with the seller here.';
+
+  @override
+  String productOfferBelow(String percent, String difference) {
+    return '$percent below the asking price (-$difference)';
+  }
+
+  @override
+  String productOfferAbove(String percent, String difference) {
+    return '$percent above the asking price (+$difference)';
+  }
+
+  @override
+  String get productOfferEqual => 'Same as the asking price';
+
+  @override
+  String get productLiveTitle => 'Listing just updated';
+
+  @override
+  String productLiveUnavailable(String status) {
+    return 'This item is now $status and can no longer be ordered.';
+  }
+
+  @override
+  String get productLiveAvailable => 'This item is available again.';
+
+  @override
+  String productLivePrice(String previous, String current) {
+    return 'The seller changed the price from $previous to $current.';
+  }
+
+  @override
+  String get productLivePriceGeneric =>
+      'The seller updated the price, please review before sending.';
+
+  @override
+  String get productLiveInfo => 'The seller just edited this listing.';
+
+  @override
+  String get productLiveIndicator => 'Live updates on';
+
+  @override
+  String get productBuyTitle => 'Request to buy';
+
+  @override
+  String get productBuySubtitle =>
+      'The seller confirms and arranges the handover with you in chat.';
+
+  @override
+  String get productBuyPriceLabel => 'Price';
+
+  @override
+  String get productBuyNoteLabel => 'Note for the seller';
+
+  @override
+  String get productBuyNoteHint => 'e.g. I can pick it up this evening';
+
+  @override
+  String get productBuySubmit => 'Send request';
+
+  @override
+  String get productBuySent =>
+      'Purchase request sent. The seller will reply in chat.';
+
+  @override
+  String get productActionFailed => 'Couldn\'t send. Please try again.';
+
+  @override
+  String get galleryOpenFullscreen => 'View photos full screen';
 }

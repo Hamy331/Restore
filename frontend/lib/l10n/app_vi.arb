@@ -635,5 +635,126 @@
   "homeQuickTrustedShopsDesc": "Đã xác minh, đánh giá tốt",
   "homeQuickFollowing": "Đang theo dõi",
   "homeQuickFollowingDesc": "Shop và người bạn theo dõi",
-  "homeBannerTooltip": "Banner khuyến mãi"
+  "homeBannerTooltip": "Banner khuyến mãi",
+  "productDetailTitle": "Chi tiết sản phẩm",
+  "productLoadErrorTitle": "Không tải được tin đăng",
+  "productLoadErrorBody": "Tin có thể đã bị gỡ hoặc kết nối mạng chưa ổn định. Vui lòng thử lại.",
+  "productViewCount": "{count} lượt xem",
+  "@productViewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productUnavailableHint": "Sản phẩm này hiện không thể đặt mua.",
+  "listingStatusDraft": "Bản nháp",
+  "listingStatusPending": "Đang chờ duyệt",
+  "listingStatusAvailable": "Đang bán",
+  "listingStatusReserved": "Đã có người đặt",
+  "listingStatusSold": "Đã bán",
+  "listingStatusExchanged": "Đã trao đổi",
+  "listingStatusExpired": "Đã hết hạn",
+  "productSellerTitle": "Người bán",
+  "productSellerVerified": "Đã xác minh",
+  "productSellerNoReviews": "Chưa có đánh giá",
+  "productSellerJoined": "Tham gia {date}",
+  "@productSellerJoined": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "productSellerListings": "{count} tin đang bán",
+  "@productSellerListings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productSellerProfile": "Xem trang",
+  "productReadMore": "Xem thêm",
+  "productReadLess": "Thu gọn",
+  "productSafetyTitle": "Mua bán an toàn",
+  "productSafetyBody": "Hẹn gặp ở nơi công cộng, kiểm tra hàng trước khi trả tiền và không chuyển tiền đặt cọc cho người lạ.",
+  "productReport": "Báo cáo tin",
+  "productChat": "Nhắn tin",
+  "productMakeOffer": "Trả giá",
+  "productBuyNow": "Mua ngay",
+  "productProposeExchange": "Đề nghị đổi",
+  "productEditListing": "Sửa tin",
+  "productBoost": "Đẩy tin",
+  "productOfferTitle": "Trả giá với người bán",
+  "productOfferSubtitle": "Giá đang bán: {price}",
+  "@productOfferSubtitle": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferAmountLabel": "Giá bạn đề nghị",
+  "productOfferAmountHint": "Nhập số tiền",
+  "productOfferInvalid": "Nhập số tiền lớn hơn 0",
+  "productOfferTooHigh": "Giá đề nghị không được vượt quá 2 lần giá đang bán",
+  "productOfferSubmit": "Gửi đề nghị",
+  "productOfferSent": "Đã gửi đề nghị, tiếp tục trao đổi với người bán tại đây.",
+  "productOfferBelow": "Thấp hơn giá gốc {percent} (-{difference})",
+  "@productOfferBelow": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferAbove": "Cao hơn giá gốc {percent} (+{difference})",
+  "@productOfferAbove": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferEqual": "Bằng giá gốc",
+  "productLiveTitle": "Tin vừa được cập nhật",
+  "productLiveUnavailable": "Sản phẩm hiện {status}, bạn không thể đặt mua nữa.",
+  "@productLiveUnavailable": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "productLiveAvailable": "Sản phẩm vừa được mở bán trở lại.",
+  "productLivePrice": "Người bán vừa đổi giá từ {previous} thành {current}.",
+  "@productLivePrice": {
+    "placeholders": {
+      "previous": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "productLivePriceGeneric": "Người bán vừa cập nhật giá, bạn xem lại trước khi gửi nhé.",
+  "productLiveInfo": "Người bán vừa sửa thông tin tin đăng.",
+  "productLiveIndicator": "Đang cập nhật trực tiếp",
+  "productBuyTitle": "Yêu cầu mua",
+  "productBuySubtitle": "Người bán sẽ xác nhận và hẹn giao nhận với bạn qua tin nhắn.",
+  "productBuyPriceLabel": "Giá",
+  "productBuyNoteLabel": "Lời nhắn cho người bán",
+  "productBuyNoteHint": "VD: Mình có thể qua lấy vào tối nay",
+  "productBuySubmit": "Gửi yêu cầu",
+  "productBuySent": "Đã gửi yêu cầu mua, người bán sẽ phản hồi qua tin nhắn.",
+  "productActionFailed": "Gửi chưa được, vui lòng thử lại.",
+  "galleryOpenFullscreen": "Xem ảnh toàn màn hình"
 }

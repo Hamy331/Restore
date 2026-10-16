@@ -100,6 +100,11 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  /// Cập nhật thẻ tin sau khi người dùng lưu / bỏ lưu ở trang chi tiết
+  /// (trang chi tiết đã gọi API nên chỉ đổi trạng thái hiển thị)
+  void syncFavorite(String listingId, bool favorite) =>
+      _setFavorite(listingId, favorite);
+
   void _setFavorite(String id, bool favorite) {
     List<HomeListingItem> update(List<HomeListingItem> items) => [
       for (final item in items)

@@ -67,11 +67,22 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     _searchPinned.value = _scrollController.offset >= topBarHeight;
   }
 
-  /// Tính năng chưa có trang riêng (tìm kiếm, thông báo, chi tiết tin...)
+  /// Tính năng chưa có trang riêng (tìm kiếm, thông báo...)
   void _comingSoon() => TSnackBarHelper.showInfo(
     context,
     message: AppLocalizations.of(context)!.featureComingSoon,
   );
+
+  /// Mở trang chi tiết; quay lại mà trạng thái lưu tin đã đổi thì cập nhật thẻ
+  Future<void> _openDetail(HomeListingItem item) async {
+    final id = item.listing.id;
+    final favorite = await context.push<bool>(
+      '/listings/$id',
+      extra: item.listing,
+    );
+    if (favorite == null || !mounted) return;
+    context.read<HomeCubit>().syncFavorite(id, favorite);
+  }
 
   void _onQuickAction(HomeQuickAction action) {
     // TODO: mở trang riêng khi có (gần bạn, thẻ đặt trước, shop uy tín,
@@ -195,8 +206,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
     Widget card(HomeListingItem item) => HomeListingCard(
       item: item,
-      // TODO: mở trang chi tiết tin khi có route /listings/:id
-      onTap: _comingSoon,
+      onTap: () => _openDetail(item),
       onFavoriteTap: () => cubit.toggleFavorite(item),
     );
 
