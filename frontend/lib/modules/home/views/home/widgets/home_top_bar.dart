@@ -5,22 +5,19 @@ import 'package:restore/l10n/app_localizations.dart';
 
 import 'home_header_palette.dart';
 
-/// Đầu trang chủ trên nền cam: chọn khu vực bên trái, tin nhắn và thông báo
-/// bên phải, bên dưới là lời chào kèm tên người dùng.
+/// Đầu trang chủ trên nền cam: chọn khu vực, bên dưới là lời chào kèm tên
+/// người dùng. Nút tin nhắn và thông báo nằm cạnh ô tìm kiếm ghim
+/// ([HomeSearchHeaderDelegate]) để luôn bấm được khi cuộn.
 class HomeTopBar extends StatelessWidget {
   final String areaName;
   final String greetingName;
   final VoidCallback onAreaTap;
-  final VoidCallback onMessagesTap;
-  final VoidCallback onNotificationsTap;
 
   const HomeTopBar({
     super.key,
     required this.areaName,
     required this.greetingName,
     required this.onAreaTap,
-    required this.onMessagesTap,
-    required this.onNotificationsTap,
   });
 
   @override
@@ -39,31 +36,10 @@ class HomeTopBar extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: _AreaButton(
-                      areaName: areaName,
-                      tooltip: l10n.homeChangeArea,
-                      onTap: onAreaTap,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                _HeaderIconButton(
-                  icon: AppIcons.chat,
-                  tooltip: l10n.messagesTitle,
-                  onTap: onMessagesTap,
-                ),
-                const SizedBox(width: 8),
-                _HeaderIconButton(
-                  icon: AppIcons.notification,
-                  tooltip: l10n.notifications,
-                  onTap: onNotificationsTap,
-                ),
-              ],
+            _AreaButton(
+              areaName: areaName,
+              tooltip: l10n.homeChangeArea,
+              onTap: onAreaTap,
             ),
             const SizedBox(height: 16),
             Text(
@@ -149,39 +125,6 @@ class _AreaButton extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HeaderIconButton extends StatelessWidget {
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback onTap;
-
-  const _HeaderIconButton({
-    required this.icon,
-    required this.tooltip,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: AppColors.surface,
-        shape: CircleBorder(
-          side: BorderSide(color: AppColors.border.withValues(alpha: 0.7)),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          customBorder: const CircleBorder(),
-          child: SizedBox.square(
-            dimension: 40,
-            child: Icon(icon, size: 20, color: AppColors.textPrimary),
           ),
         ),
       ),
