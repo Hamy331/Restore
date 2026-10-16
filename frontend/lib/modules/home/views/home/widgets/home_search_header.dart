@@ -4,17 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_glass.dart';
+import 'package:restore/l10n/app_localizations.dart';
+
+import 'home_header_icon_button.dart';
 
 import 'home_header_palette.dart';
 
-/// Ô tìm kiếm ghim ở đầu trang khi cuộn.
+/// Ô tìm kiếm ghim ở đầu trang khi cuộn, bên phải là nút tin nhắn và thông
+/// báo.
 /// Bình thường liền màu với đầu trang; khi đã ghim thì nền chuyển sang
 /// kính mờ trắng với một đường mảnh phía dưới.
 class HomeSearchHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String hintText;
   final VoidCallback onTap;
+  final VoidCallback onMessagesTap;
+  final VoidCallback onNotificationsTap;
 
-  HomeSearchHeaderDelegate({required this.hintText, required this.onTap});
+  HomeSearchHeaderDelegate({
+    required this.hintText,
+    required this.onTap,
+    required this.onMessagesTap,
+    required this.onNotificationsTap,
+  });
 
   static const double height = 68;
 
@@ -33,6 +44,7 @@ class HomeSearchHeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final pinned = overlapsContent || shrinkOffset > 0;
     // Giữ nguyên cấu trúc cây ở cả hai trạng thái, chỉ bật/tắt hiệu ứng
     return ClipRect(
@@ -56,7 +68,25 @@ class HomeSearchHeaderDelegate extends SliverPersistentHeaderDelegate {
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-            child: _SearchPill(hintText: hintText, onTap: onTap),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _SearchPill(hintText: hintText, onTap: onTap),
+                ),
+                const SizedBox(width: 8),
+                HomeHeaderIconButton(
+                  icon: AppIcons.chat,
+                  tooltip: l10n.messagesTitle,
+                  onTap: onMessagesTap,
+                ),
+                const SizedBox(width: 8),
+                HomeHeaderIconButton(
+                  icon: AppIcons.notification,
+                  tooltip: l10n.notifications,
+                  onTap: onNotificationsTap,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -65,7 +95,10 @@ class HomeSearchHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(HomeSearchHeaderDelegate oldDelegate) =>
-      oldDelegate.hintText != hintText;
+      oldDelegate.hintText != hintText ||
+      oldDelegate.onTap != onTap ||
+      oldDelegate.onMessagesTap != onMessagesTap ||
+      oldDelegate.onNotificationsTap != onNotificationsTap;
 }
 
 class _SearchPill extends StatelessWidget {

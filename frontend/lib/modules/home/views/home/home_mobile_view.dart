@@ -67,6 +67,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     _searchPinned.value = _scrollController.offset >= topBarHeight;
   }
 
+  void _openMessages() => context.go(_messagesPath);
+
   /// Tính năng chưa có trang riêng (tìm kiếm, thông báo...)
   void _comingSoon() => TSnackBarHelper.showInfo(
     context,
@@ -122,9 +124,9 @@ class _HomeMobileViewState extends State<HomeMobileView> {
               context: context,
               removeTop: true,
               child: BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) => AppPullToRefresh(
+                builder: (context, state) => AppPullToRefresh.inline(
                   onRefresh: () => cubit.load(showLoading: false),
-                  child: AppLoadMoreListener(
+                  builder: (context, refreshIndicator) => AppLoadMoreListener(
                     onLoadMore: cubit.loadMore,
                     child: CustomScrollView(
                       controller: _scrollController,
@@ -138,8 +140,6 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                                 ? ''
                                 : state.greetingName,
                             onAreaTap: _comingSoon,
-                            onMessagesTap: () => context.go(_messagesPath),
-                            onNotificationsTap: _comingSoon,
                           ),
                         ),
                         SliverPersistentHeader(
@@ -147,6 +147,16 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                           delegate: HomeSearchHeaderDelegate(
                             hintText: l10n.homeSearchHint,
                             onTap: _comingSoon,
+                            onMessagesTap: _openMessages,
+                            onNotificationsTap: _comingSoon,
+                          ),
+                        ),
+                        // Kéo xuống để làm mới: viên loading mở ra ngay dưới
+                        // ô tìm kiếm, đẩy nội dung xuống thay vì bị che
+                        SliverToBoxAdapter(
+                          child: ColoredBox(
+                            color: HomeHeaderPalette.bottom,
+                            child: refreshIndicator,
                           ),
                         ),
                         // Mép trên bo cong của phần nội dung trắng

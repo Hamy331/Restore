@@ -8,6 +8,7 @@ import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/product_detail/product_detail_cubit.dart';
 import '../../bloc/product_detail/product_detail_state.dart';
@@ -183,11 +184,10 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
             extendBody: true,
             // Builder để đọc padding đáy đã cộng chiều cao thanh hành động
             body: Builder(
-              builder: (bodyContext) => RefreshIndicator(
-                color: AppColors.primaryDark,
-                // Đẩy vòng xoay xuống dưới thanh trên cùng
-                edgeOffset: MediaQuery.paddingOf(context).top + kToolbarHeight,
-                notificationPredicate: (_) => state.detail != null,
+              builder: (bodyContext) => AppPullToRefresh(
+                // Viên loading hiện ngay dưới hàng nút quay lại / lưu tin
+                indicatorTop:
+                    MediaQuery.paddingOf(context).top + kToolbarHeight,
                 onRefresh: _cubit.refresh,
                 child: CustomScrollView(
                   controller: _scrollController,
