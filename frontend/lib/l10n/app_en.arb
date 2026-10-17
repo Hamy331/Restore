@@ -853,5 +853,42 @@
         "type": "String"
       }
     }
-  }
+  },
+  "listingSortRelevance": "Most relevant",
+  "searchNearMe": "Near me",
+  "searchNearMeSubtitle": "Browse pre-loved items around you",
+  "searchTipsTitle": "Quick search ideas",
+  "searchHistoryTitle": "Recent searches",
+  "searchClearHistory": "Clear all",
+  "searchRemoveHistory": "Remove from list",
+  "searchFillQuery": "Use in search box",
+  "searchClearInput": "Clear",
+  "searchForQuery": "Search “{query}”",
+  "@searchForQuery": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchEmptyTitle": "No results for “{query}”",
+  "@searchEmptyTitle": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchEmptyBody": "Try a shorter or different keyword, or remove some filters.",
+  "searchTryAnother": "Change keyword",
+  "searchLoadErrorTitle": "Couldn't load results",
+  "searchLoadErrorBody": "Check your connection and try again.",
+  "searchEndOfList": "You've seen all results",
+  "areaSearchHint": "Search ward or province...",
+  "areaMyLocationSubtitle": "Use your current GPS location",
+  "areaRecentTitle": "Recently chosen areas",
+  "areaWholeProvince": "Whole province / city",
+  "areaNoResultsTitle": "No matching area",
+  "areaNoResultsBody": "Try another ward or province name.",
+  "areaSearchErrorTitle": "Couldn't search areas"
 }

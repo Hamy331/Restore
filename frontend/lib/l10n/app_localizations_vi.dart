@@ -1701,4 +1701,79 @@ class AppLocalizationsVi extends AppLocalizations {
   String distanceKm(String km) {
     return '$km km';
   }
+
+  @override
+  String get listingSortRelevance => 'Phù hợp nhất';
+
+  @override
+  String get searchNearMe => 'Gần tôi';
+
+  @override
+  String get searchNearMeSubtitle => 'Xem đồ cũ quanh vị trí của bạn';
+
+  @override
+  String get searchTipsTitle => 'Gợi ý tìm nhanh';
+
+  @override
+  String get searchHistoryTitle => 'Tìm kiếm gần đây';
+
+  @override
+  String get searchClearHistory => 'Xoá tất cả';
+
+  @override
+  String get searchRemoveHistory => 'Xoá khỏi danh sách';
+
+  @override
+  String get searchFillQuery => 'Đưa lên ô tìm kiếm';
+
+  @override
+  String get searchClearInput => 'Xoá nội dung';
+
+  @override
+  String searchForQuery(String query) {
+    return 'Tìm “$query”';
+  }
+
+  @override
+  String searchEmptyTitle(String query) {
+    return 'Không tìm thấy “$query”';
+  }
+
+  @override
+  String get searchEmptyBody =>
+      'Thử từ khoá ngắn hơn, từ khoá khác hoặc bỏ bớt bộ lọc nhé.';
+
+  @override
+  String get searchTryAnother => 'Đổi từ khoá';
+
+  @override
+  String get searchLoadErrorTitle => 'Chưa tải được kết quả';
+
+  @override
+  String get searchLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get searchEndOfList => 'Bạn đã xem hết kết quả';
+
+  @override
+  String get areaSearchHint => 'Tìm phường/xã, tỉnh/thành...';
+
+  @override
+  String get areaMyLocationSubtitle => 'Dùng vị trí GPS hiện tại của bạn';
+
+  @override
+  String get areaRecentTitle => 'Khu vực đã chọn gần đây';
+
+  @override
+  String get areaWholeProvince => 'Toàn tỉnh/thành phố';
+
+  @override
+  String get areaNoResultsTitle => 'Không tìm thấy khu vực';
+
+  @override
+  String get areaNoResultsBody =>
+      'Thử gõ tên phường/xã hoặc tỉnh/thành khác nhé.';
+
+  @override
+  String get areaSearchErrorTitle => 'Chưa tìm được khu vực';
 }

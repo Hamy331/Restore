@@ -78,7 +78,8 @@ class MockNearbyRepository implements NearbyRepository {
 
     final epoch = DateTime.fromMillisecondsSinceEpoch(0);
     matches.sort(switch (filter.sort) {
-      ListingSort.nearest => (a, b) => a.distanceKm!.compareTo(b.distanceKm!),
+      ListingSort.nearest ||
+      ListingSort.relevance => (a, b) => a.distanceKm!.compareTo(b.distanceKm!),
       ListingSort.newest => (a, b) => (b.listing.createdAt ?? epoch).compareTo(
         a.listing.createdAt ?? epoch,
       ),

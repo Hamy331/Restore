@@ -7,11 +7,13 @@ import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/core/utils/formatters/distance_formatter.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/location/models/area_option.dart';
+import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
-import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
+import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
@@ -72,7 +74,7 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
     locale: Localizations.localeOf(context).toLanguageTag(),
   );
 
-  /// Chọn địa điểm và trang Bộ lọc đầy đủ chưa làm
+  /// Trang Bộ lọc đầy đủ chưa làm
   void _comingSoon() => TSnackBarHelper.showInfo(
     context,
     message: AppLocalizations.of(context)!.featureComingSoon,
@@ -97,18 +99,22 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
   }
 
   Future<void> _pickSort() async {
-    final l10n = AppLocalizations.of(context)!;
     final cubit = context.read<NearbyCubit>();
-    final sort = await showAppOptionSheet<ListingSort>(
+    final sort = await showListingSortSheet(
       context,
-      title: l10n.listingSortTitle,
       selected: cubit.state.filter.sort,
-      options: [
-        for (final sort in ListingSort.values)
-          AppSheetOption(sort, NearbyFilterBar.sortLabel(sort, l10n)),
-      ],
+      options: NearbyState.sortOptions,
     );
     if (sort != null) cubit.setSort(sort);
+  }
+
+  /// Chọn khu vực khác để xem tin quanh đó, hoặc quay về vị trí GPS
+  Future<void> _pickArea() async {
+    final cubit = context.read<NearbyCubit>();
+    final result = await context.push<AreaPickResult>(AreaSearchView.path);
+    if (result == null || !mounted) return;
+    final area = result.area;
+    area == null ? cubit.relocate() : cubit.setArea(area);
   }
 
   /// Mở trang chi tiết; quay lại mà trạng thái lưu tin đã đổi thì cập nhật thẻ
@@ -224,7 +230,7 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
               locationLabel: origin == null
                   ? null
                   : origin.label ?? l10n.nearbyCurrentLocation,
-              onTap: _comingSoon,
+              onTap: _pickArea,
             ),
           ),
           const SizedBox(height: 10),

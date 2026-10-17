@@ -41,6 +41,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
   static const String _messagesPath = '/messages';
   static const String _nearbyPath = '/nearby';
+  static const String _searchPath = '/search';
 
   final _scrollController = ScrollController();
   final _topBarKey = GlobalKey();
@@ -69,7 +70,9 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
   void _openMessages() => context.go(_messagesPath);
 
-  /// Tính năng chưa có trang riêng (tìm kiếm, thông báo...)
+  void _openSearch() => context.push(_searchPath);
+
+  /// Tính năng chưa có trang riêng (thông báo, chọn khu vực...)
   void _comingSoon() => TSnackBarHelper.showInfo(
     context,
     message: AppLocalizations.of(context)!.featureComingSoon,
@@ -146,7 +149,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                           pinned: true,
                           delegate: HomeSearchHeaderDelegate(
                             hintText: l10n.homeSearchHint,
-                            onTap: _comingSoon,
+                            onTap: _openSearch,
                             onMessagesTap: _openMessages,
                             onNotificationsTap: _comingSoon,
                           ),

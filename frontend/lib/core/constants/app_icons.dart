@@ -42,6 +42,11 @@ class AppIcons {
   static const IconData saveDraft = LucideIcons.save400;
   static const IconData search = LucideIcons.search300;
   static const IconData searchEmpty = LucideIcons.searchX300;
+  static const IconData history = LucideIcons.history300;
+  static const IconData delete = LucideIcons.trash2300;
+
+  /// Đưa gợi ý lên ô tìm kiếm để sửa tiếp (mũi tên chéo lên trái)
+  static const IconData fillQuery = LucideIcons.arrowUpLeft300;
   static const IconData send = LucideIcons.send300;
   static const IconData refresh = LucideIcons.rotateCw300;
   static const IconData renew = LucideIcons.refreshCw300;
