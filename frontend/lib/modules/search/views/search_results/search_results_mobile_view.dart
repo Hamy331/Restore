@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
-import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
@@ -70,11 +70,16 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
     );
   }
 
-  /// Trang Bộ lọc đầy đủ chưa làm
-  void _comingSoon() => TSnackBarHelper.showInfo(
-    context,
-    message: AppLocalizations.of(context)!.featureComingSoon,
-  );
+  /// Sheet Bộ lọc đầy đủ; chưa dùng vị trí nên không có nhóm Khoảng cách
+  Future<void> _openFilters() async {
+    final cubit = context.read<SearchResultsCubit>();
+    final filter = await showListingFilterSheet(
+      context,
+      filter: cubit.state.filter,
+      defaults: SearchResultsState.defaultFilter,
+    );
+    if (filter != null) cubit.applyFilter(filter);
+  }
 
   Future<void> _pickSort() async {
     final cubit = context.read<SearchResultsCubit>();
@@ -140,9 +145,10 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
                               filter: state.filter,
                               onBack: _back,
                               onEditQuery: _editQuery,
-                              onFiltersTap: _comingSoon,
+                              onFiltersTap: _openFilters,
                               onDealToggle: cubit.toggleDeal,
                               onSortTap: _pickSort,
+                              onClearTap: cubit.clearFilters,
                             ),
                           ),
                         ),

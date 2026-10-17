@@ -64,6 +64,7 @@ class AppFilterChip extends StatelessWidget {
   });
 
   static const double height = 36;
+  static const double maxLabelWidth = 200;
 
   @override
   Widget build(BuildContext context) {
@@ -102,12 +103,21 @@ class AppFilterChip extends StatelessWidget {
                     Icon(icon, size: 16, color: foreground),
                     const SizedBox(width: 6),
                   ],
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                      color: foreground,
+                  // Giới hạn bề ngang để nhãn dài (tên danh mục từ API) không
+                  // tràn chip trên màn hình hẹp
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: maxLabelWidth),
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: selected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        color: foreground,
+                      ),
                     ),
                   ),
                   if (badgeCount > 0) ...[

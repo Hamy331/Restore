@@ -1,5 +1,6 @@
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/modules/listings/data/mock_favorite_store.dart';
+import 'package:restore/shared/data/listing_filter_mock_data.dart';
 import 'package:restore/shared/models/geo_point.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/listing_filter.dart';
@@ -16,7 +17,8 @@ abstract class NearbyRepository {
   /// Khu vực mặc định của tài khoản, dùng khi chưa lấy được GPS
   Future<NearbyOrigin> getDefaultOrigin();
 
-  /// Tin quanh [origin] theo [filter] (bán kính, kiểu giao dịch, sắp xếp),
+  /// Tin quanh [origin] theo [filter] (bán kính, danh mục, giá, tình trạng,
+  /// kiểu giao dịch, sắp xếp),
   /// [page] bắt đầu từ 1. Mỗi tin có sẵn `distanceKm` tính từ [origin].
   Future<PagedResult<ListingCardItem>> getNearby(
     GeoPoint origin,
@@ -45,7 +47,6 @@ class MockNearbyRepository implements NearbyRepository {
   }) async {
     await Future<void>.delayed(latency);
     final radius = filter.radiusKm ?? double.infinity;
-    final deals = filter.dealTypes;
 
     final matches = <ListingCardItem>[];
     for (final json in NearbyMockData.listings(DateTime.now(), origin)) {
@@ -53,11 +54,7 @@ class MockNearbyRepository implements NearbyRepository {
       final listing = item.listing;
       final distance = listing.geoPoint?.distanceTo(origin);
       if (distance == null || distance > radius) continue;
-      final dealMatches =
-          deals.isEmpty ||
-          (deals.contains(ListingDealType.buy) && listing.allowSale) ||
-          (deals.contains(ListingDealType.exchange) && listing.allowExchange);
-      if (!dealMatches) continue;
+      if (!filter.matches(listing)) continue;
       matches.add(
         item.copyWith(
           distanceKm: distance,
@@ -104,7 +101,8 @@ class MockNearbyRepository implements NearbyRepository {
 
 /// Gọi backend:
 /// - `GET /users/me/location` → `{ data: { label, latitude, longitude } }`
-/// - `GET /listings/nearby?latitude=&longitude=&radiusKm=&deal=&sort=&page=&limit=`
+/// - `GET /listings/nearby?latitude=&longitude=&radiusKm=&deal=&sort=&categoryId=
+///   &minPrice=&maxPrice=&condition=&page=&limit=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
 class ApiNearbyRepository implements NearbyRepository {
   ApiNearbyRepository({ApiClient? apiClient})

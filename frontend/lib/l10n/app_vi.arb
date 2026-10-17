@@ -856,5 +856,80 @@
   "areaWholeProvince": "Toàn tỉnh/thành phố",
   "areaNoResultsTitle": "Không tìm thấy khu vực",
   "areaNoResultsBody": "Thử gõ tên phường/xã hoặc tỉnh/thành khác nhé.",
-  "areaSearchErrorTitle": "Chưa tìm được khu vực"
+  "areaSearchErrorTitle": "Chưa tìm được khu vực",
+  "listingFilterTitle": "Bộ lọc",
+  "listingFilterCategory": "Danh mục",
+  "listingFilterAllCategories": "Tất cả",
+  "listingFilterCategoryError": "Chưa tải được danh mục",
+  "listingFilterPrice": "Khoảng giá",
+  "listingFilterPriceMin": "Giá thấp nhất",
+  "listingFilterPriceMax": "Giá cao nhất",
+  "listingFilterPriceAny": "Không giới hạn",
+  "listingFilterPriceHelper": "Tin chỉ nhận trao đổi (không có giá) sẽ bị ẩn khi lọc theo giá.",
+  "listingFilterPriceInvalid": "Giá thấp nhất đang lớn hơn giá cao nhất.",
+  "listingFilterPriceUnder": "Dưới {price}",
+  "@listingFilterPriceUnder": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterPriceOver": "Trên {price}",
+  "@listingFilterPriceOver": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterPriceBetween": "{min} – {max}",
+  "@listingFilterPriceBetween": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterCondition": "Tình trạng",
+  "listingFilterDeal": "Hình thức",
+  "listingFilterDistance": "Khoảng cách",
+  "listingFilterReset": "Xoá bộ lọc",
+  "listingFilterApply": "Áp dụng",
+  "listingFilterApplyCount": "Áp dụng ({count})",
+  "@listingFilterApplyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceThousands": "{value} nghìn",
+  "@priceThousands": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "priceMillions": "{value} triệu",
+  "@priceMillions": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryDetailSearch": "Tìm kiếm",
+  "categoryDetailEmptyTitle": "Danh mục này chưa có tin nào",
+  "categoryDetailEmptyBody": "Hãy là người đầu tiên đăng món đồ thuộc danh mục này nhé.",
+  "categoryDetailPostListing": "Đăng tin",
+  "categoryDetailFilteredEmptyTitle": "Không có tin khớp bộ lọc",
+  "categoryDetailFilteredEmptyBody": "Thử bỏ bớt bộ lọc để xem thêm tin nhé.",
+  "categoryDetailLoadErrorTitle": "Chưa tải được danh mục",
+  "categoryDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "categoryDetailEndOfList": "Bạn đã xem hết tin trong danh mục này"
 }

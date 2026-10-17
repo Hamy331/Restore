@@ -3349,6 +3349,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t search areas'**
   String get areaSearchErrorTitle;
+
+  /// No description provided for @listingFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get listingFilterTitle;
+
+  /// No description provided for @listingFilterCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get listingFilterCategory;
+
+  /// No description provided for @listingFilterAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get listingFilterAllCategories;
+
+  /// No description provided for @listingFilterCategoryError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load categories'**
+  String get listingFilterCategoryError;
+
+  /// No description provided for @listingFilterPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range'**
+  String get listingFilterPrice;
+
+  /// No description provided for @listingFilterPriceMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min price'**
+  String get listingFilterPriceMin;
+
+  /// No description provided for @listingFilterPriceMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Max price'**
+  String get listingFilterPriceMax;
+
+  /// No description provided for @listingFilterPriceAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get listingFilterPriceAny;
+
+  /// No description provided for @listingFilterPriceHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange-only listings (no price) are hidden when filtering by price.'**
+  String get listingFilterPriceHelper;
+
+  /// No description provided for @listingFilterPriceInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Min price is higher than max price.'**
+  String get listingFilterPriceInvalid;
+
+  /// No description provided for @listingFilterPriceUnder.
+  ///
+  /// In en, this message translates to:
+  /// **'Under {price}'**
+  String listingFilterPriceUnder(String price);
+
+  /// No description provided for @listingFilterPriceOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Over {price}'**
+  String listingFilterPriceOver(String price);
+
+  /// No description provided for @listingFilterPriceBetween.
+  ///
+  /// In en, this message translates to:
+  /// **'{min} – {max}'**
+  String listingFilterPriceBetween(String min, String max);
+
+  /// No description provided for @listingFilterCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get listingFilterCondition;
+
+  /// No description provided for @listingFilterDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Deal type'**
+  String get listingFilterDeal;
+
+  /// No description provided for @listingFilterDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get listingFilterDistance;
+
+  /// No description provided for @listingFilterReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get listingFilterReset;
+
+  /// No description provided for @listingFilterApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get listingFilterApply;
+
+  /// No description provided for @listingFilterApplyCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply ({count})'**
+  String listingFilterApplyCount(int count);
+
+  /// No description provided for @priceThousands.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}K'**
+  String priceThousands(String value);
+
+  /// No description provided for @priceMillions.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}M'**
+  String priceMillions(String value);
+
+  /// No description provided for @categoryDetailSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get categoryDetailSearch;
+
+  /// No description provided for @categoryDetailEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings in this category yet'**
+  String get categoryDetailEmptyTitle;
+
+  /// No description provided for @categoryDetailEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to post something in this category.'**
+  String get categoryDetailEmptyBody;
+
+  /// No description provided for @categoryDetailPostListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a listing'**
+  String get categoryDetailPostListing;
+
+  /// No description provided for @categoryDetailFilteredEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings match your filters'**
+  String get categoryDetailFilteredEmptyTitle;
+
+  /// No description provided for @categoryDetailFilteredEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try removing some filters to see more listings.'**
+  String get categoryDetailFilteredEmptyBody;
+
+  /// No description provided for @categoryDetailLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this category'**
+  String get categoryDetailLoadErrorTitle;
+
+  /// No description provided for @categoryDetailLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get categoryDetailLoadErrorBody;
+
+  /// No description provided for @categoryDetailEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen every listing in this category'**
+  String get categoryDetailEndOfList;
 }
 
 class _AppLocalizationsDelegate

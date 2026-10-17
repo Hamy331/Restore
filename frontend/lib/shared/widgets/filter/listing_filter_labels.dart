@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 
@@ -6,6 +8,11 @@ extension ListingDealTypeLabel on ListingDealType {
   String label(AppLocalizations l10n) => switch (this) {
     ListingDealType.buy => l10n.listingDealBuy,
     ListingDealType.exchange => l10n.listingDealExchange,
+  };
+
+  IconData get icon => switch (this) {
+    ListingDealType.buy => AppIcons.buy,
+    ListingDealType.exchange => AppIcons.swap,
   };
 }
 

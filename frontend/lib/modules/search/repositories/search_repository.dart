@@ -2,6 +2,7 @@ import 'package:restore/core/network/api_client.dart';
 import 'package:restore/core/utils/helpers/vietnamese_text.dart';
 import 'package:restore/modules/home/data/home_mock_data.dart';
 import 'package:restore/modules/listings/data/mock_favorite_store.dart';
+import 'package:restore/shared/data/listing_filter_mock_data.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/models/paged_result.dart';
@@ -91,18 +92,13 @@ class MockSearchRepository implements SearchRepository {
 
     // Khớp khi tiêu đề chứa đủ mọi từ đã gõ (không phân biệt dấu)
     final words = VietnameseText.normalize(query).split(' ');
-    final deals = filter.dealTypes;
     final matches = <ListingCardItem>[];
     for (final json in HomeMockData.listings(DateTime.now())) {
       final item = ListingCardItem.fromJson(json);
       final listing = item.listing;
       final title = VietnameseText.normalize(listing.title);
       if (!words.every(title.contains)) continue;
-      final dealMatches =
-          deals.isEmpty ||
-          (deals.contains(ListingDealType.buy) && listing.allowSale) ||
-          (deals.contains(ListingDealType.exchange) && listing.allowExchange);
-      if (!dealMatches) continue;
+      if (!filter.matches(listing)) continue;
       matches.add(
         item.copyWith(isFavorite: MockFavoriteStore.contains(listing.id)),
       );
@@ -177,7 +173,8 @@ class MockSearchRepository implements SearchRepository {
 /// - `GET /search/suggestions?q=&limit=` → `{ data: [string] }`
 /// - `GET /search/history` → `{ data: [{ id, keyword, searchedAt }] }`
 /// - `DELETE /search/history/:id`, `DELETE /search/history`
-/// - `GET /listings/search?q=&deal=&sort=&categoryId=&minPrice=&maxPrice=&page=&limit=`
+/// - `GET /listings/search?q=&deal=&sort=&categoryId=&minPrice=&maxPrice=
+///   &condition=&page=&limit=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
 class ApiSearchRepository implements SearchRepository {
   ApiSearchRepository({ApiClient? apiClient})

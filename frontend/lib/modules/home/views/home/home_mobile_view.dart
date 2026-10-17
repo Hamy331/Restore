@@ -5,7 +5,9 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
+import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
@@ -71,6 +73,9 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   void _openMessages() => context.go(_messagesPath);
 
   void _openSearch() => context.push(_searchPath);
+
+  void _openCategory(CategoryModel category) =>
+      context.push(CategoryDetailView.location(category.id), extra: category);
 
   /// Tính năng chưa có trang riêng (thông báo, chọn khu vực...)
   void _comingSoon() => TSnackBarHelper.showInfo(
@@ -227,7 +232,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       SliverToBoxAdapter(
         child: HomeCategoryStrip(
           categories: state.categories,
-          onTap: (_) => _comingSoon(),
+          onTap: _openCategory,
         ),
       ),
       const SliverToBoxAdapter(child: SizedBox(height: 14)),
