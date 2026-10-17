@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/services/device_location_service.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
@@ -56,6 +57,16 @@ class NearbyCubit extends Cubit<NearbyState> {
     } catch (_) {
       emit(state.copyWith(isRelocating: false));
     }
+  }
+
+  /// Xem tin quanh một khu vực người dùng tự chọn (thay cho vị trí GPS)
+  Future<void> setArea(AreaOption area) async {
+    emit(
+      state.copyWith(
+        origin: NearbyOrigin(point: area.center, label: area.label),
+      ),
+    );
+    await _reload();
   }
 
   /// Kéo để làm mới: giữ danh sách cũ tới khi có dữ liệu mới

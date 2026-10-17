@@ -3211,6 +3211,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{km} km'**
   String distanceKm(String km);
+
+  /// No description provided for @listingSortRelevance.
+  ///
+  /// In en, this message translates to:
+  /// **'Most relevant'**
+  String get listingSortRelevance;
+
+  /// No description provided for @searchNearMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get searchNearMe;
+
+  /// No description provided for @searchNearMeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse pre-loved items around you'**
+  String get searchNearMeSubtitle;
+
+  /// No description provided for @searchTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick search ideas'**
+  String get searchTipsTitle;
+
+  /// No description provided for @searchHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches'**
+  String get searchHistoryTitle;
+
+  /// No description provided for @searchClearHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get searchClearHistory;
+
+  /// No description provided for @searchRemoveHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from list'**
+  String get searchRemoveHistory;
+
+  /// No description provided for @searchFillQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Use in search box'**
+  String get searchFillQuery;
+
+  /// No description provided for @searchClearInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get searchClearInput;
+
+  /// No description provided for @searchForQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Search “{query}”'**
+  String searchForQuery(String query);
+
+  /// No description provided for @searchEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for “{query}”'**
+  String searchEmptyTitle(String query);
+
+  /// No description provided for @searchEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a shorter or different keyword, or remove some filters.'**
+  String get searchEmptyBody;
+
+  /// No description provided for @searchTryAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Change keyword'**
+  String get searchTryAnother;
+
+  /// No description provided for @searchLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load results'**
+  String get searchLoadErrorTitle;
+
+  /// No description provided for @searchLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get searchLoadErrorBody;
+
+  /// No description provided for @searchEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen all results'**
+  String get searchEndOfList;
+
+  /// No description provided for @areaSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search ward or province...'**
+  String get areaSearchHint;
+
+  /// No description provided for @areaMyLocationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your current GPS location'**
+  String get areaMyLocationSubtitle;
+
+  /// No description provided for @areaRecentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently chosen areas'**
+  String get areaRecentTitle;
+
+  /// No description provided for @areaWholeProvince.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole province / city'**
+  String get areaWholeProvince;
+
+  /// No description provided for @areaNoResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching area'**
+  String get areaNoResultsTitle;
+
+  /// No description provided for @areaNoResultsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another ward or province name.'**
+  String get areaNoResultsBody;
+
+  /// No description provided for @areaSearchErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t search areas'**
+  String get areaSearchErrorTitle;
 }
 
 class _AppLocalizationsDelegate

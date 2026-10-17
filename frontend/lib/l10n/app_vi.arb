@@ -819,5 +819,42 @@
         "type": "String"
       }
     }
-  }
+  },
+  "listingSortRelevance": "Phù hợp nhất",
+  "searchNearMe": "Gần tôi",
+  "searchNearMeSubtitle": "Xem đồ cũ quanh vị trí của bạn",
+  "searchTipsTitle": "Gợi ý tìm nhanh",
+  "searchHistoryTitle": "Tìm kiếm gần đây",
+  "searchClearHistory": "Xoá tất cả",
+  "searchRemoveHistory": "Xoá khỏi danh sách",
+  "searchFillQuery": "Đưa lên ô tìm kiếm",
+  "searchClearInput": "Xoá nội dung",
+  "searchForQuery": "Tìm “{query}”",
+  "@searchForQuery": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchEmptyTitle": "Không tìm thấy “{query}”",
+  "@searchEmptyTitle": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchEmptyBody": "Thử từ khoá ngắn hơn, từ khoá khác hoặc bỏ bớt bộ lọc nhé.",
+  "searchTryAnother": "Đổi từ khoá",
+  "searchLoadErrorTitle": "Chưa tải được kết quả",
+  "searchLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "searchEndOfList": "Bạn đã xem hết kết quả",
+  "areaSearchHint": "Tìm phường/xã, tỉnh/thành...",
+  "areaMyLocationSubtitle": "Dùng vị trí GPS hiện tại của bạn",
+  "areaRecentTitle": "Khu vực đã chọn gần đây",
+  "areaWholeProvince": "Toàn tỉnh/thành phố",
+  "areaNoResultsTitle": "Không tìm thấy khu vực",
+  "areaNoResultsBody": "Thử gõ tên phường/xã hoặc tỉnh/thành khác nhé.",
+  "areaSearchErrorTitle": "Chưa tìm được khu vực"
 }

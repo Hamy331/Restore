@@ -1709,4 +1709,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String distanceKm(String km) {
     return '$km km';
   }
+
+  @override
+  String get listingSortRelevance => 'Most relevant';
+
+  @override
+  String get searchNearMe => 'Near me';
+
+  @override
+  String get searchNearMeSubtitle => 'Browse pre-loved items around you';
+
+  @override
+  String get searchTipsTitle => 'Quick search ideas';
+
+  @override
+  String get searchHistoryTitle => 'Recent searches';
+
+  @override
+  String get searchClearHistory => 'Clear all';
+
+  @override
+  String get searchRemoveHistory => 'Remove from list';
+
+  @override
+  String get searchFillQuery => 'Use in search box';
+
+  @override
+  String get searchClearInput => 'Clear';
+
+  @override
+  String searchForQuery(String query) {
+    return 'Search “$query”';
+  }
+
+  @override
+  String searchEmptyTitle(String query) {
+    return 'No results for “$query”';
+  }
+
+  @override
+  String get searchEmptyBody =>
+      'Try a shorter or different keyword, or remove some filters.';
+
+  @override
+  String get searchTryAnother => 'Change keyword';
+
+  @override
+  String get searchLoadErrorTitle => 'Couldn\'t load results';
+
+  @override
+  String get searchLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get searchEndOfList => 'You\'ve seen all results';
+
+  @override
+  String get areaSearchHint => 'Search ward or province...';
+
+  @override
+  String get areaMyLocationSubtitle => 'Use your current GPS location';
+
+  @override
+  String get areaRecentTitle => 'Recently chosen areas';
+
+  @override
+  String get areaWholeProvince => 'Whole province / city';
+
+  @override
+  String get areaNoResultsTitle => 'No matching area';
+
+  @override
+  String get areaNoResultsBody => 'Try another ward or province name.';
+
+  @override
+  String get areaSearchErrorTitle => 'Couldn\'t search areas';
 }

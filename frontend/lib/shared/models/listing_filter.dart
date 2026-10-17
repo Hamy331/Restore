@@ -14,8 +14,10 @@ enum ListingDealType {
   final String apiValue;
 }
 
-/// Thứ tự sắp xếp danh sách tin. [nearest] chỉ dùng khi đã biết vị trí.
+/// Thứ tự sắp xếp danh sách tin. [nearest] chỉ dùng khi đã biết vị trí,
+/// [relevance] chỉ dùng khi có từ khoá tìm kiếm.
 enum ListingSort {
+  relevance('relevance'),
   nearest('nearest'),
   newest('newest'),
   priceLow('price_asc'),

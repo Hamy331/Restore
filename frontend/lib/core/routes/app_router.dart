@@ -18,7 +18,10 @@ import 'package:restore/modules/listings/views/listing_preview/listing_preview_v
 import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
+import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/modules/nearby/views/nearby/nearby_view.dart';
+import 'package:restore/modules/search/views/search/search_view.dart';
+import 'package:restore/modules/search/views/search_results/search_results_view.dart';
 import 'package:restore/services/device_location_service.dart';
 import 'package:restore/services/media_picker_service.dart';
 import 'package:restore/core/utils/animations/app_page_transitions.dart';
@@ -257,6 +260,36 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       pageBuilder: (_, state) =>
           AppPageTransitions.fadeSlide(state: state, child: const NearbyView()),
+    ),
+    // Chọn khu vực cho trang Gần bạn, trả về AreaPickResult
+    GoRoute(
+      path: AreaSearchView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const AreaSearchView(),
+      ),
+    ),
+    // Tìm kiếm tin; q là từ khoá điền sẵn (tuỳ chọn)
+    GoRoute(
+      path: '/search',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: SearchView(initialQuery: state.uri.queryParameters['q'] ?? ''),
+      ),
+    ),
+    // Kết quả tìm kiếm; from=search khi mở từ trang tìm kiếm
+    GoRoute(
+      path: SearchResultsView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: SearchResultsView(
+          query: state.uri.queryParameters['q'] ?? '',
+          fromSearch: state.uri.queryParameters['from'] == 'search',
+        ),
+      ),
     ),
     GoRoute(
       path: '/boost/:id',

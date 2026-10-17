@@ -18,6 +18,14 @@ class NearbyState extends Equatable {
   /// Các mức bán kính cho người dùng chọn (km)
   static const List<double> radiusOptions = [2, 5, 10, 20];
 
+  /// Cách sắp xếp trang hỗ trợ (không có "Phù hợp nhất" vì không có từ khoá)
+  static const List<ListingSort> sortOptions = [
+    ListingSort.nearest,
+    ListingSort.newest,
+    ListingSort.priceLow,
+    ListingSort.priceHigh,
+  ];
+
   static const ListingFilter defaultFilter = ListingFilter(
     sort: ListingSort.nearest,
     radiusKm: 5,
