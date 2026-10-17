@@ -756,5 +756,68 @@
   "productBuySubmit": "Gửi yêu cầu",
   "productBuySent": "Đã gửi yêu cầu mua, người bán sẽ phản hồi qua tin nhắn.",
   "productActionFailed": "Gửi chưa được, vui lòng thử lại.",
-  "galleryOpenFullscreen": "Xem ảnh toàn màn hình"
+  "galleryOpenFullscreen": "Xem ảnh toàn màn hình",
+  "nearbyTitle": "Gần bạn",
+  "nearbySubtitle": "Đồ cũ quanh đây, hẹn gặp là có ngay",
+  "nearbyCurrentLocation": "Vị trí hiện tại",
+  "nearbyLocating": "Đang xác định vị trí...",
+  "nearbyChangeLocation": "Đổi",
+  "nearbyRelocate": "Cập nhật vị trí",
+  "nearbyFilters": "Bộ lọc",
+  "nearbyRadiusChip": "Trong {distance}",
+  "@nearbyRadiusChip": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyRadiusTitle": "Tìm trong bán kính",
+  "nearbyRadiusOption": "Trong vòng {distance}",
+  "@nearbyRadiusOption": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "listingDealBuy": "Mua trực tiếp",
+  "listingDealExchange": "Trao đổi",
+  "listingSortTitle": "Sắp xếp theo",
+  "listingSortNearest": "Gần nhất",
+  "listingSortNewest": "Mới nhất",
+  "listingSortPriceLow": "Giá thấp đến cao",
+  "listingSortPriceHigh": "Giá cao đến thấp",
+  "nearbyFallbackTitle": "Đang xem quanh khu vực mặc định",
+  "nearbyUseMyLocation": "Dùng vị trí của tôi",
+  "nearbyOpenSettings": "Mở Cài đặt",
+  "nearbyEmptyTitle": "Chưa có tin nào quanh đây",
+  "nearbyEmptyBody": "Thử mở rộng bán kính hoặc bỏ bớt bộ lọc nhé.",
+  "nearbyExpandRadius": "Mở rộng tới {distance}",
+  "@nearbyExpandRadius": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyLoadErrorTitle": "Chưa tải được tin gần bạn",
+  "nearbyLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "nearbyEndOfList": "Bạn đã xem hết tin quanh đây",
+  "distanceMeters": "{meters} m",
+  "@distanceMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceKm": "{km} km",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  }
 }

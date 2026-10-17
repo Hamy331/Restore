@@ -18,6 +18,7 @@ import 'package:restore/modules/listings/views/listing_preview/listing_preview_v
 import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
+import 'package:restore/modules/nearby/views/nearby/nearby_view.dart';
 import 'package:restore/services/device_location_service.dart';
 import 'package:restore/services/media_picker_service.dart';
 import 'package:restore/core/utils/animations/app_page_transitions.dart';
@@ -249,6 +250,13 @@ final appRouter = GoRouter(
               : null,
         ),
       ),
+    ),
+    // Tin đăng quanh vị trí người dùng (lối tắt "Gần bạn" ở trang chủ)
+    GoRoute(
+      path: '/nearby',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) =>
+          AppPageTransitions.fadeSlide(state: state, child: const NearbyView()),
     ),
     GoRoute(
       path: '/boost/:id',

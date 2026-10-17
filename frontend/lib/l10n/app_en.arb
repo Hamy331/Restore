@@ -790,5 +790,68 @@
   "productBuySubmit": "Send request",
   "productBuySent": "Purchase request sent. The seller will reply in chat.",
   "productActionFailed": "Couldn't send. Please try again.",
-  "galleryOpenFullscreen": "View photos full screen"
+  "galleryOpenFullscreen": "View photos full screen",
+  "nearbyTitle": "Near me",
+  "nearbySubtitle": "Pre-loved finds around you, meet up and grab them",
+  "nearbyCurrentLocation": "Current location",
+  "nearbyLocating": "Finding your location...",
+  "nearbyChangeLocation": "Change",
+  "nearbyRelocate": "Update location",
+  "nearbyFilters": "Filters",
+  "nearbyRadiusChip": "Within {distance}",
+  "@nearbyRadiusChip": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyRadiusTitle": "Search radius",
+  "nearbyRadiusOption": "Within {distance}",
+  "@nearbyRadiusOption": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "listingDealBuy": "Buy now",
+  "listingDealExchange": "Swap",
+  "listingSortTitle": "Sort by",
+  "listingSortNearest": "Nearest",
+  "listingSortNewest": "Newest",
+  "listingSortPriceLow": "Price: low to high",
+  "listingSortPriceHigh": "Price: high to low",
+  "nearbyFallbackTitle": "Showing listings around your default area",
+  "nearbyUseMyLocation": "Use my location",
+  "nearbyOpenSettings": "Open Settings",
+  "nearbyEmptyTitle": "Nothing nearby yet",
+  "nearbyEmptyBody": "Try a wider radius or fewer filters.",
+  "nearbyExpandRadius": "Expand to {distance}",
+  "@nearbyExpandRadius": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyLoadErrorTitle": "Couldn't load nearby listings",
+  "nearbyLoadErrorBody": "Check your connection and try again.",
+  "nearbyEndOfList": "You've seen everything nearby",
+  "distanceMeters": "{meters} m",
+  "@distanceMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceKm": "{km} km",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  }
 }
