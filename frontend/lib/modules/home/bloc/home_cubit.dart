@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/modules/listings/repositories/category_repository.dart';
 
 import '../models/home_listing_filter.dart';
-import '../models/home_listing_item.dart';
+import 'package:restore/shared/models/listing_card_item.dart';
 import '../repositories/home_repository.dart';
 import 'home_state.dart';
 
@@ -89,7 +89,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   /// Đổi trạng thái lưu tin ngay trên UI, lỗi API thì trả lại như cũ
-  Future<void> toggleFavorite(HomeListingItem item) async {
+  Future<void> toggleFavorite(ListingCardItem item) async {
     final id = item.listing.id;
     final favorite = !item.isFavorite;
     _setFavorite(id, favorite);
@@ -106,7 +106,7 @@ class HomeCubit extends Cubit<HomeState> {
       _setFavorite(listingId, favorite);
 
   void _setFavorite(String id, bool favorite) {
-    List<HomeListingItem> update(List<HomeListingItem> items) => [
+    List<ListingCardItem> update(List<ListingCardItem> items) => [
       for (final item in items)
         item.listing.id == id ? item.copyWith(isFavorite: favorite) : item,
     ];

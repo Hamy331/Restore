@@ -1614,4 +1614,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get galleryOpenFullscreen => 'View photos full screen';
+
+  @override
+  String get nearbyTitle => 'Near me';
+
+  @override
+  String get nearbySubtitle =>
+      'Pre-loved finds around you, meet up and grab them';
+
+  @override
+  String get nearbyCurrentLocation => 'Current location';
+
+  @override
+  String get nearbyLocating => 'Finding your location...';
+
+  @override
+  String get nearbyChangeLocation => 'Change';
+
+  @override
+  String get nearbyRelocate => 'Update location';
+
+  @override
+  String get nearbyFilters => 'Filters';
+
+  @override
+  String nearbyRadiusChip(String distance) {
+    return 'Within $distance';
+  }
+
+  @override
+  String get nearbyRadiusTitle => 'Search radius';
+
+  @override
+  String nearbyRadiusOption(String distance) {
+    return 'Within $distance';
+  }
+
+  @override
+  String get listingDealBuy => 'Buy now';
+
+  @override
+  String get listingDealExchange => 'Swap';
+
+  @override
+  String get listingSortTitle => 'Sort by';
+
+  @override
+  String get listingSortNearest => 'Nearest';
+
+  @override
+  String get listingSortNewest => 'Newest';
+
+  @override
+  String get listingSortPriceLow => 'Price: low to high';
+
+  @override
+  String get listingSortPriceHigh => 'Price: high to low';
+
+  @override
+  String get nearbyFallbackTitle => 'Showing listings around your default area';
+
+  @override
+  String get nearbyUseMyLocation => 'Use my location';
+
+  @override
+  String get nearbyOpenSettings => 'Open Settings';
+
+  @override
+  String get nearbyEmptyTitle => 'Nothing nearby yet';
+
+  @override
+  String get nearbyEmptyBody => 'Try a wider radius or fewer filters.';
+
+  @override
+  String nearbyExpandRadius(String distance) {
+    return 'Expand to $distance';
+  }
+
+  @override
+  String get nearbyLoadErrorTitle => 'Couldn\'t load nearby listings';
+
+  @override
+  String get nearbyLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get nearbyEndOfList => 'You\'ve seen everything nearby';
+
+  @override
+  String distanceMeters(int meters) {
+    return '$meters m';
+  }
+
+  @override
+  String distanceKm(String km) {
+    return '$km km';
+  }
 }

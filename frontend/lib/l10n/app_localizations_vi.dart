@@ -1607,4 +1607,98 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get galleryOpenFullscreen => 'Xem ảnh toàn màn hình';
+
+  @override
+  String get nearbyTitle => 'Gần bạn';
+
+  @override
+  String get nearbySubtitle => 'Đồ cũ quanh đây, hẹn gặp là có ngay';
+
+  @override
+  String get nearbyCurrentLocation => 'Vị trí hiện tại';
+
+  @override
+  String get nearbyLocating => 'Đang xác định vị trí...';
+
+  @override
+  String get nearbyChangeLocation => 'Đổi';
+
+  @override
+  String get nearbyRelocate => 'Cập nhật vị trí';
+
+  @override
+  String get nearbyFilters => 'Bộ lọc';
+
+  @override
+  String nearbyRadiusChip(String distance) {
+    return 'Trong $distance';
+  }
+
+  @override
+  String get nearbyRadiusTitle => 'Tìm trong bán kính';
+
+  @override
+  String nearbyRadiusOption(String distance) {
+    return 'Trong vòng $distance';
+  }
+
+  @override
+  String get listingDealBuy => 'Mua trực tiếp';
+
+  @override
+  String get listingDealExchange => 'Trao đổi';
+
+  @override
+  String get listingSortTitle => 'Sắp xếp theo';
+
+  @override
+  String get listingSortNearest => 'Gần nhất';
+
+  @override
+  String get listingSortNewest => 'Mới nhất';
+
+  @override
+  String get listingSortPriceLow => 'Giá thấp đến cao';
+
+  @override
+  String get listingSortPriceHigh => 'Giá cao đến thấp';
+
+  @override
+  String get nearbyFallbackTitle => 'Đang xem quanh khu vực mặc định';
+
+  @override
+  String get nearbyUseMyLocation => 'Dùng vị trí của tôi';
+
+  @override
+  String get nearbyOpenSettings => 'Mở Cài đặt';
+
+  @override
+  String get nearbyEmptyTitle => 'Chưa có tin nào quanh đây';
+
+  @override
+  String get nearbyEmptyBody => 'Thử mở rộng bán kính hoặc bỏ bớt bộ lọc nhé.';
+
+  @override
+  String nearbyExpandRadius(String distance) {
+    return 'Mở rộng tới $distance';
+  }
+
+  @override
+  String get nearbyLoadErrorTitle => 'Chưa tải được tin gần bạn';
+
+  @override
+  String get nearbyLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get nearbyEndOfList => 'Bạn đã xem hết tin quanh đây';
+
+  @override
+  String distanceMeters(int meters) {
+    return '$meters m';
+  }
+
+  @override
+  String distanceKm(String km) {
+    return '$km km';
+  }
 }

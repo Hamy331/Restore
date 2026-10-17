@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
-
-import 'home_header_palette.dart';
 
 /// Đầu trang chủ trên nền cam: chọn khu vực, bên dưới là lời chào kèm tên
 /// người dùng. Nút tin nhắn và thông báo nằm cạnh ô tìm kiếm ghim
@@ -24,13 +23,7 @@ class HomeTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [HomeHeaderPalette.top, HomeHeaderPalette.bottom],
-        ),
-      ),
+      decoration: const BoxDecoration(gradient: AppHeaderPalette.gradient),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
         child: Column(

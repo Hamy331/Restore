@@ -3043,6 +3043,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View photos full screen'**
   String get galleryOpenFullscreen;
+
+  /// No description provided for @nearbyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get nearbyTitle;
+
+  /// No description provided for @nearbySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-loved finds around you, meet up and grab them'**
+  String get nearbySubtitle;
+
+  /// No description provided for @nearbyCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get nearbyCurrentLocation;
+
+  /// No description provided for @nearbyLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location...'**
+  String get nearbyLocating;
+
+  /// No description provided for @nearbyChangeLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get nearbyChangeLocation;
+
+  /// No description provided for @nearbyRelocate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update location'**
+  String get nearbyRelocate;
+
+  /// No description provided for @nearbyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get nearbyFilters;
+
+  /// No description provided for @nearbyRadiusChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {distance}'**
+  String nearbyRadiusChip(String distance);
+
+  /// No description provided for @nearbyRadiusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search radius'**
+  String get nearbyRadiusTitle;
+
+  /// No description provided for @nearbyRadiusOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {distance}'**
+  String nearbyRadiusOption(String distance);
+
+  /// No description provided for @listingDealBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy now'**
+  String get listingDealBuy;
+
+  /// No description provided for @listingDealExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap'**
+  String get listingDealExchange;
+
+  /// No description provided for @listingSortTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get listingSortTitle;
+
+  /// No description provided for @listingSortNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest'**
+  String get listingSortNearest;
+
+  /// No description provided for @listingSortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get listingSortNewest;
+
+  /// No description provided for @listingSortPriceLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: low to high'**
+  String get listingSortPriceLow;
+
+  /// No description provided for @listingSortPriceHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: high to low'**
+  String get listingSortPriceHigh;
+
+  /// No description provided for @nearbyFallbackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing listings around your default area'**
+  String get nearbyFallbackTitle;
+
+  /// No description provided for @nearbyUseMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get nearbyUseMyLocation;
+
+  /// No description provided for @nearbyOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get nearbyOpenSettings;
+
+  /// No description provided for @nearbyEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing nearby yet'**
+  String get nearbyEmptyTitle;
+
+  /// No description provided for @nearbyEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a wider radius or fewer filters.'**
+  String get nearbyEmptyBody;
+
+  /// No description provided for @nearbyExpandRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand to {distance}'**
+  String nearbyExpandRadius(String distance);
+
+  /// No description provided for @nearbyLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load nearby listings'**
+  String get nearbyLoadErrorTitle;
+
+  /// No description provided for @nearbyLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get nearbyLoadErrorBody;
+
+  /// No description provided for @nearbyEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen everything nearby'**
+  String get nearbyEndOfList;
+
+  /// No description provided for @distanceMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'{meters} m'**
+  String distanceMeters(int meters);
+
+  /// No description provided for @distanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km'**
+  String distanceKm(String km);
 }
 
 class _AppLocalizationsDelegate
