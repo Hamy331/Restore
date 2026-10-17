@@ -1783,4 +1783,112 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get areaSearchErrorTitle => 'Couldn\'t search areas';
+
+  @override
+  String get listingFilterTitle => 'Filters';
+
+  @override
+  String get listingFilterCategory => 'Category';
+
+  @override
+  String get listingFilterAllCategories => 'All';
+
+  @override
+  String get listingFilterCategoryError => 'Couldn\'t load categories';
+
+  @override
+  String get listingFilterPrice => 'Price range';
+
+  @override
+  String get listingFilterPriceMin => 'Min price';
+
+  @override
+  String get listingFilterPriceMax => 'Max price';
+
+  @override
+  String get listingFilterPriceAny => 'Any';
+
+  @override
+  String get listingFilterPriceHelper =>
+      'Exchange-only listings (no price) are hidden when filtering by price.';
+
+  @override
+  String get listingFilterPriceInvalid => 'Min price is higher than max price.';
+
+  @override
+  String listingFilterPriceUnder(String price) {
+    return 'Under $price';
+  }
+
+  @override
+  String listingFilterPriceOver(String price) {
+    return 'Over $price';
+  }
+
+  @override
+  String listingFilterPriceBetween(String min, String max) {
+    return '$min – $max';
+  }
+
+  @override
+  String get listingFilterCondition => 'Condition';
+
+  @override
+  String get listingFilterDeal => 'Deal type';
+
+  @override
+  String get listingFilterDistance => 'Distance';
+
+  @override
+  String get listingFilterReset => 'Clear all';
+
+  @override
+  String get listingFilterApply => 'Apply';
+
+  @override
+  String listingFilterApplyCount(int count) {
+    return 'Apply ($count)';
+  }
+
+  @override
+  String priceThousands(String value) {
+    return '${value}K';
+  }
+
+  @override
+  String priceMillions(String value) {
+    return '${value}M';
+  }
+
+  @override
+  String get categoryDetailSearch => 'Search';
+
+  @override
+  String get categoryDetailEmptyTitle => 'No listings in this category yet';
+
+  @override
+  String get categoryDetailEmptyBody =>
+      'Be the first to post something in this category.';
+
+  @override
+  String get categoryDetailPostListing => 'Post a listing';
+
+  @override
+  String get categoryDetailFilteredEmptyTitle =>
+      'No listings match your filters';
+
+  @override
+  String get categoryDetailFilteredEmptyBody =>
+      'Try removing some filters to see more listings.';
+
+  @override
+  String get categoryDetailLoadErrorTitle => 'Couldn\'t load this category';
+
+  @override
+  String get categoryDetailLoadErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get categoryDetailEndOfList =>
+      'You\'ve seen every listing in this category';
 }

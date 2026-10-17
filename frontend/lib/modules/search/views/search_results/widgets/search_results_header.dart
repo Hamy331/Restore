@@ -7,6 +7,8 @@ import 'package:restore/shared/widgets/app_search_pill.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_bar.dart';
 
+import '../../../bloc/search_results_state.dart';
+
 /// Phần ghim đầu trang kết quả: nút quay lại, ô hiện từ khoá (bấm để sửa)
 /// và hàng lọc nhanh
 class SearchResultsHeader extends StatelessWidget {
@@ -17,6 +19,7 @@ class SearchResultsHeader extends StatelessWidget {
   final VoidCallback onFiltersTap;
   final ValueChanged<ListingDealType> onDealToggle;
   final VoidCallback onSortTap;
+  final VoidCallback onClearTap;
 
   const SearchResultsHeader({
     super.key,
@@ -27,6 +30,7 @@ class SearchResultsHeader extends StatelessWidget {
     required this.onFiltersTap,
     required this.onDealToggle,
     required this.onSortTap,
+    required this.onClearTap,
   });
 
   /// Ô tìm kiếm (48) + khoảng cách + hàng chip lọc + lề trên dưới
@@ -62,9 +66,11 @@ class SearchResultsHeader extends StatelessWidget {
           const SizedBox(height: 10),
           AppListingFilterBar(
             filter: filter,
+            defaults: SearchResultsState.defaultFilter,
             onFiltersTap: onFiltersTap,
             onDealToggle: onDealToggle,
             onSortTap: onSortTap,
+            onClearTap: onClearTap,
           ),
         ],
       ),

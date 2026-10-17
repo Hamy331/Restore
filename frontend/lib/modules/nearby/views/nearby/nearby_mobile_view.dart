@@ -5,7 +5,6 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/core/utils/formatters/distance_formatter.dart';
-import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
@@ -13,6 +12,7 @@ import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
+import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
@@ -74,11 +74,17 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
     locale: Localizations.localeOf(context).toLanguageTag(),
   );
 
-  /// Trang Bộ lọc đầy đủ chưa làm
-  void _comingSoon() => TSnackBarHelper.showInfo(
-    context,
-    message: AppLocalizations.of(context)!.featureComingSoon,
-  );
+  /// Sheet Bộ lọc đầy đủ, có thêm nhóm Khoảng cách
+  Future<void> _openFilters() async {
+    final cubit = context.read<NearbyCubit>();
+    final filter = await showListingFilterSheet(
+      context,
+      filter: cubit.state.filter,
+      defaults: NearbyState.defaultFilter,
+      radiusOptions: NearbyState.radiusOptions,
+    );
+    if (filter != null) cubit.applyFilter(filter);
+  }
 
   void _back() => context.canPop() ? context.pop() : context.go('/home');
 
@@ -236,10 +242,11 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
           const SizedBox(height: 10),
           NearbyFilterBar(
             filter: state.filter,
-            onFiltersTap: _comingSoon,
+            onFiltersTap: _openFilters,
             onRadiusTap: _pickRadius,
             onDealToggle: cubit.toggleDeal,
             onSortTap: _pickSort,
+            onClearTap: cubit.clearFilters,
           ),
         ],
       ),

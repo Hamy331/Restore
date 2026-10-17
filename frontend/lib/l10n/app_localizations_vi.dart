@@ -1776,4 +1776,111 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get areaSearchErrorTitle => 'Chưa tìm được khu vực';
+
+  @override
+  String get listingFilterTitle => 'Bộ lọc';
+
+  @override
+  String get listingFilterCategory => 'Danh mục';
+
+  @override
+  String get listingFilterAllCategories => 'Tất cả';
+
+  @override
+  String get listingFilterCategoryError => 'Chưa tải được danh mục';
+
+  @override
+  String get listingFilterPrice => 'Khoảng giá';
+
+  @override
+  String get listingFilterPriceMin => 'Giá thấp nhất';
+
+  @override
+  String get listingFilterPriceMax => 'Giá cao nhất';
+
+  @override
+  String get listingFilterPriceAny => 'Không giới hạn';
+
+  @override
+  String get listingFilterPriceHelper =>
+      'Tin chỉ nhận trao đổi (không có giá) sẽ bị ẩn khi lọc theo giá.';
+
+  @override
+  String get listingFilterPriceInvalid =>
+      'Giá thấp nhất đang lớn hơn giá cao nhất.';
+
+  @override
+  String listingFilterPriceUnder(String price) {
+    return 'Dưới $price';
+  }
+
+  @override
+  String listingFilterPriceOver(String price) {
+    return 'Trên $price';
+  }
+
+  @override
+  String listingFilterPriceBetween(String min, String max) {
+    return '$min – $max';
+  }
+
+  @override
+  String get listingFilterCondition => 'Tình trạng';
+
+  @override
+  String get listingFilterDeal => 'Hình thức';
+
+  @override
+  String get listingFilterDistance => 'Khoảng cách';
+
+  @override
+  String get listingFilterReset => 'Xoá bộ lọc';
+
+  @override
+  String get listingFilterApply => 'Áp dụng';
+
+  @override
+  String listingFilterApplyCount(int count) {
+    return 'Áp dụng ($count)';
+  }
+
+  @override
+  String priceThousands(String value) {
+    return '$value nghìn';
+  }
+
+  @override
+  String priceMillions(String value) {
+    return '$value triệu';
+  }
+
+  @override
+  String get categoryDetailSearch => 'Tìm kiếm';
+
+  @override
+  String get categoryDetailEmptyTitle => 'Danh mục này chưa có tin nào';
+
+  @override
+  String get categoryDetailEmptyBody =>
+      'Hãy là người đầu tiên đăng món đồ thuộc danh mục này nhé.';
+
+  @override
+  String get categoryDetailPostListing => 'Đăng tin';
+
+  @override
+  String get categoryDetailFilteredEmptyTitle => 'Không có tin khớp bộ lọc';
+
+  @override
+  String get categoryDetailFilteredEmptyBody =>
+      'Thử bỏ bớt bộ lọc để xem thêm tin nhé.';
+
+  @override
+  String get categoryDetailLoadErrorTitle => 'Chưa tải được danh mục';
+
+  @override
+  String get categoryDetailLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get categoryDetailEndOfList => 'Bạn đã xem hết tin trong danh mục này';
 }

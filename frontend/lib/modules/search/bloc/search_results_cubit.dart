@@ -40,11 +40,15 @@ class SearchResultsCubit extends Cubit<SearchResultsState> {
   void toggleDeal(ListingDealType type) =>
       _applyFilter(state.filter.toggleDeal(type));
 
-  /// Nhận bộ lọc từ trang Bộ lọc đầy đủ
+  /// Nhận bộ lọc từ sheet Bộ lọc đầy đủ
   void applyFilter(ListingFilter filter) {
     if (filter == state.filter) return;
     _applyFilter(filter);
   }
+
+  /// Xoá mọi tiêu chí về mặc định của trang, giữ cách sắp xếp
+  void clearFilters() =>
+      applyFilter(state.filter.resetTo(SearchResultsState.defaultFilter));
 
   /// Tải trang tiếp theo; tự bỏ qua khi đang tải hoặc đã hết
   Future<void> loadMore() async {

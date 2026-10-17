@@ -890,5 +890,80 @@
   "areaWholeProvince": "Whole province / city",
   "areaNoResultsTitle": "No matching area",
   "areaNoResultsBody": "Try another ward or province name.",
-  "areaSearchErrorTitle": "Couldn't search areas"
+  "areaSearchErrorTitle": "Couldn't search areas",
+  "listingFilterTitle": "Filters",
+  "listingFilterCategory": "Category",
+  "listingFilterAllCategories": "All",
+  "listingFilterCategoryError": "Couldn't load categories",
+  "listingFilterPrice": "Price range",
+  "listingFilterPriceMin": "Min price",
+  "listingFilterPriceMax": "Max price",
+  "listingFilterPriceAny": "Any",
+  "listingFilterPriceHelper": "Exchange-only listings (no price) are hidden when filtering by price.",
+  "listingFilterPriceInvalid": "Min price is higher than max price.",
+  "listingFilterPriceUnder": "Under {price}",
+  "@listingFilterPriceUnder": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterPriceOver": "Over {price}",
+  "@listingFilterPriceOver": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterPriceBetween": "{min} – {max}",
+  "@listingFilterPriceBetween": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterCondition": "Condition",
+  "listingFilterDeal": "Deal type",
+  "listingFilterDistance": "Distance",
+  "listingFilterReset": "Clear all",
+  "listingFilterApply": "Apply",
+  "listingFilterApplyCount": "Apply ({count})",
+  "@listingFilterApplyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceThousands": "{value}K",
+  "@priceThousands": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "priceMillions": "{value}M",
+  "@priceMillions": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryDetailSearch": "Search",
+  "categoryDetailEmptyTitle": "No listings in this category yet",
+  "categoryDetailEmptyBody": "Be the first to post something in this category.",
+  "categoryDetailPostListing": "Post a listing",
+  "categoryDetailFilteredEmptyTitle": "No listings match your filters",
+  "categoryDetailFilteredEmptyBody": "Try removing some filters to see more listings.",
+  "categoryDetailLoadErrorTitle": "Couldn't load this category",
+  "categoryDetailLoadErrorBody": "Check your connection and try again.",
+  "categoryDetailEndOfList": "You've seen every listing in this category"
 }

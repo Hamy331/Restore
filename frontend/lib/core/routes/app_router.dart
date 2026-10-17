@@ -19,6 +19,8 @@ import 'package:restore/modules/listings/views/product_detail/product_detail_vie
 import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
+import 'package:restore/data/models/category_model.dart';
 import 'package:restore/modules/nearby/views/nearby/nearby_view.dart';
 import 'package:restore/modules/search/views/search/search_view.dart';
 import 'package:restore/modules/search/views/search_results/search_results_view.dart';
@@ -260,6 +262,20 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       pageBuilder: (_, state) =>
           AppPageTransitions.fadeSlide(state: state, child: const NearbyView()),
+    ),
+    // Tin của một danh mục; extra là CategoryModel vừa bấm (tuỳ chọn)
+    GoRoute(
+      path: CategoryDetailView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: CategoryDetailView(
+          categoryId: state.pathParameters['id']!,
+          category: state.extra is CategoryModel
+              ? state.extra! as CategoryModel
+              : null,
+        ),
+      ),
     ),
     // Chọn khu vực cho trang Gần bạn, trả về AreaPickResult
     GoRoute(
