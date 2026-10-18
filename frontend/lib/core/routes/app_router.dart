@@ -4,11 +4,26 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/ui/layouts/t_foundation_placeholder_layout.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 import 'package:restore/modules/chat/views/messages_view.dart';
-import 'package:restore/modules/home/views/home_view.dart';
+import 'package:restore/modules/home/views/home/home_view.dart';
+import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
+import 'package:restore/modules/listings/bloc/create_listing/create_listing_event.dart';
+import 'package:restore/modules/listings/repositories/category_repository.dart';
+import 'package:restore/modules/listings/models/create_listing_step.dart';
+import 'package:restore/modules/listings/repositories/listings_repository.dart';
+import 'package:restore/modules/listings/views/basic_info/basic_info_view.dart';
 import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
-import 'package:restore/modules/listings/views/upload_photos/upload_photos_view.dart';
+import 'package:restore/modules/listings/views/listing_details/listing_details_view.dart';
+import 'package:restore/modules/listings/views/listing_preview/listing_preview_view.dart';
+import 'package:restore/modules/location/repositories/location_repository.dart';
+import 'package:restore/services/device_location_service.dart';
+import 'package:restore/services/media_picker_service.dart';
+import 'package:restore/core/utils/animations/app_page_transitions.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
+import 'package:restore/modules/shell/bloc/shell_badges_cubit.dart';
+import 'package:restore/modules/chat/repositories/chat_repository.dart';
+import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/l10n/app_localizations.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -33,6 +48,9 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/welcome',
+  // Đường dẫn chưa có trang (VD tính năng chưa làm) thì đưa về trang chủ;
+  // bộ chặn đăng nhập sẽ tự chuyển sang /login nếu chưa đăng nhập
+  onException: (_, _, router) => router.go('/home'),
   redirect: (context, state) {
     final authState = context.read<AuthBloc>().state;
     return authRouteRedirect(authState, state.uri.path);
@@ -96,23 +114,70 @@ final appRouter = GoRouter(
         destination: '/login',
       ),
     ),
+    // Luồng đăng tin: các bước dùng chung một CreateListingBloc
     ShellRoute(
-      builder: (context, state, child) =>
-          BlocProvider(create: (_) => CreateListingBloc(), child: child),
+      builder: (context, state, child) => MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider(create: (_) => MediaPickerService()),
+          RepositoryProvider(create: (_) => DeviceLocationService()),
+          RepositoryProvider<LocationRepository>(
+            create: (_) => AppEnvironment.useMockData
+                ? MockLocationRepository()
+                : ApiLocationRepository(),
+          ),
+        ],
+        child: BlocProvider(
+          create: (_) => CreateListingBloc(
+            listingsRepository: AppEnvironment.useMockData
+                ? MockListingsRepository()
+                : ApiListingsRepository(),
+            categoryRepository: AppEnvironment.useMockData
+                ? MockCategoryRepository()
+                : ApiCategoryRepository(),
+          )..add(const CategoriesRequested()),
+          child: child,
+        ),
+      ),
       routes: [
         GoRoute(
-          path: '/create-listing/choose-category',
-          builder: (_, _) => const ChooseCategoryView(),
+          path: CreateListingStep.category.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const ChooseCategoryView(),
+          ),
         ),
         GoRoute(
-          path: '/create-listing/upload-photos',
-          builder: (_, _) => const UploadPhotosView(),
+          path: CreateListingStep.basicInfo.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const BasicInfoView(),
+          ),
+        ),
+        GoRoute(
+          path: CreateListingStep.details.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const ListingDetailsView(),
+          ),
+        ),
+        GoRoute(
+          path: createListingPreviewPath,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const ListingPreviewView(),
+          ),
         ),
       ],
     ),
     StatefulShellRoute.indexedStack(
-      builder: (_, _, navigationShell) =>
-          MainShell(navigationShell: navigationShell),
+      builder: (_, _, navigationShell) => BlocProvider(
+        create: (_) => ShellBadgesCubit(
+          chatRepository: AppEnvironment.useMockData
+              ? MockChatRepository()
+              : ApiChatRepository(),
+        )..refresh(),
+        child: MainShell(navigationShell: navigationShell),
+      ),
       branches: [
         StatefulShellBranch(
           routes: [GoRoute(path: '/home', builder: (_, _) => const HomeView())],
@@ -120,12 +185,15 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/manage-listings',
-              builder: (_, _) => const TFoundationPlaceholderLayout(
-                title: 'Quản lý tin',
-                message: 'Tính năng đang được phát triển',
-                icon: Icons.inventory_2_outlined,
-              ),
+              path: '/feeds',
+              builder: (context, _) {
+                final l10n = AppLocalizations.of(context)!;
+                return TFoundationPlaceholderLayout(
+                  title: l10n.feedsTitle,
+                  message: l10n.feedsComingSoon,
+                  icon: AppIcons.feeds,
+                );
+              },
             ),
           ],
         ),

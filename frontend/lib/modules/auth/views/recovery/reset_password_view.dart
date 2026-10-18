@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../repositories/auth_repository.dart';
@@ -43,7 +44,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AuthContextIcon(Icons.password),
+          const AuthContextIcon(AppIcons.password),
           const SizedBox(height: 13),
           const Text(
             'Tạo mật khẩu mới',

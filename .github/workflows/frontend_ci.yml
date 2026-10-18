@@ -3,14 +3,8 @@ name: Frontend CI Test
 on:
   push:
     branches: ["main", "dev"]
-    paths:
-      - "frontend/**"
-      - ".github/workflows/ci_test.yml" 
   pull_request:
     branches: ["main"]
-    paths:
-      - "frontend/**"
-      - ".github/workflows/ci_test.yml"
 
 jobs:
   test_and_build:
@@ -25,13 +19,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Detect frontend changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            frontend:
+              - "frontend/**"
+              - ".github/workflows/frontend_ci.yml"
+
       - name: Setup Java
+        if: steps.changes.outputs.frontend == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: "zulu"
           java-version: "17"
 
       - name: Setup Flutter
+        if: steps.changes.outputs.frontend == 'true'
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.35.4"
@@ -39,25 +44,31 @@ jobs:
           cache: true
 
       - name: Install dependencies
+        if: steps.changes.outputs.frontend == 'true'
         run: flutter pub get
 
       - name: Generate Localization files
+        if: steps.changes.outputs.frontend == 'true'
         run: flutter gen-l10n
 
       - name: Analyze source code
+        if: steps.changes.outputs.frontend == 'true'
         run: flutter analyze
 
       # - name: Run unit tests
       #   run: flutter test
 
       - name: Setup Firebase google-services.json
+        if: steps.changes.outputs.frontend == 'true'
         run: |
           echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
 
       - name: Build Android APK (Debug)
+        if: steps.changes.outputs.frontend == 'true'
         run: flutter build apk --debug
 
       - name: Upload Artifact
+        if: steps.changes.outputs.frontend == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: restore-test-apk
