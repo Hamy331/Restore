@@ -24,6 +24,10 @@ import 'package:restore/data/models/category_model.dart';
 import 'package:restore/modules/nearby/views/nearby/nearby_view.dart';
 import 'package:restore/modules/search/views/search/search_view.dart';
 import 'package:restore/modules/search/views/search_results/search_results_view.dart';
+import 'package:restore/modules/wanted_alert/models/wanted_alert_item.dart';
+import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
+import 'package:restore/modules/wanted_alert/views/wanted_alert_detail/wanted_alert_detail_view.dart';
+import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/services/device_location_service.dart';
 import 'package:restore/services/media_picker_service.dart';
 import 'package:restore/core/utils/animations/app_page_transitions.dart';
@@ -277,13 +281,15 @@ final appRouter = GoRouter(
         ),
       ),
     ),
-    // Chọn khu vực cho trang Gần bạn, trả về AreaPickResult
+    // Chọn khu vực (Gần bạn, thông báo Báo khi có hàng), trả về AreaPickResult
     GoRoute(
       path: AreaSearchView.path,
       parentNavigatorKey: _rootNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
-        child: const AreaSearchView(),
+        child: AreaSearchView(
+          allowNationwide: state.uri.queryParameters['nationwide'] == '1',
+        ),
       ),
     ),
     // Tìm kiếm tin; q là từ khoá điền sẵn (tuỳ chọn)
@@ -304,6 +310,42 @@ final appRouter = GoRouter(
         child: SearchResultsView(
           query: state.uri.queryParameters['q'] ?? '',
           fromSearch: state.uri.queryParameters['from'] == 'search',
+        ),
+      ),
+    ),
+    // Báo khi có hàng: quản lý thông báo của người dùng
+    GoRoute(
+      path: WantedAlertsView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const WantedAlertsView(),
+      ),
+    ),
+    // Tạo thông báo; q là món cần tìm điền sẵn, from=alerts khi mở từ trang
+    // quản lý (tạo xong thì trả về WantedAlertItem)
+    GoRoute(
+      path: WantedAlertCreateView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: WantedAlertCreateView(
+          initialKeywords: state.uri.queryParameters['q'] ?? '',
+          fromAlerts: state.uri.queryParameters['from'] == 'alerts',
+        ),
+      ),
+    ),
+    // Tin đã khớp một thông báo; extra là WantedAlertItem vừa bấm (tuỳ chọn)
+    GoRoute(
+      path: WantedAlertDetailView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
+        state: state,
+        child: WantedAlertDetailView(
+          alertId: state.pathParameters['id']!,
+          alert: state.extra is WantedAlertItem
+              ? state.extra! as WantedAlertItem
+              : null,
         ),
       ),
     ),

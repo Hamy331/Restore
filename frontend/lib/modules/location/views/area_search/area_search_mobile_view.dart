@@ -15,7 +15,9 @@ import 'widgets/area_search_idle_content.dart';
 import 'widgets/area_search_result_list.dart';
 
 class AreaSearchMobileView extends StatefulWidget {
-  const AreaSearchMobileView({super.key});
+  final bool allowNationwide;
+
+  const AreaSearchMobileView({super.key, this.allowNationwide = false});
 
   @override
   State<AreaSearchMobileView> createState() => _AreaSearchMobileViewState();
@@ -35,6 +37,8 @@ class _AreaSearchMobileViewState extends State<AreaSearchMobileView> {
   void _back() => context.pop();
 
   void _pickMyLocation() => context.pop(const AreaPickResult.myLocation());
+
+  void _pickNationwide() => context.pop(const AreaPickResult.nationwide());
 
   void _pickArea(AreaOption area) {
     context.read<AreaSearchCubit>().remember(area);
@@ -81,6 +85,9 @@ class _AreaSearchMobileViewState extends State<AreaSearchMobileView> {
                             key: const ValueKey('idle'),
                             recent: state.recent,
                             onMyLocation: _pickMyLocation,
+                            onNationwide: widget.allowNationwide
+                                ? _pickNationwide
+                                : null,
                             onPick: _pickArea,
                             onRemove: cubit.removeRecent,
                           ),

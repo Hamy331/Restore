@@ -965,5 +965,184 @@
   "categoryDetailFilteredEmptyBody": "Try removing some filters to see more listings.",
   "categoryDetailLoadErrorTitle": "Couldn't load this category",
   "categoryDetailLoadErrorBody": "Check your connection and try again.",
-  "categoryDetailEndOfList": "You've seen every listing in this category"
+  "categoryDetailEndOfList": "You've seen every listing in this category",
+  "wantedAlertTitle": "Wanted alerts",
+  "wantedAlertSubtitle": "Reserve what you need, get notified when it is posted",
+  "wantedAlertActiveCount": "{count, plural, =1{1 active alert} other{{count} active alerts}}",
+  "@wantedAlertActiveCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertCreate": "Create alert",
+  "wantedAlertNew": "New alert",
+  "wantedAlertEmptyTitle": "No alerts yet",
+  "wantedAlertEmptyBody": "Tell us what you are looking for and ReStore will notify you as soon as something similar is posted.",
+  "wantedAlertLoadErrorTitle": "Couldn't load your alerts",
+  "wantedAlertLoadErrorBody": "Check your connection and try again.",
+  "wantedAlertNewMatches": "{count} new",
+  "@wantedAlertNewMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertMatchCount": "{count, plural, =1{1 match} other{{count} matches}}",
+  "@wantedAlertMatchCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertNoMatchYet": "No matches yet",
+  "wantedAlertLastMatched": "Last match {time}",
+  "@wantedAlertLastMatched": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertCreatedAt": "Created {time}",
+  "@wantedAlertCreatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertWatching": "Watching",
+  "wantedAlertAnyCategory": "Any category",
+  "wantedAlertNationwide": "Nationwide",
+  "wantedAlertAnyPrice": "Any price",
+  "wantedAlertAnyCondition": "Any condition",
+  "wantedAlertAnyDeal": "Buy or exchange",
+  "wantedAlertPriceFrom": "From {price}",
+  "@wantedAlertPriceFrom": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertPriceUpTo": "Up to {price}",
+  "@wantedAlertPriceUpTo": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertPriceRange": "{min} – {max}",
+  "@wantedAlertPriceRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertDelete": "Delete alert",
+  "wantedAlertDeleteTitle": "Delete this alert?",
+  "wantedAlertDeleteBody": "ReStore will stop notifying you about “{keywords}”. You can create it again anytime.",
+  "@wantedAlertDeleteBody": {
+    "placeholders": {
+      "keywords": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertKeep": "Keep",
+  "wantedAlertDeleted": "Alert deleted. You won't get new matches for it anymore.",
+  "wantedAlertDeleteError": "Couldn't delete the alert. Please try again.",
+  "wantedAlertSearchHint": "What are you looking for?",
+  "wantedAlertIntroTitle": "Search first, get alerted later",
+  "wantedAlertIntroStep1": "Type what you need and ReStore shows similar listings right away.",
+  "wantedAlertIntroStep2": "Found a good one? Open it now, no need to wait.",
+  "wantedAlertIntroStep3": "Nothing yet? Create an alert and get a link as soon as a similar listing appears.",
+  "wantedAlertSkipToCompose": "Skip, write the alert",
+  "wantedAlertSuggestionsTitle": "{count, plural, =1{1 similar listing available} other{{count} similar listings available}}",
+  "@wantedAlertSuggestionsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertSuggestionsHint": "None of these? Create an alert to hear about new ones.",
+  "wantedAlertSuggestionsEmptyTitle": "Nothing similar yet",
+  "wantedAlertSuggestionsEmptyBody": "Create an alert and ReStore will tell you as soon as someone posts it.",
+  "wantedAlertSuggestionsErrorTitle": "Couldn't load suggestions",
+  "wantedAlertSuggestionsErrorBody": "You can still create the alert now.",
+  "wantedAlertMatchPercent": "{percent}% match",
+  "@wantedAlertMatchPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertNotRightCta": "Not it? Create an alert",
+  "wantedAlertComposeTitle": "Set up your alert",
+  "wantedAlertComposeSubtitle": "When a similar listing is posted, ReStore sends you a link to it.",
+  "wantedAlertKeywordsLabel": "What you want",
+  "wantedAlertKeywordsHint": "e.g. Canon AE-1 film camera",
+  "wantedAlertKeywordsHelper": "Name, brand or model. It doesn't have to be exact, similar listings count too.",
+  "wantedAlertKeywordsError": "Enter at least {min} characters",
+  "@wantedAlertKeywordsError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertCriteriaTitle": "Criteria (optional)",
+  "wantedAlertCriteriaCategory": "Category",
+  "wantedAlertCriteriaPrice": "Price range",
+  "wantedAlertCriteriaCondition": "Condition",
+  "wantedAlertCriteriaDeal": "Deal type",
+  "wantedAlertCriteriaArea": "Area",
+  "wantedAlertEditCriteria": "Edit criteria",
+  "wantedAlertLevelTitle": "How close",
+  "wantedAlertLevelBroad": "Broad",
+  "wantedAlertLevelBalanced": "Balanced",
+  "wantedAlertLevelStrict": "Close",
+  "wantedAlertLevelBroadDesc": "Includes loosely similar listings, so you get more alerts.",
+  "wantedAlertLevelBalancedDesc": "Most keywords must match, small typos are fine.",
+  "wantedAlertLevelStrictDesc": "Only listings that are almost exactly what you typed.",
+  "wantedAlertPreviewTitle": "Listings matching right now",
+  "wantedAlertPreviewEmpty": "Nothing matches right now. You'll be notified when something is posted.",
+  "wantedAlertPreviewNeedKeywords": "Enter what you want to preview matching listings.",
+  "wantedAlertSave": "Turn on alert",
+  "wantedAlertCreated": "Alert on for “{keywords}”. ReStore will notify you when something similar is posted.",
+  "@wantedAlertCreated": {
+    "placeholders": {
+      "keywords": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertCreateError": "Couldn't create the alert. Please try again.",
+  "wantedAlertNewTag": "New",
+  "wantedAlertMatchesTitle": "Matched listings",
+  "wantedAlertMatchesEmptyTitle": "No matches yet",
+  "wantedAlertMatchesEmptyBody": "When someone posts something similar, ReStore notifies you and it shows up here.",
+  "wantedAlertEndOfList": "You've seen every match",
+  "wantedAlertPromptTitle": "Not finding it?",
+  "wantedAlertPromptBody": "Set an alert for “{query}” and ReStore will tell you when something similar is posted.",
+  "@wantedAlertPromptBody": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "areaNationwide": "Nationwide",
+  "areaNationwideSubtitle": "Any area, listings from anywhere"
 }

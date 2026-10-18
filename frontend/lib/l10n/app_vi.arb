@@ -931,5 +931,184 @@
   "categoryDetailFilteredEmptyBody": "Thử bỏ bớt bộ lọc để xem thêm tin nhé.",
   "categoryDetailLoadErrorTitle": "Chưa tải được danh mục",
   "categoryDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
-  "categoryDetailEndOfList": "Bạn đã xem hết tin trong danh mục này"
+  "categoryDetailEndOfList": "Bạn đã xem hết tin trong danh mục này",
+  "wantedAlertTitle": "Báo khi có hàng",
+  "wantedAlertSubtitle": "Đặt trước món bạn cần, có tin giống là báo ngay",
+  "wantedAlertActiveCount": "{count} thông báo đang bật",
+  "@wantedAlertActiveCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertCreate": "Tạo thông báo",
+  "wantedAlertNew": "Tạo thông báo mới",
+  "wantedAlertEmptyTitle": "Chưa có thông báo nào",
+  "wantedAlertEmptyBody": "Đặt trước món bạn đang tìm, ReStore sẽ báo ngay khi có người đăng món gần giống.",
+  "wantedAlertLoadErrorTitle": "Chưa tải được thông báo",
+  "wantedAlertLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "wantedAlertNewMatches": "{count} tin mới",
+  "@wantedAlertNewMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertMatchCount": "{count} tin khớp",
+  "@wantedAlertMatchCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertNoMatchYet": "Chưa có tin khớp",
+  "wantedAlertLastMatched": "Khớp gần nhất {time}",
+  "@wantedAlertLastMatched": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertCreatedAt": "Tạo {time}",
+  "@wantedAlertCreatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertWatching": "Đang theo dõi",
+  "wantedAlertAnyCategory": "Mọi danh mục",
+  "wantedAlertNationwide": "Toàn quốc",
+  "wantedAlertAnyPrice": "Mọi mức giá",
+  "wantedAlertAnyCondition": "Mọi tình trạng",
+  "wantedAlertAnyDeal": "Mua hoặc trao đổi",
+  "wantedAlertPriceFrom": "Từ {price}",
+  "@wantedAlertPriceFrom": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertPriceUpTo": "Đến {price}",
+  "@wantedAlertPriceUpTo": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertPriceRange": "{min} – {max}",
+  "@wantedAlertPriceRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertDelete": "Xoá thông báo",
+  "wantedAlertDeleteTitle": "Xoá thông báo này?",
+  "wantedAlertDeleteBody": "ReStore sẽ ngừng báo tin mới cho “{keywords}”. Bạn có thể tạo lại bất cứ lúc nào.",
+  "@wantedAlertDeleteBody": {
+    "placeholders": {
+      "keywords": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertKeep": "Giữ lại",
+  "wantedAlertDeleted": "Đã xoá thông báo, bạn sẽ không nhận tin mới cho món này nữa.",
+  "wantedAlertDeleteError": "Chưa xoá được thông báo, thử lại nhé.",
+  "wantedAlertSearchHint": "Bạn đang tìm món gì?",
+  "wantedAlertIntroTitle": "Tìm trước, đặt báo sau",
+  "wantedAlertIntroStep1": "Gõ món bạn cần, ReStore tìm ngay tin đang có gần giống.",
+  "wantedAlertIntroStep2": "Thấy món ưng ý thì xem luôn, không cần chờ.",
+  "wantedAlertIntroStep3": "Chưa có? Tạo thông báo, có tin mới gần giống là ReStore báo kèm đường dẫn.",
+  "wantedAlertSkipToCompose": "Bỏ qua, viết thông báo luôn",
+  "wantedAlertSuggestionsTitle": "{count} tin đang có gần giống",
+  "@wantedAlertSuggestionsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertSuggestionsHint": "Chưa ưng món nào? Tạo thông báo để được báo khi có tin mới.",
+  "wantedAlertSuggestionsEmptyTitle": "Chưa có tin nào gần giống",
+  "wantedAlertSuggestionsEmptyBody": "Tạo thông báo, ReStore sẽ báo ngay khi có người đăng món bạn cần.",
+  "wantedAlertSuggestionsErrorTitle": "Chưa tải được tin gợi ý",
+  "wantedAlertSuggestionsErrorBody": "Bạn vẫn có thể tạo thông báo ngay bây giờ.",
+  "wantedAlertMatchPercent": "Giống {percent}%",
+  "@wantedAlertMatchPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertNotRightCta": "Chưa ưng? Tạo thông báo",
+  "wantedAlertComposeTitle": "Soạn thông báo",
+  "wantedAlertComposeSubtitle": "Có tin mới gần giống, ReStore gửi thông báo kèm đường dẫn tới tin.",
+  "wantedAlertKeywordsLabel": "Món bạn muốn tìm",
+  "wantedAlertKeywordsHint": "VD: máy ảnh film Canon AE-1",
+  "wantedAlertKeywordsHelper": "Gõ tên món, hãng, model. Không cần y hệt, tin gần giống cũng được báo.",
+  "wantedAlertKeywordsError": "Nhập ít nhất {min} ký tự",
+  "@wantedAlertKeywordsError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertCriteriaTitle": "Tiêu chí (không bắt buộc)",
+  "wantedAlertCriteriaCategory": "Danh mục",
+  "wantedAlertCriteriaPrice": "Khoảng giá",
+  "wantedAlertCriteriaCondition": "Tình trạng",
+  "wantedAlertCriteriaDeal": "Hình thức",
+  "wantedAlertCriteriaArea": "Khu vực",
+  "wantedAlertEditCriteria": "Chỉnh tiêu chí",
+  "wantedAlertLevelTitle": "Mức độ giống",
+  "wantedAlertLevelBroad": "Rộng",
+  "wantedAlertLevelBalanced": "Vừa",
+  "wantedAlertLevelStrict": "Sát",
+  "wantedAlertLevelBroadDesc": "Báo cả tin chỉ hơi giống, bạn sẽ nhận nhiều thông báo hơn.",
+  "wantedAlertLevelBalancedDesc": "Phần lớn từ khoá phải khớp, gõ sai nhẹ vẫn nhận ra.",
+  "wantedAlertLevelStrictDesc": "Chỉ báo tin gần như đúng món bạn nhập.",
+  "wantedAlertPreviewTitle": "Tin đang có khớp thông báo",
+  "wantedAlertPreviewEmpty": "Hiện chưa có tin nào khớp, bạn sẽ được báo khi có người đăng.",
+  "wantedAlertPreviewNeedKeywords": "Nhập món bạn muốn tìm để xem trước tin khớp.",
+  "wantedAlertSave": "Bật thông báo",
+  "wantedAlertCreated": "Đã bật thông báo cho “{keywords}”. Có tin gần giống, ReStore sẽ báo bạn ngay.",
+  "@wantedAlertCreated": {
+    "placeholders": {
+      "keywords": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertCreateError": "Chưa tạo được thông báo, thử lại nhé.",
+  "wantedAlertNewTag": "Mới",
+  "wantedAlertMatchesTitle": "Tin đã khớp",
+  "wantedAlertMatchesEmptyTitle": "Chưa có tin khớp",
+  "wantedAlertMatchesEmptyBody": "Khi có người đăng món gần giống, ReStore sẽ gửi thông báo và tin sẽ hiện ở đây.",
+  "wantedAlertEndOfList": "Bạn đã xem hết tin khớp",
+  "wantedAlertPromptTitle": "Chưa thấy món ưng ý?",
+  "wantedAlertPromptBody": "Đặt báo cho “{query}”, có tin mới gần giống là ReStore báo ngay.",
+  "@wantedAlertPromptBody": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "areaNationwide": "Toàn quốc",
+  "areaNationwideSubtitle": "Không giới hạn khu vực, tin ở đâu cũng báo"
 }

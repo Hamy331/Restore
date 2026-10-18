@@ -3529,6 +3529,474 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'ve seen every listing in this category'**
   String get categoryDetailEndOfList;
+
+  /// No description provided for @wantedAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wanted alerts'**
+  String get wantedAlertTitle;
+
+  /// No description provided for @wantedAlertSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve what you need, get notified when it is posted'**
+  String get wantedAlertSubtitle;
+
+  /// No description provided for @wantedAlertActiveCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 active alert} other{{count} active alerts}}'**
+  String wantedAlertActiveCount(int count);
+
+  /// No description provided for @wantedAlertCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create alert'**
+  String get wantedAlertCreate;
+
+  /// No description provided for @wantedAlertNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New alert'**
+  String get wantedAlertNew;
+
+  /// No description provided for @wantedAlertEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No alerts yet'**
+  String get wantedAlertEmptyTitle;
+
+  /// No description provided for @wantedAlertEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what you are looking for and ReStore will notify you as soon as something similar is posted.'**
+  String get wantedAlertEmptyBody;
+
+  /// No description provided for @wantedAlertLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your alerts'**
+  String get wantedAlertLoadErrorTitle;
+
+  /// No description provided for @wantedAlertLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get wantedAlertLoadErrorBody;
+
+  /// No description provided for @wantedAlertNewMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new'**
+  String wantedAlertNewMatches(int count);
+
+  /// No description provided for @wantedAlertMatchCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 match} other{{count} matches}}'**
+  String wantedAlertMatchCount(int count);
+
+  /// No description provided for @wantedAlertNoMatchYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches yet'**
+  String get wantedAlertNoMatchYet;
+
+  /// No description provided for @wantedAlertLastMatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Last match {time}'**
+  String wantedAlertLastMatched(String time);
+
+  /// No description provided for @wantedAlertCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created {time}'**
+  String wantedAlertCreatedAt(String time);
+
+  /// No description provided for @wantedAlertWatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Watching'**
+  String get wantedAlertWatching;
+
+  /// No description provided for @wantedAlertAnyCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Any category'**
+  String get wantedAlertAnyCategory;
+
+  /// No description provided for @wantedAlertNationwide.
+  ///
+  /// In en, this message translates to:
+  /// **'Nationwide'**
+  String get wantedAlertNationwide;
+
+  /// No description provided for @wantedAlertAnyPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Any price'**
+  String get wantedAlertAnyPrice;
+
+  /// No description provided for @wantedAlertAnyCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Any condition'**
+  String get wantedAlertAnyCondition;
+
+  /// No description provided for @wantedAlertAnyDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy or exchange'**
+  String get wantedAlertAnyDeal;
+
+  /// No description provided for @wantedAlertPriceFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From {price}'**
+  String wantedAlertPriceFrom(String price);
+
+  /// No description provided for @wantedAlertPriceUpTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {price}'**
+  String wantedAlertPriceUpTo(String price);
+
+  /// No description provided for @wantedAlertPriceRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{min} – {max}'**
+  String wantedAlertPriceRange(String min, String max);
+
+  /// No description provided for @wantedAlertDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete alert'**
+  String get wantedAlertDelete;
+
+  /// No description provided for @wantedAlertDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this alert?'**
+  String get wantedAlertDeleteTitle;
+
+  /// No description provided for @wantedAlertDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore will stop notifying you about “{keywords}”. You can create it again anytime.'**
+  String wantedAlertDeleteBody(String keywords);
+
+  /// No description provided for @wantedAlertKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get wantedAlertKeep;
+
+  /// No description provided for @wantedAlertDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert deleted. You won\'t get new matches for it anymore.'**
+  String get wantedAlertDeleted;
+
+  /// No description provided for @wantedAlertDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete the alert. Please try again.'**
+  String get wantedAlertDeleteError;
+
+  /// No description provided for @wantedAlertSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you looking for?'**
+  String get wantedAlertSearchHint;
+
+  /// No description provided for @wantedAlertIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search first, get alerted later'**
+  String get wantedAlertIntroTitle;
+
+  /// No description provided for @wantedAlertIntroStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Type what you need and ReStore shows similar listings right away.'**
+  String get wantedAlertIntroStep1;
+
+  /// No description provided for @wantedAlertIntroStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Found a good one? Open it now, no need to wait.'**
+  String get wantedAlertIntroStep2;
+
+  /// No description provided for @wantedAlertIntroStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet? Create an alert and get a link as soon as a similar listing appears.'**
+  String get wantedAlertIntroStep3;
+
+  /// No description provided for @wantedAlertSkipToCompose.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip, write the alert'**
+  String get wantedAlertSkipToCompose;
+
+  /// No description provided for @wantedAlertSuggestionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 similar listing available} other{{count} similar listings available}}'**
+  String wantedAlertSuggestionsTitle(int count);
+
+  /// No description provided for @wantedAlertSuggestionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'None of these? Create an alert to hear about new ones.'**
+  String get wantedAlertSuggestionsHint;
+
+  /// No description provided for @wantedAlertSuggestionsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing similar yet'**
+  String get wantedAlertSuggestionsEmptyTitle;
+
+  /// No description provided for @wantedAlertSuggestionsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an alert and ReStore will tell you as soon as someone posts it.'**
+  String get wantedAlertSuggestionsEmptyBody;
+
+  /// No description provided for @wantedAlertSuggestionsErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load suggestions'**
+  String get wantedAlertSuggestionsErrorTitle;
+
+  /// No description provided for @wantedAlertSuggestionsErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still create the alert now.'**
+  String get wantedAlertSuggestionsErrorBody;
+
+  /// No description provided for @wantedAlertMatchPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% match'**
+  String wantedAlertMatchPercent(int percent);
+
+  /// No description provided for @wantedAlertNotRightCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Not it? Create an alert'**
+  String get wantedAlertNotRightCta;
+
+  /// No description provided for @wantedAlertComposeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your alert'**
+  String get wantedAlertComposeTitle;
+
+  /// No description provided for @wantedAlertComposeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When a similar listing is posted, ReStore sends you a link to it.'**
+  String get wantedAlertComposeSubtitle;
+
+  /// No description provided for @wantedAlertKeywordsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What you want'**
+  String get wantedAlertKeywordsLabel;
+
+  /// No description provided for @wantedAlertKeywordsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Canon AE-1 film camera'**
+  String get wantedAlertKeywordsHint;
+
+  /// No description provided for @wantedAlertKeywordsHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, brand or model. It doesn\'t have to be exact, similar listings count too.'**
+  String get wantedAlertKeywordsHelper;
+
+  /// No description provided for @wantedAlertKeywordsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter at least {min} characters'**
+  String wantedAlertKeywordsError(int min);
+
+  /// No description provided for @wantedAlertCriteriaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Criteria (optional)'**
+  String get wantedAlertCriteriaTitle;
+
+  /// No description provided for @wantedAlertCriteriaCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get wantedAlertCriteriaCategory;
+
+  /// No description provided for @wantedAlertCriteriaPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range'**
+  String get wantedAlertCriteriaPrice;
+
+  /// No description provided for @wantedAlertCriteriaCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get wantedAlertCriteriaCondition;
+
+  /// No description provided for @wantedAlertCriteriaDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Deal type'**
+  String get wantedAlertCriteriaDeal;
+
+  /// No description provided for @wantedAlertCriteriaArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Area'**
+  String get wantedAlertCriteriaArea;
+
+  /// No description provided for @wantedAlertEditCriteria.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit criteria'**
+  String get wantedAlertEditCriteria;
+
+  /// No description provided for @wantedAlertLevelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How close'**
+  String get wantedAlertLevelTitle;
+
+  /// No description provided for @wantedAlertLevelBroad.
+  ///
+  /// In en, this message translates to:
+  /// **'Broad'**
+  String get wantedAlertLevelBroad;
+
+  /// No description provided for @wantedAlertLevelBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get wantedAlertLevelBalanced;
+
+  /// No description provided for @wantedAlertLevelStrict.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get wantedAlertLevelStrict;
+
+  /// No description provided for @wantedAlertLevelBroadDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes loosely similar listings, so you get more alerts.'**
+  String get wantedAlertLevelBroadDesc;
+
+  /// No description provided for @wantedAlertLevelBalancedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Most keywords must match, small typos are fine.'**
+  String get wantedAlertLevelBalancedDesc;
+
+  /// No description provided for @wantedAlertLevelStrictDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only listings that are almost exactly what you typed.'**
+  String get wantedAlertLevelStrictDesc;
+
+  /// No description provided for @wantedAlertPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings matching right now'**
+  String get wantedAlertPreviewTitle;
+
+  /// No description provided for @wantedAlertPreviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches right now. You\'ll be notified when something is posted.'**
+  String get wantedAlertPreviewEmpty;
+
+  /// No description provided for @wantedAlertPreviewNeedKeywords.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter what you want to preview matching listings.'**
+  String get wantedAlertPreviewNeedKeywords;
+
+  /// No description provided for @wantedAlertSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on alert'**
+  String get wantedAlertSave;
+
+  /// No description provided for @wantedAlertCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert on for “{keywords}”. ReStore will notify you when something similar is posted.'**
+  String wantedAlertCreated(String keywords);
+
+  /// No description provided for @wantedAlertCreateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the alert. Please try again.'**
+  String get wantedAlertCreateError;
+
+  /// No description provided for @wantedAlertNewTag.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get wantedAlertNewTag;
+
+  /// No description provided for @wantedAlertMatchesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Matched listings'**
+  String get wantedAlertMatchesTitle;
+
+  /// No description provided for @wantedAlertMatchesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches yet'**
+  String get wantedAlertMatchesEmptyTitle;
+
+  /// No description provided for @wantedAlertMatchesEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone posts something similar, ReStore notifies you and it shows up here.'**
+  String get wantedAlertMatchesEmptyBody;
+
+  /// No description provided for @wantedAlertEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen every match'**
+  String get wantedAlertEndOfList;
+
+  /// No description provided for @wantedAlertPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not finding it?'**
+  String get wantedAlertPromptTitle;
+
+  /// No description provided for @wantedAlertPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Set an alert for “{query}” and ReStore will tell you when something similar is posted.'**
+  String wantedAlertPromptBody(String query);
+
+  /// No description provided for @areaNationwide.
+  ///
+  /// In en, this message translates to:
+  /// **'Nationwide'**
+  String get areaNationwide;
+
+  /// No description provided for @areaNationwideSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Any area, listings from anywhere'**
+  String get areaNationwideSubtitle;
 }
 
 class _AppLocalizationsDelegate

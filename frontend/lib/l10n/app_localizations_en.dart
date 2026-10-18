@@ -1891,4 +1891,303 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get categoryDetailEndOfList =>
       'You\'ve seen every listing in this category';
+
+  @override
+  String get wantedAlertTitle => 'Wanted alerts';
+
+  @override
+  String get wantedAlertSubtitle =>
+      'Reserve what you need, get notified when it is posted';
+
+  @override
+  String wantedAlertActiveCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count active alerts',
+      one: '1 active alert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wantedAlertCreate => 'Create alert';
+
+  @override
+  String get wantedAlertNew => 'New alert';
+
+  @override
+  String get wantedAlertEmptyTitle => 'No alerts yet';
+
+  @override
+  String get wantedAlertEmptyBody =>
+      'Tell us what you are looking for and ReStore will notify you as soon as something similar is posted.';
+
+  @override
+  String get wantedAlertLoadErrorTitle => 'Couldn\'t load your alerts';
+
+  @override
+  String get wantedAlertLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String wantedAlertNewMatches(int count) {
+    return '$count new';
+  }
+
+  @override
+  String wantedAlertMatchCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count matches',
+      one: '1 match',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wantedAlertNoMatchYet => 'No matches yet';
+
+  @override
+  String wantedAlertLastMatched(String time) {
+    return 'Last match $time';
+  }
+
+  @override
+  String wantedAlertCreatedAt(String time) {
+    return 'Created $time';
+  }
+
+  @override
+  String get wantedAlertWatching => 'Watching';
+
+  @override
+  String get wantedAlertAnyCategory => 'Any category';
+
+  @override
+  String get wantedAlertNationwide => 'Nationwide';
+
+  @override
+  String get wantedAlertAnyPrice => 'Any price';
+
+  @override
+  String get wantedAlertAnyCondition => 'Any condition';
+
+  @override
+  String get wantedAlertAnyDeal => 'Buy or exchange';
+
+  @override
+  String wantedAlertPriceFrom(String price) {
+    return 'From $price';
+  }
+
+  @override
+  String wantedAlertPriceUpTo(String price) {
+    return 'Up to $price';
+  }
+
+  @override
+  String wantedAlertPriceRange(String min, String max) {
+    return '$min – $max';
+  }
+
+  @override
+  String get wantedAlertDelete => 'Delete alert';
+
+  @override
+  String get wantedAlertDeleteTitle => 'Delete this alert?';
+
+  @override
+  String wantedAlertDeleteBody(String keywords) {
+    return 'ReStore will stop notifying you about “$keywords”. You can create it again anytime.';
+  }
+
+  @override
+  String get wantedAlertKeep => 'Keep';
+
+  @override
+  String get wantedAlertDeleted =>
+      'Alert deleted. You won\'t get new matches for it anymore.';
+
+  @override
+  String get wantedAlertDeleteError =>
+      'Couldn\'t delete the alert. Please try again.';
+
+  @override
+  String get wantedAlertSearchHint => 'What are you looking for?';
+
+  @override
+  String get wantedAlertIntroTitle => 'Search first, get alerted later';
+
+  @override
+  String get wantedAlertIntroStep1 =>
+      'Type what you need and ReStore shows similar listings right away.';
+
+  @override
+  String get wantedAlertIntroStep2 =>
+      'Found a good one? Open it now, no need to wait.';
+
+  @override
+  String get wantedAlertIntroStep3 =>
+      'Nothing yet? Create an alert and get a link as soon as a similar listing appears.';
+
+  @override
+  String get wantedAlertSkipToCompose => 'Skip, write the alert';
+
+  @override
+  String wantedAlertSuggestionsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count similar listings available',
+      one: '1 similar listing available',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wantedAlertSuggestionsHint =>
+      'None of these? Create an alert to hear about new ones.';
+
+  @override
+  String get wantedAlertSuggestionsEmptyTitle => 'Nothing similar yet';
+
+  @override
+  String get wantedAlertSuggestionsEmptyBody =>
+      'Create an alert and ReStore will tell you as soon as someone posts it.';
+
+  @override
+  String get wantedAlertSuggestionsErrorTitle => 'Couldn\'t load suggestions';
+
+  @override
+  String get wantedAlertSuggestionsErrorBody =>
+      'You can still create the alert now.';
+
+  @override
+  String wantedAlertMatchPercent(int percent) {
+    return '$percent% match';
+  }
+
+  @override
+  String get wantedAlertNotRightCta => 'Not it? Create an alert';
+
+  @override
+  String get wantedAlertComposeTitle => 'Set up your alert';
+
+  @override
+  String get wantedAlertComposeSubtitle =>
+      'When a similar listing is posted, ReStore sends you a link to it.';
+
+  @override
+  String get wantedAlertKeywordsLabel => 'What you want';
+
+  @override
+  String get wantedAlertKeywordsHint => 'e.g. Canon AE-1 film camera';
+
+  @override
+  String get wantedAlertKeywordsHelper =>
+      'Name, brand or model. It doesn\'t have to be exact, similar listings count too.';
+
+  @override
+  String wantedAlertKeywordsError(int min) {
+    return 'Enter at least $min characters';
+  }
+
+  @override
+  String get wantedAlertCriteriaTitle => 'Criteria (optional)';
+
+  @override
+  String get wantedAlertCriteriaCategory => 'Category';
+
+  @override
+  String get wantedAlertCriteriaPrice => 'Price range';
+
+  @override
+  String get wantedAlertCriteriaCondition => 'Condition';
+
+  @override
+  String get wantedAlertCriteriaDeal => 'Deal type';
+
+  @override
+  String get wantedAlertCriteriaArea => 'Area';
+
+  @override
+  String get wantedAlertEditCriteria => 'Edit criteria';
+
+  @override
+  String get wantedAlertLevelTitle => 'How close';
+
+  @override
+  String get wantedAlertLevelBroad => 'Broad';
+
+  @override
+  String get wantedAlertLevelBalanced => 'Balanced';
+
+  @override
+  String get wantedAlertLevelStrict => 'Close';
+
+  @override
+  String get wantedAlertLevelBroadDesc =>
+      'Includes loosely similar listings, so you get more alerts.';
+
+  @override
+  String get wantedAlertLevelBalancedDesc =>
+      'Most keywords must match, small typos are fine.';
+
+  @override
+  String get wantedAlertLevelStrictDesc =>
+      'Only listings that are almost exactly what you typed.';
+
+  @override
+  String get wantedAlertPreviewTitle => 'Listings matching right now';
+
+  @override
+  String get wantedAlertPreviewEmpty =>
+      'Nothing matches right now. You\'ll be notified when something is posted.';
+
+  @override
+  String get wantedAlertPreviewNeedKeywords =>
+      'Enter what you want to preview matching listings.';
+
+  @override
+  String get wantedAlertSave => 'Turn on alert';
+
+  @override
+  String wantedAlertCreated(String keywords) {
+    return 'Alert on for “$keywords”. ReStore will notify you when something similar is posted.';
+  }
+
+  @override
+  String get wantedAlertCreateError =>
+      'Couldn\'t create the alert. Please try again.';
+
+  @override
+  String get wantedAlertNewTag => 'New';
+
+  @override
+  String get wantedAlertMatchesTitle => 'Matched listings';
+
+  @override
+  String get wantedAlertMatchesEmptyTitle => 'No matches yet';
+
+  @override
+  String get wantedAlertMatchesEmptyBody =>
+      'When someone posts something similar, ReStore notifies you and it shows up here.';
+
+  @override
+  String get wantedAlertEndOfList => 'You\'ve seen every match';
+
+  @override
+  String get wantedAlertPromptTitle => 'Not finding it?';
+
+  @override
+  String wantedAlertPromptBody(String query) {
+    return 'Set an alert for “$query” and ReStore will tell you when something similar is posted.';
+  }
+
+  @override
+  String get areaNationwide => 'Nationwide';
+
+  @override
+  String get areaNationwideSubtitle => 'Any area, listings from anywhere';
 }

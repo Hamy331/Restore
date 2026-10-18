@@ -1883,4 +1883,285 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get categoryDetailEndOfList => 'Bạn đã xem hết tin trong danh mục này';
+
+  @override
+  String get wantedAlertTitle => 'Báo khi có hàng';
+
+  @override
+  String get wantedAlertSubtitle =>
+      'Đặt trước món bạn cần, có tin giống là báo ngay';
+
+  @override
+  String wantedAlertActiveCount(int count) {
+    return '$count thông báo đang bật';
+  }
+
+  @override
+  String get wantedAlertCreate => 'Tạo thông báo';
+
+  @override
+  String get wantedAlertNew => 'Tạo thông báo mới';
+
+  @override
+  String get wantedAlertEmptyTitle => 'Chưa có thông báo nào';
+
+  @override
+  String get wantedAlertEmptyBody =>
+      'Đặt trước món bạn đang tìm, ReStore sẽ báo ngay khi có người đăng món gần giống.';
+
+  @override
+  String get wantedAlertLoadErrorTitle => 'Chưa tải được thông báo';
+
+  @override
+  String get wantedAlertLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String wantedAlertNewMatches(int count) {
+    return '$count tin mới';
+  }
+
+  @override
+  String wantedAlertMatchCount(int count) {
+    return '$count tin khớp';
+  }
+
+  @override
+  String get wantedAlertNoMatchYet => 'Chưa có tin khớp';
+
+  @override
+  String wantedAlertLastMatched(String time) {
+    return 'Khớp gần nhất $time';
+  }
+
+  @override
+  String wantedAlertCreatedAt(String time) {
+    return 'Tạo $time';
+  }
+
+  @override
+  String get wantedAlertWatching => 'Đang theo dõi';
+
+  @override
+  String get wantedAlertAnyCategory => 'Mọi danh mục';
+
+  @override
+  String get wantedAlertNationwide => 'Toàn quốc';
+
+  @override
+  String get wantedAlertAnyPrice => 'Mọi mức giá';
+
+  @override
+  String get wantedAlertAnyCondition => 'Mọi tình trạng';
+
+  @override
+  String get wantedAlertAnyDeal => 'Mua hoặc trao đổi';
+
+  @override
+  String wantedAlertPriceFrom(String price) {
+    return 'Từ $price';
+  }
+
+  @override
+  String wantedAlertPriceUpTo(String price) {
+    return 'Đến $price';
+  }
+
+  @override
+  String wantedAlertPriceRange(String min, String max) {
+    return '$min – $max';
+  }
+
+  @override
+  String get wantedAlertDelete => 'Xoá thông báo';
+
+  @override
+  String get wantedAlertDeleteTitle => 'Xoá thông báo này?';
+
+  @override
+  String wantedAlertDeleteBody(String keywords) {
+    return 'ReStore sẽ ngừng báo tin mới cho “$keywords”. Bạn có thể tạo lại bất cứ lúc nào.';
+  }
+
+  @override
+  String get wantedAlertKeep => 'Giữ lại';
+
+  @override
+  String get wantedAlertDeleted =>
+      'Đã xoá thông báo, bạn sẽ không nhận tin mới cho món này nữa.';
+
+  @override
+  String get wantedAlertDeleteError => 'Chưa xoá được thông báo, thử lại nhé.';
+
+  @override
+  String get wantedAlertSearchHint => 'Bạn đang tìm món gì?';
+
+  @override
+  String get wantedAlertIntroTitle => 'Tìm trước, đặt báo sau';
+
+  @override
+  String get wantedAlertIntroStep1 =>
+      'Gõ món bạn cần, ReStore tìm ngay tin đang có gần giống.';
+
+  @override
+  String get wantedAlertIntroStep2 =>
+      'Thấy món ưng ý thì xem luôn, không cần chờ.';
+
+  @override
+  String get wantedAlertIntroStep3 =>
+      'Chưa có? Tạo thông báo, có tin mới gần giống là ReStore báo kèm đường dẫn.';
+
+  @override
+  String get wantedAlertSkipToCompose => 'Bỏ qua, viết thông báo luôn';
+
+  @override
+  String wantedAlertSuggestionsTitle(int count) {
+    return '$count tin đang có gần giống';
+  }
+
+  @override
+  String get wantedAlertSuggestionsHint =>
+      'Chưa ưng món nào? Tạo thông báo để được báo khi có tin mới.';
+
+  @override
+  String get wantedAlertSuggestionsEmptyTitle => 'Chưa có tin nào gần giống';
+
+  @override
+  String get wantedAlertSuggestionsEmptyBody =>
+      'Tạo thông báo, ReStore sẽ báo ngay khi có người đăng món bạn cần.';
+
+  @override
+  String get wantedAlertSuggestionsErrorTitle => 'Chưa tải được tin gợi ý';
+
+  @override
+  String get wantedAlertSuggestionsErrorBody =>
+      'Bạn vẫn có thể tạo thông báo ngay bây giờ.';
+
+  @override
+  String wantedAlertMatchPercent(int percent) {
+    return 'Giống $percent%';
+  }
+
+  @override
+  String get wantedAlertNotRightCta => 'Chưa ưng? Tạo thông báo';
+
+  @override
+  String get wantedAlertComposeTitle => 'Soạn thông báo';
+
+  @override
+  String get wantedAlertComposeSubtitle =>
+      'Có tin mới gần giống, ReStore gửi thông báo kèm đường dẫn tới tin.';
+
+  @override
+  String get wantedAlertKeywordsLabel => 'Món bạn muốn tìm';
+
+  @override
+  String get wantedAlertKeywordsHint => 'VD: máy ảnh film Canon AE-1';
+
+  @override
+  String get wantedAlertKeywordsHelper =>
+      'Gõ tên món, hãng, model. Không cần y hệt, tin gần giống cũng được báo.';
+
+  @override
+  String wantedAlertKeywordsError(int min) {
+    return 'Nhập ít nhất $min ký tự';
+  }
+
+  @override
+  String get wantedAlertCriteriaTitle => 'Tiêu chí (không bắt buộc)';
+
+  @override
+  String get wantedAlertCriteriaCategory => 'Danh mục';
+
+  @override
+  String get wantedAlertCriteriaPrice => 'Khoảng giá';
+
+  @override
+  String get wantedAlertCriteriaCondition => 'Tình trạng';
+
+  @override
+  String get wantedAlertCriteriaDeal => 'Hình thức';
+
+  @override
+  String get wantedAlertCriteriaArea => 'Khu vực';
+
+  @override
+  String get wantedAlertEditCriteria => 'Chỉnh tiêu chí';
+
+  @override
+  String get wantedAlertLevelTitle => 'Mức độ giống';
+
+  @override
+  String get wantedAlertLevelBroad => 'Rộng';
+
+  @override
+  String get wantedAlertLevelBalanced => 'Vừa';
+
+  @override
+  String get wantedAlertLevelStrict => 'Sát';
+
+  @override
+  String get wantedAlertLevelBroadDesc =>
+      'Báo cả tin chỉ hơi giống, bạn sẽ nhận nhiều thông báo hơn.';
+
+  @override
+  String get wantedAlertLevelBalancedDesc =>
+      'Phần lớn từ khoá phải khớp, gõ sai nhẹ vẫn nhận ra.';
+
+  @override
+  String get wantedAlertLevelStrictDesc =>
+      'Chỉ báo tin gần như đúng món bạn nhập.';
+
+  @override
+  String get wantedAlertPreviewTitle => 'Tin đang có khớp thông báo';
+
+  @override
+  String get wantedAlertPreviewEmpty =>
+      'Hiện chưa có tin nào khớp, bạn sẽ được báo khi có người đăng.';
+
+  @override
+  String get wantedAlertPreviewNeedKeywords =>
+      'Nhập món bạn muốn tìm để xem trước tin khớp.';
+
+  @override
+  String get wantedAlertSave => 'Bật thông báo';
+
+  @override
+  String wantedAlertCreated(String keywords) {
+    return 'Đã bật thông báo cho “$keywords”. Có tin gần giống, ReStore sẽ báo bạn ngay.';
+  }
+
+  @override
+  String get wantedAlertCreateError => 'Chưa tạo được thông báo, thử lại nhé.';
+
+  @override
+  String get wantedAlertNewTag => 'Mới';
+
+  @override
+  String get wantedAlertMatchesTitle => 'Tin đã khớp';
+
+  @override
+  String get wantedAlertMatchesEmptyTitle => 'Chưa có tin khớp';
+
+  @override
+  String get wantedAlertMatchesEmptyBody =>
+      'Khi có người đăng món gần giống, ReStore sẽ gửi thông báo và tin sẽ hiện ở đây.';
+
+  @override
+  String get wantedAlertEndOfList => 'Bạn đã xem hết tin khớp';
+
+  @override
+  String get wantedAlertPromptTitle => 'Chưa thấy món ưng ý?';
+
+  @override
+  String wantedAlertPromptBody(String query) {
+    return 'Đặt báo cho “$query”, có tin mới gần giống là ReStore báo ngay.';
+  }
+
+  @override
+  String get areaNationwide => 'Toàn quốc';
+
+  @override
+  String get areaNationwideSubtitle =>
+      'Không giới hạn khu vực, tin ở đâu cũng báo';
 }
