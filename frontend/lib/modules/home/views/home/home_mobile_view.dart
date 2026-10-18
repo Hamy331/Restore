@@ -8,6 +8,7 @@ import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
+import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
@@ -95,11 +96,12 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   }
 
   void _onQuickAction(HomeQuickAction action) {
-    // TODO: mở trang riêng khi có (thẻ đặt trước, shop uy tín, đang theo dõi)
+    // TODO: mở trang riêng khi có (shop uy tín, đang theo dõi)
     switch (action) {
       case HomeQuickAction.nearby:
         context.push(_nearbyPath);
       case HomeQuickAction.wantedAlert:
+        context.push(WantedAlertsView.path);
       case HomeQuickAction.trustedShops:
       case HomeQuickAction.following:
         _comingSoon();

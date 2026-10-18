@@ -46,14 +46,18 @@ class AreaOption extends Equatable {
   List<Object?> get props => [code, name, level, parentName, center];
 }
 
-/// Kết quả trang chọn khu vực: một khu vực cụ thể, hoặc dùng vị trí GPS
-/// của máy ("Gần tôi") khi [area] là null.
+/// Kết quả trang chọn khu vực: một khu vực cụ thể, dùng vị trí GPS của máy
+/// ("Gần tôi"), hoặc toàn quốc ([nationwide], chỉ khi trang mở với
+/// `allowNationwide`, VD chọn khu vực cho thông báo "Báo khi có hàng").
 class AreaPickResult {
   final AreaOption? area;
+  final bool nationwide;
 
-  const AreaPickResult.area(AreaOption this.area);
+  const AreaPickResult.area(AreaOption this.area) : nationwide = false;
 
-  const AreaPickResult.myLocation() : area = null;
+  const AreaPickResult.myLocation() : area = null, nationwide = false;
 
-  bool get useMyLocation => area == null;
+  const AreaPickResult.nationwide() : area = null, nationwide = true;
+
+  bool get useMyLocation => area == null && !nationwide;
 }

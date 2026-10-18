@@ -5,6 +5,7 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
@@ -18,6 +19,7 @@ import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/search_results_cubit.dart';
 import '../../bloc/search_results_state.dart';
+import 'widgets/search_results_alert_prompt.dart';
 import 'widgets/search_results_header.dart';
 
 class SearchResultsMobileView extends StatefulWidget {
@@ -68,6 +70,12 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
     context.push(
       Uri(path: '/search', queryParameters: {'q': query}).toString(),
     );
+  }
+
+  /// Chưa thấy món ưng ý: đặt "Báo khi có hàng" cho từ khoá đang tìm
+  void _createAlert() {
+    final query = context.read<SearchResultsCubit>().state.query;
+    context.push(WantedAlertCreateView.location(keywords: query));
   }
 
   /// Sheet Bộ lọc đầy đủ; chưa dùng vị trí nên không có nhóm Khoảng cách
@@ -224,9 +232,19 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
             icon: AppIcons.searchEmpty,
             title: l10n.searchEmptyTitle(state.query),
             message: l10n.searchEmptyBody,
-            action: OutlinedButton(
-              onPressed: _editQuery,
-              child: Text(l10n.searchTryAnother),
+            action: Column(
+              children: [
+                FilledButton.icon(
+                  onPressed: _createAlert,
+                  icon: const Icon(AppIcons.wantedAlert, size: 18),
+                  label: Text(l10n.homeQuickWanted),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: _editQuery,
+                  child: Text(l10n.searchTryAnother),
+                ),
+              ],
             ),
           ),
         ),
@@ -252,6 +270,16 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
           endText: l10n.searchEndOfList,
         ),
       ),
+      if (!state.hasMore)
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(_sidePadding, 4, _sidePadding, 0),
+          sliver: SliverToBoxAdapter(
+            child: SearchResultsAlertPrompt(
+              query: state.query,
+              onTap: _createAlert,
+            ),
+          ),
+        ),
     ];
   }
 }

@@ -9,10 +9,19 @@ import 'area_search_mobile_view.dart';
 
 /// Route `/nearby/area`: chọn khu vực để xem tin quanh đó.
 /// Đóng trang trả về `AreaPickResult` (null nếu người dùng quay lại).
+/// [allowNationwide] (query `nationwide=1`): thay lựa chọn "Gần tôi" bằng
+/// "Toàn quốc", dùng khi chọn khu vực cho thông báo "Báo khi có hàng".
 class AreaSearchView extends StatelessWidget {
-  const AreaSearchView({super.key});
+  final bool allowNationwide;
+
+  const AreaSearchView({super.key, this.allowNationwide = false});
 
   static const String path = '/nearby/area';
+
+  static String location({bool allowNationwide = false}) => Uri(
+    path: path,
+    queryParameters: allowNationwide ? {'nationwide': '1'} : null,
+  ).toString();
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +31,9 @@ class AreaSearchView extends StatelessWidget {
             ? MockAreaSearchRepository()
             : ApiAreaSearchRepository(),
       )..start(),
-      child: const TResponsiveLayout(mobile: AreaSearchMobileView()),
+      child: TResponsiveLayout(
+        mobile: AreaSearchMobileView(allowNationwide: allowNationwide),
+      ),
     );
   }
 }
