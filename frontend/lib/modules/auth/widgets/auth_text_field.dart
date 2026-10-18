@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../core/constants/app_colors.dart';
 
 class AuthTextField extends StatefulWidget {
@@ -93,8 +94,8 @@ class _AuthTextFieldState extends State<AuthTextField> {
                     onPressed: () => setState(() => _obscured = !_obscured),
                     icon: Icon(
                       _obscured
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
+                          ? AppIcons.hidden
+                          : AppIcons.visible,
                       size: 20,
                       color: AppColors.textSecondary,
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../repositories/auth_repository.dart';
@@ -37,7 +38,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AuthContextIcon(Icons.lock_reset),
+          const AuthContextIcon(AppIcons.lock),
           const SizedBox(height: 13),
           const Text(
             'Đặt lại mật khẩu',

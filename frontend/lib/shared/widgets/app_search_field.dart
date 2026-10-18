@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../core/constants/app_colors.dart';
 
 class AppSearchField extends StatelessWidget {
@@ -29,8 +30,8 @@ class AppSearchField extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(fontSize: 14),
-          prefixIcon: const Icon(Icons.search, size: 22),
-          suffixIcon: showFilter ? const Icon(Icons.tune, size: 20) : null,
+          prefixIcon: const Icon(AppIcons.search, size: 22),
+          suffixIcon: showFilter ? const Icon(AppIcons.filter, size: 20) : null,
           fillColor: AppColors.background,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           border: OutlineInputBorder(
