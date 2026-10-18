@@ -1110,5 +1110,109 @@
     }
   },
   "areaNationwide": "Toàn quốc",
-  "areaNationwideSubtitle": "Không giới hạn khu vực, tin ở đâu cũng báo"
+  "areaNationwideSubtitle": "Không giới hạn khu vực, tin ở đâu cũng báo",
+  "trustedShopsTitle": "Shop uy tín",
+  "trustedShopsSubtitle": "Gian hàng chính hãng đã xác minh",
+  "trustedShopsAllCategories": "Tất cả",
+  "trustedShopsOfficialTitle": "Thương hiệu chính hãng",
+  "trustedShopsCertifiedTitle": "Shop được ReStore chứng nhận",
+  "trustedShopsShowcaseTitle": "Sản phẩm theo nhãn hàng",
+  "trustedShopsShowcaseSubtitle": "Nổi bật từ các shop được theo dõi nhiều nhất",
+  "trustedShopsViewShop": "Xem shop",
+  "trustedShopsAllProductsTitle": "Tất cả sản phẩm",
+  "trustedShopsAllProductsSubtitle": "Từ mọi shop đã xác minh",
+  "trustedShopsEndOfList": "Bạn đã xem hết sản phẩm của shop uy tín",
+  "trustedShopsEmptyTitle": "Chưa có shop uy tín trong mục này",
+  "trustedShopsEmptyBody": "Khi có shop được xác minh bán mặt hàng này, shop sẽ hiện ở đây.",
+  "trustedShopsLoadErrorTitle": "Chưa tải được shop uy tín",
+  "trustedShopsLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "trustedShopsFamousTitle": "Thương hiệu nổi tiếng",
+  "trustedShopsFamousSubtitle": "Gian hàng chính hãng của các thương hiệu lớn",
+  "trustedShopsDealsTitle": "Trải nghiệm hàng hiệu",
+  "trustedShopsDealsSubtitle": "Hàng hiệu chính hãng đang giảm giá",
+  "trustedShopsDealsUpTo": "Giảm đến {percent}%",
+  "@trustedShopsDealsUpTo": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "trustedShopsNewReleasesTitle": "Siêu phẩm mới ra mắt",
+  "trustedShopsNewReleasesSubtitle": "Sản phẩm vừa ra mắt từ các thương hiệu lớn",
+  "trustedShopsNewReleaseTag": "Mới ra mắt",
+  "trustedShopsLaunchedDaysAgo": "{count, plural, =0{Ra mắt hôm nay} other{Ra mắt {count} ngày trước}}",
+  "@trustedShopsLaunchedDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trustedShopsNewShopsTitle": "Cửa hàng mới",
+  "trustedShopsNewShopsSubtitle": "Shop vừa được ReStore xác minh",
+  "trustedShopsNavFamous": "Thương hiệu",
+  "trustedShopsNavDeals": "Giảm giá",
+  "trustedShopsNavNewReleases": "Mới ra mắt",
+  "trustedShopsNavNewShops": "Cửa hàng mới",
+  "trustedShopsNavShowcases": "Theo nhãn hàng",
+  "trustedShopsNavAll": "Tất cả sản phẩm",
+  "trustedShopsSeeAll": "Xem tất cả",
+  "trustedShopsOnSaleFilter": "Đang giảm giá",
+  "shopDetailEventsTitle": "Sự kiện của shop",
+  "shopDetailEventsSubtitle": "Ưu đãi đã được ReStore duyệt",
+  "shopVerificationOfficial": "Chính hãng",
+  "shopVerificationCertified": "Đã chứng nhận",
+  "shopVerificationOfficialDesc": "Shop gốc của nhãn hàng hoặc nhà phân phối được uỷ quyền, hàng chính hãng có bảo hành.",
+  "shopVerificationCertifiedDesc": "ReStore đã kiểm tra giấy phép kinh doanh, địa chỉ và lịch sử giao dịch trước khi cấp chứng nhận.",
+  "shopVerificationSheetTitle": "Về shop đã xác minh",
+  "shopVerificationSheetSubtitle": "Chỉ shop đạt một trong hai mức sau mới hiện ở Shop uy tín",
+  "shopVerificationSheetNote": "ReStore rà soát định kỳ và thu hồi chứng nhận nếu shop vi phạm quy định hoặc bị khiếu nại nhiều lần.",
+  "shopCertificateTitle": "Chứng nhận của shop",
+  "shopCertificateCode": "Mã chứng nhận",
+  "shopVerifiedSince": "Ngày xác minh",
+  "shopVerifiedSinceShort": "Xác minh {date}",
+  "@shopVerifiedSinceShort": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "shopFollow": "Theo dõi",
+  "shopFollowing": "Đang theo dõi",
+  "shopFollowerCount": "{count} theo dõi",
+  "@shopFollowerCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "shopListingCount": "{count} sản phẩm",
+  "@shopListingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shopRatingCount": "{count} đánh giá",
+  "@shopRatingCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "shopFollowersLabel": "Người theo dõi",
+  "shopProductsLabel": "Sản phẩm",
+  "shopDescriptionMore": "Xem thêm",
+  "shopDescriptionLess": "Thu gọn",
+  "shopDetailProductsTitle": "Sản phẩm đang bán",
+  "shopDetailEmptyTitle": "Shop chưa có sản phẩm",
+  "shopDetailEmptyBody": "Theo dõi shop để biết ngay khi có sản phẩm mới.",
+  "shopDetailEndOfList": "Bạn đã xem hết sản phẩm của shop",
+  "shopDetailLoadErrorTitle": "Chưa tải được trang shop",
+  "shopDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé."
 }

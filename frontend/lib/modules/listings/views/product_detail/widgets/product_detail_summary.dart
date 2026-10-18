@@ -33,6 +33,10 @@ class ProductDetailSummary extends StatelessWidget {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final listing = detail.listing;
     final price = listing.price;
+    final discount = listing.discountPercent;
+    // Giá cũ gạch ngang: giá trước khi vừa đổi, hoặc giá gốc khi đang giảm
+    final struckPrice =
+        previousPrice ?? (discount == null ? null : listing.originalPrice);
     final createdAt = listing.createdAt;
     final tags = [
       ?listing.condition?.label(l10n),
@@ -60,23 +64,45 @@ class ProductDetailSummary extends StatelessWidget {
                 price == null
                     ? l10n.homeExchangeOnly
                     : CurrencyFormatter.formatVnd(price, locale: locale),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.4,
-                  color: AppColors.primaryDark,
+                  color: discount == null
+                      ? AppColors.primaryDark
+                      : AppColors.error,
                 ),
               ),
-              if (previousPrice != null && previousPrice != price)
+              if (struckPrice != null && struckPrice != price)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
-                    CurrencyFormatter.formatVnd(previousPrice!, locale: locale),
+                    CurrencyFormatter.formatVnd(struckPrice, locale: locale),
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                       decoration: TextDecoration.lineThrough,
                       decorationColor: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              if (discount != null)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.errorBg,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '-$discount%',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.error,
                     ),
                   ),
                 ),

@@ -24,6 +24,9 @@ import 'package:restore/data/models/category_model.dart';
 import 'package:restore/modules/nearby/views/nearby/nearby_view.dart';
 import 'package:restore/modules/search/views/search/search_view.dart';
 import 'package:restore/modules/search/views/search_results/search_results_view.dart';
+import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
+import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.dart';
+import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/models/wanted_alert_item.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_detail/wanted_alert_detail_view.dart';
@@ -345,6 +348,31 @@ final appRouter = GoRouter(
           alertId: state.pathParameters['id']!,
           alert: state.extra is WantedAlertItem
               ? state.extra! as WantedAlertItem
+              : null,
+        ),
+      ),
+    ),
+    // Shop uy tín: shop đã xác minh và sản phẩm của các shop đó
+    GoRoute(
+      path: TrustedShopsView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        // ?shop=<id>: mở trang rồi vào thẳng shop đó (VD bấm banner trang chủ)
+        child: TrustedShopsView(openShopId: state.uri.queryParameters['shop']),
+      ),
+    ),
+    // Trang của một shop; extra là TrustedShopItem vừa bấm (tuỳ chọn),
+    // đóng trang trả về trạng thái theo dõi mới nếu đã đổi
+    GoRoute(
+      path: ShopDetailView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
+        state: state,
+        child: ShopDetailView(
+          shopId: state.pathParameters['id']!,
+          shop: state.extra is TrustedShopItem
+              ? state.extra! as TrustedShopItem
               : null,
         ),
       ),

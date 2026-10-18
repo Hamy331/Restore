@@ -1,4 +1,5 @@
 import 'package:restore/modules/home/data/home_mock_data.dart';
+import 'package:restore/modules/trusted_shop/data/trusted_shop_mock_data.dart';
 
 import 'listing_mock_data.dart';
 
@@ -150,7 +151,10 @@ class ProductDetailMockData {
   /// Trả về JSON chi tiết của tin [id], null khi không có
   static Map<String, dynamic>? detail(String id, {DateTime? now}) {
     final rows = HomeMockData.listings(now ?? DateTime.now());
-    final base = rows.where((row) => row['id'] == id).firstOrNull;
+    // Tin của Shop uy tín mượn phần bổ sung của tin gốc cùng loại
+    final base =
+        rows.where((row) => row['id'] == id).firstOrNull ??
+        TrustedShopMockData.listingById(id, now: now);
     if (base == null) return null;
 
     final baseId = id.split('_').first;
