@@ -73,6 +73,12 @@ class AppIcons {
   static const IconData priceDown = LucideIcons.trendingDown300;
   static const IconData priceEqual = LucideIcons.equal300;
   static const IconData live = LucideIcons.radio300;
+  static const IconData sale = LucideIcons.badgePercent300;
+
+  // Shop uy tín
+  static const IconData brand = LucideIcons.crown300;
+  static const IconData hot = LucideIcons.flame300;
+  static const IconData event = LucideIcons.megaphone300;
 
   // AI / nổi bật
   static const IconData sparkle = LucideIcons.sparkles300;

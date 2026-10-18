@@ -2164,4 +2164,219 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get areaNationwideSubtitle =>
       'Không giới hạn khu vực, tin ở đâu cũng báo';
+
+  @override
+  String get trustedShopsTitle => 'Shop uy tín';
+
+  @override
+  String get trustedShopsSubtitle => 'Gian hàng chính hãng đã xác minh';
+
+  @override
+  String get trustedShopsAllCategories => 'Tất cả';
+
+  @override
+  String get trustedShopsOfficialTitle => 'Thương hiệu chính hãng';
+
+  @override
+  String get trustedShopsCertifiedTitle => 'Shop được ReStore chứng nhận';
+
+  @override
+  String get trustedShopsShowcaseTitle => 'Sản phẩm theo nhãn hàng';
+
+  @override
+  String get trustedShopsShowcaseSubtitle =>
+      'Nổi bật từ các shop được theo dõi nhiều nhất';
+
+  @override
+  String get trustedShopsViewShop => 'Xem shop';
+
+  @override
+  String get trustedShopsAllProductsTitle => 'Tất cả sản phẩm';
+
+  @override
+  String get trustedShopsAllProductsSubtitle => 'Từ mọi shop đã xác minh';
+
+  @override
+  String get trustedShopsEndOfList => 'Bạn đã xem hết sản phẩm của shop uy tín';
+
+  @override
+  String get trustedShopsEmptyTitle => 'Chưa có shop uy tín trong mục này';
+
+  @override
+  String get trustedShopsEmptyBody =>
+      'Khi có shop được xác minh bán mặt hàng này, shop sẽ hiện ở đây.';
+
+  @override
+  String get trustedShopsLoadErrorTitle => 'Chưa tải được shop uy tín';
+
+  @override
+  String get trustedShopsLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get trustedShopsFamousTitle => 'Thương hiệu nổi tiếng';
+
+  @override
+  String get trustedShopsFamousSubtitle =>
+      'Gian hàng chính hãng của các thương hiệu lớn';
+
+  @override
+  String get trustedShopsDealsTitle => 'Trải nghiệm hàng hiệu';
+
+  @override
+  String get trustedShopsDealsSubtitle => 'Hàng hiệu chính hãng đang giảm giá';
+
+  @override
+  String trustedShopsDealsUpTo(int percent) {
+    return 'Giảm đến $percent%';
+  }
+
+  @override
+  String get trustedShopsNewReleasesTitle => 'Siêu phẩm mới ra mắt';
+
+  @override
+  String get trustedShopsNewReleasesSubtitle =>
+      'Sản phẩm vừa ra mắt từ các thương hiệu lớn';
+
+  @override
+  String get trustedShopsNewReleaseTag => 'Mới ra mắt';
+
+  @override
+  String trustedShopsLaunchedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ra mắt $count ngày trước',
+      zero: 'Ra mắt hôm nay',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustedShopsNewShopsTitle => 'Cửa hàng mới';
+
+  @override
+  String get trustedShopsNewShopsSubtitle => 'Shop vừa được ReStore xác minh';
+
+  @override
+  String get trustedShopsNavFamous => 'Thương hiệu';
+
+  @override
+  String get trustedShopsNavDeals => 'Giảm giá';
+
+  @override
+  String get trustedShopsNavNewReleases => 'Mới ra mắt';
+
+  @override
+  String get trustedShopsNavNewShops => 'Cửa hàng mới';
+
+  @override
+  String get trustedShopsNavShowcases => 'Theo nhãn hàng';
+
+  @override
+  String get trustedShopsNavAll => 'Tất cả sản phẩm';
+
+  @override
+  String get trustedShopsSeeAll => 'Xem tất cả';
+
+  @override
+  String get trustedShopsOnSaleFilter => 'Đang giảm giá';
+
+  @override
+  String get shopDetailEventsTitle => 'Sự kiện của shop';
+
+  @override
+  String get shopDetailEventsSubtitle => 'Ưu đãi đã được ReStore duyệt';
+
+  @override
+  String get shopVerificationOfficial => 'Chính hãng';
+
+  @override
+  String get shopVerificationCertified => 'Đã chứng nhận';
+
+  @override
+  String get shopVerificationOfficialDesc =>
+      'Shop gốc của nhãn hàng hoặc nhà phân phối được uỷ quyền, hàng chính hãng có bảo hành.';
+
+  @override
+  String get shopVerificationCertifiedDesc =>
+      'ReStore đã kiểm tra giấy phép kinh doanh, địa chỉ và lịch sử giao dịch trước khi cấp chứng nhận.';
+
+  @override
+  String get shopVerificationSheetTitle => 'Về shop đã xác minh';
+
+  @override
+  String get shopVerificationSheetSubtitle =>
+      'Chỉ shop đạt một trong hai mức sau mới hiện ở Shop uy tín';
+
+  @override
+  String get shopVerificationSheetNote =>
+      'ReStore rà soát định kỳ và thu hồi chứng nhận nếu shop vi phạm quy định hoặc bị khiếu nại nhiều lần.';
+
+  @override
+  String get shopCertificateTitle => 'Chứng nhận của shop';
+
+  @override
+  String get shopCertificateCode => 'Mã chứng nhận';
+
+  @override
+  String get shopVerifiedSince => 'Ngày xác minh';
+
+  @override
+  String shopVerifiedSinceShort(String date) {
+    return 'Xác minh $date';
+  }
+
+  @override
+  String get shopFollow => 'Theo dõi';
+
+  @override
+  String get shopFollowing => 'Đang theo dõi';
+
+  @override
+  String shopFollowerCount(String count) {
+    return '$count theo dõi';
+  }
+
+  @override
+  String shopListingCount(int count) {
+    return '$count sản phẩm';
+  }
+
+  @override
+  String shopRatingCount(String count) {
+    return '$count đánh giá';
+  }
+
+  @override
+  String get shopFollowersLabel => 'Người theo dõi';
+
+  @override
+  String get shopProductsLabel => 'Sản phẩm';
+
+  @override
+  String get shopDescriptionMore => 'Xem thêm';
+
+  @override
+  String get shopDescriptionLess => 'Thu gọn';
+
+  @override
+  String get shopDetailProductsTitle => 'Sản phẩm đang bán';
+
+  @override
+  String get shopDetailEmptyTitle => 'Shop chưa có sản phẩm';
+
+  @override
+  String get shopDetailEmptyBody =>
+      'Theo dõi shop để biết ngay khi có sản phẩm mới.';
+
+  @override
+  String get shopDetailEndOfList => 'Bạn đã xem hết sản phẩm của shop';
+
+  @override
+  String get shopDetailLoadErrorTitle => 'Chưa tải được trang shop';
+
+  @override
+  String get shopDetailLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
 }

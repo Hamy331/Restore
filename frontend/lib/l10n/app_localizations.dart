@@ -3997,6 +3997,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Any area, listings from anywhere'**
   String get areaNationwideSubtitle;
+
+  /// No description provided for @trustedShopsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted shops'**
+  String get trustedShopsTitle;
+
+  /// No description provided for @trustedShopsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Genuine stores verified by ReStore'**
+  String get trustedShopsSubtitle;
+
+  /// No description provided for @trustedShopsAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get trustedShopsAllCategories;
+
+  /// No description provided for @trustedShopsOfficialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Official brands'**
+  String get trustedShopsOfficialTitle;
+
+  /// No description provided for @trustedShopsCertifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore certified'**
+  String get trustedShopsCertifiedTitle;
+
+  /// No description provided for @trustedShopsShowcaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop by brand'**
+  String get trustedShopsShowcaseTitle;
+
+  /// No description provided for @trustedShopsShowcaseSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Picks from the most followed shops'**
+  String get trustedShopsShowcaseSubtitle;
+
+  /// No description provided for @trustedShopsViewShop.
+  ///
+  /// In en, this message translates to:
+  /// **'View shop'**
+  String get trustedShopsViewShop;
+
+  /// No description provided for @trustedShopsAllProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All products'**
+  String get trustedShopsAllProductsTitle;
+
+  /// No description provided for @trustedShopsAllProductsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'From every verified shop'**
+  String get trustedShopsAllProductsSubtitle;
+
+  /// No description provided for @trustedShopsEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen every product from trusted shops'**
+  String get trustedShopsEndOfList;
+
+  /// No description provided for @trustedShopsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No trusted shops here yet'**
+  String get trustedShopsEmptyTitle;
+
+  /// No description provided for @trustedShopsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified shops in this category will show up here.'**
+  String get trustedShopsEmptyBody;
+
+  /// No description provided for @trustedShopsLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load trusted shops'**
+  String get trustedShopsLoadErrorTitle;
+
+  /// No description provided for @trustedShopsLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get trustedShopsLoadErrorBody;
+
+  /// No description provided for @trustedShopsFamousTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Famous brands'**
+  String get trustedShopsFamousTitle;
+
+  /// No description provided for @trustedShopsFamousSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Official stores of big-name brands'**
+  String get trustedShopsFamousSubtitle;
+
+  /// No description provided for @trustedShopsDealsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Luxury for less'**
+  String get trustedShopsDealsTitle;
+
+  /// No description provided for @trustedShopsDealsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Genuine brand products, now on sale'**
+  String get trustedShopsDealsSubtitle;
+
+  /// No description provided for @trustedShopsDealsUpTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to -{percent}%'**
+  String trustedShopsDealsUpTo(int percent);
+
+  /// No description provided for @trustedShopsNewReleasesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot new releases'**
+  String get trustedShopsNewReleasesTitle;
+
+  /// No description provided for @trustedShopsNewReleasesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh launches from famous brands'**
+  String get trustedShopsNewReleasesSubtitle;
+
+  /// No description provided for @trustedShopsNewReleaseTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Just launched'**
+  String get trustedShopsNewReleaseTag;
+
+  /// No description provided for @trustedShopsLaunchedDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Launched today} =1{Launched yesterday} other{Launched {count} days ago}}'**
+  String trustedShopsLaunchedDaysAgo(int count);
+
+  /// No description provided for @trustedShopsNewShopsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New stores'**
+  String get trustedShopsNewShopsTitle;
+
+  /// No description provided for @trustedShopsNewShopsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops ReStore verified recently'**
+  String get trustedShopsNewShopsSubtitle;
+
+  /// No description provided for @trustedShopsNavFamous.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands'**
+  String get trustedShopsNavFamous;
+
+  /// No description provided for @trustedShopsNavDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Deals'**
+  String get trustedShopsNavDeals;
+
+  /// No description provided for @trustedShopsNavNewReleases.
+  ///
+  /// In en, this message translates to:
+  /// **'New releases'**
+  String get trustedShopsNavNewReleases;
+
+  /// No description provided for @trustedShopsNavNewShops.
+  ///
+  /// In en, this message translates to:
+  /// **'New stores'**
+  String get trustedShopsNavNewShops;
+
+  /// No description provided for @trustedShopsNavShowcases.
+  ///
+  /// In en, this message translates to:
+  /// **'By brand'**
+  String get trustedShopsNavShowcases;
+
+  /// No description provided for @trustedShopsNavAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All products'**
+  String get trustedShopsNavAll;
+
+  /// No description provided for @trustedShopsSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get trustedShopsSeeAll;
+
+  /// No description provided for @trustedShopsOnSaleFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'On sale'**
+  String get trustedShopsOnSaleFilter;
+
+  /// No description provided for @shopDetailEventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop events'**
+  String get shopDetailEventsTitle;
+
+  /// No description provided for @shopDetailEventsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotions approved by ReStore'**
+  String get shopDetailEventsSubtitle;
+
+  /// No description provided for @shopVerificationOfficial.
+  ///
+  /// In en, this message translates to:
+  /// **'Official'**
+  String get shopVerificationOfficial;
+
+  /// No description provided for @shopVerificationCertified.
+  ///
+  /// In en, this message translates to:
+  /// **'Certified'**
+  String get shopVerificationCertified;
+
+  /// No description provided for @shopVerificationOfficialDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The brand\'s own store or its authorised distributor, selling genuine goods with brand warranty.'**
+  String get shopVerificationOfficialDesc;
+
+  /// No description provided for @shopVerificationCertifiedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore checked this shop\'s business licence, address and trading history before certifying it.'**
+  String get shopVerificationCertifiedDesc;
+
+  /// No description provided for @shopVerificationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About verified shops'**
+  String get shopVerificationSheetTitle;
+
+  /// No description provided for @shopVerificationSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Only shops that pass one of these checks appear in Trusted shops'**
+  String get shopVerificationSheetSubtitle;
+
+  /// No description provided for @shopVerificationSheetNote.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore reviews verified shops regularly and removes the badge if a shop breaks the rules or gets repeated complaints.'**
+  String get shopVerificationSheetNote;
+
+  /// No description provided for @shopCertificateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop certificate'**
+  String get shopCertificateTitle;
+
+  /// No description provided for @shopCertificateCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate no.'**
+  String get shopCertificateCode;
+
+  /// No description provided for @shopVerifiedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified on'**
+  String get shopVerifiedSince;
+
+  /// No description provided for @shopVerifiedSinceShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified {date}'**
+  String shopVerifiedSinceShort(String date);
+
+  /// No description provided for @shopFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get shopFollow;
+
+  /// No description provided for @shopFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get shopFollowing;
+
+  /// No description provided for @shopFollowerCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} followers'**
+  String shopFollowerCount(String count);
+
+  /// No description provided for @shopListingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 product} other{{count} products}}'**
+  String shopListingCount(int count);
+
+  /// No description provided for @shopRatingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reviews'**
+  String shopRatingCount(String count);
+
+  /// No description provided for @shopFollowersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get shopFollowersLabel;
+
+  /// No description provided for @shopProductsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get shopProductsLabel;
+
+  /// No description provided for @shopDescriptionMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get shopDescriptionMore;
+
+  /// No description provided for @shopDescriptionLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get shopDescriptionLess;
+
+  /// No description provided for @shopDetailProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Products for sale'**
+  String get shopDetailProductsTitle;
+
+  /// No description provided for @shopDetailEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No products yet'**
+  String get shopDetailEmptyTitle;
+
+  /// No description provided for @shopDetailEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow this shop to hear about new products first.'**
+  String get shopDetailEmptyBody;
+
+  /// No description provided for @shopDetailEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen every product from this shop'**
+  String get shopDetailEndOfList;
+
+  /// No description provided for @shopDetailLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this shop'**
+  String get shopDetailLoadErrorTitle;
+
+  /// No description provided for @shopDetailLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get shopDetailLoadErrorBody;
 }
 
 class _AppLocalizationsDelegate

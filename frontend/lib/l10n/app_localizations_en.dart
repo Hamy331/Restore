@@ -2190,4 +2190,225 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get areaNationwideSubtitle => 'Any area, listings from anywhere';
+
+  @override
+  String get trustedShopsTitle => 'Trusted shops';
+
+  @override
+  String get trustedShopsSubtitle => 'Genuine stores verified by ReStore';
+
+  @override
+  String get trustedShopsAllCategories => 'All';
+
+  @override
+  String get trustedShopsOfficialTitle => 'Official brands';
+
+  @override
+  String get trustedShopsCertifiedTitle => 'ReStore certified';
+
+  @override
+  String get trustedShopsShowcaseTitle => 'Shop by brand';
+
+  @override
+  String get trustedShopsShowcaseSubtitle =>
+      'Picks from the most followed shops';
+
+  @override
+  String get trustedShopsViewShop => 'View shop';
+
+  @override
+  String get trustedShopsAllProductsTitle => 'All products';
+
+  @override
+  String get trustedShopsAllProductsSubtitle => 'From every verified shop';
+
+  @override
+  String get trustedShopsEndOfList =>
+      'You\'ve seen every product from trusted shops';
+
+  @override
+  String get trustedShopsEmptyTitle => 'No trusted shops here yet';
+
+  @override
+  String get trustedShopsEmptyBody =>
+      'Verified shops in this category will show up here.';
+
+  @override
+  String get trustedShopsLoadErrorTitle => 'Couldn\'t load trusted shops';
+
+  @override
+  String get trustedShopsLoadErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get trustedShopsFamousTitle => 'Famous brands';
+
+  @override
+  String get trustedShopsFamousSubtitle => 'Official stores of big-name brands';
+
+  @override
+  String get trustedShopsDealsTitle => 'Luxury for less';
+
+  @override
+  String get trustedShopsDealsSubtitle => 'Genuine brand products, now on sale';
+
+  @override
+  String trustedShopsDealsUpTo(int percent) {
+    return 'Up to -$percent%';
+  }
+
+  @override
+  String get trustedShopsNewReleasesTitle => 'Hot new releases';
+
+  @override
+  String get trustedShopsNewReleasesSubtitle =>
+      'Fresh launches from famous brands';
+
+  @override
+  String get trustedShopsNewReleaseTag => 'Just launched';
+
+  @override
+  String trustedShopsLaunchedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Launched $count days ago',
+      one: 'Launched yesterday',
+      zero: 'Launched today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustedShopsNewShopsTitle => 'New stores';
+
+  @override
+  String get trustedShopsNewShopsSubtitle => 'Shops ReStore verified recently';
+
+  @override
+  String get trustedShopsNavFamous => 'Brands';
+
+  @override
+  String get trustedShopsNavDeals => 'Deals';
+
+  @override
+  String get trustedShopsNavNewReleases => 'New releases';
+
+  @override
+  String get trustedShopsNavNewShops => 'New stores';
+
+  @override
+  String get trustedShopsNavShowcases => 'By brand';
+
+  @override
+  String get trustedShopsNavAll => 'All products';
+
+  @override
+  String get trustedShopsSeeAll => 'See all';
+
+  @override
+  String get trustedShopsOnSaleFilter => 'On sale';
+
+  @override
+  String get shopDetailEventsTitle => 'Shop events';
+
+  @override
+  String get shopDetailEventsSubtitle => 'Promotions approved by ReStore';
+
+  @override
+  String get shopVerificationOfficial => 'Official';
+
+  @override
+  String get shopVerificationCertified => 'Certified';
+
+  @override
+  String get shopVerificationOfficialDesc =>
+      'The brand\'s own store or its authorised distributor, selling genuine goods with brand warranty.';
+
+  @override
+  String get shopVerificationCertifiedDesc =>
+      'ReStore checked this shop\'s business licence, address and trading history before certifying it.';
+
+  @override
+  String get shopVerificationSheetTitle => 'About verified shops';
+
+  @override
+  String get shopVerificationSheetSubtitle =>
+      'Only shops that pass one of these checks appear in Trusted shops';
+
+  @override
+  String get shopVerificationSheetNote =>
+      'ReStore reviews verified shops regularly and removes the badge if a shop breaks the rules or gets repeated complaints.';
+
+  @override
+  String get shopCertificateTitle => 'Shop certificate';
+
+  @override
+  String get shopCertificateCode => 'Certificate no.';
+
+  @override
+  String get shopVerifiedSince => 'Verified on';
+
+  @override
+  String shopVerifiedSinceShort(String date) {
+    return 'Verified $date';
+  }
+
+  @override
+  String get shopFollow => 'Follow';
+
+  @override
+  String get shopFollowing => 'Following';
+
+  @override
+  String shopFollowerCount(String count) {
+    return '$count followers';
+  }
+
+  @override
+  String shopListingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count products',
+      one: '1 product',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String shopRatingCount(String count) {
+    return '$count reviews';
+  }
+
+  @override
+  String get shopFollowersLabel => 'Followers';
+
+  @override
+  String get shopProductsLabel => 'Products';
+
+  @override
+  String get shopDescriptionMore => 'Show more';
+
+  @override
+  String get shopDescriptionLess => 'Show less';
+
+  @override
+  String get shopDetailProductsTitle => 'Products for sale';
+
+  @override
+  String get shopDetailEmptyTitle => 'No products yet';
+
+  @override
+  String get shopDetailEmptyBody =>
+      'Follow this shop to hear about new products first.';
+
+  @override
+  String get shopDetailEndOfList => 'You\'ve seen every product from this shop';
+
+  @override
+  String get shopDetailLoadErrorTitle => 'Couldn\'t load this shop';
+
+  @override
+  String get shopDetailLoadErrorBody => 'Check your connection and try again.';
 }

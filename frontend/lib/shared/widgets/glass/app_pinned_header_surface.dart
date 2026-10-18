@@ -8,14 +8,19 @@ import 'package:restore/core/theme/app_header_palette.dart';
 /// Nền cho phần đầu trang được ghim khi cuộn (ô tìm kiếm, hàng lọc...).
 /// Bình thường liền màu với đầu trang ([AppHeaderPalette.bottom]); khi đã
 /// ghim ([pinned]) thì chuyển sang kính mờ trắng với một đường mảnh phía dưới.
+/// Trang có màu riêng (VD trang shop theo màu thương hiệu) truyền [color].
 class AppPinnedHeaderSurface extends StatelessWidget {
   final bool pinned;
   final Widget child;
+
+  /// Màu khi chưa ghim
+  final Color color;
 
   const AppPinnedHeaderSurface({
     super.key,
     required this.pinned,
     required this.child,
+    this.color = AppHeaderPalette.bottom,
   });
 
   /// Nền kính khi đã ghim, dùng chung với dải thanh trạng thái phía trên
@@ -33,12 +38,10 @@ class AppPinnedHeaderSurface extends StatelessWidget {
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: pinned ? pinnedColor : AppHeaderPalette.bottom,
+            color: pinned ? pinnedColor : color,
             border: Border(
               bottom: BorderSide(
-                color: pinned
-                    ? AppColors.border.withValues(alpha: 0.8)
-                    : AppHeaderPalette.bottom,
+                color: pinned ? AppColors.border.withValues(alpha: 0.8) : color,
                 width: 0.6,
               ),
             ),
@@ -64,7 +67,14 @@ class AppPinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double height;
   final Widget child;
 
-  AppPinnedHeaderDelegate({required this.height, required this.child});
+  /// Màu khi chưa ghim ([AppPinnedHeaderSurface.color])
+  final Color color;
+
+  AppPinnedHeaderDelegate({
+    required this.height,
+    required this.child,
+    this.color = AppHeaderPalette.bottom,
+  });
 
   @override
   double get minExtent => height;
@@ -80,11 +90,14 @@ class AppPinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
   ) {
     return AppPinnedHeaderSurface(
       pinned: overlapsContent || shrinkOffset > 0,
+      color: color,
       child: child,
     );
   }
 
   @override
   bool shouldRebuild(AppPinnedHeaderDelegate oldDelegate) =>
-      oldDelegate.height != height || oldDelegate.child != child;
+      oldDelegate.height != height ||
+      oldDelegate.child != child ||
+      oldDelegate.color != color;
 }
