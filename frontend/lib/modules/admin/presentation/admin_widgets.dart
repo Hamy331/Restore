@@ -116,3 +116,97 @@ class AdminBadge extends StatelessWidget {
     );
   }
 }
+
+class AdminButton extends StatelessWidget {
+  const AdminButton(
+    this.label, {
+    required this.onPressed,
+    this.icon,
+    this.danger = false,
+    this.primary = false,
+    super.key,
+  });
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+  final bool danger, primary;
+  @override
+  Widget build(BuildContext context) {
+    final child = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (icon != null) ...[Icon(icon, size: 18), const SizedBox(width: 8)],
+        Flexible(child: Text(label)),
+      ],
+    );
+    final style = OutlinedButton.styleFrom(
+      foregroundColor: danger ? AppColors.error : AppColors.textPrimary,
+      backgroundColor: primary ? AppColors.primary : AppColors.surface,
+      side: BorderSide(
+        color: danger
+            ? AppColors.error
+            : primary
+            ? AppColors.primary
+            : AppColors.border,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    );
+    return OutlinedButton(onPressed: onPressed, style: style, child: child);
+  }
+}
+
+class AdminSelect extends StatelessWidget {
+  const AdminSelect({
+    required this.value,
+    required this.values,
+    required this.onChanged,
+    required this.label,
+    super.key,
+  });
+  final String value, label;
+  final List<String> values;
+  final ValueChanged<String> onChanged;
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 200,
+    child: DropdownButtonFormField<String>(
+      key: ValueKey('$label:$value'),
+      initialValue: value,
+      isExpanded: true,
+      decoration: InputDecoration(labelText: label, isDense: true),
+      items: [
+        for (final item in values)
+          DropdownMenuItem(
+            value: item,
+            child: Text(item, overflow: TextOverflow.ellipsis),
+          ),
+      ],
+      onChanged: (value) {
+        if (value != null) onChanged(value);
+      },
+    ),
+  );
+}
+
+class AdminSearch extends StatelessWidget {
+  const AdminSearch({
+    required this.onChanged,
+    this.hint = 'Tìm kiếm...',
+    super.key,
+  });
+  final ValueChanged<String> onChanged;
+  final String hint;
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 320,
+    child: TextField(
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: hint,
+        prefixIcon: const Icon(Icons.search, size: 20),
+        isDense: true,
+      ),
+    ),
+  );
+}
