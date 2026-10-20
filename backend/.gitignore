@@ -11,6 +11,7 @@ pnpm-debug.log*
 # Build Outputs (TypeScript)
 # ------------------------
 dist/
+uploads/
 build/
 out/
 *.tsbuildinfo
@@ -19,6 +20,7 @@ out/
 # Environment Variables
 # ------------------------
 .env
+env
 .env.*
 !.env.example
 
