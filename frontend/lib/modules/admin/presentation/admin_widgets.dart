@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/feedback_view.dart';
 
 class AdminPanel extends StatelessWidget {
   const AdminPanel({
@@ -208,5 +209,88 @@ class AdminSearch extends StatelessWidget {
         isDense: true,
       ),
     ),
+  );
+}
+
+class AdminEmpty extends StatelessWidget {
+  const AdminEmpty({
+    this.message = 'Thử tìm với từ khóa khác hoặc điều chỉnh bộ lọc.',
+    super.key,
+  });
+  final String message;
+  @override
+  Widget build(BuildContext context) => FeedbackView(
+    icon: Icons.search_off_outlined,
+    title: 'Không có kết quả',
+    message: message,
+  );
+}
+
+class AdminTable extends StatelessWidget {
+  const AdminTable({required this.columns, required this.rows, super.key});
+  final List<String> columns;
+  final List<List<Widget>> rows;
+  @override
+  Widget build(BuildContext context) => AdminPanel(
+    padding: EdgeInsets.zero,
+    child: rows.isEmpty
+        ? const AdminEmpty()
+        : LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                child: DataTable(
+                  headingRowColor: const WidgetStatePropertyAll(
+                    AppColors.cream,
+                  ),
+                  headingTextStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSecondary,
+                  ),
+                  dataTextStyle: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textPrimary,
+                  ),
+                  horizontalMargin: 20,
+                  columnSpacing: 28,
+                  dataRowMinHeight: 72,
+                  dataRowMaxHeight: 84,
+                  columns: [
+                    for (final text in columns) DataColumn(label: Text(text)),
+                  ],
+                  rows: [
+                    for (final row in rows)
+                      DataRow(cells: [for (final cell in row) DataCell(cell)]),
+                  ],
+                ),
+              ),
+            ),
+          ),
+  );
+}
+
+class AdminTwoColumns extends StatelessWidget {
+  const AdminTwoColumns({
+    required this.left,
+    required this.right,
+    this.equal = false,
+    super.key,
+  });
+  final Widget left, right;
+  final bool equal;
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (_, constraints) => constraints.maxWidth < 850
+        ? Column(children: [left, const SizedBox(height: 20), right])
+        : Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: equal ? 1 : 2, child: left),
+              const SizedBox(width: 20),
+              Expanded(child: right),
+            ],
+          ),
   );
 }
