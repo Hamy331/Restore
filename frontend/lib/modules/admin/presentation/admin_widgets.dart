@@ -294,3 +294,161 @@ class AdminTwoColumns extends StatelessWidget {
           ),
   );
 }
+
+Future<T?> adminDialog<T>(
+  BuildContext context, {
+  required String title,
+  required Widget child,
+  double width = 760,
+}) => showDialog<T>(
+  context: context,
+  builder: (dialogContext) => Dialog(
+    insetPadding: const EdgeInsets.all(16),
+    backgroundColor: AppColors.background,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    child: ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: width,
+        maxHeight: MediaQuery.sizeOf(dialogContext).height - 48,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 12, 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Đóng',
+                  onPressed: () => Navigator.maybePop(dialogContext),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: child,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+);
+
+void adminNotice(
+  BuildContext context, [
+  String message =
+      'Đã cập nhật bản mẫu. Thay đổi chỉ lưu trong phiên xem trước.',
+]) {
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
+  );
+}
+
+class AdminDecisionForm extends StatefulWidget {
+  const AdminDecisionForm({
+    required this.actions,
+    required this.onSubmit,
+    super.key,
+  });
+  final List<String> actions;
+  final bool Function(String action, String reason, int days) onSubmit;
+  @override
+  State<AdminDecisionForm> createState() => _AdminDecisionFormState();
+}
+
+class _AdminDecisionFormState extends State<AdminDecisionForm> {
+  final _form = GlobalKey<FormState>();
+  final _reason = TextEditingController();
+  late String _action = widget.actions.first;
+  int _days = 7;
+  String? _error;
+  @override
+  void dispose() {
+    _reason.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Form(
+    key: _form,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Thử thao tác trên dữ liệu mẫu. Không gửi thông báo hoặc thay đổi dữ liệu thật.',
+        ),
+        const SizedBox(height: 20),
+        AdminSelect(
+          value: _action,
+          values: widget.actions,
+          label: 'Quyết định',
+          onChanged: (value) => setState(() => _action = value),
+        ),
+        if (_action == 'Đình chỉ') ...[
+          const SizedBox(height: 16),
+          AdminSelect(
+            value: '$_days ngày',
+            values: const ['1 ngày', '7 ngày', '30 ngày'],
+            label: 'Thời hạn',
+            onChanged: (value) =>
+                setState(() => _days = int.parse(value.split(' ').first)),
+          ),
+        ],
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _reason,
+          maxLines: 3,
+          maxLength: 500,
+          decoration: const InputDecoration(labelText: 'Lý do / Kết luận'),
+          validator: (value) =>
+              _action != activeDecision &&
+                  (value == null || value.trim().isEmpty)
+              ? 'Vui lòng nhập lý do.'
+              : null,
+        ),
+        if (_error != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              _error!,
+              style: const TextStyle(color: AppColors.error),
+            ),
+          ),
+        const SizedBox(height: 12),
+        AdminButton(
+          'Xác nhận trên bản mẫu',
+          primary: true,
+          onPressed: () {
+            if (!_form.currentState!.validate()) return;
+            if (widget.onSubmit(_action, _reason.text.trim(), _days)) {
+              Navigator.pop(context);
+              adminNotice(context);
+            } else {
+              setState(
+                () => _error =
+                    'Trạng thái đã thay đổi hoặc thao tác không còn phù hợp. Hãy đóng và mở lại chi tiết.',
+              );
+            }
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+const activeDecision = 'Đang hiển thị';
