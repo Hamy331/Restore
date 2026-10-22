@@ -4,6 +4,8 @@ import 'package:restore/l10n/app_localizations.dart';
 enum ListingStatus {
   draft('DRAFT'),
   pending('PENDING'),
+  rejected('REJECTED'),
+  hidden('HIDDEN'),
   available('AVAILABLE'),
   reserved('RESERVED'),
   sold('SOLD'),

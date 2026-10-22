@@ -20,6 +20,10 @@ export const errorHandler = (
     });
   }
 
+  if (typeof error === 'object' && error !== null && 'type' in error && error.type === 'entity.too.large') {
+    return res.status(413).json({ success: false, error: 'Ảnh phải có dung lượng tối đa 5 MB.', code: 'IMAGE_TOO_LARGE' });
+  }
+
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
     return res.status(409).json({
       success: false,
