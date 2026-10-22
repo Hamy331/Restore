@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
+import 'package:restore/shared/widgets/app_size_reporter.dart';
 import 'package:restore/shared/widgets/app_step_indicator.dart';
 import 'package:restore/shared/widgets/glass/app_glass_background.dart';
 import 'package:restore/shared/widgets/glass/app_glass_scroll_header.dart';
@@ -152,7 +152,7 @@ class _CreateListingScaffoldState extends State<CreateListingScaffold> {
                 right: 0,
                 child: AppGlassScrollHeader(
                   progress: _glassProgress,
-                  child: _SizeReporter(
+                  child: AppSizeReporter(
                     onSize: _onHeaderSize,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -211,40 +211,6 @@ class _CreateListingScaffoldState extends State<CreateListingScaffold> {
 }
 
 /// Báo kích thước của [child] sau mỗi lần layout (khi thay đổi)
-class _SizeReporter extends SingleChildRenderObjectWidget {
-  final ValueChanged<Size> onSize;
-
-  const _SizeReporter({required this.onSize, required super.child});
-
-  @override
-  RenderObject createRenderObject(BuildContext context) =>
-      _RenderSizeReporter(onSize);
-
-  @override
-  void updateRenderObject(
-    BuildContext context,
-    _RenderSizeReporter renderObject,
-  ) {
-    renderObject.onSize = onSize;
-  }
-}
-
-class _RenderSizeReporter extends RenderProxyBox {
-  _RenderSizeReporter(this.onSize);
-
-  ValueChanged<Size> onSize;
-  Size? _lastSize;
-
-  @override
-  void performLayout() {
-    super.performLayout();
-    if (size == _lastSize) return;
-    _lastSize = size;
-    final reported = size;
-    WidgetsBinding.instance.addPostFrameCallback((_) => onSize(reported));
-  }
-}
-
 class _SaveDraftButton extends StatelessWidget {
   final String label;
   const _SaveDraftButton({required this.label});
