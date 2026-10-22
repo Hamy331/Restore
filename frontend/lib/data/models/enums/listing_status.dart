@@ -2,6 +2,8 @@
 enum ListingStatus {
   draft('DRAFT'),
   pending('PENDING'),
+  rejected('REJECTED'),
+  hidden('HIDDEN'),
   available('AVAILABLE'),
   reserved('RESERVED'),
   sold('SOLD'),

@@ -31,8 +31,11 @@ class PagedResult<T> extends Equatable {
         itemFromJson(Map<String, dynamic>.from(item as Map)),
     ];
     final meta = json['meta'];
+    final pagination = json['pagination'];
     final hasMore = meta is Map && meta['hasMore'] is bool
         ? meta['hasMore'] as bool
+        : pagination is Map && pagination['totalPages'] is num
+        ? page < (pagination['totalPages'] as num)
         : items.length >= pageSize;
     return PagedResult(items: items, page: page, hasMore: hasMore);
   }

@@ -4,6 +4,7 @@ import 'package:restore/data/models/category_model.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
 import 'listing_enums.dart';
+import 'package:restore/data/models/listing_model.dart';
 
 /// Dữ liệu tin đăng đang soạn, dùng chung cho cả 3 bước và trang xem trước
 class ListingDraft extends Equatable {
@@ -54,6 +55,33 @@ class ListingDraft extends Equatable {
 
   String? get coverImage => images.isEmpty ? null : images.first;
 
+  factory ListingDraft.fromListing(ListingModel model) => ListingDraft(
+    id: model.id,
+    categoryId: model.categoryId ?? '',
+    title: model.title,
+    description: model.description,
+    images: model.images,
+    price:
+        model.status == ListingStatus.draft &&
+            model.allowSale &&
+            model.price == 0
+        ? null
+        : model.price,
+    condition: model.condition,
+    isNegotiable: model.isNegotiable,
+    tradeType: model.allowSale
+        ? (model.allowExchange ? TradeType.sellOrExchange : TradeType.sell)
+        : TradeType.exchange,
+    exchangeWish: model.exchangeWish,
+    address: model.address,
+    sellerType: model.sellerType == 'BUSINESS'
+        ? SellerType.business
+        : SellerType.personal,
+    attributes: model.attributes.map((key, value) => MapEntry(key, '$value')),
+    status: model.status,
+    updatedAt: model.updatedAt,
+  );
+
   ListingDraft copyWith({
     String? id,
     String? categoryId,
@@ -90,12 +118,8 @@ class ListingDraft extends Equatable {
     );
   }
 
-  /// Payload gửi `POST /listings`. Thuộc tính được đổi đúng kiểu theo schema
-  /// của danh mục; [imageUrls] là ảnh đã tải lên (thay cho đường dẫn trên máy).
-  Map<String, dynamic> toPayload({
-    required CategoryModel? category,
-    List<String>? imageUrls,
-  }) {
+  /// Thuộc tính được đổi đúng kiểu theo schema; ảnh tải riêng bằng API media.
+  Map<String, dynamic> toPayload({required CategoryModel? category}) {
     final attributeValues = <String, Object>{
       for (final attribute in category?.attributes ?? const [])
         if (attribute.parse(attributes[attribute.key]) case final value?)
@@ -103,14 +127,13 @@ class ListingDraft extends Equatable {
     };
     return {
       'categoryId': categoryId,
-      'images': imageUrls ?? images,
       'title': title.trim(),
       'description': description.trim(),
       'allowSale': tradeType.allowsSale,
       'allowExchange': tradeType.allowsExchange,
-      'price': tradeType.requiresPrice ? price : null,
+      'price': tradeType.requiresPrice ? '${price ?? 0}' : '0',
       'isNegotiable': tradeType.requiresPrice && isNegotiable,
-      'exchangeWish': tradeType.allowsExchange ? exchangeWish.trim() : null,
+      'exchangeWish': tradeType.allowsExchange ? exchangeWish.trim() : '',
       'condition': condition?.apiValue,
       'sellerType': sellerType.name.toUpperCase(),
       'location': address?.toPayload(),
