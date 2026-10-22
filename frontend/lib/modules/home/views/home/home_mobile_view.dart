@@ -3,20 +3,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
+import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
+import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
+import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/listing/app_listing_card.dart';
+import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/home_cubit.dart';
 import '../../bloc/home_state.dart';
-import '../../models/home_listing_item.dart';
+import 'package:restore/shared/models/listing_card_item.dart';
 import '../../models/home_quick_action.dart';
 import 'widgets/home_banner_carousel.dart';
 import 'widgets/home_category_strip.dart';
-import 'widgets/home_header_palette.dart';
-import 'widgets/home_listing_card.dart';
 import 'widgets/home_quick_actions.dart';
 import 'widgets/home_search_header.dart';
 import 'widgets/home_section_header.dart';
@@ -34,13 +39,13 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   /// Thẻ tin trong hàng "Dành cho bạn"
   static const double _featuredCardWidth = 164;
 
-  /// Chiều rộng tối đa một cột của lưới "Tin đăng mới"
-  static const double _gridMaxCardWidth = 220;
   static const double _gridSpacing = 12;
   static const double _sidePadding = 16;
   static const double _contentRadius = 24;
 
   static const String _messagesPath = '/messages';
+  static const String _nearbyPath = '/nearby';
+  static const String _searchPath = '/search';
 
   final _scrollController = ScrollController();
   final _topBarKey = GlobalKey();
@@ -67,19 +72,39 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     _searchPinned.value = _scrollController.offset >= topBarHeight;
   }
 
-  /// Tính năng chưa có trang riêng (tìm kiếm, thông báo, chi tiết tin...)
+  void _openMessages() => context.go(_messagesPath);
+
+  void _openSearch() => context.push(_searchPath);
+
+  void _openCategory(CategoryModel category) =>
+      context.push(CategoryDetailView.location(category.id), extra: category);
+
+  /// Tính năng chưa có trang riêng (thông báo, chọn khu vực...)
   void _comingSoon() => TSnackBarHelper.showInfo(
     context,
     message: AppLocalizations.of(context)!.featureComingSoon,
   );
 
+  /// Mở trang chi tiết; quay lại mà trạng thái lưu tin đã đổi thì cập nhật thẻ
+  Future<void> _openDetail(ListingCardItem item) async {
+    final id = item.listing.id;
+    final favorite = await context.push<bool>(
+      '/listings/$id',
+      extra: item.listing,
+    );
+    if (favorite == null || !mounted) return;
+    context.read<HomeCubit>().syncFavorite(id, favorite);
+  }
+
   void _onQuickAction(HomeQuickAction action) {
-    // TODO: mở trang riêng khi có (gần bạn, thẻ đặt trước, shop uy tín,
-    // đang theo dõi)
+    // TODO: mở trang riêng khi có (đang theo dõi)
     switch (action) {
       case HomeQuickAction.nearby:
+        context.push(_nearbyPath);
       case HomeQuickAction.wantedAlert:
+        context.push(WantedAlertsView.path);
       case HomeQuickAction.trustedShops:
+        context.push(TrustedShopsView.path);
       case HomeQuickAction.following:
         _comingSoon();
     }
@@ -103,7 +128,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
               duration: const Duration(milliseconds: 180),
               height: padding.top,
               width: double.infinity,
-              color: pinned ? AppColors.surface : HomeHeaderPalette.top,
+              color: pinned ? AppColors.surface : AppHeaderPalette.top,
             ),
           ),
           Expanded(
@@ -111,9 +136,9 @@ class _HomeMobileViewState extends State<HomeMobileView> {
               context: context,
               removeTop: true,
               child: BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) => AppPullToRefresh(
+                builder: (context, state) => AppPullToRefresh.inline(
                   onRefresh: () => cubit.load(showLoading: false),
-                  child: AppLoadMoreListener(
+                  builder: (context, refreshIndicator) => AppLoadMoreListener(
                     onLoadMore: cubit.loadMore,
                     child: CustomScrollView(
                       controller: _scrollController,
@@ -127,21 +152,29 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                                 ? ''
                                 : state.greetingName,
                             onAreaTap: _comingSoon,
-                            onMessagesTap: () => context.go(_messagesPath),
-                            onNotificationsTap: _comingSoon,
                           ),
                         ),
                         SliverPersistentHeader(
                           pinned: true,
                           delegate: HomeSearchHeaderDelegate(
                             hintText: l10n.homeSearchHint,
-                            onTap: _comingSoon,
+                            onTap: _openSearch,
+                            onMessagesTap: _openMessages,
+                            onNotificationsTap: _comingSoon,
+                          ),
+                        ),
+                        // Kéo xuống để làm mới: viên loading mở ra ngay dưới
+                        // ô tìm kiếm, đẩy nội dung xuống thay vì bị che
+                        SliverToBoxAdapter(
+                          child: ColoredBox(
+                            color: AppHeaderPalette.bottom,
+                            child: refreshIndicator,
                           ),
                         ),
                         // Mép trên bo cong của phần nội dung trắng
                         SliverToBoxAdapter(
                           child: ColoredBox(
-                            color: HomeHeaderPalette.bottom,
+                            color: AppHeaderPalette.bottom,
                             child: Container(
                               height: _contentRadius,
                               decoration: const BoxDecoration(
@@ -193,10 +226,9 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     final l10n = AppLocalizations.of(context)!;
     final cubit = context.read<HomeCubit>();
 
-    Widget card(HomeListingItem item) => HomeListingCard(
+    Widget card(ListingCardItem item) => AppListingCard(
       item: item,
-      // TODO: mở trang chi tiết tin khi có route /listings/:id
-      onTap: _comingSoon,
+      onTap: () => _openDetail(item),
       onFavoriteTap: () => cubit.toggleFavorite(item),
     );
 
@@ -204,7 +236,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       SliverToBoxAdapter(
         child: HomeCategoryStrip(
           categories: state.categories,
-          onTap: (_) => _comingSoon(),
+          onTap: _openCategory,
         ),
       ),
       const SliverToBoxAdapter(child: SizedBox(height: 14)),
@@ -231,7 +263,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
         const SliverToBoxAdapter(child: SizedBox(height: 8)),
         SliverToBoxAdapter(
           child: SizedBox(
-            height: HomeListingCard.heightFor(_featuredCardWidth),
+            height: AppListingCard.heightFor(_featuredCardWidth),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
@@ -262,26 +294,10 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       else
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
-          sliver: SliverLayoutBuilder(
-            builder: (context, constraints) {
-              final width = constraints.crossAxisExtent;
-              final columns =
-                  ((width + _gridSpacing) / (_gridMaxCardWidth + _gridSpacing))
-                      .ceil()
-                      .clamp(2, 6);
-              final cardWidth =
-                  (width - _gridSpacing * (columns - 1)) / columns;
-              return SliverGrid.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: columns,
-                  mainAxisSpacing: _gridSpacing,
-                  crossAxisSpacing: _gridSpacing,
-                  mainAxisExtent: HomeListingCard.heightFor(cardWidth),
-                ),
-                itemCount: state.latest.length,
-                itemBuilder: (_, index) => card(state.latest[index]),
-              );
-            },
+          sliver: AppListingSliverGrid(
+            items: state.latest,
+            spacing: _gridSpacing,
+            itemBuilder: (_, item) => card(item),
           ),
         ),
       SliverToBoxAdapter(

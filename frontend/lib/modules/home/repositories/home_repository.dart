@@ -1,11 +1,12 @@
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/user_model.dart';
+import 'package:restore/modules/listings/data/mock_favorite_store.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
 import '../data/home_mock_data.dart';
 import '../models/home_banner.dart';
 import '../models/home_listing_filter.dart';
-import '../models/home_listing_item.dart';
+import 'package:restore/shared/models/listing_card_item.dart';
 
 /// Nguồn dữ liệu cho trang chủ (danh mục lấy từ CategoryRepository)
 abstract class HomeRepository {
@@ -19,10 +20,10 @@ abstract class HomeRepository {
   Future<List<HomeBanner>> getBanners();
 
   /// Tin gợi ý riêng cho người dùng (tối đa [pageSize] tin)
-  Future<List<HomeListingItem>> getRecommended();
+  Future<List<ListingCardItem>> getRecommended();
 
   /// Tin theo bộ lọc, [page] bắt đầu từ 1
-  Future<PagedResult<HomeListingItem>> getLatest(
+  Future<PagedResult<ListingCardItem>> getLatest(
     HomeListingFilter filter, {
     int page = 1,
   });
@@ -35,14 +36,11 @@ class MockHomeRepository implements HomeRepository {
 
   final Duration latency;
 
-  /// Tin đã lưu, giữ trong bộ nhớ suốt phiên
-  static final Set<String> _favorites = {};
-
-  List<HomeListingItem> _items() => [
+  List<ListingCardItem> _items() => [
     for (final json in HomeMockData.listings(DateTime.now()))
-      HomeListingItem.fromJson(
+      ListingCardItem.fromJson(
         json,
-      ).copyWith(isFavorite: _favorites.contains('${json['id']}')),
+      ).copyWith(isFavorite: MockFavoriteStore.contains('${json['id']}')),
   ];
 
   @override
@@ -59,7 +57,7 @@ class MockHomeRepository implements HomeRepository {
   }
 
   @override
-  Future<List<HomeListingItem>> getRecommended() async {
+  Future<List<ListingCardItem>> getRecommended() async {
     await Future<void>.delayed(latency);
     return _items()
         .where((item) => item.isFeatured)
@@ -68,7 +66,7 @@ class MockHomeRepository implements HomeRepository {
   }
 
   @override
-  Future<PagedResult<HomeListingItem>> getLatest(
+  Future<PagedResult<ListingCardItem>> getLatest(
     HomeListingFilter filter, {
     int page = 1,
   }) async {
@@ -94,7 +92,7 @@ class MockHomeRepository implements HomeRepository {
 
   @override
   Future<void> setFavorite(String listingId, bool favorite) async {
-    favorite ? _favorites.add(listingId) : _favorites.remove(listingId);
+    MockFavoriteStore.set(listingId, favorite);
   }
 }
 
@@ -124,16 +122,16 @@ class ApiHomeRepository implements HomeRepository {
       _list(await _get('/home/banners'), HomeBanner.fromJson);
 
   @override
-  Future<List<HomeListingItem>> getRecommended() async => _list(
+  Future<List<ListingCardItem>> getRecommended() async => _list(
     await _get(
       '/listings/recommended',
       query: const {'limit': HomeRepository.pageSize},
     ),
-    HomeListingItem.fromJson,
+    ListingCardItem.fromJson,
   );
 
   @override
-  Future<PagedResult<HomeListingItem>> getLatest(
+  Future<PagedResult<ListingCardItem>> getLatest(
     HomeListingFilter filter, {
     int page = 1,
   }) async {
@@ -147,7 +145,7 @@ class ApiHomeRepository implements HomeRepository {
     );
     return PagedResult.fromJson(
       json,
-      HomeListingItem.fromJson,
+      ListingCardItem.fromJson,
       page: page,
       pageSize: HomeRepository.pageSize,
     );
