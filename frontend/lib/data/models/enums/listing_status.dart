@@ -26,6 +26,8 @@ enum ListingStatus {
   String label(AppLocalizations l10n) => switch (this) {
     draft => l10n.listingStatusDraft,
     pending => l10n.listingStatusPending,
+    rejected => l10n.listingStatusRejected,
+    hidden => l10n.listingStatusHidden,
     available => l10n.listingStatusAvailable,
     reserved => l10n.listingStatusReserved,
     sold => l10n.listingStatusSold,

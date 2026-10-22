@@ -2780,6 +2780,18 @@ abstract class AppLocalizations {
   /// **'Expired'**
   String get listingStatusExpired;
 
+  /// No description provided for @listingStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get listingStatusRejected;
+
+  /// No description provided for @listingStatusHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get listingStatusHidden;
+
   /// No description provided for @productSellerTitle.
   ///
   /// In en, this message translates to:
