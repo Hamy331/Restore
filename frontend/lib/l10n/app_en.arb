@@ -689,6 +689,8 @@
   "listingStatusSold": "Sold",
   "listingStatusExchanged": "Exchanged",
   "listingStatusExpired": "Expired",
+  "listingStatusRejected": "Rejected",
+  "listingStatusHidden": "Hidden",
   "productSellerTitle": "Seller",
   "productSellerVerified": "Verified",
   "productSellerNoReviews": "No reviews yet",

@@ -1464,6 +1464,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listingStatusExpired => 'Expired';
 
   @override
+  String get listingStatusRejected => 'Rejected';
+
+  @override
+  String get listingStatusHidden => 'Hidden';
+
+  @override
   String get productSellerTitle => 'Seller';
 
   @override

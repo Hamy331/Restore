@@ -655,6 +655,8 @@
   "listingStatusSold": "Đã bán",
   "listingStatusExchanged": "Đã trao đổi",
   "listingStatusExpired": "Đã hết hạn",
+  "listingStatusRejected": "Bị từ chối",
+  "listingStatusHidden": "Đã ẩn",
   "productSellerTitle": "Người bán",
   "productSellerVerified": "Đã xác minh",
   "productSellerNoReviews": "Chưa có đánh giá",

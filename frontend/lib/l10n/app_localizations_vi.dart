@@ -1457,6 +1457,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get listingStatusExpired => 'Đã hết hạn';
 
   @override
+  String get listingStatusRejected => 'Bị từ chối';
+
+  @override
+  String get listingStatusHidden => 'Đã ẩn';
+
+  @override
   String get productSellerTitle => 'Người bán';
 
   @override
