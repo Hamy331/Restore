@@ -1423,4 +1423,998 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeBannerTooltip => 'Promotion banner';
+
+  @override
+  String get productDetailTitle => 'Product details';
+
+  @override
+  String get productLoadErrorTitle => 'Couldn\'t load this listing';
+
+  @override
+  String get productLoadErrorBody =>
+      'The listing may have been removed, or your connection is unstable. Please try again.';
+
+  @override
+  String productViewCount(int count) {
+    return '$count views';
+  }
+
+  @override
+  String get productUnavailableHint => 'This item can no longer be bought.';
+
+  @override
+  String get listingStatusDraft => 'Draft';
+
+  @override
+  String get listingStatusPending => 'Pending review';
+
+  @override
+  String get listingStatusAvailable => 'Available';
+
+  @override
+  String get listingStatusReserved => 'Reserved';
+
+  @override
+  String get listingStatusSold => 'Sold';
+
+  @override
+  String get listingStatusExchanged => 'Exchanged';
+
+  @override
+  String get listingStatusExpired => 'Expired';
+
+  @override
+  String get listingStatusRejected => 'Rejected';
+
+  @override
+  String get listingStatusHidden => 'Hidden';
+
+  @override
+  String get productSellerTitle => 'Seller';
+
+  @override
+  String get productSellerVerified => 'Verified';
+
+  @override
+  String get productSellerNoReviews => 'No reviews yet';
+
+  @override
+  String productSellerJoined(String date) {
+    return 'Joined $date';
+  }
+
+  @override
+  String productSellerListings(int count) {
+    return '$count listings';
+  }
+
+  @override
+  String get productSellerProfile => 'View profile';
+
+  @override
+  String get productReadMore => 'Show more';
+
+  @override
+  String get productReadLess => 'Show less';
+
+  @override
+  String get productSafetyTitle => 'Shop safely';
+
+  @override
+  String get productSafetyBody =>
+      'Meet in a public place, check the item before paying and never send a deposit to someone you don\'t know.';
+
+  @override
+  String get productReport => 'Report listing';
+
+  @override
+  String get productChat => 'Chat';
+
+  @override
+  String get productMakeOffer => 'Make offer';
+
+  @override
+  String get productBuyNow => 'Buy now';
+
+  @override
+  String get productProposeExchange => 'Propose a swap';
+
+  @override
+  String get productEditListing => 'Edit listing';
+
+  @override
+  String get productBoost => 'Boost';
+
+  @override
+  String get productOfferTitle => 'Make an offer';
+
+  @override
+  String productOfferSubtitle(String price) {
+    return 'Listed at $price';
+  }
+
+  @override
+  String get productOfferAmountLabel => 'Your offer';
+
+  @override
+  String get productOfferAmountHint => 'Enter an amount';
+
+  @override
+  String get productOfferInvalid => 'Enter an amount greater than 0';
+
+  @override
+  String get productOfferTooHigh =>
+      'Your offer can be at most twice the asking price';
+
+  @override
+  String get productOfferSubmit => 'Send offer';
+
+  @override
+  String get productOfferSent =>
+      'Offer sent. Continue the conversation with the seller here.';
+
+  @override
+  String productOfferBelow(String percent, String difference) {
+    return '$percent below the asking price (-$difference)';
+  }
+
+  @override
+  String productOfferAbove(String percent, String difference) {
+    return '$percent above the asking price (+$difference)';
+  }
+
+  @override
+  String get productOfferEqual => 'Same as the asking price';
+
+  @override
+  String get productLiveTitle => 'Listing just updated';
+
+  @override
+  String productLiveUnavailable(String status) {
+    return 'This item is now $status and can no longer be ordered.';
+  }
+
+  @override
+  String get productLiveAvailable => 'This item is available again.';
+
+  @override
+  String productLivePrice(String previous, String current) {
+    return 'The seller changed the price from $previous to $current.';
+  }
+
+  @override
+  String get productLivePriceGeneric =>
+      'The seller updated the price, please review before sending.';
+
+  @override
+  String get productLiveInfo => 'The seller just edited this listing.';
+
+  @override
+  String get productLiveIndicator => 'Live updates on';
+
+  @override
+  String get productBuyTitle => 'Request to buy';
+
+  @override
+  String get productBuySubtitle =>
+      'The seller confirms and arranges the handover with you in chat.';
+
+  @override
+  String get productBuyPriceLabel => 'Price';
+
+  @override
+  String get productBuyNoteLabel => 'Note for the seller';
+
+  @override
+  String get productBuyNoteHint => 'e.g. I can pick it up this evening';
+
+  @override
+  String get productBuySubmit => 'Send request';
+
+  @override
+  String get productBuySent =>
+      'Purchase request sent. The seller will reply in chat.';
+
+  @override
+  String get productActionFailed => 'Couldn\'t send. Please try again.';
+
+  @override
+  String get galleryOpenFullscreen => 'View photos full screen';
+
+  @override
+  String get nearbyTitle => 'Near me';
+
+  @override
+  String get nearbySubtitle =>
+      'Pre-loved finds around you, meet up and grab them';
+
+  @override
+  String get nearbyCurrentLocation => 'Current location';
+
+  @override
+  String get nearbyLocating => 'Finding your location...';
+
+  @override
+  String get nearbyChangeLocation => 'Change';
+
+  @override
+  String get nearbyRelocate => 'Update location';
+
+  @override
+  String get nearbyFilters => 'Filters';
+
+  @override
+  String nearbyRadiusChip(String distance) {
+    return 'Within $distance';
+  }
+
+  @override
+  String get nearbyRadiusTitle => 'Search radius';
+
+  @override
+  String nearbyRadiusOption(String distance) {
+    return 'Within $distance';
+  }
+
+  @override
+  String get listingDealBuy => 'Buy now';
+
+  @override
+  String get listingDealExchange => 'Swap';
+
+  @override
+  String get listingSortTitle => 'Sort by';
+
+  @override
+  String get listingSortNearest => 'Nearest';
+
+  @override
+  String get listingSortNewest => 'Newest';
+
+  @override
+  String get listingSortPriceLow => 'Price: low to high';
+
+  @override
+  String get listingSortPriceHigh => 'Price: high to low';
+
+  @override
+  String get nearbyFallbackTitle => 'Showing listings around your default area';
+
+  @override
+  String get nearbyUseMyLocation => 'Use my location';
+
+  @override
+  String get nearbyOpenSettings => 'Open Settings';
+
+  @override
+  String get nearbyEmptyTitle => 'Nothing nearby yet';
+
+  @override
+  String get nearbyEmptyBody => 'Try a wider radius or fewer filters.';
+
+  @override
+  String nearbyExpandRadius(String distance) {
+    return 'Expand to $distance';
+  }
+
+  @override
+  String get nearbyLoadErrorTitle => 'Couldn\'t load nearby listings';
+
+  @override
+  String get nearbyLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get nearbyEndOfList => 'You\'ve seen everything nearby';
+
+  @override
+  String distanceMeters(int meters) {
+    return '$meters m';
+  }
+
+  @override
+  String distanceKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String get listingSortRelevance => 'Most relevant';
+
+  @override
+  String get searchNearMe => 'Near me';
+
+  @override
+  String get searchNearMeSubtitle => 'Browse pre-loved items around you';
+
+  @override
+  String get searchTipsTitle => 'Quick search ideas';
+
+  @override
+  String get searchHistoryTitle => 'Recent searches';
+
+  @override
+  String get searchClearHistory => 'Clear all';
+
+  @override
+  String get searchRemoveHistory => 'Remove from list';
+
+  @override
+  String get searchFillQuery => 'Use in search box';
+
+  @override
+  String get searchClearInput => 'Clear';
+
+  @override
+  String searchForQuery(String query) {
+    return 'Search “$query”';
+  }
+
+  @override
+  String searchEmptyTitle(String query) {
+    return 'No results for “$query”';
+  }
+
+  @override
+  String get searchEmptyBody =>
+      'Try a shorter or different keyword, or remove some filters.';
+
+  @override
+  String get searchTryAnother => 'Change keyword';
+
+  @override
+  String get searchLoadErrorTitle => 'Couldn\'t load results';
+
+  @override
+  String get searchLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get searchEndOfList => 'You\'ve seen all results';
+
+  @override
+  String get areaSearchHint => 'Search ward or province...';
+
+  @override
+  String get areaMyLocationSubtitle => 'Use your current GPS location';
+
+  @override
+  String get areaRecentTitle => 'Recently chosen areas';
+
+  @override
+  String get areaWholeProvince => 'Whole province / city';
+
+  @override
+  String get areaNoResultsTitle => 'No matching area';
+
+  @override
+  String get areaNoResultsBody => 'Try another ward or province name.';
+
+  @override
+  String get areaSearchErrorTitle => 'Couldn\'t search areas';
+
+  @override
+  String get listingFilterTitle => 'Filters';
+
+  @override
+  String get listingFilterCategory => 'Category';
+
+  @override
+  String get listingFilterAllCategories => 'All';
+
+  @override
+  String get listingFilterCategoryError => 'Couldn\'t load categories';
+
+  @override
+  String get listingFilterPrice => 'Price range';
+
+  @override
+  String get listingFilterPriceMin => 'Min price';
+
+  @override
+  String get listingFilterPriceMax => 'Max price';
+
+  @override
+  String get listingFilterPriceAny => 'Any';
+
+  @override
+  String get listingFilterPriceHelper =>
+      'Exchange-only listings (no price) are hidden when filtering by price.';
+
+  @override
+  String get listingFilterPriceInvalid => 'Min price is higher than max price.';
+
+  @override
+  String listingFilterPriceUnder(String price) {
+    return 'Under $price';
+  }
+
+  @override
+  String listingFilterPriceOver(String price) {
+    return 'Over $price';
+  }
+
+  @override
+  String listingFilterPriceBetween(String min, String max) {
+    return '$min – $max';
+  }
+
+  @override
+  String get listingFilterCondition => 'Condition';
+
+  @override
+  String get listingFilterDeal => 'Deal type';
+
+  @override
+  String get listingFilterDistance => 'Distance';
+
+  @override
+  String get listingFilterReset => 'Clear all';
+
+  @override
+  String get listingFilterApply => 'Apply';
+
+  @override
+  String listingFilterApplyCount(int count) {
+    return 'Apply ($count)';
+  }
+
+  @override
+  String priceThousands(String value) {
+    return '${value}K';
+  }
+
+  @override
+  String priceMillions(String value) {
+    return '${value}M';
+  }
+
+  @override
+  String get categoryDetailSearch => 'Search';
+
+  @override
+  String get categoryDetailEmptyTitle => 'No listings in this category yet';
+
+  @override
+  String get categoryDetailEmptyBody =>
+      'Be the first to post something in this category.';
+
+  @override
+  String get categoryDetailPostListing => 'Post a listing';
+
+  @override
+  String get categoryDetailFilteredEmptyTitle =>
+      'No listings match your filters';
+
+  @override
+  String get categoryDetailFilteredEmptyBody =>
+      'Try removing some filters to see more listings.';
+
+  @override
+  String get categoryDetailLoadErrorTitle => 'Couldn\'t load this category';
+
+  @override
+  String get categoryDetailLoadErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get categoryDetailEndOfList =>
+      'You\'ve seen every listing in this category';
+
+  @override
+  String get wantedAlertTitle => 'Wanted alerts';
+
+  @override
+  String get wantedAlertSubtitle =>
+      'Reserve what you need, get notified when it is posted';
+
+  @override
+  String wantedAlertActiveCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count active alerts',
+      one: '1 active alert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wantedAlertCreate => 'Create alert';
+
+  @override
+  String get wantedAlertNew => 'New alert';
+
+  @override
+  String get wantedAlertEmptyTitle => 'No alerts yet';
+
+  @override
+  String get wantedAlertEmptyBody =>
+      'Tell us what you are looking for and ReStore will notify you as soon as something similar is posted.';
+
+  @override
+  String get wantedAlertLoadErrorTitle => 'Couldn\'t load your alerts';
+
+  @override
+  String get wantedAlertLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String wantedAlertNewMatches(int count) {
+    return '$count new';
+  }
+
+  @override
+  String wantedAlertMatchCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count matches',
+      one: '1 match',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wantedAlertNoMatchYet => 'No matches yet';
+
+  @override
+  String wantedAlertLastMatched(String time) {
+    return 'Last match $time';
+  }
+
+  @override
+  String wantedAlertCreatedAt(String time) {
+    return 'Created $time';
+  }
+
+  @override
+  String get wantedAlertWatching => 'Watching';
+
+  @override
+  String get wantedAlertAnyCategory => 'Any category';
+
+  @override
+  String get wantedAlertNationwide => 'Nationwide';
+
+  @override
+  String get wantedAlertAnyPrice => 'Any price';
+
+  @override
+  String get wantedAlertAnyCondition => 'Any condition';
+
+  @override
+  String get wantedAlertAnyDeal => 'Buy or exchange';
+
+  @override
+  String wantedAlertPriceFrom(String price) {
+    return 'From $price';
+  }
+
+  @override
+  String wantedAlertPriceUpTo(String price) {
+    return 'Up to $price';
+  }
+
+  @override
+  String wantedAlertPriceRange(String min, String max) {
+    return '$min – $max';
+  }
+
+  @override
+  String get wantedAlertDelete => 'Delete alert';
+
+  @override
+  String get wantedAlertDeleteTitle => 'Delete this alert?';
+
+  @override
+  String wantedAlertDeleteBody(String keywords) {
+    return 'ReStore will stop notifying you about “$keywords”. You can create it again anytime.';
+  }
+
+  @override
+  String get wantedAlertKeep => 'Keep';
+
+  @override
+  String get wantedAlertDeleted =>
+      'Alert deleted. You won\'t get new matches for it anymore.';
+
+  @override
+  String get wantedAlertDeleteError =>
+      'Couldn\'t delete the alert. Please try again.';
+
+  @override
+  String get wantedAlertSearchHint => 'What are you looking for?';
+
+  @override
+  String get wantedAlertIntroTitle => 'Search first, get alerted later';
+
+  @override
+  String get wantedAlertIntroStep1 =>
+      'Type what you need and ReStore shows similar listings right away.';
+
+  @override
+  String get wantedAlertIntroStep2 =>
+      'Found a good one? Open it now, no need to wait.';
+
+  @override
+  String get wantedAlertIntroStep3 =>
+      'Nothing yet? Create an alert and get a link as soon as a similar listing appears.';
+
+  @override
+  String get wantedAlertSkipToCompose => 'Skip, write the alert';
+
+  @override
+  String wantedAlertSuggestionsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count similar listings available',
+      one: '1 similar listing available',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wantedAlertSuggestionsHint =>
+      'None of these? Create an alert to hear about new ones.';
+
+  @override
+  String get wantedAlertSuggestionsEmptyTitle => 'Nothing similar yet';
+
+  @override
+  String get wantedAlertSuggestionsEmptyBody =>
+      'Create an alert and ReStore will tell you as soon as someone posts it.';
+
+  @override
+  String get wantedAlertSuggestionsErrorTitle => 'Couldn\'t load suggestions';
+
+  @override
+  String get wantedAlertSuggestionsErrorBody =>
+      'You can still create the alert now.';
+
+  @override
+  String wantedAlertMatchPercent(int percent) {
+    return '$percent% match';
+  }
+
+  @override
+  String get wantedAlertNotRightCta => 'Not it? Create an alert';
+
+  @override
+  String get wantedAlertComposeTitle => 'Set up your alert';
+
+  @override
+  String get wantedAlertComposeSubtitle =>
+      'When a similar listing is posted, ReStore sends you a link to it.';
+
+  @override
+  String get wantedAlertKeywordsLabel => 'What you want';
+
+  @override
+  String get wantedAlertKeywordsHint => 'e.g. Canon AE-1 film camera';
+
+  @override
+  String get wantedAlertKeywordsHelper =>
+      'Name, brand or model. It doesn\'t have to be exact, similar listings count too.';
+
+  @override
+  String wantedAlertKeywordsError(int min) {
+    return 'Enter at least $min characters';
+  }
+
+  @override
+  String get wantedAlertCriteriaTitle => 'Criteria (optional)';
+
+  @override
+  String get wantedAlertCriteriaCategory => 'Category';
+
+  @override
+  String get wantedAlertCriteriaPrice => 'Price range';
+
+  @override
+  String get wantedAlertCriteriaCondition => 'Condition';
+
+  @override
+  String get wantedAlertCriteriaDeal => 'Deal type';
+
+  @override
+  String get wantedAlertCriteriaArea => 'Area';
+
+  @override
+  String get wantedAlertEditCriteria => 'Edit criteria';
+
+  @override
+  String get wantedAlertLevelTitle => 'How close';
+
+  @override
+  String get wantedAlertLevelBroad => 'Broad';
+
+  @override
+  String get wantedAlertLevelBalanced => 'Balanced';
+
+  @override
+  String get wantedAlertLevelStrict => 'Close';
+
+  @override
+  String get wantedAlertLevelBroadDesc =>
+      'Includes loosely similar listings, so you get more alerts.';
+
+  @override
+  String get wantedAlertLevelBalancedDesc =>
+      'Most keywords must match, small typos are fine.';
+
+  @override
+  String get wantedAlertLevelStrictDesc =>
+      'Only listings that are almost exactly what you typed.';
+
+  @override
+  String get wantedAlertPreviewTitle => 'Listings matching right now';
+
+  @override
+  String get wantedAlertPreviewEmpty =>
+      'Nothing matches right now. You\'ll be notified when something is posted.';
+
+  @override
+  String get wantedAlertPreviewNeedKeywords =>
+      'Enter what you want to preview matching listings.';
+
+  @override
+  String get wantedAlertSave => 'Turn on alert';
+
+  @override
+  String wantedAlertCreated(String keywords) {
+    return 'Alert on for “$keywords”. ReStore will notify you when something similar is posted.';
+  }
+
+  @override
+  String get wantedAlertCreateError =>
+      'Couldn\'t create the alert. Please try again.';
+
+  @override
+  String get wantedAlertNewTag => 'New';
+
+  @override
+  String get wantedAlertMatchesTitle => 'Matched listings';
+
+  @override
+  String get wantedAlertMatchesEmptyTitle => 'No matches yet';
+
+  @override
+  String get wantedAlertMatchesEmptyBody =>
+      'When someone posts something similar, ReStore notifies you and it shows up here.';
+
+  @override
+  String get wantedAlertEndOfList => 'You\'ve seen every match';
+
+  @override
+  String get wantedAlertPromptTitle => 'Not finding it?';
+
+  @override
+  String wantedAlertPromptBody(String query) {
+    return 'Set an alert for “$query” and ReStore will tell you when something similar is posted.';
+  }
+
+  @override
+  String get areaNationwide => 'Nationwide';
+
+  @override
+  String get areaNationwideSubtitle => 'Any area, listings from anywhere';
+
+  @override
+  String get trustedShopsTitle => 'Trusted shops';
+
+  @override
+  String get trustedShopsSubtitle => 'Genuine stores verified by ReStore';
+
+  @override
+  String get trustedShopsAllCategories => 'All';
+
+  @override
+  String get trustedShopsOfficialTitle => 'Official brands';
+
+  @override
+  String get trustedShopsCertifiedTitle => 'ReStore certified';
+
+  @override
+  String get trustedShopsShowcaseTitle => 'Shop by brand';
+
+  @override
+  String get trustedShopsShowcaseSubtitle =>
+      'Picks from the most followed shops';
+
+  @override
+  String get trustedShopsViewShop => 'View shop';
+
+  @override
+  String get trustedShopsAllProductsTitle => 'All products';
+
+  @override
+  String get trustedShopsAllProductsSubtitle => 'From every verified shop';
+
+  @override
+  String get trustedShopsEndOfList =>
+      'You\'ve seen every product from trusted shops';
+
+  @override
+  String get trustedShopsEmptyTitle => 'No trusted shops here yet';
+
+  @override
+  String get trustedShopsEmptyBody =>
+      'Verified shops in this category will show up here.';
+
+  @override
+  String get trustedShopsLoadErrorTitle => 'Couldn\'t load trusted shops';
+
+  @override
+  String get trustedShopsLoadErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get trustedShopsFamousTitle => 'Famous brands';
+
+  @override
+  String get trustedShopsFamousSubtitle => 'Official stores of big-name brands';
+
+  @override
+  String get trustedShopsDealsTitle => 'Luxury for less';
+
+  @override
+  String get trustedShopsDealsSubtitle => 'Genuine brand products, now on sale';
+
+  @override
+  String trustedShopsDealsUpTo(int percent) {
+    return 'Up to -$percent%';
+  }
+
+  @override
+  String get trustedShopsNewReleasesTitle => 'Hot new releases';
+
+  @override
+  String get trustedShopsNewReleasesSubtitle =>
+      'Fresh launches from famous brands';
+
+  @override
+  String get trustedShopsNewReleaseTag => 'Just launched';
+
+  @override
+  String trustedShopsLaunchedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Launched $count days ago',
+      one: 'Launched yesterday',
+      zero: 'Launched today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustedShopsNewShopsTitle => 'New stores';
+
+  @override
+  String get trustedShopsNewShopsSubtitle => 'Shops ReStore verified recently';
+
+  @override
+  String get trustedShopsNavFamous => 'Brands';
+
+  @override
+  String get trustedShopsNavDeals => 'Deals';
+
+  @override
+  String get trustedShopsNavNewReleases => 'New releases';
+
+  @override
+  String get trustedShopsNavNewShops => 'New stores';
+
+  @override
+  String get trustedShopsNavShowcases => 'By brand';
+
+  @override
+  String get trustedShopsNavAll => 'All products';
+
+  @override
+  String get trustedShopsSeeAll => 'See all';
+
+  @override
+  String get trustedShopsOnSaleFilter => 'On sale';
+
+  @override
+  String get shopDetailEventsTitle => 'Shop events';
+
+  @override
+  String get shopDetailEventsSubtitle => 'Promotions approved by ReStore';
+
+  @override
+  String get shopVerificationOfficial => 'Official';
+
+  @override
+  String get shopVerificationCertified => 'Certified';
+
+  @override
+  String get shopVerificationOfficialDesc =>
+      'The brand\'s own store or its authorised distributor, selling genuine goods with brand warranty.';
+
+  @override
+  String get shopVerificationCertifiedDesc =>
+      'ReStore checked this shop\'s business licence, address and trading history before certifying it.';
+
+  @override
+  String get shopVerificationSheetTitle => 'About verified shops';
+
+  @override
+  String get shopVerificationSheetSubtitle =>
+      'Only shops that pass one of these checks appear in Trusted shops';
+
+  @override
+  String get shopVerificationSheetNote =>
+      'ReStore reviews verified shops regularly and removes the badge if a shop breaks the rules or gets repeated complaints.';
+
+  @override
+  String get shopCertificateTitle => 'Shop certificate';
+
+  @override
+  String get shopCertificateCode => 'Certificate no.';
+
+  @override
+  String get shopVerifiedSince => 'Verified on';
+
+  @override
+  String shopVerifiedSinceShort(String date) {
+    return 'Verified $date';
+  }
+
+  @override
+  String get shopFollow => 'Follow';
+
+  @override
+  String get shopFollowing => 'Following';
+
+  @override
+  String shopFollowerCount(String count) {
+    return '$count followers';
+  }
+
+  @override
+  String shopListingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count products',
+      one: '1 product',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String shopRatingCount(String count) {
+    return '$count reviews';
+  }
+
+  @override
+  String get shopFollowersLabel => 'Followers';
+
+  @override
+  String get shopProductsLabel => 'Products';
+
+  @override
+  String get shopDescriptionMore => 'Show more';
+
+  @override
+  String get shopDescriptionLess => 'Show less';
+
+  @override
+  String get shopDetailProductsTitle => 'Products for sale';
+
+  @override
+  String get shopDetailEmptyTitle => 'No products yet';
+
+  @override
+  String get shopDetailEmptyBody =>
+      'Follow this shop to hear about new products first.';
+
+  @override
+  String get shopDetailEndOfList => 'You\'ve seen every product from this shop';
+
+  @override
+  String get shopDetailLoadErrorTitle => 'Couldn\'t load this shop';
+
+  @override
+  String get shopDetailLoadErrorBody => 'Check your connection and try again.';
 }

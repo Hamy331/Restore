@@ -18,8 +18,25 @@ class HomeMockData {
     'status': 'ACTIVE',
   };
 
-  /// Chưa có ảnh banner nên để imageUrl null, app hiện khung trống
+  /// Banner trang chủ (ảnh 1200 × 600). Banner sự kiện của shop uy tín đã được
+  /// admin duyệt đứng đầu, bấm vào mở trang Shop uy tín rồi vào thẳng shop.
+  /// Banner của app chưa có ảnh nên để imageUrl null, app hiện khung trống.
   static final List<Map<String, dynamic>> banners = [
+    {
+      'id': 'banner-shop-kodo',
+      'imageUrl': 'assets/images/banners/banner-kodo-week.jpg',
+      'route': '/trusted-shops?shop=shop_kodo',
+    },
+    {
+      'id': 'banner-shop-lumi',
+      'imageUrl': 'assets/images/banners/banner-super-sale.jpg',
+      'route': '/trusted-shops?shop=shop_lumi',
+    },
+    {
+      'id': 'banner-shop-mirai',
+      'imageUrl': 'assets/images/banners/banner-black-friday.jpg',
+      'route': '/trusted-shops?shop=shop_mirai',
+    },
     {'id': 'banner-1', 'imageUrl': null, 'route': '/create-listing/category'},
     {'id': 'banner-2', 'imageUrl': null, 'route': null},
     {'id': 'banner-3', 'imageUrl': null, 'route': '/ai-assistant'},

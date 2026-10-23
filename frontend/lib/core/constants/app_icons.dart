@@ -42,6 +42,11 @@ class AppIcons {
   static const IconData saveDraft = LucideIcons.save400;
   static const IconData search = LucideIcons.search300;
   static const IconData searchEmpty = LucideIcons.searchX300;
+  static const IconData history = LucideIcons.history300;
+  static const IconData delete = LucideIcons.trash2300;
+
+  /// Đưa gợi ý lên ô tìm kiếm để sửa tiếp (mũi tên chéo lên trái)
+  static const IconData fillQuery = LucideIcons.arrowUpLeft300;
   static const IconData send = LucideIcons.send300;
   static const IconData refresh = LucideIcons.rotateCw300;
   static const IconData renew = LucideIcons.refreshCw300;
@@ -55,6 +60,25 @@ class AppIcons {
   static const IconData visible = LucideIcons.eye300;
   static const IconData hidden = LucideIcons.eyeOff300;
   static const IconData block = LucideIcons.ban300;
+  static const IconData report = LucideIcons.flag300;
+  static const IconData edit = LucideIcons.squarePen300;
+  static const IconData boost = LucideIcons.rocket300;
+
+  // Mua bán
+  static const IconData buy = LucideIcons.shoppingBag300;
+  static const IconData offer = LucideIcons.handCoins300;
+  static const IconData shop = LucideIcons.store300;
+  static const IconData calendar = LucideIcons.calendar300;
+  static const IconData priceUp = LucideIcons.trendingUp300;
+  static const IconData priceDown = LucideIcons.trendingDown300;
+  static const IconData priceEqual = LucideIcons.equal300;
+  static const IconData live = LucideIcons.radio300;
+  static const IconData sale = LucideIcons.badgePercent300;
+
+  // Shop uy tín
+  static const IconData brand = LucideIcons.crown300;
+  static const IconData hot = LucideIcons.flame300;
+  static const IconData event = LucideIcons.megaphone300;
 
   // AI / nổi bật
   static const IconData sparkle = LucideIcons.sparkles300;
@@ -68,6 +92,8 @@ class AppIcons {
   static const IconData gallery = LucideIcons.images300;
   static const IconData image = LucideIcons.image300;
   static const IconData imageBroken = LucideIcons.imageOff300;
+  static const IconData zoomIn = LucideIcons.zoomIn300;
+  static const IconData expand = LucideIcons.maximize300;
 
   // Vị trí
   static const IconData location = LucideIcons.mapPin300;

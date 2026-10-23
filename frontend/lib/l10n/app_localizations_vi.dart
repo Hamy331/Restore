@@ -1416,4 +1416,973 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get homeBannerTooltip => 'Banner khuyến mãi';
+
+  @override
+  String get productDetailTitle => 'Chi tiết sản phẩm';
+
+  @override
+  String get productLoadErrorTitle => 'Không tải được tin đăng';
+
+  @override
+  String get productLoadErrorBody =>
+      'Tin có thể đã bị gỡ hoặc kết nối mạng chưa ổn định. Vui lòng thử lại.';
+
+  @override
+  String productViewCount(int count) {
+    return '$count lượt xem';
+  }
+
+  @override
+  String get productUnavailableHint => 'Sản phẩm này hiện không thể đặt mua.';
+
+  @override
+  String get listingStatusDraft => 'Bản nháp';
+
+  @override
+  String get listingStatusPending => 'Đang chờ duyệt';
+
+  @override
+  String get listingStatusAvailable => 'Đang bán';
+
+  @override
+  String get listingStatusReserved => 'Đã có người đặt';
+
+  @override
+  String get listingStatusSold => 'Đã bán';
+
+  @override
+  String get listingStatusExchanged => 'Đã trao đổi';
+
+  @override
+  String get listingStatusExpired => 'Đã hết hạn';
+
+  @override
+  String get listingStatusRejected => 'Bị từ chối';
+
+  @override
+  String get listingStatusHidden => 'Đã ẩn';
+
+  @override
+  String get productSellerTitle => 'Người bán';
+
+  @override
+  String get productSellerVerified => 'Đã xác minh';
+
+  @override
+  String get productSellerNoReviews => 'Chưa có đánh giá';
+
+  @override
+  String productSellerJoined(String date) {
+    return 'Tham gia $date';
+  }
+
+  @override
+  String productSellerListings(int count) {
+    return '$count tin đang bán';
+  }
+
+  @override
+  String get productSellerProfile => 'Xem trang';
+
+  @override
+  String get productReadMore => 'Xem thêm';
+
+  @override
+  String get productReadLess => 'Thu gọn';
+
+  @override
+  String get productSafetyTitle => 'Mua bán an toàn';
+
+  @override
+  String get productSafetyBody =>
+      'Hẹn gặp ở nơi công cộng, kiểm tra hàng trước khi trả tiền và không chuyển tiền đặt cọc cho người lạ.';
+
+  @override
+  String get productReport => 'Báo cáo tin';
+
+  @override
+  String get productChat => 'Nhắn tin';
+
+  @override
+  String get productMakeOffer => 'Trả giá';
+
+  @override
+  String get productBuyNow => 'Mua ngay';
+
+  @override
+  String get productProposeExchange => 'Đề nghị đổi';
+
+  @override
+  String get productEditListing => 'Sửa tin';
+
+  @override
+  String get productBoost => 'Đẩy tin';
+
+  @override
+  String get productOfferTitle => 'Trả giá với người bán';
+
+  @override
+  String productOfferSubtitle(String price) {
+    return 'Giá đang bán: $price';
+  }
+
+  @override
+  String get productOfferAmountLabel => 'Giá bạn đề nghị';
+
+  @override
+  String get productOfferAmountHint => 'Nhập số tiền';
+
+  @override
+  String get productOfferInvalid => 'Nhập số tiền lớn hơn 0';
+
+  @override
+  String get productOfferTooHigh =>
+      'Giá đề nghị không được vượt quá 2 lần giá đang bán';
+
+  @override
+  String get productOfferSubmit => 'Gửi đề nghị';
+
+  @override
+  String get productOfferSent =>
+      'Đã gửi đề nghị, tiếp tục trao đổi với người bán tại đây.';
+
+  @override
+  String productOfferBelow(String percent, String difference) {
+    return 'Thấp hơn giá gốc $percent (-$difference)';
+  }
+
+  @override
+  String productOfferAbove(String percent, String difference) {
+    return 'Cao hơn giá gốc $percent (+$difference)';
+  }
+
+  @override
+  String get productOfferEqual => 'Bằng giá gốc';
+
+  @override
+  String get productLiveTitle => 'Tin vừa được cập nhật';
+
+  @override
+  String productLiveUnavailable(String status) {
+    return 'Sản phẩm hiện $status, bạn không thể đặt mua nữa.';
+  }
+
+  @override
+  String get productLiveAvailable => 'Sản phẩm vừa được mở bán trở lại.';
+
+  @override
+  String productLivePrice(String previous, String current) {
+    return 'Người bán vừa đổi giá từ $previous thành $current.';
+  }
+
+  @override
+  String get productLivePriceGeneric =>
+      'Người bán vừa cập nhật giá, bạn xem lại trước khi gửi nhé.';
+
+  @override
+  String get productLiveInfo => 'Người bán vừa sửa thông tin tin đăng.';
+
+  @override
+  String get productLiveIndicator => 'Đang cập nhật trực tiếp';
+
+  @override
+  String get productBuyTitle => 'Yêu cầu mua';
+
+  @override
+  String get productBuySubtitle =>
+      'Người bán sẽ xác nhận và hẹn giao nhận với bạn qua tin nhắn.';
+
+  @override
+  String get productBuyPriceLabel => 'Giá';
+
+  @override
+  String get productBuyNoteLabel => 'Lời nhắn cho người bán';
+
+  @override
+  String get productBuyNoteHint => 'VD: Mình có thể qua lấy vào tối nay';
+
+  @override
+  String get productBuySubmit => 'Gửi yêu cầu';
+
+  @override
+  String get productBuySent =>
+      'Đã gửi yêu cầu mua, người bán sẽ phản hồi qua tin nhắn.';
+
+  @override
+  String get productActionFailed => 'Gửi chưa được, vui lòng thử lại.';
+
+  @override
+  String get galleryOpenFullscreen => 'Xem ảnh toàn màn hình';
+
+  @override
+  String get nearbyTitle => 'Gần bạn';
+
+  @override
+  String get nearbySubtitle => 'Đồ cũ quanh đây, hẹn gặp là có ngay';
+
+  @override
+  String get nearbyCurrentLocation => 'Vị trí hiện tại';
+
+  @override
+  String get nearbyLocating => 'Đang xác định vị trí...';
+
+  @override
+  String get nearbyChangeLocation => 'Đổi';
+
+  @override
+  String get nearbyRelocate => 'Cập nhật vị trí';
+
+  @override
+  String get nearbyFilters => 'Bộ lọc';
+
+  @override
+  String nearbyRadiusChip(String distance) {
+    return 'Trong $distance';
+  }
+
+  @override
+  String get nearbyRadiusTitle => 'Tìm trong bán kính';
+
+  @override
+  String nearbyRadiusOption(String distance) {
+    return 'Trong vòng $distance';
+  }
+
+  @override
+  String get listingDealBuy => 'Mua trực tiếp';
+
+  @override
+  String get listingDealExchange => 'Trao đổi';
+
+  @override
+  String get listingSortTitle => 'Sắp xếp theo';
+
+  @override
+  String get listingSortNearest => 'Gần nhất';
+
+  @override
+  String get listingSortNewest => 'Mới nhất';
+
+  @override
+  String get listingSortPriceLow => 'Giá thấp đến cao';
+
+  @override
+  String get listingSortPriceHigh => 'Giá cao đến thấp';
+
+  @override
+  String get nearbyFallbackTitle => 'Đang xem quanh khu vực mặc định';
+
+  @override
+  String get nearbyUseMyLocation => 'Dùng vị trí của tôi';
+
+  @override
+  String get nearbyOpenSettings => 'Mở Cài đặt';
+
+  @override
+  String get nearbyEmptyTitle => 'Chưa có tin nào quanh đây';
+
+  @override
+  String get nearbyEmptyBody => 'Thử mở rộng bán kính hoặc bỏ bớt bộ lọc nhé.';
+
+  @override
+  String nearbyExpandRadius(String distance) {
+    return 'Mở rộng tới $distance';
+  }
+
+  @override
+  String get nearbyLoadErrorTitle => 'Chưa tải được tin gần bạn';
+
+  @override
+  String get nearbyLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get nearbyEndOfList => 'Bạn đã xem hết tin quanh đây';
+
+  @override
+  String distanceMeters(int meters) {
+    return '$meters m';
+  }
+
+  @override
+  String distanceKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String get listingSortRelevance => 'Phù hợp nhất';
+
+  @override
+  String get searchNearMe => 'Gần tôi';
+
+  @override
+  String get searchNearMeSubtitle => 'Xem đồ cũ quanh vị trí của bạn';
+
+  @override
+  String get searchTipsTitle => 'Gợi ý tìm nhanh';
+
+  @override
+  String get searchHistoryTitle => 'Tìm kiếm gần đây';
+
+  @override
+  String get searchClearHistory => 'Xoá tất cả';
+
+  @override
+  String get searchRemoveHistory => 'Xoá khỏi danh sách';
+
+  @override
+  String get searchFillQuery => 'Đưa lên ô tìm kiếm';
+
+  @override
+  String get searchClearInput => 'Xoá nội dung';
+
+  @override
+  String searchForQuery(String query) {
+    return 'Tìm “$query”';
+  }
+
+  @override
+  String searchEmptyTitle(String query) {
+    return 'Không tìm thấy “$query”';
+  }
+
+  @override
+  String get searchEmptyBody =>
+      'Thử từ khoá ngắn hơn, từ khoá khác hoặc bỏ bớt bộ lọc nhé.';
+
+  @override
+  String get searchTryAnother => 'Đổi từ khoá';
+
+  @override
+  String get searchLoadErrorTitle => 'Chưa tải được kết quả';
+
+  @override
+  String get searchLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get searchEndOfList => 'Bạn đã xem hết kết quả';
+
+  @override
+  String get areaSearchHint => 'Tìm phường/xã, tỉnh/thành...';
+
+  @override
+  String get areaMyLocationSubtitle => 'Dùng vị trí GPS hiện tại của bạn';
+
+  @override
+  String get areaRecentTitle => 'Khu vực đã chọn gần đây';
+
+  @override
+  String get areaWholeProvince => 'Toàn tỉnh/thành phố';
+
+  @override
+  String get areaNoResultsTitle => 'Không tìm thấy khu vực';
+
+  @override
+  String get areaNoResultsBody =>
+      'Thử gõ tên phường/xã hoặc tỉnh/thành khác nhé.';
+
+  @override
+  String get areaSearchErrorTitle => 'Chưa tìm được khu vực';
+
+  @override
+  String get listingFilterTitle => 'Bộ lọc';
+
+  @override
+  String get listingFilterCategory => 'Danh mục';
+
+  @override
+  String get listingFilterAllCategories => 'Tất cả';
+
+  @override
+  String get listingFilterCategoryError => 'Chưa tải được danh mục';
+
+  @override
+  String get listingFilterPrice => 'Khoảng giá';
+
+  @override
+  String get listingFilterPriceMin => 'Giá thấp nhất';
+
+  @override
+  String get listingFilterPriceMax => 'Giá cao nhất';
+
+  @override
+  String get listingFilterPriceAny => 'Không giới hạn';
+
+  @override
+  String get listingFilterPriceHelper =>
+      'Tin chỉ nhận trao đổi (không có giá) sẽ bị ẩn khi lọc theo giá.';
+
+  @override
+  String get listingFilterPriceInvalid =>
+      'Giá thấp nhất đang lớn hơn giá cao nhất.';
+
+  @override
+  String listingFilterPriceUnder(String price) {
+    return 'Dưới $price';
+  }
+
+  @override
+  String listingFilterPriceOver(String price) {
+    return 'Trên $price';
+  }
+
+  @override
+  String listingFilterPriceBetween(String min, String max) {
+    return '$min – $max';
+  }
+
+  @override
+  String get listingFilterCondition => 'Tình trạng';
+
+  @override
+  String get listingFilterDeal => 'Hình thức';
+
+  @override
+  String get listingFilterDistance => 'Khoảng cách';
+
+  @override
+  String get listingFilterReset => 'Xoá bộ lọc';
+
+  @override
+  String get listingFilterApply => 'Áp dụng';
+
+  @override
+  String listingFilterApplyCount(int count) {
+    return 'Áp dụng ($count)';
+  }
+
+  @override
+  String priceThousands(String value) {
+    return '$value nghìn';
+  }
+
+  @override
+  String priceMillions(String value) {
+    return '$value triệu';
+  }
+
+  @override
+  String get categoryDetailSearch => 'Tìm kiếm';
+
+  @override
+  String get categoryDetailEmptyTitle => 'Danh mục này chưa có tin nào';
+
+  @override
+  String get categoryDetailEmptyBody =>
+      'Hãy là người đầu tiên đăng món đồ thuộc danh mục này nhé.';
+
+  @override
+  String get categoryDetailPostListing => 'Đăng tin';
+
+  @override
+  String get categoryDetailFilteredEmptyTitle => 'Không có tin khớp bộ lọc';
+
+  @override
+  String get categoryDetailFilteredEmptyBody =>
+      'Thử bỏ bớt bộ lọc để xem thêm tin nhé.';
+
+  @override
+  String get categoryDetailLoadErrorTitle => 'Chưa tải được danh mục';
+
+  @override
+  String get categoryDetailLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get categoryDetailEndOfList => 'Bạn đã xem hết tin trong danh mục này';
+
+  @override
+  String get wantedAlertTitle => 'Báo khi có hàng';
+
+  @override
+  String get wantedAlertSubtitle =>
+      'Đặt trước món bạn cần, có tin giống là báo ngay';
+
+  @override
+  String wantedAlertActiveCount(int count) {
+    return '$count thông báo đang bật';
+  }
+
+  @override
+  String get wantedAlertCreate => 'Tạo thông báo';
+
+  @override
+  String get wantedAlertNew => 'Tạo thông báo mới';
+
+  @override
+  String get wantedAlertEmptyTitle => 'Chưa có thông báo nào';
+
+  @override
+  String get wantedAlertEmptyBody =>
+      'Đặt trước món bạn đang tìm, ReStore sẽ báo ngay khi có người đăng món gần giống.';
+
+  @override
+  String get wantedAlertLoadErrorTitle => 'Chưa tải được thông báo';
+
+  @override
+  String get wantedAlertLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String wantedAlertNewMatches(int count) {
+    return '$count tin mới';
+  }
+
+  @override
+  String wantedAlertMatchCount(int count) {
+    return '$count tin khớp';
+  }
+
+  @override
+  String get wantedAlertNoMatchYet => 'Chưa có tin khớp';
+
+  @override
+  String wantedAlertLastMatched(String time) {
+    return 'Khớp gần nhất $time';
+  }
+
+  @override
+  String wantedAlertCreatedAt(String time) {
+    return 'Tạo $time';
+  }
+
+  @override
+  String get wantedAlertWatching => 'Đang theo dõi';
+
+  @override
+  String get wantedAlertAnyCategory => 'Mọi danh mục';
+
+  @override
+  String get wantedAlertNationwide => 'Toàn quốc';
+
+  @override
+  String get wantedAlertAnyPrice => 'Mọi mức giá';
+
+  @override
+  String get wantedAlertAnyCondition => 'Mọi tình trạng';
+
+  @override
+  String get wantedAlertAnyDeal => 'Mua hoặc trao đổi';
+
+  @override
+  String wantedAlertPriceFrom(String price) {
+    return 'Từ $price';
+  }
+
+  @override
+  String wantedAlertPriceUpTo(String price) {
+    return 'Đến $price';
+  }
+
+  @override
+  String wantedAlertPriceRange(String min, String max) {
+    return '$min – $max';
+  }
+
+  @override
+  String get wantedAlertDelete => 'Xoá thông báo';
+
+  @override
+  String get wantedAlertDeleteTitle => 'Xoá thông báo này?';
+
+  @override
+  String wantedAlertDeleteBody(String keywords) {
+    return 'ReStore sẽ ngừng báo tin mới cho “$keywords”. Bạn có thể tạo lại bất cứ lúc nào.';
+  }
+
+  @override
+  String get wantedAlertKeep => 'Giữ lại';
+
+  @override
+  String get wantedAlertDeleted =>
+      'Đã xoá thông báo, bạn sẽ không nhận tin mới cho món này nữa.';
+
+  @override
+  String get wantedAlertDeleteError => 'Chưa xoá được thông báo, thử lại nhé.';
+
+  @override
+  String get wantedAlertSearchHint => 'Bạn đang tìm món gì?';
+
+  @override
+  String get wantedAlertIntroTitle => 'Tìm trước, đặt báo sau';
+
+  @override
+  String get wantedAlertIntroStep1 =>
+      'Gõ món bạn cần, ReStore tìm ngay tin đang có gần giống.';
+
+  @override
+  String get wantedAlertIntroStep2 =>
+      'Thấy món ưng ý thì xem luôn, không cần chờ.';
+
+  @override
+  String get wantedAlertIntroStep3 =>
+      'Chưa có? Tạo thông báo, có tin mới gần giống là ReStore báo kèm đường dẫn.';
+
+  @override
+  String get wantedAlertSkipToCompose => 'Bỏ qua, viết thông báo luôn';
+
+  @override
+  String wantedAlertSuggestionsTitle(int count) {
+    return '$count tin đang có gần giống';
+  }
+
+  @override
+  String get wantedAlertSuggestionsHint =>
+      'Chưa ưng món nào? Tạo thông báo để được báo khi có tin mới.';
+
+  @override
+  String get wantedAlertSuggestionsEmptyTitle => 'Chưa có tin nào gần giống';
+
+  @override
+  String get wantedAlertSuggestionsEmptyBody =>
+      'Tạo thông báo, ReStore sẽ báo ngay khi có người đăng món bạn cần.';
+
+  @override
+  String get wantedAlertSuggestionsErrorTitle => 'Chưa tải được tin gợi ý';
+
+  @override
+  String get wantedAlertSuggestionsErrorBody =>
+      'Bạn vẫn có thể tạo thông báo ngay bây giờ.';
+
+  @override
+  String wantedAlertMatchPercent(int percent) {
+    return 'Giống $percent%';
+  }
+
+  @override
+  String get wantedAlertNotRightCta => 'Chưa ưng? Tạo thông báo';
+
+  @override
+  String get wantedAlertComposeTitle => 'Soạn thông báo';
+
+  @override
+  String get wantedAlertComposeSubtitle =>
+      'Có tin mới gần giống, ReStore gửi thông báo kèm đường dẫn tới tin.';
+
+  @override
+  String get wantedAlertKeywordsLabel => 'Món bạn muốn tìm';
+
+  @override
+  String get wantedAlertKeywordsHint => 'VD: máy ảnh film Canon AE-1';
+
+  @override
+  String get wantedAlertKeywordsHelper =>
+      'Gõ tên món, hãng, model. Không cần y hệt, tin gần giống cũng được báo.';
+
+  @override
+  String wantedAlertKeywordsError(int min) {
+    return 'Nhập ít nhất $min ký tự';
+  }
+
+  @override
+  String get wantedAlertCriteriaTitle => 'Tiêu chí (không bắt buộc)';
+
+  @override
+  String get wantedAlertCriteriaCategory => 'Danh mục';
+
+  @override
+  String get wantedAlertCriteriaPrice => 'Khoảng giá';
+
+  @override
+  String get wantedAlertCriteriaCondition => 'Tình trạng';
+
+  @override
+  String get wantedAlertCriteriaDeal => 'Hình thức';
+
+  @override
+  String get wantedAlertCriteriaArea => 'Khu vực';
+
+  @override
+  String get wantedAlertEditCriteria => 'Chỉnh tiêu chí';
+
+  @override
+  String get wantedAlertLevelTitle => 'Mức độ giống';
+
+  @override
+  String get wantedAlertLevelBroad => 'Rộng';
+
+  @override
+  String get wantedAlertLevelBalanced => 'Vừa';
+
+  @override
+  String get wantedAlertLevelStrict => 'Sát';
+
+  @override
+  String get wantedAlertLevelBroadDesc =>
+      'Báo cả tin chỉ hơi giống, bạn sẽ nhận nhiều thông báo hơn.';
+
+  @override
+  String get wantedAlertLevelBalancedDesc =>
+      'Phần lớn từ khoá phải khớp, gõ sai nhẹ vẫn nhận ra.';
+
+  @override
+  String get wantedAlertLevelStrictDesc =>
+      'Chỉ báo tin gần như đúng món bạn nhập.';
+
+  @override
+  String get wantedAlertPreviewTitle => 'Tin đang có khớp thông báo';
+
+  @override
+  String get wantedAlertPreviewEmpty =>
+      'Hiện chưa có tin nào khớp, bạn sẽ được báo khi có người đăng.';
+
+  @override
+  String get wantedAlertPreviewNeedKeywords =>
+      'Nhập món bạn muốn tìm để xem trước tin khớp.';
+
+  @override
+  String get wantedAlertSave => 'Bật thông báo';
+
+  @override
+  String wantedAlertCreated(String keywords) {
+    return 'Đã bật thông báo cho “$keywords”. Có tin gần giống, ReStore sẽ báo bạn ngay.';
+  }
+
+  @override
+  String get wantedAlertCreateError => 'Chưa tạo được thông báo, thử lại nhé.';
+
+  @override
+  String get wantedAlertNewTag => 'Mới';
+
+  @override
+  String get wantedAlertMatchesTitle => 'Tin đã khớp';
+
+  @override
+  String get wantedAlertMatchesEmptyTitle => 'Chưa có tin khớp';
+
+  @override
+  String get wantedAlertMatchesEmptyBody =>
+      'Khi có người đăng món gần giống, ReStore sẽ gửi thông báo và tin sẽ hiện ở đây.';
+
+  @override
+  String get wantedAlertEndOfList => 'Bạn đã xem hết tin khớp';
+
+  @override
+  String get wantedAlertPromptTitle => 'Chưa thấy món ưng ý?';
+
+  @override
+  String wantedAlertPromptBody(String query) {
+    return 'Đặt báo cho “$query”, có tin mới gần giống là ReStore báo ngay.';
+  }
+
+  @override
+  String get areaNationwide => 'Toàn quốc';
+
+  @override
+  String get areaNationwideSubtitle =>
+      'Không giới hạn khu vực, tin ở đâu cũng báo';
+
+  @override
+  String get trustedShopsTitle => 'Shop uy tín';
+
+  @override
+  String get trustedShopsSubtitle => 'Gian hàng chính hãng đã xác minh';
+
+  @override
+  String get trustedShopsAllCategories => 'Tất cả';
+
+  @override
+  String get trustedShopsOfficialTitle => 'Thương hiệu chính hãng';
+
+  @override
+  String get trustedShopsCertifiedTitle => 'Shop được ReStore chứng nhận';
+
+  @override
+  String get trustedShopsShowcaseTitle => 'Sản phẩm theo nhãn hàng';
+
+  @override
+  String get trustedShopsShowcaseSubtitle =>
+      'Nổi bật từ các shop được theo dõi nhiều nhất';
+
+  @override
+  String get trustedShopsViewShop => 'Xem shop';
+
+  @override
+  String get trustedShopsAllProductsTitle => 'Tất cả sản phẩm';
+
+  @override
+  String get trustedShopsAllProductsSubtitle => 'Từ mọi shop đã xác minh';
+
+  @override
+  String get trustedShopsEndOfList => 'Bạn đã xem hết sản phẩm của shop uy tín';
+
+  @override
+  String get trustedShopsEmptyTitle => 'Chưa có shop uy tín trong mục này';
+
+  @override
+  String get trustedShopsEmptyBody =>
+      'Khi có shop được xác minh bán mặt hàng này, shop sẽ hiện ở đây.';
+
+  @override
+  String get trustedShopsLoadErrorTitle => 'Chưa tải được shop uy tín';
+
+  @override
+  String get trustedShopsLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get trustedShopsFamousTitle => 'Thương hiệu nổi tiếng';
+
+  @override
+  String get trustedShopsFamousSubtitle =>
+      'Gian hàng chính hãng của các thương hiệu lớn';
+
+  @override
+  String get trustedShopsDealsTitle => 'Trải nghiệm hàng hiệu';
+
+  @override
+  String get trustedShopsDealsSubtitle => 'Hàng hiệu chính hãng đang giảm giá';
+
+  @override
+  String trustedShopsDealsUpTo(int percent) {
+    return 'Giảm đến $percent%';
+  }
+
+  @override
+  String get trustedShopsNewReleasesTitle => 'Siêu phẩm mới ra mắt';
+
+  @override
+  String get trustedShopsNewReleasesSubtitle =>
+      'Sản phẩm vừa ra mắt từ các thương hiệu lớn';
+
+  @override
+  String get trustedShopsNewReleaseTag => 'Mới ra mắt';
+
+  @override
+  String trustedShopsLaunchedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ra mắt $count ngày trước',
+      zero: 'Ra mắt hôm nay',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustedShopsNewShopsTitle => 'Cửa hàng mới';
+
+  @override
+  String get trustedShopsNewShopsSubtitle => 'Shop vừa được ReStore xác minh';
+
+  @override
+  String get trustedShopsNavFamous => 'Thương hiệu';
+
+  @override
+  String get trustedShopsNavDeals => 'Giảm giá';
+
+  @override
+  String get trustedShopsNavNewReleases => 'Mới ra mắt';
+
+  @override
+  String get trustedShopsNavNewShops => 'Cửa hàng mới';
+
+  @override
+  String get trustedShopsNavShowcases => 'Theo nhãn hàng';
+
+  @override
+  String get trustedShopsNavAll => 'Tất cả sản phẩm';
+
+  @override
+  String get trustedShopsSeeAll => 'Xem tất cả';
+
+  @override
+  String get trustedShopsOnSaleFilter => 'Đang giảm giá';
+
+  @override
+  String get shopDetailEventsTitle => 'Sự kiện của shop';
+
+  @override
+  String get shopDetailEventsSubtitle => 'Ưu đãi đã được ReStore duyệt';
+
+  @override
+  String get shopVerificationOfficial => 'Chính hãng';
+
+  @override
+  String get shopVerificationCertified => 'Đã chứng nhận';
+
+  @override
+  String get shopVerificationOfficialDesc =>
+      'Shop gốc của nhãn hàng hoặc nhà phân phối được uỷ quyền, hàng chính hãng có bảo hành.';
+
+  @override
+  String get shopVerificationCertifiedDesc =>
+      'ReStore đã kiểm tra giấy phép kinh doanh, địa chỉ và lịch sử giao dịch trước khi cấp chứng nhận.';
+
+  @override
+  String get shopVerificationSheetTitle => 'Về shop đã xác minh';
+
+  @override
+  String get shopVerificationSheetSubtitle =>
+      'Chỉ shop đạt một trong hai mức sau mới hiện ở Shop uy tín';
+
+  @override
+  String get shopVerificationSheetNote =>
+      'ReStore rà soát định kỳ và thu hồi chứng nhận nếu shop vi phạm quy định hoặc bị khiếu nại nhiều lần.';
+
+  @override
+  String get shopCertificateTitle => 'Chứng nhận của shop';
+
+  @override
+  String get shopCertificateCode => 'Mã chứng nhận';
+
+  @override
+  String get shopVerifiedSince => 'Ngày xác minh';
+
+  @override
+  String shopVerifiedSinceShort(String date) {
+    return 'Xác minh $date';
+  }
+
+  @override
+  String get shopFollow => 'Theo dõi';
+
+  @override
+  String get shopFollowing => 'Đang theo dõi';
+
+  @override
+  String shopFollowerCount(String count) {
+    return '$count theo dõi';
+  }
+
+  @override
+  String shopListingCount(int count) {
+    return '$count sản phẩm';
+  }
+
+  @override
+  String shopRatingCount(String count) {
+    return '$count đánh giá';
+  }
+
+  @override
+  String get shopFollowersLabel => 'Người theo dõi';
+
+  @override
+  String get shopProductsLabel => 'Sản phẩm';
+
+  @override
+  String get shopDescriptionMore => 'Xem thêm';
+
+  @override
+  String get shopDescriptionLess => 'Thu gọn';
+
+  @override
+  String get shopDetailProductsTitle => 'Sản phẩm đang bán';
+
+  @override
+  String get shopDetailEmptyTitle => 'Shop chưa có sản phẩm';
+
+  @override
+  String get shopDetailEmptyBody =>
+      'Theo dõi shop để biết ngay khi có sản phẩm mới.';
+
+  @override
+  String get shopDetailEndOfList => 'Bạn đã xem hết sản phẩm của shop';
+
+  @override
+  String get shopDetailLoadErrorTitle => 'Chưa tải được trang shop';
+
+  @override
+  String get shopDetailLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
 }
