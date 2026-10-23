@@ -13,6 +13,24 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
        _categoryRepository = categoryRepository,
        super(const CreateListingState()) {
     on<CategoriesRequested>(_onCategoriesRequested);
+    on<DraftRequested>((event, emit) async {
+      if (state.isBusy) return;
+      emit(
+        state.copyWith(isLoadingDraft: true, draftLoadFailed: false, error: ''),
+      );
+      try {
+        final draft = await _repository.getDraft(event.id);
+        emit(state.copyWith(draft: draft, isLoadingDraft: false));
+      } catch (_) {
+        emit(
+          state.copyWith(
+            isLoadingDraft: false,
+            draftLoadFailed: true,
+            error: 'Không tải được tin của bạn.',
+          ),
+        );
+      }
+    });
     on<CategorySelected>(_onCategorySelected);
     on<PhotosAdded>(_onPhotosAdded);
     on<PhotoRemoved>(_onPhotoRemoved);
@@ -82,6 +100,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
     Emitter<CreateListingState> emit,
     ListingDraft Function(ListingDraft draft) update,
   ) {
+    if (state.isBusy) return;
     emit(state.copyWith(draft: update(state.draft)));
   }
 
@@ -108,6 +127,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
     CategorySelected event,
     Emitter<CreateListingState> emit,
   ) {
+    if (state.isBusy) return;
     if (event.categoryId == state.draft.categoryId) return;
     // Mỗi danh mục có bộ thông tin chi tiết riêng nên cần làm mới
     emit(
@@ -130,11 +150,21 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
   }
 
   void _onPhotoRemoved(PhotoRemoved event, Emitter<CreateListingState> emit) {
+    if (state.isBusy ||
+        event.index < 0 ||
+        event.index >= state.draft.images.length) {
+      return;
+    }
     final images = [...state.draft.images]..removeAt(event.index);
     _updateDraft(emit, (draft) => draft.copyWith(images: images));
   }
 
   void _onCoverPhotoSet(CoverPhotoSet event, Emitter<CreateListingState> emit) {
+    if (state.isBusy ||
+        event.index < 0 ||
+        event.index >= state.draft.images.length) {
+      return;
+    }
     if (event.index == 0) return;
     final images = [...state.draft.images];
     images.insert(0, images.removeAt(event.index));
@@ -153,8 +183,8 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
     DraftSaveRequested event,
     Emitter<CreateListingState> emit,
   ) async {
-    if (state.saveDraftStatus == RequestStatus.loading) return;
-    emit(state.copyWith(saveDraftStatus: RequestStatus.loading));
+    if (state.isBusy) return;
+    emit(state.copyWith(saveDraftStatus: RequestStatus.loading, error: ''));
     final sent = state.draft;
     try {
       final saved = await _repository.saveDraft(sent, state.category);
@@ -165,13 +195,28 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
         state.copyWith(
           draft: state.draft.copyWith(
             id: saved.id,
+            status: saved.status,
+            updatedAt: saved.updatedAt,
             images: imagesUnchanged ? saved.images : null,
           ),
           saveDraftStatus: RequestStatus.success,
         ),
       );
+    } on ListingSaveException catch (error) {
+      emit(
+        state.copyWith(
+          draft: error.draft,
+          error: error.message,
+          saveDraftStatus: RequestStatus.failure,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(saveDraftStatus: RequestStatus.failure));
+      emit(
+        state.copyWith(
+          error: 'Không lưu được nháp.',
+          saveDraftStatus: RequestStatus.failure,
+        ),
+      );
     }
   }
 
@@ -179,7 +224,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
     PublishRequested event,
     Emitter<CreateListingState> emit,
   ) async {
-    if (state.publishStatus == RequestStatus.loading) return;
+    if (state.isBusy) return;
     if (!state.isReadyToPublish) {
       emit(
         state.copyWith(
@@ -191,14 +236,27 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
       return;
     }
 
-    emit(state.copyWith(publishStatus: RequestStatus.loading));
+    emit(state.copyWith(publishStatus: RequestStatus.loading, error: ''));
     try {
       final published = await _repository.publish(state.draft, state.category);
       emit(
         state.copyWith(draft: published, publishStatus: RequestStatus.success),
       );
+    } on ListingSaveException catch (error) {
+      emit(
+        state.copyWith(
+          draft: error.draft,
+          error: error.message,
+          publishStatus: RequestStatus.failure,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(publishStatus: RequestStatus.failure));
+      emit(
+        state.copyWith(
+          error: 'Không gửi được tin.',
+          publishStatus: RequestStatus.failure,
+        ),
+      );
     }
   }
 }

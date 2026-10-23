@@ -50,7 +50,7 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
     if (_refreshing || state.detail == null) return;
     _refreshing = true;
     try {
-      _apply(await _repository.getDetail(listingId));
+      _apply(await _repository.getDetail(listingId, countView: false));
     } catch (_) {
       // Lần làm mới sau sẽ thử lại
     } finally {
@@ -129,7 +129,9 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
     if (state.isSubmitting) return const ProductActionFailed();
     emit(state.copyWith(isSubmitting: true));
     try {
-      final change = _apply(await _repository.getDetail(listingId));
+      final change = _apply(
+        await _repository.getDetail(listingId, countView: false),
+      );
       if (change?.kind == ProductDetailChangeKind.price ||
           !(state.detail?.isAvailable ?? false)) {
         return const ProductActionOutdated();

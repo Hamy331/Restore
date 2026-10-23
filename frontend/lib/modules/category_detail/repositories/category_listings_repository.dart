@@ -102,7 +102,7 @@ class MockCategoryListingsRepository implements CategoryListingsRepository {
 /// Gọi backend:
 /// - `GET /categories/:id` → `{ data: Category }`
 /// - `GET /listings?categoryId=&deal=&sort=&minPrice=&maxPrice=&condition=
-///   &page=&limit=`
+///   &page=&pageSize=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
 class ApiCategoryListingsRepository implements CategoryListingsRepository {
   ApiCategoryListingsRepository({ApiClient? apiClient})
@@ -113,10 +113,11 @@ class ApiCategoryListingsRepository implements CategoryListingsRepository {
   @override
   Future<CategoryModel> getCategory(String categoryId) async {
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/categories/$categoryId',
+      '/categories',
     );
-    final data = response.data?['data'];
-    if (data is! Map) throw const FormatException('Missing response data');
+    final data = (response.data?['data'] as List).cast<Map>().firstWhere(
+      (row) => row['id'] == categoryId,
+    );
     return CategoryModel.fromJson(Map<String, dynamic>.from(data));
   }
 
@@ -130,7 +131,7 @@ class ApiCategoryListingsRepository implements CategoryListingsRepository {
       queryParameters: {
         ...filter.toQuery(),
         'page': page,
-        'limit': CategoryListingsRepository.pageSize,
+        'pageSize': CategoryListingsRepository.pageSize,
       },
     );
     return PagedResult.fromJson(
@@ -145,7 +146,7 @@ class ApiCategoryListingsRepository implements CategoryListingsRepository {
   Future<void> setFavorite(String listingId, bool favorite) async {
     final path = '/listings/$listingId/favorite';
     favorite
-        ? await _apiClient.dio.post<void>(path)
+        ? await _apiClient.dio.put<void>(path)
         : await _apiClient.dio.delete<void>(path);
   }
 }

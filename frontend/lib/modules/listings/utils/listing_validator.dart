@@ -18,11 +18,14 @@ class ListingValidator {
 
   static Set<ListingField> basicInfoErrors(ListingDraft draft) => {
     if (draft.images.isEmpty) ListingField.photos,
-    if (draft.description.trim().length < ListingDraft.minDescriptionLength)
+    if (draft.description.trim().length < ListingDraft.minDescriptionLength ||
+        draft.description.trim().length > ListingDraft.maxDescriptionLength)
       ListingField.description,
-    if (draft.title.trim().length < ListingDraft.minTitleLength)
+    if (draft.title.trim().length < ListingDraft.minTitleLength ||
+        draft.title.trim().length > ListingDraft.maxTitleLength)
       ListingField.title,
-    if (draft.tradeType.requiresPrice && (draft.price ?? 0) <= 0)
+    if (draft.tradeType.requiresPrice &&
+        ((draft.price ?? 0) <= 0 || (draft.price ?? 0) > 999999999999))
       ListingField.price,
     if (draft.address == null) ListingField.location,
   };
@@ -33,13 +36,17 @@ class ListingValidator {
     CategoryModel? category,
   ) => {
     if (draft.condition == null) conditionKey: AttributeError.required,
-    for (final attribute in category?.attributes ?? const <CategoryAttributeModel>[])
+    for (final attribute
+        in category?.attributes ?? const <CategoryAttributeModel>[])
       if (_errorOf(attribute, draft.attributes[attribute.key])
           case final error?)
         attribute.key: error,
   };
 
-  static AttributeError? _errorOf(CategoryAttributeModel attribute, String? raw) {
+  static AttributeError? _errorOf(
+    CategoryAttributeModel attribute,
+    String? raw,
+  ) {
     if (attribute.parse(raw) == null) {
       // Công tắc có/không luôn có giá trị nên không tính là thiếu
       if (attribute.isRequired && attribute.type != AttributeType.boolean) {

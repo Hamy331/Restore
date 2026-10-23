@@ -14,6 +14,13 @@ class CategoriesRequested extends CreateListingEvent {
   const CategoriesRequested();
 }
 
+class DraftRequested extends CreateListingEvent {
+  const DraftRequested(this.id);
+  final String id;
+  @override
+  List<Object?> get props => [id];
+}
+
 class CategorySelected extends CreateListingEvent {
   final String categoryId;
   const CategorySelected(this.categoryId);

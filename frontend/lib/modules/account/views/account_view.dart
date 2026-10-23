@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/config/app_environment.dart';
+import 'package:restore/core/network/api_client.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
@@ -9,8 +11,27 @@ import '../../../l10n/app_localizations.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
 
-class AccountView extends StatelessWidget {
+class AccountView extends StatefulWidget {
   const AccountView({super.key});
+
+  @override
+  State<AccountView> createState() => _AccountViewState();
+}
+
+class _AccountViewState extends State<AccountView> {
+  late Future<Map<String, dynamic>> _counts = _loadCounts();
+  Future<void> _openListings() async {
+    await context.push('/manage-listings');
+    if (mounted) setState(() => _counts = _loadCounts());
+  }
+
+  Future<Map<String, dynamic>> _loadCounts() async {
+    if (AppEnvironment.useMockData) return {'active': 3, 'sold': 12};
+    final response = await ApiClient().dio.get<Map<String, dynamic>>(
+      '/listings/summary',
+    );
+    return Map<String, dynamic>.from(response.data?['data'] as Map);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,24 +81,27 @@ class AccountView extends StatelessWidget {
                         onEdit: () => context.push('/account/edit'),
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _MetricCard(
-                              value: 3.toString(),
-                              label: l10n.activeListings,
-                              onTap: () => context.go('/manage-listings'),
+                      FutureBuilder<Map<String, dynamic>>(
+                        future: _counts,
+                        builder: (context, snapshot) => Row(
+                          children: [
+                            Expanded(
+                              child: _MetricCard(
+                                value: '${snapshot.data?['active'] ?? '—'}',
+                                label: l10n.activeListings,
+                                onTap: _openListings,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _MetricCard(
-                              value: 12.toString(),
-                              label: l10n.soldListings,
-                              onTap: () => context.go('/manage-listings'),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _MetricCard(
+                                value: '${snapshot.data?['sold'] ?? '—'}',
+                                label: l10n.soldListings,
+                                onTap: _openListings,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -92,7 +116,6 @@ class AccountView extends StatelessWidget {
                       _AccountItem(
                         icon: AppIcons.favorite,
                         label: l10n.savedListings,
-                        trailing: 4.toString(),
                         onTap: () => context.push('/favorites'),
                       ),
                       _AccountItem(

@@ -16,6 +16,13 @@ class CreateListingState extends Equatable {
 
   /// Tăng mỗi lần bấm Đăng tin khi còn thiếu thông tin để view báo lỗi
   final int invalidPublishAttempts;
+  final String error;
+  final bool isLoadingDraft;
+  final bool draftLoadFailed;
+  bool get isBusy =>
+      isLoadingDraft ||
+      saveDraftStatus == RequestStatus.loading ||
+      publishStatus == RequestStatus.loading;
 
   const CreateListingState({
     this.categories = const [],
@@ -26,6 +33,9 @@ class CreateListingState extends Equatable {
     this.saveDraftStatus = RequestStatus.idle,
     this.publishStatus = RequestStatus.idle,
     this.invalidPublishAttempts = 0,
+    this.error = '',
+    this.isLoadingDraft = false,
+    this.draftLoadFailed = false,
   });
 
   CategoryModel? get category {
@@ -55,8 +65,14 @@ class CreateListingState extends Equatable {
     RequestStatus? saveDraftStatus,
     RequestStatus? publishStatus,
     int? invalidPublishAttempts,
+    String? error,
+    bool? isLoadingDraft,
+    bool? draftLoadFailed,
   }) {
     return CreateListingState(
+      error: error ?? this.error,
+      isLoadingDraft: isLoadingDraft ?? this.isLoadingDraft,
+      draftLoadFailed: draftLoadFailed ?? this.draftLoadFailed,
       categories: categories ?? this.categories,
       categoriesStatus: categoriesStatus ?? this.categoriesStatus,
       draft: draft ?? this.draft,
@@ -79,5 +95,8 @@ class CreateListingState extends Equatable {
     saveDraftStatus,
     publishStatus,
     invalidPublishAttempts,
+    error,
+    isLoadingDraft,
+    draftLoadFailed,
   ];
 }

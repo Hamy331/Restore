@@ -1,3 +1,4 @@
+import 'package:restore/services/device_location_service.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/user_model.dart';
 import 'package:restore/modules/listings/data/mock_favorite_store.dart';
@@ -106,7 +107,15 @@ class ApiHomeRepository implements HomeRepository {
 
   @override
   Future<UserModel> getCurrentUser() async {
-    final data = (await _get('/users/me'))['data'];
+    if (await _apiClient.tokenStorage.readAccessToken() == null) {
+      return const UserModel(
+        id: '',
+        email: '',
+        fullName: 'Khách',
+        username: '',
+      );
+    }
+    final data = (await _get('/auth/me'))['data'];
     if (data is! Map) throw const FormatException('Missing response data');
     return UserModel.fromJson(Map<String, dynamic>.from(data));
   }
@@ -125,7 +134,7 @@ class ApiHomeRepository implements HomeRepository {
   Future<List<ListingCardItem>> getRecommended() async => _list(
     await _get(
       '/listings/recommended',
-      query: const {'limit': HomeRepository.pageSize},
+      query: const {'pageSize': HomeRepository.pageSize},
     ),
     ListingCardItem.fromJson,
   );
@@ -135,12 +144,17 @@ class ApiHomeRepository implements HomeRepository {
     HomeListingFilter filter, {
     int page = 1,
   }) async {
+    final point = filter == HomeListingFilter.nearby
+        ? await DeviceLocationService().getCurrentPosition()
+        : null;
     final json = await _get(
       '/listings',
       query: {
-        'filter': filter.apiValue,
+        if (filter == HomeListingFilter.exchange) 'allowExchange': 'true',
+        if (point != null) ...point.toJson(),
+        if (point != null) 'radiusKm': 5,
         'page': page,
-        'limit': HomeRepository.pageSize,
+        'pageSize': HomeRepository.pageSize,
       },
     );
     return PagedResult.fromJson(
@@ -155,7 +169,7 @@ class ApiHomeRepository implements HomeRepository {
   Future<void> setFavorite(String listingId, bool favorite) async {
     final path = '/listings/$listingId/favorite';
     favorite
-        ? await _apiClient.dio.post<void>(path)
+        ? await _apiClient.dio.put<void>(path)
         : await _apiClient.dio.delete<void>(path);
   }
 

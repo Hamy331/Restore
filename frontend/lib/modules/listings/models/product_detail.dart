@@ -46,12 +46,15 @@ class ProductDetail extends Equatable {
       listing.allowSale && listing.price != null && listing.isNegotiable;
 
   factory ProductDetail.fromJson(Map<String, dynamic> json) {
-    final seller = json['seller'];
+    final seller = json['owner'] ?? json['seller'];
     final category = json['category'];
     final wish = (json['exchangeWish'] as String?)?.trim();
     return ProductDetail(
       listing: ListingModel.fromJson(json),
-      seller: UserModel.fromJson(Map<String, dynamic>.from(seller as Map)),
+      seller: UserModel.fromJson({
+        'email': '',
+        ...Map<String, dynamic>.from(seller as Map),
+      }),
       category: category is Map
           ? CategoryModel.fromJson(Map<String, dynamic>.from(category))
           : null,

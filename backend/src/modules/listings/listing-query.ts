@@ -28,6 +28,9 @@ export function listingQuery(filters: ReturnType<typeof listingFilters>, now: Da
           WHERE p."listingId" = l.id AND p."startsAt" <= ${now}
         ) boosted ON TRUE
         WHERE l.status = 'AVAILABLE'
+          AND (${filters.deal === 'buy'} = false OR l."allowSale"=true)
+          AND (${filters.deal === 'exchange'} = false OR l."allowExchange"=true)
+          ${filters.conditions ? Prisma.sql`AND l.condition::text IN (${Prisma.join(filters.conditions)})` : Prisma.empty}
           AND (${filters.allowExchange ?? false} = false OR l."allowExchange"=true)
           AND (${filters.nearby?.radius ?? null}::double precision IS NULL OR ${distance} <= ${filters.nearby?.radius ?? null})
           AND (${filters.q} = '' OR POSITION(LOWER(${filters.q}) IN LOWER(l.title)) > 0)
@@ -35,7 +38,7 @@ export function listingQuery(filters: ReturnType<typeof listingFilters>, now: Da
           AND (${filters.condition}::text IS NULL OR l.condition = ${filters.condition}::"ListingCondition")
           AND (${filters.minPrice}::numeric IS NULL OR l.price >= ${filters.minPrice}::numeric)
           AND (${filters.maxPrice}::numeric IS NULL OR l.price <= ${filters.maxPrice}::numeric)
-        ORDER BY ${filters.nearby ? Prisma.sql`${distance} ASC,` : Prisma.empty} COALESCE(boosted."featuredPriority", 0) DESC,
+        ORDER BY ${filters.sort === 'price_asc' ? Prisma.sql`l.price ASC,` : filters.sort === 'price_desc' ? Prisma.sql`l.price DESC,` : Prisma.empty} ${filters.nearby ? Prisma.sql`${distance} ASC,` : Prisma.empty} COALESCE(boosted."featuredPriority", 0) DESC,
           CASE WHEN ss."categoryId" = l."categoryId" THEN COALESCE(sp."priorityLevel", 0) ELSE 0 END DESC,
           GREATEST(COALESCE(l."publishedAt", l."createdAt"),
             COALESCE(boosted."bumpedAt", l."createdAt")) DESC,

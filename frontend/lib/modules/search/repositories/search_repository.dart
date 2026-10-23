@@ -173,8 +173,8 @@ class MockSearchRepository implements SearchRepository {
 /// - `GET /search/suggestions?q=&limit=` → `{ data: [string] }`
 /// - `GET /search/history` → `{ data: [{ id, keyword, searchedAt }] }`
 /// - `DELETE /search/history/:id`, `DELETE /search/history`
-/// - `GET /listings/search?q=&deal=&sort=&categoryId=&minPrice=&maxPrice=
-///   &condition=&page=&limit=`
+/// - `GET /listings?q=&deal=&sort=&categoryId=&minPrice=&maxPrice=
+///   &condition=&page=&pageSize=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
 class ApiSearchRepository implements SearchRepository {
   ApiSearchRepository({ApiClient? apiClient})
@@ -218,12 +218,12 @@ class ApiSearchRepository implements SearchRepository {
     int page = 1,
   }) async {
     final json = await _get(
-      '/listings/search',
+      '/listings',
       query: {
         'q': query,
         ...filter.toQuery(),
         'page': page,
-        'limit': SearchRepository.pageSize,
+        'pageSize': SearchRepository.pageSize,
       },
     );
     return PagedResult.fromJson(
@@ -238,7 +238,7 @@ class ApiSearchRepository implements SearchRepository {
   Future<void> setFavorite(String listingId, bool favorite) async {
     final path = '/listings/$listingId/favorite';
     favorite
-        ? await _apiClient.dio.post<void>(path)
+        ? await _apiClient.dio.put<void>(path)
         : await _apiClient.dio.delete<void>(path);
   }
 

@@ -1,3 +1,6 @@
+import 'package:restore/modules/listings/views/listing_browse_view.dart';
+import 'package:restore/modules/listings/bloc/create_listing/create_listing_state.dart';
+import 'package:restore/modules/listings/views/manage_listings_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -142,15 +145,51 @@ final appRouter = GoRouter(
           ),
         ],
         child: BlocProvider(
-          create: (_) => CreateListingBloc(
-            listingsRepository: AppEnvironment.useMockData
-                ? MockListingsRepository()
-                : ApiListingsRepository(),
-            categoryRepository: AppEnvironment.useMockData
-                ? MockCategoryRepository()
-                : ApiCategoryRepository(),
-          )..add(const CategoriesRequested()),
-          child: child,
+          create: (_) {
+            final bloc = CreateListingBloc(
+              listingsRepository: AppEnvironment.useMockData
+                  ? MockListingsRepository()
+                  : ApiListingsRepository(),
+              categoryRepository: AppEnvironment.useMockData
+                  ? MockCategoryRepository()
+                  : ApiCategoryRepository(),
+            );
+            bloc.add(const CategoriesRequested());
+            final draftId = state.uri.queryParameters['draft'];
+            if (draftId != null) bloc.add(DraftRequested(draftId));
+            return bloc;
+          },
+          child: BlocBuilder<CreateListingBloc, CreateListingState>(
+            builder: (context, listingState) {
+              if (listingState.isLoadingDraft) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (listingState.draftLoadFailed) {
+                return Scaffold(
+                  body: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(listingState.error),
+                        TextButton(
+                          onPressed: () =>
+                              context.read<CreateListingBloc>().add(
+                                DraftRequested(
+                                  state.uri.queryParameters['draft']!,
+                                ),
+                              ),
+                          child: const Text('Thử lại'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return child;
+            },
+          ),
         ),
       ),
       routes: [
@@ -248,6 +287,16 @@ final appRouter = GoRouter(
         create: (_) => AiAssistantCubit(),
         child: const AiAssistantView(),
       ),
+    ),
+    GoRoute(
+      path: '/favorites',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const ListingBrowseView(saved: true),
+    ),
+    GoRoute(
+      path: '/manage-listings',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, state) => ManageListingsView(key: ValueKey(state.extra)),
     ),
     // Chi tiết sản phẩm; extra là ListingModel của thẻ vừa bấm (tuỳ chọn)
     GoRoute(

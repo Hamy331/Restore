@@ -1,3 +1,4 @@
+import '../data/mock_favorite_store.dart';
 import 'dart:typed_data';
 import 'package:restore/modules/home/data/home_mock_data.dart';
 import 'package:restore/shared/models/geo_point.dart';
@@ -37,7 +38,6 @@ class MockListingsRepository implements ListingsRepository {
 
   final Duration latency;
   static final Map<String, ListingDraft> _store = {};
-  static final Set<String> _favorites = {};
   ListingModel _model(ListingDraft draft) => ListingModel(
     id: draft.id!,
     ownerId: 'mock-user',
@@ -113,15 +113,15 @@ class MockListingsRepository implements ListingsRepository {
 
   @override
   Future<List<ListingModel>> favorites() async => (await browse()).items
-      .where((item) => _favorites.contains(item.id))
+      .where((item) => MockFavoriteStore.contains(item.id))
       .toList();
   @override
   Future<void> setFavorite(String id, bool favorite) async {
-    favorite ? _favorites.add(id) : _favorites.remove(id);
+    MockFavoriteStore.set(id, favorite);
   }
 
   @override
-  Future<bool> isFavorite(String id) async => _favorites.contains(id);
+  Future<bool> isFavorite(String id) async => MockFavoriteStore.contains(id);
 
   @override
   Future<ListingDraft> getDraft(String id) async =>
@@ -195,7 +195,8 @@ class ApiListingsRepository implements ListingsRepository {
       return null;
     }
     if (uri == null ||
-        (uri.hasScheme && uri.origin != Uri.parse(_dio.options.baseUrl).origin)) {
+        (uri.hasScheme &&
+            uri.origin != Uri.parse(_dio.options.baseUrl).origin)) {
       return null;
     }
     return uri.path.startsWith('/api/v1/listings/media/') ? uri.path : null;

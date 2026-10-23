@@ -101,8 +101,8 @@ class MockNearbyRepository implements NearbyRepository {
 
 /// Gọi backend:
 /// - `GET /users/me/location` → `{ data: { label, latitude, longitude } }`
-/// - `GET /listings/nearby?latitude=&longitude=&radiusKm=&deal=&sort=&categoryId=
-///   &minPrice=&maxPrice=&condition=&page=&limit=`
+/// - `GET /listings?latitude=&longitude=&radiusKm=&deal=&sort=&categoryId=
+///   &minPrice=&maxPrice=&condition=&page=&pageSize=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
 class ApiNearbyRepository implements NearbyRepository {
   ApiNearbyRepository({ApiClient? apiClient})
@@ -124,12 +124,12 @@ class ApiNearbyRepository implements NearbyRepository {
     int page = 1,
   }) async {
     final json = await _get(
-      '/listings/nearby',
+      '/listings',
       query: {
         ...origin.toJson(),
         ...filter.toQuery(),
         'page': page,
-        'limit': NearbyRepository.pageSize,
+        'pageSize': NearbyRepository.pageSize,
       },
     );
     return PagedResult.fromJson(
@@ -144,7 +144,7 @@ class ApiNearbyRepository implements NearbyRepository {
   Future<void> setFavorite(String listingId, bool favorite) async {
     final path = '/listings/$listingId/favorite';
     favorite
-        ? await _apiClient.dio.post<void>(path)
+        ? await _apiClient.dio.put<void>(path)
         : await _apiClient.dio.delete<void>(path);
   }
 

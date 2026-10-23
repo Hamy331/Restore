@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:restore/core/network/api_client.dart';
 
 import '../data/mock_favorite_store.dart';
@@ -7,7 +8,7 @@ import '../models/product_detail.dart';
 
 /// Nguồn dữ liệu trang chi tiết sản phẩm và các hành động của người mua
 abstract class ProductDetailRepository {
-  Future<ProductDetail> getDetail(String listingId);
+  Future<ProductDetail> getDetail(String listingId, {bool countView = true});
   Future<void> setFavorite(String listingId, bool favorite);
 
   /// Mở (hoặc tạo) cuộc trò chuyện với người bán về tin này, trả về id
@@ -29,7 +30,10 @@ class MockProductDetailRepository implements ProductDetailRepository {
   final Duration latency;
 
   @override
-  Future<ProductDetail> getDetail(String listingId) async {
+  Future<ProductDetail> getDetail(
+    String listingId, {
+    bool countView = true,
+  }) async {
     await Future<void>.delayed(latency);
     final json = ProductDetailMockData.detail(listingId);
     if (json == null) throw StateError('Listing $listingId not found');
@@ -61,15 +65,19 @@ class MockProductDetailRepository implements ProductDetailRepository {
 
 /// Gọi backend, hợp đồng API xem listing-api-contract.md (mục "Chi tiết tin")
 class ApiProductDetailRepository implements ProductDetailRepository {
-  ApiProductDetailRepository({ApiClient? apiClient})
-    : _apiClient = apiClient ?? ApiClient();
+  ApiProductDetailRepository({ApiClient? apiClient, Dio? dio})
+    : _dio = dio ?? (apiClient ?? ApiClient()).dio;
 
-  final ApiClient _apiClient;
+  final Dio _dio;
 
   @override
-  Future<ProductDetail> getDetail(String listingId) async {
-    final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/listings/$listingId',
+  Future<ProductDetail> getDetail(
+    String listingId, {
+    bool countView = true,
+  }) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/listings/${Uri.encodeComponent(listingId)}',
+      queryParameters: {'countView': '$countView'},
     );
     return ProductDetail.fromJson(_data(response.data));
   }
@@ -77,14 +85,12 @@ class ApiProductDetailRepository implements ProductDetailRepository {
   @override
   Future<void> setFavorite(String listingId, bool favorite) async {
     final path = '/listings/$listingId/favorite';
-    favorite
-        ? await _apiClient.dio.post<void>(path)
-        : await _apiClient.dio.delete<void>(path);
+    favorite ? await _dio.put<void>(path) : await _dio.delete<void>(path);
   }
 
   @override
   Future<String> openConversation(String listingId) async {
-    final response = await _apiClient.dio.post<Map<String, dynamic>>(
+    final response = await _dio.post<Map<String, dynamic>>(
       '/conversations',
       data: {'listingId': listingId},
     );
@@ -93,7 +99,7 @@ class ApiProductDetailRepository implements ProductDetailRepository {
 
   @override
   Future<String> sendOffer(String listingId, int amount) async {
-    final response = await _apiClient.dio.post<Map<String, dynamic>>(
+    final response = await _dio.post<Map<String, dynamic>>(
       '/listings/$listingId/offers',
       data: {'amount': amount},
     );
@@ -102,7 +108,7 @@ class ApiProductDetailRepository implements ProductDetailRepository {
 
   @override
   Future<String> requestPurchase(String listingId, {String? note}) async {
-    final response = await _apiClient.dio.post<Map<String, dynamic>>(
+    final response = await _dio.post<Map<String, dynamic>>(
       '/listings/$listingId/purchase-requests',
       data: {'note': ?note},
     );

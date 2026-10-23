@@ -108,3 +108,13 @@ test('category attributes and GPS enforce supported values',()=>{
   assert.throws(()=>listingFilters({latitude:'91',longitude:'1'}),{code:'INVALID_LOCATION'});
   assert.throws(()=>listingFilters({latitude:'1'}),{code:'INVALID_QUERY'});
 });
+
+test('new UI filters accept multiple conditions, trade type and price ordering', () => {
+  const filters = listingFilters({condition: 'USED_GOOD,NEW', deal: 'exchange', sort: 'price_asc'});
+  assert.deepEqual(filters.conditions, ['USED_GOOD','NEW']);
+  assert.equal(filters.condition, null);
+  assert.equal(filters.deal, 'exchange');
+  assert.equal(filters.sort, 'price_asc');
+  assert.throws(() => listingFilters({deal:'unknown'}), {code:'INVALID_QUERY'});
+  assert.throws(() => listingFilters({sort:'price; DROP TABLE'}), {code:'INVALID_QUERY'});
+});

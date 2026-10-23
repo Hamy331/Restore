@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/app_size_reporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
-import 'package:restore/shared/widgets/app_size_reporter.dart';
 import 'package:restore/shared/widgets/app_step_indicator.dart';
 import 'package:restore/shared/widgets/glass/app_glass_background.dart';
 import 'package:restore/shared/widgets/glass/app_glass_scroll_header.dart';
@@ -102,7 +102,10 @@ class _CreateListingScaffoldState extends State<CreateListingScaffold> {
     if (state.saveDraftStatus == RequestStatus.success) {
       TSnackBarHelper.showSuccess(context, message: l10n.draftSaved);
     } else if (state.saveDraftStatus == RequestStatus.failure) {
-      TSnackBarHelper.showError(context, message: l10n.draftSaveFailed);
+      TSnackBarHelper.showError(
+        context,
+        message: state.error.isEmpty ? l10n.draftSaveFailed : state.error,
+      );
     }
   }
 
@@ -119,98 +122,102 @@ class _CreateListingScaffoldState extends State<CreateListingScaffold> {
       listenWhen: (previous, current) =>
           previous.saveDraftStatus != current.saveDraftStatus,
       listener: _onSaveDraftChanged,
-      child: AppGlassBackground(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          extendBody: true,
-          body: Stack(
-            children: [
-              // Builder để lấy padding dưới đã tính cả thanh nút kính mờ
-              // (extendBody cho nội dung cuộn xuyên qua thanh nút)
-              Positioned.fill(
-                child: Builder(
-                  builder: (context) => ListView(
-                    controller: _scrollController,
-                    padding: widget.contentPadding.add(
-                      EdgeInsets.only(
-                        top: headerHeight,
-                        bottom: MediaQuery.paddingOf(context).bottom,
+      child: AbsorbPointer(
+        absorbing: context.select(
+          (CreateListingBloc bloc) => bloc.state.isBusy,
+        ),
+        child: AppGlassBackground(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            extendBody: true,
+            body: Stack(
+              children: [
+                // Builder để lấy padding dưới đã tính cả thanh nút kính mờ
+                // (extendBody cho nội dung cuộn xuyên qua thanh nút)
+                Positioned.fill(
+                  child: Builder(
+                    builder: (context) => ListView(
+                      controller: _scrollController,
+                      padding: widget.contentPadding.add(
+                        EdgeInsets.only(
+                          top: headerHeight,
+                          bottom: MediaQuery.paddingOf(context).bottom,
+                        ),
                       ),
-                    ),
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    children: [
-                      for (var i = 0; i < widget.children.length; i++)
-                        FadeSlideIn(index: i, child: widget.children[i]),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: AppGlassScrollHeader(
-                  progress: _glassProgress,
-                  child: AppSizeReporter(
-                    onSize: _onHeaderSize,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       children: [
-                        AppBar(
-                          backgroundColor: Colors.transparent,
-                          surfaceTintColor: Colors.transparent,
-                          elevation: 0,
-                          scrolledUnderElevation: 0,
-                          centerTitle: false,
-                          leading: IconButton(
-                            icon: const Icon(
-                              AppIcons.back,
-                              color: AppColors.textPrimary,
-                            ),
-                            tooltip: MaterialLocalizations.of(
-                              context,
-                            ).backButtonTooltip,
-                            onPressed: () => _onBack(context),
-                          ),
-                          title: Text(
-                            widget.title,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          actions: [
-                            if (widget.showSaveDraft)
-                              _SaveDraftButton(label: l10n.saveDraft),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                          child: AppStepIndicator(
-                            currentStep: step.number,
-                            stepTitle: step.title(l10n),
-                            stepLabels: CreateListingStep.shortTitles(l10n),
-                            compact: _compact,
-                          ),
-                        ),
+                        for (var i = 0; i < widget.children.length; i++)
+                          FadeSlideIn(index: i, child: widget.children[i]),
                       ],
                     ),
                   ),
                 ),
-              ),
-            ],
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: AppGlassScrollHeader(
+                    progress: _glassProgress,
+                    child: AppSizeReporter(
+                      onSize: _onHeaderSize,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          AppBar(
+                            backgroundColor: Colors.transparent,
+                            surfaceTintColor: Colors.transparent,
+                            elevation: 0,
+                            scrolledUnderElevation: 0,
+                            centerTitle: false,
+                            leading: IconButton(
+                              icon: const Icon(
+                                AppIcons.back,
+                                color: AppColors.textPrimary,
+                              ),
+                              tooltip: MaterialLocalizations.of(
+                                context,
+                              ).backButtonTooltip,
+                              onPressed: () => _onBack(context),
+                            ),
+                            title: Text(
+                              widget.title,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            actions: [
+                              if (widget.showSaveDraft)
+                                _SaveDraftButton(label: l10n.saveDraft),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                            child: AppStepIndicator(
+                              currentStep: step.number,
+                              stepTitle: step.title(l10n),
+                              stepLabels: CreateListingStep.shortTitles(l10n),
+                              compact: _compact,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            bottomNavigationBar: widget.bottomBar,
           ),
-          bottomNavigationBar: widget.bottomBar,
         ),
       ),
     );
   }
 }
 
-/// Báo kích thước của [child] sau mỗi lần layout (khi thay đổi)
 class _SaveDraftButton extends StatelessWidget {
   final String label;
   const _SaveDraftButton({required this.label});
@@ -218,8 +225,7 @@ class _SaveDraftButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSaving = context.select(
-      (CreateListingBloc bloc) =>
-          bloc.state.saveDraftStatus == RequestStatus.loading,
+      (CreateListingBloc bloc) => bloc.state.isBusy,
     );
     // Nút nổi bật: nền trắng đặc, viền ấm, icon lưu và bóng nhẹ
     return Padding(
@@ -238,9 +244,12 @@ class _SaveDraftButton extends StatelessWidget {
         child: TextButton.icon(
           onPressed: isSaving
               ? null
-              : () => context.read<CreateListingBloc>().add(
-                  const DraftSaveRequested(),
-                ),
+              : () {
+                  FocusScope.of(context).unfocus();
+                  context.read<CreateListingBloc>().add(
+                    const DraftSaveRequested(),
+                  );
+                },
           style: TextButton.styleFrom(
             backgroundColor: Colors.white,
             foregroundColor: AppColors.primaryDark,

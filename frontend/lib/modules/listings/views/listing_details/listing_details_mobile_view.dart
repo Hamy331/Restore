@@ -25,9 +25,15 @@ class ListingDetailsMobileView extends StatelessWidget {
     switch (state.publishStatus) {
       case RequestStatus.success:
         TSnackBarHelper.showSuccess(context, message: l10n.listingSubmitted);
-        context.go('/home');
+        context.go(
+          '/manage-listings',
+          extra: state.draft.updatedAt?.toIso8601String(),
+        );
       case RequestStatus.failure:
-        TSnackBarHelper.showError(context, message: l10n.publishFailed);
+        TSnackBarHelper.showError(
+          context,
+          message: state.error.isEmpty ? l10n.publishFailed : state.error,
+        );
       case RequestStatus.idle || RequestStatus.loading:
         break;
     }
@@ -72,7 +78,10 @@ class ListingDetailsMobileView extends StatelessWidget {
               onSecondary: () => context.push(createListingPreviewPath),
               primaryLabel: l10n.publishListing,
               isLoading: state.publishStatus == RequestStatus.loading,
-              onPrimary: () => bloc.add(const PublishRequested()),
+              onPrimary: () {
+                FocusScope.of(context).unfocus();
+                bloc.add(const PublishRequested());
+              },
             ),
             children: [
               ListingDetailsHeader(category: category),

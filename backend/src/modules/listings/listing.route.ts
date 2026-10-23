@@ -48,7 +48,7 @@ const fields = {
   ownerId: true, categoryId: true, status: true, updatedAt: true,
   allowSale: true, allowExchange: true, exchangeWish: true, sellerType: true, attributes: true, location: true, reviewReason: true,
   condition: true,
-  category: { select: { id: true, name: true } },
+  category: { select: { id: true, name: true, metadata: true } },
   images: true,
   createdAt: true,
   viewCount: true,
@@ -72,6 +72,11 @@ export function listingFilters(query: Record<string, unknown>) {
   const q = query.q;
   const categoryId = query.categoryId;
   const condition = query.condition;
+  const conditions = typeof condition === 'string' ? condition.split(',') : [];
+  const deal = query.deal;
+  const sort = query.sort;
+  if (deal !== undefined && (typeof deal !== 'string' || !deal.split(',').every(value => ['buy','exchange'].includes(value)))) throw new AppError(400,'INVALID_QUERY','Kiểu giao dịch không hợp lệ.');
+  if (sort !== undefined && !['relevance','nearest','newest','price_asc','price_desc'].includes(String(sort))) throw new AppError(400,'INVALID_QUERY','Thứ tự không hợp lệ.');
   const minPrice = query.minPrice;
   const maxPrice = query.maxPrice;
   if (q !== undefined && (typeof q !== 'string' || q.trim().length > 100)) {
@@ -80,7 +85,7 @@ export function listingFilters(query: Record<string, unknown>) {
   if (categoryId !== undefined && (typeof categoryId !== 'string' || categoryId.length > 100)) {
     throw new AppError(400, 'INVALID_QUERY', 'Danh mục không hợp lệ.');
   }
-  if (condition !== undefined && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) {
+  if (condition !== undefined && (typeof condition !== 'string' || !conditions.every(value => Object.values(ListingCondition).includes(value as ListingCondition)))) {
     throw new AppError(400, 'INVALID_QUERY', 'Tình trạng sản phẩm không hợp lệ.');
   }
   for (const value of [minPrice, maxPrice]) {
@@ -101,10 +106,12 @@ export function listingFilters(query: Record<string, unknown>) {
   }
   if(query.allowExchange!=null && query.allowExchange!=='true' && query.allowExchange!=='false')throw new AppError(400,'INVALID_QUERY','Bộ lọc trao đổi không hợp lệ.');
   return {
+    ...(deal !== undefined ? {deal: deal as string} : {}), ...(sort !== undefined ? {sort: sort as string} : {}),
+    ...(conditions.length > 1 ? {conditions} : {}),
     ...(nearby?{nearby}:{}), ...(query.allowExchange==='true'?{allowExchange:true}:{}),
     q: typeof q === 'string' ? q.trim() : '',
     categoryId: typeof categoryId === 'string' ? categoryId : '',
-    condition: typeof condition === 'string' ? condition as ListingCondition : null,
+    condition: typeof condition === 'string' && conditions.length === 1 ? condition as ListingCondition : null,
     minPrice: typeof minPrice === 'string' ? minPrice : null,
     maxPrice: typeof maxPrice === 'string' ? maxPrice : null,
   };
@@ -517,17 +524,23 @@ router.get('/:id', (req:AuthRequest,res,next)=>req.headers.authorization?verifyT
   try {
     const id = req.params.id;
     if (typeof id !== 'string') throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy tin đăng.');
+    if (req.query.countView != null && !['true','false'].includes(String(req.query.countView))) throw new AppError(400,'INVALID_QUERY','countView không hợp lệ.');
     const listing = await prisma.listing.findFirst({
       where: { ...visible, id },
       select: fields,
     });
     if (!listing) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy tin đăng.');
     const views=await prisma.$queryRaw<{viewCount:number}[]>`UPDATE "Listing" SET "viewCount"="viewCount"+
-      CASE WHEN ${req.user?.role===Role.ADMIN} OR "ownerId"=${req.user?.userId??''} THEN 0 ELSE 1 END
+      CASE WHEN ${req.query.countView === 'false'} OR ${req.user?.role===Role.ADMIN} OR "ownerId"=${req.user?.userId??''} THEN 0 ELSE 1 END
       WHERE id=${id} AND status='AVAILABLE' AND EXISTS(SELECT 1 FROM "User" WHERE id="Listing"."ownerId" AND status='ACTIVE') RETURNING "viewCount"`;
     if(!views.length)throw new AppError(404,'LISTING_NOT_FOUND','Tin không còn hiển thị.');
     listing.viewCount=views[0]!.viewCount;
-    res.json({ success: true, data: output(listing) });
+    const [sellerActiveListings, favorite] = await Promise.all([
+      prisma.listing.count({where:{ownerId:listing.ownerId,...visible}}),
+      req.user ? prisma.listingFavorite.findUnique({where:{userId_listingId:{userId:req.user.userId,listingId:id}}}) : null,
+    ]);
+    res.json({ success: true, data: {...output(listing), category: listing.category ? {...listing.category, ...(listing.category.metadata as object)} : null,
+      sellerActiveListings, isFavorite: !!favorite, isOwner: req.user?.userId === listing.ownerId} });
   } catch (error) {
     next(error);
   }
