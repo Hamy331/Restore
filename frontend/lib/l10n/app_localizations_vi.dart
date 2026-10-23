@@ -2385,4 +2385,94 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get shopDetailLoadErrorBody =>
       'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get postingQuotaPersonalTitle => 'Tài khoản cá nhân';
+
+  @override
+  String postingQuotaBannerMessage(int min, int max, int days) {
+    return 'Mỗi chuyên mục được $min đến $max tin miễn phí đang hiển thị. Mỗi tin hiển thị $days ngày.';
+  }
+
+  @override
+  String get postingRulesAction => 'Xem quy định';
+
+  @override
+  String postingQuotaUsage(int used, int limit) {
+    return 'Đã đăng $used/$limit tin';
+  }
+
+  @override
+  String postingQuotaFull(int limit) {
+    return 'Đã đủ $limit tin';
+  }
+
+  @override
+  String get postingQuotaLastSlot => 'Còn 1 lượt đăng';
+
+  @override
+  String postingQuotaRemainingInCategory(int remaining, int limit) {
+    return 'Còn $remaining/$limit lượt đăng trong chuyên mục này';
+  }
+
+  @override
+  String get postingLimitTitle => 'Chuyên mục đã đủ số tin';
+
+  @override
+  String postingLimitMessage(int limit, String category) {
+    return 'Tài khoản cá nhân được đăng tối đa $limit tin đang hiển thị trong mục $category. Hãy giải phóng một suất để đăng tin mới.';
+  }
+
+  @override
+  String get postingLimitWaysTitle => 'Cách giải phóng suất đăng';
+
+  @override
+  String get postingLimitTipSold => 'Đánh dấu “Đã bán” cho món đã bán xong';
+
+  @override
+  String get postingLimitTipHide => 'Ẩn tin bạn không còn muốn bán';
+
+  @override
+  String postingLimitTipExpire(int days) {
+    return 'Tin hết hạn sau $days ngày cũng được trả lại suất';
+  }
+
+  @override
+  String get manageMyListings => 'Quản lý tin đăng';
+
+  @override
+  String get chooseAnotherCategory => 'Chọn mục khác';
+
+  @override
+  String get postingRulesTitle => 'Quy định đăng tin';
+
+  @override
+  String get postingRulesSubtitle => 'Áp dụng cho người bán cá nhân';
+
+  @override
+  String postingRuleLimit(int min, int max) {
+    return 'Mỗi chuyên mục được $min đến $max tin miễn phí đang hiển thị. Món giá trị cao như điện thoại, xe cộ chỉ được 1 tin.';
+  }
+
+  @override
+  String get postingRuleCounted =>
+      'Chỉ tính tin đang hiển thị và đang chờ duyệt. Tin đã bán, đã ẩn hoặc hết hạn không bị tính.';
+
+  @override
+  String postingRuleDuration(int days) {
+    return 'Mỗi tin hiển thị $days ngày kể từ khi được duyệt.';
+  }
+
+  @override
+  String get postingRuleFree =>
+      'Đăng tin miễn phí. Mỗi tin được kiểm duyệt trước khi hiển thị.';
+
+  @override
+  String get postingRulePersonalUse =>
+      'Tài khoản cá nhân dành cho việc bán đồ của chính bạn. Nếu đăng bán nhiều và thường xuyên như kinh doanh, ReStore có thể chuyển bạn sang tài khoản bán chuyên.';
+
+  @override
+  String postingRuleBusiness(int limit) {
+    return 'Gói Bán chuyên (sắp ra mắt): tối đa $limit tin mỗi chuyên mục. Gói Cửa hàng có thêm trang cửa hàng riêng.';
+  }
 }

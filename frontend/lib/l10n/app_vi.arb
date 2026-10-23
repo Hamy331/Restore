@@ -1216,5 +1216,109 @@
   "shopDetailEmptyBody": "Theo dõi shop để biết ngay khi có sản phẩm mới.",
   "shopDetailEndOfList": "Bạn đã xem hết sản phẩm của shop",
   "shopDetailLoadErrorTitle": "Chưa tải được trang shop",
-  "shopDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé."
+  "shopDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "postingQuotaPersonalTitle": "Tài khoản cá nhân",
+  "postingQuotaBannerMessage": "Mỗi chuyên mục được {min} đến {max} tin miễn phí đang hiển thị. Mỗi tin hiển thị {days} ngày.",
+  "@postingQuotaBannerMessage": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRulesAction": "Xem quy định",
+  "postingQuotaUsage": "Đã đăng {used}/{limit} tin",
+  "@postingQuotaUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaFull": "Đã đủ {limit} tin",
+  "@postingQuotaFull": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaLastSlot": "Còn 1 lượt đăng",
+  "postingQuotaRemainingInCategory": "Còn {remaining}/{limit} lượt đăng trong chuyên mục này",
+  "@postingQuotaRemainingInCategory": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLimitTitle": "Chuyên mục đã đủ số tin",
+  "postingLimitMessage": "Tài khoản cá nhân được đăng tối đa {limit} tin đang hiển thị trong mục {category}. Hãy giải phóng một suất để đăng tin mới.",
+  "@postingLimitMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "postingLimitWaysTitle": "Cách giải phóng suất đăng",
+  "postingLimitTipSold": "Đánh dấu “Đã bán” cho món đã bán xong",
+  "postingLimitTipHide": "Ẩn tin bạn không còn muốn bán",
+  "postingLimitTipExpire": "Tin hết hạn sau {days} ngày cũng được trả lại suất",
+  "@postingLimitTipExpire": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "manageMyListings": "Quản lý tin đăng",
+  "chooseAnotherCategory": "Chọn mục khác",
+  "postingRulesTitle": "Quy định đăng tin",
+  "postingRulesSubtitle": "Áp dụng cho người bán cá nhân",
+  "postingRuleLimit": "Mỗi chuyên mục được {min} đến {max} tin miễn phí đang hiển thị. Món giá trị cao như điện thoại, xe cộ chỉ được 1 tin.",
+  "@postingRuleLimit": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRuleCounted": "Chỉ tính tin đang hiển thị và đang chờ duyệt. Tin đã bán, đã ẩn hoặc hết hạn không bị tính.",
+  "postingRuleDuration": "Mỗi tin hiển thị {days} ngày kể từ khi được duyệt.",
+  "@postingRuleDuration": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRuleFree": "Đăng tin miễn phí. Mỗi tin được kiểm duyệt trước khi hiển thị.",
+  "postingRulePersonalUse": "Tài khoản cá nhân dành cho việc bán đồ của chính bạn. Nếu đăng bán nhiều và thường xuyên như kinh doanh, ReStore có thể chuyển bạn sang tài khoản bán chuyên.",
+  "postingRuleBusiness": "Gói Bán chuyên (sắp ra mắt): tối đa {limit} tin mỗi chuyên mục. Gói Cửa hàng có thêm trang cửa hàng riêng.",
+  "@postingRuleBusiness": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  }
 }

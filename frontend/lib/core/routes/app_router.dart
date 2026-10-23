@@ -11,6 +11,7 @@ import 'package:restore/modules/listings/bloc/create_listing/create_listing_even
 import 'package:restore/modules/listings/repositories/category_repository.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/listings/repositories/listings_repository.dart';
+import 'package:restore/modules/listings/repositories/posting_quota_repository.dart';
 import 'package:restore/modules/listings/views/basic_info/basic_info_view.dart';
 import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
 import 'package:restore/modules/listings/views/listing_details/listing_details_view.dart';
@@ -142,14 +143,20 @@ final appRouter = GoRouter(
           ),
         ],
         child: BlocProvider(
-          create: (_) => CreateListingBloc(
-            listingsRepository: AppEnvironment.useMockData
-                ? MockListingsRepository()
-                : ApiListingsRepository(),
-            categoryRepository: AppEnvironment.useMockData
-                ? MockCategoryRepository()
-                : ApiCategoryRepository(),
-          )..add(const CategoriesRequested()),
+          create: (_) =>
+              CreateListingBloc(
+                  listingsRepository: AppEnvironment.useMockData
+                      ? MockListingsRepository()
+                      : ApiListingsRepository(),
+                  categoryRepository: AppEnvironment.useMockData
+                      ? MockCategoryRepository()
+                      : ApiCategoryRepository(),
+                  postingQuotaRepository: AppEnvironment.useMockData
+                      ? MockPostingQuotaRepository()
+                      : ApiPostingQuotaRepository(),
+                )
+                ..add(const CategoriesRequested())
+                ..add(const PostingQuotaRequested()),
           child: child,
         ),
       ),

@@ -11,6 +11,7 @@ import '../../bloc/create_listing/create_listing_state.dart';
 import '../../models/create_listing_step.dart';
 import '../../utils/listing_validator.dart';
 import '../../widgets/create_listing_scaffold.dart';
+import '../../widgets/posting_limit_sheet.dart';
 import 'widgets/listing_attribute_field.dart';
 import 'widgets/listing_condition_section.dart';
 import 'widgets/listing_details_header.dart';
@@ -40,6 +41,24 @@ class ListingDetailsMobileView extends StatelessWidget {
     if (!state.isBasicInfoValid && context.canPop()) context.pop();
   }
 
+  Future<void> _onPostingLimitHit(
+    BuildContext context,
+    CreateListingState state,
+  ) async {
+    final category = state.category;
+    final quota = state.quota;
+    if (category == null || quota == null) return;
+    final action = await showPostingLimitSheet(
+      context,
+      category: category,
+      quota: quota,
+    );
+    // Giữ nguyên nội dung đã nhập, chỉ quay về bước 1 để đổi chuyên mục
+    if (action == PostingLimitAction.chooseAnotherCategory && context.mounted) {
+      context.go(CreateListingStep.category.path);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -56,6 +75,11 @@ class ListingDetailsMobileView extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.invalidPublishAttempts != current.invalidPublishAttempts,
           listener: _onInvalidPublish,
+        ),
+        BlocListener<CreateListingBloc, CreateListingState>(
+          listenWhen: (previous, current) =>
+              previous.postingLimitHits != current.postingLimitHits,
+          listener: _onPostingLimitHit,
         ),
       ],
       child: BlocBuilder<CreateListingBloc, CreateListingState>(

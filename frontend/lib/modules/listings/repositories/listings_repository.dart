@@ -6,7 +6,9 @@ import 'package:restore/shared/models/paged_result.dart';
 import 'package:dio/dio.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/category_model.dart';
+import '../data/mock_posting_quota_store.dart';
 import '../models/listing_draft.dart';
+import '../models/posting_quota.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
 import 'package:restore/data/models/listing_model.dart';
 
@@ -150,6 +152,15 @@ class MockListingsRepository implements ListingsRepository {
     CategoryModel? category,
   ) async {
     await Future<void>.delayed(latency);
+    final categoryId = draft.categoryId;
+    final alreadyCounted = _store[draft.id]?.status == ListingStatus.pending;
+    // Backend cũng chặn khi chuyên mục đã đủ số tin của tài khoản cá nhân
+    if (categoryId.isNotEmpty && !alreadyCounted) {
+      final used = MockPostingQuotaStore.used[categoryId] ?? 0;
+      if (used >= MockPostingQuotaStore.limitOf(categoryId)) {
+        throw ListingSaveException(draft, const PostingLimitReachedException());
+      }
+    }
     // Tin mới cần admin duyệt trước khi hiển thị (SRS 4.2)
     final published = draft.copyWith(
       id: draft.id ?? _newId(),
@@ -157,6 +168,9 @@ class MockListingsRepository implements ListingsRepository {
       updatedAt: DateTime.now(),
     );
     _store[published.id!] = published;
+    if (categoryId.isNotEmpty && !alreadyCounted) {
+      MockPostingQuotaStore.recordPublished(categoryId);
+    }
     return published;
   }
 }
@@ -165,6 +179,18 @@ class ListingSaveException implements Exception {
   const ListingSaveException(this.draft, this.cause);
   final ListingDraft draft;
   final Object cause;
+
+  /// Chuyên mục đã đủ số tin cho phép (API trả 409 `POSTING_LIMIT_REACHED`)
+  bool get isPostingLimitReached {
+    final error = cause;
+    if (error is PostingLimitReachedException) return true;
+    if (error is! DioException || error.response?.statusCode != 409) {
+      return false;
+    }
+    final data = error.response?.data;
+    return data is Map && data['code'] == PostingLimitReachedException.code;
+  }
+
   String get message {
     final error = cause;
     if (error is DioException && error.response?.data is Map) {
@@ -195,7 +221,8 @@ class ApiListingsRepository implements ListingsRepository {
       return null;
     }
     if (uri == null ||
-        (uri.hasScheme && uri.origin != Uri.parse(_dio.options.baseUrl).origin)) {
+        (uri.hasScheme &&
+            uri.origin != Uri.parse(_dio.options.baseUrl).origin)) {
       return null;
     }
     return uri.path.startsWith('/api/v1/listings/media/') ? uri.path : null;

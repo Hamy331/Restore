@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/listing_draft.dart';
 import '../../repositories/category_repository.dart';
 import '../../repositories/listings_repository.dart';
+import '../../repositories/posting_quota_repository.dart';
 import 'create_listing_event.dart';
 import 'create_listing_state.dart';
 
@@ -9,10 +10,13 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
   CreateListingBloc({
     required ListingsRepository listingsRepository,
     required CategoryRepository categoryRepository,
+    required PostingQuotaRepository postingQuotaRepository,
   }) : _repository = listingsRepository,
        _categoryRepository = categoryRepository,
+       _quotaRepository = postingQuotaRepository,
        super(const CreateListingState()) {
     on<CategoriesRequested>(_onCategoriesRequested);
+    on<PostingQuotaRequested>(_onPostingQuotaRequested);
     on<CategorySelected>(_onCategorySelected);
     on<PhotosAdded>(_onPhotosAdded);
     on<PhotoRemoved>(_onPhotoRemoved);
@@ -55,12 +59,6 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
       (event, emit) =>
           _updateDraft(emit, (draft) => draft.copyWith(address: event.address)),
     );
-    on<SellerTypeChanged>(
-      (event, emit) => _updateDraft(
-        emit,
-        (draft) => draft.copyWith(sellerType: event.sellerType),
-      ),
-    );
     on<ConditionChanged>(
       (event, emit) => _updateDraft(
         emit,
@@ -77,6 +75,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
 
   final ListingsRepository _repository;
   final CategoryRepository _categoryRepository;
+  final PostingQuotaRepository _quotaRepository;
 
   void _updateDraft(
     Emitter<CreateListingState> emit,
@@ -101,6 +100,24 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
       );
     } catch (_) {
       emit(state.copyWith(categoriesStatus: RequestStatus.failure));
+    }
+  }
+
+  Future<void> _onPostingQuotaRequested(
+    PostingQuotaRequested event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    try {
+      final quota = await _quotaRepository.getQuota();
+      // Loại người bán theo tài khoản, không để người dùng tự chọn
+      emit(
+        state.copyWith(
+          quota: quota,
+          draft: state.draft.copyWith(sellerType: quota.accountType),
+        ),
+      );
+    } catch (_) {
+      // Không tải được hạn mức thì vẫn cho đăng, backend sẽ kiểm tra
     }
   }
 
@@ -191,12 +208,31 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
       return;
     }
 
+    if (state.quota?.isFull(state.draft.categoryId) ?? false) {
+      emit(state.copyWith(postingLimitHits: state.postingLimitHits + 1));
+      return;
+    }
+
     emit(state.copyWith(publishStatus: RequestStatus.loading));
     try {
       final published = await _repository.publish(state.draft, state.category);
       emit(
         state.copyWith(draft: published, publishStatus: RequestStatus.success),
       );
+      add(const PostingQuotaRequested());
+    } on ListingSaveException catch (error) {
+      if (!error.isPostingLimitReached) {
+        emit(state.copyWith(publishStatus: RequestStatus.failure));
+        return;
+      }
+      // Hạn mức trên máy đã cũ (VD đăng từ thiết bị khác): tải lại rồi báo
+      emit(
+        state.copyWith(
+          publishStatus: RequestStatus.idle,
+          postingLimitHits: state.postingLimitHits + 1,
+        ),
+      );
+      add(const PostingQuotaRequested());
     } catch (_) {
       emit(state.copyWith(publishStatus: RequestStatus.failure));
     }
