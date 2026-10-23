@@ -4381,6 +4381,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check your connection and try again.'**
   String get shopDetailLoadErrorBody;
+
+  /// No description provided for @postingQuotaPersonalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal account'**
+  String get postingQuotaPersonalTitle;
+
+  /// No description provided for @postingQuotaBannerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Free listings per category: {min} to {max} active at a time. Each listing stays up for {days} days.'**
+  String postingQuotaBannerMessage(int min, int max, int days);
+
+  /// No description provided for @postingRulesAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View rules'**
+  String get postingRulesAction;
+
+  /// No description provided for @postingQuotaUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'{used}/{limit} used'**
+  String postingQuotaUsage(int used, int limit);
+
+  /// No description provided for @postingQuotaFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit of {limit} reached'**
+  String postingQuotaFull(int limit);
+
+  /// No description provided for @postingQuotaLastSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'1 slot left'**
+  String get postingQuotaLastSlot;
+
+  /// No description provided for @postingQuotaRemainingInCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining}/{limit} slots left in this category'**
+  String postingQuotaRemainingInCategory(int remaining, int limit);
+
+  /// No description provided for @postingLimitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Category limit reached'**
+  String get postingLimitTitle;
+
+  /// No description provided for @postingLimitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal accounts can have up to {limit} active listings in {category}. Free up a slot to post a new one.'**
+  String postingLimitMessage(int limit, String category);
+
+  /// No description provided for @postingLimitWaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to free a slot'**
+  String get postingLimitWaysTitle;
+
+  /// No description provided for @postingLimitTipSold.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark items you have sold as Sold'**
+  String get postingLimitTipSold;
+
+  /// No description provided for @postingLimitTipHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide listings you no longer want to sell'**
+  String get postingLimitTipHide;
+
+  /// No description provided for @postingLimitTipExpire.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings expire after {days} days and free their slot'**
+  String postingLimitTipExpire(int days);
+
+  /// No description provided for @manageMyListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage my listings'**
+  String get manageMyListings;
+
+  /// No description provided for @chooseAnotherCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Other category'**
+  String get chooseAnotherCategory;
+
+  /// No description provided for @postingRulesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting rules'**
+  String get postingRulesTitle;
+
+  /// No description provided for @postingRulesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'For personal sellers'**
+  String get postingRulesSubtitle;
+
+  /// No description provided for @postingRuleLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'{min} to {max} free active listings per category, depending on the category. High-value items such as phones and vehicles get 1.'**
+  String postingRuleLimit(int min, int max);
+
+  /// No description provided for @postingRuleCounted.
+  ///
+  /// In en, this message translates to:
+  /// **'Only active and pending listings count. Sold, hidden or expired listings do not.'**
+  String get postingRuleCounted;
+
+  /// No description provided for @postingRuleDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Each listing is shown for {days} days after it is approved.'**
+  String postingRuleDuration(int days);
+
+  /// No description provided for @postingRuleFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting is free. Every listing is reviewed before it goes live.'**
+  String get postingRuleFree;
+
+  /// No description provided for @postingRulePersonalUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal accounts are for selling your own used items. If you post many items regularly like a business, ReStore may move you to a business account.'**
+  String get postingRulePersonalUse;
+
+  /// No description provided for @postingRuleBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Business plan (coming soon): up to {limit} listings per category. Shop plan: your own shop page.'**
+  String postingRuleBusiness(int limit);
 }
 
 class _AppLocalizationsDelegate

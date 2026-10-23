@@ -1250,5 +1250,109 @@
   "shopDetailEmptyBody": "Follow this shop to hear about new products first.",
   "shopDetailEndOfList": "You've seen every product from this shop",
   "shopDetailLoadErrorTitle": "Couldn't load this shop",
-  "shopDetailLoadErrorBody": "Check your connection and try again."
+  "shopDetailLoadErrorBody": "Check your connection and try again.",
+  "postingQuotaPersonalTitle": "Personal account",
+  "postingQuotaBannerMessage": "Free listings per category: {min} to {max} active at a time. Each listing stays up for {days} days.",
+  "@postingQuotaBannerMessage": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRulesAction": "View rules",
+  "postingQuotaUsage": "{used}/{limit} used",
+  "@postingQuotaUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaFull": "Limit of {limit} reached",
+  "@postingQuotaFull": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaLastSlot": "1 slot left",
+  "postingQuotaRemainingInCategory": "{remaining}/{limit} slots left in this category",
+  "@postingQuotaRemainingInCategory": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLimitTitle": "Category limit reached",
+  "postingLimitMessage": "Personal accounts can have up to {limit} active listings in {category}. Free up a slot to post a new one.",
+  "@postingLimitMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "postingLimitWaysTitle": "How to free a slot",
+  "postingLimitTipSold": "Mark items you have sold as Sold",
+  "postingLimitTipHide": "Hide listings you no longer want to sell",
+  "postingLimitTipExpire": "Listings expire after {days} days and free their slot",
+  "@postingLimitTipExpire": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "manageMyListings": "Manage my listings",
+  "chooseAnotherCategory": "Other category",
+  "postingRulesTitle": "Posting rules",
+  "postingRulesSubtitle": "For personal sellers",
+  "postingRuleLimit": "{min} to {max} free active listings per category, depending on the category. High-value items such as phones and vehicles get 1.",
+  "@postingRuleLimit": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRuleCounted": "Only active and pending listings count. Sold, hidden or expired listings do not.",
+  "postingRuleDuration": "Each listing is shown for {days} days after it is approved.",
+  "@postingRuleDuration": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRuleFree": "Posting is free. Every listing is reviewed before it goes live.",
+  "postingRulePersonalUse": "Personal accounts are for selling your own used items. If you post many items regularly like a business, ReStore may move you to a business account.",
+  "postingRuleBusiness": "Business plan (coming soon): up to {limit} listings per category. Shop plan: your own shop page.",
+  "@postingRuleBusiness": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  }
 }

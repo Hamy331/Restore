@@ -2417,4 +2417,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopDetailLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get postingQuotaPersonalTitle => 'Personal account';
+
+  @override
+  String postingQuotaBannerMessage(int min, int max, int days) {
+    return 'Free listings per category: $min to $max active at a time. Each listing stays up for $days days.';
+  }
+
+  @override
+  String get postingRulesAction => 'View rules';
+
+  @override
+  String postingQuotaUsage(int used, int limit) {
+    return '$used/$limit used';
+  }
+
+  @override
+  String postingQuotaFull(int limit) {
+    return 'Limit of $limit reached';
+  }
+
+  @override
+  String get postingQuotaLastSlot => '1 slot left';
+
+  @override
+  String postingQuotaRemainingInCategory(int remaining, int limit) {
+    return '$remaining/$limit slots left in this category';
+  }
+
+  @override
+  String get postingLimitTitle => 'Category limit reached';
+
+  @override
+  String postingLimitMessage(int limit, String category) {
+    return 'Personal accounts can have up to $limit active listings in $category. Free up a slot to post a new one.';
+  }
+
+  @override
+  String get postingLimitWaysTitle => 'How to free a slot';
+
+  @override
+  String get postingLimitTipSold => 'Mark items you have sold as Sold';
+
+  @override
+  String get postingLimitTipHide => 'Hide listings you no longer want to sell';
+
+  @override
+  String postingLimitTipExpire(int days) {
+    return 'Listings expire after $days days and free their slot';
+  }
+
+  @override
+  String get manageMyListings => 'Manage my listings';
+
+  @override
+  String get chooseAnotherCategory => 'Other category';
+
+  @override
+  String get postingRulesTitle => 'Posting rules';
+
+  @override
+  String get postingRulesSubtitle => 'For personal sellers';
+
+  @override
+  String postingRuleLimit(int min, int max) {
+    return '$min to $max free active listings per category, depending on the category. High-value items such as phones and vehicles get 1.';
+  }
+
+  @override
+  String get postingRuleCounted =>
+      'Only active and pending listings count. Sold, hidden or expired listings do not.';
+
+  @override
+  String postingRuleDuration(int days) {
+    return 'Each listing is shown for $days days after it is approved.';
+  }
+
+  @override
+  String get postingRuleFree =>
+      'Posting is free. Every listing is reviewed before it goes live.';
+
+  @override
+  String get postingRulePersonalUse =>
+      'Personal accounts are for selling your own used items. If you post many items regularly like a business, ReStore may move you to a business account.';
+
+  @override
+  String postingRuleBusiness(int limit) {
+    return 'Business plan (coming soon): up to $limit listings per category. Shop plan: your own shop page.';
+  }
 }

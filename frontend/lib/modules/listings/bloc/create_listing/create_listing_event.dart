@@ -14,6 +14,11 @@ class CategoriesRequested extends CreateListingEvent {
   const CategoriesRequested();
 }
 
+/// Tải hạn mức đăng tin của tài khoản (số tin đã dùng mỗi chuyên mục)
+class PostingQuotaRequested extends CreateListingEvent {
+  const PostingQuotaRequested();
+}
+
 class CategorySelected extends CreateListingEvent {
   final String categoryId;
   const CategorySelected(this.categoryId);
@@ -89,13 +94,6 @@ class AddressChanged extends CreateListingEvent {
   const AddressChanged(this.address);
   @override
   List<Object?> get props => [address];
-}
-
-class SellerTypeChanged extends CreateListingEvent {
-  final SellerType sellerType;
-  const SellerTypeChanged(this.sellerType);
-  @override
-  List<Object?> get props => [sellerType];
 }
 
 class ConditionChanged extends CreateListingEvent {

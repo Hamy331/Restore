@@ -13,7 +13,7 @@ import '../../widgets/create_listing_scaffold.dart';
 import 'widgets/basic_info_description_field.dart';
 import 'widgets/basic_info_location_field.dart';
 import 'widgets/basic_info_photos_section.dart';
-import 'widgets/basic_info_seller_type_row.dart';
+import 'widgets/basic_info_quota_note.dart';
 import 'widgets/basic_info_title_field.dart';
 import 'widgets/basic_info_trade_section.dart';
 
@@ -72,7 +72,9 @@ class BasicInfoMobileView extends StatelessWidget {
               hasError: errors.contains(ListingField.location),
             ),
             const SizedBox(height: 16),
-            BasicInfoSellerTypeRow(sellerType: draft.sellerType),
+            // Loại người bán lấy theo gói tài khoản, không hỏi lúc đăng tin
+            if (state.categoryQuota != null)
+              BasicInfoQuotaNote(quota: state.categoryQuota!),
           ],
         );
       },
