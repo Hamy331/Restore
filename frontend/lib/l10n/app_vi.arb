@@ -1320,5 +1320,18 @@
         "type": "int"
       }
     }
-  }
+  },
+  "homeGreetingPro": "Chào nhà bán chuyên {name} 👋",
+  "homeGreetingShop": "Chào chủ shop {name} 👋",
+  "planPersonal": "Cá nhân",
+  "planPro": "Bán chuyên",
+  "planShop": "Cửa hàng",
+  "devPlanTag": "TEST",
+  "devPlanSwitchTooltip": "Đổi gói để test (chỉ khi dùng dữ liệu mẫu)",
+  "trustedShopsFamousEyebrow": "Chính hãng",
+  "trustedShopsDealsEyebrow": "Đang giảm giá",
+  "trustedShopsNewReleasesEyebrow": "Vừa ra mắt",
+  "trustedShopsNewShopsEyebrow": "Mới xác minh",
+  "trustedShopsShowcaseEyebrow": "Theo nhãn hàng",
+  "trustedShopsAllProductsEyebrow": "Khám phá"
 }

@@ -2507,4 +2507,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String postingRuleBusiness(int limit) {
     return 'Business plan (coming soon): up to $limit listings per category. Shop plan: your own shop page.';
   }
+
+  @override
+  String homeGreetingPro(String name) {
+    return 'Hi pro seller $name 👋';
+  }
+
+  @override
+  String homeGreetingShop(String name) {
+    return 'Hi shop owner $name 👋';
+  }
+
+  @override
+  String get planPersonal => 'Personal';
+
+  @override
+  String get planPro => 'Pro seller';
+
+  @override
+  String get planShop => 'Shop';
+
+  @override
+  String get devPlanTag => 'TEST';
+
+  @override
+  String get devPlanSwitchTooltip => 'Switch plan for testing (mock data only)';
+
+  @override
+  String get trustedShopsFamousEyebrow => 'Official';
+
+  @override
+  String get trustedShopsDealsEyebrow => 'On sale';
+
+  @override
+  String get trustedShopsNewReleasesEyebrow => 'Just launched';
+
+  @override
+  String get trustedShopsNewShopsEyebrow => 'Newly verified';
+
+  @override
+  String get trustedShopsShowcaseEyebrow => 'By brand';
+
+  @override
+  String get trustedShopsAllProductsEyebrow => 'Explore';
 }

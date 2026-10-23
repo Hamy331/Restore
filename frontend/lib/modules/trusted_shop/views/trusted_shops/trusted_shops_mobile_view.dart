@@ -361,7 +361,7 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
             TrustedShopCarousel(
               title: l10n.trustedShopsFamousTitle,
               subtitle: l10n.trustedShopsFamousSubtitle,
-              icon: AppIcons.brand,
+              eyebrow: l10n.trustedShopsFamousEyebrow,
               accent: ShopVerificationStyle.official.accent,
               shops: overview.famousShops,
               onShopTap: _openShopItem,
@@ -406,7 +406,7 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
             TrustedShopCarousel(
               title: l10n.trustedShopsNewShopsTitle,
               subtitle: l10n.trustedShopsNewShopsSubtitle,
-              icon: AppIcons.sparkle,
+              eyebrow: l10n.trustedShopsNewShopsEyebrow,
               accent: ShopVerificationStyle.certified.accent,
               shops: overview.newShops,
               onShopTap: _openShopItem,
@@ -422,7 +422,7 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
             key: _sectionKeys[TrustedShopsSection.showcases],
             title: l10n.trustedShopsShowcaseTitle,
             subtitle: l10n.trustedShopsShowcaseSubtitle,
-            icon: AppIcons.shop,
+            eyebrow: l10n.trustedShopsShowcaseEyebrow,
           ),
         ),
         gap(12),
@@ -446,7 +446,7 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
           key: _sectionKeys[TrustedShopsSection.allProducts],
           title: l10n.trustedShopsAllProductsTitle,
           subtitle: l10n.trustedShopsAllProductsSubtitle,
-          icon: AppIcons.listings,
+          eyebrow: l10n.trustedShopsAllProductsEyebrow,
           trailing: AppFilterChip(
             label: state.sort.label(l10n),
             hasDropdown: true,

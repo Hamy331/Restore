@@ -1354,5 +1354,32 @@
         "type": "int"
       }
     }
-  }
+  },
+  "homeGreetingPro": "Hi pro seller {name} 👋",
+  "@homeGreetingPro": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingShop": "Hi shop owner {name} 👋",
+  "@homeGreetingShop": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "planPersonal": "Personal",
+  "planPro": "Pro seller",
+  "planShop": "Shop",
+  "devPlanTag": "TEST",
+  "devPlanSwitchTooltip": "Switch plan for testing (mock data only)",
+  "trustedShopsFamousEyebrow": "Official",
+  "trustedShopsDealsEyebrow": "On sale",
+  "trustedShopsNewReleasesEyebrow": "Just launched",
+  "trustedShopsNewShopsEyebrow": "Newly verified",
+  "trustedShopsShowcaseEyebrow": "By brand",
+  "trustedShopsAllProductsEyebrow": "Explore"
 }

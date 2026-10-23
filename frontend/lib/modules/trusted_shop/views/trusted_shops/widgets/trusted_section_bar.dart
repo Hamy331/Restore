@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
@@ -21,15 +20,6 @@ enum TrustedShopsSection {
     newShops => l10n.trustedShopsNavNewShops,
     showcases => l10n.trustedShopsNavShowcases,
     allProducts => l10n.trustedShopsNavAll,
-  };
-
-  IconData get icon => switch (this) {
-    famous => AppIcons.brand,
-    deals => AppIcons.sale,
-    newReleases => AppIcons.hot,
-    newShops => AppIcons.sparkle,
-    showcases => AppIcons.shop,
-    allProducts => AppIcons.listings,
   };
 }
 
@@ -127,7 +117,6 @@ class _SectionChipsState extends State<_SectionChips> {
           AppFilterChip(
             key: _chipKeys[section],
             label: section.label(l10n),
-            icon: section.icon,
             selected: section == widget.active,
             onTap: () => widget.onTap(section),
           ),
