@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
@@ -145,13 +146,20 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(
-                          child: HomeTopBar(
-                            key: _topBarKey,
-                            areaName: state.areaName,
-                            greetingName: state.user == null
-                                ? ''
-                                : state.greetingName,
-                            onAreaTap: _comingSoon,
+                          child: ValueListenableBuilder(
+                            valueListenable: DevPlanOverride.plan,
+                            builder: (context, plan, _) => HomeTopBar(
+                              key: _topBarKey,
+                              areaName: state.areaName,
+                              greetingName: state.user == null
+                                  ? ''
+                                  : state.greetingName,
+                              plan: plan,
+                              onAreaTap: _comingSoon,
+                              onPlanTap: DevPlanOverride.enabled
+                                  ? DevPlanOverride.next
+                                  : null,
+                            ),
                           ),
                         ),
                         SliverPersistentHeader(

@@ -22,7 +22,6 @@ class HomeQuickActions extends StatelessWidget {
       description: l10n.homeQuickNearbyDesc,
       accent: const Color(0xFF0E7C70),
       tint: const Color(0xFFE5F5F2),
-      iconShape: const CircleBorder(),
     ),
     HomeQuickAction.wantedAlert => _QuickActionStyle(
       icon: AppIcons.wantedAlert,
@@ -30,9 +29,6 @@ class HomeQuickActions extends StatelessWidget {
       description: l10n.homeQuickWantedDesc,
       accent: AppColors.primaryDark,
       tint: AppColors.primarySoft,
-      iconShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
     ),
     HomeQuickAction.trustedShops => _QuickActionStyle(
       icon: AppIcons.verified,
@@ -40,7 +36,6 @@ class HomeQuickActions extends StatelessWidget {
       description: l10n.homeQuickTrustedShopsDesc,
       accent: const Color(0xFF2B63C6),
       tint: const Color(0xFFEAF1FD),
-      iconShape: const StarBorder.polygon(sides: 6, pointRounding: 0.45),
     ),
     HomeQuickAction.following => _QuickActionStyle(
       icon: AppIcons.following,
@@ -48,9 +43,6 @@ class HomeQuickActions extends StatelessWidget {
       description: l10n.homeQuickFollowingDesc,
       accent: const Color(0xFFC23A62),
       tint: const Color(0xFFFDECF1),
-      iconShape: ContinuousRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-      ),
     ),
   };
 
@@ -71,12 +63,15 @@ class HomeQuickActions extends StatelessWidget {
         children: [
           for (var row = 0; row < actions.length; row += 2) ...[
             if (row > 0) const SizedBox(height: 10),
-            Row(
-              children: [
-                tile(actions[row]),
-                const SizedBox(width: 10),
-                tile(actions[row + 1]),
-              ],
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  tile(actions[row]),
+                  const SizedBox(width: 10),
+                  tile(actions[row + 1]),
+                ],
+              ),
             ),
           ],
         ],
@@ -91,7 +86,6 @@ class _QuickActionStyle {
   final String description;
   final Color accent;
   final Color tint;
-  final ShapeBorder iconShape;
 
   const _QuickActionStyle({
     required this.icon,
@@ -99,7 +93,6 @@ class _QuickActionStyle {
     required this.description,
     required this.accent,
     required this.tint,
-    required this.iconShape,
   });
 }
 
@@ -135,65 +128,64 @@ class _QuickActionTile extends StatelessWidget {
             onTap: onTap,
             splashColor: style.accent.withValues(alpha: 0.10),
             highlightColor: style.accent.withValues(alpha: 0.05),
-            child: Stack(
-              children: [
-                // Icon lớn mờ ở góc làm hoạ tiết, mỗi ô một hình riêng
-                Positioned(
-                  right: -8,
-                  top: -10,
-                  child: Icon(
-                    style.icon,
-                    size: 64,
-                    color: style.accent.withValues(alpha: 0.08),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 10, 12),
-                  child: Column(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 13, 10, 13),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: ShapeDecoration(
-                          shape: style.iconShape,
-                          color: style.accent,
-                          shadows: [
-                            BoxShadow(
-                              color: style.accent.withValues(alpha: 0.28),
-                              blurRadius: 10,
-                              spreadRadius: -3,
-                              offset: const Offset(0, 4),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Gạch màu ngắn trên tên, nhận diện từng ô
+                            Container(
+                              width: 16,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: style.accent,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              style.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 15.5,
+                                height: 1.2,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.3,
+                                color: AppColors.textPrimary,
+                              ),
                             ),
                           ],
                         ),
-                        child: Icon(style.icon, size: 18, color: Colors.white),
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        style.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        style.description,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          color: AppColors.textSecondary,
-                        ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        style.icon,
+                        size: 16,
+                        color: style.accent.withValues(alpha: 0.7),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 3),
+                  Text(
+                    style.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      height: 1.3,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

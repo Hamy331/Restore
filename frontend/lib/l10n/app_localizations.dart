@@ -4519,6 +4519,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Business plan (coming soon): up to {limit} listings per category. Shop plan: your own shop page.'**
   String postingRuleBusiness(int limit);
+
+  /// No description provided for @homeGreetingPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi pro seller {name} 👋'**
+  String homeGreetingPro(String name);
+
+  /// No description provided for @homeGreetingShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi shop owner {name} 👋'**
+  String homeGreetingShop(String name);
+
+  /// No description provided for @planPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get planPersonal;
+
+  /// No description provided for @planPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro seller'**
+  String get planPro;
+
+  /// No description provided for @planShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get planShop;
+
+  /// No description provided for @devPlanTag.
+  ///
+  /// In en, this message translates to:
+  /// **'TEST'**
+  String get devPlanTag;
+
+  /// No description provided for @devPlanSwitchTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch plan for testing (mock data only)'**
+  String get devPlanSwitchTooltip;
+
+  /// No description provided for @trustedShopsFamousEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Official'**
+  String get trustedShopsFamousEyebrow;
+
+  /// No description provided for @trustedShopsDealsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'On sale'**
+  String get trustedShopsDealsEyebrow;
+
+  /// No description provided for @trustedShopsNewReleasesEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just launched'**
+  String get trustedShopsNewReleasesEyebrow;
+
+  /// No description provided for @trustedShopsNewShopsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Newly verified'**
+  String get trustedShopsNewShopsEyebrow;
+
+  /// No description provided for @trustedShopsShowcaseEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'By brand'**
+  String get trustedShopsShowcaseEyebrow;
+
+  /// No description provided for @trustedShopsAllProductsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get trustedShopsAllProductsEyebrow;
 }
 
 class _AppLocalizationsDelegate

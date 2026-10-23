@@ -2475,4 +2475,48 @@ class AppLocalizationsVi extends AppLocalizations {
   String postingRuleBusiness(int limit) {
     return 'Gói Bán chuyên (sắp ra mắt): tối đa $limit tin mỗi chuyên mục. Gói Cửa hàng có thêm trang cửa hàng riêng.';
   }
+
+  @override
+  String homeGreetingPro(String name) {
+    return 'Chào nhà bán chuyên $name 👋';
+  }
+
+  @override
+  String homeGreetingShop(String name) {
+    return 'Chào chủ shop $name 👋';
+  }
+
+  @override
+  String get planPersonal => 'Cá nhân';
+
+  @override
+  String get planPro => 'Bán chuyên';
+
+  @override
+  String get planShop => 'Cửa hàng';
+
+  @override
+  String get devPlanTag => 'TEST';
+
+  @override
+  String get devPlanSwitchTooltip =>
+      'Đổi gói để test (chỉ khi dùng dữ liệu mẫu)';
+
+  @override
+  String get trustedShopsFamousEyebrow => 'Chính hãng';
+
+  @override
+  String get trustedShopsDealsEyebrow => 'Đang giảm giá';
+
+  @override
+  String get trustedShopsNewReleasesEyebrow => 'Vừa ra mắt';
+
+  @override
+  String get trustedShopsNewShopsEyebrow => 'Mới xác minh';
+
+  @override
+  String get trustedShopsShowcaseEyebrow => 'Theo nhãn hàng';
+
+  @override
+  String get trustedShopsAllProductsEyebrow => 'Khám phá';
 }
