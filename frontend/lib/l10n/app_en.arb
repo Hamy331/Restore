@@ -669,5 +669,586 @@
   "homeQuickTrustedShopsDesc": "Verified and top rated",
   "homeQuickFollowing": "Following",
   "homeQuickFollowingDesc": "Shops and people you follow",
-  "homeBannerTooltip": "Promotion banner"
+  "homeBannerTooltip": "Promotion banner",
+  "productDetailTitle": "Product details",
+  "productLoadErrorTitle": "Couldn't load this listing",
+  "productLoadErrorBody": "The listing may have been removed, or your connection is unstable. Please try again.",
+  "productViewCount": "{count} views",
+  "@productViewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productUnavailableHint": "This item can no longer be bought.",
+  "listingStatusDraft": "Draft",
+  "listingStatusPending": "Pending review",
+  "listingStatusAvailable": "Available",
+  "listingStatusReserved": "Reserved",
+  "listingStatusSold": "Sold",
+  "listingStatusExchanged": "Exchanged",
+  "listingStatusExpired": "Expired",
+  "listingStatusRejected": "Rejected",
+  "listingStatusHidden": "Hidden",
+  "productSellerTitle": "Seller",
+  "productSellerVerified": "Verified",
+  "productSellerNoReviews": "No reviews yet",
+  "productSellerJoined": "Joined {date}",
+  "@productSellerJoined": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "productSellerListings": "{count} listings",
+  "@productSellerListings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productSellerProfile": "View profile",
+  "productReadMore": "Show more",
+  "productReadLess": "Show less",
+  "productSafetyTitle": "Shop safely",
+  "productSafetyBody": "Meet in a public place, check the item before paying and never send a deposit to someone you don't know.",
+  "productReport": "Report listing",
+  "productChat": "Chat",
+  "productMakeOffer": "Make offer",
+  "productBuyNow": "Buy now",
+  "productProposeExchange": "Propose a swap",
+  "productEditListing": "Edit listing",
+  "productBoost": "Boost",
+  "productOfferTitle": "Make an offer",
+  "productOfferSubtitle": "Listed at {price}",
+  "@productOfferSubtitle": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferAmountLabel": "Your offer",
+  "productOfferAmountHint": "Enter an amount",
+  "productOfferInvalid": "Enter an amount greater than 0",
+  "productOfferTooHigh": "Your offer can be at most twice the asking price",
+  "productOfferSubmit": "Send offer",
+  "productOfferSent": "Offer sent. Continue the conversation with the seller here.",
+  "productOfferBelow": "{percent} below the asking price (-{difference})",
+  "@productOfferBelow": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferAbove": "{percent} above the asking price (+{difference})",
+  "@productOfferAbove": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferEqual": "Same as the asking price",
+  "productLiveTitle": "Listing just updated",
+  "productLiveUnavailable": "This item is now {status} and can no longer be ordered.",
+  "@productLiveUnavailable": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "productLiveAvailable": "This item is available again.",
+  "productLivePrice": "The seller changed the price from {previous} to {current}.",
+  "@productLivePrice": {
+    "placeholders": {
+      "previous": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "productLivePriceGeneric": "The seller updated the price, please review before sending.",
+  "productLiveInfo": "The seller just edited this listing.",
+  "productLiveIndicator": "Live updates on",
+  "productBuyTitle": "Request to buy",
+  "productBuySubtitle": "The seller confirms and arranges the handover with you in chat.",
+  "productBuyPriceLabel": "Price",
+  "productBuyNoteLabel": "Note for the seller",
+  "productBuyNoteHint": "e.g. I can pick it up this evening",
+  "productBuySubmit": "Send request",
+  "productBuySent": "Purchase request sent. The seller will reply in chat.",
+  "productActionFailed": "Couldn't send. Please try again.",
+  "galleryOpenFullscreen": "View photos full screen",
+  "nearbyTitle": "Near me",
+  "nearbySubtitle": "Pre-loved finds around you, meet up and grab them",
+  "nearbyCurrentLocation": "Current location",
+  "nearbyLocating": "Finding your location...",
+  "nearbyChangeLocation": "Change",
+  "nearbyRelocate": "Update location",
+  "nearbyFilters": "Filters",
+  "nearbyRadiusChip": "Within {distance}",
+  "@nearbyRadiusChip": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyRadiusTitle": "Search radius",
+  "nearbyRadiusOption": "Within {distance}",
+  "@nearbyRadiusOption": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "listingDealBuy": "Buy now",
+  "listingDealExchange": "Swap",
+  "listingSortTitle": "Sort by",
+  "listingSortNearest": "Nearest",
+  "listingSortNewest": "Newest",
+  "listingSortPriceLow": "Price: low to high",
+  "listingSortPriceHigh": "Price: high to low",
+  "nearbyFallbackTitle": "Showing listings around your default area",
+  "nearbyUseMyLocation": "Use my location",
+  "nearbyOpenSettings": "Open Settings",
+  "nearbyEmptyTitle": "Nothing nearby yet",
+  "nearbyEmptyBody": "Try a wider radius or fewer filters.",
+  "nearbyExpandRadius": "Expand to {distance}",
+  "@nearbyExpandRadius": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyLoadErrorTitle": "Couldn't load nearby listings",
+  "nearbyLoadErrorBody": "Check your connection and try again.",
+  "nearbyEndOfList": "You've seen everything nearby",
+  "distanceMeters": "{meters} m",
+  "@distanceMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceKm": "{km} km",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "listingSortRelevance": "Most relevant",
+  "searchNearMe": "Near me",
+  "searchNearMeSubtitle": "Browse pre-loved items around you",
+  "searchTipsTitle": "Quick search ideas",
+  "searchHistoryTitle": "Recent searches",
+  "searchClearHistory": "Clear all",
+  "searchRemoveHistory": "Remove from list",
+  "searchFillQuery": "Use in search box",
+  "searchClearInput": "Clear",
+  "searchForQuery": "Search “{query}”",
+  "@searchForQuery": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchEmptyTitle": "No results for “{query}”",
+  "@searchEmptyTitle": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchEmptyBody": "Try a shorter or different keyword, or remove some filters.",
+  "searchTryAnother": "Change keyword",
+  "searchLoadErrorTitle": "Couldn't load results",
+  "searchLoadErrorBody": "Check your connection and try again.",
+  "searchEndOfList": "You've seen all results",
+  "areaSearchHint": "Search ward or province...",
+  "areaMyLocationSubtitle": "Use your current GPS location",
+  "areaRecentTitle": "Recently chosen areas",
+  "areaWholeProvince": "Whole province / city",
+  "areaNoResultsTitle": "No matching area",
+  "areaNoResultsBody": "Try another ward or province name.",
+  "areaSearchErrorTitle": "Couldn't search areas",
+  "listingFilterTitle": "Filters",
+  "listingFilterCategory": "Category",
+  "listingFilterAllCategories": "All",
+  "listingFilterCategoryError": "Couldn't load categories",
+  "listingFilterPrice": "Price range",
+  "listingFilterPriceMin": "Min price",
+  "listingFilterPriceMax": "Max price",
+  "listingFilterPriceAny": "Any",
+  "listingFilterPriceHelper": "Exchange-only listings (no price) are hidden when filtering by price.",
+  "listingFilterPriceInvalid": "Min price is higher than max price.",
+  "listingFilterPriceUnder": "Under {price}",
+  "@listingFilterPriceUnder": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterPriceOver": "Over {price}",
+  "@listingFilterPriceOver": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterPriceBetween": "{min} – {max}",
+  "@listingFilterPriceBetween": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterCondition": "Condition",
+  "listingFilterDeal": "Deal type",
+  "listingFilterDistance": "Distance",
+  "listingFilterReset": "Clear all",
+  "listingFilterApply": "Apply",
+  "listingFilterApplyCount": "Apply ({count})",
+  "@listingFilterApplyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceThousands": "{value}K",
+  "@priceThousands": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "priceMillions": "{value}M",
+  "@priceMillions": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryDetailSearch": "Search",
+  "categoryDetailEmptyTitle": "No listings in this category yet",
+  "categoryDetailEmptyBody": "Be the first to post something in this category.",
+  "categoryDetailPostListing": "Post a listing",
+  "categoryDetailFilteredEmptyTitle": "No listings match your filters",
+  "categoryDetailFilteredEmptyBody": "Try removing some filters to see more listings.",
+  "categoryDetailLoadErrorTitle": "Couldn't load this category",
+  "categoryDetailLoadErrorBody": "Check your connection and try again.",
+  "categoryDetailEndOfList": "You've seen every listing in this category",
+  "wantedAlertTitle": "Wanted alerts",
+  "wantedAlertSubtitle": "Reserve what you need, get notified when it is posted",
+  "wantedAlertActiveCount": "{count, plural, =1{1 active alert} other{{count} active alerts}}",
+  "@wantedAlertActiveCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertCreate": "Create alert",
+  "wantedAlertNew": "New alert",
+  "wantedAlertEmptyTitle": "No alerts yet",
+  "wantedAlertEmptyBody": "Tell us what you are looking for and ReStore will notify you as soon as something similar is posted.",
+  "wantedAlertLoadErrorTitle": "Couldn't load your alerts",
+  "wantedAlertLoadErrorBody": "Check your connection and try again.",
+  "wantedAlertNewMatches": "{count} new",
+  "@wantedAlertNewMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertMatchCount": "{count, plural, =1{1 match} other{{count} matches}}",
+  "@wantedAlertMatchCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertNoMatchYet": "No matches yet",
+  "wantedAlertLastMatched": "Last match {time}",
+  "@wantedAlertLastMatched": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertCreatedAt": "Created {time}",
+  "@wantedAlertCreatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertWatching": "Watching",
+  "wantedAlertAnyCategory": "Any category",
+  "wantedAlertNationwide": "Nationwide",
+  "wantedAlertAnyPrice": "Any price",
+  "wantedAlertAnyCondition": "Any condition",
+  "wantedAlertAnyDeal": "Buy or exchange",
+  "wantedAlertPriceFrom": "From {price}",
+  "@wantedAlertPriceFrom": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertPriceUpTo": "Up to {price}",
+  "@wantedAlertPriceUpTo": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertPriceRange": "{min} – {max}",
+  "@wantedAlertPriceRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertDelete": "Delete alert",
+  "wantedAlertDeleteTitle": "Delete this alert?",
+  "wantedAlertDeleteBody": "ReStore will stop notifying you about “{keywords}”. You can create it again anytime.",
+  "@wantedAlertDeleteBody": {
+    "placeholders": {
+      "keywords": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertKeep": "Keep",
+  "wantedAlertDeleted": "Alert deleted. You won't get new matches for it anymore.",
+  "wantedAlertDeleteError": "Couldn't delete the alert. Please try again.",
+  "wantedAlertSearchHint": "What are you looking for?",
+  "wantedAlertIntroTitle": "Search first, get alerted later",
+  "wantedAlertIntroStep1": "Type what you need and ReStore shows similar listings right away.",
+  "wantedAlertIntroStep2": "Found a good one? Open it now, no need to wait.",
+  "wantedAlertIntroStep3": "Nothing yet? Create an alert and get a link as soon as a similar listing appears.",
+  "wantedAlertSkipToCompose": "Skip, write the alert",
+  "wantedAlertSuggestionsTitle": "{count, plural, =1{1 similar listing available} other{{count} similar listings available}}",
+  "@wantedAlertSuggestionsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertSuggestionsHint": "None of these? Create an alert to hear about new ones.",
+  "wantedAlertSuggestionsEmptyTitle": "Nothing similar yet",
+  "wantedAlertSuggestionsEmptyBody": "Create an alert and ReStore will tell you as soon as someone posts it.",
+  "wantedAlertSuggestionsErrorTitle": "Couldn't load suggestions",
+  "wantedAlertSuggestionsErrorBody": "You can still create the alert now.",
+  "wantedAlertMatchPercent": "{percent}% match",
+  "@wantedAlertMatchPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertNotRightCta": "Not it? Create an alert",
+  "wantedAlertComposeTitle": "Set up your alert",
+  "wantedAlertComposeSubtitle": "When a similar listing is posted, ReStore sends you a link to it.",
+  "wantedAlertKeywordsLabel": "What you want",
+  "wantedAlertKeywordsHint": "e.g. Canon AE-1 film camera",
+  "wantedAlertKeywordsHelper": "Name, brand or model. It doesn't have to be exact, similar listings count too.",
+  "wantedAlertKeywordsError": "Enter at least {min} characters",
+  "@wantedAlertKeywordsError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertCriteriaTitle": "Criteria (optional)",
+  "wantedAlertCriteriaCategory": "Category",
+  "wantedAlertCriteriaPrice": "Price range",
+  "wantedAlertCriteriaCondition": "Condition",
+  "wantedAlertCriteriaDeal": "Deal type",
+  "wantedAlertCriteriaArea": "Area",
+  "wantedAlertEditCriteria": "Edit criteria",
+  "wantedAlertLevelTitle": "How close",
+  "wantedAlertLevelBroad": "Broad",
+  "wantedAlertLevelBalanced": "Balanced",
+  "wantedAlertLevelStrict": "Close",
+  "wantedAlertLevelBroadDesc": "Includes loosely similar listings, so you get more alerts.",
+  "wantedAlertLevelBalancedDesc": "Most keywords must match, small typos are fine.",
+  "wantedAlertLevelStrictDesc": "Only listings that are almost exactly what you typed.",
+  "wantedAlertPreviewTitle": "Listings matching right now",
+  "wantedAlertPreviewEmpty": "Nothing matches right now. You'll be notified when something is posted.",
+  "wantedAlertPreviewNeedKeywords": "Enter what you want to preview matching listings.",
+  "wantedAlertSave": "Turn on alert",
+  "wantedAlertCreated": "Alert on for “{keywords}”. ReStore will notify you when something similar is posted.",
+  "@wantedAlertCreated": {
+    "placeholders": {
+      "keywords": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertCreateError": "Couldn't create the alert. Please try again.",
+  "wantedAlertNewTag": "New",
+  "wantedAlertMatchesTitle": "Matched listings",
+  "wantedAlertMatchesEmptyTitle": "No matches yet",
+  "wantedAlertMatchesEmptyBody": "When someone posts something similar, ReStore notifies you and it shows up here.",
+  "wantedAlertEndOfList": "You've seen every match",
+  "wantedAlertPromptTitle": "Not finding it?",
+  "wantedAlertPromptBody": "Set an alert for “{query}” and ReStore will tell you when something similar is posted.",
+  "@wantedAlertPromptBody": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "areaNationwide": "Nationwide",
+  "areaNationwideSubtitle": "Any area, listings from anywhere",
+  "trustedShopsTitle": "Trusted shops",
+  "trustedShopsSubtitle": "Genuine stores verified by ReStore",
+  "trustedShopsAllCategories": "All",
+  "trustedShopsOfficialTitle": "Official brands",
+  "trustedShopsCertifiedTitle": "ReStore certified",
+  "trustedShopsShowcaseTitle": "Shop by brand",
+  "trustedShopsShowcaseSubtitle": "Picks from the most followed shops",
+  "trustedShopsViewShop": "View shop",
+  "trustedShopsAllProductsTitle": "All products",
+  "trustedShopsAllProductsSubtitle": "From every verified shop",
+  "trustedShopsEndOfList": "You've seen every product from trusted shops",
+  "trustedShopsEmptyTitle": "No trusted shops here yet",
+  "trustedShopsEmptyBody": "Verified shops in this category will show up here.",
+  "trustedShopsLoadErrorTitle": "Couldn't load trusted shops",
+  "trustedShopsLoadErrorBody": "Check your connection and try again.",
+  "trustedShopsFamousTitle": "Famous brands",
+  "trustedShopsFamousSubtitle": "Official stores of big-name brands",
+  "trustedShopsDealsTitle": "Luxury for less",
+  "trustedShopsDealsSubtitle": "Genuine brand products, now on sale",
+  "trustedShopsDealsUpTo": "Up to -{percent}%",
+  "@trustedShopsDealsUpTo": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "trustedShopsNewReleasesTitle": "Hot new releases",
+  "trustedShopsNewReleasesSubtitle": "Fresh launches from famous brands",
+  "trustedShopsNewReleaseTag": "Just launched",
+  "trustedShopsLaunchedDaysAgo": "{count, plural, =0{Launched today} =1{Launched yesterday} other{Launched {count} days ago}}",
+  "@trustedShopsLaunchedDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trustedShopsNewShopsTitle": "New stores",
+  "trustedShopsNewShopsSubtitle": "Shops ReStore verified recently",
+  "trustedShopsNavFamous": "Brands",
+  "trustedShopsNavDeals": "Deals",
+  "trustedShopsNavNewReleases": "New releases",
+  "trustedShopsNavNewShops": "New stores",
+  "trustedShopsNavShowcases": "By brand",
+  "trustedShopsNavAll": "All products",
+  "trustedShopsSeeAll": "See all",
+  "trustedShopsOnSaleFilter": "On sale",
+  "shopDetailEventsTitle": "Shop events",
+  "shopDetailEventsSubtitle": "Promotions approved by ReStore",
+  "shopVerificationOfficial": "Official",
+  "shopVerificationCertified": "Certified",
+  "shopVerificationOfficialDesc": "The brand's own store or its authorised distributor, selling genuine goods with brand warranty.",
+  "shopVerificationCertifiedDesc": "ReStore checked this shop's business licence, address and trading history before certifying it.",
+  "shopVerificationSheetTitle": "About verified shops",
+  "shopVerificationSheetSubtitle": "Only shops that pass one of these checks appear in Trusted shops",
+  "shopVerificationSheetNote": "ReStore reviews verified shops regularly and removes the badge if a shop breaks the rules or gets repeated complaints.",
+  "shopCertificateTitle": "Shop certificate",
+  "shopCertificateCode": "Certificate no.",
+  "shopVerifiedSince": "Verified on",
+  "shopVerifiedSinceShort": "Verified {date}",
+  "@shopVerifiedSinceShort": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "shopFollow": "Follow",
+  "shopFollowing": "Following",
+  "shopFollowerCount": "{count} followers",
+  "@shopFollowerCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "shopListingCount": "{count, plural, =1{1 product} other{{count} products}}",
+  "@shopListingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shopRatingCount": "{count} reviews",
+  "@shopRatingCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "shopFollowersLabel": "Followers",
+  "shopProductsLabel": "Products",
+  "shopDescriptionMore": "Show more",
+  "shopDescriptionLess": "Show less",
+  "shopDetailProductsTitle": "Products for sale",
+  "shopDetailEmptyTitle": "No products yet",
+  "shopDetailEmptyBody": "Follow this shop to hear about new products first.",
+  "shopDetailEndOfList": "You've seen every product from this shop",
+  "shopDetailLoadErrorTitle": "Couldn't load this shop",
+  "shopDetailLoadErrorBody": "Check your connection and try again."
 }

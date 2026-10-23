@@ -18,6 +18,10 @@ class ListingModel extends Equatable {
 
   /// Giá VND. Cột Decimal nên API có thể trả về chuỗi hoặc số.
   final int? price;
+
+  /// (đề xuất) Giá gốc trước khi giảm, chỉ có khi tin đang giảm giá
+  /// (lớn hơn [price])
+  final int? originalPrice;
   final bool isNegotiable;
   final ListingCondition? condition;
   final ListingStatus status;
@@ -49,6 +53,7 @@ class ListingModel extends Equatable {
     required this.title,
     required this.description,
     this.price,
+    this.originalPrice,
     this.isNegotiable = true,
     this.condition,
     this.status = ListingStatus.available,
@@ -73,18 +78,32 @@ class ListingModel extends Equatable {
 
   String? get coverImage => images.isEmpty ? null : images.first;
 
+  /// Phần trăm giảm so với [originalPrice] (làm tròn), null khi không giảm
+  int? get discountPercent {
+    final price = this.price;
+    final originalPrice = this.originalPrice;
+    if (price == null || originalPrice == null || originalPrice <= price) {
+      return null;
+    }
+    final percent = ((1 - price / originalPrice) * 100).round();
+    return percent > 0 ? percent : null;
+  }
+
+  static int? _parseMoney(Object? value) =>
+      value is num ? value.toInt() : num.tryParse('$value')?.toInt();
+
   factory ListingModel.fromJson(
     Map<String, dynamic> json, {
     String? apiBaseUrl,
   }) {
-    final price = json['price'];
     final location = json['location'];
     return ListingModel(
       id: '${json['id']}',
       ownerId: '${json['ownerId'] ?? ''}',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      price: price is num ? price.toInt() : num.tryParse('$price')?.toInt(),
+      price: _parseMoney(json['price']),
+      originalPrice: _parseMoney(json['originalPrice']),
       isNegotiable: json['isNegotiable'] as bool? ?? true,
       condition: ListingCondition.fromApi(json['condition'] as String?),
       status:
@@ -140,6 +159,7 @@ class ListingModel extends Equatable {
     title,
     description,
     price,
+    originalPrice,
     isNegotiable,
     condition,
     status,
