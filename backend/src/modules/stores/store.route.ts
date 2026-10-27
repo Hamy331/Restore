@@ -1,3 +1,4 @@
+import { audit, text as adminText } from '../admin/admin.service.js';
 import { NextFunction, Response, Router } from 'express';
 import { Role, StoreTier } from '@prisma/client';
 import { AppError } from '../../errors/app-error.js';
@@ -69,7 +70,7 @@ router.post('/orders', verifyToken, authorizeRoles(Role.USER), async (req: AuthR
     const order = await withQuotaTransaction(async (tx) => {
       const [storePackage, category, pending] = await Promise.all([
         tx.storePackage.findUnique({ where: { id: packageId } }),
-        tx.category.findUnique({ where: { id: categoryId } }),
+        tx.category.findFirst({ where: { id: categoryId, active:true } }),
         tx.storeOrder.findFirst({ where: { userId: req.user!.userId, status: 'PENDING' } }),
       ]);
       if (!storePackage || storePackage.tier === StoreTier.PERSONAL || !category) {
@@ -113,7 +114,7 @@ router.post('/admin/orders/:id/confirm', verifyToken, authorizeRoles(Role.ADMIN)
       const now = new Date();
       const order = await tx.storeOrder.findUnique({
         where: { id },
-        include: { user: { select: { role: true, status: true } } },
+        include: { user: { select: { role: true, status: true } }, category:{select:{active:true}} },
       });
       if (!order || order.status !== 'PENDING') {
         throw new AppError(409, 'STORE_ORDER_NOT_PENDING', 'Đơn không còn ở trạng thái chờ.');
@@ -121,6 +122,7 @@ router.post('/admin/orders/:id/confirm', verifyToken, authorizeRoles(Role.ADMIN)
       if (order.user.role !== Role.USER || order.user.status !== 'ACTIVE') {
         throw new AppError(409, 'STORE_USER_UNAVAILABLE', 'Tài khoản mua gói không còn hoạt động.');
       }
+      if(!order.category.active)throw new AppError(409,'STORE_CATEGORY_UNAVAILABLE','Danh mục đã ngừng sử dụng. Chưa thể xác nhận đơn này.');
       const changed = await tx.storeOrder.updateMany({
         where: { id, status: 'PENDING' },
         data: { status: 'CONFIRMED', decidedAt: now },
@@ -136,6 +138,7 @@ router.post('/admin/orders/:id/confirm', verifyToken, authorizeRoles(Role.ADMIN)
         update: { packageId: order.packageId, categoryId: order.categoryId, startsAt: now, endsAt },
         include: { package: true, category: true },
       });
+      await audit(tx,req.user!.userId,'CONFIRM','STORE_ORDER',id,adminText(req.body?.reason??'Đã đối soát thanh toán','reason',5,300),{status:'PENDING'},{status:'CONFIRMED',amount:order.amount});
       return { orderId: id, subscription };
     });
     res.json({ success: true, data: result });
@@ -148,11 +151,14 @@ router.post('/admin/orders/:id/reject', verifyToken, authorizeRoles(Role.ADMIN),
   try {
     const id = req.params.id;
     if (typeof id !== 'string') throw new AppError(404, 'STORE_ORDER_NOT_FOUND', 'Không tìm thấy đơn gói cửa hàng.');
-    const changed = await prisma.storeOrder.updateMany({
+    await withQuotaTransaction(async tx=>{
+    const changed = await tx.storeOrder.updateMany({
       where: { id, status: 'PENDING' },
       data: { status: 'REJECTED', decidedAt: new Date() },
     });
     if (!changed.count) throw new AppError(409, 'STORE_ORDER_NOT_PENDING', 'Đơn không còn ở trạng thái chờ.');
+      await audit(tx,req.user!.userId,'REJECT','STORE_ORDER',id,adminText(req.body?.reason??'Đơn không đủ điều kiện xác nhận','reason',5,300));
+    });
     res.json({ success: true });
   } catch (error) {
     next(error);

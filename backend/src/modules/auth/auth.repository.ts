@@ -1,3 +1,4 @@
+import { releaseExpiredSuspensions } from '../../lib/account-status.js';
 import { OtpPurpose, Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
 import { AppError } from '../../errors/app-error.js';
@@ -17,14 +18,14 @@ const publicUserSelect = {
   updatedAt: true,
 } satisfies Prisma.UserSelect;
 
-export const findUserByEmail = (email: string) =>
-  prisma.user.findUnique({ where: { email } });
+export const findUserByEmail = async (email: string) => { const user=await prisma.user.findUnique({where:{email}}); if(user?.status==='SUSPENDED'){await releaseExpiredSuspensions(user.id);return prisma.user.findUnique({where:{email}});} return user; };
 
 export const findPublicUserById = (id: string) =>
   prisma.user.findUnique({ where: { id }, select: publicUserSelect });
 
-export const findAuthUserById = (id: string) =>
-  prisma.user.findUnique({
+export const findAuthUserById = async (id: string) => {
+  await releaseExpiredSuspensions(id);
+  return prisma.user.findUnique({
     where: { id },
     select: {
       id: true,
@@ -34,6 +35,7 @@ export const findAuthUserById = (id: string) =>
       authVersion: true,
     },
   });
+};
 
 export const findUserByUsername = (username: string) =>
   prisma.user.findUnique({ where: { username } });
