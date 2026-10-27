@@ -1,3 +1,4 @@
+import { audit, text as adminText } from '../admin/admin.service.js';
 import { randomUUID } from 'node:crypto';
 import { NextFunction, Response, Router } from 'express';
 import { PromotionKind, Role, StoreTier } from '@prisma/client';
@@ -52,7 +53,7 @@ router.get('/packages', async (_req, res: Response, next: NextFunction) => {
 
 router.post('/packages', verifyToken, authorizeRoles(Role.ADMIN), async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const item = await prisma.promotionPackage.create({ data: { id: randomUUID(), ...promotionPackageInput(req.body) } });
+    const item = await withQuotaTransaction(async tx=>{const item=await tx.promotionPackage.create({data:{id:randomUUID(),...promotionPackageInput(req.body)}});await audit(tx,req.user!.userId,'CREATE','PROMOTION_PACKAGE',item.id,item.name);return item;});
     res.status(201).json({ success: true, data: item });
   } catch (error) {
     next(error);
@@ -64,7 +65,8 @@ router.put('/packages/:id', verifyToken, authorizeRoles(Role.ADMIN), async (req:
     const id = req.params.id;
     if (typeof id !== 'string') throw new AppError(404, 'PROMOTION_PACKAGE_NOT_FOUND', 'Không tìm thấy gói quảng cáo.');
     const input = promotionPackageInput(req.body);
-    const existing = await prisma.promotionPackage.findUnique({ where: { id }, include: {
+    const item=await withQuotaTransaction(async tx=>{
+    const existing = await tx.promotionPackage.findUnique({ where: { id }, include: {
       _count: { select: { promotions: true, orders: true } },
     } });
     if (!existing) throw new AppError(404, 'PROMOTION_PACKAGE_NOT_FOUND', 'Không tìm thấy gói quảng cáo.');
@@ -72,9 +74,11 @@ router.put('/packages/:id', verifyToken, authorizeRoles(Role.ADMIN), async (req:
         (existing.kind !== input.kind || existing.durationDays !== input.durationDays || existing.priority !== input.priority)) {
       throw new AppError(409, 'PROMOTION_PACKAGE_IN_USE', 'Gói đã có giao dịch. Chỉ được sửa tên, giá và trạng thái bán.');
     }
-    const changed = await prisma.promotionPackage.updateMany({ where: { id }, data: input });
+    const changed = await tx.promotionPackage.updateMany({ where: { id }, data: input });
     if (!changed.count) throw new AppError(404, 'PROMOTION_PACKAGE_NOT_FOUND', 'Không tìm thấy gói quảng cáo.');
-    res.json({ success: true, data: await prisma.promotionPackage.findUniqueOrThrow({ where: { id } }) });
+    const updated=await tx.promotionPackage.findUniqueOrThrow({where:{id}});await audit(tx,req.user!.userId,'UPDATE','PROMOTION_PACKAGE',id,input.name,existing,updated);return updated;
+    });
+    res.json({success:true,data:item});
   } catch (error) {
     next(error);
   }
@@ -196,6 +200,7 @@ router.post('/admin/orders/:id/confirm', verifyToken, authorizeRoles(Role.ADMIN)
         orderBy: { endsAt: 'desc' },
       });
       const startsAt = latest ? latest.endsAt : now;
+      await audit(tx,req.user!.userId,'CONFIRM','PROMOTION_ORDER',id,adminText(req.body?.reason??'Đã đối soát thanh toán','reason',5,300),{status:'PENDING'},{status:'CONFIRMED',amount:order.amount});
       return tx.promotion.create({
         data: { userId: order.userId, listingId: order.listingId, packageId: order.packageId,
           source: 'PURCHASED', orderId: id, startsAt,
@@ -213,10 +218,13 @@ router.post('/admin/orders/:id/reject', verifyToken, authorizeRoles(Role.ADMIN),
   try {
     const id = req.params.id;
     if (typeof id !== 'string') throw new AppError(404, 'PROMOTION_ORDER_NOT_FOUND', 'Không tìm thấy đơn quảng cáo.');
-    const changed = await prisma.promotionOrder.updateMany({
+    await withQuotaTransaction(async tx=>{
+    const changed = await tx.promotionOrder.updateMany({
       where: { id, status: 'PENDING' }, data: { status: 'REJECTED', decidedAt: new Date() },
     });
     if (!changed.count) throw new AppError(409, 'PROMOTION_ORDER_NOT_PENDING', 'Đơn không còn ở trạng thái chờ.');
+      await audit(tx,req.user!.userId,'REJECT','PROMOTION_ORDER',id,adminText(req.body?.reason??'Đơn không đủ điều kiện xác nhận','reason',5,300));
+    });
     res.json({ success: true });
   } catch (error) {
     next(error);
