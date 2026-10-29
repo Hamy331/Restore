@@ -1,3 +1,4 @@
+import { moderate, text as adminText } from '../admin/admin.service.js';
 import express, { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../../lib/prisma.js';
 import { AppError } from '../../errors/app-error.js';
@@ -143,8 +144,9 @@ router.post('/', verifyToken, authorizeRoles(Role.USER), async (req: AuthRequest
     const data = createInput(req.body);
     const listing = await withQuotaTransaction(async (tx) => {
       const now = new Date();
-      const category = await tx.category.findUnique({ where: { id: data.categoryId } });
+      const category = await tx.category.findFirst({ where: { id: data.categoryId, active:true } });
       if (!category) throw new AppError(400, 'INVALID_LISTING', 'Danh mục không tồn tại.', 'categoryId');
+      if(data.condition && (await tx.conditionPolicy.findUnique({where:{condition:data.condition}}))?.active===false)throw new AppError(400,'INVALID_CONDITION','Tình trạng đã ngừng sử dụng.');
       validateAttributes(data.attributes, category.metadata, true);
       const current = await storePackageForUser(tx, req.user!.userId, now);
       const usage = await storeUsage(tx, req.user!.userId, now);
@@ -189,7 +191,7 @@ router.put('/drafts/:id', verifyToken, authorizeRoles(Role.USER), async (req: Au
     const listing = await prisma.$transaction(async (tx) => {
       const current = await requireOwnedListing(tx, id, req.user!.userId);
       if (!['DRAFT','PENDING','REJECTED','AVAILABLE','HIDDEN'].includes(current.status)) throw new AppError(409, 'DRAFT_CHANGED', 'Tin này không còn sửa được.');
-      if (data.categoryId && !await tx.category.findUnique({ where: { id: data.categoryId } })) {
+      if (data.categoryId && !await tx.category.findFirst({ where: { id: data.categoryId, active:true } })) {
         throw new AppError(400, 'INVALID_DRAFT', 'Danh mục không tồn tại.', 'categoryId');
       }
       const category = data.categoryId ? await tx.category.findUnique({where:{id:data.categoryId}}) : null;
@@ -221,10 +223,11 @@ router.post('/drafts/:id/publish', verifyToken, authorizeRoles(Role.USER), async
         exchangeWish: current.exchangeWish, sellerType: current.sellerType, attributes: current.attributes,
         location: location ? Object.fromEntries(['provinceCode','wardCode','streetAddress','latitude','longitude','geoSource'].map((key)=>[key,location[key]])) : null,
       });
-      const category = await tx.category.findUnique({ where: { id: data.categoryId } });
+      const category = await tx.category.findFirst({ where: { id: data.categoryId, active:true } });
       if (!category) {
         throw new AppError(400, 'INVALID_LISTING', 'Danh mục không tồn tại.', 'categoryId');
       }
+      if(data.condition && (await tx.conditionPolicy.findUnique({where:{condition:data.condition}}))?.active===false)throw new AppError(400,'INVALID_CONDITION','Tình trạng đã ngừng sử dụng.');
       validateAttributes(data.attributes, category.metadata, true);
       const now = new Date();
       const plan = await storePackageForUser(tx, req.user!.userId, now);
@@ -428,10 +431,11 @@ router.put('/:id', verifyToken, authorizeRoles(Role.USER), async (req: AuthReque
       if (current.status !== ListingStatus.AVAILABLE && current.status !== ListingStatus.HIDDEN && current.status !== ListingStatus.REJECTED && current.status !== ListingStatus.PENDING) {
         throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị hoặc đã ẩn.');
       }
-      const category = await tx.category.findUnique({ where: { id: data.categoryId } });
+      const category = await tx.category.findFirst({ where: { id: data.categoryId, active:true } });
       if (!category) {
         throw new AppError(400, 'INVALID_LISTING', 'Danh mục không tồn tại.', 'categoryId');
       }
+      if(data.condition && (await tx.conditionPolicy.findUnique({where:{condition:data.condition}}))?.active===false)throw new AppError(400,'INVALID_CONDITION','Tình trạng đã ngừng sử dụng.');
       validateAttributes(data.attributes, category.metadata, true);
       await updateOwnedListing(tx, id, req.user!.userId, current.status, {...data,status:ListingStatus.PENDING,reviewReason:null});
       return tx.listing.findUniqueOrThrow({ where: { id }, select: { ...fields, status: true } });
@@ -501,11 +505,7 @@ router.post('/admin/:id/decision', verifyToken, authorizeRoles(Role.ADMIN), asyn
     const {decision,reason,updatedAt}=req.body??{};
     const expected=typeof updatedAt==='string'?new Date(updatedAt):null;
     if (!['APPROVED','REJECTED'].includes(decision) || !expected || Number.isNaN(+expected) || (decision==='REJECTED' && (typeof reason!=='string'||reason.trim().length<5||reason.length>300))) throw new AppError(400,'INVALID_DECISION','Quyết định không hợp lệ.');
-    const current=await prisma.listing.findFirst({where:{id:req.params.id as string,status:'PENDING'}});
-    if(!current) throw new AppError(404,'LISTING_NOT_FOUND','Không tìm thấy tin chờ duyệt.');
-    if(decision==='APPROVED' && !current.images.length) throw new AppError(400,'INVALID_LISTING','Tin cần ít nhất một ảnh.');
-    const changed=await prisma.listing.updateMany({where:{id:current.id,status:'PENDING',updatedAt:expected},data:{status:decision==='APPROVED'?'AVAILABLE':'REJECTED',reviewReason:decision==='REJECTED'?reason.trim():null}});
-    if(!changed.count) throw new AppError(409,'LISTING_CHANGED','Tin đã thay đổi; tải lại trước khi duyệt.');
+    await withQuotaTransaction(tx => moderate(tx,req.user!.userId,String(req.params.id),decision==='APPROVED'?'APPROVE':'REJECT',adminText(reason??'','reason',decision==='APPROVED'?0:5,300),expected));
     res.json({success:true});
   } catch(error){next(error);}
 });
