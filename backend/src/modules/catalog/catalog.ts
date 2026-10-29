@@ -54,9 +54,10 @@ export function distanceKm(a: {latitude: number; longitude: number}, b: {latitud
 }
 
 export const catalogRouter = Router();
+catalogRouter.get('/conditions',async(_req,res,next)=>{try{res.json({success:true,data:await prisma.conditionPolicy.findMany({where:{active:true},orderBy:{condition:'asc'}})});}catch(error){next(error);}});
 catalogRouter.get('/categories', async (_req, res, next) => {
   try {
-    const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
+    const categories = await prisma.category.findMany({ where: {active:true}, orderBy: { name: 'asc' } });
     const order=new Map(catalog.categories.map((item,index)=>[item.id,index]));
     categories.sort((a,b)=>(order.get(a.id)??Number.MAX_SAFE_INTEGER)-(order.get(b.id)??Number.MAX_SAFE_INTEGER));
     res.json({ success: true, data: categories.map((category) => {
