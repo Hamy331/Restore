@@ -1,7 +1,11 @@
+import 'package:restore/l10n/app_localizations.dart';
+
 /// Backend hiện có AVAILABLE, RESERVED, SOLD, EXCHANGED. DRAFT, PENDING và EXPIRED (ListingStatus).
 enum ListingStatus {
   draft('DRAFT'),
   pending('PENDING'),
+  rejected('REJECTED'),
+  hidden('HIDDEN'),
   available('AVAILABLE'),
   reserved('RESERVED'),
   sold('SOLD'),
@@ -18,4 +22,16 @@ enum ListingStatus {
     }
     return null;
   }
+
+  String label(AppLocalizations l10n) => switch (this) {
+    draft => l10n.listingStatusDraft,
+    pending => l10n.listingStatusPending,
+    rejected => l10n.listingStatusRejected,
+    hidden => l10n.listingStatusHidden,
+    available => l10n.listingStatusAvailable,
+    reserved => l10n.listingStatusReserved,
+    sold => l10n.listingStatusSold,
+    exchanged => l10n.listingStatusExchanged,
+    expired => l10n.listingStatusExpired,
+  };
 }
