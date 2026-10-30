@@ -12,6 +12,7 @@ import listingRouter from './modules/listings/listing.route.js';
 import storeRouter from './modules/stores/store.route.js';
 import promotionRouter from './modules/promotions/promotion.route.js';
 import { catalogRouter } from './modules/catalog/catalog.js';
+import chatRouter from './modules/chat/chat.route.js';
 import { validateEnvironment } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
 
@@ -55,6 +56,7 @@ app.use('/api/v1/listings', listingRouter);
 app.use('/api/v1', catalogRouter);
 app.use('/api/v1/stores', storeRouter);
 app.use('/api/v1/promotions', promotionRouter);
+app.use('/api/v1/conversations', chatRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 

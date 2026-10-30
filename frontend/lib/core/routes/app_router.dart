@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/ui/layouts/t_foundation_placeholder_layout.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 import 'package:restore/modules/chat/views/messages_view.dart';
+import 'package:restore/modules/chat/views/live_messages_view.dart';
+import 'package:restore/modules/chat/views/live_chat_conversation_view.dart';
 import 'package:restore/modules/home/views/home/home_view.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
@@ -214,7 +216,12 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/messages', builder: (_, _) => const MessagesView()),
+            GoRoute(
+              path: '/messages',
+              builder: (_, _) => AppEnvironment.useMockData
+                  ? const MessagesView()
+                  : const LiveMessagesView(),
+            ),
           ],
         ),
         StatefulShellBranch(
@@ -227,7 +234,11 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/messages/:id',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const ChatConversationView(),
+      builder: (_, state) => AppEnvironment.useMockData
+          ? const ChatConversationView()
+          : LiveChatConversationView(
+              conversationId: state.pathParameters['id']!,
+            ),
     ),
     GoRoute(
       path: '/messages/:id/offer/:stage',
