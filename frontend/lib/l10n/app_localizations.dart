@@ -2707,6 +2707,1680 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Promotion banner'**
   String get homeBannerTooltip;
+
+  /// No description provided for @productDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product details'**
+  String get productDetailTitle;
+
+  /// No description provided for @productLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this listing'**
+  String get productLoadErrorTitle;
+
+  /// No description provided for @productLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The listing may have been removed, or your connection is unstable. Please try again.'**
+  String get productLoadErrorBody;
+
+  /// No description provided for @productViewCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} views'**
+  String productViewCount(int count);
+
+  /// No description provided for @productUnavailableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This item can no longer be bought.'**
+  String get productUnavailableHint;
+
+  /// No description provided for @listingStatusDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get listingStatusDraft;
+
+  /// No description provided for @listingStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get listingStatusPending;
+
+  /// No description provided for @listingStatusAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get listingStatusAvailable;
+
+  /// No description provided for @listingStatusReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved'**
+  String get listingStatusReserved;
+
+  /// No description provided for @listingStatusSold.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold'**
+  String get listingStatusSold;
+
+  /// No description provided for @listingStatusExchanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchanged'**
+  String get listingStatusExchanged;
+
+  /// No description provided for @listingStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get listingStatusExpired;
+
+  /// No description provided for @listingStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get listingStatusRejected;
+
+  /// No description provided for @listingStatusHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get listingStatusHidden;
+
+  /// No description provided for @productSellerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller'**
+  String get productSellerTitle;
+
+  /// No description provided for @productSellerVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get productSellerVerified;
+
+  /// No description provided for @productSellerNoReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get productSellerNoReviews;
+
+  /// No description provided for @productSellerJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {date}'**
+  String productSellerJoined(String date);
+
+  /// No description provided for @productSellerListings.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} listings'**
+  String productSellerListings(int count);
+
+  /// No description provided for @productSellerProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View profile'**
+  String get productSellerProfile;
+
+  /// No description provided for @productReadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get productReadMore;
+
+  /// No description provided for @productReadLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get productReadLess;
+
+  /// No description provided for @productSafetyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop safely'**
+  String get productSafetyTitle;
+
+  /// No description provided for @productSafetyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet in a public place, check the item before paying and never send a deposit to someone you don\'t know.'**
+  String get productSafetyBody;
+
+  /// No description provided for @productReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report listing'**
+  String get productReport;
+
+  /// No description provided for @productChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get productChat;
+
+  /// No description provided for @productMakeOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Make offer'**
+  String get productMakeOffer;
+
+  /// No description provided for @productBuyNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy now'**
+  String get productBuyNow;
+
+  /// No description provided for @productProposeExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose a swap'**
+  String get productProposeExchange;
+
+  /// No description provided for @productEditListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit listing'**
+  String get productEditListing;
+
+  /// No description provided for @productBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost'**
+  String get productBoost;
+
+  /// No description provided for @productOfferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Make an offer'**
+  String get productOfferTitle;
+
+  /// No description provided for @productOfferSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listed at {price}'**
+  String productOfferSubtitle(String price);
+
+  /// No description provided for @productOfferAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your offer'**
+  String get productOfferAmountLabel;
+
+  /// No description provided for @productOfferAmountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount'**
+  String get productOfferAmountHint;
+
+  /// No description provided for @productOfferInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than 0'**
+  String get productOfferInvalid;
+
+  /// No description provided for @productOfferTooHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Your offer can be at most twice the asking price'**
+  String get productOfferTooHigh;
+
+  /// No description provided for @productOfferSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send offer'**
+  String get productOfferSubmit;
+
+  /// No description provided for @productOfferSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer sent. Continue the conversation with the seller here.'**
+  String get productOfferSent;
+
+  /// No description provided for @productOfferBelow.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} below the asking price (-{difference})'**
+  String productOfferBelow(String percent, String difference);
+
+  /// No description provided for @productOfferAbove.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} above the asking price (+{difference})'**
+  String productOfferAbove(String percent, String difference);
+
+  /// No description provided for @productOfferEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as the asking price'**
+  String get productOfferEqual;
+
+  /// No description provided for @productLiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing just updated'**
+  String get productLiveTitle;
+
+  /// No description provided for @productLiveUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This item is now {status} and can no longer be ordered.'**
+  String productLiveUnavailable(String status);
+
+  /// No description provided for @productLiveAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This item is available again.'**
+  String get productLiveAvailable;
+
+  /// No description provided for @productLivePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller changed the price from {previous} to {current}.'**
+  String productLivePrice(String previous, String current);
+
+  /// No description provided for @productLivePriceGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller updated the price, please review before sending.'**
+  String get productLivePriceGeneric;
+
+  /// No description provided for @productLiveInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller just edited this listing.'**
+  String get productLiveInfo;
+
+  /// No description provided for @productLiveIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Live updates on'**
+  String get productLiveIndicator;
+
+  /// No description provided for @productBuyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request to buy'**
+  String get productBuyTitle;
+
+  /// No description provided for @productBuySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller confirms and arranges the handover with you in chat.'**
+  String get productBuySubtitle;
+
+  /// No description provided for @productBuyPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get productBuyPriceLabel;
+
+  /// No description provided for @productBuyNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Note for the seller'**
+  String get productBuyNoteLabel;
+
+  /// No description provided for @productBuyNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I can pick it up this evening'**
+  String get productBuyNoteHint;
+
+  /// No description provided for @productBuySubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get productBuySubmit;
+
+  /// No description provided for @productBuySent.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase request sent. The seller will reply in chat.'**
+  String get productBuySent;
+
+  /// No description provided for @productActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send. Please try again.'**
+  String get productActionFailed;
+
+  /// No description provided for @galleryOpenFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'View photos full screen'**
+  String get galleryOpenFullscreen;
+
+  /// No description provided for @nearbyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get nearbyTitle;
+
+  /// No description provided for @nearbySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-loved finds around you, meet up and grab them'**
+  String get nearbySubtitle;
+
+  /// No description provided for @nearbyCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get nearbyCurrentLocation;
+
+  /// No description provided for @nearbyLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location...'**
+  String get nearbyLocating;
+
+  /// No description provided for @nearbyChangeLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get nearbyChangeLocation;
+
+  /// No description provided for @nearbyRelocate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update location'**
+  String get nearbyRelocate;
+
+  /// No description provided for @nearbyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get nearbyFilters;
+
+  /// No description provided for @nearbyRadiusChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {distance}'**
+  String nearbyRadiusChip(String distance);
+
+  /// No description provided for @nearbyRadiusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search radius'**
+  String get nearbyRadiusTitle;
+
+  /// No description provided for @nearbyRadiusOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {distance}'**
+  String nearbyRadiusOption(String distance);
+
+  /// No description provided for @listingDealBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy now'**
+  String get listingDealBuy;
+
+  /// No description provided for @listingDealExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap'**
+  String get listingDealExchange;
+
+  /// No description provided for @listingSortTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get listingSortTitle;
+
+  /// No description provided for @listingSortNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest'**
+  String get listingSortNearest;
+
+  /// No description provided for @listingSortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get listingSortNewest;
+
+  /// No description provided for @listingSortPriceLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: low to high'**
+  String get listingSortPriceLow;
+
+  /// No description provided for @listingSortPriceHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: high to low'**
+  String get listingSortPriceHigh;
+
+  /// No description provided for @nearbyFallbackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing listings around your default area'**
+  String get nearbyFallbackTitle;
+
+  /// No description provided for @nearbyUseMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get nearbyUseMyLocation;
+
+  /// No description provided for @nearbyOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get nearbyOpenSettings;
+
+  /// No description provided for @nearbyEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing nearby yet'**
+  String get nearbyEmptyTitle;
+
+  /// No description provided for @nearbyEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a wider radius or fewer filters.'**
+  String get nearbyEmptyBody;
+
+  /// No description provided for @nearbyExpandRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand to {distance}'**
+  String nearbyExpandRadius(String distance);
+
+  /// No description provided for @nearbyLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load nearby listings'**
+  String get nearbyLoadErrorTitle;
+
+  /// No description provided for @nearbyLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get nearbyLoadErrorBody;
+
+  /// No description provided for @nearbyEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen everything nearby'**
+  String get nearbyEndOfList;
+
+  /// No description provided for @distanceMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'{meters} m'**
+  String distanceMeters(int meters);
+
+  /// No description provided for @distanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km'**
+  String distanceKm(String km);
+
+  /// No description provided for @listingSortRelevance.
+  ///
+  /// In en, this message translates to:
+  /// **'Most relevant'**
+  String get listingSortRelevance;
+
+  /// No description provided for @searchNearMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get searchNearMe;
+
+  /// No description provided for @searchNearMeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse pre-loved items around you'**
+  String get searchNearMeSubtitle;
+
+  /// No description provided for @searchTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick search ideas'**
+  String get searchTipsTitle;
+
+  /// No description provided for @searchHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches'**
+  String get searchHistoryTitle;
+
+  /// No description provided for @searchClearHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get searchClearHistory;
+
+  /// No description provided for @searchRemoveHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from list'**
+  String get searchRemoveHistory;
+
+  /// No description provided for @searchFillQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Use in search box'**
+  String get searchFillQuery;
+
+  /// No description provided for @searchClearInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get searchClearInput;
+
+  /// No description provided for @searchForQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Search “{query}”'**
+  String searchForQuery(String query);
+
+  /// No description provided for @searchEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for “{query}”'**
+  String searchEmptyTitle(String query);
+
+  /// No description provided for @searchEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a shorter or different keyword, or remove some filters.'**
+  String get searchEmptyBody;
+
+  /// No description provided for @searchTryAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Change keyword'**
+  String get searchTryAnother;
+
+  /// No description provided for @searchLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load results'**
+  String get searchLoadErrorTitle;
+
+  /// No description provided for @searchLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get searchLoadErrorBody;
+
+  /// No description provided for @searchEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen all results'**
+  String get searchEndOfList;
+
+  /// No description provided for @areaSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search ward or province...'**
+  String get areaSearchHint;
+
+  /// No description provided for @areaMyLocationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your current GPS location'**
+  String get areaMyLocationSubtitle;
+
+  /// No description provided for @areaRecentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently chosen areas'**
+  String get areaRecentTitle;
+
+  /// No description provided for @areaWholeProvince.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole province / city'**
+  String get areaWholeProvince;
+
+  /// No description provided for @areaNoResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching area'**
+  String get areaNoResultsTitle;
+
+  /// No description provided for @areaNoResultsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another ward or province name.'**
+  String get areaNoResultsBody;
+
+  /// No description provided for @areaSearchErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t search areas'**
+  String get areaSearchErrorTitle;
+
+  /// No description provided for @listingFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get listingFilterTitle;
+
+  /// No description provided for @listingFilterCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get listingFilterCategory;
+
+  /// No description provided for @listingFilterAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get listingFilterAllCategories;
+
+  /// No description provided for @listingFilterCategoryError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load categories'**
+  String get listingFilterCategoryError;
+
+  /// No description provided for @listingFilterPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range'**
+  String get listingFilterPrice;
+
+  /// No description provided for @listingFilterPriceMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min price'**
+  String get listingFilterPriceMin;
+
+  /// No description provided for @listingFilterPriceMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Max price'**
+  String get listingFilterPriceMax;
+
+  /// No description provided for @listingFilterPriceAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get listingFilterPriceAny;
+
+  /// No description provided for @listingFilterPriceHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange-only listings (no price) are hidden when filtering by price.'**
+  String get listingFilterPriceHelper;
+
+  /// No description provided for @listingFilterPriceInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Min price is higher than max price.'**
+  String get listingFilterPriceInvalid;
+
+  /// No description provided for @listingFilterPriceUnder.
+  ///
+  /// In en, this message translates to:
+  /// **'Under {price}'**
+  String listingFilterPriceUnder(String price);
+
+  /// No description provided for @listingFilterPriceOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Over {price}'**
+  String listingFilterPriceOver(String price);
+
+  /// No description provided for @listingFilterPriceBetween.
+  ///
+  /// In en, this message translates to:
+  /// **'{min} – {max}'**
+  String listingFilterPriceBetween(String min, String max);
+
+  /// No description provided for @listingFilterCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get listingFilterCondition;
+
+  /// No description provided for @listingFilterDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Deal type'**
+  String get listingFilterDeal;
+
+  /// No description provided for @listingFilterDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get listingFilterDistance;
+
+  /// No description provided for @listingFilterReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get listingFilterReset;
+
+  /// No description provided for @listingFilterApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get listingFilterApply;
+
+  /// No description provided for @listingFilterApplyCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply ({count})'**
+  String listingFilterApplyCount(int count);
+
+  /// No description provided for @priceThousands.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}K'**
+  String priceThousands(String value);
+
+  /// No description provided for @priceMillions.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}M'**
+  String priceMillions(String value);
+
+  /// No description provided for @categoryDetailSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get categoryDetailSearch;
+
+  /// No description provided for @categoryDetailEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings in this category yet'**
+  String get categoryDetailEmptyTitle;
+
+  /// No description provided for @categoryDetailEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to post something in this category.'**
+  String get categoryDetailEmptyBody;
+
+  /// No description provided for @categoryDetailPostListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a listing'**
+  String get categoryDetailPostListing;
+
+  /// No description provided for @categoryDetailFilteredEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings match your filters'**
+  String get categoryDetailFilteredEmptyTitle;
+
+  /// No description provided for @categoryDetailFilteredEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try removing some filters to see more listings.'**
+  String get categoryDetailFilteredEmptyBody;
+
+  /// No description provided for @categoryDetailLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this category'**
+  String get categoryDetailLoadErrorTitle;
+
+  /// No description provided for @categoryDetailLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get categoryDetailLoadErrorBody;
+
+  /// No description provided for @categoryDetailEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen every listing in this category'**
+  String get categoryDetailEndOfList;
+
+  /// No description provided for @wantedAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wanted alerts'**
+  String get wantedAlertTitle;
+
+  /// No description provided for @wantedAlertSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve what you need, get notified when it is posted'**
+  String get wantedAlertSubtitle;
+
+  /// No description provided for @wantedAlertActiveCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 active alert} other{{count} active alerts}}'**
+  String wantedAlertActiveCount(int count);
+
+  /// No description provided for @wantedAlertCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create alert'**
+  String get wantedAlertCreate;
+
+  /// No description provided for @wantedAlertNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New alert'**
+  String get wantedAlertNew;
+
+  /// No description provided for @wantedAlertEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No alerts yet'**
+  String get wantedAlertEmptyTitle;
+
+  /// No description provided for @wantedAlertEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what you are looking for and ReStore will notify you as soon as something similar is posted.'**
+  String get wantedAlertEmptyBody;
+
+  /// No description provided for @wantedAlertLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your alerts'**
+  String get wantedAlertLoadErrorTitle;
+
+  /// No description provided for @wantedAlertLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get wantedAlertLoadErrorBody;
+
+  /// No description provided for @wantedAlertNewMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new'**
+  String wantedAlertNewMatches(int count);
+
+  /// No description provided for @wantedAlertMatchCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 match} other{{count} matches}}'**
+  String wantedAlertMatchCount(int count);
+
+  /// No description provided for @wantedAlertNoMatchYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches yet'**
+  String get wantedAlertNoMatchYet;
+
+  /// No description provided for @wantedAlertLastMatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Last match {time}'**
+  String wantedAlertLastMatched(String time);
+
+  /// No description provided for @wantedAlertCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created {time}'**
+  String wantedAlertCreatedAt(String time);
+
+  /// No description provided for @wantedAlertWatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Watching'**
+  String get wantedAlertWatching;
+
+  /// No description provided for @wantedAlertAnyCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Any category'**
+  String get wantedAlertAnyCategory;
+
+  /// No description provided for @wantedAlertNationwide.
+  ///
+  /// In en, this message translates to:
+  /// **'Nationwide'**
+  String get wantedAlertNationwide;
+
+  /// No description provided for @wantedAlertAnyPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Any price'**
+  String get wantedAlertAnyPrice;
+
+  /// No description provided for @wantedAlertAnyCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Any condition'**
+  String get wantedAlertAnyCondition;
+
+  /// No description provided for @wantedAlertAnyDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy or exchange'**
+  String get wantedAlertAnyDeal;
+
+  /// No description provided for @wantedAlertPriceFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From {price}'**
+  String wantedAlertPriceFrom(String price);
+
+  /// No description provided for @wantedAlertPriceUpTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {price}'**
+  String wantedAlertPriceUpTo(String price);
+
+  /// No description provided for @wantedAlertPriceRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{min} – {max}'**
+  String wantedAlertPriceRange(String min, String max);
+
+  /// No description provided for @wantedAlertDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete alert'**
+  String get wantedAlertDelete;
+
+  /// No description provided for @wantedAlertDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this alert?'**
+  String get wantedAlertDeleteTitle;
+
+  /// No description provided for @wantedAlertDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore will stop notifying you about “{keywords}”. You can create it again anytime.'**
+  String wantedAlertDeleteBody(String keywords);
+
+  /// No description provided for @wantedAlertKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get wantedAlertKeep;
+
+  /// No description provided for @wantedAlertDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert deleted. You won\'t get new matches for it anymore.'**
+  String get wantedAlertDeleted;
+
+  /// No description provided for @wantedAlertDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete the alert. Please try again.'**
+  String get wantedAlertDeleteError;
+
+  /// No description provided for @wantedAlertSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you looking for?'**
+  String get wantedAlertSearchHint;
+
+  /// No description provided for @wantedAlertIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search first, get alerted later'**
+  String get wantedAlertIntroTitle;
+
+  /// No description provided for @wantedAlertIntroStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Type what you need and ReStore shows similar listings right away.'**
+  String get wantedAlertIntroStep1;
+
+  /// No description provided for @wantedAlertIntroStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Found a good one? Open it now, no need to wait.'**
+  String get wantedAlertIntroStep2;
+
+  /// No description provided for @wantedAlertIntroStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet? Create an alert and get a link as soon as a similar listing appears.'**
+  String get wantedAlertIntroStep3;
+
+  /// No description provided for @wantedAlertSkipToCompose.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip, write the alert'**
+  String get wantedAlertSkipToCompose;
+
+  /// No description provided for @wantedAlertSuggestionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 similar listing available} other{{count} similar listings available}}'**
+  String wantedAlertSuggestionsTitle(int count);
+
+  /// No description provided for @wantedAlertSuggestionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'None of these? Create an alert to hear about new ones.'**
+  String get wantedAlertSuggestionsHint;
+
+  /// No description provided for @wantedAlertSuggestionsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing similar yet'**
+  String get wantedAlertSuggestionsEmptyTitle;
+
+  /// No description provided for @wantedAlertSuggestionsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an alert and ReStore will tell you as soon as someone posts it.'**
+  String get wantedAlertSuggestionsEmptyBody;
+
+  /// No description provided for @wantedAlertSuggestionsErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load suggestions'**
+  String get wantedAlertSuggestionsErrorTitle;
+
+  /// No description provided for @wantedAlertSuggestionsErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still create the alert now.'**
+  String get wantedAlertSuggestionsErrorBody;
+
+  /// No description provided for @wantedAlertMatchPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% match'**
+  String wantedAlertMatchPercent(int percent);
+
+  /// No description provided for @wantedAlertNotRightCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Not it? Create an alert'**
+  String get wantedAlertNotRightCta;
+
+  /// No description provided for @wantedAlertComposeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your alert'**
+  String get wantedAlertComposeTitle;
+
+  /// No description provided for @wantedAlertComposeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When a similar listing is posted, ReStore sends you a link to it.'**
+  String get wantedAlertComposeSubtitle;
+
+  /// No description provided for @wantedAlertKeywordsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What you want'**
+  String get wantedAlertKeywordsLabel;
+
+  /// No description provided for @wantedAlertKeywordsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Canon AE-1 film camera'**
+  String get wantedAlertKeywordsHint;
+
+  /// No description provided for @wantedAlertKeywordsHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, brand or model. It doesn\'t have to be exact, similar listings count too.'**
+  String get wantedAlertKeywordsHelper;
+
+  /// No description provided for @wantedAlertKeywordsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter at least {min} characters'**
+  String wantedAlertKeywordsError(int min);
+
+  /// No description provided for @wantedAlertCriteriaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Criteria (optional)'**
+  String get wantedAlertCriteriaTitle;
+
+  /// No description provided for @wantedAlertCriteriaCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get wantedAlertCriteriaCategory;
+
+  /// No description provided for @wantedAlertCriteriaPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range'**
+  String get wantedAlertCriteriaPrice;
+
+  /// No description provided for @wantedAlertCriteriaCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get wantedAlertCriteriaCondition;
+
+  /// No description provided for @wantedAlertCriteriaDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Deal type'**
+  String get wantedAlertCriteriaDeal;
+
+  /// No description provided for @wantedAlertCriteriaArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Area'**
+  String get wantedAlertCriteriaArea;
+
+  /// No description provided for @wantedAlertEditCriteria.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit criteria'**
+  String get wantedAlertEditCriteria;
+
+  /// No description provided for @wantedAlertLevelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How close'**
+  String get wantedAlertLevelTitle;
+
+  /// No description provided for @wantedAlertLevelBroad.
+  ///
+  /// In en, this message translates to:
+  /// **'Broad'**
+  String get wantedAlertLevelBroad;
+
+  /// No description provided for @wantedAlertLevelBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get wantedAlertLevelBalanced;
+
+  /// No description provided for @wantedAlertLevelStrict.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get wantedAlertLevelStrict;
+
+  /// No description provided for @wantedAlertLevelBroadDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes loosely similar listings, so you get more alerts.'**
+  String get wantedAlertLevelBroadDesc;
+
+  /// No description provided for @wantedAlertLevelBalancedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Most keywords must match, small typos are fine.'**
+  String get wantedAlertLevelBalancedDesc;
+
+  /// No description provided for @wantedAlertLevelStrictDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only listings that are almost exactly what you typed.'**
+  String get wantedAlertLevelStrictDesc;
+
+  /// No description provided for @wantedAlertPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings matching right now'**
+  String get wantedAlertPreviewTitle;
+
+  /// No description provided for @wantedAlertPreviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches right now. You\'ll be notified when something is posted.'**
+  String get wantedAlertPreviewEmpty;
+
+  /// No description provided for @wantedAlertPreviewNeedKeywords.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter what you want to preview matching listings.'**
+  String get wantedAlertPreviewNeedKeywords;
+
+  /// No description provided for @wantedAlertSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on alert'**
+  String get wantedAlertSave;
+
+  /// No description provided for @wantedAlertCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert on for “{keywords}”. ReStore will notify you when something similar is posted.'**
+  String wantedAlertCreated(String keywords);
+
+  /// No description provided for @wantedAlertCreateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the alert. Please try again.'**
+  String get wantedAlertCreateError;
+
+  /// No description provided for @wantedAlertNewTag.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get wantedAlertNewTag;
+
+  /// No description provided for @wantedAlertMatchesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Matched listings'**
+  String get wantedAlertMatchesTitle;
+
+  /// No description provided for @wantedAlertMatchesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches yet'**
+  String get wantedAlertMatchesEmptyTitle;
+
+  /// No description provided for @wantedAlertMatchesEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone posts something similar, ReStore notifies you and it shows up here.'**
+  String get wantedAlertMatchesEmptyBody;
+
+  /// No description provided for @wantedAlertEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen every match'**
+  String get wantedAlertEndOfList;
+
+  /// No description provided for @wantedAlertPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not finding it?'**
+  String get wantedAlertPromptTitle;
+
+  /// No description provided for @wantedAlertPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Set an alert for “{query}” and ReStore will tell you when something similar is posted.'**
+  String wantedAlertPromptBody(String query);
+
+  /// No description provided for @areaNationwide.
+  ///
+  /// In en, this message translates to:
+  /// **'Nationwide'**
+  String get areaNationwide;
+
+  /// No description provided for @areaNationwideSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Any area, listings from anywhere'**
+  String get areaNationwideSubtitle;
+
+  /// No description provided for @trustedShopsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted shops'**
+  String get trustedShopsTitle;
+
+  /// No description provided for @trustedShopsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Genuine stores verified by ReStore'**
+  String get trustedShopsSubtitle;
+
+  /// No description provided for @trustedShopsAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get trustedShopsAllCategories;
+
+  /// No description provided for @trustedShopsOfficialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Official brands'**
+  String get trustedShopsOfficialTitle;
+
+  /// No description provided for @trustedShopsCertifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore certified'**
+  String get trustedShopsCertifiedTitle;
+
+  /// No description provided for @trustedShopsShowcaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop by brand'**
+  String get trustedShopsShowcaseTitle;
+
+  /// No description provided for @trustedShopsShowcaseSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Picks from the most followed shops'**
+  String get trustedShopsShowcaseSubtitle;
+
+  /// No description provided for @trustedShopsViewShop.
+  ///
+  /// In en, this message translates to:
+  /// **'View shop'**
+  String get trustedShopsViewShop;
+
+  /// No description provided for @trustedShopsAllProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All products'**
+  String get trustedShopsAllProductsTitle;
+
+  /// No description provided for @trustedShopsAllProductsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'From every verified shop'**
+  String get trustedShopsAllProductsSubtitle;
+
+  /// No description provided for @trustedShopsEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen every product from trusted shops'**
+  String get trustedShopsEndOfList;
+
+  /// No description provided for @trustedShopsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No trusted shops here yet'**
+  String get trustedShopsEmptyTitle;
+
+  /// No description provided for @trustedShopsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified shops in this category will show up here.'**
+  String get trustedShopsEmptyBody;
+
+  /// No description provided for @trustedShopsLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load trusted shops'**
+  String get trustedShopsLoadErrorTitle;
+
+  /// No description provided for @trustedShopsLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get trustedShopsLoadErrorBody;
+
+  /// No description provided for @trustedShopsFamousTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Famous brands'**
+  String get trustedShopsFamousTitle;
+
+  /// No description provided for @trustedShopsFamousSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Official stores of big-name brands'**
+  String get trustedShopsFamousSubtitle;
+
+  /// No description provided for @trustedShopsDealsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Luxury for less'**
+  String get trustedShopsDealsTitle;
+
+  /// No description provided for @trustedShopsDealsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Genuine brand products, now on sale'**
+  String get trustedShopsDealsSubtitle;
+
+  /// No description provided for @trustedShopsDealsUpTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to -{percent}%'**
+  String trustedShopsDealsUpTo(int percent);
+
+  /// No description provided for @trustedShopsNewReleasesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot new releases'**
+  String get trustedShopsNewReleasesTitle;
+
+  /// No description provided for @trustedShopsNewReleasesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh launches from famous brands'**
+  String get trustedShopsNewReleasesSubtitle;
+
+  /// No description provided for @trustedShopsNewReleaseTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Just launched'**
+  String get trustedShopsNewReleaseTag;
+
+  /// No description provided for @trustedShopsLaunchedDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Launched today} =1{Launched yesterday} other{Launched {count} days ago}}'**
+  String trustedShopsLaunchedDaysAgo(int count);
+
+  /// No description provided for @trustedShopsNewShopsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New stores'**
+  String get trustedShopsNewShopsTitle;
+
+  /// No description provided for @trustedShopsNewShopsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops ReStore verified recently'**
+  String get trustedShopsNewShopsSubtitle;
+
+  /// No description provided for @trustedShopsNavFamous.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands'**
+  String get trustedShopsNavFamous;
+
+  /// No description provided for @trustedShopsNavDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Deals'**
+  String get trustedShopsNavDeals;
+
+  /// No description provided for @trustedShopsNavNewReleases.
+  ///
+  /// In en, this message translates to:
+  /// **'New releases'**
+  String get trustedShopsNavNewReleases;
+
+  /// No description provided for @trustedShopsNavNewShops.
+  ///
+  /// In en, this message translates to:
+  /// **'New stores'**
+  String get trustedShopsNavNewShops;
+
+  /// No description provided for @trustedShopsNavShowcases.
+  ///
+  /// In en, this message translates to:
+  /// **'By brand'**
+  String get trustedShopsNavShowcases;
+
+  /// No description provided for @trustedShopsNavAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All products'**
+  String get trustedShopsNavAll;
+
+  /// No description provided for @trustedShopsSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get trustedShopsSeeAll;
+
+  /// No description provided for @trustedShopsOnSaleFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'On sale'**
+  String get trustedShopsOnSaleFilter;
+
+  /// No description provided for @shopDetailEventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop events'**
+  String get shopDetailEventsTitle;
+
+  /// No description provided for @shopDetailEventsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotions approved by ReStore'**
+  String get shopDetailEventsSubtitle;
+
+  /// No description provided for @shopVerificationOfficial.
+  ///
+  /// In en, this message translates to:
+  /// **'Official'**
+  String get shopVerificationOfficial;
+
+  /// No description provided for @shopVerificationCertified.
+  ///
+  /// In en, this message translates to:
+  /// **'Certified'**
+  String get shopVerificationCertified;
+
+  /// No description provided for @shopVerificationOfficialDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The brand\'s own store or its authorised distributor, selling genuine goods with brand warranty.'**
+  String get shopVerificationOfficialDesc;
+
+  /// No description provided for @shopVerificationCertifiedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore checked this shop\'s business licence, address and trading history before certifying it.'**
+  String get shopVerificationCertifiedDesc;
+
+  /// No description provided for @shopVerificationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About verified shops'**
+  String get shopVerificationSheetTitle;
+
+  /// No description provided for @shopVerificationSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Only shops that pass one of these checks appear in Trusted shops'**
+  String get shopVerificationSheetSubtitle;
+
+  /// No description provided for @shopVerificationSheetNote.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore reviews verified shops regularly and removes the badge if a shop breaks the rules or gets repeated complaints.'**
+  String get shopVerificationSheetNote;
+
+  /// No description provided for @shopCertificateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop certificate'**
+  String get shopCertificateTitle;
+
+  /// No description provided for @shopCertificateCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate no.'**
+  String get shopCertificateCode;
+
+  /// No description provided for @shopVerifiedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified on'**
+  String get shopVerifiedSince;
+
+  /// No description provided for @shopVerifiedSinceShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified {date}'**
+  String shopVerifiedSinceShort(String date);
+
+  /// No description provided for @shopFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get shopFollow;
+
+  /// No description provided for @shopFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get shopFollowing;
+
+  /// No description provided for @shopFollowerCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} followers'**
+  String shopFollowerCount(String count);
+
+  /// No description provided for @shopListingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 product} other{{count} products}}'**
+  String shopListingCount(int count);
+
+  /// No description provided for @shopRatingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reviews'**
+  String shopRatingCount(String count);
+
+  /// No description provided for @shopFollowersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get shopFollowersLabel;
+
+  /// No description provided for @shopProductsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get shopProductsLabel;
+
+  /// No description provided for @shopDescriptionMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get shopDescriptionMore;
+
+  /// No description provided for @shopDescriptionLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get shopDescriptionLess;
+
+  /// No description provided for @shopDetailProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Products for sale'**
+  String get shopDetailProductsTitle;
+
+  /// No description provided for @shopDetailEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No products yet'**
+  String get shopDetailEmptyTitle;
+
+  /// No description provided for @shopDetailEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow this shop to hear about new products first.'**
+  String get shopDetailEmptyBody;
+
+  /// No description provided for @shopDetailEndOfList.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen every product from this shop'**
+  String get shopDetailEndOfList;
+
+  /// No description provided for @shopDetailLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this shop'**
+  String get shopDetailLoadErrorTitle;
+
+  /// No description provided for @shopDetailLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get shopDetailLoadErrorBody;
 }
 
 class _AppLocalizationsDelegate

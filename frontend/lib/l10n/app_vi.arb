@@ -635,5 +635,586 @@
   "homeQuickTrustedShopsDesc": "Đã xác minh, đánh giá tốt",
   "homeQuickFollowing": "Đang theo dõi",
   "homeQuickFollowingDesc": "Shop và người bạn theo dõi",
-  "homeBannerTooltip": "Banner khuyến mãi"
+  "homeBannerTooltip": "Banner khuyến mãi",
+  "productDetailTitle": "Chi tiết sản phẩm",
+  "productLoadErrorTitle": "Không tải được tin đăng",
+  "productLoadErrorBody": "Tin có thể đã bị gỡ hoặc kết nối mạng chưa ổn định. Vui lòng thử lại.",
+  "productViewCount": "{count} lượt xem",
+  "@productViewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productUnavailableHint": "Sản phẩm này hiện không thể đặt mua.",
+  "listingStatusDraft": "Bản nháp",
+  "listingStatusPending": "Đang chờ duyệt",
+  "listingStatusAvailable": "Đang bán",
+  "listingStatusReserved": "Đã có người đặt",
+  "listingStatusSold": "Đã bán",
+  "listingStatusExchanged": "Đã trao đổi",
+  "listingStatusExpired": "Đã hết hạn",
+  "listingStatusRejected": "Bị từ chối",
+  "listingStatusHidden": "Đã ẩn",
+  "productSellerTitle": "Người bán",
+  "productSellerVerified": "Đã xác minh",
+  "productSellerNoReviews": "Chưa có đánh giá",
+  "productSellerJoined": "Tham gia {date}",
+  "@productSellerJoined": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "productSellerListings": "{count} tin đang bán",
+  "@productSellerListings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productSellerProfile": "Xem trang",
+  "productReadMore": "Xem thêm",
+  "productReadLess": "Thu gọn",
+  "productSafetyTitle": "Mua bán an toàn",
+  "productSafetyBody": "Hẹn gặp ở nơi công cộng, kiểm tra hàng trước khi trả tiền và không chuyển tiền đặt cọc cho người lạ.",
+  "productReport": "Báo cáo tin",
+  "productChat": "Nhắn tin",
+  "productMakeOffer": "Trả giá",
+  "productBuyNow": "Mua ngay",
+  "productProposeExchange": "Đề nghị đổi",
+  "productEditListing": "Sửa tin",
+  "productBoost": "Đẩy tin",
+  "productOfferTitle": "Trả giá với người bán",
+  "productOfferSubtitle": "Giá đang bán: {price}",
+  "@productOfferSubtitle": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferAmountLabel": "Giá bạn đề nghị",
+  "productOfferAmountHint": "Nhập số tiền",
+  "productOfferInvalid": "Nhập số tiền lớn hơn 0",
+  "productOfferTooHigh": "Giá đề nghị không được vượt quá 2 lần giá đang bán",
+  "productOfferSubmit": "Gửi đề nghị",
+  "productOfferSent": "Đã gửi đề nghị, tiếp tục trao đổi với người bán tại đây.",
+  "productOfferBelow": "Thấp hơn giá gốc {percent} (-{difference})",
+  "@productOfferBelow": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferAbove": "Cao hơn giá gốc {percent} (+{difference})",
+  "@productOfferAbove": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "productOfferEqual": "Bằng giá gốc",
+  "productLiveTitle": "Tin vừa được cập nhật",
+  "productLiveUnavailable": "Sản phẩm hiện {status}, bạn không thể đặt mua nữa.",
+  "@productLiveUnavailable": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "productLiveAvailable": "Sản phẩm vừa được mở bán trở lại.",
+  "productLivePrice": "Người bán vừa đổi giá từ {previous} thành {current}.",
+  "@productLivePrice": {
+    "placeholders": {
+      "previous": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "productLivePriceGeneric": "Người bán vừa cập nhật giá, bạn xem lại trước khi gửi nhé.",
+  "productLiveInfo": "Người bán vừa sửa thông tin tin đăng.",
+  "productLiveIndicator": "Đang cập nhật trực tiếp",
+  "productBuyTitle": "Yêu cầu mua",
+  "productBuySubtitle": "Người bán sẽ xác nhận và hẹn giao nhận với bạn qua tin nhắn.",
+  "productBuyPriceLabel": "Giá",
+  "productBuyNoteLabel": "Lời nhắn cho người bán",
+  "productBuyNoteHint": "VD: Mình có thể qua lấy vào tối nay",
+  "productBuySubmit": "Gửi yêu cầu",
+  "productBuySent": "Đã gửi yêu cầu mua, người bán sẽ phản hồi qua tin nhắn.",
+  "productActionFailed": "Gửi chưa được, vui lòng thử lại.",
+  "galleryOpenFullscreen": "Xem ảnh toàn màn hình",
+  "nearbyTitle": "Gần bạn",
+  "nearbySubtitle": "Đồ cũ quanh đây, hẹn gặp là có ngay",
+  "nearbyCurrentLocation": "Vị trí hiện tại",
+  "nearbyLocating": "Đang xác định vị trí...",
+  "nearbyChangeLocation": "Đổi",
+  "nearbyRelocate": "Cập nhật vị trí",
+  "nearbyFilters": "Bộ lọc",
+  "nearbyRadiusChip": "Trong {distance}",
+  "@nearbyRadiusChip": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyRadiusTitle": "Tìm trong bán kính",
+  "nearbyRadiusOption": "Trong vòng {distance}",
+  "@nearbyRadiusOption": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "listingDealBuy": "Mua trực tiếp",
+  "listingDealExchange": "Trao đổi",
+  "listingSortTitle": "Sắp xếp theo",
+  "listingSortNearest": "Gần nhất",
+  "listingSortNewest": "Mới nhất",
+  "listingSortPriceLow": "Giá thấp đến cao",
+  "listingSortPriceHigh": "Giá cao đến thấp",
+  "nearbyFallbackTitle": "Đang xem quanh khu vực mặc định",
+  "nearbyUseMyLocation": "Dùng vị trí của tôi",
+  "nearbyOpenSettings": "Mở Cài đặt",
+  "nearbyEmptyTitle": "Chưa có tin nào quanh đây",
+  "nearbyEmptyBody": "Thử mở rộng bán kính hoặc bỏ bớt bộ lọc nhé.",
+  "nearbyExpandRadius": "Mở rộng tới {distance}",
+  "@nearbyExpandRadius": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyLoadErrorTitle": "Chưa tải được tin gần bạn",
+  "nearbyLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "nearbyEndOfList": "Bạn đã xem hết tin quanh đây",
+  "distanceMeters": "{meters} m",
+  "@distanceMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceKm": "{km} km",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "listingSortRelevance": "Phù hợp nhất",
+  "searchNearMe": "Gần tôi",
+  "searchNearMeSubtitle": "Xem đồ cũ quanh vị trí của bạn",
+  "searchTipsTitle": "Gợi ý tìm nhanh",
+  "searchHistoryTitle": "Tìm kiếm gần đây",
+  "searchClearHistory": "Xoá tất cả",
+  "searchRemoveHistory": "Xoá khỏi danh sách",
+  "searchFillQuery": "Đưa lên ô tìm kiếm",
+  "searchClearInput": "Xoá nội dung",
+  "searchForQuery": "Tìm “{query}”",
+  "@searchForQuery": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchEmptyTitle": "Không tìm thấy “{query}”",
+  "@searchEmptyTitle": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchEmptyBody": "Thử từ khoá ngắn hơn, từ khoá khác hoặc bỏ bớt bộ lọc nhé.",
+  "searchTryAnother": "Đổi từ khoá",
+  "searchLoadErrorTitle": "Chưa tải được kết quả",
+  "searchLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "searchEndOfList": "Bạn đã xem hết kết quả",
+  "areaSearchHint": "Tìm phường/xã, tỉnh/thành...",
+  "areaMyLocationSubtitle": "Dùng vị trí GPS hiện tại của bạn",
+  "areaRecentTitle": "Khu vực đã chọn gần đây",
+  "areaWholeProvince": "Toàn tỉnh/thành phố",
+  "areaNoResultsTitle": "Không tìm thấy khu vực",
+  "areaNoResultsBody": "Thử gõ tên phường/xã hoặc tỉnh/thành khác nhé.",
+  "areaSearchErrorTitle": "Chưa tìm được khu vực",
+  "listingFilterTitle": "Bộ lọc",
+  "listingFilterCategory": "Danh mục",
+  "listingFilterAllCategories": "Tất cả",
+  "listingFilterCategoryError": "Chưa tải được danh mục",
+  "listingFilterPrice": "Khoảng giá",
+  "listingFilterPriceMin": "Giá thấp nhất",
+  "listingFilterPriceMax": "Giá cao nhất",
+  "listingFilterPriceAny": "Không giới hạn",
+  "listingFilterPriceHelper": "Tin chỉ nhận trao đổi (không có giá) sẽ bị ẩn khi lọc theo giá.",
+  "listingFilterPriceInvalid": "Giá thấp nhất đang lớn hơn giá cao nhất.",
+  "listingFilterPriceUnder": "Dưới {price}",
+  "@listingFilterPriceUnder": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterPriceOver": "Trên {price}",
+  "@listingFilterPriceOver": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterPriceBetween": "{min} – {max}",
+  "@listingFilterPriceBetween": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "listingFilterCondition": "Tình trạng",
+  "listingFilterDeal": "Hình thức",
+  "listingFilterDistance": "Khoảng cách",
+  "listingFilterReset": "Xoá bộ lọc",
+  "listingFilterApply": "Áp dụng",
+  "listingFilterApplyCount": "Áp dụng ({count})",
+  "@listingFilterApplyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceThousands": "{value} nghìn",
+  "@priceThousands": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "priceMillions": "{value} triệu",
+  "@priceMillions": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryDetailSearch": "Tìm kiếm",
+  "categoryDetailEmptyTitle": "Danh mục này chưa có tin nào",
+  "categoryDetailEmptyBody": "Hãy là người đầu tiên đăng món đồ thuộc danh mục này nhé.",
+  "categoryDetailPostListing": "Đăng tin",
+  "categoryDetailFilteredEmptyTitle": "Không có tin khớp bộ lọc",
+  "categoryDetailFilteredEmptyBody": "Thử bỏ bớt bộ lọc để xem thêm tin nhé.",
+  "categoryDetailLoadErrorTitle": "Chưa tải được danh mục",
+  "categoryDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "categoryDetailEndOfList": "Bạn đã xem hết tin trong danh mục này",
+  "wantedAlertTitle": "Báo khi có hàng",
+  "wantedAlertSubtitle": "Đặt trước món bạn cần, có tin giống là báo ngay",
+  "wantedAlertActiveCount": "{count} thông báo đang bật",
+  "@wantedAlertActiveCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertCreate": "Tạo thông báo",
+  "wantedAlertNew": "Tạo thông báo mới",
+  "wantedAlertEmptyTitle": "Chưa có thông báo nào",
+  "wantedAlertEmptyBody": "Đặt trước món bạn đang tìm, ReStore sẽ báo ngay khi có người đăng món gần giống.",
+  "wantedAlertLoadErrorTitle": "Chưa tải được thông báo",
+  "wantedAlertLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "wantedAlertNewMatches": "{count} tin mới",
+  "@wantedAlertNewMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertMatchCount": "{count} tin khớp",
+  "@wantedAlertMatchCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertNoMatchYet": "Chưa có tin khớp",
+  "wantedAlertLastMatched": "Khớp gần nhất {time}",
+  "@wantedAlertLastMatched": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertCreatedAt": "Tạo {time}",
+  "@wantedAlertCreatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertWatching": "Đang theo dõi",
+  "wantedAlertAnyCategory": "Mọi danh mục",
+  "wantedAlertNationwide": "Toàn quốc",
+  "wantedAlertAnyPrice": "Mọi mức giá",
+  "wantedAlertAnyCondition": "Mọi tình trạng",
+  "wantedAlertAnyDeal": "Mua hoặc trao đổi",
+  "wantedAlertPriceFrom": "Từ {price}",
+  "@wantedAlertPriceFrom": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertPriceUpTo": "Đến {price}",
+  "@wantedAlertPriceUpTo": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertPriceRange": "{min} – {max}",
+  "@wantedAlertPriceRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertDelete": "Xoá thông báo",
+  "wantedAlertDeleteTitle": "Xoá thông báo này?",
+  "wantedAlertDeleteBody": "ReStore sẽ ngừng báo tin mới cho “{keywords}”. Bạn có thể tạo lại bất cứ lúc nào.",
+  "@wantedAlertDeleteBody": {
+    "placeholders": {
+      "keywords": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertKeep": "Giữ lại",
+  "wantedAlertDeleted": "Đã xoá thông báo, bạn sẽ không nhận tin mới cho món này nữa.",
+  "wantedAlertDeleteError": "Chưa xoá được thông báo, thử lại nhé.",
+  "wantedAlertSearchHint": "Bạn đang tìm món gì?",
+  "wantedAlertIntroTitle": "Tìm trước, đặt báo sau",
+  "wantedAlertIntroStep1": "Gõ món bạn cần, ReStore tìm ngay tin đang có gần giống.",
+  "wantedAlertIntroStep2": "Thấy món ưng ý thì xem luôn, không cần chờ.",
+  "wantedAlertIntroStep3": "Chưa có? Tạo thông báo, có tin mới gần giống là ReStore báo kèm đường dẫn.",
+  "wantedAlertSkipToCompose": "Bỏ qua, viết thông báo luôn",
+  "wantedAlertSuggestionsTitle": "{count} tin đang có gần giống",
+  "@wantedAlertSuggestionsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertSuggestionsHint": "Chưa ưng món nào? Tạo thông báo để được báo khi có tin mới.",
+  "wantedAlertSuggestionsEmptyTitle": "Chưa có tin nào gần giống",
+  "wantedAlertSuggestionsEmptyBody": "Tạo thông báo, ReStore sẽ báo ngay khi có người đăng món bạn cần.",
+  "wantedAlertSuggestionsErrorTitle": "Chưa tải được tin gợi ý",
+  "wantedAlertSuggestionsErrorBody": "Bạn vẫn có thể tạo thông báo ngay bây giờ.",
+  "wantedAlertMatchPercent": "Giống {percent}%",
+  "@wantedAlertMatchPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertNotRightCta": "Chưa ưng? Tạo thông báo",
+  "wantedAlertComposeTitle": "Soạn thông báo",
+  "wantedAlertComposeSubtitle": "Có tin mới gần giống, ReStore gửi thông báo kèm đường dẫn tới tin.",
+  "wantedAlertKeywordsLabel": "Món bạn muốn tìm",
+  "wantedAlertKeywordsHint": "VD: máy ảnh film Canon AE-1",
+  "wantedAlertKeywordsHelper": "Gõ tên món, hãng, model. Không cần y hệt, tin gần giống cũng được báo.",
+  "wantedAlertKeywordsError": "Nhập ít nhất {min} ký tự",
+  "@wantedAlertKeywordsError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "wantedAlertCriteriaTitle": "Tiêu chí (không bắt buộc)",
+  "wantedAlertCriteriaCategory": "Danh mục",
+  "wantedAlertCriteriaPrice": "Khoảng giá",
+  "wantedAlertCriteriaCondition": "Tình trạng",
+  "wantedAlertCriteriaDeal": "Hình thức",
+  "wantedAlertCriteriaArea": "Khu vực",
+  "wantedAlertEditCriteria": "Chỉnh tiêu chí",
+  "wantedAlertLevelTitle": "Mức độ giống",
+  "wantedAlertLevelBroad": "Rộng",
+  "wantedAlertLevelBalanced": "Vừa",
+  "wantedAlertLevelStrict": "Sát",
+  "wantedAlertLevelBroadDesc": "Báo cả tin chỉ hơi giống, bạn sẽ nhận nhiều thông báo hơn.",
+  "wantedAlertLevelBalancedDesc": "Phần lớn từ khoá phải khớp, gõ sai nhẹ vẫn nhận ra.",
+  "wantedAlertLevelStrictDesc": "Chỉ báo tin gần như đúng món bạn nhập.",
+  "wantedAlertPreviewTitle": "Tin đang có khớp thông báo",
+  "wantedAlertPreviewEmpty": "Hiện chưa có tin nào khớp, bạn sẽ được báo khi có người đăng.",
+  "wantedAlertPreviewNeedKeywords": "Nhập món bạn muốn tìm để xem trước tin khớp.",
+  "wantedAlertSave": "Bật thông báo",
+  "wantedAlertCreated": "Đã bật thông báo cho “{keywords}”. Có tin gần giống, ReStore sẽ báo bạn ngay.",
+  "@wantedAlertCreated": {
+    "placeholders": {
+      "keywords": {
+        "type": "String"
+      }
+    }
+  },
+  "wantedAlertCreateError": "Chưa tạo được thông báo, thử lại nhé.",
+  "wantedAlertNewTag": "Mới",
+  "wantedAlertMatchesTitle": "Tin đã khớp",
+  "wantedAlertMatchesEmptyTitle": "Chưa có tin khớp",
+  "wantedAlertMatchesEmptyBody": "Khi có người đăng món gần giống, ReStore sẽ gửi thông báo và tin sẽ hiện ở đây.",
+  "wantedAlertEndOfList": "Bạn đã xem hết tin khớp",
+  "wantedAlertPromptTitle": "Chưa thấy món ưng ý?",
+  "wantedAlertPromptBody": "Đặt báo cho “{query}”, có tin mới gần giống là ReStore báo ngay.",
+  "@wantedAlertPromptBody": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "areaNationwide": "Toàn quốc",
+  "areaNationwideSubtitle": "Không giới hạn khu vực, tin ở đâu cũng báo",
+  "trustedShopsTitle": "Shop uy tín",
+  "trustedShopsSubtitle": "Gian hàng chính hãng đã xác minh",
+  "trustedShopsAllCategories": "Tất cả",
+  "trustedShopsOfficialTitle": "Thương hiệu chính hãng",
+  "trustedShopsCertifiedTitle": "Shop được ReStore chứng nhận",
+  "trustedShopsShowcaseTitle": "Sản phẩm theo nhãn hàng",
+  "trustedShopsShowcaseSubtitle": "Nổi bật từ các shop được theo dõi nhiều nhất",
+  "trustedShopsViewShop": "Xem shop",
+  "trustedShopsAllProductsTitle": "Tất cả sản phẩm",
+  "trustedShopsAllProductsSubtitle": "Từ mọi shop đã xác minh",
+  "trustedShopsEndOfList": "Bạn đã xem hết sản phẩm của shop uy tín",
+  "trustedShopsEmptyTitle": "Chưa có shop uy tín trong mục này",
+  "trustedShopsEmptyBody": "Khi có shop được xác minh bán mặt hàng này, shop sẽ hiện ở đây.",
+  "trustedShopsLoadErrorTitle": "Chưa tải được shop uy tín",
+  "trustedShopsLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "trustedShopsFamousTitle": "Thương hiệu nổi tiếng",
+  "trustedShopsFamousSubtitle": "Gian hàng chính hãng của các thương hiệu lớn",
+  "trustedShopsDealsTitle": "Trải nghiệm hàng hiệu",
+  "trustedShopsDealsSubtitle": "Hàng hiệu chính hãng đang giảm giá",
+  "trustedShopsDealsUpTo": "Giảm đến {percent}%",
+  "@trustedShopsDealsUpTo": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "trustedShopsNewReleasesTitle": "Siêu phẩm mới ra mắt",
+  "trustedShopsNewReleasesSubtitle": "Sản phẩm vừa ra mắt từ các thương hiệu lớn",
+  "trustedShopsNewReleaseTag": "Mới ra mắt",
+  "trustedShopsLaunchedDaysAgo": "{count, plural, =0{Ra mắt hôm nay} other{Ra mắt {count} ngày trước}}",
+  "@trustedShopsLaunchedDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trustedShopsNewShopsTitle": "Cửa hàng mới",
+  "trustedShopsNewShopsSubtitle": "Shop vừa được ReStore xác minh",
+  "trustedShopsNavFamous": "Thương hiệu",
+  "trustedShopsNavDeals": "Giảm giá",
+  "trustedShopsNavNewReleases": "Mới ra mắt",
+  "trustedShopsNavNewShops": "Cửa hàng mới",
+  "trustedShopsNavShowcases": "Theo nhãn hàng",
+  "trustedShopsNavAll": "Tất cả sản phẩm",
+  "trustedShopsSeeAll": "Xem tất cả",
+  "trustedShopsOnSaleFilter": "Đang giảm giá",
+  "shopDetailEventsTitle": "Sự kiện của shop",
+  "shopDetailEventsSubtitle": "Ưu đãi đã được ReStore duyệt",
+  "shopVerificationOfficial": "Chính hãng",
+  "shopVerificationCertified": "Đã chứng nhận",
+  "shopVerificationOfficialDesc": "Shop gốc của nhãn hàng hoặc nhà phân phối được uỷ quyền, hàng chính hãng có bảo hành.",
+  "shopVerificationCertifiedDesc": "ReStore đã kiểm tra giấy phép kinh doanh, địa chỉ và lịch sử giao dịch trước khi cấp chứng nhận.",
+  "shopVerificationSheetTitle": "Về shop đã xác minh",
+  "shopVerificationSheetSubtitle": "Chỉ shop đạt một trong hai mức sau mới hiện ở Shop uy tín",
+  "shopVerificationSheetNote": "ReStore rà soát định kỳ và thu hồi chứng nhận nếu shop vi phạm quy định hoặc bị khiếu nại nhiều lần.",
+  "shopCertificateTitle": "Chứng nhận của shop",
+  "shopCertificateCode": "Mã chứng nhận",
+  "shopVerifiedSince": "Ngày xác minh",
+  "shopVerifiedSinceShort": "Xác minh {date}",
+  "@shopVerifiedSinceShort": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "shopFollow": "Theo dõi",
+  "shopFollowing": "Đang theo dõi",
+  "shopFollowerCount": "{count} theo dõi",
+  "@shopFollowerCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "shopListingCount": "{count} sản phẩm",
+  "@shopListingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shopRatingCount": "{count} đánh giá",
+  "@shopRatingCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "shopFollowersLabel": "Người theo dõi",
+  "shopProductsLabel": "Sản phẩm",
+  "shopDescriptionMore": "Xem thêm",
+  "shopDescriptionLess": "Thu gọn",
+  "shopDetailProductsTitle": "Sản phẩm đang bán",
+  "shopDetailEmptyTitle": "Shop chưa có sản phẩm",
+  "shopDetailEmptyBody": "Theo dõi shop để biết ngay khi có sản phẩm mới.",
+  "shopDetailEndOfList": "Bạn đã xem hết sản phẩm của shop",
+  "shopDetailLoadErrorTitle": "Chưa tải được trang shop",
+  "shopDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé."
 }

@@ -1,3 +1,6 @@
+import adminRouter from './modules/admin/admin.route.js';
+import contentRouter from './modules/admin/content.route.js';
+import { releaseExpiredSuspensions } from './lib/account-status.js';
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -5,6 +8,10 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.js';
 import { apiLogger } from './middlewares/logger.middleware.js';
 import authRouter from './modules/auth/auth.route.js';
+import listingRouter from './modules/listings/listing.route.js';
+import storeRouter from './modules/stores/store.route.js';
+import promotionRouter from './modules/promotions/promotion.route.js';
+import { catalogRouter } from './modules/catalog/catalog.js';
 import { validateEnvironment } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
 
@@ -33,13 +40,21 @@ app.use(
   }),
 );
 
-app.use(express.json());
+app.use(express.json({limit:'256kb'}));
 app.use(apiLogger);
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/content', contentRouter);
 app.use('/api/v1/auth', authRouter);
+const suspensionTimer = setInterval(() => releaseExpiredSuspensions().catch(error => console.error('Suspension expiry failed', error.code)), 60000);
+suspensionTimer.unref();
+app.use('/api/v1/listings', listingRouter);
+app.use('/api/v1', catalogRouter);
+app.use('/api/v1/stores', storeRouter);
+app.use('/api/v1/promotions', promotionRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 

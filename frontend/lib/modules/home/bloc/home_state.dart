@@ -3,7 +3,7 @@ import 'package:restore/data/models/category_model.dart';
 import 'package:restore/data/models/user_model.dart';
 
 import '../models/home_banner.dart';
-import '../models/home_listing_item.dart';
+import 'package:restore/shared/models/listing_card_item.dart';
 
 enum HomeStatus { loading, ready, failure }
 
@@ -13,9 +13,9 @@ class HomeState extends Equatable {
   final String areaName;
   final List<HomeBanner> banners;
   final List<CategoryModel> categories;
-  final List<HomeListingItem> recommended;
+  final List<ListingCardItem> recommended;
 
-  final List<HomeListingItem> latest;
+  final List<ListingCardItem> latest;
 
   /// Trang cuối đã tải của [latest]
   final int latestPage;
@@ -49,8 +49,8 @@ class HomeState extends Equatable {
     String? areaName,
     List<HomeBanner>? banners,
     List<CategoryModel>? categories,
-    List<HomeListingItem>? recommended,
-    List<HomeListingItem>? latest,
+    List<ListingCardItem>? recommended,
+    List<ListingCardItem>? latest,
     int? latestPage,
     bool? hasMoreLatest,
     bool? isLoadingMore,

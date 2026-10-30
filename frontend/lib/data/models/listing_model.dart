@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
 import 'package:restore/shared/models/geo_point.dart';
+import 'package:restore/core/config/app_environment.dart';
+import 'package:restore/modules/location/models/address_info.dart';
 
 /// Một dòng của bảng Listing (prisma/schema.prisma), tên khoá JSON giống
 /// tên cột (camelCase).
@@ -16,6 +18,10 @@ class ListingModel extends Equatable {
 
   /// Giá VND. Cột Decimal nên API có thể trả về chuỗi hoặc số.
   final int? price;
+
+  /// (đề xuất) Giá gốc trước khi giảm, chỉ có khi tin đang giảm giá
+  /// (lớn hơn [price])
+  final int? originalPrice;
   final bool isNegotiable;
   final ListingCondition? condition;
   final ListingStatus status;
@@ -34,6 +40,12 @@ class ListingModel extends Equatable {
   final String? provinceCode;
   final String? wardCode;
   final GeoPoint? geoPoint;
+  final AddressInfo? address;
+  final String sellerName;
+  final String exchangeWish;
+  final String? reviewReason;
+  final String sellerType;
+  final bool isFavorite;
 
   const ListingModel({
     required this.id,
@@ -41,6 +53,7 @@ class ListingModel extends Equatable {
     required this.title,
     required this.description,
     this.price,
+    this.originalPrice,
     this.isNegotiable = true,
     this.condition,
     this.status = ListingStatus.available,
@@ -55,19 +68,42 @@ class ListingModel extends Equatable {
     this.provinceCode,
     this.wardCode,
     this.geoPoint,
+    this.address,
+    this.sellerName = '',
+    this.exchangeWish = '',
+    this.reviewReason,
+    this.sellerType = 'PERSONAL',
+    this.isFavorite = false,
   });
 
   String? get coverImage => images.isEmpty ? null : images.first;
 
-  factory ListingModel.fromJson(Map<String, dynamic> json) {
-    final price = json['price'];
+  /// Phần trăm giảm so với [originalPrice] (làm tròn), null khi không giảm
+  int? get discountPercent {
+    final price = this.price;
+    final originalPrice = this.originalPrice;
+    if (price == null || originalPrice == null || originalPrice <= price) {
+      return null;
+    }
+    final percent = ((1 - price / originalPrice) * 100).round();
+    return percent > 0 ? percent : null;
+  }
+
+  static int? _parseMoney(Object? value) =>
+      value is num ? value.toInt() : num.tryParse('$value')?.toInt();
+
+  factory ListingModel.fromJson(
+    Map<String, dynamic> json, {
+    String? apiBaseUrl,
+  }) {
     final location = json['location'];
     return ListingModel(
       id: '${json['id']}',
       ownerId: '${json['ownerId'] ?? ''}',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      price: price is num ? price.toInt() : num.tryParse('$price')?.toInt(),
+      price: _parseMoney(json['price']),
+      originalPrice: _parseMoney(json['originalPrice']),
       isNegotiable: json['isNegotiable'] as bool? ?? true,
       condition: ListingCondition.fromApi(json['condition'] as String?),
       status:
@@ -76,7 +112,10 @@ class ListingModel extends Equatable {
       allowSale: json['allowSale'] as bool? ?? true,
       allowExchange: json['allowExchange'] as bool? ?? false,
       images: [
-        for (final image in json['images'] as List? ?? const []) '$image',
+        for (final image in json['images'] as List? ?? const [])
+          '$image'.startsWith('/api/')
+              ? '${Uri.parse(apiBaseUrl ?? AppEnvironment.apiBaseUrl).origin}$image'
+              : '$image',
       ],
       viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
       createdAt: DateTime.tryParse('${json['createdAt']}'),
@@ -90,6 +129,26 @@ class ListingModel extends Equatable {
       geoPoint: location is Map && location['latitude'] != null
           ? GeoPoint.fromJson(Map<String, dynamic>.from(location))
           : null,
+      address:
+          location is Map &&
+              location['province'] is Map &&
+              location['ward'] is Map
+          ? AddressInfo.fromJson({
+              ...Map<String, dynamic>.from(location),
+              'geoPoint': location['latitude'] == null
+                  ? null
+                  : {
+                      'latitude': location['latitude'],
+                      'longitude': location['longitude'],
+                    },
+              'isGeoPointFromDevice': location['geoSource'] == 'device',
+            })
+          : null,
+      sellerName: (json['owner'] as Map?)?['fullName'] as String? ?? '',
+      exchangeWish: json['exchangeWish'] as String? ?? '',
+      reviewReason: json['reviewReason'] as String?,
+      sellerType: json['sellerType'] as String? ?? 'PERSONAL',
+      isFavorite: json['isFavorite'] == true,
     );
   }
 
@@ -100,6 +159,7 @@ class ListingModel extends Equatable {
     title,
     description,
     price,
+    originalPrice,
     isNegotiable,
     condition,
     status,
@@ -114,5 +174,11 @@ class ListingModel extends Equatable {
     provinceCode,
     wardCode,
     geoPoint,
+    address,
+    sellerName,
+    exchangeWish,
+    reviewReason,
+    sellerType,
+    isFavorite,
   ];
 }
