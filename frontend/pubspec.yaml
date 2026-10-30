@@ -91,6 +91,11 @@ flutter:
   uses-material-design: true
   generate: true
 
+  fonts:
+    - family: DM Sans
+      fonts:
+        - asset: assets/fonts/DM_Sans.ttf
+
   # Assets:
   assets:
     - assets/icons/

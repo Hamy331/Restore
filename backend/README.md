@@ -18,7 +18,7 @@ Hệ thống được xây dựng theo hướng **Modular/Clean Architecture**, 
 | **Prisma**         | ORM                       |
 | **JWT**            | Authentication            |
 | **bcrypt**         | Password Hashing          |
-| **Socket.IO**      | Real-time Communication   |
+| **SSE + REST**     | Chat events and message API |
 | **Cloudinary**     | Image Storage             |
 | **GitHub Actions** | CI/CD                     |
 
@@ -90,12 +90,38 @@ backend/
 
 ### 💬 Real-time Chat
 
-Sử dụng **Socket.IO** để hỗ trợ:
+Chat hiện dùng REST và Server-Sent Events (SSE) để hỗ trợ:
 
 - Buyer ↔ Seller messaging
 - Real-time messages
 - Real-time notifications
 - Conversation management
+
+### API hồ sơ và chat đã triển khai
+
+Tất cả endpoint dưới đây yêu cầu `Authorization: Bearer <accessToken>`.
+
+| Chức năng | Endpoint |
+| --- | --- |
+| Hồ sơ của tôi / cập nhật | `GET /api/v1/users/me`, `PATCH /api/v1/users/me` |
+| Xem hồ sơ, theo dõi | `GET /api/v1/users/:id`, `POST/DELETE /api/v1/users/:id/follow` |
+| Báo đang hoạt động | `POST /api/v1/users/me/heartbeat` |
+| Danh sách / tạo cuộc trò chuyện | `GET/POST /api/v1/conversations` |
+| Chi tiết / tin nhắn | `GET /api/v1/conversations/:id`, `GET/POST /api/v1/conversations/:id/messages` |
+| Đã đọc / số chưa đọc | `POST /api/v1/conversations/:id/read`, `GET /api/v1/conversations/unread-count` |
+| Sự kiện thời gian thực | `GET /api/v1/conversations/events` (SSE: `message`, `read`, `presence`) |
+
+`POST /conversations` nhận `{ "recipientId": "<userId>" }` và không tạo trùng cặp người dùng.
+Gửi tin nhận `{ "clientId": "<id-duy-nhat>", "text": "..." }`; dùng lại `clientId`
+với cùng nội dung trả về tin đã gửi, tránh gửi trùng khi mạng chập chờn. API chỉ cho thành viên
+đọc và gửi tin trong cuộc trò chuyện. Danh sách tin nhắn hỗ trợ `limit` (1–100) và `before`
+(sequence của trang trước). Heartbeat gửi mỗi 60 giây khi ứng dụng mở; người dùng được coi là
+online trong 2 phút sau heartbeat cuối. SSE chạy trong một tiến trình backend; khi triển khai
+nhiều instance cần chia sẻ sự kiện qua Redis/pub-sub.
+
+Trước khi chạy API trên database mới, cấu hình `DATABASE_URL`, `DIRECT_URL` và chạy
+`npx prisma migrate deploy`. Migration mới chỉ thêm trường hồ sơ/presence và bảng theo dõi,
+không thay đổi bảng Listing.
 
 ### 🚨 Reports
 

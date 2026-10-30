@@ -21,6 +21,9 @@ class AppIcons {
   static const IconData chevronDown = LucideIcons.chevronDown300;
   static const IconData arrowUp = LucideIcons.arrowUp400;
   static const IconData more = LucideIcons.ellipsisVertical300;
+  static const IconData menu = LucideIcons.menu300;
+  static const IconData activity = LucideIcons.footprints300;
+  static const IconData followUser = LucideIcons.userRoundPlus300;
   static const IconData filter = LucideIcons.slidersHorizontal300;
 
   // Thanh điều hướng chính
@@ -85,6 +88,8 @@ class AppIcons {
   static const IconData sparkleActive = LucideIcons.sparkles500;
   static const IconData trendUp = LucideIcons.trendingUp300;
   static const IconData wallet = LucideIcons.wallet300;
+  static const IconData pro = LucideIcons.crown300;
+  static const IconData store = LucideIcons.store300;
 
   // Ảnh
   static const IconData addPhoto = LucideIcons.imagePlus300;
