@@ -17,6 +17,7 @@ import 'modules/auth/bloc/auth_event.dart';
 import 'modules/auth/bloc/auth_state.dart';
 import 'modules/auth/repositories/auth_repository.dart';
 import 'modules/auth/auth_route_guard.dart';
+import 'modules/chat/widgets/presence_reporter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
@@ -51,38 +52,40 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (context) => LanguageBloc()),
       ],
-      child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          final path = appRouter.routeInformationProvider.value.uri.path;
-          if (state is AuthAuthenticated && isPublicAuthPath(path)) {
-            appRouter.go('/home');
-          } else if (state is AuthUnauthenticated && !isPublicRoute(path)) {
-            appRouter.go('/welcome');
-          }
-        },
-        child: ScreenUtilInit(
-          designSize: const Size(375, 812),
-          minTextAdapt: true,
-          splitScreenMode: false,
-          builder: (context, child) {
-            return BlocBuilder<LanguageBloc, LanguageState>(
-              builder: (context, languageState) {
-                return MaterialApp.router(
-                  debugShowCheckedModeBanner: false,
-                  locale: languageState.locale,
-                  localizationsDelegates: const [
-                    AppLocalizations.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
-                  supportedLocales: const [Locale('en'), Locale('vi')],
-                  theme: AppTheme.lightTheme,
-                  routerConfig: appRouter,
-                );
-              },
-            );
+      child: PresenceReporter(
+        child: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            final path = appRouter.routeInformationProvider.value.uri.path;
+            if (state is AuthAuthenticated && isPublicAuthPath(path)) {
+              appRouter.go('/home');
+            } else if (state is AuthUnauthenticated && !isPublicRoute(path)) {
+              appRouter.go('/welcome');
+            }
           },
+          child: ScreenUtilInit(
+            designSize: const Size(375, 812),
+            minTextAdapt: true,
+            splitScreenMode: false,
+            builder: (context, child) {
+              return BlocBuilder<LanguageBloc, LanguageState>(
+                builder: (context, languageState) {
+                  return MaterialApp.router(
+                    debugShowCheckedModeBanner: false,
+                    locale: languageState.locale,
+                    localizationsDelegates: const [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    supportedLocales: const [Locale('en'), Locale('vi')],
+                    theme: AppTheme.lightTheme,
+                    routerConfig: appRouter,
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

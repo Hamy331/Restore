@@ -33,6 +33,8 @@ model User {
   username       String        @unique
   phone          String?
   avatarUrl      String?
+  bio            String?        @db.VarChar(300)
+  lastActiveAt   DateTime?
   role           Role          @default(USER)
   status         AccountStatus @default(UNVERIFIED)
   suspendedUntil DateTime?
@@ -57,7 +59,21 @@ model User {
   promotions     Promotion[]
   promotionOrders PromotionOrder[]
 
+  followers      UserFollow[]  @relation("FollowedUser")
+  following      UserFollow[]  @relation("FollowingUser")
+
   @@index([status, suspendedUntil])
+}
+
+model UserFollow {
+  followerId String
+  followingId String
+  createdAt DateTime @default(now())
+  follower User @relation("FollowingUser", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("FollowedUser", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followingId])
 }
 
 model Conversation {
