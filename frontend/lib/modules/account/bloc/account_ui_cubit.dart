@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/core/blocs/safe_emit.dart';
 
 class EditProfileState {
   const EditProfileState({
@@ -34,7 +35,8 @@ class EditProfileState {
   );
 }
 
-class EditProfileCubit extends Cubit<EditProfileState> {
+class EditProfileCubit extends Cubit<EditProfileState>
+    with SafeEmit<EditProfileState> {
   EditProfileCubit() : super(const EditProfileState());
 
   void nameChanged(String value) => emit(state.copyWith(name: value));
@@ -45,7 +47,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   void submitted() => emit(state.copyWith(saved: true));
 }
 
-class SettingsCubit extends Cubit<bool> {
+class SettingsCubit extends Cubit<bool> with SafeEmit<bool> {
   SettingsCubit() : super(true);
 
   void notificationsChanged(bool value) => emit(value);
@@ -70,7 +72,7 @@ class ReviewState {
       );
 }
 
-class ReviewCubit extends Cubit<ReviewState> {
+class ReviewCubit extends Cubit<ReviewState> with SafeEmit<ReviewState> {
   ReviewCubit() : super(const ReviewState());
 
   void ratingChanged(int value) => emit(state.copyWith(rating: value));
@@ -100,7 +102,7 @@ class ReportState {
   );
 }
 
-class ReportCubit extends Cubit<ReportState> {
+class ReportCubit extends Cubit<ReportState> with SafeEmit<ReportState> {
   ReportCubit() : super(const ReportState());
 
   void reasonChanged(String value) => emit(state.copyWith(reason: value));

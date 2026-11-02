@@ -2,8 +2,9 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/auth_repository.dart';
 import 'otp_state.dart';
+import 'package:restore/core/blocs/safe_emit.dart';
 
-class OtpCubit extends Cubit<OtpState> {
+class OtpCubit extends Cubit<OtpState> with SafeEmit<OtpState> {
   final AuthRepository? _authRepository;
 
   OtpCubit([this._authRepository])

@@ -69,6 +69,10 @@ String? authRouteRedirect(AuthState authState, Uri uri) {
   return null;
 }
 
+/// Trang đăng nhập, đăng nhập xong quay lại [from]
+String loginPath({String? from}) =>
+    from == null ? '/login' : _withFrom('/login', from);
+
 String _withFrom(String path, String from) =>
     Uri(path: path, queryParameters: {'from': from}).toString();
 

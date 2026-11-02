@@ -17,8 +17,10 @@ class AuthMockData {
       'email': 'minhanh@example.com',
       'fullName': 'Nguyễn Minh Anh',
       'username': 'minhanh',
+      'phone': '0901231234',
       'role': 'USER',
       'status': 'ACTIVE',
+      'createdAt': '2022-03-15T08:00:00.000Z',
     },
     {
       'id': 'user_admin',
@@ -27,6 +29,7 @@ class AuthMockData {
       'username': 'admin',
       'role': 'ADMIN',
       'status': 'ACTIVE',
+      'createdAt': '2024-01-02T08:00:00.000Z',
     },
   ];
 }

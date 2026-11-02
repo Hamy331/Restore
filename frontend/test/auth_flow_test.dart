@@ -34,6 +34,23 @@ Map<String, String> _fakeSecureStorage() {
   return values;
 }
 
+/// Repository giả: người dùng lưu sẵn trên máy + kết quả hỏi máy chủ (chờ [server])
+class _CachedSessionRepository implements AuthRepository {
+  _CachedSessionRepository(this.cached, this.server);
+
+  final UserModel? cached;
+  final Completer<UserModel?> server;
+
+  @override
+  Future<UserModel?> cachedUser() async => cached;
+
+  @override
+  Future<UserModel?> restoreSession() => server.future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -118,6 +135,62 @@ void main() {
     });
   });
 
+  group('người dùng lưu sẵn trên máy', () {
+    const fresh = UserModel(
+      id: 'u1',
+      email: 'a@b.c',
+      fullName: 'A Mới',
+      username: 'a',
+    );
+
+    test(
+      'mở app vào ngay bằng người dùng đã lưu, rồi cập nhật từ máy chủ',
+      () async {
+        final server = Completer<UserModel?>();
+        final bloc = AuthBloc(_CachedSessionRepository(user, server))
+          ..add(const AuthCheckRequested());
+        final states = <AuthState>[];
+        final sub = bloc.stream.listen(states.add);
+        await pumpEventQueue();
+        // Chưa có phản hồi máy chủ mà đã vào app
+        expect(states, [const AuthAuthenticated(user)]);
+        server.complete(fresh);
+        await pumpEventQueue();
+        expect(states, [
+          const AuthAuthenticated(user),
+          const AuthAuthenticated(fresh),
+        ]);
+        await sub.cancel();
+        await bloc.close();
+      },
+    );
+
+    test(
+      'máy chủ từ chối phiên đã lưu thì về đăng nhập, báo hết hạn',
+      () async {
+        final bloc = AuthBloc(
+          _CachedSessionRepository(user, Completer()..complete(null)),
+        )..add(const AuthCheckRequested());
+        await expectLater(
+          bloc.stream,
+          emitsInOrder([
+            const AuthAuthenticated(user),
+            const AuthUnauthenticated(sessionExpired: true),
+          ]),
+        );
+        await bloc.close();
+      },
+    );
+
+    test('chưa từng đăng nhập thì không có người dùng lưu sẵn', () async {
+      final bloc = AuthBloc(
+        _CachedSessionRepository(null, Completer()..complete(null)),
+      )..add(const AuthCheckRequested());
+      await expectLater(bloc.stream, emits(const AuthUnauthenticated()));
+      await bloc.close();
+    });
+  });
+
   group('MockAuthRepository + AuthBloc', () {
     late Map<String, String> storage;
     setUp(() => storage = _fakeSecureStorage());
@@ -130,6 +203,8 @@ void main() {
       );
       expect(signedIn.fullName, 'Nguyễn Minh Anh');
       expect(storage, isNotEmpty);
+      // Người dùng được lưu cùng phiên, đọc lại không cần mạng
+      expect((await repository.cachedUser())?.id, 'user_me');
 
       // "Mở lại app": bloc mới, repository mới, cùng storage
       final bloc = AuthBloc(MockAuthRepository(latency: Duration.zero))
@@ -157,6 +232,7 @@ void main() {
       await repository.logout();
       expect(storage, isEmpty);
       expect(await repository.restoreSession(), isNull);
+      expect(await repository.cachedUser(), isNull);
     });
 
     test('đăng ký, xác minh OTP thì đăng nhập luôn', () async {

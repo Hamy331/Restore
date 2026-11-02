@@ -45,9 +45,14 @@
   "invalidOtpError": "Invalid OTP. Please check and try again.",
   "accountTitle": "Account",
   "settingsTitle": "Settings",
-  "profileName": "Ngo Tuong Phat",
-  "memberSince2022": "Member since 2022",
-  "maskedPhoneArea": "090 ••• 1234 · District 1, HCMC",
+  "memberSince": "Member since {year}",
+  "@memberSince": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
+  },
   "editProfile": "Edit profile",
   "activeListings": "Active listings",
   "soldListings": "Sold listings",

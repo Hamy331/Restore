@@ -5,8 +5,10 @@ import '../../repositories/listings_repository.dart';
 import '../../repositories/posting_quota_repository.dart';
 import 'create_listing_event.dart';
 import 'create_listing_state.dart';
+import 'package:restore/core/blocs/safe_emit.dart';
 
-class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState> {
+class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
+    with SafeEmit<CreateListingState> {
   CreateListingBloc({
     required ListingsRepository listingsRepository,
     required CategoryRepository categoryRepository,

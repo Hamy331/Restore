@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+/// Phiên đăng nhập lưu trên máy: access / refresh token và bản sao người dùng
+/// (để mở app hiện ngay, không chờ gọi /auth/me).
 class TokenStorage {
   TokenStorage({FlutterSecureStorage? storage})
     : _storage = storage ?? const FlutterSecureStorage();
@@ -7,6 +11,7 @@ class TokenStorage {
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
   static const _legacyTokenKey = 'jwt_token';
+  static const _userKey = 'session_user';
   final FlutterSecureStorage _storage;
 
   Future<String?> readAccessToken() async =>
@@ -38,7 +43,23 @@ class TokenStorage {
     await _storage.delete(key: _legacyTokenKey);
   }
 
+  /// Người dùng của phiên đang lưu (JSON giống `user` của API /auth)
+  Future<Map<String, dynamic>?> readUser() async {
+    final value = await _read(_userKey);
+    if (value == null) return null;
+    try {
+      final json = jsonDecode(value);
+      return json is Map ? Map<String, dynamic>.from(json) : null;
+    } on FormatException {
+      return null;
+    }
+  }
+
+  Future<void> writeUser(Map<String, dynamic> user) =>
+      _storage.write(key: _userKey, value: jsonEncode(user));
+
   Future<void> clear() async {
+    await _storage.delete(key: _userKey);
     await _storage.delete(key: _accessTokenKey);
     await _storage.delete(key: _refreshTokenKey);
     await _storage.delete(key: _legacyTokenKey);

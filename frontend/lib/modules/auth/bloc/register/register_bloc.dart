@@ -2,8 +2,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/auth_repository.dart';
 import 'register_event.dart';
 import 'register_state.dart';
+import 'package:restore/core/blocs/safe_emit.dart';
 
-class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
+class RegisterBloc extends Bloc<RegisterEvent, RegisterState>
+    with SafeEmit<RegisterState> {
   final AuthRepository _authRepository;
 
   RegisterBloc(this._authRepository) : super(RegisterInitial()) {

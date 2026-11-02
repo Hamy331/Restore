@@ -278,23 +278,11 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsTitle;
 
-  /// No description provided for @profileName.
+  /// No description provided for @memberSince.
   ///
   /// In en, this message translates to:
-  /// **'Ngo Tuong Phat'**
-  String get profileName;
-
-  /// No description provided for @memberSince2022.
-  ///
-  /// In en, this message translates to:
-  /// **'Member since 2022'**
-  String get memberSince2022;
-
-  /// No description provided for @maskedPhoneArea.
-  ///
-  /// In en, this message translates to:
-  /// **'090 ••• 1234 · District 1, HCMC'**
-  String get maskedPhoneArea;
+  /// **'Member since {year}'**
+  String memberSince(String year);
 
   /// No description provided for @editProfile.
   ///
