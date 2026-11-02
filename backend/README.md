@@ -273,8 +273,8 @@ Tất cả endpoint nằm dưới tiền tố `/api/v1`. Tài liệu đầy đ�
 | `/home`            | home            |
 | `/catalog`         | catalog         |
 | `/listings`        | listings        |
-| `/stores`          | stores          |
-| `/promotions`      | promotions      |
+| `/stores`          | commerce        |
+| `/promotions`      | commerce        |
 | `/wanted-alerts`   | wanted-alerts   |
 | `/content`         | content         |
 | `/admin`           | admin           |
@@ -335,7 +335,7 @@ Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước v�
 | C5–C6 | `users`, `home` sang mẫu phẳng | ✅ |
 | C7 | README quy ước module | ✅ |
 | C8–C15 | `listings` sang mẫu nhóm: feed, favorites, tin, nháp, ảnh, duyệt tin, bỏ `listing.route.ts` | ✅ |
-| C16–C18 | `commerce`: gộp `stores` + `promotions`, logic duyệt đơn vào service | |
+| C16–C18 | `commerce`: gộp `stores` + `promotions`, logic duyệt đơn vào service | ✅ |
 | C19–C21 | `content` tách khỏi `admin`, `admin` sang mẫu nhóm | |
 | C22 | `auth` dùng zod, bỏ `common/validation/parsers.ts` | |
 | C23 | `catalog`: dữ liệu vào `prisma/seed.ts`, mẫu phẳng | |

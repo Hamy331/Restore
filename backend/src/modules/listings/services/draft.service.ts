@@ -1,6 +1,6 @@
 import { ListingStatus } from '@prisma/client';
 import { AppError } from '../../../common/errors/app-error.js';
-import { withQuotaTransaction } from '../../stores/store.service.js';
+import { withQuotaTransaction } from '../../commerce/index.js';
 import { DraftInput, toOwnerListingDto } from '../listing.dto.js';
 import { DRAFT_EDITABLE } from '../listing.type.js';
 import { createInput, validateAttributes } from '../listing.validator.js';

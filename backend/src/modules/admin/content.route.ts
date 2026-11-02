@@ -7,7 +7,7 @@ import { AuthRequest, verifyToken, authorizeRoles } from '../../middlewares/auth
 import { AppError } from '../../common/errors/app-error.js';
 import { imageExtension } from '../listings/index.js';
 import { audit, choice, normalizeKnowledge, object, page, text } from './admin.service.js';
-import { withQuotaTransaction } from '../stores/store.service.js';
+import { withQuotaTransaction } from '../commerce/index.js';
 
 const router = Router();
 const handler = (fn:(req:AuthRequest)=>Promise<unknown>)=>async(req:AuthRequest,res:import('express').Response,next:import('express').NextFunction)=>{
