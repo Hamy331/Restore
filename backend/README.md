@@ -84,18 +84,18 @@ Restore/
     │   │   └── supabase.ts          # Supabase client (service role) cho Storage
     │   │
     │   ├── middlewares/
-    │   │   ├── auth.middleware.ts   # verifyToken, authorizeRoles, requireAuth, optionalAuth
-    │   │   ├── validate.middleware.ts
+    │   │   ├── auth.middleware.ts   # requirePermission, optionalAuth, verifyToken
+    │   │   ├── validate.middleware.ts # validate({ query, params, body }) bằng schema zod
     │   │   ├── request-id.middleware.ts
     │   │   ├── require-json.middleware.ts
     │   │   ├── error.middleware.ts
     │   │   └── logger.middleware.ts
     │   │
     │   ├── common/
+    │   │   ├── auth/permissions.ts  # PERMISSION + bảng vai trò → quyền
     │   │   ├── errors/app-error.ts
     │   │   ├── http/response.ts     # ok(), created(), noContent(), paginated()
-    │   │   ├── http/pagination.ts   # Đọc page/limit từ query
-    │   │   └── validation/parsers.ts # Hàm kiểm tra đầu vào dùng chung
+    │   │   └── validation/schemas.ts # Schema zod dùng lại: pageQuery, coordinates, idParam, str, int...
     │   │
     │   ├── jobs/
     │   │   └── account-status.job.ts # Tự mở khóa tài khoản hết hạn tạm khóa
@@ -106,17 +106,16 @@ Restore/
     │   │
     │   ├── docs/swagger/            # File *.swagger.yaml theo module
     │   │
-    │   └── modules/
-    │       ├── auth/                # Đăng ký, đăng nhập, OTP, refresh token
-    │       ├── users/               # Hồ sơ người dùng, /users/me, khu vực gần đây
-    │       ├── home/                # Banner và khu vực mặc định của trang chủ
-    │       ├── catalog/             # Danh mục, tỉnh/phường, tình trạng sản phẩm
-    │       ├── listings/            # Tin đăng, nháp, ảnh; feed/ (danh sách, gợi ý), favorites/ (lưu tin)
-    │       ├── stores/              # Gói cửa hàng, đơn mua gói
-    │       ├── promotions/          # Gói đẩy tin, đơn đẩy tin
-    │       ├── wanted-alerts/       # Thẻ báo tin khớp nhu cầu
-    │       ├── content/             # Bài viết, báo cáo vi phạm, ticket hỗ trợ, tri thức AI
-    │       └── admin/               # Kiểm duyệt, quản lý người dùng, thống kê, audit
+    │   └── modules/                 # (P) = mẫu phẳng, (N) = mẫu nhóm
+    │       ├── auth/            (P) # Đăng ký, đăng nhập, OTP, refresh token
+    │       ├── users/           (P) # Hồ sơ người dùng, /users/me
+    │       ├── home/            (P) # Banner và khu vực của trang chủ
+    │       ├── catalog/         (P) # Danh mục, tỉnh/phường, tình trạng sản phẩm
+    │       ├── wanted-alerts/   (P) # Thẻ báo tin khớp nhu cầu
+    │       ├── listings/        (N) # Tin đăng, nháp, ảnh, feed, lưu tin, duyệt tin
+    │       ├── commerce/        (N) # Gói cửa hàng, gói đẩy tin, đơn mua (gộp stores + promotions)
+    │       ├── content/         (N) # Bài viết, báo cáo vi phạm, ticket hỗ trợ, tri thức AI
+    │       └── admin/           (N) # Quản lý người dùng, thống kê, audit
     │
     ├── scripts/                     # Script vận hành (verify-admin, ...)
     ├── .env.example
@@ -124,40 +123,98 @@ Restore/
     └── tsconfig.json
 ```
 
-### Cấu trúc bên trong một module
+### Quy ước module
 
-Ví dụ với `listings`:
+Có hai mẫu. Dùng **mẫu phẳng** khi module chỉ có một thực thể chính; chuyển sang **mẫu nhóm** khi có từ 2 thực thể con trở lên, mỗi thực thể có route riêng. Tín hiệu nên chuyển: một file vượt khoảng 250 dòng, hoặc bắt đầu có thực thể thứ hai.
+
+**Mẫu phẳng** (ví dụ `home`): mỗi lớp một file ở gốc module.
+
+```text
+modules/home/
+├── index.ts               # export homeRouter và hàm service module khác được dùng
+├── home.route.ts
+├── home.controller.ts
+├── home.service.ts
+├── home.repository.ts
+├── home.validator.ts      # schema zod
+├── home.dto.ts            # kiểu vào (z.output) + kiểu ra + toXxxDto()
+├── home.type.ts           # hằng số, kiểu nội bộ
+└── home.test.ts
+```
+
+**Mẫu nhóm** (ví dụ `listings`): mỗi lớp một thư mục, mỗi thực thể con một file; validator, dto, type vẫn mỗi loại một file chung ở gốc.
 
 ```text
 modules/listings/
-├── listing.route.ts        # Khai báo endpoint + middleware, KHÔNG chứa logic
-├── listing.controller.ts   # Đọc req, gọi service, trả res qua ok()/paginated()
-├── listing.service.ts      # Nghiệp vụ: quota, trạng thái, tính isFeatured...
-├── listing.repository.ts   # Truy vấn Prisma / $queryRaw, chỉ lớp này import prisma
-├── listing.validation.ts   # Kiểm tra body/query, trả về DTO đã làm sạch
-├── listing.mapper.ts       # Chuyển bản ghi Prisma sang JSON trả cho app
-├── listing.types.ts        # DTO, kiểu dữ liệu của module
-└── __tests__/
-    └── listing.service.test.ts
+├── index.ts
+├── listing.validator.ts
+├── listing.dto.ts
+├── listing.type.ts
+├── routes/          listing.route.ts, draft.route.ts, image.route.ts, feed.route.ts, favorite.route.ts, moderation.route.ts
+├── controllers/     listing.controller.ts, draft.controller.ts, ...
+├── services/        listing.service.ts, draft.service.ts, ...
+└── repositories/    listing.repository.ts, favorite.repository.ts, ...
 ```
+
+Mỗi file một việc:
+
+| File | Chứa gì | Không được chứa |
+| ---- | ------- | --------------- |
+| `index.ts` | Export router và các hàm service module khác được dùng | Logic |
+| `*.route.ts` | Khai báo endpoint + middleware + ghi chú ngắn | Kiểm tra dữ liệu, truy vấn |
+| `*.controller.ts` | Đọc `getInput(res)`, gọi service, trả `ok()` / `created()` / `paginated()` | Nghiệp vụ, `prisma` |
+| `*.service.ts` | Nghiệp vụ, transaction, ném `AppError` | `req`, `res` |
+| `*.repository.ts` | Truy vấn Prisma / `$queryRaw` | Quy tắc nghiệp vụ |
+| `*.validator.ts` | Schema zod cho query, params, body | |
+| `*.dto.ts` | Kiểu vào suy ra từ schema, kiểu ra và hàm map `toXxxDto()` | |
+| `*.type.ts` | Hằng số, hàng SQL thô, enum riêng module | Kiểu trả ra API |
+
+Quy tắc:
+
+- Chỉ repository được import `prisma`.
+- Module khác dùng dữ liệu của module này qua `index.ts` (service), không import repository hay file lẻ.
+- Không dùng `*.module.ts` (Express không có cơ chế inject như NestJS, `index.ts` đã làm việc này).
+- Không cần `asyncWrapper` hay `try/catch` trong controller: Express 5 tự chuyển lỗi async sang `errorHandler`.
+- Lỗi nghiệp vụ ném `AppError(status, code, message, field?)`.
+- Phân quyền theo **permission**, không kiểm tra vai trò trực tiếp. Thêm hoặc đổi quyền chỉ sửa `common/auth/permissions.ts` (và bảng mong đợi trong `permissions.test.ts`).
 
 Luồng xử lý:
 
 ```text
 Request
-  → route        (verifyToken / optionalAuth / authorizeRoles / validate)
-  → controller   (lấy tham số, gọi service)
+  → route        (requirePermission / optionalAuth, requireJson, validate)
+  → controller   (getInput, gọi service)
   → service      (nghiệp vụ, transaction)
   → repository   (Prisma)
   → PostgreSQL (Supabase)
 ```
 
-Quy ước:
+Mẫu route và ghi chú. Ghi chú chỉ mô tả và tham số; quyền và header đọc được từ middleware, mã lỗi chung nằm trong README này.
 
-- File route chỉ gắn middleware và controller. Không gọi `prisma` trong route hoặc controller.
-- Module khác muốn dùng dữ liệu của module này thì gọi **service** của nó, không gọi repository.
-- Lỗi nghiệp vụ ném `AppError(status, code, message)`, `error.middleware.ts` chuyển thành JSON.
-- Mỗi module có file Swagger riêng trong `src/docs/swagger/`.
+```ts
+/**
+ * Sửa banner, chỉ cập nhật trường được gửi, ghi AdminAudit
+ *
+ * Path params:
+ *  - id: string - mã banner
+ *
+ * Body: như khi tạo, mọi trường đều không bắt buộc
+ */
+homeRouter.put(
+  '/admin/banners/:id',
+  requirePermission(PERMISSION.BANNER_MANAGE),
+  requireJson,
+  validate({ params: bannerIdParams, body: bannerBody(true) }),
+  homeController.adminUpdateBanner,
+);
+```
+
+Validator dùng schema dùng chung trong `common/validation/schemas.ts`; lỗi zod được đổi thành `AppError` 400 với đúng `code` và `field`:
+
+```ts
+export const favoritesQuery = pageQuery({ defaultLimit: 20, maxLimit: 100 });  // → { page, limit, skip }
+export const listingIdParams = idParam(64);                                      // → { id }
+```
 
 ---
 
@@ -185,6 +242,19 @@ Lỗi:
 ```json
 { "success": false, "error": "Tin không còn hiển thị.", "code": "LISTING_NOT_FOUND" }
 ```
+
+Lỗi đầu vào có thêm `field` (tên trường sai). Mã lỗi chung:
+
+| Status | code | Khi nào |
+| ------ | ---- | ------- |
+| 400 | `INVALID_INPUT` (hoặc mã riêng như `INVALID_LOCATION`) | Query, params, body sai |
+| 401 | `AUTH_REQUIRED` | Thiếu `Authorization` |
+| 401 | `INVALID_ACCESS_TOKEN` | Token sai hoặc hết hạn, app refresh rồi gọi lại |
+| 401 | `SESSION_REVOKED` | Token cũ sau khi đổi mật khẩu / đăng xuất mọi nơi |
+| 401 | `ACCOUNT_UNAVAILABLE` | Tài khoản bị khóa hoặc không còn |
+| 403 | `FORBIDDEN` | Vai trò không có quyền cần thiết |
+| 404 | `*_NOT_FOUND` | Không tìm thấy |
+| 415 | `UNSUPPORTED_MEDIA_TYPE` | API nhận JSON nhưng thiếu `Content-Type: application/json` |
 
 App Flutter đang đọc đúng dạng lỗi này, nên giữ nguyên khi tái cấu trúc.
 
@@ -215,28 +285,28 @@ App Flutter (`frontend/lib/modules/home/repositories/home_repository.dart`, lớ
 
 Ghi chú chi tiết (header, tham số, kết quả, mã lỗi) nằm ngay trên từng route trong file `*.route.ts`.
 
-| Endpoint | Quyền | Mô tả | File |
-| -------- | ----- | ----- | ---- |
-| `GET /users/me` | USER, ADMIN | Hồ sơ người đang đăng nhập | `modules/users/users.route.ts` |
+| Endpoint | Quyền (permission) | Mô tả | File |
+| -------- | ------------------ | ----- | ---- |
+| `GET /users/me` | `PROFILE_READ` | Hồ sơ người đang đăng nhập | `modules/users/users.route.ts` |
 | `GET /home/area?provinceCode=&latitude=&longitude=` | Công khai | Tên khu vực, mặc định `Toàn quốc` | `modules/home/home.route.ts` |
 | `GET /home/banners` | Công khai | Banner đang chạy `{ id, imageUrl, route }` | `modules/home/home.route.ts` |
-| `GET /home/admin/banners` | ADMIN | Toàn bộ banner | `modules/home/home.route.ts` |
-| `POST /home/admin/banners` | ADMIN | Tạo banner (ghi AdminAudit) | `modules/home/home.route.ts` |
-| `PUT /home/admin/banners/:id` | ADMIN | Sửa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
-| `DELETE /home/admin/banners/:id` | ADMIN | Xóa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
+| `GET /home/admin/banners` | `BANNER_MANAGE` | Toàn bộ banner | `modules/home/home.route.ts` |
+| `POST /home/admin/banners` | `BANNER_MANAGE` | Tạo banner (ghi AdminAudit) | `modules/home/home.route.ts` |
+| `PUT /home/admin/banners/:id` | `BANNER_MANAGE` | Sửa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
+| `DELETE /home/admin/banners/:id` | `BANNER_MANAGE` | Xóa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
 | `GET /categories` | Công khai | Danh mục cho thanh danh mục | `modules/catalog/catalog.ts` |
 | `GET /listings?filter=newest\|nearby\|exchange&page=1&limit=10` | Công khai, token tùy chọn | Tin mới nhất / gần bạn / trao đổi, có phân trang | `modules/listings/feed/feed.route.ts` |
 | `GET /listings/recommended?limit=10` | Công khai, token tùy chọn | Tin gợi ý (đang đẩy nổi bật) | `modules/listings/feed/feed.route.ts` |
-| `GET /listings/favorites` | USER | Tin đã lưu, có phân trang | `modules/listings/favorites/favorite.route.ts` |
-| `GET /listings/:id/favorite` | USER | Đã lưu tin chưa | `modules/listings/favorites/favorite.route.ts` |
-| `POST` (hoặc `PUT`) `/listings/:id/favorite` | USER | Lưu tin | `modules/listings/favorites/favorite.route.ts` |
-| `DELETE /listings/:id/favorite` | USER | Bỏ lưu tin | `modules/listings/favorites/favorite.route.ts` |
+| `GET /listings/favorites` | USER (`FAVORITE_READ`) | Tin đã lưu, có phân trang | `modules/listings/favorites/favorite.route.ts` |
+| `GET /listings/:id/favorite` | USER (`FAVORITE_READ`) | Đã lưu tin chưa | `modules/listings/favorites/favorite.route.ts` |
+| `POST` (hoặc `PUT`) `/listings/:id/favorite` | USER (`FAVORITE_WRITE`) | Lưu tin | `modules/listings/favorites/favorite.route.ts` |
+| `DELETE /listings/:id/favorite` | USER (`FAVORITE_WRITE`) | Bỏ lưu tin | `modules/listings/favorites/favorite.route.ts` |
 
 Header:
 
 | Header | Khi nào |
 | ------ | ------- |
-| `Authorization: Bearer <accessToken>` | Bắt buộc với API có quyền USER/ADMIN. Với API công khai thì không bắt buộc, nhưng nếu gửi thì token phải hợp lệ (sai hoặc hết hạn trả 401 để app refresh token). |
+| `Authorization: Bearer <accessToken>` | Bắt buộc với API cần permission. Với API công khai thì không bắt buộc, nhưng nếu gửi thì token phải hợp lệ (sai hoặc hết hạn trả 401 để app refresh token). |
 | `Content-Type: application/json` | Bắt buộc với API nhận body JSON (thiếu trả 415). |
 | `Accept: application/json` | Nên gửi. |
 | `X-Request-Id` | Tùy chọn. Server luôn trả header này để dò log. |
@@ -246,29 +316,33 @@ Middleware dùng chung (`src/middlewares/`):
 | Middleware | Việc |
 | ---------- | ---- |
 | `requestId` | Gắn `X-Request-Id` cho mỗi request |
-| `verifyToken`, `authorizeRoles` | Kiểm tra JWT, trạng thái tài khoản, vai trò |
-| `requireAuth(...roles)` | Gộp hai middleware trên: `router.get('/x', ...requireAuth(Role.ADMIN), handler)` |
+| `requirePermission(...perms)` | Kiểm tra JWT, trạng thái tài khoản và quyền: `router.get('/x', requirePermission(PERMISSION.BANNER_MANAGE), handler)` |
+| `verifyToken`, `authorizeRoles`, `requireAuth` | Kiểu cũ theo vai trò, còn dùng ở các module chưa refactor, sẽ bỏ dần |
 | `optionalAuth` | Cho khách đi qua, có token thì xác thực để biết người xem |
 | `requireJson` | Bắt buộc `Content-Type: application/json` |
-| `validate({ query, params, body })` | Kiểm tra đầu vào bằng các hàm trong `*.validation.ts`, controller đọc lại bằng `getInput(res)` |
+| `validate({ query, params, body })` | Kiểm tra đầu vào bằng schema zod trong `*.validator.ts`, controller đọc lại bằng `getInput(res)` |
 | `notFoundHandler`, `errorHandler` | Trả lỗi theo định dạng chung |
 
 ---
 
-## 🛠 Lộ trình chuyển đổi cấu trúc
+## 🛠 Lộ trình refactor
 
-Làm theo thứ tự, mỗi bước một Pull Request, chạy `npm test` và `npm run build` trước khi merge.
+Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước và sau mỗi commit, `npm test` và `npm run test:api` phải xanh; snapshot JSON lệch thì dừng lại sửa code, không sửa snapshot cho khớp.
 
-1. ✅ **Khung ứng dụng** (xong app/server/routes, `common/`, `jobs/`): tách `src/index.ts` thành `app.ts`, `server.ts`, `routes.ts`. Chuyển `errors/` vào `common/errors/`, thêm `common/http/response.ts`. Chuyển `lib/account-status.ts` (có trên `main`) thành `jobs/account-status.job.ts`.
-2. **Script và database**:
-   - ✅ Thêm script `test`, `db:migrate`, `db:deploy`, `db:studio` vào `package.json` (còn `db:seed`).
-   - Chuyển `src/modules/catalog/catalog.json` thành dữ liệu seed trong `prisma/seed.ts`, bỏ `scripts/copy-catalog.mjs`.
-   - ✅ Bỏ `prisma.config.ts` vì Prisma 5.x không đọc file này (đường dẫn schema/migration và `DATABASE_URL`/`DIRECT_URL` đã khai báo trong `schema.prisma`). Khi nâng lên Prisma 6+ thì thêm lại.
-   - Bỏ `docker-compose.yml`, dùng `supabase start` cho database local.
-3. **Tách lớp từng module** theo mẫu ở trên: `listings` (file `listing.route.ts` đang dài hơn 500 dòng), `admin`, `stores`, `promotions`. Gộp các route nội dung đang nằm trong `admin/content.route.ts` (có trên `main`, nhánh `fix/product-detail` chưa có) vào module `content`. Đưa `wanted-alert.matcher.ts` vào module `wanted-alerts` và gắn router.
-4. ✅ **Module mới cho trang chủ**: `users` (`GET /users/me`), `home` (`GET /home/area`, `GET /home/banners` + bảng `HomeBanner`), chuẩn hóa `GET /listings` và `GET /listings/recommended` theo bảng API trang chủ ở trên.
-5. **Ảnh**: chuyển ảnh tin đăng và ảnh nội dung từ ổ đĩa `uploads/` sang Supabase Storage qua `services/storage.service.ts`. Trên Render/Railway, ổ đĩa bị xóa sau mỗi lần deploy nên ảnh hiện tại sẽ mất.
-6. **CI**: thêm bước `npm test` vào `.github/workflows/backend_ci.yml` và chạy `prisma migrate diff` để bắt schema lệch với migration.
+| # | Phạm vi | Trạng thái |
+| - | ------- | ---------- |
+| C0–C4 | Nền chung: contract test, zod, `schemas.ts`, `validate` dùng zod, permissions + `requirePermission` | ✅ |
+| C5–C6 | `users`, `home` sang mẫu phẳng | ✅ |
+| C7 | README quy ước module | ✅ |
+| C8–C15 | `listings` sang mẫu nhóm: feed, favorites, tin, nháp, ảnh, duyệt tin, bỏ `listing.route.ts` | |
+| C16–C18 | `commerce`: gộp `stores` + `promotions`, logic duyệt đơn vào service | |
+| C19–C21 | `content` tách khỏi `admin`, `admin` sang mẫu nhóm | |
+| C22 | `auth` dùng zod, bỏ `common/validation/parsers.ts` | |
+| C23 | `catalog`: dữ liệu vào `prisma/seed.ts`, mẫu phẳng | |
+| C24–C25 | Ảnh lên Supabase Storage, chuyển ảnh cũ | |
+| C26 | `wanted-alerts`: gắn router, bỏ code chết | |
+
+Còn lại ngoài lộ trình: bỏ `docker-compose.yml` (dùng `supabase start`), thêm `npm test` và `prisma migrate diff` vào `.github/workflows/backend_ci.yml`.
 
 ---
 
@@ -355,6 +429,14 @@ npm run dev        # Development, tự reload
 npm run build      # Build ra dist/
 npm start          # Chạy bản build
 npm test           # Unit test
+npm run test:api   # Contract test: gọi thật mọi API trên database thử, so với snapshot JSON
+```
+
+Contract test cần một Postgres thử (Supabase local hoặc Postgres bất kỳ). Test sẽ **reset** database này, và từ chối host không phải local trừ khi đặt `TEST_DB_ALLOW_REMOTE=1`:
+
+```bash
+TEST_DATABASE_URL="postgresql://postgres:postgres@localhost:54322/postgres" npm run test:api
+UPDATE_SNAPSHOTS=1 TEST_DATABASE_URL=... npm run test:api   # chỉ khi cố ý đổi API
 ```
 
 Server mặc định chạy tại `http://localhost:3000`, Swagger tại `http://localhost:3000/api-docs`.
