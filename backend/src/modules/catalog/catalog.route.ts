@@ -3,7 +3,7 @@ import { validate } from '../../middlewares/validate.middleware.js';
 import * as catalogController from './catalog.controller.js';
 import { provinceParams, reverseGeocodeQuery } from './catalog.validator.js';
 
-/** Dữ liệu tham chiếu công khai, gắn ở gốc /api/v1 */
+/** Dữ liệu tham chiếu công khai, gắn tại /api/v1/catalog */
 const catalogRouter = Router();
 
 /**

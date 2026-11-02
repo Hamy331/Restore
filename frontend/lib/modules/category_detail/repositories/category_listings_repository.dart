@@ -100,7 +100,7 @@ class MockCategoryListingsRepository implements CategoryListingsRepository {
 }
 
 /// Gọi backend:
-/// - `GET /categories/:id` → `{ data: Category }`
+/// - `GET /catalog/categories/:id` → `{ data: Category }`
 /// - `GET /listings?categoryId=&deal=&sort=&minPrice=&maxPrice=&condition=
 ///   &page=&limit=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
@@ -113,7 +113,7 @@ class ApiCategoryListingsRepository implements CategoryListingsRepository {
   @override
   Future<CategoryModel> getCategory(String categoryId) async {
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/categories/$categoryId',
+      '/catalog/categories/$categoryId',
     );
     final data = response.data?['data'];
     if (data is! Map) throw const FormatException('Missing response data');

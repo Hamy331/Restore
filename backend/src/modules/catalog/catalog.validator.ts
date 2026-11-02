@@ -47,7 +47,7 @@ export type ListingLocation = NonNullable<ReturnType<typeof listingLocation>>;
 
 /* ---------- API công khai ---------- */
 
-/** Query GET /locations/reverse-geocode: latitude, longitude (chuỗi số, bắt buộc cả hai) */
+/** Query GET /catalog/locations/reverse-geocode: latitude, longitude (chuỗi số, bắt buộc cả hai) */
 export const reverseGeocodeQuery = z.record(z.string(), z.unknown()).transform(({ latitude, longitude }) => {
   if (typeof latitude !== 'string' || typeof longitude !== 'string' || !latitude.trim() || !longitude.trim()) {
     throw new AppError(400, 'INVALID_LOCATION', 'Cần đủ tọa độ GPS.', 'location');

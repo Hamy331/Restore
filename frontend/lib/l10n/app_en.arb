@@ -1381,5 +1381,82 @@
   "trustedShopsNewReleasesEyebrow": "Just launched",
   "trustedShopsNewShopsEyebrow": "Newly verified",
   "trustedShopsShowcaseEyebrow": "By brand",
-  "trustedShopsAllProductsEyebrow": "Explore"
+  "trustedShopsAllProductsEyebrow": "Explore",
+  "feedsComposePrompt": "What's on your mind? Share an item or ask the community",
+  "postAudienceTitle": "Who can see this post?",
+  "postAudienceEveryone": "Everyone",
+  "postAudienceEveryoneDesc": "Anyone on ReStore can see it",
+  "postAudienceFollowers": "Followers",
+  "postAudienceFollowersDesc": "Only people who follow you",
+  "postAudienceOnlyMe": "Only me",
+  "postAudienceOnlyMeDesc": "Saved privately on your page",
+  "postComposerSubmit": "Post",
+  "postComposerHint": "Share an item, a buying tip or ask the community...",
+  "postComposerRemovePhoto": "Remove photo",
+  "postComposerCover": "Cover",
+  "postComposerListingTag": "Your listing",
+  "postComposerRemoveAttachment": "Remove",
+  "postComposerWithOne": "With {name}",
+  "@postComposerWithOne": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "postComposerWithMany": "With {name} and {count} others",
+  "@postComposerWithMany": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "postComposerBackground": "Background colour",
+  "postComposerBackgroundDisabled": "Background colours are for short posts without photos",
+  "postComposerNoBackground": "No background",
+  "postComposerAttachListing": "Attach listing",
+  "postComposerAttachListingHint": "Show one of your listings in this post",
+  "postComposerTopic": "Topic",
+  "postComposerTopicHint": "Helps the right people find your post",
+  "postComposerTagFriends": "Tag people",
+  "postComposerTagFriendsHint": "People you follow",
+  "postComposerTaggedCount": "{count} tagged",
+  "@postComposerTaggedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "postComposerEmoji": "Emoji",
+  "postComposerPhoto": "Photos",
+  "postComposerVideo": "Video",
+  "postComposerLink": "Link",
+  "postComposerLinkHint": "Paste a web link to share",
+  "postComposerLinkInvalid": "This link doesn't look right",
+  "postComposerLocation": "Location",
+  "postComposerTakePhoto": "Take photo",
+  "postComposerOpenGallery": "Gallery",
+  "postComposerDone": "Done",
+  "postComposerLoadError": "Couldn't load post options, trying again",
+  "postComposerDiscardTitle": "Discard this post?",
+  "postComposerDiscardMessage": "What you've written won't be saved",
+  "postComposerKeepEditing": "Keep writing",
+  "postComposerDiscard": "Discard post",
+  "postComposerPhotoLimit": "You can add up to {count} photos",
+  "@postComposerPhotoLimit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "postComposerPhotoPermission": "ReStore needs photo access. Please allow it in Settings.",
+  "postComposerNoListings": "You have no active listings to attach yet",
+  "postComposerError": "Couldn't publish your post, please try again",
+  "postComposerPosted": "Your post is live on the feed"
 }

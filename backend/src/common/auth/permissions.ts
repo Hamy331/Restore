@@ -33,7 +33,7 @@ export const PERMISSION = {
   ADMIN_ACCESS: 'admin:access',
   /** Quản lý thành viên: /admin/users (cảnh cáo, tạm khóa, cấm, mở lại), xử lý /admin/reports */
   USER_MANAGE: 'user:manage',
-  /** Quản lý danh mục và tình trạng: /admin/catalog, /admin/categories, /admin/conditions */
+  /** Quản lý danh mục và tình trạng: /admin/catalog/* */
   CATALOG_MANAGE: 'catalog:manage',
   /** Quản lý banner trang chủ: /home/admin/banners */
   BANNER_MANAGE: 'banner:manage',

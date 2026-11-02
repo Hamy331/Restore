@@ -1,4 +1,4 @@
-/// Dữ liệu mẫu dạng JSON giống response API `/locations/...`.
+/// Dữ liệu mẫu dạng JSON giống response API `/catalog/locations/...`.
 /// Chỉ gồm 6 thành phố trực thuộc trung ương và vài phường tiêu biểu,
 /// toạ độ tâm là gần đúng. Danh sách đầy đủ 34 tỉnh/thành và các phường/xã
 /// sẽ do backend cung cấp (seed từ bộ dữ liệu hành chính chính thức).

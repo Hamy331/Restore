@@ -25,7 +25,7 @@ catalogAdminRouter.get('/catalog', manage, catalogAdminController.getCatalog);
  *  - description: string (0-500)
  *  - active: boolean
  */
-catalogAdminRouter.post('/categories', manage, validate({ body: createCategoryBody }), catalogAdminController.createCategory);
+catalogAdminRouter.post('/catalog/categories', manage, validate({ body: createCategoryBody }), catalogAdminController.createCategory);
 
 /**
  * Sửa danh mục, ghi AdminAudit
@@ -36,7 +36,7 @@ catalogAdminRouter.post('/categories', manage, validate({ body: createCategoryBo
  * Body:
  *  - name: string (2-100), description: string (0-500), active: boolean
  */
-catalogAdminRouter.put('/categories/:id', manage, validate({ params: categoryIdParams, body: updateCategoryBody }), catalogAdminController.updateCategory);
+catalogAdminRouter.put('/catalog/categories/:id', manage, validate({ params: categoryIdParams, body: updateCategoryBody }), catalogAdminController.updateCategory);
 
 /**
  * Đặt tên hiển thị và bật/tắt tình trạng, ghi AdminAudit
@@ -47,6 +47,6 @@ catalogAdminRouter.put('/categories/:id', manage, validate({ params: categoryIdP
  * Body:
  *  - name: string (2-100), active: boolean
  */
-catalogAdminRouter.put('/conditions/:condition', manage, validate({ params: conditionParams, body: conditionBody }), catalogAdminController.updateCondition);
+catalogAdminRouter.put('/catalog/conditions/:condition', manage, validate({ params: conditionParams, body: conditionBody }), catalogAdminController.updateCondition);
 
 export default catalogAdminRouter;

@@ -111,7 +111,7 @@ class MockAreaSearchRepository implements AreaSearchRepository {
 }
 
 /// Gọi backend:
-/// - `GET /locations/search?q=&limit=` → `{ data: [{ code, name, level, parentName, center }] }`
+/// - `GET /catalog/locations/search?q=&limit=` → `{ data: [{ code, name, level, parentName, center }] }`
 /// - `GET /users/me/recent-areas` → cùng cấu trúc, mới nhất trước
 /// - `POST /users/me/recent-areas` `{ code }`
 /// - `DELETE /users/me/recent-areas/:code`
@@ -123,7 +123,7 @@ class ApiAreaSearchRepository implements AreaSearchRepository {
 
   @override
   Future<List<AreaOption>> search(String query) => _getAreas(
-    '/locations/search',
+    '/catalog/locations/search',
     query: {'q': query, 'limit': AreaSearchRepository.resultLimit},
   );
 

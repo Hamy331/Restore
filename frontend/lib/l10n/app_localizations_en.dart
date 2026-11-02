@@ -2550,4 +2550,159 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trustedShopsAllProductsEyebrow => 'Explore';
+
+  @override
+  String get feedsComposePrompt =>
+      'What\'s on your mind? Share an item or ask the community';
+
+  @override
+  String get postAudienceTitle => 'Who can see this post?';
+
+  @override
+  String get postAudienceEveryone => 'Everyone';
+
+  @override
+  String get postAudienceEveryoneDesc => 'Anyone on ReStore can see it';
+
+  @override
+  String get postAudienceFollowers => 'Followers';
+
+  @override
+  String get postAudienceFollowersDesc => 'Only people who follow you';
+
+  @override
+  String get postAudienceOnlyMe => 'Only me';
+
+  @override
+  String get postAudienceOnlyMeDesc => 'Saved privately on your page';
+
+  @override
+  String get postComposerSubmit => 'Post';
+
+  @override
+  String get postComposerHint =>
+      'Share an item, a buying tip or ask the community...';
+
+  @override
+  String get postComposerRemovePhoto => 'Remove photo';
+
+  @override
+  String get postComposerCover => 'Cover';
+
+  @override
+  String get postComposerListingTag => 'Your listing';
+
+  @override
+  String get postComposerRemoveAttachment => 'Remove';
+
+  @override
+  String postComposerWithOne(String name) {
+    return 'With $name';
+  }
+
+  @override
+  String postComposerWithMany(String name, int count) {
+    return 'With $name and $count others';
+  }
+
+  @override
+  String get postComposerBackground => 'Background colour';
+
+  @override
+  String get postComposerBackgroundDisabled =>
+      'Background colours are for short posts without photos';
+
+  @override
+  String get postComposerNoBackground => 'No background';
+
+  @override
+  String get postComposerAttachListing => 'Attach listing';
+
+  @override
+  String get postComposerAttachListingHint =>
+      'Show one of your listings in this post';
+
+  @override
+  String get postComposerTopic => 'Topic';
+
+  @override
+  String get postComposerTopicHint => 'Helps the right people find your post';
+
+  @override
+  String get postComposerTagFriends => 'Tag people';
+
+  @override
+  String get postComposerTagFriendsHint => 'People you follow';
+
+  @override
+  String postComposerTaggedCount(int count) {
+    return '$count tagged';
+  }
+
+  @override
+  String get postComposerEmoji => 'Emoji';
+
+  @override
+  String get postComposerPhoto => 'Photos';
+
+  @override
+  String get postComposerVideo => 'Video';
+
+  @override
+  String get postComposerLink => 'Link';
+
+  @override
+  String get postComposerLinkHint => 'Paste a web link to share';
+
+  @override
+  String get postComposerLinkInvalid => 'This link doesn\'t look right';
+
+  @override
+  String get postComposerLocation => 'Location';
+
+  @override
+  String get postComposerTakePhoto => 'Take photo';
+
+  @override
+  String get postComposerOpenGallery => 'Gallery';
+
+  @override
+  String get postComposerDone => 'Done';
+
+  @override
+  String get postComposerLoadError =>
+      'Couldn\'t load post options, trying again';
+
+  @override
+  String get postComposerDiscardTitle => 'Discard this post?';
+
+  @override
+  String get postComposerDiscardMessage =>
+      'What you\'ve written won\'t be saved';
+
+  @override
+  String get postComposerKeepEditing => 'Keep writing';
+
+  @override
+  String get postComposerDiscard => 'Discard post';
+
+  @override
+  String postComposerPhotoLimit(int count) {
+    return 'You can add up to $count photos';
+  }
+
+  @override
+  String get postComposerPhotoPermission =>
+      'ReStore needs photo access. Please allow it in Settings.';
+
+  @override
+  String get postComposerNoListings =>
+      'You have no active listings to attach yet';
+
+  @override
+  String get postComposerError =>
+      'Couldn\'t publish your post, please try again';
+
+  @override
+  String get postComposerPosted => 'Your post is live on the feed';
 }

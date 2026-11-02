@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:restore/core/ui/layouts/t_foundation_placeholder_layout.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 import 'package:restore/modules/chat/views/messages_view.dart';
 import 'package:restore/modules/home/views/home/home_view.dart';
+import 'package:restore/modules/feed/views/feeds/feeds_view.dart';
+import 'package:restore/modules/feed/views/post_composer/post_composer_view.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_event.dart';
@@ -38,8 +39,6 @@ import 'package:restore/core/utils/animations/app_page_transitions.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
 import 'package:restore/modules/shell/bloc/shell_badges_cubit.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
-import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/l10n/app_localizations.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -206,17 +205,7 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/feeds',
-              builder: (context, _) {
-                final l10n = AppLocalizations.of(context)!;
-                return TFoundationPlaceholderLayout(
-                  title: l10n.feedsTitle,
-                  message: l10n.feedsComingSoon,
-                  icon: AppIcons.feeds,
-                );
-              },
-            ),
+            GoRoute(path: FeedsView.path, builder: (_, _) => const FeedsView()),
           ],
         ),
         StatefulShellBranch(
@@ -230,6 +219,17 @@ final appRouter = GoRouter(
           ],
         ),
       ],
+    ),
+    // Viết bài lên Bảng tin; panel=photos mở sẵn lưới ảnh
+    GoRoute(
+      path: PostComposerView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide<String>(
+        state: state,
+        child: PostComposerView(
+          openPhotos: state.uri.queryParameters['panel'] == 'photos',
+        ),
+      ),
     ),
     GoRoute(
       path: '/messages/:id',
