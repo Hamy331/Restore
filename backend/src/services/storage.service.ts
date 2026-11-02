@@ -1,4 +1,4 @@
-import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 /**
@@ -86,6 +86,16 @@ async function isNotFound(response: Response) {
   return /not[_ ]found|"404"/i.test(body);
 }
 
+/** Supabase trả 409, hoặc 400 kèm statusCode "409" / Duplicate, khi object đã có */
+async function isDuplicate(response: Response) {
+  if (response.status === 409) return true;
+  if (response.status !== 400) return false;
+  return /duplicate|"409"/i.test(await response.clone().text());
+}
+
+/** Lỗi "đã có file" cùng mã EEXIST với driver disk */
+const alreadyExists = (key: string) => Object.assign(new Error(`Storage object already exists: ${key}`), { code: 'EEXIST' });
+
 async function failure(action: string, key: string, response: Response) {
   return new Error(`Supabase Storage ${action} ${key} failed: ${response.status} ${await response.text()}`);
 }
@@ -97,7 +107,9 @@ const supabase = {
       body: new Uint8Array(bytes),
       headers: { 'Content-Type': contentTypeOf(name), 'x-upsert': 'false', 'Cache-Control': 'no-store' },
     });
-    if (!response.ok) throw await failure('upload', key, response);
+    if (response.ok) return;
+    if (await isDuplicate(response)) throw alreadyExists(key);
+    throw await failure('upload', key, response);
   },
   async get(area: StorageArea, name: string) {
     const key = `${area}/${name}`;
@@ -116,12 +128,19 @@ const supabase = {
   },
 };
 
-const drivers = { disk, supabase } as const;
+type Driver = {
+  put(area: StorageArea, name: string, bytes: Buffer): Promise<void>;
+  get(area: StorageArea, name: string): Promise<Buffer | null>;
+  remove(area: StorageArea, name: string): Promise<void>;
+};
+
+/** Hai driver, gọi thẳng (không theo STORAGE_DRIVER) khi cần chép giữa chúng, VD scripts/migrate-images.ts */
+export const drivers: Record<StorageDriver, Driver> = { disk, supabase };
 
 /* ---------- API dùng chung ---------- */
 
-/** Lưu file mới; trùng tên thì lỗi (tên luôn là UUID nên không xảy ra) */
-export function putObject(area: StorageArea, name: string, bytes: Buffer) {
+/** Lưu file mới; trùng tên thì lỗi code EEXIST (tên luôn là UUID nên thực tế không xảy ra) */
+export function putObject(area: StorageArea, name: string, bytes: Buffer): Promise<void> {
   assertName(name);
   return drivers[storageDriver()].put(area, name, bytes);
 }
@@ -138,7 +157,20 @@ export function removeObject(area: StorageArea, name: string) {
   return drivers[storageDriver()].remove(area, name);
 }
 
-/** Kiểm tra cấu hình lúc khởi động */
-export function validateStorageEnvironment() {
-  if (storageDriver() === 'supabase') supabaseConfig();
+/** Tên file trong một khu của ổ đĩa (để chép đi nơi khác); thư mục chưa có thì rỗng */
+export async function listDiskObjects(area: StorageArea): Promise<string[]> {
+  try {
+    return (await readdir(path.dirname(diskPath(area, 'x')), { withFileTypes: true }))
+      .filter((entry) => entry.isFile() && /^[A-Za-z0-9._-]+$/.test(entry.name) && !entry.name.startsWith('.'))
+      .map((entry) => entry.name)
+      .sort();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
+    throw error;
+  }
+}
+
+/** Kiểm tra cấu hình lúc khởi động (hoặc trước khi chép lên Supabase) */
+export function validateStorageEnvironment(driver: StorageDriver = storageDriver()) {
+  if (driver === 'supabase') supabaseConfig();
 }
