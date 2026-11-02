@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { verifyAccessToken } from '../modules/auth/token.service.js';
 import { Role } from '@prisma/client';
 import { findAuthUserById } from '../modules/auth/auth.repository.js';
+import { hasPermission, Permission } from '../common/auth/permissions.js';
 
 export interface AuthRequest extends Request {
   user?: { userId: string; email: string; role: Role };
@@ -88,3 +89,36 @@ export const requireAuth = (...roles: Role[]) => [
   verifyToken,
   authorizeRoles(...(roles.length ? roles : Object.values(Role))),
 ];
+
+/**
+ * Chỉ kiểm tra quyền, dùng sau verifyToken (req.user đã có).
+ * 401 AUTH_REQUIRED nếu chưa đăng nhập, 403 FORBIDDEN nếu vai trò thiếu quyền.
+ */
+export const authorizePermission = (...permissions: Permission[]) =>
+  (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Vui lòng đăng nhập để tiếp tục.',
+        code: 'AUTH_REQUIRED',
+      });
+    }
+    if (!hasPermission(req.user.role, ...permissions)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Bạn không có quyền thực hiện thao tác này.',
+        code: 'FORBIDDEN',
+      });
+    }
+    next();
+  };
+
+/**
+ * Bắt buộc đăng nhập và có đủ quyền. Gộp verifyToken + authorizePermission trong một middleware.
+ * Dùng: router.post('/:id/favorite', requirePermission(PERMISSION.FAVORITE_WRITE), handler)
+ */
+export const requirePermission = (...permissions: Permission[]) => {
+  const check = authorizePermission(...permissions);
+  return (req: AuthRequest, res: Response, next: NextFunction) =>
+    verifyToken(req, res, (error?: unknown) => (error ? next(error) : check(req, res, next)));
+};
