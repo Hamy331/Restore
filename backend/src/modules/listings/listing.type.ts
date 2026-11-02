@@ -28,7 +28,7 @@ export const IMAGE_EDITABLE: readonly ListingStatus[] = [
   ListingStatus.AVAILABLE, ListingStatus.HIDDEN, ListingStatus.DRAFT, ListingStatus.PENDING, ListingStatus.REJECTED,
 ];
 
-/** Ảnh tin đăng (lưu trên ổ đĩa, chuyển sang Supabase Storage ở C24) */
+/** Ảnh tin đăng, lưu qua services/storage.service (ổ đĩa hoặc Supabase Storage) */
 export const IMAGE_PREFIX = '/api/v1/listings/media/';
 export const MAX_IMAGES = 20;
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;

@@ -1,4 +1,4 @@
-/** Ảnh nội dung (bìa bài viết), lưu trên ổ đĩa; chuyển sang Supabase Storage ở C24 */
+/** Ảnh nội dung (bìa bài viết), lưu qua services/storage.service (ổ đĩa hoặc Supabase Storage) */
 export const MEDIA_PREFIX = '/api/v1/content/media/';
 export const MEDIA_NAME = /^[0-9a-f-]{36}\.(jpg|png|webp)$/;
 
