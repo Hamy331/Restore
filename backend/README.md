@@ -4,7 +4,7 @@ Backend API cho dự án **Restore**, nền tảng C2C (Customer-to-Customer) đ
 
 Backend là một REST API viết bằng **Express + TypeScript**, dùng **Prisma ORM** để làm việc với **PostgreSQL trên Supabase**. Code được chia theo module nghiệp vụ, mỗi module tách lớp `route → controller → service → repository`.
 
-> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Các module `users`, `home`, `listings`, `commerce`, `content`, `admin` đã theo chuẩn. `auth`, `catalog` (phần công khai) và `wanted-alerts` còn theo kiểu cũ (xem lộ trình). Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
+> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Các module `auth`, `users`, `home`, `listings`, `commerce`, `content`, `admin` đã theo chuẩn. `catalog` (phần công khai) và `wanted-alerts` còn theo kiểu cũ (xem lộ trình). Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
 
 ---
 
@@ -251,6 +251,7 @@ Lỗi đầu vào có thêm `field` (tên trường sai). Mã lỗi chung:
 | Status | code | Khi nào |
 | ------ | ---- | ------- |
 | 400 | `INVALID_INPUT` (hoặc mã riêng như `INVALID_LOCATION`) | Query, params, body sai |
+| 422 | `INVALID_EMAIL`, `WEAK_PASSWORD`, `PASSWORD_REQUIRED`, `INVALID_USERNAME`, `INVALID_FULL_NAME`, `INVALID_OTP_FORMAT`, `TOKEN_REQUIRED` | Body của `/auth/*` sai (mỗi mã ứng với một trường) |
 | 401 | `AUTH_REQUIRED` | Thiếu `Authorization` |
 | 401 | `INVALID_ACCESS_TOKEN` | Token sai hoặc hết hạn, app refresh rồi gọi lại |
 | 401 | `SESSION_REVOKED` | Token cũ sau khi đổi mật khẩu / đăng xuất mọi nơi |
@@ -321,7 +322,7 @@ Middleware dùng chung (`src/middlewares/`):
 | `requestId` | Gắn `X-Request-Id` cho mỗi request |
 | `requirePermission(...perms)` | Kiểm tra JWT, trạng thái tài khoản và quyền: `router.get('/x', requirePermission(PERMISSION.BANNER_MANAGE), handler)` |
 | `authorizePermission(...perms)` | Chỉ kiểm tra quyền, dùng sau khi router cha đã xác thực token (ví dụ router quản trị dưới `/admin`) |
-| `verifyToken`, `authorizeRoles`, `requireAuth` | Kiểu cũ theo vai trò, còn dùng ở `auth`, sẽ bỏ ở C22 |
+| `verifyToken` | Chỉ xác thực JWT và trạng thái tài khoản; route dùng `requirePermission`, không gọi trực tiếp |
 | `optionalAuth` | Cho khách đi qua, có token thì xác thực để biết người xem |
 | `requireJson` | Bắt buộc `Content-Type: application/json` |
 | `validate({ query, params, body })` | Kiểm tra đầu vào bằng schema zod trong `*.validator.ts`, controller đọc lại bằng `getInput(res)` |
@@ -360,7 +361,7 @@ Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước v�
 | C8–C15 | `listings` sang mẫu nhóm: feed, favorites, tin, nháp, ảnh, duyệt tin, bỏ `listing.route.ts` | ✅ |
 | C16–C18 | `commerce`: gộp `stores` + `promotions`, logic duyệt đơn vào service | ✅ |
 | C19–C21 | `content` tách khỏi `admin`; endpoint `/admin/*` về module sở hữu dữ liệu; `admin` sang mẫu nhóm, bỏ `admin.route.ts` | ✅ |
-| C22 | `auth` dùng zod, bỏ `common/validation/parsers.ts` | |
+| C22 | `auth` sang mẫu phẳng, đầu vào bằng zod (`auth.validator.ts`, giữ lỗi 422 theo trường); bỏ `parsers.ts`, `pagination.ts`, `authorizeRoles`, `requireAuth` | ✅ |
 | C23 | `catalog`: dữ liệu vào `prisma/seed.ts`, mẫu phẳng | |
 | C24–C25 | Ảnh lên Supabase Storage, chuyển ảnh cũ | |
 | C26 | `wanted-alerts`: gắn router, bỏ code chết | |

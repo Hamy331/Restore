@@ -6,7 +6,7 @@ import { AuthRequest, authorizePermission, requirePermission } from '../../middl
 import { hasPermission, PERMISSION, Permission, ROLE_PERMISSIONS } from './permissions.js';
 
 /**
- * Quyền → vai trò được phép, đúng như các route đang chặn bằng authorizeRoles hôm nay.
+ * Quyền → vai trò được phép, đúng như các route chặn theo vai trò trước khi có permission.
  * Đổi bảng ROLE_PERMISSIONS mà không sửa bảng này thì test đỏ, tránh mở quyền nhầm.
  */
 const EXPECTED: Record<Permission, Role[]> = {
