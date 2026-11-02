@@ -1,16 +1,15 @@
 import { ListingStatus } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
-import path from 'node:path';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
+import { contentTypeOf, getObject, putObject, removeObject } from '../../../services/storage.service.js';
 import { IMAGE_EDITABLE, IMAGE_NAME, IMAGE_PREFIX, MAX_IMAGE_BYTES, MAX_IMAGES } from '../listing.type.js';
 import { orderedImages } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 
-// Ảnh đang lưu trên ổ đĩa; sẽ chuyển sang Supabase Storage (C24).
-const imageDirectory = path.join(process.cwd(), 'uploads', 'listings');
+/** Ảnh tin nằm ở khu 'listings' của storage (ổ đĩa hoặc Supabase Storage, theo STORAGE_DRIVER) */
+const AREA = 'listings';
 
 /** Đuôi file theo Content-Type, kiểm tra cả byte đầu file. Dùng chung cho ảnh nội dung. */
 export function imageExtension(contentType: unknown, bytes: unknown): string {
@@ -28,7 +27,7 @@ export function imageExtension(contentType: unknown, bytes: unknown): string {
 export async function removeStoredImages(urls: string[]) {
   for (const url of urls) {
     if (url.startsWith(IMAGE_PREFIX) && IMAGE_NAME.test(url.slice(IMAGE_PREFIX.length))) {
-      await unlink(path.join(imageDirectory, url.slice(IMAGE_PREFIX.length))).catch(() => {});
+      await removeObject(AREA, url.slice(IMAGE_PREFIX.length)).catch(() => {});
     }
   }
 }
@@ -50,15 +49,14 @@ export async function addImage(ownerId: string, id: string, contentType: string 
   if (current.images.length >= MAX_IMAGES) throw new AppError(409, 'IMAGE_LIMIT', 'Mỗi tin được tối đa 20 ảnh.');
   const filename = `${randomUUID()}.${extension}`;
   try {
-    await mkdir(imageDirectory, { recursive: true });
-    await writeFile(path.join(imageDirectory, filename), bytes as Buffer, { flag: 'wx' });
+    await putObject(AREA, filename, bytes as Buffer);
     const url = `${IMAGE_PREFIX}${filename}`;
     const changed = await listingRepository.updateImagesIfUnchanged(id, ownerId, current,
       { images: [...current.images, url], status: statusAfterImageChange(current.status) });
     if (!changed) throw new AppError(409, 'LISTING_CHANGED', 'Tin đã thay đổi. Vui lòng thử lại.');
     return { url };
   } catch (error) {
-    await unlink(path.join(imageDirectory, filename)).catch(() => {});
+    await removeObject(AREA, filename).catch(() => {});
     throw error;
   }
 }
@@ -84,12 +82,7 @@ export async function readImage(viewer: AuthRequest['user'], filename: string) {
   const listing = await listingRepository.findByImage(IMAGE_PREFIX + filename);
   if (!listing || !(hasPermission(viewer?.role, PERMISSION.LISTING_MODERATE) || viewer?.userId === listing.ownerId ||
     (listing.status === ListingStatus.AVAILABLE && listing.owner.status === 'ACTIVE'))) throw notFound();
-  try {
-    const bytes = await readFile(path.join(imageDirectory, filename));
-    const extension = path.extname(filename);
-    return { bytes, contentType: extension === '.jpg' ? 'image/jpeg' : `image/${extension.slice(1)}` };
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') throw notFound();
-    throw error;
-  }
+  const bytes = await getObject(AREA, filename);
+  if (!bytes) throw notFound();
+  return { bytes, contentType: contentTypeOf(filename) };
 }

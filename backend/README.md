@@ -24,7 +24,7 @@ Backend là một REST API viết bằng **Express + TypeScript**, dùng **Prism
 | **node:test** + `tsx`         | Unit test                                               |
 | **GitHub Actions**            | CI                                                      |
 
-> Socket.IO (chat) và lưu ảnh trên Supabase Storage nằm trong kế hoạch, **chưa được cài**. Ảnh hiện lưu ở ổ đĩa server (`uploads/`).
+> Socket.IO (chat) nằm trong kế hoạch, **chưa được cài**. Ảnh lưu qua `services/storage.service.ts`: mặc định ổ đĩa server (`uploads/`), đặt `STORAGE_DRIVER=supabase` để dùng Supabase Storage.
 
 ---
 
@@ -38,7 +38,7 @@ Backend là một REST API viết bằng **Express + TypeScript**, dùng **Prism
 | Tạo và áp dụng migration               | `prisma migrate` (thư mục `prisma/migrations/`)         |
 | RLS, policy, function, trigger SQL     | Viết tay trong file `migration.sql` của Prisma migration |
 | Chạy Postgres/Storage ở máy local      | Supabase CLI (`supabase/config.toml`)                   |
-| Lưu ảnh                                | Supabase Storage (bucket `listing-images`, `content-media`) |
+| Lưu ảnh                                | Supabase Storage, một bucket private (mặc định `media`): `listings/<uuid>.<ext>` ảnh tin, `admin/<uuid>.<ext>` ảnh nội dung. Server trả ảnh qua API sau khi kiểm tra quyền xem |
 | Truy cập dữ liệu từ app Flutter        | **Chỉ qua Backend API**, app không gọi thẳng Supabase   |
 
 Quy tắc:
@@ -81,8 +81,7 @@ Restore/
     │   │   └── swagger.ts
     │   │
     │   ├── lib/
-    │   │   ├── prisma.ts            # PrismaClient dùng chung
-    │   │   └── supabase.ts          # Supabase client (service role) cho Storage
+    │   │   └── prisma.ts            # PrismaClient dùng chung
     │   │
     │   ├── middlewares/
     │   │   ├── auth.middleware.ts   # requirePermission, optionalAuth, verifyToken
@@ -106,7 +105,7 @@ Restore/
     │   │
     │   ├── services/
     │   │   ├── email.service.ts
-    │   │   └── storage.service.ts   # Upload/xóa ảnh trên Supabase Storage
+    │   │   └── storage.service.ts   # putObject/getObject/removeObject; driver disk | supabase (REST API, không cần SDK)
     │   │
     │   ├── docs/swagger/            # File *.swagger.yaml theo module
     │   │
@@ -364,7 +363,8 @@ Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước v�
 | C19–C21 | `content` tách khỏi `admin`; endpoint `/admin/*` về module sở hữu dữ liệu; `admin` sang mẫu nhóm, bỏ `admin.route.ts` | ✅ |
 | C22 | `auth` sang mẫu phẳng, đầu vào bằng zod (`auth.validator.ts`, giữ lỗi 422 theo trường); bỏ `parsers.ts`, `pagination.ts`, `authorizeRoles`, `requireAuth` | ✅ |
 | C23 | `catalog` sang mẫu phẳng; danh mục, tình trạng, gói vào `prisma/seed.ts` (`npm run db:seed`); tỉnh/phường thành `catalog.data.ts`, bỏ `catalog.json` | ✅ |
-| C24–C25 | Ảnh lên Supabase Storage, chuyển ảnh cũ | |
+| C24 | `services/storage.service.ts`: driver `disk` (mặc định) / `supabase`, ảnh tin và ảnh nội dung đi qua service | ✅ |
+| C25 | Chuyển ảnh cũ trong `uploads/` lên bucket | |
 | C26 | `wanted-alerts`: gắn router, bỏ code chết | |
 
 Còn lại ngoài lộ trình: bỏ `docker-compose.yml` (dùng `supabase start`), thêm `npm test` và `prisma migrate diff` vào `.github/workflows/backend_ci.yml`.
@@ -400,9 +400,12 @@ DATABASE_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pool
 # Kết nối trực tiếp hoặc Session pooler, dùng cho migration
 DIRECT_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres"
 
-# Supabase Storage (chỉ dùng ở backend, không đưa vào app)
+# Nơi lưu ảnh: disk (mặc định, thư mục uploads/ hoặc STORAGE_DISK_ROOT) hoặc supabase
+STORAGE_DRIVER="disk"
+# Chỉ cần khi STORAGE_DRIVER=supabase (chỉ dùng ở backend, không đưa vào app). Thiếu thì server không khởi động.
 SUPABASE_URL="https://[PROJECT_REF].supabase.co"
 SUPABASE_SERVICE_ROLE_KEY="..."
+SUPABASE_STORAGE_BUCKET="media"   # tạo bucket private trước trong Supabase Dashboard
 
 # JWT (production: mỗi secret tối thiểu 32 ký tự)
 JWT_SECRET="..."
