@@ -5,7 +5,7 @@ import path from 'node:path';
 import { prisma } from '../../lib/prisma.js';
 import { AuthRequest, verifyToken, authorizeRoles } from '../../middlewares/auth.middleware.js';
 import { AppError } from '../../common/errors/app-error.js';
-import { imageExtension } from '../listings/listing.route.js';
+import { imageExtension } from '../listings/index.js';
 import { audit, choice, normalizeKnowledge, object, page, text } from './admin.service.js';
 import { withQuotaTransaction } from '../stores/store.service.js';
 

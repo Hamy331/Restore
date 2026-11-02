@@ -1,7 +1,6 @@
 import { AppError } from '../../../common/errors/app-error.js';
-import type { Pagination } from '../../../common/http/pagination.js';
-import { output } from '../listing.mapper.js';
-import * as favoriteRepository from './favorite.repository.js';
+import { FavoritesQuery, toListingDto } from '../listing.dto.js';
+import * as favoriteRepository from '../repositories/favorite.repository.js';
 
 export async function addFavorite(userId: string, listingId: string) {
   const listing = await favoriteRepository.findVisibleListingId(listingId);
@@ -17,10 +16,10 @@ export async function removeFavorite(userId: string, listingId: string) {
 export const isFavorite = (userId: string, listingId: string) =>
   favoriteRepository.existsFavorite(userId, listingId);
 
-export async function listFavorites(userId: string, { page, limit, skip }: Pagination) {
+export async function listFavorites(userId: string, { page, limit, skip }: FavoritesQuery) {
   const [rows, totalItems] = await favoriteRepository.findFavoriteListings(userId, limit, skip);
   return {
-    items: rows.map((row) => ({ ...output(row.listing), isFavorite: true })),
+    items: rows.map((row) => ({ ...toListingDto(row.listing), isFavorite: true })),
     page: { page, limit, totalItems },
   };
 }
