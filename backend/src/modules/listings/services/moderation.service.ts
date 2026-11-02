@@ -6,6 +6,7 @@ import { withQuotaTransaction } from '../../commerce/index.js';
 import { AdminDecisionInput, AdminListingQuery, DecisionInput, toOwnerListingDto } from '../listing.dto.js';
 import type { ModerationAction } from '../listing.type.js';
 import * as listingRepository from '../repositories/listing.repository.js';
+import { runApprovalHooks } from './approval-hooks.js';
 
 /**
  * Ra quyết định trên một tin trong transaction [tx], ghi AdminAudit.
@@ -13,6 +14,7 @@ import * as listingRepository from '../repositories/listing.repository.js';
  * - AVAILABLE: REMOVE
  * updatedAt phải khớp [expected] lúc admin mở tin (409 ADMIN_STALE nếu không).
  * Dùng ở /listings/admin, /admin/listings và khi xử lý báo cáo vi phạm.
+ * Duyệt xong thì chạy các hook onListingApproved (VD chấm điểm thông báo "Báo khi có hàng").
  */
 export async function moderate(tx: Prisma.TransactionClient, actorId: string, id: string, action: ModerationAction | string,
   reason: string, expected: Date) {
@@ -34,6 +36,7 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
   changed(await listingRepository.updateWhereVersion(tx, id, item.status, expected,
     { status, reviewReason: action === 'APPROVE' ? null : reason }));
   await audit(tx, actorId, action, 'LISTING', id, reason, { status: item.status }, { status });
+  if (action === 'APPROVE') await runApprovalHooks(tx, id, new Date());
 }
 
 /* ---------- /listings/admin ---------- */

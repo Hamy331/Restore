@@ -1,0 +1,769 @@
+{
+  "list as guest": {
+    "status": 401,
+    "body": {
+      "success": false,
+      "error": "Vui lòng đăng nhập để tiếp tục.",
+      "code": "AUTH_REQUIRED"
+    }
+  },
+  "list as admin": {
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Bạn không có quyền thực hiện thao tác này.",
+      "code": "FORBIDDEN"
+    }
+  },
+  "list empty": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": []
+    }
+  },
+  "create filler keywords": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "keywords cần ít nhất một từ có nghĩa.",
+      "code": "INVALID_INPUT",
+      "field": "keywords"
+    }
+  },
+  "create invalid price range": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "minPrice phải nhỏ hơn hoặc bằng maxPrice.",
+      "code": "INVALID_INPUT",
+      "field": "maxPrice"
+    }
+  },
+  "create invalid area": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy phường/xã này.",
+      "code": "INVALID_LOCATION",
+      "field": "area"
+    }
+  },
+  "create unknown category": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Danh mục không tồn tại hoặc đã ngừng sử dụng.",
+      "code": "INVALID_INPUT",
+      "field": "categoryId"
+    }
+  },
+  "create unknown field": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Trường sort không được hỗ trợ.",
+      "code": "INVALID_INPUT",
+      "field": "sort"
+    }
+  },
+  "preview": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing-2",
+          "title": "Ghế xoay văn phòng",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": true,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "79-SG",
+            "province": {
+              "code": "79",
+              "name": "TP. Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "79-SG",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:20:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:20:00.000Z",
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false,
+          "score": 1
+        }
+      ]
+    }
+  },
+  "preview with filters": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing-1",
+          "title": "Bàn gỗ sồi thật",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "79-SG",
+            "province": {
+              "code": "79",
+              "name": "TP. Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "79-SG",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:10:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:10:00.000Z",
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false,
+          "score": 0.8594
+        },
+        {
+          "id": "listing-3",
+          "title": "Đèn bàn học cũ",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "79-SG",
+            "province": {
+              "code": "79",
+              "name": "TP. Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "79-SG",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:30:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:30:00.000Z",
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false,
+          "score": 0.4306
+        }
+      ]
+    }
+  },
+  "preview own listings excluded": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": []
+    }
+  },
+  "create": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-buyer",
+        "keywords": "ghế công thái học",
+        "categoryId": "other",
+        "conditions": [],
+        "dealTypes": [
+          "buy"
+        ],
+        "matchLevel": "BALANCED",
+        "seenAt": "<date>",
+        "lastMatchedAt": null,
+        "createdAt": "<date>",
+        "updatedAt": "<date>",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "minPrice": null,
+        "maxPrice": null,
+        "area": {
+          "code": "79-SG",
+          "level": "ward",
+          "label": "Phường Sài Gòn, TP. Hồ Chí Minh"
+        },
+        "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+        "matchCount": 0,
+        "newMatchCount": 0,
+        "previewImages": []
+      }
+    }
+  },
+  "create strict": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-buyer",
+        "keywords": "ghế công thái học màu đỏ ergonomic",
+        "categoryId": null,
+        "conditions": [],
+        "dealTypes": [],
+        "matchLevel": "STRICT",
+        "seenAt": "<date>",
+        "lastMatchedAt": null,
+        "createdAt": "<date>",
+        "updatedAt": "<date>",
+        "category": null,
+        "minPrice": null,
+        "maxPrice": null,
+        "area": null,
+        "areaLabel": null,
+        "matchCount": 0,
+        "newMatchCount": 0,
+        "previewImages": []
+      }
+    }
+  },
+  "seller own alert": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-seller",
+        "keywords": "ghế công thái học",
+        "categoryId": null,
+        "conditions": [],
+        "dealTypes": [],
+        "matchLevel": "BALANCED",
+        "seenAt": "<date>",
+        "lastMatchedAt": null,
+        "createdAt": "<date>",
+        "updatedAt": "<date>",
+        "category": null,
+        "minPrice": null,
+        "maxPrice": null,
+        "area": null,
+        "areaLabel": null,
+        "matchCount": 0,
+        "newMatchCount": 0,
+        "previewImages": []
+      }
+    }
+  },
+  "approve listing": {
+    "status": 200,
+    "body": {
+      "success": true
+    }
+  },
+  "list after match": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "userId": "user-buyer",
+          "keywords": "ghế công thái học màu đỏ ergonomic",
+          "categoryId": null,
+          "conditions": [],
+          "dealTypes": [],
+          "matchLevel": "STRICT",
+          "seenAt": "<date>",
+          "lastMatchedAt": null,
+          "createdAt": "<date>",
+          "updatedAt": "<date>",
+          "category": null,
+          "minPrice": null,
+          "maxPrice": null,
+          "area": null,
+          "areaLabel": null,
+          "matchCount": 0,
+          "newMatchCount": 0,
+          "previewImages": []
+        },
+        {
+          "id": "<uuid>",
+          "userId": "user-buyer",
+          "keywords": "ghế công thái học",
+          "categoryId": "other",
+          "conditions": [],
+          "dealTypes": [
+            "buy"
+          ],
+          "matchLevel": "BALANCED",
+          "seenAt": "<date>",
+          "lastMatchedAt": "<date>",
+          "createdAt": "<date>",
+          "updatedAt": "<date>",
+          "category": {
+            "id": "other",
+            "name": "Khác"
+          },
+          "minPrice": null,
+          "maxPrice": null,
+          "area": {
+            "code": "79-SG",
+            "level": "ward",
+            "label": "Phường Sài Gòn, TP. Hồ Chí Minh"
+          },
+          "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+          "matchCount": 1,
+          "newMatchCount": 1,
+          "previewImages": [
+            "/api/v1/listings/media/<uuid>.png"
+          ]
+        }
+      ]
+    }
+  },
+  "seller alerts ignore own listing": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "userId": "user-seller",
+          "keywords": "ghế công thái học",
+          "categoryId": null,
+          "conditions": [],
+          "dealTypes": [],
+          "matchLevel": "BALANCED",
+          "seenAt": "<date>",
+          "lastMatchedAt": null,
+          "createdAt": "<date>",
+          "updatedAt": "<date>",
+          "category": null,
+          "minPrice": null,
+          "maxPrice": null,
+          "area": null,
+          "areaLabel": null,
+          "matchCount": 0,
+          "newMatchCount": 0,
+          "previewImages": []
+        }
+      ]
+    }
+  },
+  "detail": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-buyer",
+        "keywords": "ghế công thái học",
+        "categoryId": "other",
+        "conditions": [],
+        "dealTypes": [
+          "buy"
+        ],
+        "matchLevel": "BALANCED",
+        "seenAt": "<date>",
+        "lastMatchedAt": "<date>",
+        "createdAt": "<date>",
+        "updatedAt": "<date>",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "minPrice": null,
+        "maxPrice": null,
+        "area": {
+          "code": "79-SG",
+          "level": "ward",
+          "label": "Phường Sài Gòn, TP. Hồ Chí Minh"
+        },
+        "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+        "matchCount": 1,
+        "newMatchCount": 1,
+        "previewImages": [
+          "/api/v1/listings/media/<uuid>.png"
+        ]
+      }
+    }
+  },
+  "detail of other user": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy thông báo.",
+      "code": "WANTED_ALERT_NOT_FOUND"
+    }
+  },
+  "matches": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "title": "Ghế công thái học Ergohuman",
+          "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+          "price": "250000",
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "other",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "79-SG",
+            "province": {
+              "code": "79",
+              "name": "TP. Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "79-SG",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "other",
+            "name": "Khác"
+          },
+          "images": [
+            "/api/v1/listings/media/<uuid>.png"
+          ],
+          "createdAt": "<date>",
+          "viewCount": 0,
+          "publishedAt": "<date>",
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false,
+          "score": 0.9107,
+          "matchedAt": "<date>",
+          "isNew": true
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 1,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "matches invalid limit": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "limit phải là số nguyên từ 1 đến 50.",
+      "code": "INVALID_INPUT",
+      "field": "limit"
+    }
+  },
+  "seen": {
+    "status": 204,
+    "body": null
+  },
+  "matches after seen": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "title": "Ghế công thái học Ergohuman",
+          "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+          "price": "250000",
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "other",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "79-SG",
+            "province": {
+              "code": "79",
+              "name": "TP. Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "79-SG",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "other",
+            "name": "Khác"
+          },
+          "images": [
+            "/api/v1/listings/media/<uuid>.png"
+          ],
+          "createdAt": "<date>",
+          "viewCount": 0,
+          "publishedAt": "<date>",
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false,
+          "score": 0.9107,
+          "matchedAt": "<date>",
+          "isNew": false
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 1,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "detail after seen": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-buyer",
+        "keywords": "ghế công thái học",
+        "categoryId": "other",
+        "conditions": [],
+        "dealTypes": [
+          "buy"
+        ],
+        "matchLevel": "BALANCED",
+        "seenAt": "<date>",
+        "lastMatchedAt": "<date>",
+        "createdAt": "<date>",
+        "updatedAt": "<date>",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "minPrice": null,
+        "maxPrice": null,
+        "area": {
+          "code": "79-SG",
+          "level": "ward",
+          "label": "Phường Sài Gòn, TP. Hồ Chí Minh"
+        },
+        "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+        "matchCount": 1,
+        "newMatchCount": 0,
+        "previewImages": [
+          "/api/v1/listings/media/<uuid>.png"
+        ]
+      }
+    }
+  },
+  "matches hide hidden listing": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 0,
+        "totalPages": 0,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "delete of other user": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy thông báo.",
+      "code": "WANTED_ALERT_NOT_FOUND"
+    }
+  },
+  "delete": {
+    "status": 204,
+    "body": null
+  },
+  "detail after delete": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy thông báo.",
+      "code": "WANTED_ALERT_NOT_FOUND"
+    }
+  },
+  "seen after delete": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy thông báo.",
+      "code": "WANTED_ALERT_NOT_FOUND"
+    }
+  }
+}
