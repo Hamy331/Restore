@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { ListingStatus, ListingCondition, Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
 import { AuthRequest, verifyToken, authorizeRoles } from '../../middlewares/auth.middleware.js';
-import { withQuotaTransaction } from '../stores/store.service.js';
+import { withQuotaTransaction } from '../commerce/index.js';
 import { AppError } from '../../common/errors/app-error.js';
 import { audit, boolean, changed, choice, integer, moderate, object, page, sanction, text, userFields, version, normalizeKnowledge } from './admin.service.js';
 

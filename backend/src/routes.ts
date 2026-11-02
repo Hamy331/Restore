@@ -4,9 +4,8 @@ import contentRouter from './modules/admin/content.route.js';
 import authRouter from './modules/auth/auth.route.js';
 import { catalogRouter } from './modules/catalog/catalog.js';
 import { homeRouter } from './modules/home/index.js';
+import { promotionRouter, storeRouter } from './modules/commerce/index.js';
 import { listingsRouter } from './modules/listings/index.js';
-import promotionRouter from './modules/promotions/promotion.route.js';
-import storeRouter from './modules/stores/store.route.js';
 import { usersRouter } from './modules/users/index.js';
 
 /** Toàn bộ API, gắn dưới tiền tố /api/v1 trong app.ts. */

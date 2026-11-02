@@ -1,7 +1,7 @@
 import { ListingStatus, Prisma } from '@prisma/client';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
-import { storePackageForUser, storeUsage, withQuotaTransaction } from '../../stores/store.service.js';
+import { storePackageForUser, storeUsage, withQuotaTransaction } from '../../commerce/index.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { ListingInput, MineQuery, toListingDto, toOwnerListingDto } from '../listing.dto.js';
 import { LISTING_EDITABLE } from '../listing.type.js';

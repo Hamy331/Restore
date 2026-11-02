@@ -6,7 +6,7 @@ import { canChangeListingStatus, requireOwnedListing, updateOwnedListing } from 
 import { imageExtension } from './services/image.service.js';
 import { AppError } from '../../common/errors/app-error.js';
 import { parse } from '../../common/validation/schemas.js';
-import { storeUsage } from '../stores/store.service.js';
+import { storeUsage } from '../commerce/index.js';
 import { catalog, publicLocation } from '../catalog/catalog.js';
 const province=catalog.provinces[0]!;
 const ward=catalog.wards[province.code]![0]!;

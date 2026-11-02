@@ -1,5 +1,5 @@
 import { text as adminText, moderate } from '../../admin/admin.service.js';
-import { withQuotaTransaction } from '../../stores/store.service.js';
+import { withQuotaTransaction } from '../../commerce/index.js';
 import { DecisionInput, toOwnerListingDto } from '../listing.dto.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 
