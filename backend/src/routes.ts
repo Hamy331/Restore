@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import adminRouter from './modules/admin/admin.route.js';
-import contentRouter from './modules/admin/content.route.js';
 import authRouter from './modules/auth/auth.route.js';
 import { catalogRouter } from './modules/catalog/catalog.js';
 import { homeRouter } from './modules/home/index.js';
 import { promotionRouter, storeRouter } from './modules/commerce/index.js';
+import { contentRouter } from './modules/content/index.js';
 import { listingsRouter } from './modules/listings/index.js';
 import { usersRouter } from './modules/users/index.js';
 
