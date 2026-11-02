@@ -1,0 +1,2774 @@
+{
+  "categories": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "phones",
+          "icon": "phone",
+          "name": {
+            "en": "Phones",
+            "vi": "Điện thoại"
+          },
+          "imageUrl": null,
+          "attributes": [
+            {
+              "key": "brand",
+              "type": "select",
+              "label": {
+                "en": "Brand",
+                "vi": "Hãng"
+              },
+              "options": [
+                {
+                  "value": "Apple"
+                },
+                {
+                  "value": "Samsung"
+                },
+                {
+                  "value": "Xiaomi"
+                },
+                {
+                  "value": "OPPO"
+                },
+                {
+                  "value": "vivo"
+                },
+                {
+                  "value": "realme"
+                },
+                {
+                  "value": "Nokia"
+                },
+                {
+                  "value": "Google"
+                },
+                {
+                  "value": "Sony"
+                },
+                {
+                  "value": "ASUS"
+                },
+                {
+                  "label": {
+                    "en": "Other",
+                    "vi": "Hãng khác"
+                  },
+                  "value": "other"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "model",
+              "hint": {
+                "en": "e.g. iPhone 14 Pro Max",
+                "vi": "VD: iPhone 14 Pro Max"
+              },
+              "type": "text",
+              "label": {
+                "en": "Model",
+                "vi": "Dòng máy"
+              },
+              "required": true,
+              "maxLength": 60
+            },
+            {
+              "key": "storage",
+              "type": "select",
+              "label": {
+                "en": "Storage",
+                "vi": "Dung lượng"
+              },
+              "options": [
+                {
+                  "value": "32 GB"
+                },
+                {
+                  "value": "64 GB"
+                },
+                {
+                  "value": "128 GB"
+                },
+                {
+                  "value": "256 GB"
+                },
+                {
+                  "value": "512 GB"
+                },
+                {
+                  "value": "1 TB"
+                }
+              ],
+              "required": false
+            },
+            {
+              "key": "color",
+              "type": "select",
+              "label": {
+                "en": "Color",
+                "vi": "Màu sắc"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Black",
+                    "vi": "Đen"
+                  },
+                  "value": "black"
+                },
+                {
+                  "label": {
+                    "en": "White",
+                    "vi": "Trắng"
+                  },
+                  "value": "white"
+                },
+                {
+                  "label": {
+                    "en": "Silver",
+                    "vi": "Bạc"
+                  },
+                  "value": "silver"
+                },
+                {
+                  "label": {
+                    "en": "Gold",
+                    "vi": "Vàng"
+                  },
+                  "value": "gold"
+                },
+                {
+                  "label": {
+                    "en": "Gray",
+                    "vi": "Xám"
+                  },
+                  "value": "gray"
+                },
+                {
+                  "label": {
+                    "en": "Blue",
+                    "vi": "Xanh dương"
+                  },
+                  "value": "blue"
+                },
+                {
+                  "label": {
+                    "en": "Green",
+                    "vi": "Xanh lá"
+                  },
+                  "value": "green"
+                },
+                {
+                  "label": {
+                    "en": "Red",
+                    "vi": "Đỏ"
+                  },
+                  "value": "red"
+                },
+                {
+                  "label": {
+                    "en": "Purple",
+                    "vi": "Tím"
+                  },
+                  "value": "purple"
+                },
+                {
+                  "label": {
+                    "en": "Pink",
+                    "vi": "Hồng"
+                  },
+                  "value": "pink"
+                }
+              ],
+              "required": false
+            },
+            {
+              "key": "origin",
+              "type": "select",
+              "label": {
+                "en": "Origin",
+                "vi": "Xuất xứ"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Official VN/A",
+                    "vi": "Chính hãng VN/A"
+                  },
+                  "value": "vn_a"
+                },
+                {
+                  "label": {
+                    "en": "International",
+                    "vi": "Quốc tế"
+                  },
+                  "value": "international"
+                },
+                {
+                  "label": {
+                    "en": "Carrier locked",
+                    "vi": "Bản lock"
+                  },
+                  "value": "lock"
+                }
+              ],
+              "required": false
+            },
+            {
+              "key": "battery_health",
+              "max": 100,
+              "min": 1,
+              "type": "number",
+              "unit": "%",
+              "label": {
+                "en": "Battery health",
+                "vi": "Tình trạng pin"
+              },
+              "required": false
+            },
+            {
+              "key": "warranty",
+              "type": "select",
+              "label": {
+                "en": "Warranty",
+                "vi": "Bảo hành"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "No warranty",
+                    "vi": "Hết bảo hành"
+                  },
+                  "value": "none"
+                },
+                {
+                  "label": {
+                    "en": "Manufacturer warranty",
+                    "vi": "Còn bảo hành hãng"
+                  },
+                  "value": "manufacturer"
+                },
+                {
+                  "label": {
+                    "en": "Store warranty",
+                    "vi": "Bảo hành cửa hàng"
+                  },
+                  "value": "store"
+                }
+              ],
+              "required": false
+            }
+          ],
+          "description": {
+            "en": "iPhone, Samsung, Xiaomi, OPPO...",
+            "vi": "iPhone, Samsung, Xiaomi, OPPO..."
+          }
+        },
+        {
+          "id": "electronics",
+          "icon": "electronics",
+          "name": {
+            "en": "Electronics",
+            "vi": "Đồ điện tử"
+          },
+          "imageUrl": "assets/images/marketplace/listing-camera.png",
+          "attributes": [
+            {
+              "key": "device_type",
+              "type": "select",
+              "label": {
+                "en": "Device type",
+                "vi": "Loại thiết bị"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Laptop",
+                    "vi": "Laptop"
+                  },
+                  "value": "laptop"
+                },
+                {
+                  "label": {
+                    "en": "Tablet",
+                    "vi": "Máy tính bảng"
+                  },
+                  "value": "tablet"
+                },
+                {
+                  "label": {
+                    "en": "Camera",
+                    "vi": "Máy ảnh, máy quay"
+                  },
+                  "value": "camera"
+                },
+                {
+                  "label": {
+                    "en": "Headphones, speakers",
+                    "vi": "Tai nghe, loa"
+                  },
+                  "value": "audio"
+                },
+                {
+                  "label": {
+                    "en": "Smartwatch",
+                    "vi": "Đồng hồ thông minh"
+                  },
+                  "value": "smartwatch"
+                },
+                {
+                  "label": {
+                    "en": "TV, monitor",
+                    "vi": "Tivi, màn hình"
+                  },
+                  "value": "tv"
+                },
+                {
+                  "label": {
+                    "en": "Game console",
+                    "vi": "Máy chơi game"
+                  },
+                  "value": "gaming"
+                },
+                {
+                  "label": {
+                    "en": "Other",
+                    "vi": "Khác"
+                  },
+                  "value": "other"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "brand",
+              "hint": {
+                "en": "e.g. Sony, Canon, Dell",
+                "vi": "VD: Sony, Canon, Dell"
+              },
+              "type": "text",
+              "label": {
+                "en": "Brand",
+                "vi": "Hãng"
+              },
+              "required": true,
+              "maxLength": 60
+            },
+            {
+              "key": "model",
+              "hint": {
+                "en": "e.g. Alpha A7 III",
+                "vi": "VD: Alpha A7 III"
+              },
+              "type": "text",
+              "label": {
+                "en": "Model",
+                "vi": "Model"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "warranty",
+              "type": "select",
+              "label": {
+                "en": "Warranty",
+                "vi": "Bảo hành"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "No warranty",
+                    "vi": "Hết bảo hành"
+                  },
+                  "value": "none"
+                },
+                {
+                  "label": {
+                    "en": "Manufacturer warranty",
+                    "vi": "Còn bảo hành hãng"
+                  },
+                  "value": "manufacturer"
+                },
+                {
+                  "label": {
+                    "en": "Store warranty",
+                    "vi": "Bảo hành cửa hàng"
+                  },
+                  "value": "store"
+                }
+              ],
+              "required": false
+            },
+            {
+              "key": "has_accessories",
+              "type": "boolean",
+              "label": {
+                "en": "Includes box & accessories",
+                "vi": "Còn đủ phụ kiện, hộp"
+              }
+            }
+          ],
+          "description": {
+            "en": "Laptops, cameras, headphones, tablets...",
+            "vi": "Laptop, máy ảnh, tai nghe, máy tính bảng..."
+          }
+        },
+        {
+          "id": "vehicles",
+          "icon": "vehicle",
+          "name": {
+            "en": "Vehicles",
+            "vi": "Xe cộ"
+          },
+          "imageUrl": null,
+          "attributes": [
+            {
+              "key": "vehicle_type",
+              "type": "select",
+              "label": {
+                "en": "Vehicle type",
+                "vi": "Loại xe"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Motorbike",
+                    "vi": "Xe máy"
+                  },
+                  "value": "motorbike"
+                },
+                {
+                  "label": {
+                    "en": "Electric bike",
+                    "vi": "Xe điện"
+                  },
+                  "value": "ebike"
+                },
+                {
+                  "label": {
+                    "en": "Bicycle",
+                    "vi": "Xe đạp"
+                  },
+                  "value": "bicycle"
+                },
+                {
+                  "label": {
+                    "en": "Car",
+                    "vi": "Ô tô"
+                  },
+                  "value": "car"
+                },
+                {
+                  "label": {
+                    "en": "Parts",
+                    "vi": "Phụ tùng"
+                  },
+                  "value": "parts"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "brand",
+              "hint": {
+                "en": "e.g. Honda, Yamaha",
+                "vi": "VD: Honda, Yamaha, VinFast"
+              },
+              "type": "text",
+              "label": {
+                "en": "Brand",
+                "vi": "Hãng"
+              },
+              "required": true,
+              "maxLength": 60
+            },
+            {
+              "key": "model",
+              "hint": {
+                "en": "e.g. Vision 2022",
+                "vi": "VD: Vision 2022"
+              },
+              "type": "text",
+              "label": {
+                "en": "Model",
+                "vi": "Dòng xe"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "year",
+              "max": 2030,
+              "min": 1980,
+              "type": "number",
+              "unit": null,
+              "label": {
+                "en": "Year",
+                "vi": "Năm sản xuất"
+              },
+              "required": false
+            },
+            {
+              "key": "mileage",
+              "max": 2000000,
+              "min": 0,
+              "type": "number",
+              "unit": "km",
+              "label": {
+                "en": "Mileage",
+                "vi": "Số km đã đi"
+              },
+              "required": false
+            },
+            {
+              "key": "engine_cc",
+              "max": 10000,
+              "min": 0,
+              "type": "number",
+              "unit": "cc",
+              "label": {
+                "en": "Engine capacity",
+                "vi": "Dung tích xi lanh"
+              },
+              "required": false
+            },
+            {
+              "key": "has_papers",
+              "type": "boolean",
+              "label": {
+                "en": "Has registration papers",
+                "vi": "Còn giấy tờ chính chủ"
+              }
+            }
+          ],
+          "description": {
+            "en": "Motorbikes, bicycles, cars, parts...",
+            "vi": "Xe máy, xe đạp, ô tô, phụ tùng..."
+          }
+        },
+        {
+          "id": "fashion",
+          "icon": "fashion",
+          "name": {
+            "en": "Fashion",
+            "vi": "Thời trang"
+          },
+          "imageUrl": null,
+          "attributes": [
+            {
+              "key": "product_type",
+              "type": "select",
+              "label": {
+                "en": "Product type",
+                "vi": "Loại sản phẩm"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Clothes",
+                    "vi": "Quần áo"
+                  },
+                  "value": "clothes"
+                },
+                {
+                  "label": {
+                    "en": "Shoes",
+                    "vi": "Giày dép"
+                  },
+                  "value": "shoes"
+                },
+                {
+                  "label": {
+                    "en": "Bags",
+                    "vi": "Túi xách"
+                  },
+                  "value": "bags"
+                },
+                {
+                  "label": {
+                    "en": "Accessories",
+                    "vi": "Phụ kiện"
+                  },
+                  "value": "accessories"
+                },
+                {
+                  "label": {
+                    "en": "Watches",
+                    "vi": "Đồng hồ"
+                  },
+                  "value": "watch"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "gender",
+              "type": "select",
+              "label": {
+                "en": "For",
+                "vi": "Dành cho"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Men",
+                    "vi": "Nam"
+                  },
+                  "value": "men"
+                },
+                {
+                  "label": {
+                    "en": "Women",
+                    "vi": "Nữ"
+                  },
+                  "value": "women"
+                },
+                {
+                  "label": {
+                    "en": "Unisex",
+                    "vi": "Unisex"
+                  },
+                  "value": "unisex"
+                },
+                {
+                  "label": {
+                    "en": "Kids",
+                    "vi": "Trẻ em"
+                  },
+                  "value": "kids"
+                }
+              ],
+              "required": false
+            },
+            {
+              "key": "size",
+              "hint": {
+                "en": "e.g. M, 42, 28",
+                "vi": "VD: M, 42, 28"
+              },
+              "type": "text",
+              "label": {
+                "en": "Size",
+                "vi": "Kích cỡ"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "brand",
+              "hint": {
+                "en": "e.g. Uniqlo, Nike",
+                "vi": "VD: Uniqlo, Nike"
+              },
+              "type": "text",
+              "label": {
+                "en": "Brand",
+                "vi": "Thương hiệu"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "material",
+              "hint": {
+                "en": "e.g. Cotton, leather",
+                "vi": "VD: Cotton, da thật"
+              },
+              "type": "text",
+              "label": {
+                "en": "Material",
+                "vi": "Chất liệu"
+              },
+              "required": false,
+              "maxLength": 60
+            }
+          ],
+          "description": {
+            "en": "Clothes, shoes, bags...",
+            "vi": "Quần áo, giày dép, túi xách..."
+          }
+        },
+        {
+          "id": "appliances",
+          "icon": "appliance",
+          "name": {
+            "en": "Appliances",
+            "vi": "Đồ gia dụng"
+          },
+          "imageUrl": null,
+          "attributes": [
+            {
+              "key": "appliance_type",
+              "type": "select",
+              "label": {
+                "en": "Product type",
+                "vi": "Loại sản phẩm"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Fridge",
+                    "vi": "Tủ lạnh"
+                  },
+                  "value": "fridge"
+                },
+                {
+                  "label": {
+                    "en": "Washing machine",
+                    "vi": "Máy giặt"
+                  },
+                  "value": "washer"
+                },
+                {
+                  "label": {
+                    "en": "Air conditioner",
+                    "vi": "Điều hoà"
+                  },
+                  "value": "air_conditioner"
+                },
+                {
+                  "label": {
+                    "en": "Water heater",
+                    "vi": "Bình nóng lạnh"
+                  },
+                  "value": "water_heater"
+                },
+                {
+                  "label": {
+                    "en": "Kitchen appliance",
+                    "vi": "Đồ dùng nhà bếp"
+                  },
+                  "value": "kitchen"
+                },
+                {
+                  "label": {
+                    "en": "Other",
+                    "vi": "Khác"
+                  },
+                  "value": "other"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "brand",
+              "hint": {
+                "en": "e.g. Panasonic, LG",
+                "vi": "VD: Panasonic, LG"
+              },
+              "type": "text",
+              "label": {
+                "en": "Brand",
+                "vi": "Hãng"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "capacity",
+              "hint": {
+                "en": "e.g. 9 kg, 1.5 HP, 300 L",
+                "vi": "VD: 9 kg, 1.5 HP, 300 L"
+              },
+              "type": "text",
+              "label": {
+                "en": "Capacity",
+                "vi": "Công suất / dung tích"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "power",
+              "max": 20000,
+              "min": 0,
+              "type": "number",
+              "unit": "W",
+              "label": {
+                "en": "Power",
+                "vi": "Công suất điện"
+              },
+              "required": false
+            },
+            {
+              "key": "warranty",
+              "type": "select",
+              "label": {
+                "en": "Warranty",
+                "vi": "Bảo hành"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "No warranty",
+                    "vi": "Hết bảo hành"
+                  },
+                  "value": "none"
+                },
+                {
+                  "label": {
+                    "en": "Manufacturer warranty",
+                    "vi": "Còn bảo hành hãng"
+                  },
+                  "value": "manufacturer"
+                },
+                {
+                  "label": {
+                    "en": "Store warranty",
+                    "vi": "Bảo hành cửa hàng"
+                  },
+                  "value": "store"
+                }
+              ],
+              "required": false
+            }
+          ],
+          "description": {
+            "en": "Fridges, washing machines, air conditioners...",
+            "vi": "Tủ lạnh, máy giặt, điều hoà..."
+          }
+        },
+        {
+          "id": "pets",
+          "icon": "pet",
+          "name": {
+            "en": "Pets",
+            "vi": "Thú cưng"
+          },
+          "imageUrl": null,
+          "attributes": [
+            {
+              "key": "pet_type",
+              "type": "select",
+              "label": {
+                "en": "Type",
+                "vi": "Loại"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Dog",
+                    "vi": "Chó"
+                  },
+                  "value": "dog"
+                },
+                {
+                  "label": {
+                    "en": "Cat",
+                    "vi": "Mèo"
+                  },
+                  "value": "cat"
+                },
+                {
+                  "label": {
+                    "en": "Bird",
+                    "vi": "Chim"
+                  },
+                  "value": "bird"
+                },
+                {
+                  "label": {
+                    "en": "Fish",
+                    "vi": "Cá cảnh"
+                  },
+                  "value": "fish"
+                },
+                {
+                  "label": {
+                    "en": "Accessories, food",
+                    "vi": "Phụ kiện, thức ăn"
+                  },
+                  "value": "accessories"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "breed",
+              "hint": {
+                "en": "e.g. Poodle",
+                "vi": "VD: Poodle, Mèo Anh lông ngắn"
+              },
+              "type": "text",
+              "label": {
+                "en": "Breed",
+                "vi": "Giống"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "age_months",
+              "max": 360,
+              "min": 0,
+              "type": "number",
+              "unit": {
+                "en": "months",
+                "vi": "tháng"
+              },
+              "label": {
+                "en": "Age",
+                "vi": "Tuổi"
+              },
+              "required": false
+            },
+            {
+              "key": "pet_gender",
+              "type": "select",
+              "label": {
+                "en": "Gender",
+                "vi": "Giới tính"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Male",
+                    "vi": "Đực"
+                  },
+                  "value": "male"
+                },
+                {
+                  "label": {
+                    "en": "Female",
+                    "vi": "Cái"
+                  },
+                  "value": "female"
+                }
+              ],
+              "required": false
+            },
+            {
+              "key": "vaccinated",
+              "type": "boolean",
+              "label": {
+                "en": "Vaccinated",
+                "vi": "Đã tiêm phòng"
+              }
+            }
+          ],
+          "description": {
+            "en": "Dogs, cats, birds, pet accessories...",
+            "vi": "Chó, mèo, chim, phụ kiện thú cưng..."
+          }
+        },
+        {
+          "id": "furniture",
+          "icon": "home",
+          "name": {
+            "en": "Furniture & decor",
+            "vi": "Nội thất, trang trí"
+          },
+          "imageUrl": "assets/images/marketplace/listing-lamp.png",
+          "attributes": [
+            {
+              "key": "home_type",
+              "type": "select",
+              "label": {
+                "en": "Product type",
+                "vi": "Loại sản phẩm"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Furniture",
+                    "vi": "Bàn ghế, tủ kệ"
+                  },
+                  "value": "furniture"
+                },
+                {
+                  "label": {
+                    "en": "Lighting",
+                    "vi": "Đèn"
+                  },
+                  "value": "lighting"
+                },
+                {
+                  "label": {
+                    "en": "Kitchenware",
+                    "vi": "Đồ bếp"
+                  },
+                  "value": "kitchenware"
+                },
+                {
+                  "label": {
+                    "en": "Decor",
+                    "vi": "Đồ trang trí"
+                  },
+                  "value": "decor"
+                },
+                {
+                  "label": {
+                    "en": "Bedding",
+                    "vi": "Chăn ga gối"
+                  },
+                  "value": "bedding"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "material",
+              "hint": {
+                "en": "e.g. Oak, rattan",
+                "vi": "VD: Gỗ sồi, mây tre"
+              },
+              "type": "text",
+              "label": {
+                "en": "Material",
+                "vi": "Chất liệu"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "dimensions",
+              "hint": {
+                "en": "e.g. 120 x 60 x 75 cm",
+                "vi": "VD: 120 x 60 x 75 cm"
+              },
+              "type": "text",
+              "label": {
+                "en": "Dimensions",
+                "vi": "Kích thước"
+              },
+              "required": false,
+              "maxLength": 60
+            }
+          ],
+          "description": {
+            "en": "Furniture, lamps, kitchenware, decor...",
+            "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
+          }
+        },
+        {
+          "id": "books",
+          "icon": "book",
+          "name": {
+            "en": "Books & stationery",
+            "vi": "Sách, văn phòng phẩm"
+          },
+          "attributes": [
+            {
+              "key": "genre",
+              "type": "select",
+              "label": {
+                "en": "Genre",
+                "vi": "Thể loại"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Textbook",
+                    "vi": "Giáo trình, sách giáo khoa"
+                  },
+                  "value": "textbook"
+                },
+                {
+                  "label": {
+                    "en": "Novel, comics",
+                    "vi": "Tiểu thuyết, truyện"
+                  },
+                  "value": "novel"
+                },
+                {
+                  "label": {
+                    "en": "Self-help, business",
+                    "vi": "Kỹ năng, kinh tế"
+                  },
+                  "value": "skills"
+                },
+                {
+                  "label": {
+                    "en": "Children",
+                    "vi": "Thiếu nhi"
+                  },
+                  "value": "kids"
+                },
+                {
+                  "label": {
+                    "en": "Stationery",
+                    "vi": "Văn phòng phẩm"
+                  },
+                  "value": "stationery"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "author",
+              "hint": null,
+              "type": "text",
+              "label": {
+                "en": "Author",
+                "vi": "Tác giả"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "quantity",
+              "max": 1000,
+              "min": 1,
+              "type": "number",
+              "unit": {
+                "en": "books",
+                "vi": "cuốn"
+              },
+              "label": {
+                "en": "Quantity",
+                "vi": "Số lượng"
+              },
+              "required": false
+            }
+          ],
+          "description": {
+            "en": "Textbooks, novels, course books...",
+            "vi": "Sách giáo khoa, truyện, giáo trình..."
+          }
+        },
+        {
+          "id": "sports",
+          "icon": "sport",
+          "name": {
+            "en": "Sports & outdoors",
+            "vi": "Thể thao, dã ngoại"
+          },
+          "attributes": [
+            {
+              "key": "sport_type",
+              "hint": {
+                "en": "e.g. Gym, camping",
+                "vi": "VD: Gym, cầu lông, cắm trại"
+              },
+              "type": "text",
+              "label": {
+                "en": "Sport",
+                "vi": "Môn thể thao"
+              },
+              "required": true,
+              "maxLength": 60
+            },
+            {
+              "key": "brand",
+              "hint": null,
+              "type": "text",
+              "label": {
+                "en": "Brand",
+                "vi": "Thương hiệu"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "size",
+              "hint": null,
+              "type": "text",
+              "label": {
+                "en": "Size",
+                "vi": "Kích cỡ"
+              },
+              "required": false,
+              "maxLength": 60
+            }
+          ],
+          "description": {
+            "en": "Gym gear, sport bikes, camping...",
+            "vi": "Dụng cụ tập, xe đạp thể thao, đồ cắm trại..."
+          }
+        },
+        {
+          "id": "other",
+          "icon": "other",
+          "name": {
+            "en": "Other",
+            "vi": "Khác"
+          },
+          "attributes": [
+            {
+              "key": "brand",
+              "hint": null,
+              "type": "text",
+              "label": {
+                "en": "Brand",
+                "vi": "Thương hiệu"
+              },
+              "required": false,
+              "maxLength": 60
+            }
+          ],
+          "description": {
+            "en": "Items that fit no other category",
+            "vi": "Các món đồ chưa có danh mục phù hợp"
+          }
+        }
+      ]
+    }
+  },
+  "conditions": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "condition": "NEW",
+          "name": "Mới",
+          "active": true,
+          "updatedAt": "<date>"
+        },
+        {
+          "condition": "LIKE_NEW",
+          "name": "Như mới",
+          "active": true,
+          "updatedAt": "<date>"
+        },
+        {
+          "condition": "USED_GOOD",
+          "name": "Đã dùng – Tốt",
+          "active": true,
+          "updatedAt": "<date>"
+        },
+        {
+          "condition": "USED_FAIR",
+          "name": "Đã dùng – Khá",
+          "active": true,
+          "updatedAt": "<date>"
+        },
+        {
+          "condition": "FOR_PARTS",
+          "name": "Cần sửa chữa",
+          "active": true,
+          "updatedAt": "<date>"
+        }
+      ]
+    }
+  },
+  "provinces": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "code": "79",
+          "name": "TP. Hồ Chí Minh",
+          "level": "province"
+        },
+        {
+          "code": "01",
+          "name": "TP. Hà Nội",
+          "level": "province"
+        },
+        {
+          "code": "48",
+          "name": "TP. Đà Nẵng",
+          "level": "province"
+        },
+        {
+          "code": "31",
+          "name": "TP. Hải Phòng",
+          "level": "province"
+        },
+        {
+          "code": "92",
+          "name": "TP. Cần Thơ",
+          "level": "province"
+        },
+        {
+          "code": "46",
+          "name": "TP. Huế",
+          "level": "province"
+        }
+      ],
+      "coverage": "sample"
+    }
+  },
+  "wards": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "code": "79-SG",
+          "name": "Phường Sài Gòn",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.7769,
+            "longitude": 106.7009
+          }
+        },
+        {
+          "code": "79-BT",
+          "name": "Phường Bến Thành",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.7725,
+            "longitude": 106.698
+          }
+        },
+        {
+          "code": "79-TD",
+          "name": "Phường Tân Định",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.7905,
+            "longitude": 106.6897
+          }
+        },
+        {
+          "code": "79-BC",
+          "name": "Phường Bàn Cờ",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.77,
+            "longitude": 106.68
+          }
+        },
+        {
+          "code": "79-XH",
+          "name": "Phường Xuân Hòa",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.779,
+            "longitude": 106.689
+          }
+        },
+        {
+          "code": "79-GV",
+          "name": "Phường Gò Vấp",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.8387,
+            "longitude": 106.6653
+          }
+        },
+        {
+          "code": "79-AK",
+          "name": "Phường An Khánh",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.788,
+            "longitude": 106.731
+          }
+        },
+        {
+          "code": "79-THD",
+          "name": "Phường Thủ Đức",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.8494,
+            "longitude": 106.7537
+          }
+        }
+      ],
+      "coverage": "sample"
+    }
+  },
+  "wards unknown province": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Chưa có dữ liệu địa chỉ cho tỉnh này.",
+      "code": "LOCATION_NOT_FOUND"
+    }
+  },
+  "reverse geocode": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "province": {
+          "code": "79",
+          "name": "TP. Hồ Chí Minh",
+          "level": "province"
+        },
+        "ward": {
+          "code": "79-SG",
+          "name": "Phường Sài Gòn",
+          "level": "ward",
+          "parentCode": "79",
+          "center": {
+            "latitude": 10.7769,
+            "longitude": 106.7009
+          }
+        }
+      },
+      "coverage": "sample"
+    }
+  },
+  "reverse geocode outside": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "GPS nằm ngoài vùng dữ liệu địa chỉ.",
+      "code": "LOCATION_NOT_FOUND"
+    }
+  },
+  "store categories": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "active": true,
+          "id": "other",
+          "name": "Khác",
+          "metadata": {
+            "id": "other",
+            "icon": "other",
+            "name": {
+              "en": "Other",
+              "vi": "Khác"
+            },
+            "attributes": [
+              {
+                "key": "brand",
+                "hint": null,
+                "type": "text",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Thương hiệu"
+                },
+                "required": false,
+                "maxLength": 60
+              }
+            ],
+            "description": {
+              "en": "Items that fit no other category",
+              "vi": "Các món đồ chưa có danh mục phù hợp"
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "furniture",
+          "name": "Nội thất, trang trí",
+          "metadata": {
+            "id": "furniture",
+            "icon": "home",
+            "name": {
+              "en": "Furniture & decor",
+              "vi": "Nội thất, trang trí"
+            },
+            "imageUrl": "assets/images/marketplace/listing-lamp.png",
+            "attributes": [
+              {
+                "key": "home_type",
+                "type": "select",
+                "label": {
+                  "en": "Product type",
+                  "vi": "Loại sản phẩm"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Furniture",
+                      "vi": "Bàn ghế, tủ kệ"
+                    },
+                    "value": "furniture"
+                  },
+                  {
+                    "label": {
+                      "en": "Lighting",
+                      "vi": "Đèn"
+                    },
+                    "value": "lighting"
+                  },
+                  {
+                    "label": {
+                      "en": "Kitchenware",
+                      "vi": "Đồ bếp"
+                    },
+                    "value": "kitchenware"
+                  },
+                  {
+                    "label": {
+                      "en": "Decor",
+                      "vi": "Đồ trang trí"
+                    },
+                    "value": "decor"
+                  },
+                  {
+                    "label": {
+                      "en": "Bedding",
+                      "vi": "Chăn ga gối"
+                    },
+                    "value": "bedding"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "material",
+                "hint": {
+                  "en": "e.g. Oak, rattan",
+                  "vi": "VD: Gỗ sồi, mây tre"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Material",
+                  "vi": "Chất liệu"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "dimensions",
+                "hint": {
+                  "en": "e.g. 120 x 60 x 75 cm",
+                  "vi": "VD: 120 x 60 x 75 cm"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Dimensions",
+                  "vi": "Kích thước"
+                },
+                "required": false,
+                "maxLength": 60
+              }
+            ],
+            "description": {
+              "en": "Furniture, lamps, kitchenware, decor...",
+              "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "books",
+          "name": "Sách, văn phòng phẩm",
+          "metadata": {
+            "id": "books",
+            "icon": "book",
+            "name": {
+              "en": "Books & stationery",
+              "vi": "Sách, văn phòng phẩm"
+            },
+            "attributes": [
+              {
+                "key": "genre",
+                "type": "select",
+                "label": {
+                  "en": "Genre",
+                  "vi": "Thể loại"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Textbook",
+                      "vi": "Giáo trình, sách giáo khoa"
+                    },
+                    "value": "textbook"
+                  },
+                  {
+                    "label": {
+                      "en": "Novel, comics",
+                      "vi": "Tiểu thuyết, truyện"
+                    },
+                    "value": "novel"
+                  },
+                  {
+                    "label": {
+                      "en": "Self-help, business",
+                      "vi": "Kỹ năng, kinh tế"
+                    },
+                    "value": "skills"
+                  },
+                  {
+                    "label": {
+                      "en": "Children",
+                      "vi": "Thiếu nhi"
+                    },
+                    "value": "kids"
+                  },
+                  {
+                    "label": {
+                      "en": "Stationery",
+                      "vi": "Văn phòng phẩm"
+                    },
+                    "value": "stationery"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "author",
+                "hint": null,
+                "type": "text",
+                "label": {
+                  "en": "Author",
+                  "vi": "Tác giả"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "quantity",
+                "max": 1000,
+                "min": 1,
+                "type": "number",
+                "unit": {
+                  "en": "books",
+                  "vi": "cuốn"
+                },
+                "label": {
+                  "en": "Quantity",
+                  "vi": "Số lượng"
+                },
+                "required": false
+              }
+            ],
+            "description": {
+              "en": "Textbooks, novels, course books...",
+              "vi": "Sách giáo khoa, truyện, giáo trình..."
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "pets",
+          "name": "Thú cưng",
+          "metadata": {
+            "id": "pets",
+            "icon": "pet",
+            "name": {
+              "en": "Pets",
+              "vi": "Thú cưng"
+            },
+            "imageUrl": null,
+            "attributes": [
+              {
+                "key": "pet_type",
+                "type": "select",
+                "label": {
+                  "en": "Type",
+                  "vi": "Loại"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Dog",
+                      "vi": "Chó"
+                    },
+                    "value": "dog"
+                  },
+                  {
+                    "label": {
+                      "en": "Cat",
+                      "vi": "Mèo"
+                    },
+                    "value": "cat"
+                  },
+                  {
+                    "label": {
+                      "en": "Bird",
+                      "vi": "Chim"
+                    },
+                    "value": "bird"
+                  },
+                  {
+                    "label": {
+                      "en": "Fish",
+                      "vi": "Cá cảnh"
+                    },
+                    "value": "fish"
+                  },
+                  {
+                    "label": {
+                      "en": "Accessories, food",
+                      "vi": "Phụ kiện, thức ăn"
+                    },
+                    "value": "accessories"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "breed",
+                "hint": {
+                  "en": "e.g. Poodle",
+                  "vi": "VD: Poodle, Mèo Anh lông ngắn"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Breed",
+                  "vi": "Giống"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "age_months",
+                "max": 360,
+                "min": 0,
+                "type": "number",
+                "unit": {
+                  "en": "months",
+                  "vi": "tháng"
+                },
+                "label": {
+                  "en": "Age",
+                  "vi": "Tuổi"
+                },
+                "required": false
+              },
+              {
+                "key": "pet_gender",
+                "type": "select",
+                "label": {
+                  "en": "Gender",
+                  "vi": "Giới tính"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Male",
+                      "vi": "Đực"
+                    },
+                    "value": "male"
+                  },
+                  {
+                    "label": {
+                      "en": "Female",
+                      "vi": "Cái"
+                    },
+                    "value": "female"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "vaccinated",
+                "type": "boolean",
+                "label": {
+                  "en": "Vaccinated",
+                  "vi": "Đã tiêm phòng"
+                }
+              }
+            ],
+            "description": {
+              "en": "Dogs, cats, birds, pet accessories...",
+              "vi": "Chó, mèo, chim, phụ kiện thú cưng..."
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "sports",
+          "name": "Thể thao, dã ngoại",
+          "metadata": {
+            "id": "sports",
+            "icon": "sport",
+            "name": {
+              "en": "Sports & outdoors",
+              "vi": "Thể thao, dã ngoại"
+            },
+            "attributes": [
+              {
+                "key": "sport_type",
+                "hint": {
+                  "en": "e.g. Gym, camping",
+                  "vi": "VD: Gym, cầu lông, cắm trại"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Sport",
+                  "vi": "Môn thể thao"
+                },
+                "required": true,
+                "maxLength": 60
+              },
+              {
+                "key": "brand",
+                "hint": null,
+                "type": "text",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Thương hiệu"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "size",
+                "hint": null,
+                "type": "text",
+                "label": {
+                  "en": "Size",
+                  "vi": "Kích cỡ"
+                },
+                "required": false,
+                "maxLength": 60
+              }
+            ],
+            "description": {
+              "en": "Gym gear, sport bikes, camping...",
+              "vi": "Dụng cụ tập, xe đạp thể thao, đồ cắm trại..."
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "fashion",
+          "name": "Thời trang",
+          "metadata": {
+            "id": "fashion",
+            "icon": "fashion",
+            "name": {
+              "en": "Fashion",
+              "vi": "Thời trang"
+            },
+            "imageUrl": null,
+            "attributes": [
+              {
+                "key": "product_type",
+                "type": "select",
+                "label": {
+                  "en": "Product type",
+                  "vi": "Loại sản phẩm"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Clothes",
+                      "vi": "Quần áo"
+                    },
+                    "value": "clothes"
+                  },
+                  {
+                    "label": {
+                      "en": "Shoes",
+                      "vi": "Giày dép"
+                    },
+                    "value": "shoes"
+                  },
+                  {
+                    "label": {
+                      "en": "Bags",
+                      "vi": "Túi xách"
+                    },
+                    "value": "bags"
+                  },
+                  {
+                    "label": {
+                      "en": "Accessories",
+                      "vi": "Phụ kiện"
+                    },
+                    "value": "accessories"
+                  },
+                  {
+                    "label": {
+                      "en": "Watches",
+                      "vi": "Đồng hồ"
+                    },
+                    "value": "watch"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "gender",
+                "type": "select",
+                "label": {
+                  "en": "For",
+                  "vi": "Dành cho"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Men",
+                      "vi": "Nam"
+                    },
+                    "value": "men"
+                  },
+                  {
+                    "label": {
+                      "en": "Women",
+                      "vi": "Nữ"
+                    },
+                    "value": "women"
+                  },
+                  {
+                    "label": {
+                      "en": "Unisex",
+                      "vi": "Unisex"
+                    },
+                    "value": "unisex"
+                  },
+                  {
+                    "label": {
+                      "en": "Kids",
+                      "vi": "Trẻ em"
+                    },
+                    "value": "kids"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "size",
+                "hint": {
+                  "en": "e.g. M, 42, 28",
+                  "vi": "VD: M, 42, 28"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Size",
+                  "vi": "Kích cỡ"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "brand",
+                "hint": {
+                  "en": "e.g. Uniqlo, Nike",
+                  "vi": "VD: Uniqlo, Nike"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Thương hiệu"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "material",
+                "hint": {
+                  "en": "e.g. Cotton, leather",
+                  "vi": "VD: Cotton, da thật"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Material",
+                  "vi": "Chất liệu"
+                },
+                "required": false,
+                "maxLength": 60
+              }
+            ],
+            "description": {
+              "en": "Clothes, shoes, bags...",
+              "vi": "Quần áo, giày dép, túi xách..."
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "vehicles",
+          "name": "Xe cộ",
+          "metadata": {
+            "id": "vehicles",
+            "icon": "vehicle",
+            "name": {
+              "en": "Vehicles",
+              "vi": "Xe cộ"
+            },
+            "imageUrl": null,
+            "attributes": [
+              {
+                "key": "vehicle_type",
+                "type": "select",
+                "label": {
+                  "en": "Vehicle type",
+                  "vi": "Loại xe"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Motorbike",
+                      "vi": "Xe máy"
+                    },
+                    "value": "motorbike"
+                  },
+                  {
+                    "label": {
+                      "en": "Electric bike",
+                      "vi": "Xe điện"
+                    },
+                    "value": "ebike"
+                  },
+                  {
+                    "label": {
+                      "en": "Bicycle",
+                      "vi": "Xe đạp"
+                    },
+                    "value": "bicycle"
+                  },
+                  {
+                    "label": {
+                      "en": "Car",
+                      "vi": "Ô tô"
+                    },
+                    "value": "car"
+                  },
+                  {
+                    "label": {
+                      "en": "Parts",
+                      "vi": "Phụ tùng"
+                    },
+                    "value": "parts"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "brand",
+                "hint": {
+                  "en": "e.g. Honda, Yamaha",
+                  "vi": "VD: Honda, Yamaha, VinFast"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Hãng"
+                },
+                "required": true,
+                "maxLength": 60
+              },
+              {
+                "key": "model",
+                "hint": {
+                  "en": "e.g. Vision 2022",
+                  "vi": "VD: Vision 2022"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Model",
+                  "vi": "Dòng xe"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "year",
+                "max": 2030,
+                "min": 1980,
+                "type": "number",
+                "unit": null,
+                "label": {
+                  "en": "Year",
+                  "vi": "Năm sản xuất"
+                },
+                "required": false
+              },
+              {
+                "key": "mileage",
+                "max": 2000000,
+                "min": 0,
+                "type": "number",
+                "unit": "km",
+                "label": {
+                  "en": "Mileage",
+                  "vi": "Số km đã đi"
+                },
+                "required": false
+              },
+              {
+                "key": "engine_cc",
+                "max": 10000,
+                "min": 0,
+                "type": "number",
+                "unit": "cc",
+                "label": {
+                  "en": "Engine capacity",
+                  "vi": "Dung tích xi lanh"
+                },
+                "required": false
+              },
+              {
+                "key": "has_papers",
+                "type": "boolean",
+                "label": {
+                  "en": "Has registration papers",
+                  "vi": "Còn giấy tờ chính chủ"
+                }
+              }
+            ],
+            "description": {
+              "en": "Motorbikes, bicycles, cars, parts...",
+              "vi": "Xe máy, xe đạp, ô tô, phụ tùng..."
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "phones",
+          "name": "Điện thoại",
+          "metadata": {
+            "id": "phones",
+            "icon": "phone",
+            "name": {
+              "en": "Phones",
+              "vi": "Điện thoại"
+            },
+            "imageUrl": null,
+            "attributes": [
+              {
+                "key": "brand",
+                "type": "select",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Hãng"
+                },
+                "options": [
+                  {
+                    "value": "Apple"
+                  },
+                  {
+                    "value": "Samsung"
+                  },
+                  {
+                    "value": "Xiaomi"
+                  },
+                  {
+                    "value": "OPPO"
+                  },
+                  {
+                    "value": "vivo"
+                  },
+                  {
+                    "value": "realme"
+                  },
+                  {
+                    "value": "Nokia"
+                  },
+                  {
+                    "value": "Google"
+                  },
+                  {
+                    "value": "Sony"
+                  },
+                  {
+                    "value": "ASUS"
+                  },
+                  {
+                    "label": {
+                      "en": "Other",
+                      "vi": "Hãng khác"
+                    },
+                    "value": "other"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "model",
+                "hint": {
+                  "en": "e.g. iPhone 14 Pro Max",
+                  "vi": "VD: iPhone 14 Pro Max"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Model",
+                  "vi": "Dòng máy"
+                },
+                "required": true,
+                "maxLength": 60
+              },
+              {
+                "key": "storage",
+                "type": "select",
+                "label": {
+                  "en": "Storage",
+                  "vi": "Dung lượng"
+                },
+                "options": [
+                  {
+                    "value": "32 GB"
+                  },
+                  {
+                    "value": "64 GB"
+                  },
+                  {
+                    "value": "128 GB"
+                  },
+                  {
+                    "value": "256 GB"
+                  },
+                  {
+                    "value": "512 GB"
+                  },
+                  {
+                    "value": "1 TB"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "color",
+                "type": "select",
+                "label": {
+                  "en": "Color",
+                  "vi": "Màu sắc"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Black",
+                      "vi": "Đen"
+                    },
+                    "value": "black"
+                  },
+                  {
+                    "label": {
+                      "en": "White",
+                      "vi": "Trắng"
+                    },
+                    "value": "white"
+                  },
+                  {
+                    "label": {
+                      "en": "Silver",
+                      "vi": "Bạc"
+                    },
+                    "value": "silver"
+                  },
+                  {
+                    "label": {
+                      "en": "Gold",
+                      "vi": "Vàng"
+                    },
+                    "value": "gold"
+                  },
+                  {
+                    "label": {
+                      "en": "Gray",
+                      "vi": "Xám"
+                    },
+                    "value": "gray"
+                  },
+                  {
+                    "label": {
+                      "en": "Blue",
+                      "vi": "Xanh dương"
+                    },
+                    "value": "blue"
+                  },
+                  {
+                    "label": {
+                      "en": "Green",
+                      "vi": "Xanh lá"
+                    },
+                    "value": "green"
+                  },
+                  {
+                    "label": {
+                      "en": "Red",
+                      "vi": "Đỏ"
+                    },
+                    "value": "red"
+                  },
+                  {
+                    "label": {
+                      "en": "Purple",
+                      "vi": "Tím"
+                    },
+                    "value": "purple"
+                  },
+                  {
+                    "label": {
+                      "en": "Pink",
+                      "vi": "Hồng"
+                    },
+                    "value": "pink"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "origin",
+                "type": "select",
+                "label": {
+                  "en": "Origin",
+                  "vi": "Xuất xứ"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Official VN/A",
+                      "vi": "Chính hãng VN/A"
+                    },
+                    "value": "vn_a"
+                  },
+                  {
+                    "label": {
+                      "en": "International",
+                      "vi": "Quốc tế"
+                    },
+                    "value": "international"
+                  },
+                  {
+                    "label": {
+                      "en": "Carrier locked",
+                      "vi": "Bản lock"
+                    },
+                    "value": "lock"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "battery_health",
+                "max": 100,
+                "min": 1,
+                "type": "number",
+                "unit": "%",
+                "label": {
+                  "en": "Battery health",
+                  "vi": "Tình trạng pin"
+                },
+                "required": false
+              },
+              {
+                "key": "warranty",
+                "type": "select",
+                "label": {
+                  "en": "Warranty",
+                  "vi": "Bảo hành"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "No warranty",
+                      "vi": "Hết bảo hành"
+                    },
+                    "value": "none"
+                  },
+                  {
+                    "label": {
+                      "en": "Manufacturer warranty",
+                      "vi": "Còn bảo hành hãng"
+                    },
+                    "value": "manufacturer"
+                  },
+                  {
+                    "label": {
+                      "en": "Store warranty",
+                      "vi": "Bảo hành cửa hàng"
+                    },
+                    "value": "store"
+                  }
+                ],
+                "required": false
+              }
+            ],
+            "description": {
+              "en": "iPhone, Samsung, Xiaomi, OPPO...",
+              "vi": "iPhone, Samsung, Xiaomi, OPPO..."
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "appliances",
+          "name": "Đồ gia dụng",
+          "metadata": {
+            "id": "appliances",
+            "icon": "appliance",
+            "name": {
+              "en": "Appliances",
+              "vi": "Đồ gia dụng"
+            },
+            "imageUrl": null,
+            "attributes": [
+              {
+                "key": "appliance_type",
+                "type": "select",
+                "label": {
+                  "en": "Product type",
+                  "vi": "Loại sản phẩm"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Fridge",
+                      "vi": "Tủ lạnh"
+                    },
+                    "value": "fridge"
+                  },
+                  {
+                    "label": {
+                      "en": "Washing machine",
+                      "vi": "Máy giặt"
+                    },
+                    "value": "washer"
+                  },
+                  {
+                    "label": {
+                      "en": "Air conditioner",
+                      "vi": "Điều hoà"
+                    },
+                    "value": "air_conditioner"
+                  },
+                  {
+                    "label": {
+                      "en": "Water heater",
+                      "vi": "Bình nóng lạnh"
+                    },
+                    "value": "water_heater"
+                  },
+                  {
+                    "label": {
+                      "en": "Kitchen appliance",
+                      "vi": "Đồ dùng nhà bếp"
+                    },
+                    "value": "kitchen"
+                  },
+                  {
+                    "label": {
+                      "en": "Other",
+                      "vi": "Khác"
+                    },
+                    "value": "other"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "brand",
+                "hint": {
+                  "en": "e.g. Panasonic, LG",
+                  "vi": "VD: Panasonic, LG"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Hãng"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "capacity",
+                "hint": {
+                  "en": "e.g. 9 kg, 1.5 HP, 300 L",
+                  "vi": "VD: 9 kg, 1.5 HP, 300 L"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Capacity",
+                  "vi": "Công suất / dung tích"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "power",
+                "max": 20000,
+                "min": 0,
+                "type": "number",
+                "unit": "W",
+                "label": {
+                  "en": "Power",
+                  "vi": "Công suất điện"
+                },
+                "required": false
+              },
+              {
+                "key": "warranty",
+                "type": "select",
+                "label": {
+                  "en": "Warranty",
+                  "vi": "Bảo hành"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "No warranty",
+                      "vi": "Hết bảo hành"
+                    },
+                    "value": "none"
+                  },
+                  {
+                    "label": {
+                      "en": "Manufacturer warranty",
+                      "vi": "Còn bảo hành hãng"
+                    },
+                    "value": "manufacturer"
+                  },
+                  {
+                    "label": {
+                      "en": "Store warranty",
+                      "vi": "Bảo hành cửa hàng"
+                    },
+                    "value": "store"
+                  }
+                ],
+                "required": false
+              }
+            ],
+            "description": {
+              "en": "Fridges, washing machines, air conditioners...",
+              "vi": "Tủ lạnh, máy giặt, điều hoà..."
+            }
+          }
+        },
+        {
+          "active": true,
+          "id": "electronics",
+          "name": "Đồ điện tử",
+          "metadata": {
+            "id": "electronics",
+            "icon": "electronics",
+            "name": {
+              "en": "Electronics",
+              "vi": "Đồ điện tử"
+            },
+            "imageUrl": "assets/images/marketplace/listing-camera.png",
+            "attributes": [
+              {
+                "key": "device_type",
+                "type": "select",
+                "label": {
+                  "en": "Device type",
+                  "vi": "Loại thiết bị"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Laptop",
+                      "vi": "Laptop"
+                    },
+                    "value": "laptop"
+                  },
+                  {
+                    "label": {
+                      "en": "Tablet",
+                      "vi": "Máy tính bảng"
+                    },
+                    "value": "tablet"
+                  },
+                  {
+                    "label": {
+                      "en": "Camera",
+                      "vi": "Máy ảnh, máy quay"
+                    },
+                    "value": "camera"
+                  },
+                  {
+                    "label": {
+                      "en": "Headphones, speakers",
+                      "vi": "Tai nghe, loa"
+                    },
+                    "value": "audio"
+                  },
+                  {
+                    "label": {
+                      "en": "Smartwatch",
+                      "vi": "Đồng hồ thông minh"
+                    },
+                    "value": "smartwatch"
+                  },
+                  {
+                    "label": {
+                      "en": "TV, monitor",
+                      "vi": "Tivi, màn hình"
+                    },
+                    "value": "tv"
+                  },
+                  {
+                    "label": {
+                      "en": "Game console",
+                      "vi": "Máy chơi game"
+                    },
+                    "value": "gaming"
+                  },
+                  {
+                    "label": {
+                      "en": "Other",
+                      "vi": "Khác"
+                    },
+                    "value": "other"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "brand",
+                "hint": {
+                  "en": "e.g. Sony, Canon, Dell",
+                  "vi": "VD: Sony, Canon, Dell"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Hãng"
+                },
+                "required": true,
+                "maxLength": 60
+              },
+              {
+                "key": "model",
+                "hint": {
+                  "en": "e.g. Alpha A7 III",
+                  "vi": "VD: Alpha A7 III"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Model",
+                  "vi": "Model"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "warranty",
+                "type": "select",
+                "label": {
+                  "en": "Warranty",
+                  "vi": "Bảo hành"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "No warranty",
+                      "vi": "Hết bảo hành"
+                    },
+                    "value": "none"
+                  },
+                  {
+                    "label": {
+                      "en": "Manufacturer warranty",
+                      "vi": "Còn bảo hành hãng"
+                    },
+                    "value": "manufacturer"
+                  },
+                  {
+                    "label": {
+                      "en": "Store warranty",
+                      "vi": "Bảo hành cửa hàng"
+                    },
+                    "value": "store"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "has_accessories",
+                "type": "boolean",
+                "label": {
+                  "en": "Includes box & accessories",
+                  "vi": "Còn đủ phụ kiện, hộp"
+                }
+              }
+            ],
+            "description": {
+              "en": "Laptops, cameras, headphones, tablets...",
+              "vi": "Laptop, máy ảnh, tai nghe, máy tính bảng..."
+            }
+          }
+        }
+      ]
+    }
+  },
+  "store packages": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "basic",
+          "tier": "BASIC",
+          "name": "Cửa hàng Basic",
+          "monthlyPrice": "99000",
+          "dailyListingLimit": 10,
+          "activeListingLimit": 30,
+          "monthlyPromotionQuota": 2,
+          "priorityLevel": 1
+        },
+        {
+          "id": "pro",
+          "tier": "PRO",
+          "name": "Cửa hàng Pro",
+          "monthlyPrice": "299000",
+          "dailyListingLimit": 30,
+          "activeListingLimit": 100,
+          "monthlyPromotionQuota": 10,
+          "priorityLevel": 2
+        }
+      ]
+    }
+  },
+  "promotion packages": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "bump-1",
+          "name": "Đẩy tin 1 ngày",
+          "kind": "BUMP",
+          "durationDays": 1,
+          "price": "10000",
+          "priority": 0,
+          "active": true
+        },
+        {
+          "id": "bump-3",
+          "name": "Đẩy tin 3 ngày",
+          "kind": "BUMP",
+          "durationDays": 3,
+          "price": "28000",
+          "priority": 0,
+          "active": true
+        },
+        {
+          "id": "bump-7",
+          "name": "Đẩy tin 7 ngày",
+          "kind": "BUMP",
+          "durationDays": 7,
+          "price": "63000",
+          "priority": 0,
+          "active": true
+        },
+        {
+          "id": "featured-1",
+          "name": "Tin ưu tiên 1 ngày",
+          "kind": "FEATURED",
+          "durationDays": 1,
+          "price": "20000",
+          "priority": 3,
+          "active": true
+        },
+        {
+          "id": "featured-3",
+          "name": "Tin ưu tiên 3 ngày",
+          "kind": "FEATURED",
+          "durationDays": 3,
+          "price": "57000",
+          "priority": 3,
+          "active": true
+        },
+        {
+          "id": "featured-7",
+          "name": "Tin ưu tiên 7 ngày",
+          "kind": "FEATURED",
+          "durationDays": 7,
+          "price": "126000",
+          "priority": 3,
+          "active": true
+        }
+      ]
+    }
+  },
+  "unknown route": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy API.",
+      "code": "NOT_FOUND"
+    }
+  }
+}
