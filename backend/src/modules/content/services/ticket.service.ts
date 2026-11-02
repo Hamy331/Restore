@@ -1,6 +1,8 @@
 import { AppError } from '../../../common/errors/app-error.js';
+import { audit } from '../../../common/audit/admin-audit.js';
+import { ADMIN_PAGE_SIZE, changed } from '../../../common/validation/admin-input.js';
 import { withQuotaTransaction } from '../../commerce/index.js';
-import type { PageQuery, TicketInput } from '../content.dto.js';
+import type { AdminTicketReplyInput, PageQuery, TicketInput, TicketStatusInput } from '../content.dto.js';
 import { PAGE_SIZE } from '../content.type.js';
 import * as ticketRepository from '../repositories/ticket.repository.js';
 
@@ -18,5 +20,32 @@ export function reply(userId: string, id: string, content: string) {
     if (!ticket) throw new AppError(404, 'TICKET_NOT_FOUND', 'Không tìm thấy yêu cầu đang mở của bạn.');
     await ticketRepository.touch(tx, ticket.id);
     return ticketRepository.createUserMessage(tx, ticket.id, userId, content);
+  });
+}
+
+/* ---------- Quản trị (/admin/tickets) ---------- */
+
+/** Mọi yêu cầu hỗ trợ kèm tin nhắn, 25 mỗi trang */
+export async function listForAdmin({ page }: PageQuery) {
+  const [items, total] = await ticketRepository.findPage((page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+  return { items, total, page };
+}
+
+/** Admin trả lời yêu cầu đang mở (updatedAt phải khớp), ghi AdminAudit */
+export function adminReply(actorId: string, id: string, { content, expected }: AdminTicketReplyInput) {
+  return withQuotaTransaction(async (tx) => {
+    changed(await ticketRepository.touchOpenWhereVersion(tx, id, expected));
+    const message = await ticketRepository.createAdminMessage(tx, id, actorId, content);
+    await audit(tx, actorId, 'REPLY', 'TICKET', id, 'Phản hồi hỗ trợ');
+    return message;
+  });
+}
+
+/** Mở lại / đóng yêu cầu (updatedAt phải khớp), ghi AdminAudit */
+export function setStatus(actorId: string, id: string, { status, expected }: TicketStatusInput) {
+  return withQuotaTransaction(async (tx) => {
+    changed(await ticketRepository.setStatusWhereVersion(tx, id, expected, status));
+    await audit(tx, actorId, status, 'TICKET', id, 'Cập nhật trạng thái hỗ trợ');
+    return { updated: true };
   });
 }

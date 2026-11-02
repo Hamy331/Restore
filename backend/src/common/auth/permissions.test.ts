@@ -6,7 +6,8 @@ import { AuthRequest, authorizePermission, requirePermission } from '../../middl
 import { hasPermission, PERMISSION, Permission, ROLE_PERMISSIONS } from './permissions.js';
 
 /**
- * Quyền → vai trò được phép, đúng với các route đang chặn bằng authorizeRoles.
+ * Quyền → vai trò được phép, đúng như các route đang chặn bằng authorizeRoles hôm nay.
+ * Đổi bảng ROLE_PERMISSIONS mà không sửa bảng này thì test đỏ, tránh mở quyền nhầm.
  */
 const EXPECTED: Record<Permission, Role[]> = {
   [PERMISSION.PROFILE_READ]: [Role.USER, Role.ADMIN],
@@ -18,6 +19,8 @@ const EXPECTED: Record<Permission, Role[]> = {
   [PERMISSION.REPORT_SUBMIT]: [Role.USER],
   [PERMISSION.SUPPORT_TICKET]: [Role.USER],
   [PERMISSION.ADMIN_ACCESS]: [Role.ADMIN],
+  [PERMISSION.USER_MANAGE]: [Role.ADMIN],
+  [PERMISSION.CATALOG_MANAGE]: [Role.ADMIN],
   [PERMISSION.BANNER_MANAGE]: [Role.ADMIN],
   [PERMISSION.LISTING_MODERATE]: [Role.ADMIN],
   [PERMISSION.STORE_ORDER_MANAGE]: [Role.ADMIN],

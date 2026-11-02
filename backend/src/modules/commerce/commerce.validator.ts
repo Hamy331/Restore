@@ -1,6 +1,7 @@
 import { PromotionKind } from '@prisma/client';
 import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
+import { choice, integer, object, page, text } from '../../common/validation/admin-input.js';
 
 /* ---------- Gói cửa hàng ---------- */
 
@@ -55,3 +56,25 @@ export const purchaseBody = z.unknown().transform((body) => {
 
 /** Params `:id` (gói hoặc đơn) */
 export const idParams = z.object({ id: z.string() });
+
+/* ---------- Quản trị (/admin/store-*, /admin/promotion-orders), lỗi INVALID_ADMIN_INPUT / INVALID_QUERY như API cũ ---------- */
+
+/** Query danh sách đơn quản trị: page, status? (PENDING | CONFIRMED | REJECTED) */
+export const adminOrderQuery = z.record(z.string(), z.unknown()).transform((query) => {
+  const current = page(query.page);
+  return { page: current, status: query.status ? choice(query.status, ['PENDING', 'CONFIRMED', 'REJECTED'] as const) : undefined };
+});
+
+/** Body PUT /admin/store-packages/:id */
+export const storePackageBody = z.unknown().transform((value) => {
+  const body = object(value, ['name', 'monthlyPrice', 'dailyListingLimit', 'activeListingLimit', 'monthlyPromotionQuota', 'priorityLevel']);
+  const name = text(body.name, 'name', 3, 80), monthlyPrice = text(body.monthlyPrice, 'monthlyPrice', 1, 12);
+  if (!/^(0|[1-9]\d{0,11})$/.test(monthlyPrice)) throw new AppError(400, 'INVALID_PRICE', 'Giá không hợp lệ.');
+  return {
+    name, monthlyPrice,
+    dailyListingLimit: integer(body.dailyListingLimit, 1, 10000),
+    activeListingLimit: integer(body.activeListingLimit, 1, 100000),
+    monthlyPromotionQuota: integer(body.monthlyPromotionQuota, 0, 10000),
+    priorityLevel: integer(body.priorityLevel, 0, 10),
+  };
+});

@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 import type {
+  adminReportQuery, adminTicketReplyBody, knowledgeBody, postBody, resolveReportBody, ticketStatusBody, versionBody,
   knowledgeSearchQuery, knowledgeUploadBody, knowledgeUploadQuery, pageOnlyQuery, reportBody, ticketBody, ticketReplyBody,
 } from './content.validator.js';
 
@@ -12,3 +13,11 @@ export type KnowledgeUploadBody = z.output<typeof knowledgeUploadBody>;
 export type ReportInput = z.output<typeof reportBody>;
 export type TicketInput = z.output<typeof ticketBody>;
 export type TicketReplyInput = z.output<typeof ticketReplyBody>;
+
+export type PostInput = z.output<typeof postBody>;
+export type AdminTicketReplyInput = z.output<typeof adminTicketReplyBody>;
+export type TicketStatusInput = z.output<typeof ticketStatusBody>;
+export type KnowledgeInput = z.output<typeof knowledgeBody>;
+export type VersionInput = z.output<typeof versionBody>;
+export type AdminReportQuery = z.output<typeof adminReportQuery>;
+export type ResolveReportInput = z.output<typeof resolveReportBody>;

@@ -1,6 +1,6 @@
 import { ListingCondition, ListingStatus, Prisma } from '@prisma/client';
 import { prisma } from '../../../lib/prisma.js';
-import { listingSelect } from '../listing.dto.js';
+import { adminListingSelect, listingSelect } from '../listing.dto.js';
 
 /** Prisma client hoặc transaction đang chạy */
 export type Db = Prisma.TransactionClient;
@@ -91,3 +91,25 @@ export const incrementViewCount = (id: string, skipCount: boolean, viewerId: str
 
 export const findPending = () =>
   prisma.listing.findMany({ where: { status: 'PENDING' }, select: listingSelect, orderBy: { publishedAt: 'asc' }, take: 100 });
+
+/** Tin cần đọc khi admin ra quyết định */
+export const findForModeration = (tx: Db, id: string) =>
+  tx.listing.findUnique({ where: { id }, select: { id: true, status: true, images: true, updatedAt: true, categoryId: true, condition: true } });
+
+/** Đổi trạng thái khi tin vẫn đúng trạng thái và updatedAt lúc admin mở; trả về số dòng đổi */
+export async function updateWhereVersion(tx: Db, id: string, status: ListingStatus, updatedAt: Date,
+  data: { status: ListingStatus; reviewReason: string | null }) {
+  const changed = await tx.listing.updateMany({ where: { id, status, updatedAt }, data });
+  return changed.count;
+}
+
+/** Danh sách quản trị: lọc trạng thái, tìm trong tiêu đề; cập nhật gần nhất trước */
+export function findAdminPage({ status, q }: { status?: ListingStatus; q?: string }, skip: number, take: number) {
+  const where: Prisma.ListingWhereInput = { ...(status ? { status } : {}), ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}) };
+  return prisma.$transaction([
+    prisma.listing.findMany({ where, select: adminListingSelect, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], skip, take }),
+    prisma.listing.count({ where }),
+  ]);
+}
+
+export const findAdminListing = (id: string) => prisma.listing.findUnique({ where: { id }, select: adminListingSelect });

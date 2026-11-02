@@ -75,3 +75,13 @@ export const findOrderForApproval = (tx: Db, id: string) =>
 export async function decidePendingOrder(tx: Db, id: string, status: 'CONFIRMED' | 'REJECTED', decidedAt: Date) {
   return (await tx.promotionOrder.updateMany({ where: { id, status: 'PENDING' }, data: { status, decidedAt } })).count;
 }
+
+/** Đơn đẩy tin cho trang quản trị, mới trước, kèm người mua, gói, tin */
+export function findOrderPage(status: Prisma.PromotionOrderWhereInput['status'] | undefined, skip: number, take: number) {
+  const where: Prisma.PromotionOrderWhereInput = status ? { status } : {};
+  return prisma.$transaction([
+    prisma.promotionOrder.findMany({ where, take, skip, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      include: { user: { select: { fullName: true, email: true } }, package: true, listing: { select: { id: true, title: true } } } }),
+    prisma.promotionOrder.count({ where }),
+  ]);
+}

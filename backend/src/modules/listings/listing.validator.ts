@@ -1,9 +1,10 @@
 import { ListingCondition, ListingStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
+import { choice, object, page, text, version } from '../../common/validation/admin-input.js';
 import { idParam, int, oneOf, pageQuery, parse } from '../../common/validation/schemas.js';
 import { coordinates, listingLocation } from '../catalog/catalog.js';
-import { FEED_FILTERS, MAX_IMAGES, OWNER_STATUS_TARGETS } from './listing.type.js';
+import { FEED_FILTERS, MAX_IMAGES, MODERATION_ACTIONS, OWNER_STATUS_TARGETS } from './listing.type.js';
 
 /*
  * Schema đầu vào của module listings.
@@ -222,3 +223,19 @@ export const recommendedQuery = z.object({ limit: int('limit', { min: 1, max: 20
 
 /** Query GET /listings/favorites: page, limit 1-100 (mặc định 20) */
 export const favoritesQuery = pageQuery({ defaultLimit: 20, maxLimit: 100 });
+
+/* ---------- Quản trị tin (/admin/listings), lỗi INVALID_ADMIN_INPUT / INVALID_QUERY như API cũ ---------- */
+
+/** Query GET /admin/listings: status?, q? (1-100 ký tự, tìm trong tiêu đề), page */
+export const adminListingQuery = z.record(z.string(), z.unknown()).transform((query) => ({
+  status: query.status ? choice(query.status, Object.values(ListingStatus)) : undefined,
+  q: query.q ? text(query.q, 'q', 1, 100) : undefined,
+  page: page(query.page),
+}));
+
+/** Body POST /admin/listings/:id/decision */
+export const adminDecisionBody = z.unknown().transform((value) => {
+  const body = object(value, ['action', 'reason', 'updatedAt']);
+  const action = choice(body.action, MODERATION_ACTIONS);
+  return { action, reason: text(body.reason, 'reason', action === 'APPROVE' ? 0 : 5, 300), expectedUpdatedAt: version(body.updatedAt) };
+});
