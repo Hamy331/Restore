@@ -1,9 +1,7 @@
-import { parsePagination } from '../../../common/http/pagination.js';
-import { requiredString } from '../../../common/validation/parsers.js';
+import { idParam, pageQuery } from '../../../common/validation/schemas.js';
 
-export const parseListingId = (params: Record<string, unknown>) => ({
-  id: requiredString(params.id, 'id', { max: 64 }),
-});
+/** Params `:id` = mã tin */
+export const listingIdParams = idParam(64);
 
-export const parseFavoritesQuery = (query: Record<string, unknown>) =>
-  parsePagination(query, { defaultLimit: 20, maxLimit: 100 });
+/** Query của GET /favorites: page, limit 1–100 (mặc định 20) */
+export const favoritesQuery = pageQuery({ defaultLimit: 20, maxLimit: 100 });

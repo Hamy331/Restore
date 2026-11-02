@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { optionalAuth } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as feedController from './feed.controller.js';
-import { parseFeedQuery, parseRecommendedQuery } from './feed.validation.js';
+import { feedQuery, recommendedQuery } from './feed.validation.js';
 
 /**
  * Danh sách tin công khai, gắn tại /api/v1/listings
@@ -34,7 +34,7 @@ const router = Router();
  * Lỗi:      400 INVALID_INPUT | INVALID_QUERY | LOCATION_REQUIRED | INVALID_LOCATION,
  *           401 khi gửi token sai/hết hạn
  */
-router.get('/', optionalAuth, validate({ query: parseFeedQuery }), feedController.listFeed);
+router.get('/', optionalAuth, validate({ query: feedQuery }), feedController.listFeed);
 
 /**
  * GET /api/v1/listings/recommended
@@ -44,6 +44,6 @@ router.get('/', optionalAuth, validate({ query: parseFeedQuery }), feedControlle
  * Trả về:   200 { success, data: Listing[] }   (isFeatured luôn là true)
  * Lỗi:      400 INVALID_INPUT, 401 khi gửi token sai/hết hạn
  */
-router.get('/recommended', optionalAuth, validate({ query: parseRecommendedQuery }), feedController.listRecommended);
+router.get('/recommended', optionalAuth, validate({ query: recommendedQuery }), feedController.listRecommended);
 
 export default router;
