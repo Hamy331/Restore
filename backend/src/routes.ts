@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { adminRouter } from './modules/admin/index.js';
-import authRouter from './modules/auth/auth.route.js';
+import { authRouter } from './modules/auth/index.js';
 import { catalogRouter } from './modules/catalog/index.js';
 import { homeRouter } from './modules/home/index.js';
 import { promotionRouter, storeRouter } from './modules/commerce/index.js';

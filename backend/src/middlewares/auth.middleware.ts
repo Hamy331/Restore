@@ -52,25 +52,6 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
   }
 };
 
-export const authorizeRoles = (...allowedRoles: Role[]) =>
-  (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        error: 'Vui lòng đăng nhập để tiếp tục.',
-        code: 'AUTH_REQUIRED',
-      });
-    }
-    if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        error: 'Bạn không có quyền thực hiện thao tác này.',
-        code: 'FORBIDDEN',
-      });
-    }
-    next();
-  };
-
 /**
  * Cho phép cả khách lẫn người đã đăng nhập.
  * - Không gửi header Authorization: đi tiếp với req.user = undefined.
@@ -79,16 +60,6 @@ export const authorizeRoles = (...allowedRoles: Role[]) =>
  */
 export const optionalAuth = (req: AuthRequest, res: Response, next: NextFunction) =>
   req.headers.authorization ? verifyToken(req, res, next) : next();
-
-/**
- * Bắt buộc đăng nhập và (tùy chọn) giới hạn vai trò.
- * Dùng: router.get('/x', ...requireAuth(Role.USER), handler)
- * Không truyền vai trò thì mọi tài khoản đang hoạt động đều qua.
- */
-export const requireAuth = (...roles: Role[]) => [
-  verifyToken,
-  authorizeRoles(...(roles.length ? roles : Object.values(Role))),
-];
 
 /**
  * Chỉ kiểm tra quyền, dùng sau verifyToken (req.user đã có).
