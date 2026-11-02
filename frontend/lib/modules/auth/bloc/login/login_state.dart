@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:restore/data/models/user_model.dart';
 
 abstract class LoginState extends Equatable {
   @override
@@ -10,12 +11,12 @@ class LoginInitial extends LoginState {}
 class LoginLoading extends LoginState {}
 
 class LoginSuccess extends LoginState {
-  LoginSuccess(this.role);
+  LoginSuccess(this.user);
 
-  final String role;
+  final UserModel user;
 
   @override
-  List<Object> get props => [role];
+  List<Object> get props => [user];
 }
 
 class LoginFailure extends LoginState {

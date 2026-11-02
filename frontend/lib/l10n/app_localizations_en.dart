@@ -2705,4 +2705,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get postComposerPosted => 'Your post is live on the feed';
+
+  @override
+  String get authSessionExpired =>
+      'Your session has expired. Please sign in again.';
 }

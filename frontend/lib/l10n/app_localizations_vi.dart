@@ -2673,4 +2673,8 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get postComposerPosted => 'Bài viết đã lên Bảng tin';
+
+  @override
+  String get authSessionExpired =>
+      'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
 }

@@ -1379,5 +1379,6 @@
   "postComposerPhotoPermission": "ReStore cần quyền truy cập ảnh. Vui lòng bật trong Cài đặt.",
   "postComposerNoListings": "Bạn chưa có tin đăng nào đang hiển thị để gắn",
   "postComposerError": "Chưa đăng được bài, vui lòng thử lại",
-  "postComposerPosted": "Bài viết đã lên Bảng tin"
+  "postComposerPosted": "Bài viết đã lên Bảng tin",
+  "authSessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
 }
