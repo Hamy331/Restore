@@ -21,3 +21,10 @@ export const updateCategory = (tx: Db, id: string, data: Prisma.CategoryUpdateIn
 
 export const upsertCondition = (tx: Db, condition: ListingCondition, data: { name: string; active: boolean }) =>
   tx.conditionPolicy.upsert({ where: { condition }, create: { condition, ...data }, update: data });
+
+/* ---------- Công khai ---------- */
+
+export const findActiveConditions = () =>
+  prisma.conditionPolicy.findMany({ where: { active: true }, orderBy: { condition: 'asc' } });
+
+export const findActiveCategories = () => prisma.category.findMany({ where: { active: true }, orderBy: { name: 'asc' } });

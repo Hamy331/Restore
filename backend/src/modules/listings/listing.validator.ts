@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
 import { choice, object, page, text, version } from '../../common/validation/admin-input.js';
 import { idParam, int, oneOf, pageQuery, parse } from '../../common/validation/schemas.js';
-import { coordinates, listingLocation } from '../catalog/catalog.js';
+import { coordinates, listingLocation } from '../catalog/index.js';
 import { FEED_FILTERS, MAX_IMAGES, MODERATION_ACTIONS, OWNER_STATUS_TARGETS } from './listing.type.js';
 
 /*
