@@ -7,9 +7,9 @@ import { imageExtension } from './services/image.service.js';
 import { AppError } from '../../common/errors/app-error.js';
 import { parse } from '../../common/validation/schemas.js';
 import { storeUsage } from '../commerce/index.js';
-import { catalog, publicLocation } from '../catalog/catalog.js';
-const province=catalog.provinces[0]!;
-const ward=catalog.wards[province.code]![0]!;
+import { PROVINCES, publicLocation, WARDS } from '../catalog/index.js';
+const province=PROVINCES[0]!;
+const ward=WARDS[province.code]![0]!;
 const location={provinceCode:province.code,wardCode:ward.code,streetAddress:'Nhà riêng',...ward.center,geoSource:'device'};
 
 test('listing creation accepts supported fields and rejects invalid or silently discarded data', () => {

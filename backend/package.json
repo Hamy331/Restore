@@ -27,12 +27,16 @@
   "scripts": {
     "postinstall": "prisma skills sync || exit 0",
     "dev": "tsx watch src/server.ts",
-    "build": "tsc && node scripts/copy-catalog.mjs",
+    "build": "tsc",
     "start": "node dist/server.js",
     "test": "node --import tsx --test \"src/**/*.test.ts\"",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
+    "db:seed": "prisma db seed",
     "test:api": "node --import tsx --test --test-concurrency=1 \"test/api/*.api.test.ts\""
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

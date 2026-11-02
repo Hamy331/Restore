@@ -4,7 +4,7 @@ Backend API cho dự án **Restore**, nền tảng C2C (Customer-to-Customer) đ
 
 Backend là một REST API viết bằng **Express + TypeScript**, dùng **Prisma ORM** để làm việc với **PostgreSQL trên Supabase**. Code được chia theo module nghiệp vụ, mỗi module tách lớp `route → controller → service → repository`.
 
-> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Các module `auth`, `users`, `home`, `listings`, `commerce`, `content`, `admin` đã theo chuẩn. `catalog` (phần công khai) và `wanted-alerts` còn theo kiểu cũ (xem lộ trình). Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
+> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Các module `auth`, `users`, `home`, `catalog`, `listings`, `commerce`, `content`, `admin` đã theo chuẩn. Còn `wanted-alerts` theo kiểu cũ (xem lộ trình). Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
 
 ---
 
@@ -65,7 +65,8 @@ Restore/
     ├── prisma/
     │   ├── schema.prisma            # Nguồn duy nhất của schema
     │   ├── migrations/              # Migration do Prisma tạo, kèm SQL RLS viết tay
-    │   └── seed.ts                  # Dữ liệu khởi tạo: danh mục, tỉnh/phường, gói cửa hàng, banner mẫu
+    │   ├── seed.ts                  # npm run db:seed: thêm dữ liệu tham chiếu còn thiếu (--sync ghi đè metadata danh mục)
+    │   └── seed/                    # categories.ts (danh mục + thuộc tính), reference.ts (tình trạng, gói cửa hàng, gói đẩy tin)
     │
     ├── supabase/
     │   └── config.toml              # Cấu hình Supabase CLI cho môi trường local
@@ -113,7 +114,7 @@ Restore/
     │       ├── auth/            (P) # Đăng ký, đăng nhập, OTP, refresh token
     │       ├── users/           (P) # Hồ sơ người dùng, /users/me
     │       ├── home/            (P) # Banner và khu vực của trang chủ
-    │       ├── catalog/         (P) # Danh mục, tỉnh/phường, tình trạng sản phẩm
+    │       ├── catalog/         (P) # Danh mục, tình trạng sản phẩm, tỉnh/phường (catalog.data.ts, dữ liệu mẫu tĩnh)
     │       ├── wanted-alerts/   (P) # Thẻ báo tin khớp nhu cầu
     │       ├── listings/        (N) # Tin đăng, nháp, ảnh, feed, lưu tin, duyệt tin
     │       ├── commerce/        (N) # Gói cửa hàng, gói đẩy tin, đơn mua (gộp stores + promotions)
@@ -275,7 +276,7 @@ Tất cả endpoint nằm dưới tiền tố `/api/v1`. Tài liệu đầy đ�
 | `/auth`            | auth            |
 | `/users`           | users           |
 | `/home`            | home            |
-| `/catalog`         | catalog         |
+| `/categories`, `/conditions`, `/locations` | catalog |
 | `/listings`        | listings        |
 | `/stores`          | commerce        |
 | `/promotions`      | commerce        |
@@ -298,7 +299,7 @@ Ghi chú chi tiết (header, tham số, kết quả, mã lỗi) nằm ngay trên
 | `POST /home/admin/banners` | `BANNER_MANAGE` | Tạo banner (ghi AdminAudit) | `modules/home/home.route.ts` |
 | `PUT /home/admin/banners/:id` | `BANNER_MANAGE` | Sửa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
 | `DELETE /home/admin/banners/:id` | `BANNER_MANAGE` | Xóa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
-| `GET /categories` | Công khai | Danh mục cho thanh danh mục | `modules/catalog/catalog.ts` |
+| `GET /categories` | Công khai | Danh mục cho thanh danh mục | `modules/catalog/catalog.route.ts` |
 | `GET /listings?filter=newest\|nearby\|exchange&page=1&limit=10` | Công khai, token tùy chọn | Tin mới nhất / gần bạn / trao đổi, có phân trang | `modules/listings/routes/feed.route.ts` |
 | `GET /listings/recommended?limit=10` | Công khai, token tùy chọn | Tin gợi ý (đang đẩy nổi bật) | `modules/listings/routes/feed.route.ts` |
 | `GET /listings/favorites` | USER (`FAVORITE_READ`) | Tin đã lưu, có phân trang | `modules/listings/routes/favorite.route.ts` |
@@ -362,7 +363,7 @@ Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước v�
 | C16–C18 | `commerce`: gộp `stores` + `promotions`, logic duyệt đơn vào service | ✅ |
 | C19–C21 | `content` tách khỏi `admin`; endpoint `/admin/*` về module sở hữu dữ liệu; `admin` sang mẫu nhóm, bỏ `admin.route.ts` | ✅ |
 | C22 | `auth` sang mẫu phẳng, đầu vào bằng zod (`auth.validator.ts`, giữ lỗi 422 theo trường); bỏ `parsers.ts`, `pagination.ts`, `authorizeRoles`, `requireAuth` | ✅ |
-| C23 | `catalog`: dữ liệu vào `prisma/seed.ts`, mẫu phẳng | |
+| C23 | `catalog` sang mẫu phẳng; danh mục, tình trạng, gói vào `prisma/seed.ts` (`npm run db:seed`); tỉnh/phường thành `catalog.data.ts`, bỏ `catalog.json` | ✅ |
 | C24–C25 | Ảnh lên Supabase Storage, chuyển ảnh cũ | |
 | C26 | `wanted-alerts`: gắn router, bỏ code chết | |
 
@@ -442,9 +443,15 @@ npx prisma migrate dev
 # Staging / production: chỉ áp dụng migration có sẵn
 npx prisma migrate deploy
 
-# Nạp dữ liệu khởi tạo
-npx prisma db seed
+# Nạp dữ liệu tham chiếu (danh mục, tình trạng, gói cửa hàng, gói đẩy tin) còn thiếu.
+# Chạy lại an toàn: bản ghi đã có (kể cả admin đã sửa) giữ nguyên.
+npm run db:seed
+
+# Sau khi sửa thuộc tính danh mục trong prisma/seed/categories.ts: ghi đè tên + metadata danh mục
+npm run db:seed -- --sync
 ```
+
+Thêm danh mục mặc định: thêm vào `prisma/seed/categories.ts` và `CATEGORY_ORDER` (`modules/catalog/catalog.type.ts`) cùng thứ tự; seed báo lỗi nếu hai nơi lệch nhau.
 
 ## 5. Chạy server
 

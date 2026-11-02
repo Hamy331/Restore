@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import type { z } from 'zod';
-import { publicLocation } from '../catalog/catalog.js';
+import { publicLocation } from '../catalog/index.js';
 import type {
   adminDecisionBody, adminListingQuery, createListingBody, decisionBody, draftBody, favoritesQuery, feedQuery, mineQuery, recommendedQuery, statusBody,
 } from './listing.validator.js';
