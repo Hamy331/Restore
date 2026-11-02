@@ -1458,5 +1458,6 @@
   "postComposerPhotoPermission": "ReStore needs photo access. Please allow it in Settings.",
   "postComposerNoListings": "You have no active listings to attach yet",
   "postComposerError": "Couldn't publish your post, please try again",
-  "postComposerPosted": "Your post is live on the feed"
+  "postComposerPosted": "Your post is live on the feed",
+  "authSessionExpired": "Your session has expired. Please sign in again."
 }

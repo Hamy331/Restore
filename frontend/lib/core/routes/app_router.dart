@@ -57,20 +57,24 @@ import '../../modules/boost/bloc/boost_listing_cubit.dart';
 import '../../modules/boost/views/boost_listing_view.dart';
 import '../../modules/auth/bloc/auth_bloc.dart';
 import '../../modules/auth/auth_route_guard.dart';
+import '../../modules/auth/views/splash/splash_view.dart';
+import 'router_refresh_stream.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-final appRouter = GoRouter(
+/// Router của app. Chạy lại `redirect` mỗi khi [authBloc] đổi trạng thái,
+/// nên mọi chuyển trang theo đăng nhập / đăng xuất / hết phiên nằm ở
+/// [authRouteRedirect], các trang không tự `go` sau khi đăng nhập.
+GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/welcome',
+  initialLocation: splashPath,
+  refreshListenable: RouterRefreshStream(authBloc.stream),
   // Đường dẫn chưa có trang (VD tính năng chưa làm) thì đưa về trang chủ;
   // bộ chặn đăng nhập sẽ tự chuyển sang /login nếu chưa đăng nhập
   onException: (_, _, router) => router.go('/home'),
-  redirect: (context, state) {
-    final authState = context.read<AuthBloc>().state;
-    return authRouteRedirect(authState, state.uri.path);
-  },
+  redirect: (_, state) => authRouteRedirect(authBloc.state, state.uri),
   routes: [
+    GoRoute(path: splashPath, builder: (_, _) => const SplashView()),
     GoRoute(path: '/welcome', builder: (_, _) => const WelcomeView()),
     GoRoute(
       path: '/login',

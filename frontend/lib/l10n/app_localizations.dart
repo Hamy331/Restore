@@ -4873,6 +4873,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your post is live on the feed'**
   String get postComposerPosted;
+
+  /// No description provided for @authSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again.'**
+  String get authSessionExpired;
 }
 
 class _AppLocalizationsDelegate
