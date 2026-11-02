@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { AppError } from '../../../common/errors/app-error.js';
-import { parseFeedQuery, parseRecommendedQuery } from './feed.validation.js';
+import { parse } from '../../../common/validation/schemas.js';
+import { feedQuery, recommendedQuery } from './feed.validation.js';
+
+const parseFeedQuery = (query: unknown) => parse(feedQuery, query);
+const parseRecommendedQuery = (query: unknown) => parse(recommendedQuery, query);
 
 test('feed query defaults to newest page 1 with 10 items', () => {
   const query = parseFeedQuery({});

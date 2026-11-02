@@ -1,15 +1,16 @@
 import { Response } from 'express';
+import type { z } from 'zod';
 import { created, noContent, ok } from '../../common/http/response.js';
 import { AuthRequest } from '../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../middlewares/validate.middleware.js';
 import * as homeService from './home.service.js';
-import type { BannerInput, parseAreaQuery } from './home.validation.js';
+import type { BannerInput, areaQuery } from './home.validation.js';
 
-type AreaInput = ValidatedInput<ReturnType<typeof parseAreaQuery>>;
+type AreaQuery = z.output<typeof areaQuery>;
 type IdParams = { id: string };
 
 export function getArea(_req: AuthRequest, res: Response) {
-  ok(res, homeService.resolveArea(getInput<AreaInput>(res).query));
+  ok(res, homeService.resolveArea(getInput<ValidatedInput<AreaQuery>>(res).query));
 }
 
 export async function getBanners(_req: AuthRequest, res: Response) {

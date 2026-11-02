@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { AppError } from '../../common/errors/app-error.js';
 import { NATIONWIDE_AREA, resolveArea } from './home.service.js';
-import { parseAreaQuery, parseBannerBody } from './home.validation.js';
+import { parse } from '../../common/validation/schemas.js';
+import { areaQuery, bannerBody } from './home.validation.js';
+
+const parseAreaQuery = (query: unknown) => parse(areaQuery, query);
 
 test('home area resolves province code, GPS point and falls back to nationwide', () => {
   assert.deepEqual(resolveArea({ provinceCode: '79' }), { code: '79', name: 'TP. Hồ Chí Minh' });
@@ -19,8 +22,8 @@ test('home area query requires both coordinates', () => {
 });
 
 test('banner body validates fields and rejects unknown keys', () => {
-  const create = parseBannerBody(false);
-  const update = parseBannerBody(true);
+  const create = (body: unknown) => parse(bannerBody(false), body);
+  const update = (body: unknown) => parse(bannerBody(true), body);
   assert.deepEqual(create({ title: ' Sale ', route: '/trusted-shops', sortOrder: 2 }).data,
     { title: 'Sale', route: '/trusted-shops', sortOrder: 2 });
   assert.throws(() => create({}), AppError);

@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { requireAuth } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as favoriteController from './favorite.controller.js';
-import { parseFavoritesQuery, parseListingId } from './favorite.validation.js';
+import { favoritesQuery, listingIdParams } from './favorite.validation.js';
 
 /**
  * Lưu tin (yêu thích), gắn tại /api/v1/listings
@@ -14,7 +14,7 @@ import { parseFavoritesQuery, parseListingId } from './favorite.validation.js';
  */
 const router = Router();
 const userOnly = requireAuth(Role.USER);
-const withListingId = validate({ params: parseListingId });
+const withListingId = validate({ params: listingIdParams });
 
 /**
  * GET /api/v1/listings/favorites
@@ -22,7 +22,7 @@ const withListingId = validate({ params: parseListingId });
  * Query:    page? (mặc định 1), limit? 1-100 (mặc định 20)
  * Trả về:   200 { success, data: Listing[] (isFavorite = true), pagination, meta }
  */
-router.get('/favorites', ...userOnly, validate({ query: parseFavoritesQuery }), favoriteController.listFavorites);
+router.get('/favorites', ...userOnly, validate({ query: favoritesQuery }), favoriteController.listFavorites);
 
 /**
  * GET /api/v1/listings/:id/favorite

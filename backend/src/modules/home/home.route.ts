@@ -4,7 +4,7 @@ import { optionalAuth, requireAuth } from '../../middlewares/auth.middleware.js'
 import { requireJson } from '../../middlewares/require-json.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as homeController from './home.controller.js';
-import { parseAreaQuery, parseBannerBody, parseBannerId } from './home.validation.js';
+import { areaQuery, bannerBody, bannerIdParams } from './home.validation.js';
 
 /**
  * Module home, gắn tại /api/v1/home
@@ -23,7 +23,7 @@ const router = Router();
  *           Không xác định được khu vực thì trả { code: null, name: "Toàn quốc" }.
  * Lỗi:      400 INVALID_LOCATION | INVALID_INPUT, 404 AREA_NOT_FOUND
  */
-router.get('/area', optionalAuth, validate({ query: parseAreaQuery }), homeController.getArea);
+router.get('/area', optionalAuth, validate({ query: areaQuery }), homeController.getArea);
 
 /**
  * GET /api/v1/home/banners
@@ -66,7 +66,7 @@ router.post(
   '/admin/banners',
   ...requireAuth(Role.ADMIN),
   requireJson,
-  validate({ body: parseBannerBody(false) }),
+  validate({ body: bannerBody(false) }),
   homeController.adminCreateBanner,
 );
 
@@ -84,7 +84,7 @@ router.put(
   '/admin/banners/:id',
   ...requireAuth(Role.ADMIN),
   requireJson,
-  validate({ params: parseBannerId, body: parseBannerBody(true) }),
+  validate({ params: bannerIdParams, body: bannerBody(true) }),
   homeController.adminUpdateBanner,
 );
 
@@ -100,7 +100,7 @@ router.put(
 router.delete(
   '/admin/banners/:id',
   ...requireAuth(Role.ADMIN),
-  validate({ params: parseBannerId }),
+  validate({ params: bannerIdParams }),
   homeController.adminDeleteBanner,
 );
 

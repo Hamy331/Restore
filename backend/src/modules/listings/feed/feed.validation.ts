@@ -1,10 +1,12 @@
+import { z } from 'zod';
 import { AppError } from '../../../common/errors/app-error.js';
-import { parsePagination } from '../../../common/http/pagination.js';
-import { integerInRange, oneOf } from '../../../common/validation/parsers.js';
+import { int, oneOf, pageQuery, parse } from '../../../common/validation/schemas.js';
 import { listingFilters } from '../listing.filters.js';
 
 export const FEED_FILTERS = ['newest', 'nearby', 'exchange'] as const;
 export type FeedFilter = (typeof FEED_FILTERS)[number];
+
+const query = z.record(z.string(), z.unknown());
 
 /**
  * Query của GET /listings.
@@ -13,10 +15,10 @@ export type FeedFilter = (typeof FEED_FILTERS)[number];
  * - exchange: chỉ tin cho phép trao đổi.
  * Các bộ lọc tìm kiếm (q, categoryId, condition, minPrice, maxPrice) dùng được với mọi filter.
  */
-export function parseFeedQuery(query: Record<string, unknown>) {
-  const filter = oneOf(query.filter, 'filter', FEED_FILTERS, 'newest');
-  const pagination = parsePagination(query, { defaultLimit: 10, maxLimit: 50 });
-  const { nearby, allowExchange, ...search } = listingFilters(query);
+export const feedQuery = query.transform((raw) => {
+  const filter = parse(oneOf('filter', FEED_FILTERS, 'newest'), raw.filter);
+  const pagination = parse(pageQuery({ defaultLimit: 10, maxLimit: 50 }), raw);
+  const { nearby, allowExchange, ...search } = listingFilters(raw);
 
   if (filter === 'nearby' && !nearby) {
     throw new AppError(400, 'LOCATION_REQUIRED', 'Cần latitude và longitude để xem tin gần bạn.', 'location');
@@ -27,12 +29,10 @@ export function parseFeedQuery(query: Record<string, unknown>) {
     ...(filter === 'exchange' || allowExchange ? { allowExchange: true } : {}),
   };
   return { filter, pagination, filters };
-}
+});
 
 /** Query của GET /listings/recommended */
-export function parseRecommendedQuery(query: Record<string, unknown>) {
-  return { limit: integerInRange(query.limit, 'limit', { min: 1, max: 20, fallback: 10 }) };
-}
+export const recommendedQuery = z.object({ limit: int('limit', { min: 1, max: 20, fallback: 10 }) });
 
-export type FeedQuery = ReturnType<typeof parseFeedQuery>;
-export type RecommendedQuery = ReturnType<typeof parseRecommendedQuery>;
+export type FeedQuery = z.output<typeof feedQuery>;
+export type RecommendedQuery = z.output<typeof recommendedQuery>;
