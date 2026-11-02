@@ -1,107 +1,79 @@
-import { Role } from '@prisma/client';
 import { Router } from 'express';
-import { optionalAuth, requireAuth } from '../../middlewares/auth.middleware.js';
+import { PERMISSION } from '../../common/auth/permissions.js';
+import { optionalAuth, requirePermission } from '../../middlewares/auth.middleware.js';
 import { requireJson } from '../../middlewares/require-json.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as homeController from './home.controller.js';
-import { areaQuery, bannerBody, bannerIdParams } from './home.validation.js';
+import { areaQuery, bannerBody, bannerIdParams } from './home.validator.js';
+
+/** /api/v1/home */
+const homeRouter = Router();
 
 /**
- * Module home, gắn tại /api/v1/home
- * Header chung: Accept: application/json
+ * Tên khu vực ở đầu trang chủ. Ưu tiên provinceCode, rồi tới GPS, không có thì "Toàn quốc"
+ *
+ * Query params:
+ *  - provinceCode?: string - mã tỉnh/thành, VD "79"
+ *  - latitude?, longitude?: number - phải gửi đủ cả hai
+ *
+ * Trả về: AreaDto { code: string | null, name }
  */
-const router = Router();
+homeRouter.get('/area', optionalAuth, validate({ query: areaQuery }), homeController.getArea);
 
 /**
- * GET /api/v1/home/area
- * Mô tả:    Tên khu vực hiển thị trên đầu trang chủ.
- * Quyền:    Công khai (khách xem được). Có gửi token thì token phải hợp lệ.
- * Header:   Authorization: Bearer <accessToken>   (không bắt buộc)
- * Query:    provinceCode?  mã tỉnh/thành, VD "79"            (ưu tiên nếu có)
- *           latitude?, longitude?  tọa độ GPS, phải gửi đủ cả hai
- * Trả về:   200 { success, data: { code: string | null, name: string } }
- *           Không xác định được khu vực thì trả { code: null, name: "Toàn quốc" }.
- * Lỗi:      400 INVALID_LOCATION | INVALID_INPUT, 404 AREA_NOT_FOUND
+ * Banner đang chạy, xếp theo sortOrder tăng dần. Ảnh tỉ lệ 1200 × 600
+ *
+ * Trả về: HomeBannerDto[] { id, imageUrl, route }
  */
-router.get('/area', optionalAuth, validate({ query: areaQuery }), homeController.getArea);
+homeRouter.get('/banners', homeController.getBanners);
+
+/* ---------- Quản trị banner ---------- */
+
+const manageBanners = requirePermission(PERMISSION.BANNER_MANAGE);
 
 /**
- * GET /api/v1/home/banners
- * Mô tả:    Banner đang chạy ở trang chủ, xếp theo sortOrder tăng dần. Ảnh tỉ lệ 1200 × 600.
- * Quyền:    Công khai.
- * Header:   Không yêu cầu thêm.
- * Tham số:  Không có.
- * Trả về:   200 { success, data: [{ id, imageUrl: string | null, route: string | null }] }
+ * Toàn bộ banner, kể cả đã tắt hoặc hết hạn
+ *
+ * Trả về: HomeBanner[] (đủ cột)
  */
-router.get('/banners', homeController.getBanners);
-
-/* ------------------------- Quản trị banner (ADMIN) ------------------------- */
+homeRouter.get('/admin/banners', manageBanners, homeController.adminListBanners);
 
 /**
- * GET /api/v1/home/admin/banners
- * Mô tả:    Toàn bộ banner kể cả đã tắt/hết hạn, để admin quản lý.
- * Quyền:    ADMIN.
- * Header:   Authorization: Bearer <accessToken>
- * Trả về:   200 { success, data: HomeBanner[] }  (đủ cột: title, sortOrder, active, startsAt, endsAt...)
- * Lỗi:      401, 403 FORBIDDEN
+ * Tạo banner, ghi AdminAudit
+ *
+ * Body:
+ *  - title: string (1-120) - tên nội bộ cho admin
+ *  - imageUrl?: string | null - URL http(s) hoặc "/..."
+ *  - route?: string | null - đường dẫn trong app, bắt đầu bằng "/"
+ *  - sortOrder?: number (0-1000) - mặc định 0
+ *  - active?: boolean - mặc định true
+ *  - startsAt?, endsAt?: ISO 8601 | null
+ *  - reason?: string (≤300) - ghi chú audit
  */
-router.get('/admin/banners', ...requireAuth(Role.ADMIN), homeController.adminListBanners);
+homeRouter.post('/admin/banners', manageBanners, requireJson, validate({ body: bannerBody(false) }), homeController.adminCreateBanner);
 
 /**
- * POST /api/v1/home/admin/banners
- * Mô tả:    Tạo banner mới. Ghi AdminAudit.
- * Quyền:    ADMIN.
- * Header:   Authorization: Bearer <accessToken>, Content-Type: application/json
- * Body:     { title: string (1-120)            bắt buộc, tên nội bộ cho admin
- *             imageUrl?: string | null         URL http(s) hoặc "/..."
- *             route?: string | null            đường dẫn trong app, bắt đầu bằng "/"
- *             sortOrder?: number (0-1000)      mặc định 0
- *             active?: boolean                 mặc định true
- *             startsAt?, endsAt?: ISO 8601 | null
- *             reason?: string (≤300)           ghi chú audit }
- * Trả về:   201 { success, data: HomeBanner }
- * Lỗi:      400 INVALID_INPUT, 401, 403, 415 UNSUPPORTED_MEDIA_TYPE
+ * Sửa banner, chỉ cập nhật trường được gửi (cần ít nhất một trường), ghi AdminAudit
+ *
+ * Path params:
+ *  - id: string - mã banner
+ *
+ * Body: như khi tạo, mọi trường đều không bắt buộc
  */
-router.post(
-  '/admin/banners',
-  ...requireAuth(Role.ADMIN),
-  requireJson,
-  validate({ body: bannerBody(false) }),
-  homeController.adminCreateBanner,
-);
-
-/**
- * PUT /api/v1/home/admin/banners/:id
- * Mô tả:    Sửa banner, chỉ cập nhật các trường được gửi. Ghi AdminAudit.
- * Quyền:    ADMIN.
- * Header:   Authorization: Bearer <accessToken>, Content-Type: application/json
- * Params:   id  mã banner
- * Body:     giống POST nhưng mọi trường đều không bắt buộc (cần ít nhất một trường).
- * Trả về:   200 { success, data: HomeBanner }
- * Lỗi:      400 INVALID_INPUT, 401, 403, 404 BANNER_NOT_FOUND, 415
- */
-router.put(
+homeRouter.put(
   '/admin/banners/:id',
-  ...requireAuth(Role.ADMIN),
+  manageBanners,
   requireJson,
   validate({ params: bannerIdParams, body: bannerBody(true) }),
   homeController.adminUpdateBanner,
 );
 
 /**
- * DELETE /api/v1/home/admin/banners/:id
- * Mô tả:    Xóa banner. Ghi AdminAudit.
- * Quyền:    ADMIN.
- * Header:   Authorization: Bearer <accessToken>
- * Params:   id  mã banner
- * Trả về:   204 (không có body)
- * Lỗi:      401, 403, 404 BANNER_NOT_FOUND
+ * Xóa banner, ghi AdminAudit. Trả 204
+ *
+ * Path params:
+ *  - id: string - mã banner
  */
-router.delete(
-  '/admin/banners/:id',
-  ...requireAuth(Role.ADMIN),
-  validate({ params: bannerIdParams }),
-  homeController.adminDeleteBanner,
-);
+homeRouter.delete('/admin/banners/:id', manageBanners, validate({ params: bannerIdParams }), homeController.adminDeleteBanner);
 
-export default router;
+export default homeRouter;

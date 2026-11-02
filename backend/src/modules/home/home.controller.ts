@@ -1,13 +1,9 @@
 import { Response } from 'express';
-import type { z } from 'zod';
 import { created, noContent, ok } from '../../common/http/response.js';
 import { AuthRequest } from '../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../middlewares/validate.middleware.js';
 import * as homeService from './home.service.js';
-import type { BannerInput, areaQuery } from './home.validation.js';
-
-type AreaQuery = z.output<typeof areaQuery>;
-type IdParams = { id: string };
+import type { AreaQuery, BannerIdParams, BannerInput } from './home.dto.js';
 
 export function getArea(_req: AuthRequest, res: Response) {
   ok(res, homeService.resolveArea(getInput<ValidatedInput<AreaQuery>>(res).query));
@@ -27,12 +23,12 @@ export async function adminCreateBanner(req: AuthRequest, res: Response) {
 }
 
 export async function adminUpdateBanner(req: AuthRequest, res: Response) {
-  const { params, body } = getInput<ValidatedInput<undefined, IdParams, BannerInput>>(res);
+  const { params, body } = getInput<ValidatedInput<undefined, BannerIdParams, BannerInput>>(res);
   ok(res, await homeService.updateBanner(req.user!.userId, params.id, body));
 }
 
 export async function adminDeleteBanner(req: AuthRequest, res: Response) {
-  const { params } = getInput<ValidatedInput<undefined, IdParams>>(res);
+  const { params } = getInput<ValidatedInput<undefined, BannerIdParams>>(res);
   await homeService.deleteBanner(req.user!.userId, params.id);
   noContent(res);
 }

@@ -1,21 +1,17 @@
 import { AppError } from '../../common/errors/app-error.js';
 import { catalog, distanceKm } from '../catalog/catalog.js';
+import { AreaDto, BannerInput, toHomeBannerDto } from './home.dto.js';
 import * as homeRepository from './home.repository.js';
-import { toPublicBanner } from './home.mapper.js';
-import type { BannerInput } from './home.validation.js';
+import { MAX_AREA_DISTANCE_KM, NATIONWIDE_AREA } from './home.type.js';
 
 /** Bản chụp JSON của banner để lưu vào AdminAudit */
 const snapshot = (value: unknown) => JSON.parse(JSON.stringify(value));
-
-/** Khoảng cách tối đa (km) từ GPS tới tâm phường gần nhất để coi là cùng khu vực */
-const MAX_AREA_DISTANCE_KM = 30;
-export const NATIONWIDE_AREA = { code: null, name: 'Toàn quốc' } as const;
 
 /**
  * Khu vực đang xem ở trang chủ.
  * Ưu tiên provinceCode, sau đó tới tọa độ GPS; không có gì thì trả "Toàn quốc".
  */
-export function resolveArea(input: { provinceCode?: string; point?: { latitude: number; longitude: number } }) {
+export function resolveArea(input: { provinceCode?: string; point?: { latitude: number; longitude: number } }): AreaDto {
   if (input.provinceCode) {
     const province = catalog.provinces.find((unit) => unit.code === input.provinceCode);
     if (!province) throw new AppError(404, 'AREA_NOT_FOUND', 'Không tìm thấy tỉnh/thành này.', 'provinceCode');
@@ -37,7 +33,7 @@ export function resolveArea(input: { provinceCode?: string; point?: { latitude: 
 }
 
 export async function listVisibleBanners(now = new Date()) {
-  return (await homeRepository.findVisibleBanners(now)).map(toPublicBanner);
+  return (await homeRepository.findVisibleBanners(now)).map(toHomeBannerDto);
 }
 
 /* ---------- Quản trị banner (ADMIN) ---------- */

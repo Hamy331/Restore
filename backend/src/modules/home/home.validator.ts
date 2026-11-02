@@ -68,5 +68,3 @@ export const bannerBody = (partial: boolean) =>
     }
     return { data, reason: parse(optionalStr('reason', { max: 300 }), body.reason) ?? '' };
   });
-
-export type BannerInput = z.output<ReturnType<typeof bannerBody>>;
