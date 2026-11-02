@@ -4597,6 +4597,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Explore'**
   String get trustedShopsAllProductsEyebrow;
+
+  /// No description provided for @feedsComposePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s on your mind? Share an item or ask the community'**
+  String get feedsComposePrompt;
+
+  /// No description provided for @postAudienceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see this post?'**
+  String get postAudienceTitle;
+
+  /// No description provided for @postAudienceEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get postAudienceEveryone;
+
+  /// No description provided for @postAudienceEveryoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone on ReStore can see it'**
+  String get postAudienceEveryoneDesc;
+
+  /// No description provided for @postAudienceFollowers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get postAudienceFollowers;
+
+  /// No description provided for @postAudienceFollowersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only people who follow you'**
+  String get postAudienceFollowersDesc;
+
+  /// No description provided for @postAudienceOnlyMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Only me'**
+  String get postAudienceOnlyMe;
+
+  /// No description provided for @postAudienceOnlyMeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved privately on your page'**
+  String get postAudienceOnlyMeDesc;
+
+  /// No description provided for @postComposerSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get postComposerSubmit;
+
+  /// No description provided for @postComposerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share an item, a buying tip or ask the community...'**
+  String get postComposerHint;
+
+  /// No description provided for @postComposerRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get postComposerRemovePhoto;
+
+  /// No description provided for @postComposerCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover'**
+  String get postComposerCover;
+
+  /// No description provided for @postComposerListingTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing'**
+  String get postComposerListingTag;
+
+  /// No description provided for @postComposerRemoveAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get postComposerRemoveAttachment;
+
+  /// No description provided for @postComposerWithOne.
+  ///
+  /// In en, this message translates to:
+  /// **'With {name}'**
+  String postComposerWithOne(String name);
+
+  /// No description provided for @postComposerWithMany.
+  ///
+  /// In en, this message translates to:
+  /// **'With {name} and {count} others'**
+  String postComposerWithMany(String name, int count);
+
+  /// No description provided for @postComposerBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Background colour'**
+  String get postComposerBackground;
+
+  /// No description provided for @postComposerBackgroundDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Background colours are for short posts without photos'**
+  String get postComposerBackgroundDisabled;
+
+  /// No description provided for @postComposerNoBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'No background'**
+  String get postComposerNoBackground;
+
+  /// No description provided for @postComposerAttachListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach listing'**
+  String get postComposerAttachListing;
+
+  /// No description provided for @postComposerAttachListingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show one of your listings in this post'**
+  String get postComposerAttachListingHint;
+
+  /// No description provided for @postComposerTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic'**
+  String get postComposerTopic;
+
+  /// No description provided for @postComposerTopicHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Helps the right people find your post'**
+  String get postComposerTopicHint;
+
+  /// No description provided for @postComposerTagFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag people'**
+  String get postComposerTagFriends;
+
+  /// No description provided for @postComposerTagFriendsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'People you follow'**
+  String get postComposerTagFriendsHint;
+
+  /// No description provided for @postComposerTaggedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tagged'**
+  String postComposerTaggedCount(int count);
+
+  /// No description provided for @postComposerEmoji.
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get postComposerEmoji;
+
+  /// No description provided for @postComposerPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get postComposerPhoto;
+
+  /// No description provided for @postComposerVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get postComposerVideo;
+
+  /// No description provided for @postComposerLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get postComposerLink;
+
+  /// No description provided for @postComposerLinkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a web link to share'**
+  String get postComposerLinkHint;
+
+  /// No description provided for @postComposerLinkInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This link doesn\'t look right'**
+  String get postComposerLinkInvalid;
+
+  /// No description provided for @postComposerLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get postComposerLocation;
+
+  /// No description provided for @postComposerTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get postComposerTakePhoto;
+
+  /// No description provided for @postComposerOpenGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get postComposerOpenGallery;
+
+  /// No description provided for @postComposerDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get postComposerDone;
+
+  /// No description provided for @postComposerLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load post options, trying again'**
+  String get postComposerLoadError;
+
+  /// No description provided for @postComposerDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard this post?'**
+  String get postComposerDiscardTitle;
+
+  /// No description provided for @postComposerDiscardMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'ve written won\'t be saved'**
+  String get postComposerDiscardMessage;
+
+  /// No description provided for @postComposerKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep writing'**
+  String get postComposerKeepEditing;
+
+  /// No description provided for @postComposerDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard post'**
+  String get postComposerDiscard;
+
+  /// No description provided for @postComposerPhotoLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add up to {count} photos'**
+  String postComposerPhotoLimit(int count);
+
+  /// No description provided for @postComposerPhotoPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore needs photo access. Please allow it in Settings.'**
+  String get postComposerPhotoPermission;
+
+  /// No description provided for @postComposerNoListings.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no active listings to attach yet'**
+  String get postComposerNoListings;
+
+  /// No description provided for @postComposerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t publish your post, please try again'**
+  String get postComposerError;
+
+  /// No description provided for @postComposerPosted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your post is live on the feed'**
+  String get postComposerPosted;
 }
 
 class _AppLocalizationsDelegate

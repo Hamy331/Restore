@@ -74,17 +74,17 @@ class ApiLocationRepository implements LocationRepository {
 
   @override
   Future<List<AdministrativeUnitModel>> getProvinces() =>
-      _getUnits('/locations/provinces');
+      _getUnits('/catalog/locations/provinces');
 
   @override
   Future<List<AdministrativeUnitModel>> getWards(String provinceCode) =>
-      _getUnits('/locations/provinces/$provinceCode/wards');
+      _getUnits('/catalog/locations/provinces/$provinceCode/wards');
 
   @override
   Future<AddressInfo?> reverseGeocode(GeoPoint point) async {
     try {
       final response = await _apiClient.dio.get<Map<String, dynamic>>(
-        '/locations/reverse-geocode',
+        '/catalog/locations/reverse-geocode',
         queryParameters: point.toJson(),
       );
       final data = response.data?['data'];

@@ -95,6 +95,16 @@ class AppIcons {
   static const IconData zoomIn = LucideIcons.zoomIn300;
   static const IconData expand = LucideIcons.maximize300;
 
+  // Viết bài (Bảng tin)
+  static const IconData emoji = LucideIcons.smile300;
+  static const IconData video = LucideIcons.squarePlay300;
+  static const IconData link = LucideIcons.link300;
+  static const IconData topic = LucideIcons.hash300;
+  static const IconData tagFriend = LucideIcons.userRoundPlus300;
+  static const IconData textStyle = LucideIcons.caseSensitive300;
+  static const IconData audienceFollowers = LucideIcons.usersRound300;
+  static const IconData remove = LucideIcons.circleX300;
+
   // Vị trí
   static const IconData location = LucideIcons.mapPin300;
   static const IconData locationArea = LucideIcons.mapPinned300;

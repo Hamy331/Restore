@@ -20,7 +20,7 @@ class MockCategoryRepository implements CategoryRepository {
   }
 }
 
-/// Gọi `GET /categories`. Danh mục ít thay đổi nên giữ lại trong bộ nhớ
+/// Gọi `GET /catalog/categories`. Danh mục ít thay đổi nên giữ lại trong bộ nhớ
 /// suốt phiên làm việc, tránh tải lại mỗi lần mở luồng đăng tin.
 class ApiCategoryRepository implements CategoryRepository {
   ApiCategoryRepository({ApiClient? apiClient})
@@ -35,7 +35,7 @@ class ApiCategoryRepository implements CategoryRepository {
     if (cached != null) return cached;
 
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/categories',
+      '/catalog/categories',
       queryParameters: const {'include': 'attributes'},
     );
     final data = response.data?['data'];

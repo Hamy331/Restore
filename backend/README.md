@@ -275,7 +275,7 @@ Tất cả endpoint nằm dưới tiền tố `/api/v1`. Tài liệu đầy đ�
 | `/auth`            | auth            |
 | `/users`           | users           |
 | `/home`            | home            |
-| `/categories`, `/conditions`, `/locations` | catalog |
+| `/catalog`         | catalog         |
 | `/listings`        | listings        |
 | `/wanted-alerts`   | wanted-alerts   |
 | `/stores`          | commerce        |
@@ -298,7 +298,7 @@ Ghi chú chi tiết (header, tham số, kết quả, mã lỗi) nằm ngay trên
 | `POST /home/admin/banners` | `BANNER_MANAGE` | Tạo banner (ghi AdminAudit) | `modules/home/home.route.ts` |
 | `PUT /home/admin/banners/:id` | `BANNER_MANAGE` | Sửa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
 | `DELETE /home/admin/banners/:id` | `BANNER_MANAGE` | Xóa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
-| `GET /categories` | Công khai | Danh mục cho thanh danh mục | `modules/catalog/catalog.route.ts` |
+| `GET /catalog/categories` | Công khai | Danh mục cho thanh danh mục | `modules/catalog/catalog.route.ts` |
 | `GET /listings?filter=newest\|nearby\|exchange&page=1&limit=10` | Công khai, token tùy chọn | Tin mới nhất / gần bạn / trao đổi, có phân trang | `modules/listings/routes/feed.route.ts` |
 | `GET /listings/recommended?limit=10` | Công khai, token tùy chọn | Tin gợi ý (đang đẩy nổi bật) | `modules/listings/routes/feed.route.ts` |
 | `GET /listings/favorites` | USER (`FAVORITE_READ`) | Tin đã lưu, có phân trang | `modules/listings/routes/favorite.route.ts` |
@@ -361,7 +361,7 @@ Danh sách trả `{ items, total, page }`, 25 dòng mỗi trang. Thao tác ghi k
 | `GET /admin/listings`, `POST /admin/listings/:id/decision` | `LISTING_MODERATE` | `listings/routes/admin-listing.route.ts` (logic duyệt: `moderation.service.moderate`) |
 | `/admin/posts`, `/admin/tickets`, `/admin/knowledge` | `CONTENT_MANAGE` | `content/routes/admin-content.route.ts` |
 | `/admin/reports` | `USER_MANAGE` | `content/routes/admin-content.route.ts` |
-| `GET /admin/catalog`, `/admin/categories`, `/admin/conditions/:condition` | `CATALOG_MANAGE` | `catalog/catalog-admin.route.ts` |
+| `GET /admin/catalog`, `/admin/catalog/categories`, `/admin/catalog/conditions/:condition` | `CATALOG_MANAGE` | `catalog/catalog-admin.route.ts` |
 | `/admin/store-packages`, `GET /admin/store-orders` | `STORE_ORDER_MANAGE` | `commerce/routes/commerce-admin.route.ts` |
 | `GET /admin/promotion-orders` | `PROMOTION_MANAGE` | `commerce/routes/commerce-admin.route.ts` |
 

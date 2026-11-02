@@ -2519,4 +2519,158 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get trustedShopsAllProductsEyebrow => 'Khám phá';
+
+  @override
+  String get feedsComposePrompt =>
+      'Bạn đang nghĩ gì? Khoe món đồ hay hỏi cộng đồng';
+
+  @override
+  String get postAudienceTitle => 'Ai được xem bài này?';
+
+  @override
+  String get postAudienceEveryone => 'Mọi người';
+
+  @override
+  String get postAudienceEveryoneDesc => 'Ai trên ReStore cũng xem được';
+
+  @override
+  String get postAudienceFollowers => 'Người theo dõi';
+
+  @override
+  String get postAudienceFollowersDesc => 'Chỉ người đang theo dõi bạn';
+
+  @override
+  String get postAudienceOnlyMe => 'Chỉ mình tôi';
+
+  @override
+  String get postAudienceOnlyMeDesc => 'Lưu riêng trên trang của bạn';
+
+  @override
+  String get postComposerSubmit => 'Đăng';
+
+  @override
+  String get postComposerHint =>
+      'Khoe món đồ, chia sẻ kinh nghiệm hay hỏi cộng đồng...';
+
+  @override
+  String get postComposerRemovePhoto => 'Bỏ ảnh';
+
+  @override
+  String get postComposerCover => 'Ảnh bìa';
+
+  @override
+  String get postComposerListingTag => 'Tin đăng của bạn';
+
+  @override
+  String get postComposerRemoveAttachment => 'Bỏ';
+
+  @override
+  String postComposerWithOne(String name) {
+    return 'Cùng $name';
+  }
+
+  @override
+  String postComposerWithMany(String name, int count) {
+    return 'Cùng $name và $count người khác';
+  }
+
+  @override
+  String get postComposerBackground => 'Nền màu';
+
+  @override
+  String get postComposerBackgroundDisabled =>
+      'Nền màu chỉ dùng cho bài ngắn, chưa có ảnh';
+
+  @override
+  String get postComposerNoBackground => 'Không dùng nền';
+
+  @override
+  String get postComposerAttachListing => 'Gắn tin đăng';
+
+  @override
+  String get postComposerAttachListingHint =>
+      'Hiện một tin đăng của bạn trong bài viết';
+
+  @override
+  String get postComposerTopic => 'Chủ đề';
+
+  @override
+  String get postComposerTopicHint => 'Giúp đúng người tìm thấy bài của bạn';
+
+  @override
+  String get postComposerTagFriends => 'Gắn thẻ';
+
+  @override
+  String get postComposerTagFriendsHint => 'Những người bạn đang theo dõi';
+
+  @override
+  String postComposerTaggedCount(int count) {
+    return 'Đã gắn $count người';
+  }
+
+  @override
+  String get postComposerEmoji => 'Biểu cảm';
+
+  @override
+  String get postComposerPhoto => 'Ảnh';
+
+  @override
+  String get postComposerVideo => 'Video';
+
+  @override
+  String get postComposerLink => 'Liên kết';
+
+  @override
+  String get postComposerLinkHint => 'Dán đường dẫn trang web muốn chia sẻ';
+
+  @override
+  String get postComposerLinkInvalid => 'Liên kết chưa đúng';
+
+  @override
+  String get postComposerLocation => 'Vị trí';
+
+  @override
+  String get postComposerTakePhoto => 'Chụp ảnh';
+
+  @override
+  String get postComposerOpenGallery => 'Thư viện';
+
+  @override
+  String get postComposerDone => 'Xong';
+
+  @override
+  String get postComposerLoadError =>
+      'Chưa tải được tuỳ chọn bài viết, đang thử lại';
+
+  @override
+  String get postComposerDiscardTitle => 'Bỏ bài viết này?';
+
+  @override
+  String get postComposerDiscardMessage =>
+      'Nội dung bạn vừa viết sẽ không được lưu';
+
+  @override
+  String get postComposerKeepEditing => 'Tiếp tục viết';
+
+  @override
+  String get postComposerDiscard => 'Bỏ bài viết';
+
+  @override
+  String postComposerPhotoLimit(int count) {
+    return 'Mỗi bài tối đa $count ảnh';
+  }
+
+  @override
+  String get postComposerPhotoPermission =>
+      'ReStore cần quyền truy cập ảnh. Vui lòng bật trong Cài đặt.';
+
+  @override
+  String get postComposerNoListings =>
+      'Bạn chưa có tin đăng nào đang hiển thị để gắn';
+
+  @override
+  String get postComposerError => 'Chưa đăng được bài, vui lòng thử lại';
+
+  @override
+  String get postComposerPosted => 'Bài viết đã lên Bảng tin';
 }

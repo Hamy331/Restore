@@ -23,5 +23,4 @@ apiRouter.use('/stores', storeRouter);
 apiRouter.use('/promotions', promotionRouter);
 apiRouter.use('/content', contentRouter);
 apiRouter.use('/admin', adminRouter);
-// catalog gắn ở gốc: /categories, /conditions, /locations/...
-apiRouter.use('/', catalogRouter);
+apiRouter.use('/catalog', catalogRouter);

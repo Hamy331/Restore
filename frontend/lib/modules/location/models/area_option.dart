@@ -3,7 +3,7 @@ import 'package:restore/data/models/administrative_unit_model.dart';
 import 'package:restore/shared/models/geo_point.dart';
 
 /// Một khu vực (tỉnh/thành hoặc phường/xã) để chọn làm điểm gốc khi xem
-/// tin quanh đó. Trả về từ `GET /locations/search`.
+/// tin quanh đó. Trả về từ `GET /catalog/locations/search`.
 class AreaOption extends Equatable {
   final String code;
   final String name;

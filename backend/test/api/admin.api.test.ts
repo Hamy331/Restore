@@ -30,11 +30,11 @@ test('admin: users', async () => {
 test('admin: catalog, packages, listing decisions, audit', async () => {
   const { api, tokens } = ctx;
   expect('catalog', await api.get('/admin/catalog', { token: tokens.admin }));
-  expect('create category invalid id', await api.post('/admin/categories', { token: tokens.admin, body: { id: 'Bad Id', name: 'Đồ cổ', description: '', active: true } }));
-  expect('create category', await api.post('/admin/categories', { token: tokens.admin, body: { id: 'antiques', name: 'Đồ cổ', description: 'Đồ sưu tầm', active: true } }));
-  expect('create category duplicate', await api.post('/admin/categories', { token: tokens.admin, body: { id: 'antiques-2', name: 'Đồ cổ', description: '', active: true } }));
-  expect('update category', await api.put('/admin/categories/antiques', { token: tokens.admin, body: { name: 'Đồ cổ sưu tầm', description: 'Đồ sưu tầm', active: false } }));
-  expect('update condition', await api.put('/admin/conditions/FOR_PARTS', { token: tokens.admin, body: { name: 'Bán xác', active: true } }));
+  expect('create category invalid id', await api.post('/admin/catalog/categories', { token: tokens.admin, body: { id: 'Bad Id', name: 'Đồ cổ', description: '', active: true } }));
+  expect('create category', await api.post('/admin/catalog/categories', { token: tokens.admin, body: { id: 'antiques', name: 'Đồ cổ', description: 'Đồ sưu tầm', active: true } }));
+  expect('create category duplicate', await api.post('/admin/catalog/categories', { token: tokens.admin, body: { id: 'antiques-2', name: 'Đồ cổ', description: '', active: true } }));
+  expect('update category', await api.put('/admin/catalog/categories/antiques', { token: tokens.admin, body: { name: 'Đồ cổ sưu tầm', description: 'Đồ sưu tầm', active: false } }));
+  expect('update condition', await api.put('/admin/catalog/conditions/FOR_PARTS', { token: tokens.admin, body: { name: 'Bán xác', active: true } }));
   expect('update store package', await api.put('/admin/store-packages/basic', { token: tokens.admin, body: { name: 'Cửa hàng Basic', monthlyPrice: '109000', dailyListingLimit: 10, activeListingLimit: 30, monthlyPromotionQuota: 2, priorityLevel: 1 } }));
   expect('update personal package invalid', await api.put('/admin/store-packages/personal', { token: tokens.admin, body: { name: 'Cá nhân', monthlyPrice: '1000', dailyListingLimit: 3, activeListingLimit: 10, monthlyPromotionQuota: 0, priorityLevel: 0 } }));
 
