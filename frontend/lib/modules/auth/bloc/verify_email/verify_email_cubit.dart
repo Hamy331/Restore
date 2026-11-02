@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/auth_repository.dart';
 import 'verify_email_state.dart';
+import 'package:restore/core/blocs/safe_emit.dart';
 
-class VerifyEmailCubit extends Cubit<VerifyEmailState> {
+class VerifyEmailCubit extends Cubit<VerifyEmailState>
+    with SafeEmit<VerifyEmailState> {
   final AuthRepository _authRepository;
 
   VerifyEmailCubit(this._authRepository) : super(VerifyEmailInitial());

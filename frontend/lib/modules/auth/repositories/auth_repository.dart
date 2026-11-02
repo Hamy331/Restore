@@ -50,7 +50,13 @@ abstract class AuthRepository {
   /// Đặt mật khẩu mới; mọi phiên cũ bị thu hồi nên xóa phiên trên máy
   Future<void> resetPassword(String resetToken, String newPassword);
 
-  /// Khôi phục phiên đã lưu lúc mở app. `null` nếu chưa đăng nhập hoặc phiên hết hạn.
+  /// Người dùng lưu sẵn trên máy từ lần đăng nhập trước, đọc ngay lúc mở app
+  /// (không gọi mạng). `null` nếu chưa đăng nhập.
+  Future<UserModel?> cachedUser();
+
+  /// Hỏi máy chủ phiên đã lưu còn dùng được không và lấy thông tin người dùng mới nhất.
+  /// Mất mạng thì trả về [cachedUser] (vẫn coi là đăng nhập); `null` nếu chưa
+  /// đăng nhập hoặc máy chủ từ chối phiên.
   Future<UserModel?> restoreSession();
 
   /// Đăng xuất; phiên trên máy luôn bị xóa kể cả khi mất mạng
@@ -139,6 +145,9 @@ class ApiAuthRepository implements AuthRepository {
       });
 
   @override
+  Future<UserModel?> cachedUser() => _readCachedUser(_tokens);
+
+  @override
   Future<UserModel?> restoreSession() async {
     final access = await _tokens.readAccessToken();
     final refresh = await _tokens.readRefreshToken();
@@ -150,12 +159,17 @@ class ApiAuthRepository implements AuthRepository {
       final response = await _apiClient.dio.get<Map<String, dynamic>>(
         '/auth/me',
       );
-      return _user(_data(response));
+      final user = _user(_data(response));
+      await _tokens.writeUser(user.toJson());
+      return user;
     } on DioException catch (error) {
-      // Mất mạng / máy chủ lỗi: giữ phiên để lần mở sau thử lại, coi như chưa đăng nhập lúc này
       final status = error.response?.statusCode;
-      if (status == 401 || status == 403) await _tokens.clear();
-      return null;
+      if (status == 401 || status == 403) {
+        await _tokens.clear();
+        return null;
+      }
+      // Mất mạng / máy chủ lỗi: giữ phiên, dùng người dùng đã lưu
+      return cachedUser();
     } on FormatException {
       await _tokens.clear();
       return null;
@@ -207,6 +221,7 @@ class ApiAuthRepository implements AuthRepository {
     final refresh = data['refreshToken'];
     if (access is! String || refresh is! String) throw const FormatException();
     await _tokens.writeTokens(accessToken: access, refreshToken: refresh);
+    await _tokens.writeUser(_user(data['user']).toJson());
   }
 
   /// Đổi lỗi Dio / phản hồi sai dạng thành [AuthException] có thông báo cho người dùng
@@ -262,8 +277,12 @@ class MockAuthRepository implements AuthRepository {
       accessToken: '${AuthMockData.tokenPrefix}${account['email']}',
       refreshToken: '${AuthMockData.tokenPrefix}${account['email']}',
     );
+    await _tokens.writeUser(account);
     return UserModel.fromJson(account);
   }
+
+  @override
+  Future<UserModel?> cachedUser() => _readCachedUser(_tokens);
 
   @override
   Future<UserModel> login(String email, String password) async {
@@ -354,6 +373,7 @@ class MockAuthRepository implements AuthRepository {
       await _tokens.clear();
       return null;
     }
+    await _tokens.writeUser(account);
     return UserModel.fromJson(account);
   }
 
@@ -364,5 +384,22 @@ class MockAuthRepository implements AuthRepository {
     if (otp.trim() != AuthMockData.otp) {
       throw const AuthException('Mã OTP không chính xác.', code: 'INVALID_OTP');
     }
+  }
+}
+
+/// Người dùng đã lưu, chỉ khi máy còn giữ phiên (còn refresh hoặc access token)
+Future<UserModel?> _readCachedUser(TokenStorage tokens) async {
+  final refresh = await tokens.readRefreshToken();
+  final access = await tokens.readAccessToken();
+  if ((refresh == null || refresh.isEmpty) &&
+      (access == null || access.isEmpty)) {
+    return null;
+  }
+  final json = await tokens.readUser();
+  if (json == null) return null;
+  try {
+    return UserModel.fromJson(json);
+  } catch (_) {
+    return null;
   }
 }

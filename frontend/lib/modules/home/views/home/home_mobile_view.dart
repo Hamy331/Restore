@@ -8,6 +8,8 @@ import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/auth/auth_route_guard.dart';
+import 'package:restore/modules/auth/bloc/auth_context.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
@@ -97,6 +99,15 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     context.read<HomeCubit>().syncFavorite(id, favorite);
   }
 
+  /// Khách bấm lưu tin thì mời đăng nhập, xong quay lại trang chủ
+  void _toggleFavorite(ListingCardItem item) {
+    if (!context.isSignedIn) {
+      context.go(loginPath(from: '/home'));
+      return;
+    }
+    context.read<HomeCubit>().toggleFavorite(item);
+  }
+
   void _onQuickAction(HomeQuickAction action) {
     // TODO: mở trang riêng khi có (đang theo dõi)
     switch (action) {
@@ -116,6 +127,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     final l10n = AppLocalizations.of(context)!;
     final cubit = context.read<HomeCubit>();
     final padding = MediaQuery.paddingOf(context);
+    // Khách chưa đăng nhập: chuỗi rỗng, đầu trang hiện lời chào chung
+    final greetingName = context.watchUser()?.givenName ?? '';
 
     return ColoredBox(
       color: AppColors.surface,
@@ -151,9 +164,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                             builder: (context, plan, _) => HomeTopBar(
                               key: _topBarKey,
                               areaName: state.areaName,
-                              greetingName: state.user == null
-                                  ? ''
-                                  : state.greetingName,
+                              greetingName: greetingName,
                               plan: plan,
                               onAreaTap: _comingSoon,
                               onPlanTap: DevPlanOverride.enabled
@@ -232,12 +243,11 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
   List<Widget> _content(HomeState state) {
     final l10n = AppLocalizations.of(context)!;
-    final cubit = context.read<HomeCubit>();
 
     Widget card(ListingCardItem item) => AppListingCard(
       item: item,
       onTap: () => _openDetail(item),
-      onFavoriteTap: () => cubit.toggleFavorite(item),
+      onFavoriteTap: () => _toggleFavorite(item),
     );
 
     return [

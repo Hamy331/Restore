@@ -105,13 +105,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsTitle => 'Cài đặt';
 
   @override
-  String get profileName => 'Ngô Tường Phát';
-
-  @override
-  String get memberSince2022 => 'Thành viên từ 2022';
-
-  @override
-  String get maskedPhoneArea => '090 ••• 1234 · Quận 1, TP.HCM';
+  String memberSince(String year) {
+    return 'Thành viên từ $year';
+  }
 
   @override
   String get editProfile => 'Chỉnh sửa hồ sơ';

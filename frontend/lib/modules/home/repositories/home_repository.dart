@@ -1,5 +1,4 @@
 import 'package:restore/core/network/api_client.dart';
-import 'package:restore/data/models/user_model.dart';
 import 'package:restore/modules/listings/data/mock_favorite_store.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
@@ -12,8 +11,6 @@ import 'package:restore/shared/models/listing_card_item.dart';
 abstract class HomeRepository {
   /// Số tin tối đa mỗi lượt tải
   static const int pageSize = 10;
-
-  Future<UserModel> getCurrentUser();
 
   /// Tên khu vực đang xem, VD "TP. Hồ Chí Minh"
   Future<String> getAreaName();
@@ -42,10 +39,6 @@ class MockHomeRepository implements HomeRepository {
         json,
       ).copyWith(isFavorite: MockFavoriteStore.contains('${json['id']}')),
   ];
-
-  @override
-  Future<UserModel> getCurrentUser() async =>
-      UserModel.fromJson(HomeMockData.currentUser);
 
   @override
   Future<String> getAreaName() async => HomeMockData.areaName;
@@ -103,13 +96,6 @@ class ApiHomeRepository implements HomeRepository {
     : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
-
-  @override
-  Future<UserModel> getCurrentUser() async {
-    final data = (await _get('/users/me'))['data'];
-    if (data is! Map) throw const FormatException('Missing response data');
-    return UserModel.fromJson(Map<String, dynamic>.from(data));
-  }
 
   @override
   Future<String> getAreaName() async {

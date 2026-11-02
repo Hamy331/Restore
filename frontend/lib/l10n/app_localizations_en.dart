@@ -106,13 +106,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get profileName => 'Ngo Tuong Phat';
-
-  @override
-  String get memberSince2022 => 'Member since 2022';
-
-  @override
-  String get maskedPhoneArea => '090 ••• 1234 · District 1, HCMC';
+  String memberSince(String year) {
+    return 'Member since $year';
+  }
 
   @override
   String get editProfile => 'Edit profile';

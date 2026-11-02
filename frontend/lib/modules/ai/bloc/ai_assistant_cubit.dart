@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/core/blocs/safe_emit.dart';
 
 enum AiAssistantStatus { welcome, results, filtered, comparison, empty, error }
 
@@ -24,7 +25,8 @@ class AiAssistantState {
   );
 }
 
-class AiAssistantCubit extends Cubit<AiAssistantState> {
+class AiAssistantCubit extends Cubit<AiAssistantState>
+    with SafeEmit<AiAssistantState> {
   AiAssistantCubit() : super(const AiAssistantState());
 
   void submitted(String value) {

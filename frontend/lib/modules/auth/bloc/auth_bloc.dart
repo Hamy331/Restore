@@ -9,6 +9,9 @@ import 'auth_state.dart';
 ///
 /// Phiên luôn được ghi nhớ (60 ngày, tự gia hạn khi dùng app): mở app thì
 /// [AuthCheckRequested] khôi phục phiên đã lưu. Router đọc state này để chuyển trang.
+///
+/// Đây là nơi duy nhất giữ người dùng hiện tại cho cả app; widget đọc qua
+/// `context.watchUser()` / `context.currentUser` (auth_context.dart).
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._authRepository, {Stream<void>? sessionExpired})
     : super(const AuthChecking()) {
@@ -30,8 +33,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthCheckRequested event,
     Emitter<AuthState> emit,
   ) async {
+    // Có người dùng lưu sẵn: vào app ngay, kiểm tra phiên với máy chủ ở phía sau
+    final cached = await _authRepository.cachedUser();
+    if (cached != null) emit(AuthAuthenticated(cached));
     final user = await _authRepository.restoreSession();
-    emit(user != null ? AuthAuthenticated(user) : const AuthUnauthenticated());
+    if (user != null) {
+      emit(AuthAuthenticated(user));
+    } else if (state is! AuthUnauthenticated) {
+      // Đang hiện người dùng lưu sẵn mà máy chủ từ chối phiên: báo hết hạn
+      emit(AuthUnauthenticated(sessionExpired: cached != null));
+    }
   }
 
   Future<void> _onLoggedOut(LoggedOut event, Emitter<AuthState> emit) async {
