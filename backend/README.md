@@ -4,7 +4,7 @@ Backend API cho dự án **Restore**, nền tảng C2C (Customer-to-Customer) đ
 
 Backend là một REST API viết bằng **Express + TypeScript**, dùng **Prisma ORM** để làm việc với **PostgreSQL trên Supabase**. Code được chia theo module nghiệp vụ, mỗi module tách lớp `route → controller → service → repository`.
 
-> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Các module `auth`, `users`, `home`, `catalog`, `listings`, `commerce`, `content`, `admin` đã theo chuẩn. Còn `wanted-alerts` theo kiểu cũ (xem lộ trình). Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
+> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Mọi module (`auth`, `users`, `home`, `catalog`, `listings`, `commerce`, `content`, `admin`, `wanted-alerts`) đã theo chuẩn. Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
 
 ---
 
@@ -114,8 +114,8 @@ Restore/
     │       ├── users/           (P) # Hồ sơ người dùng, /users/me
     │       ├── home/            (P) # Banner và khu vực của trang chủ
     │       ├── catalog/         (P) # Danh mục, tình trạng sản phẩm, tỉnh/phường (catalog.data.ts, dữ liệu mẫu tĩnh)
-    │       ├── wanted-alerts/   (P) # Thẻ báo tin khớp nhu cầu
     │       ├── listings/        (N) # Tin đăng, nháp, ảnh, feed, lưu tin, duyệt tin
+    │       ├── wanted-alerts/   (P) # "Báo khi có hàng": thông báo tin mong muốn, chấm điểm khi duyệt tin
     │       ├── commerce/        (N) # Gói cửa hàng, gói đẩy tin, đơn mua (gộp stores + promotions)
     │       ├── content/         (N) # Bài viết, báo cáo vi phạm, ticket hỗ trợ, tri thức AI
     │       └── admin/           (N) # /admin: hồ sơ admin, dashboard, thành viên, nhật ký; gắn router quản trị của các module khác
@@ -277,9 +277,9 @@ Tất cả endpoint nằm dưới tiền tố `/api/v1`. Tài liệu đầy đ�
 | `/home`            | home            |
 | `/categories`, `/conditions`, `/locations` | catalog |
 | `/listings`        | listings        |
+| `/wanted-alerts`   | wanted-alerts   |
 | `/stores`          | commerce        |
 | `/promotions`      | commerce        |
-| `/wanted-alerts`   | wanted-alerts   |
 | `/content`         | content         |
 | `/admin`           | admin           |
 
@@ -305,6 +305,24 @@ Ghi chú chi tiết (header, tham số, kết quả, mã lỗi) nằm ngay trên
 | `GET /listings/:id/favorite` | USER (`FAVORITE_READ`) | Đã lưu tin chưa | `modules/listings/routes/favorite.route.ts` |
 | `POST` (hoặc `PUT`) `/listings/:id/favorite` | USER (`FAVORITE_WRITE`) | Lưu tin | `modules/listings/routes/favorite.route.ts` |
 | `DELETE /listings/:id/favorite` | USER (`FAVORITE_WRITE`) | Bỏ lưu tin | `modules/listings/routes/favorite.route.ts` |
+
+### API "Báo khi có hàng" (/wanted-alerts)
+
+App Flutter (`frontend/lib/modules/wanted_alert/repositories/wanted_alert_repository.dart`, lớp `ApiWantedAlertRepository`). Mọi endpoint cần quyền `WANTED_ALERT_MANAGE` (thành viên thường; admin 403). Route ở `modules/wanted-alerts/wanted-alert.route.ts`.
+
+| Endpoint | Việc |
+| -------- | ---- |
+| `GET /wanted-alerts` | Thông báo của tôi, mới tạo trước, kèm `matchCount`, `newMatchCount`, `previewImages` (tối đa 3 ảnh bìa tin khớp gần nhất) |
+| `GET /wanted-alerts/:id` | Một thông báo (404 `WANTED_ALERT_NOT_FOUND` nếu không phải của tôi) |
+| `POST /wanted-alerts/preview?limit=20` | Tin hiện có gần giống bản nháp, điểm cao nhất trước (mỗi tin thêm `score`), không lưu gì |
+| `POST /wanted-alerts` | Tạo thông báo (tối đa 20 mỗi người, 409 `WANTED_ALERT_LIMIT`) |
+| `DELETE /wanted-alerts/:id` | Xóa thông báo, trả 204 |
+| `GET /wanted-alerts/:id/matches?page=1&limit=10` | Tin đã khớp còn hiển thị, khớp gần nhất trước (thêm `score`, `matchedAt`, `isNew`) |
+| `POST /wanted-alerts/:id/seen` | Đánh dấu đã xem, `newMatchCount` về 0, trả 204 |
+
+Body của `POST /wanted-alerts` và `/preview`: `{ keywords (2-80), categoryId?, minPrice?, maxPrice?, conditions?: ListingCondition[], dealTypes?: ('buy' | 'exchange')[], area?: { code, level: 'province' | 'ward' } | null, matchLevel?: 'BROAD' | 'BALANCED' | 'STRICT' }`.
+
+Cách khớp: khi admin duyệt một tin (`moderate()` với `APPROVE`), hook `onListingApproved` mà `wanted-alerts/index.ts` đăng ký chấm điểm tin đó với mọi thông báo của người khác, trong cùng transaction, rồi ghi `WantedAlertMatch`. Bộ lọc cứng (danh mục, giá khi tin có bán, tình trạng, kiểu giao dịch, khu vực) phải qua hết, sau đó điểm từ khoá (0..1, công thức trong `wanted-alert.matcher.ts`, giống `wanted_alert_matcher.dart` của app) phải đạt ngưỡng của `matchLevel`: `BROAD` 0.3, `BALANCED` 0.45, `STRICT` 0.6. Chỉ tin được duyệt sau lúc tạo thông báo mới được ghi khớp. Chưa gửi thông báo đẩy (FCM): app đọc `newMatchCount` khi mở trang.
 
 Header:
 
@@ -365,7 +383,7 @@ Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước v�
 | C23 | `catalog` sang mẫu phẳng; danh mục, tình trạng, gói vào `prisma/seed.ts` (`npm run db:seed`); tỉnh/phường thành `catalog.data.ts`, bỏ `catalog.json` | ✅ |
 | C24 | `services/storage.service.ts`: driver `disk` (mặc định) / `supabase`, ảnh tin và ảnh nội dung đi qua service | ✅ |
 | C25 | `npm run storage:migrate`: chép ảnh cũ trong `uploads/` lên bucket (URL trong DB không đổi) | ✅ |
-| C26 | `wanted-alerts`: gắn router, bỏ code chết | |
+| C26 | Nối `wanted-alert.matcher.ts` thành tính năng "Báo khi có hàng" đầy đủ: bảng `WantedAlert`, `WantedAlertMatch` + migration, module phẳng `wanted-alerts` theo hợp đồng `ApiWantedAlertRepository` của app, chấm điểm khi admin duyệt tin | ✅ |
 
 Còn lại ngoài lộ trình: bỏ `docker-compose.yml` (dùng `supabase start`), thêm `npm test` và `prisma migrate diff` vào `.github/workflows/backend_ci.yml`.
 

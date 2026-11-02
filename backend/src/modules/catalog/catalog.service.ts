@@ -16,6 +16,9 @@ export function distanceKm(a: Coordinates, b: Coordinates) {
 
 export const findProvince = (code: unknown) => PROVINCES.find((unit) => unit.code === code);
 
+/** Phường/xã theo mã (tìm trong mọi tỉnh) */
+export const findWard = (code: unknown) => Object.values(WARDS).flat().find((unit) => unit.code === code);
+
 /** Mọi phường có tọa độ tâm */
 export const wardsWithCenter = () => Object.values(WARDS).flat().filter((unit): unit is Unit & { center: Coordinates } => !!unit.center);
 

@@ -26,6 +26,8 @@ export const PERMISSION = {
   REPORT_SUBMIT: 'report:submit',
   /** Gửi yêu cầu hỗ trợ: GET/POST /content/tickets, POST /content/tickets/:id/reply */
   SUPPORT_TICKET: 'support:ticket',
+  /** Thông báo "Báo khi có hàng" của mình: /wanted-alerts */
+  WANTED_ALERT_MANAGE: 'wanted-alert:manage',
 
   /** Vào khu quản trị /admin/*: /admin/me, /admin/dashboard, /admin/audit */
   ADMIN_ACCESS: 'admin:access',
@@ -61,6 +63,7 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     PERMISSION.PROMOTION_PURCHASE,
     PERMISSION.REPORT_SUBMIT,
     PERMISSION.SUPPORT_TICKET,
+    PERMISSION.WANTED_ALERT_MANAGE,
   ],
   [Role.ADMIN]: [
     PERMISSION.PROFILE_READ,
