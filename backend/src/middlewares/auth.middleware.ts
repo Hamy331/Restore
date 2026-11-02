@@ -69,3 +69,22 @@ export const authorizeRoles = (...allowedRoles: Role[]) =>
     }
     next();
   };
+
+/**
+ * Cho phép cả khách lẫn người đã đăng nhập.
+ * - Không gửi header Authorization: đi tiếp với req.user = undefined.
+ * - Có gửi header: kiểm tra như verifyToken; token sai/hết hạn trả 401
+ *   để app tự refresh token rồi gọi lại.
+ */
+export const optionalAuth = (req: AuthRequest, res: Response, next: NextFunction) =>
+  req.headers.authorization ? verifyToken(req, res, next) : next();
+
+/**
+ * Bắt buộc đăng nhập và (tùy chọn) giới hạn vai trò.
+ * Dùng: router.get('/x', ...requireAuth(Role.USER), handler)
+ * Không truyền vai trò thì mọi tài khoản đang hoạt động đều qua.
+ */
+export const requireAuth = (...roles: Role[]) => [
+  verifyToken,
+  authorizeRoles(...(roles.length ? roles : Object.values(Role))),
+];

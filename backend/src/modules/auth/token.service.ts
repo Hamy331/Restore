@@ -2,7 +2,7 @@ import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Role } from '@prisma/client';
 import { getRequiredEnv, getSecuritySecret } from '../../config/env.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 import * as repository from './auth.repository.js';
 
 const ISSUER = 'restore-api';

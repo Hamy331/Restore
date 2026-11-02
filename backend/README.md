@@ -4,7 +4,7 @@ Backend API cho dự án **Restore**, nền tảng C2C (Customer-to-Customer) đ
 
 Backend là một REST API viết bằng **Express + TypeScript**, dùng **Prisma ORM** để làm việc với **PostgreSQL trên Supabase**. Code được chia theo module nghiệp vụ, mỗi module tách lớp `route → controller → service → repository`.
 
-> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Code trên nhánh `main` (commit `6b0e806`) mới đúng chuẩn ở module `auth`. Các module khác vẫn đang dồn truy vấn Prisma vào file route. Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
+> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Các module `auth`, `users`, `home`, `listings/feed`, `listings/favorites` đã theo chuẩn. Các phần còn lại của `listings`, `admin`, `stores`, `promotions` vẫn dồn truy vấn Prisma vào file route. Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
 
 ---
 
@@ -84,15 +84,18 @@ Restore/
     │   │   └── supabase.ts          # Supabase client (service role) cho Storage
     │   │
     │   ├── middlewares/
-    │   │   ├── auth.middleware.ts   # verifyToken, optionalAuth, authorizeRoles
+    │   │   ├── auth.middleware.ts   # verifyToken, authorizeRoles, requireAuth, optionalAuth
     │   │   ├── validate.middleware.ts
+    │   │   ├── request-id.middleware.ts
+    │   │   ├── require-json.middleware.ts
     │   │   ├── error.middleware.ts
     │   │   └── logger.middleware.ts
     │   │
     │   ├── common/
     │   │   ├── errors/app-error.ts
-    │   │   ├── http/response.ts     # ok(), paginated(): định dạng phản hồi thống nhất
-    │   │   └── utils/pagination.ts
+    │   │   ├── http/response.ts     # ok(), created(), noContent(), paginated()
+    │   │   ├── http/pagination.ts   # Đọc page/limit từ query
+    │   │   └── validation/parsers.ts # Hàm kiểm tra đầu vào dùng chung
     │   │
     │   ├── jobs/
     │   │   └── account-status.job.ts # Tự mở khóa tài khoản hết hạn tạm khóa
@@ -108,7 +111,7 @@ Restore/
     │       ├── users/               # Hồ sơ người dùng, /users/me, khu vực gần đây
     │       ├── home/                # Banner và khu vực mặc định của trang chủ
     │       ├── catalog/             # Danh mục, tỉnh/phường, tình trạng sản phẩm
-    │       ├── listings/            # Tin đăng, nháp, ảnh, tìm kiếm, yêu thích, gợi ý
+    │       ├── listings/            # Tin đăng, nháp, ảnh; feed/ (danh sách, gợi ý), favorites/ (lưu tin)
     │       ├── stores/              # Gói cửa hàng, đơn mua gói
     │       ├── promotions/          # Gói đẩy tin, đơn đẩy tin
     │       ├── wanted-alerts/       # Thẻ báo tin khớp nhu cầu
@@ -117,7 +120,6 @@ Restore/
     │
     ├── scripts/                     # Script vận hành (verify-admin, ...)
     ├── .env.example
-    ├── prisma.config.ts
     ├── package.json
     └── tsconfig.json
 ```
@@ -173,7 +175,8 @@ Danh sách có phân trang:
 {
   "success": true,
   "data": [ ],
-  "pagination": { "page": 1, "limit": 10, "totalItems": 42, "totalPages": 5, "hasMore": true }
+  "pagination": { "page": 1, "limit": 10, "pageSize": 10, "totalItems": 42, "totalPages": 5, "hasMore": true },
+  "meta": { "page": 1, "limit": 10, "hasMore": true }
 }
 ```
 
@@ -210,34 +213,45 @@ Tất cả endpoint nằm dưới tiền tố `/api/v1`. Tài liệu đầy đ�
 
 App Flutter (`frontend/lib/modules/home/repositories/home_repository.dart`, lớp `ApiHomeRepository`) gọi các endpoint sau khi tắt mock. Mỗi tin trong danh sách là bản ghi `Listing` kèm các trường đã tính sẵn ở server: `areaLabel`, `distanceKm`, `isFeatured`, `isFavorite`.
 
-| Endpoint                                   | Đăng nhập | Mô tả                                                         | Trạng thái hiện tại |
-| ------------------------------------------ | --------- | ------------------------------------------------------------- | ------------------- |
-| `GET /users/me`                            | Bắt buộc  | Hồ sơ người dùng đang đăng nhập                               | ❌ Chưa có (đang có `GET /auth/me`) |
-| `GET /home/area`                           | Tùy chọn  | Tên khu vực đang xem, VD `{ "name": "TP. Hồ Chí Minh" }`     | ❌ Chưa có |
-| `GET /home/banners`                        | Không     | Banner `{ id, imageUrl, route }`, ảnh 1200 × 600              | ❌ Chưa có (cần bảng `HomeBanner`) |
-| `GET /catalog/categories`                  | Không     | Danh mục cho thanh danh mục                                   | ⚠️ Đang ở `GET /categories` |
-| `GET /listings/recommended?limit=10`       | Tùy chọn  | Tin gợi ý (tin đang được đẩy FEATURED)                        | ⚠️ Có, nhưng bỏ qua `limit`, thiếu `areaLabel` |
-| `GET /listings?filter=newest\|nearby\|exchange&page=1&limit=10` | Tùy chọn | Tin mới nhất theo bộ lọc | ⚠️ Có, nhưng đọc `pageSize` thay vì `limit`, chưa hiểu `filter`, thiếu `hasMore`, `areaLabel`, `isFeatured` |
-| `POST /listings/:id/favorite`              | Bắt buộc  | Lưu tin                                                       | ⚠️ Backend đang dùng `PUT` |
-| `DELETE /listings/:id/favorite`            | Bắt buộc  | Bỏ lưu tin                                                    | ✅ Có |
+Ghi chú chi tiết (header, tham số, kết quả, mã lỗi) nằm ngay trên từng route trong file `*.route.ts`.
 
-Bảng mới cần thêm vào `schema.prisma` cho banner:
+| Endpoint | Quyền | Mô tả | File |
+| -------- | ----- | ----- | ---- |
+| `GET /users/me` | USER, ADMIN | Hồ sơ người đang đăng nhập | `modules/users/users.route.ts` |
+| `GET /home/area?provinceCode=&latitude=&longitude=` | Công khai | Tên khu vực, mặc định `Toàn quốc` | `modules/home/home.route.ts` |
+| `GET /home/banners` | Công khai | Banner đang chạy `{ id, imageUrl, route }` | `modules/home/home.route.ts` |
+| `GET /home/admin/banners` | ADMIN | Toàn bộ banner | `modules/home/home.route.ts` |
+| `POST /home/admin/banners` | ADMIN | Tạo banner (ghi AdminAudit) | `modules/home/home.route.ts` |
+| `PUT /home/admin/banners/:id` | ADMIN | Sửa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
+| `DELETE /home/admin/banners/:id` | ADMIN | Xóa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
+| `GET /categories` | Công khai | Danh mục cho thanh danh mục | `modules/catalog/catalog.ts` |
+| `GET /listings?filter=newest\|nearby\|exchange&page=1&limit=10` | Công khai, token tùy chọn | Tin mới nhất / gần bạn / trao đổi, có phân trang | `modules/listings/feed/feed.route.ts` |
+| `GET /listings/recommended?limit=10` | Công khai, token tùy chọn | Tin gợi ý (đang đẩy nổi bật) | `modules/listings/feed/feed.route.ts` |
+| `GET /listings/favorites` | USER | Tin đã lưu, có phân trang | `modules/listings/favorites/favorite.route.ts` |
+| `GET /listings/:id/favorite` | USER | Đã lưu tin chưa | `modules/listings/favorites/favorite.route.ts` |
+| `POST` (hoặc `PUT`) `/listings/:id/favorite` | USER | Lưu tin | `modules/listings/favorites/favorite.route.ts` |
+| `DELETE /listings/:id/favorite` | USER | Bỏ lưu tin | `modules/listings/favorites/favorite.route.ts` |
 
-```prisma
-model HomeBanner {
-  id        String    @id @default(uuid())
-  imageUrl  String?
-  route     String?
-  sortOrder Int       @default(0)
-  active    Boolean   @default(true)
-  startsAt  DateTime?
-  endsAt    DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+Header:
 
-  @@index([active, sortOrder])
-}
-```
+| Header | Khi nào |
+| ------ | ------- |
+| `Authorization: Bearer <accessToken>` | Bắt buộc với API có quyền USER/ADMIN. Với API công khai thì không bắt buộc, nhưng nếu gửi thì token phải hợp lệ (sai hoặc hết hạn trả 401 để app refresh token). |
+| `Content-Type: application/json` | Bắt buộc với API nhận body JSON (thiếu trả 415). |
+| `Accept: application/json` | Nên gửi. |
+| `X-Request-Id` | Tùy chọn. Server luôn trả header này để dò log. |
+
+Middleware dùng chung (`src/middlewares/`):
+
+| Middleware | Việc |
+| ---------- | ---- |
+| `requestId` | Gắn `X-Request-Id` cho mỗi request |
+| `verifyToken`, `authorizeRoles` | Kiểm tra JWT, trạng thái tài khoản, vai trò |
+| `requireAuth(...roles)` | Gộp hai middleware trên: `router.get('/x', ...requireAuth(Role.ADMIN), handler)` |
+| `optionalAuth` | Cho khách đi qua, có token thì xác thực để biết người xem |
+| `requireJson` | Bắt buộc `Content-Type: application/json` |
+| `validate({ query, params, body })` | Kiểm tra đầu vào bằng các hàm trong `*.validation.ts`, controller đọc lại bằng `getInput(res)` |
+| `notFoundHandler`, `errorHandler` | Trả lỗi theo định dạng chung |
 
 ---
 
@@ -245,14 +259,14 @@ model HomeBanner {
 
 Làm theo thứ tự, mỗi bước một Pull Request, chạy `npm test` và `npm run build` trước khi merge.
 
-1. **Khung ứng dụng**: tách `src/index.ts` thành `app.ts`, `server.ts`, `routes.ts`. Chuyển `errors/` vào `common/errors/`, thêm `common/http/response.ts`. Chuyển `lib/account-status.ts` (có trên `main`) thành `jobs/account-status.job.ts`.
+1. ✅ **Khung ứng dụng** (xong app/server/routes, `common/`, `jobs/`): tách `src/index.ts` thành `app.ts`, `server.ts`, `routes.ts`. Chuyển `errors/` vào `common/errors/`, thêm `common/http/response.ts`. Chuyển `lib/account-status.ts` (có trên `main`) thành `jobs/account-status.job.ts`.
 2. **Script và database**:
-   - Thêm script `test`, `db:migrate`, `db:deploy`, `db:seed`, `db:studio` vào `package.json`.
+   - ✅ Thêm script `test`, `db:migrate`, `db:deploy`, `db:studio` vào `package.json` (còn `db:seed`).
    - Chuyển `src/modules/catalog/catalog.json` thành dữ liệu seed trong `prisma/seed.ts`, bỏ `scripts/copy-catalog.mjs`.
-   - Nâng `prisma` và `@prisma/client` lên cùng bản hỗ trợ `prisma.config.ts` (6.x trở lên), hoặc bỏ `prisma.config.ts` nếu giữ 5.x.
+   - ✅ Bỏ `prisma.config.ts` vì Prisma 5.x không đọc file này (đường dẫn schema/migration và `DATABASE_URL`/`DIRECT_URL` đã khai báo trong `schema.prisma`). Khi nâng lên Prisma 6+ thì thêm lại.
    - Bỏ `docker-compose.yml`, dùng `supabase start` cho database local.
 3. **Tách lớp từng module** theo mẫu ở trên: `listings` (file `listing.route.ts` đang dài hơn 500 dòng), `admin`, `stores`, `promotions`. Gộp các route nội dung đang nằm trong `admin/content.route.ts` (có trên `main`, nhánh `fix/product-detail` chưa có) vào module `content`. Đưa `wanted-alert.matcher.ts` vào module `wanted-alerts` và gắn router.
-4. **Module mới cho trang chủ**: `users` (`GET /users/me`), `home` (`GET /home/area`, `GET /home/banners` + bảng `HomeBanner`), chuẩn hóa `GET /listings` và `GET /listings/recommended` theo bảng API trang chủ ở trên.
+4. ✅ **Module mới cho trang chủ**: `users` (`GET /users/me`), `home` (`GET /home/area`, `GET /home/banners` + bảng `HomeBanner`), chuẩn hóa `GET /listings` và `GET /listings/recommended` theo bảng API trang chủ ở trên.
 5. **Ảnh**: chuyển ảnh tin đăng và ảnh nội dung từ ổ đĩa `uploads/` sang Supabase Storage qua `services/storage.service.ts`. Trên Render/Railway, ổ đĩa bị xóa sau mỗi lần deploy nên ảnh hiện tại sẽ mất.
 6. **CI**: thêm bước `npm test` vào `.github/workflows/backend_ci.yml` và chạy `prisma migrate diff` để bắt schema lệch với migration.
 

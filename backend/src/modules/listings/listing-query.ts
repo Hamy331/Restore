@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
-import type { listingFilters } from './listing.route.js';
+import type { ListingFilters } from './listing.filters.js';
 // ponytail: distance uses the public ward center; add PostGIS/indexes when the catalog needs it.
-export function listingQuery(filters: ReturnType<typeof listingFilters>, now: Date) {
+export function listingQuery(filters: ListingFilters, now: Date) {
  const distance = !filters.nearby ? Prisma.sql`NULL::double precision` : Prisma.sql`
  CASE WHEN l.location #>> '{ward,center,latitude}' IS NULL OR l.location #>> '{ward,center,longitude}' IS NULL THEN NULL
  ELSE 6371*acos(GREATEST(-1,LEAST(1,
@@ -9,7 +9,8 @@ export function listingQuery(filters: ReturnType<typeof listingFilters>, now: Da
   cos(radians(${filters.nearby.latitude}::double precision))*cos(radians((l.location #>> '{ward,center,latitude}')::double precision))*
   cos(radians((l.location #>> '{ward,center,longitude}')::double precision-${filters.nearby.longitude}::double precision))))) END`;
  return Prisma.sql`
-        SELECT l.id, ${distance} AS "distanceKm"
+        SELECT l.id, ${distance} AS "distanceKm",
+          COALESCE(boosted."featuredPriority", 0) > 0 AS "isFeatured"
         FROM "Listing" l
         JOIN "User" u ON u.id = l."ownerId" AND u.status = 'ACTIVE'
         LEFT JOIN "StoreSubscription" ss ON ss."userId" = l."ownerId"
