@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { AppError } from '../../common/errors/app-error.js';
-import { NATIONWIDE_AREA, resolveArea } from './home.service.js';
+import { resolveArea } from './home.service.js';
+import { NATIONWIDE_AREA } from './home.type.js';
 import { parse } from '../../common/validation/schemas.js';
-import { areaQuery, bannerBody } from './home.validation.js';
+import { areaQuery, bannerBody } from './home.validator.js';
 
 const parseAreaQuery = (query: unknown) => parse(areaQuery, query);
 

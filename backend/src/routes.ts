@@ -3,13 +3,13 @@ import adminRouter from './modules/admin/admin.route.js';
 import contentRouter from './modules/admin/content.route.js';
 import authRouter from './modules/auth/auth.route.js';
 import { catalogRouter } from './modules/catalog/catalog.js';
-import homeRouter from './modules/home/home.route.js';
+import { homeRouter } from './modules/home/index.js';
 import favoriteRouter from './modules/listings/favorites/favorite.route.js';
 import feedRouter from './modules/listings/feed/feed.route.js';
 import listingRouter from './modules/listings/listing.route.js';
 import promotionRouter from './modules/promotions/promotion.route.js';
 import storeRouter from './modules/stores/store.route.js';
-import usersRouter from './modules/users/users.route.js';
+import { usersRouter } from './modules/users/index.js';
 
 /** Toàn bộ API, gắn dưới tiền tố /api/v1 trong app.ts. */
 export const apiRouter = Router();
