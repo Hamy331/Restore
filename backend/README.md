@@ -295,12 +295,12 @@ Ghi chú chi tiết (header, tham số, kết quả, mã lỗi) nằm ngay trên
 | `PUT /home/admin/banners/:id` | `BANNER_MANAGE` | Sửa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
 | `DELETE /home/admin/banners/:id` | `BANNER_MANAGE` | Xóa banner (ghi AdminAudit) | `modules/home/home.route.ts` |
 | `GET /categories` | Công khai | Danh mục cho thanh danh mục | `modules/catalog/catalog.ts` |
-| `GET /listings?filter=newest\|nearby\|exchange&page=1&limit=10` | Công khai, token tùy chọn | Tin mới nhất / gần bạn / trao đổi, có phân trang | `modules/listings/feed/feed.route.ts` |
-| `GET /listings/recommended?limit=10` | Công khai, token tùy chọn | Tin gợi ý (đang đẩy nổi bật) | `modules/listings/feed/feed.route.ts` |
-| `GET /listings/favorites` | USER (`FAVORITE_READ`) | Tin đã lưu, có phân trang | `modules/listings/favorites/favorite.route.ts` |
-| `GET /listings/:id/favorite` | USER (`FAVORITE_READ`) | Đã lưu tin chưa | `modules/listings/favorites/favorite.route.ts` |
-| `POST` (hoặc `PUT`) `/listings/:id/favorite` | USER (`FAVORITE_WRITE`) | Lưu tin | `modules/listings/favorites/favorite.route.ts` |
-| `DELETE /listings/:id/favorite` | USER (`FAVORITE_WRITE`) | Bỏ lưu tin | `modules/listings/favorites/favorite.route.ts` |
+| `GET /listings?filter=newest\|nearby\|exchange&page=1&limit=10` | Công khai, token tùy chọn | Tin mới nhất / gần bạn / trao đổi, có phân trang | `modules/listings/routes/feed.route.ts` |
+| `GET /listings/recommended?limit=10` | Công khai, token tùy chọn | Tin gợi ý (đang đẩy nổi bật) | `modules/listings/routes/feed.route.ts` |
+| `GET /listings/favorites` | USER (`FAVORITE_READ`) | Tin đã lưu, có phân trang | `modules/listings/routes/favorite.route.ts` |
+| `GET /listings/:id/favorite` | USER (`FAVORITE_READ`) | Đã lưu tin chưa | `modules/listings/routes/favorite.route.ts` |
+| `POST` (hoặc `PUT`) `/listings/:id/favorite` | USER (`FAVORITE_WRITE`) | Lưu tin | `modules/listings/routes/favorite.route.ts` |
+| `DELETE /listings/:id/favorite` | USER (`FAVORITE_WRITE`) | Bỏ lưu tin | `modules/listings/routes/favorite.route.ts` |
 
 Header:
 
@@ -334,7 +334,7 @@ Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước v�
 | C0–C4 | Nền chung: contract test, zod, `schemas.ts`, `validate` dùng zod, permissions + `requirePermission` | ✅ |
 | C5–C6 | `users`, `home` sang mẫu phẳng | ✅ |
 | C7 | README quy ước module | ✅ |
-| C8–C15 | `listings` sang mẫu nhóm: feed, favorites, tin, nháp, ảnh, duyệt tin, bỏ `listing.route.ts` | |
+| C8–C15 | `listings` sang mẫu nhóm: feed, favorites, tin, nháp, ảnh, duyệt tin, bỏ `listing.route.ts` | ✅ |
 | C16–C18 | `commerce`: gộp `stores` + `promotions`, logic duyệt đơn vào service | |
 | C19–C21 | `content` tách khỏi `admin`, `admin` sang mẫu nhóm | |
 | C22 | `auth` dùng zod, bỏ `common/validation/parsers.ts` | |

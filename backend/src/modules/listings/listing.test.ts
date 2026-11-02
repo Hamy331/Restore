@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { ListingStatus, Prisma } from '@prisma/client';
-import { canChangeListingStatus, createInput, draftInput, imageExtension, listingFilters, orderedImages, requireOwnedListing, updateOwnedListing } from './listing.route.js';
+import { createInput, draftInput, feedQuery, listingFilters, orderedImages, recommendedQuery, validateAttributes } from './listing.validator.js';
+import { canChangeListingStatus, requireOwnedListing, updateOwnedListing } from './services/listing.service.js';
+import { imageExtension } from './services/image.service.js';
+import { AppError } from '../../common/errors/app-error.js';
+import { parse } from '../../common/validation/schemas.js';
 import { storeUsage } from '../stores/store.service.js';
 import { catalog, publicLocation } from '../catalog/catalog.js';
-import { validateAttributes } from './listing-input.js';
 const province=catalog.provinces[0]!;
 const ward=catalog.wards[province.code]![0]!;
 const location={provinceCode:province.code,wardCode:ward.code,streetAddress:'Nhà riêng',...ward.center,geoSource:'device'};
@@ -60,9 +63,10 @@ test('listing images accept real supported bytes and cannot attach foreign URLs 
   assert.throws(() => imageExtension('image/jpeg', Buffer.from('fake image')), { code: 'INVALID_IMAGE' });
   assert.throws(() => imageExtension('image/png', Buffer.alloc(5 * 1024 * 1024 + 1)), { code: 'INVALID_IMAGE' });
   const urls = ['/api/v1/listings/media/a.jpg', '/api/v1/listings/media/b.png'];
-  assert.deepEqual(orderedImages([urls[1], urls[0]], urls), [urls[1], urls[0]]);
-  assert.throws(() => orderedImages([urls[0], urls[0]], urls), { code: 'INVALID_IMAGES' });
-  assert.throws(() => orderedImages(['https://example.com/foreign.jpg'], urls), { code: 'INVALID_IMAGES' });
+  assert.deepEqual(orderedImages({ images: [urls[1], urls[0]] }, urls), [urls[1], urls[0]]);
+  assert.throws(() => orderedImages({ images: [urls[0], urls[0]] }, urls), { code: 'INVALID_IMAGES' });
+  assert.throws(() => orderedImages({ images: [urls[0]], extra: 1 }, urls), { code: 'INVALID_IMAGES' });
+  assert.throws(() => orderedImages({ images: ['https://example.com/foreign.jpg'] }, urls), { code: 'INVALID_IMAGES' });
 });
 
 test('listing filters validate range and normalize search values', () => {
@@ -107,4 +111,36 @@ test('category attributes and GPS enforce supported values',()=>{
   assert.throws(()=>validateAttributes({ownerId:'someone'},metadata,false),{code:'INVALID_ATTRIBUTES'});
   assert.throws(()=>listingFilters({latitude:'91',longitude:'1'}),{code:'INVALID_LOCATION'});
   assert.throws(()=>listingFilters({latitude:'1'}),{code:'INVALID_QUERY'});
+});
+
+const parseFeedQuery = (query: unknown) => parse(feedQuery, query);
+const parseRecommendedQuery = (query: unknown) => parse(recommendedQuery, query);
+
+test('feed query defaults to newest page 1 with 10 items', () => {
+  const query = parseFeedQuery({});
+  assert.equal(query.filter, 'newest');
+  assert.deepEqual(query.pagination, { page: 1, limit: 10, skip: 0 });
+  assert.equal(query.filters.nearby, undefined);
+});
+
+test('feed query accepts limit and the legacy pageSize name', () => {
+  assert.deepEqual(parseFeedQuery({ page: '3', limit: '10' }).pagination, { page: 3, limit: 10, skip: 20 });
+  assert.equal(parseFeedQuery({ pageSize: '12' }).pagination.limit, 12);
+  assert.throws(() => parseFeedQuery({ limit: '500' }), AppError);
+  assert.throws(() => parseFeedQuery({ page: '0' }), AppError);
+});
+
+test('feed filters map to listing filters', () => {
+  assert.throws(() => parseFeedQuery({ filter: 'nearby' }), AppError);
+  const nearby = parseFeedQuery({ filter: 'nearby', latitude: '10.77', longitude: '106.7' });
+  assert.deepEqual(nearby.filters.nearby, { latitude: 10.77, longitude: 106.7, radius: 5 });
+  assert.equal(parseFeedQuery({ filter: 'exchange' }).filters.allowExchange, true);
+  assert.equal(parseFeedQuery({ latitude: '10.77', longitude: '106.7' }).filters.nearby, undefined);
+  assert.throws(() => parseFeedQuery({ filter: 'popular' }), AppError);
+});
+
+test('recommended limit is between 1 and 20', () => {
+  assert.equal(parseRecommendedQuery({}).limit, 10);
+  assert.equal(parseRecommendedQuery({ limit: '5' }).limit, 5);
+  assert.throws(() => parseRecommendedQuery({ limit: '21' }), AppError);
 });

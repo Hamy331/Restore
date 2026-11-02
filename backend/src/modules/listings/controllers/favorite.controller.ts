@@ -1,14 +1,14 @@
 import { Response } from 'express';
-import type { Pagination } from '../../../common/http/pagination.js';
+import type { FavoritesQuery } from '../listing.dto.js';
 import { noContent, ok, paginated } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
-import * as favoriteService from './favorite.service.js';
+import * as favoriteService from '../services/favorite.service.js';
 
 type IdInput = ValidatedInput<undefined, { id: string }>;
 
 export async function listFavorites(req: AuthRequest, res: Response) {
-  const { query } = getInput<ValidatedInput<Pagination>>(res);
+  const { query } = getInput<ValidatedInput<FavoritesQuery>>(res);
   const { items, page } = await favoriteService.listFavorites(req.user!.userId, query);
   paginated(res, items, page);
 }

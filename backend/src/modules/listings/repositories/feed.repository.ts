@@ -1,7 +1,16 @@
 import { Prisma } from '@prisma/client';
-import type { ListingFilters } from './listing.filters.js';
+import { prisma } from '../../../lib/prisma.js';
+import { listingSelect } from '../listing.dto.js';
+import type { ListingFilters } from '../listing.type.js';
+import { visible } from './listing.repository.js';
+
+export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boolean };
+
 // ponytail: distance uses the public ward center; add PostGIS/indexes when the catalog needs it.
-export function listingQuery(filters: ListingFilters, now: Date) {
+/**
+ * SQL xếp hạng tin: gần nhất (nearby), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian.
+ */
+function rankedQuery(filters: ListingFilters, now: Date) {
  const distance = !filters.nearby ? Prisma.sql`NULL::double precision` : Prisma.sql`
  CASE WHEN l.location #>> '{ward,center,latitude}' IS NULL OR l.location #>> '{ward,center,longitude}' IS NULL THEN NULL
  ELSE 6371*acos(GREATEST(-1,LEAST(1,
@@ -41,4 +50,42 @@ export function listingQuery(filters: ListingFilters, now: Date) {
           GREATEST(COALESCE(l."publishedAt", l."createdAt"),
             COALESCE(boosted."bumpedAt", l."createdAt")) DESC,
           COALESCE(l."publishedAt", l."createdAt") DESC, l.id DESC`;
+}
+
+/**
+ * Lấy một trang id tin đã xếp hạng (đẩy tin, gói cửa hàng, khoảng cách, thời gian)
+ * cùng tổng số tin khớp bộ lọc.
+ */
+export async function findRankedPage(filters: ListingFilters, now: Date, limit: number, skip: number) {
+  const query = rankedQuery(filters, now);
+  const [rows, totals] = await prisma.$transaction([
+    prisma.$queryRaw<RankedRow[]>`${query} LIMIT ${limit} OFFSET ${skip}`,
+    prisma.$queryRaw<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM (${query}) ranked`,
+  ]);
+  return { rows, totalItems: totals[0]?.n ?? 0 };
+}
+
+export const findVisibleByIds = (ids: string[]) =>
+  ids.length ? prisma.listing.findMany({ where: { ...visible, id: { in: ids } }, select: listingSelect }) : Promise.resolve([]);
+
+/** Tin đang có gói đẩy FEATURED còn hiệu lực, mới nhất trước */
+export const findFeatured = (now: Date, limit: number) =>
+  prisma.listing.findMany({
+    where: {
+      ...visible,
+      promotions: { some: { startsAt: { lte: now }, endsAt: { gt: now }, package: { kind: 'FEATURED' } } },
+    },
+    select: listingSelect,
+    take: limit,
+    orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
+  });
+
+/** Trong [listingIds], những tin mà [userId] đã lưu */
+export async function findFavoriteIds(userId: string | undefined, listingIds: string[]) {
+  if (!userId || !listingIds.length) return new Set<string>();
+  const rows = await prisma.listingFavorite.findMany({
+    where: { userId, listingId: { in: listingIds } },
+    select: { listingId: true },
+  });
+  return new Set(rows.map((row) => row.listingId));
 }

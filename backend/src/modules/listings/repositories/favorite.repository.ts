@@ -1,5 +1,6 @@
 import { prisma } from '../../../lib/prisma.js';
-import { fields, visible } from '../listing.mapper.js';
+import { listingSelect } from '../listing.dto.js';
+import { visible } from './listing.repository.js';
 
 export const findVisibleListingId = (id: string) =>
   prisma.listing.findFirst({ where: { ...visible, id }, select: { id: true } });
@@ -23,7 +24,7 @@ export const findFavoriteListings = (userId: string, take: number, skip: number)
   prisma.$transaction([
     prisma.listingFavorite.findMany({
       where: { userId, listing: visible },
-      select: { listing: { select: fields } },
+      select: { listing: { select: listingSelect } },
       orderBy: { createdAt: 'desc' },
       take,
       skip,
