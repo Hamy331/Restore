@@ -4,7 +4,7 @@ Backend API cho dự án **Restore**, nền tảng C2C (Customer-to-Customer) đ
 
 Backend là một REST API viết bằng **Express + TypeScript**, dùng **Prisma ORM** để làm việc với **PostgreSQL trên Supabase**. Code được chia theo module nghiệp vụ, mỗi module tách lớp `route → controller → service → repository`.
 
-> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Các module `auth`, `users`, `home`, `listings/feed`, `listings/favorites` đã theo chuẩn. Các phần còn lại của `listings`, `admin`, `stores`, `promotions` vẫn dồn truy vấn Prisma vào file route. Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
+> ⚠️ **Trạng thái tài liệu (02/11/2026):** README này mô tả **cấu trúc chuẩn mà backend phải theo**. Các module `users`, `home`, `listings`, `commerce`, `content`, `admin` đã theo chuẩn. `auth`, `catalog` (phần công khai) và `wanted-alerts` còn theo kiểu cũ (xem lộ trình). Phần [Lộ trình chuyển đổi](#-lộ-trình-chuyển-đổi-cấu-trúc) liệt kê những gì cần sửa trước khi viết thêm API.
 
 ---
 
@@ -92,10 +92,13 @@ Restore/
     │   │   └── logger.middleware.ts
     │   │
     │   ├── common/
+    │   │   ├── audit/admin-audit.ts # audit(tx, ...): ghi một dòng AdminAudit trong transaction
     │   │   ├── auth/permissions.ts  # PERMISSION + bảng vai trò → quyền
     │   │   ├── errors/app-error.ts
     │   │   ├── http/response.ts     # ok(), created(), noContent(), paginated()
-    │   │   └── validation/schemas.ts # Schema zod dùng lại: pageQuery, coordinates, idParam, str, int...
+    │   │   └── validation/
+    │   │       ├── schemas.ts       # Schema zod dùng lại: pageQuery, coordinates, idParam, str, int...
+    │   │       └── admin-input.ts   # Kiểm tra kiểu cũ của API quản trị: text, object, choice, version, changed, page...
     │   │
     │   ├── jobs/
     │   │   └── account-status.job.ts # Tự mở khóa tài khoản hết hạn tạm khóa
@@ -115,7 +118,7 @@ Restore/
     │       ├── listings/        (N) # Tin đăng, nháp, ảnh, feed, lưu tin, duyệt tin
     │       ├── commerce/        (N) # Gói cửa hàng, gói đẩy tin, đơn mua (gộp stores + promotions)
     │       ├── content/         (N) # Bài viết, báo cáo vi phạm, ticket hỗ trợ, tri thức AI
-    │       └── admin/           (N) # Quản lý người dùng, thống kê, audit
+    │       └── admin/           (N) # /admin: hồ sơ admin, dashboard, thành viên, nhật ký; gắn router quản trị của các module khác
     │
     ├── scripts/                     # Script vận hành (verify-admin, ...)
     ├── .env.example
@@ -317,11 +320,31 @@ Middleware dùng chung (`src/middlewares/`):
 | ---------- | ---- |
 | `requestId` | Gắn `X-Request-Id` cho mỗi request |
 | `requirePermission(...perms)` | Kiểm tra JWT, trạng thái tài khoản và quyền: `router.get('/x', requirePermission(PERMISSION.BANNER_MANAGE), handler)` |
-| `verifyToken`, `authorizeRoles`, `requireAuth` | Kiểu cũ theo vai trò, còn dùng ở các module chưa refactor, sẽ bỏ dần |
+| `authorizePermission(...perms)` | Chỉ kiểm tra quyền, dùng sau khi router cha đã xác thực token (ví dụ router quản trị dưới `/admin`) |
+| `verifyToken`, `authorizeRoles`, `requireAuth` | Kiểu cũ theo vai trò, còn dùng ở `auth`, sẽ bỏ ở C22 |
 | `optionalAuth` | Cho khách đi qua, có token thì xác thực để biết người xem |
 | `requireJson` | Bắt buộc `Content-Type: application/json` |
 | `validate({ query, params, body })` | Kiểm tra đầu vào bằng schema zod trong `*.validator.ts`, controller đọc lại bằng `getInput(res)` |
 | `notFoundHandler`, `errorHandler` | Trả lỗi theo định dạng chung |
+
+---
+
+### API quản trị (/admin)
+
+`modules/admin/index.ts` gắn `adminRouter` tại `/admin`: mọi đường dẫn bên dưới cần token và quyền `ADMIN_ACCESS` trước (khách 401, thành viên 403, kể cả đường dẫn không tồn tại). Mỗi module có dữ liệu tự cung cấp router quản trị của mình qua `index.ts`, route kiểm tra thêm quyền riêng bằng `authorizePermission`.
+
+Danh sách trả `{ items, total, page }`, 25 dòng mỗi trang. Thao tác ghi kèm `updatedAt` lúc đọc (409 `ADMIN_STALE` nếu dữ liệu đã đổi) và ghi `AdminAudit`. Lỗi đầu vào giữ mã `INVALID_ADMIN_INPUT`, `INVALID_QUERY` như trước.
+
+| Endpoint | Quyền | Module / file |
+| -------- | ----- | ------------- |
+| `GET /admin/me`, `GET /admin/dashboard`, `GET /admin/audit` | `ADMIN_ACCESS` | `admin/routes/{user,dashboard,audit}.route.ts` |
+| `GET /admin/users`, `POST /admin/users/:id/action` | `USER_MANAGE` | `admin/routes/user.route.ts` (logic khóa tài khoản: `users.service.sanctionUser`) |
+| `GET /admin/listings`, `POST /admin/listings/:id/decision` | `LISTING_MODERATE` | `listings/routes/admin-listing.route.ts` (logic duyệt: `moderation.service.moderate`) |
+| `/admin/posts`, `/admin/tickets`, `/admin/knowledge` | `CONTENT_MANAGE` | `content/routes/admin-content.route.ts` |
+| `/admin/reports` | `USER_MANAGE` | `content/routes/admin-content.route.ts` |
+| `GET /admin/catalog`, `/admin/categories`, `/admin/conditions/:condition` | `CATALOG_MANAGE` | `catalog/catalog-admin.route.ts` |
+| `/admin/store-packages`, `GET /admin/store-orders` | `STORE_ORDER_MANAGE` | `commerce/routes/commerce-admin.route.ts` |
+| `GET /admin/promotion-orders` | `PROMOTION_MANAGE` | `commerce/routes/commerce-admin.route.ts` |
 
 ---
 
@@ -336,7 +359,7 @@ Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước v�
 | C7 | README quy ước module | ✅ |
 | C8–C15 | `listings` sang mẫu nhóm: feed, favorites, tin, nháp, ảnh, duyệt tin, bỏ `listing.route.ts` | ✅ |
 | C16–C18 | `commerce`: gộp `stores` + `promotions`, logic duyệt đơn vào service | ✅ |
-| C19–C21 | `content` tách khỏi `admin`, `admin` sang mẫu nhóm | |
+| C19–C21 | `content` tách khỏi `admin`; endpoint `/admin/*` về module sở hữu dữ liệu; `admin` sang mẫu nhóm, bỏ `admin.route.ts` | ✅ |
 | C22 | `auth` dùng zod, bỏ `common/validation/parsers.ts` | |
 | C23 | `catalog`: dữ liệu vào `prisma/seed.ts`, mẫu phẳng | |
 | C24–C25 | Ảnh lên Supabase Storage, chuyển ảnh cũ | |

@@ -53,3 +53,22 @@ export const upsertSubscription = (tx: Db, userId: string, data: { packageId: st
     update: data,
     include: { package: true, category: true },
   });
+
+/* ---------- Quản trị ---------- */
+
+/** Mọi gói cửa hàng (kể cả PERSONAL), ưu tiên thấp trước */
+export const findAllPackages = () => prisma.storePackage.findMany({ orderBy: { priorityLevel: 'asc' } });
+
+/** Đơn mua gói, mới trước, kèm người mua, gói, danh mục */
+export function findOrderPage(status: Prisma.StoreOrderWhereInput['status'] | undefined, skip: number, take: number) {
+  const where: Prisma.StoreOrderWhereInput = status ? { status } : {};
+  return prisma.$transaction([
+    prisma.storeOrder.findMany({ where, take, skip, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      include: { user: { select: { fullName: true, email: true } }, package: true, category: true } }),
+    prisma.storeOrder.count({ where }),
+  ]);
+}
+
+export const findPackageOrThrow = (tx: Db, id: string) => tx.storePackage.findUniqueOrThrow({ where: { id } });
+
+export const updatePackage = (tx: Db, id: string, data: Prisma.StorePackageUpdateInput) => tx.storePackage.update({ where: { id }, data });

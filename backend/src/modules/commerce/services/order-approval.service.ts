@@ -1,5 +1,6 @@
 import { Role } from '@prisma/client';
-import { audit, text as adminText } from '../../admin/admin.service.js';
+import { audit } from '../../../common/audit/admin-audit.js';
+import { text as adminText } from '../../../common/validation/admin-input.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import * as promotionRepository from '../repositories/promotion.repository.js';
 import type { Db } from '../repositories/quota.repository.js';

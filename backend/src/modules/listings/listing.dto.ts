@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import type { z } from 'zod';
 import { publicLocation } from '../catalog/catalog.js';
 import type {
-  createListingBody, decisionBody, draftBody, favoritesQuery, feedQuery, mineQuery, recommendedQuery, statusBody,
+  adminDecisionBody, adminListingQuery, createListingBody, decisionBody, draftBody, favoritesQuery, feedQuery, mineQuery, recommendedQuery, statusBody,
 } from './listing.validator.js';
 
 /* ---------- Vào (suy ra từ schema) ---------- */
@@ -16,6 +16,8 @@ export type FeedQuery = z.output<typeof feedQuery>;
 export type RecommendedQuery = z.output<typeof recommendedQuery>;
 export type FavoritesQuery = z.output<typeof favoritesQuery>;
 export type ListingIdParams = { id: string };
+export type AdminListingQuery = z.output<typeof adminListingQuery>;
+export type AdminDecisionInput = z.output<typeof adminDecisionBody>;
 
 /* ---------- Ra ---------- */
 
@@ -63,3 +65,10 @@ export const toFeedItemDto = (listing: ListingRecord, extra: { distanceKm: numbe
   ({ ...toListingDto(listing), ...extra });
 
 export type ListingDto = ReturnType<typeof toListingDto>;
+
+/** Cột tin trả cho trang quản trị (/admin/listings, đối tượng của báo cáo); trả nguyên bản ghi, không qua DTO */
+export const adminListingSelect = {
+  id: true, title: true, description: true, price: true, status: true, images: true, reviewReason: true,
+  updatedAt: true, categoryId: true, ownerId: true, condition: true,
+  owner: { select: { id: true, fullName: true } }, category: { select: { id: true, name: true } },
+} as const satisfies Prisma.ListingSelect;

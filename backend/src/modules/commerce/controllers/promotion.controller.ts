@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { created, ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
-import type { IdParams, PromotionPackageInput, PurchaseInput } from '../commerce.dto.js';
+import type { AdminOrderQuery, IdParams, PromotionPackageInput, PurchaseInput } from '../commerce.dto.js';
 import * as promotionService from '../services/promotion.service.js';
 
 export async function listPackages(_req: AuthRequest, res: Response) {
@@ -47,4 +47,10 @@ export async function rejectOrder(req: AuthRequest, res: Response) {
   const { params } = getInput<ValidatedInput<undefined, IdParams>>(res);
   await promotionService.rejectPromotionOrder(req.user!.userId, params.id, req.body?.reason);
   res.json({ success: true });
+}
+
+/* ---------- /admin/promotion-orders ---------- */
+
+export async function listOrders(_req: AuthRequest, res: Response) {
+  ok(res, await promotionService.listOrders(getInput<ValidatedInput<AdminOrderQuery>>(res).query));
 }

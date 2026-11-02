@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import adminRouter from './modules/admin/admin.route.js';
+import { adminRouter } from './modules/admin/index.js';
 import authRouter from './modules/auth/auth.route.js';
-import { catalogRouter } from './modules/catalog/catalog.js';
+import { catalogRouter } from './modules/catalog/index.js';
 import { homeRouter } from './modules/home/index.js';
 import { promotionRouter, storeRouter } from './modules/commerce/index.js';
 import { contentRouter } from './modules/content/index.js';

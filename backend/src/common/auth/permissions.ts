@@ -27,17 +27,21 @@ export const PERMISSION = {
   /** Gửi yêu cầu hỗ trợ: GET/POST /content/tickets, POST /content/tickets/:id/reply */
   SUPPORT_TICKET: 'support:ticket',
 
-  /** Vào khu quản trị /admin/* */
+  /** Vào khu quản trị /admin/*: /admin/me, /admin/dashboard, /admin/audit */
   ADMIN_ACCESS: 'admin:access',
+  /** Quản lý thành viên: /admin/users (cảnh cáo, tạm khóa, cấm, mở lại), xử lý /admin/reports */
+  USER_MANAGE: 'user:manage',
+  /** Quản lý danh mục và tình trạng: /admin/catalog, /admin/categories, /admin/conditions */
+  CATALOG_MANAGE: 'catalog:manage',
   /** Quản lý banner trang chủ: /home/admin/banners */
   BANNER_MANAGE: 'banner:manage',
-  /** Duyệt tin, xem tin chờ duyệt, xem ảnh tin của người khác */
+  /** Duyệt tin (/listings/admin/*, /admin/listings), xem ảnh tin của người khác */
   LISTING_MODERATE: 'listing:moderate',
-  /** Xử lý đơn mua gói cửa hàng: /stores/admin/orders */
+  /** Gói cửa hàng và đơn mua gói: /stores/admin/orders, /admin/store-packages, /admin/store-orders */
   STORE_ORDER_MANAGE: 'store:order-manage',
-  /** Quản lý gói và đơn đẩy tin: /promotions/packages, /promotions/admin/orders */
+  /** Quản lý gói và đơn đẩy tin: /promotions/packages, /promotions/admin/orders, /admin/promotion-orders */
   PROMOTION_MANAGE: 'promotion:manage',
-  /** Quản lý nội dung: tải ảnh bài viết, tài liệu kiến thức */
+  /** Quản lý nội dung: ảnh bài viết, /admin/posts, /admin/knowledge, /admin/tickets */
   CONTENT_MANAGE: 'content:manage',
 } as const;
 
@@ -61,6 +65,8 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
   [Role.ADMIN]: [
     PERMISSION.PROFILE_READ,
     PERMISSION.ADMIN_ACCESS,
+    PERMISSION.USER_MANAGE,
+    PERMISSION.CATALOG_MANAGE,
     PERMISSION.BANNER_MANAGE,
     PERMISSION.LISTING_MODERATE,
     PERMISSION.STORE_ORDER_MANAGE,

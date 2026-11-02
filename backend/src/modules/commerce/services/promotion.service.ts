@@ -1,7 +1,8 @@
 import { StoreTier } from '@prisma/client';
-import { audit } from '../../admin/admin.service.js';
+import { audit } from '../../../common/audit/admin-audit.js';
+import { ADMIN_PAGE_SIZE } from '../../../common/validation/admin-input.js';
 import { AppError } from '../../../common/errors/app-error.js';
-import type { PromotionPackageInput, PurchaseInput } from '../commerce.dto.js';
+import type { AdminOrderQuery, PromotionPackageInput, PurchaseInput } from '../commerce.dto.js';
 import { DAY_MS } from '../commerce.type.js';
 import * as promotionRepository from '../repositories/promotion.repository.js';
 import { assertBuyerActive, assertPending, auditDecision, markConfirmed, rejectOrder } from './order-approval.service.js';
@@ -111,3 +112,11 @@ export async function confirmOrder(actorId: string, id: string, reason: unknown)
 }
 
 export const rejectPromotionOrder = (actorId: string, id: string, reason: unknown) => rejectOrder('PROMOTION_ORDER', actorId, id, reason);
+
+/* ---------- Quản trị (/admin/promotion-orders) ---------- */
+
+/** Đơn đẩy tin, 25 đơn mỗi trang */
+export async function listOrders({ page, status }: AdminOrderQuery) {
+  const [items, total] = await promotionRepository.findOrderPage(status, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+  return { items, total, page };
+}

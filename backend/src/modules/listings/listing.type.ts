@@ -33,3 +33,7 @@ export const IMAGE_PREFIX = '/api/v1/listings/media/';
 export const MAX_IMAGES = 20;
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export const IMAGE_NAME = /^[0-9a-f-]{36}\.(jpg|png|webp)$/;
+
+/** Quyết định của admin trên một tin: duyệt / từ chối / yêu cầu sửa khi PENDING, gỡ khi AVAILABLE */
+export const MODERATION_ACTIONS = ['APPROVE', 'REJECT', 'REQUEST_CHANGES', 'REMOVE'] as const;
+export type ModerationAction = (typeof MODERATION_ACTIONS)[number];

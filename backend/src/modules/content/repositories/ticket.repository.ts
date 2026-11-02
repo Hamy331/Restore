@@ -25,3 +25,24 @@ export const touch = (tx: Db, id: string) => tx.supportTicket.update({ where: { 
 
 export const createUserMessage = (tx: Db, ticketId: string, authorId: string, content: string) =>
   tx.supportMessage.create({ data: { ticketId, authorId, isAdmin: false, content } });
+
+/* ---------- Quản trị ---------- */
+
+/** Mọi yêu cầu hỗ trợ kèm tin nhắn, cập nhật gần nhất trước */
+export const findPage = (skip: number, take: number) =>
+  prisma.$transaction([
+    prisma.supportTicket.findMany({ skip, take, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], include: { messages: { orderBy: { createdAt: 'asc' } } } }),
+    prisma.supportTicket.count(),
+  ]);
+
+/** Đánh dấu có hoạt động mới khi yêu cầu còn mở và updatedAt như lúc đọc; trả về số dòng đổi */
+export async function touchOpenWhereVersion(tx: Db, id: string, updatedAt: Date) {
+  return (await tx.supportTicket.updateMany({ where: { id, status: 'OPEN', updatedAt }, data: { updatedAt: new Date() } })).count;
+}
+
+export const createAdminMessage = (tx: Db, ticketId: string, authorId: string, content: string) =>
+  tx.supportMessage.create({ data: { ticketId, authorId, isAdmin: true, content } });
+
+export async function setStatusWhereVersion(tx: Db, id: string, updatedAt: Date, status: 'OPEN' | 'RESOLVED') {
+  return (await tx.supportTicket.updateMany({ where: { id, updatedAt }, data: { status } })).count;
+}

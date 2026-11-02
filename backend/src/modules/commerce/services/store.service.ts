@@ -1,6 +1,8 @@
 import { StoreTier } from '@prisma/client';
 import { AppError } from '../../../common/errors/app-error.js';
-import type { StoreOrderInput } from '../commerce.dto.js';
+import { audit } from '../../../common/audit/admin-audit.js';
+import { ADMIN_PAGE_SIZE } from '../../../common/validation/admin-input.js';
+import type { AdminOrderQuery, StoreOrderInput, StorePackageInput } from '../commerce.dto.js';
 import { MONTH_MS, PURCHASABLE_STORE_TIERS } from '../commerce.type.js';
 import * as storeRepository from '../repositories/store.repository.js';
 import { transaction } from '../repositories/quota.repository.js';
@@ -76,3 +78,26 @@ export async function confirmOrder(actorId: string, id: string, reason: unknown)
 }
 
 export const rejectStoreOrder = (actorId: string, id: string, reason: unknown) => rejectOrder('STORE_ORDER', actorId, id, reason);
+
+/* ---------- Quản trị (/admin/store-packages, /admin/store-orders) ---------- */
+
+export const listAllPackages = () => storeRepository.findAllPackages();
+
+/** Đơn mua gói, 25 đơn mỗi trang */
+export async function listOrders({ page, status }: AdminOrderQuery) {
+  const [items, total] = await storeRepository.findOrderPage(status, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+  return { items, total, page };
+}
+
+/** Sửa gói cửa hàng; gói PERSONAL phải miễn phí, không ưu tiên, không kèm lượt đẩy tin. Ghi AdminAudit. */
+export function updatePackage(actorId: string, id: string, data: StorePackageInput) {
+  return withQuotaTransaction(async (tx) => {
+    const old = await storeRepository.findPackageOrThrow(tx, id);
+    if (old.tier === StoreTier.PERSONAL && (data.monthlyPrice !== '0' || data.priorityLevel !== 0 || data.monthlyPromotionQuota !== 0)) {
+      throw new AppError(400, 'INVALID_PERSONAL_PACKAGE', 'Gói cá nhân phải miễn phí, không có ưu tiên hoặc quảng cáo kèm gói.');
+    }
+    const item = await storeRepository.updatePackage(tx, id, data);
+    await audit(tx, actorId, 'UPDATE', 'STORE_PACKAGE', id, data.name, old, item);
+    return item;
+  });
+}

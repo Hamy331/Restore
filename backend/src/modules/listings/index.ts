@@ -20,3 +20,5 @@ listingsRouter.use(listingRouter);
 
 export { imageExtension } from './services/image.service.js';
 export type { ListingDto } from './listing.dto.js';
+export { default as listingsAdminRouter } from './routes/admin-listing.route.js';
+export { getAdminListing, moderate } from './services/moderation.service.js';
