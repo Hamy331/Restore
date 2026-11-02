@@ -1,6 +1,6 @@
 import { Prisma, StoreTier } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 
 export const utcDayStart = (date: Date) =>
   new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));

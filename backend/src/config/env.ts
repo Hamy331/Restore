@@ -1,4 +1,4 @@
-import { AppError } from '../errors/app-error.js';
+import { AppError } from '../common/errors/app-error.js';
 
 export const getRequiredEnv = (name: string): string => {
   const value = process.env[name]?.trim();

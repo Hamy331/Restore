@@ -1,5 +1,5 @@
 import { ListingCondition, Prisma } from '@prisma/client';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 import { listingLocation } from '../catalog/catalog.js';
 
 export function listingInput(value: unknown, draft = false) {

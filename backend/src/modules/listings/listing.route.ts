@@ -1,11 +1,13 @@
+import { moderate, text as adminText } from '../admin/admin.service.js';
 import express, { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../../lib/prisma.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 import { ListingCondition, ListingStatus, Prisma, Role } from '@prisma/client';
 import { AuthRequest, authorizeRoles, verifyToken } from '../../middlewares/auth.middleware.js';
 import { storePackageForUser, storeUsage, withQuotaTransaction } from '../stores/store.service.js';
 import { listingInput, validateAttributes } from './listing-input.js';
-import { listingQuery } from './listing-query.js';
+import { fields, output, visible } from './listing.mapper.js';
+export { listingFilters } from './listing.filters.js';
 import { coordinates } from '../catalog/catalog.js';
 import { publicLocation } from '../catalog/catalog.js';
 import { randomUUID } from 'node:crypto';
@@ -38,23 +40,6 @@ export function orderedImages(value: unknown, current: string[]): string[] {
   }
   return value as string[];
 }
-const visible = { status: 'AVAILABLE' as const, owner: { status: 'ACTIVE' as const } };
-const fields = {
-  id: true,
-  title: true,
-  description: true,
-  price: true,
-  isNegotiable: true,
-  ownerId: true, categoryId: true, status: true, updatedAt: true,
-  allowSale: true, allowExchange: true, exchangeWish: true, sellerType: true, attributes: true, location: true, reviewReason: true,
-  condition: true,
-  category: { select: { id: true, name: true } },
-  images: true,
-  createdAt: true,
-  viewCount: true,
-  publishedAt: true,
-  owner: { select: { id: true, fullName: true, ratingAverage: true, ratingCount: true } },
-} as const;
 
 function positiveInteger(value: unknown, fallback: number, max: number): number {
   if (value === undefined) return fallback;
@@ -68,54 +53,7 @@ function positiveInteger(value: unknown, fallback: number, max: number): number 
   return parsed;
 }
 
-export function listingFilters(query: Record<string, unknown>) {
-  const q = query.q;
-  const categoryId = query.categoryId;
-  const condition = query.condition;
-  const minPrice = query.minPrice;
-  const maxPrice = query.maxPrice;
-  if (q !== undefined && (typeof q !== 'string' || q.trim().length > 100)) {
-    throw new AppError(400, 'INVALID_QUERY', 'Từ khóa tìm kiếm không hợp lệ.');
-  }
-  if (categoryId !== undefined && (typeof categoryId !== 'string' || categoryId.length > 100)) {
-    throw new AppError(400, 'INVALID_QUERY', 'Danh mục không hợp lệ.');
-  }
-  if (condition !== undefined && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) {
-    throw new AppError(400, 'INVALID_QUERY', 'Tình trạng sản phẩm không hợp lệ.');
-  }
-  for (const value of [minPrice, maxPrice]) {
-    if (value !== undefined && (typeof value !== 'string' || !/^\d{1,12}$/.test(value))) {
-      throw new AppError(400, 'INVALID_QUERY', 'Khoảng giá không hợp lệ.');
-    }
-  }
-  if (minPrice !== undefined && maxPrice !== undefined && Number(minPrice) > Number(maxPrice)) {
-    throw new AppError(400, 'INVALID_QUERY', 'Giá thấp nhất phải nhỏ hơn giá cao nhất.');
-  }
-  let nearby: {latitude:number;longitude:number;radius:number} | undefined;
-  if (query.latitude != null || query.longitude != null) {
-    if(typeof query.latitude!=='string' || typeof query.longitude!=='string' || !query.latitude.trim() || !query.longitude.trim()) throw new AppError(400,'INVALID_QUERY','Cần đủ tọa độ để tìm gần bạn.');
-    const point=coordinates(Number(query.latitude),Number(query.longitude));
-    const radius=query.radiusKm==null?5:Number(query.radiusKm);
-    if(!Number.isFinite(radius)||radius<1||radius>100)throw new AppError(400,'INVALID_QUERY','Bán kính từ 1 đến 100 km.');
-    nearby={...point,radius};
-  }
-  if(query.allowExchange!=null && query.allowExchange!=='true' && query.allowExchange!=='false')throw new AppError(400,'INVALID_QUERY','Bộ lọc trao đổi không hợp lệ.');
-  return {
-    ...(nearby?{nearby}:{}), ...(query.allowExchange==='true'?{allowExchange:true}:{}),
-    q: typeof q === 'string' ? q.trim() : '',
-    categoryId: typeof categoryId === 'string' ? categoryId : '',
-    condition: typeof condition === 'string' ? condition as ListingCondition : null,
-    minPrice: typeof minPrice === 'string' ? minPrice : null,
-    maxPrice: typeof maxPrice === 'string' ? maxPrice : null,
-  };
-}
 
-export function output(listing: Prisma.ListingGetPayload<{ select: typeof fields }>, owner = false) {
-  const location = owner ? listing.location : publicLocation(listing.location);
-  const address = listing.location as {province?:{name?:string};ward?:{name?:string}} | null;
-  return { ...listing, price: listing.price.toString(), location,
-    areaLabel: address ? [address.ward?.name,address.province?.name].filter(Boolean).join(', ') : '' };
-}
 export function createInput(value: unknown) { const data = listingInput(value); return { ...data, categoryId: data.categoryId!, condition: data.condition! }; }
 export function draftInput(value: unknown) { return listingInput(value, true); }
 
@@ -143,8 +81,9 @@ router.post('/', verifyToken, authorizeRoles(Role.USER), async (req: AuthRequest
     const data = createInput(req.body);
     const listing = await withQuotaTransaction(async (tx) => {
       const now = new Date();
-      const category = await tx.category.findUnique({ where: { id: data.categoryId } });
+      const category = await tx.category.findFirst({ where: { id: data.categoryId, active:true } });
       if (!category) throw new AppError(400, 'INVALID_LISTING', 'Danh mục không tồn tại.', 'categoryId');
+      if(data.condition && (await tx.conditionPolicy.findUnique({where:{condition:data.condition}}))?.active===false)throw new AppError(400,'INVALID_CONDITION','Tình trạng đã ngừng sử dụng.');
       validateAttributes(data.attributes, category.metadata, true);
       const current = await storePackageForUser(tx, req.user!.userId, now);
       const usage = await storeUsage(tx, req.user!.userId, now);
@@ -189,7 +128,7 @@ router.put('/drafts/:id', verifyToken, authorizeRoles(Role.USER), async (req: Au
     const listing = await prisma.$transaction(async (tx) => {
       const current = await requireOwnedListing(tx, id, req.user!.userId);
       if (!['DRAFT','PENDING','REJECTED','AVAILABLE','HIDDEN'].includes(current.status)) throw new AppError(409, 'DRAFT_CHANGED', 'Tin này không còn sửa được.');
-      if (data.categoryId && !await tx.category.findUnique({ where: { id: data.categoryId } })) {
+      if (data.categoryId && !await tx.category.findFirst({ where: { id: data.categoryId, active:true } })) {
         throw new AppError(400, 'INVALID_DRAFT', 'Danh mục không tồn tại.', 'categoryId');
       }
       const category = data.categoryId ? await tx.category.findUnique({where:{id:data.categoryId}}) : null;
@@ -221,10 +160,11 @@ router.post('/drafts/:id/publish', verifyToken, authorizeRoles(Role.USER), async
         exchangeWish: current.exchangeWish, sellerType: current.sellerType, attributes: current.attributes,
         location: location ? Object.fromEntries(['provinceCode','wardCode','streetAddress','latitude','longitude','geoSource'].map((key)=>[key,location[key]])) : null,
       });
-      const category = await tx.category.findUnique({ where: { id: data.categoryId } });
+      const category = await tx.category.findFirst({ where: { id: data.categoryId, active:true } });
       if (!category) {
         throw new AppError(400, 'INVALID_LISTING', 'Danh mục không tồn tại.', 'categoryId');
       }
+      if(data.condition && (await tx.conditionPolicy.findUnique({where:{condition:data.condition}}))?.active===false)throw new AppError(400,'INVALID_CONDITION','Tình trạng đã ngừng sử dụng.');
       validateAttributes(data.attributes, category.metadata, true);
       const now = new Date();
       const plan = await storePackageForUser(tx, req.user!.userId, now);
@@ -259,36 +199,6 @@ router.delete('/drafts/:id', verifyToken, authorizeRoles(Role.USER), async (req:
       }
     }
     res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get('/', (req:AuthRequest,res,next)=>req.headers.authorization?verifyToken(req,res,next):next(), async (req: AuthRequest, res: Response, next: NextFunction) => {
-  try {
-    const page = positiveInteger(req.query.page, 1, 1000000);
-    const pageSize = positiveInteger(req.query.pageSize, 12, 50);
-    const filters = listingFilters(req.query);
-    const query=listingQuery(filters,new Date());
-    const [ranked,totals]=await prisma.$transaction([
-      prisma.$queryRaw<{id:string;distanceKm:number|null}[]>`${query} LIMIT ${pageSize} OFFSET ${(page-1)*pageSize}`,
-      prisma.$queryRaw<{n:number}[]>`SELECT COUNT(*)::int AS n FROM (${query}) ranked`,
-    ]);
-    const totalItems=totals[0]?.n??0;
-    const items = ranked.length
-      ? await prisma.listing.findMany({ where: { ...visible, id: { in: ranked.map((row) => row.id) } }, select: fields })
-      : [];
-    const byId = new Map(items.map((item) => [item.id, item]));
-    const favorites=req.user && ranked.length?await prisma.listingFavorite.findMany({where:{userId:req.user.userId,listingId:{in:ranked.map(row=>row.id)}},select:{listingId:true}}):[];
-    const favoriteIds=new Set(favorites.map(row=>row.listingId));
-    res.json({
-      success: true,
-      data: ranked.flatMap((row) => {
-        const item = byId.get(row.id);
-        return item ? [{...output(item),distanceKm:row.distanceKm,isFavorite:favoriteIds.has(item.id)}] : [];
-      }),
-      pagination: { page, pageSize, totalItems, totalPages: Math.ceil(totalItems / pageSize) },
-    });
   } catch (error) {
     next(error);
   }
@@ -428,10 +338,11 @@ router.put('/:id', verifyToken, authorizeRoles(Role.USER), async (req: AuthReque
       if (current.status !== ListingStatus.AVAILABLE && current.status !== ListingStatus.HIDDEN && current.status !== ListingStatus.REJECTED && current.status !== ListingStatus.PENDING) {
         throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị hoặc đã ẩn.');
       }
-      const category = await tx.category.findUnique({ where: { id: data.categoryId } });
+      const category = await tx.category.findFirst({ where: { id: data.categoryId, active:true } });
       if (!category) {
         throw new AppError(400, 'INVALID_LISTING', 'Danh mục không tồn tại.', 'categoryId');
       }
+      if(data.condition && (await tx.conditionPolicy.findUnique({where:{condition:data.condition}}))?.active===false)throw new AppError(400,'INVALID_CONDITION','Tình trạng đã ngừng sử dụng.');
       validateAttributes(data.attributes, category.metadata, true);
       await updateOwnedListing(tx, id, req.user!.userId, current.status, {...data,status:ListingStatus.PENDING,reviewReason:null});
       return tx.listing.findUniqueOrThrow({ where: { id }, select: { ...fields, status: true } });
@@ -475,37 +386,12 @@ router.patch('/:id/status', verifyToken, authorizeRoles(Role.USER), async (req: 
   }
 });
 
-router.get('/favorites',verifyToken,authorizeRoles(Role.USER),async(req:AuthRequest,res,next)=>{
- try{const rows=await prisma.listingFavorite.findMany({where:{userId:req.user!.userId,listing:visible},select:{listing:{select:fields}},take:100,orderBy:{createdAt:'desc'}});res.json({success:true,data:rows.map(row=>output(row.listing))});}catch(error){next(error);}
-});
-router.put('/:id/favorite',verifyToken,authorizeRoles(Role.USER),async(req:AuthRequest,res,next)=>{
- try{const listing=await prisma.listing.findFirst({where:{...visible,id:req.params.id as string},select:{id:true}});if(!listing)throw new AppError(404,'LISTING_NOT_FOUND','Tin không còn hiển thị.');const key={userId:req.user!.userId,listingId:listing.id};await prisma.listingFavorite.upsert({where:{userId_listingId:key},create:key,update:{}});res.json({success:true});}catch(error){next(error);}
-});
-router.get('/:id/favorite',verifyToken,authorizeRoles(Role.USER),async(req:AuthRequest,res,next)=>{
-  try { const favorite=await prisma.listingFavorite.findUnique({where:{userId_listingId:{userId:req.user!.userId,listingId:req.params.id as string}}});res.json({success:true,data:!!favorite}); } catch(error){next(error);}
-});
-router.delete('/:id/favorite',verifyToken,authorizeRoles(Role.USER),async(req:AuthRequest,res,next)=>{
- try{await prisma.listingFavorite.deleteMany({where:{userId:req.user!.userId,listingId:req.params.id as string}});res.status(204).send();}catch(error){next(error);}
-});
-
-router.get('/recommended', (req:AuthRequest,res,next)=>req.headers.authorization?verifyToken(req,res,next):next(), async (req:AuthRequest,res,next) => {
-  try {
-    const items = await prisma.listing.findMany({where:{...visible,promotions:{some:{startsAt:{lte:new Date()},endsAt:{gt:new Date()},package:{kind:'FEATURED'}}}},select:fields,take:10,orderBy:{publishedAt:'desc'}});
-    const favorites=req.user?await prisma.listingFavorite.findMany({where:{userId:req.user.userId,listingId:{in:items.map(item=>item.id)}},select:{listingId:true}}):[];
-    const ids=new Set(favorites.map(row=>row.listingId));
-    res.json({success:true,data:items.map(item=>({...output(item),isFeatured:true,isFavorite:ids.has(item.id)}))});
-  } catch(error) {next(error);}
-});
 router.post('/admin/:id/decision', verifyToken, authorizeRoles(Role.ADMIN), async (req: AuthRequest,res,next) => {
   try {
     const {decision,reason,updatedAt}=req.body??{};
     const expected=typeof updatedAt==='string'?new Date(updatedAt):null;
     if (!['APPROVED','REJECTED'].includes(decision) || !expected || Number.isNaN(+expected) || (decision==='REJECTED' && (typeof reason!=='string'||reason.trim().length<5||reason.length>300))) throw new AppError(400,'INVALID_DECISION','Quyết định không hợp lệ.');
-    const current=await prisma.listing.findFirst({where:{id:req.params.id as string,status:'PENDING'}});
-    if(!current) throw new AppError(404,'LISTING_NOT_FOUND','Không tìm thấy tin chờ duyệt.');
-    if(decision==='APPROVED' && !current.images.length) throw new AppError(400,'INVALID_LISTING','Tin cần ít nhất một ảnh.');
-    const changed=await prisma.listing.updateMany({where:{id:current.id,status:'PENDING',updatedAt:expected},data:{status:decision==='APPROVED'?'AVAILABLE':'REJECTED',reviewReason:decision==='REJECTED'?reason.trim():null}});
-    if(!changed.count) throw new AppError(409,'LISTING_CHANGED','Tin đã thay đổi; tải lại trước khi duyệt.');
+    await withQuotaTransaction(tx => moderate(tx,req.user!.userId,String(req.params.id),decision==='APPROVED'?'APPROVE':'REJECT',adminText(reason??'','reason',decision==='APPROVED'?0:5,300),expected));
     res.json({success:true});
   } catch(error){next(error);}
 });

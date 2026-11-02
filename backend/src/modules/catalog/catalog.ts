@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { Router } from 'express';
 import { prisma } from '../../lib/prisma.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 
 export type Unit = { code: string; name: string; level: string; parentCode?: string;
   center?: { latitude: number; longitude: number } };
@@ -54,9 +54,10 @@ export function distanceKm(a: {latitude: number; longitude: number}, b: {latitud
 }
 
 export const catalogRouter = Router();
+catalogRouter.get('/conditions',async(_req,res,next)=>{try{res.json({success:true,data:await prisma.conditionPolicy.findMany({where:{active:true},orderBy:{condition:'asc'}})});}catch(error){next(error);}});
 catalogRouter.get('/categories', async (_req, res, next) => {
   try {
-    const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
+    const categories = await prisma.category.findMany({ where: {active:true}, orderBy: { name: 'asc' } });
     const order=new Map(catalog.categories.map((item,index)=>[item.id,index]));
     categories.sort((a,b)=>(order.get(a.id)??Number.MAX_SAFE_INTEGER)-(order.get(b.id)??Number.MAX_SAFE_INTEGER));
     res.json({ success: true, data: categories.map((category) => {
@@ -82,5 +83,3 @@ catalogRouter.get('/locations/reverse-geocode', (req, res, next) => {
     res.json({ success: true, data: { province: catalog.provinces.find((unit) => unit.code === ward.parentCode), ward }, coverage: 'sample' });
   } catch (error) { next(error); }
 });
-catalogRouter.get('/home/area', (_req, res) => res.json({ success: true, data: { name: 'Toàn quốc' } }));
-catalogRouter.get('/home/banners', (_req, res) => res.json({ success: true, data: [] }));
