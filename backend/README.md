@@ -364,7 +364,7 @@ Làm từng commit nhỏ, không đổi URL và định dạng JSON. Trước v�
 | C22 | `auth` sang mẫu phẳng, đầu vào bằng zod (`auth.validator.ts`, giữ lỗi 422 theo trường); bỏ `parsers.ts`, `pagination.ts`, `authorizeRoles`, `requireAuth` | ✅ |
 | C23 | `catalog` sang mẫu phẳng; danh mục, tình trạng, gói vào `prisma/seed.ts` (`npm run db:seed`); tỉnh/phường thành `catalog.data.ts`, bỏ `catalog.json` | ✅ |
 | C24 | `services/storage.service.ts`: driver `disk` (mặc định) / `supabase`, ảnh tin và ảnh nội dung đi qua service | ✅ |
-| C25 | Chuyển ảnh cũ trong `uploads/` lên bucket | |
+| C25 | `npm run storage:migrate`: chép ảnh cũ trong `uploads/` lên bucket (URL trong DB không đổi) | ✅ |
 | C26 | `wanted-alerts`: gắn router, bỏ code chết | |
 
 Còn lại ngoài lộ trình: bỏ `docker-compose.yml` (dùng `supabase start`), thêm `npm test` và `prisma migrate diff` vào `.github/workflows/backend_ci.yml`.
@@ -430,6 +430,14 @@ Chạy local bằng Supabase CLI thì dùng:
 DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 DIRECT_URL="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 ```
+
+### Chuyển ảnh từ ổ đĩa lên Supabase Storage
+
+1. Tạo bucket **private** (mặc định tên `media`) trong Supabase Dashboard, điền `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` trong `.env`.
+2. `npm run storage:migrate -- --dry-run`: đếm file trong `uploads/listings`, `uploads/admin`, đối chiếu với ảnh tin và ảnh bìa bài viết trong DB, báo ảnh DB đang dùng nhưng đã mất trên ổ đĩa.
+3. `npm run storage:migrate`: chép lên bucket với cùng tên (`listings/<file>`, `admin/<file>`). Chạy lại an toàn, file đã có thì bỏ qua; có lỗi thì exit code 1.
+4. Đặt `STORAGE_DRIVER=supabase`, khởi động lại server. URL ảnh trong DB là đường dẫn API nên không cần sửa.
+5. Kiểm tra app hiển thị ảnh bình thường rồi mới xóa `uploads/` (script không xóa gì).
 
 ## 4. Database
 

@@ -3,7 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { contentTypeOf, getObject, putObject, removeObject, storageDriver, validateStorageEnvironment } from './storage.service.js';
+import { contentTypeOf, getObject, listDiskObjects, putObject, removeObject, storageDriver, validateStorageEnvironment } from './storage.service.js';
 
 const ENV_KEYS = ['STORAGE_DRIVER', 'STORAGE_DISK_ROOT', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_STORAGE_BUCKET'];
 
@@ -38,7 +38,9 @@ test('disk driver: put, get, remove; missing file reads as null', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'storage-'));
   try {
     await withEnv({ STORAGE_DISK_ROOT: root }, async () => {
+      assert.deepEqual(await listDiskObjects('listings'), []);
       await putObject('listings', 'a.png', Buffer.from('png'));
+      assert.deepEqual(await listDiskObjects('listings'), ['a.png']);
       assert.equal((await getObject('listings', 'a.png'))?.toString(), 'png');
       await assert.rejects(putObject('listings', 'a.png', Buffer.from('again')), { code: 'EEXIST' });
       await removeObject('listings', 'a.png');
@@ -62,6 +64,9 @@ test('supabase driver calls the Storage REST API with the service key', async ()
     }
     if (call.method === 'GET') return new Response(new Uint8Array([1, 2, 3]));
     if (call.method === 'POST' && call.url.endsWith('/fail.jpg')) return new Response('boom', { status: 500 });
+    if (call.method === 'POST' && call.url.endsWith('/dup.jpg')) {
+      return new Response('{"statusCode":"409","error":"Duplicate","message":"The resource already exists"}', { status: 400 });
+    }
     return new Response('{}');
   }) as typeof fetch;
   try {
@@ -71,6 +76,7 @@ test('supabase driver calls the Storage REST API with the service key', async ()
       assert.equal(await getObject('admin', 'missing.jpg'), null);
       await removeObject('admin', 'x.webp');
       await assert.rejects(putObject('admin', 'fail.jpg', Buffer.from('f')), /500 boom/);
+      await assert.rejects(putObject('admin', 'dup.jpg', Buffer.from('d')), { code: 'EEXIST' });
     });
   } finally {
     globalThis.fetch = realFetch;

@@ -34,6 +34,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
+    "storage:migrate": "tsx scripts/migrate-images.ts",
     "test:api": "node --import tsx --test --test-concurrency=1 \"test/api/*.api.test.ts\""
   },
   "prisma": {
