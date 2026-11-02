@@ -31,6 +31,7 @@
     "test": "node --import tsx --test \"src/**/*.test.ts\"",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test:api": "node --import tsx --test --test-concurrency=1 \"test/api/*.api.test.ts\""
   }
 }
