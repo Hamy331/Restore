@@ -55,8 +55,12 @@ export const countByOwner = (ownerId: string) =>
 
 export const findMine = (ownerId: string, status: ListingStatus | undefined, skip: number, take: number) => {
   const where = { ownerId, ...(status ? { status } : {}) };
+  // Tin nháp: cái vừa sửa lên đầu để soạn tiếp
+  const orderBy = status === ListingStatus.DRAFT
+    ? [{ updatedAt: 'desc' as const }, { id: 'desc' as const }]
+    : [{ createdAt: 'desc' as const }, { id: 'desc' as const }];
   return prisma.$transaction([
-    prisma.listing.findMany({ where, select: listingSelect, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], skip, take }),
+    prisma.listing.findMany({ where, select: listingSelect, orderBy, skip, take }),
     prisma.listing.count({ where }),
   ]);
 };

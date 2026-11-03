@@ -17,6 +17,7 @@ import 'package:restore/modules/listings/views/basic_info/basic_info_view.dart';
 import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
 import 'package:restore/modules/listings/views/listing_details/listing_details_view.dart';
 import 'package:restore/modules/listings/views/listing_preview/listing_preview_view.dart';
+import 'package:restore/modules/listings/views/listing_drafts/listing_drafts_view.dart';
 import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
@@ -159,7 +160,8 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
                       : ApiPostingQuotaRepository(),
                 )
                 ..add(const CategoriesRequested())
-                ..add(const PostingQuotaRequested()),
+                ..add(const PostingQuotaRequested())
+                ..add(const DraftsRequested()),
           child: child,
         ),
       ),
@@ -183,6 +185,14 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
           pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
             state: state,
             child: const ListingDetailsView(),
+          ),
+        ),
+        // Tin nháp: soạn tiếp tin đã lưu (mở từ bước 1 hoặc trang Tài khoản)
+        GoRoute(
+          path: ListingDraftsView.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const ListingDraftsView(),
           ),
         ),
         GoRoute(

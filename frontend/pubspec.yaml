@@ -41,6 +41,7 @@ dependencies:
   # Utils
   flutter_screenutil: ^5.9.0
   image_picker: ^1.1.2
+  path_provider: ^2.1.5
   geolocator: ^14.0.2
   # State management
   dio: ^5.11.1

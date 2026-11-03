@@ -49,6 +49,7 @@ commerceAdminRouter.get('/promotion-orders', managePromotions, validate({ query:
  *  - monthlyPrice: string - số nguyên VND, tối đa 12 chữ số
  *  - dailyListingLimit: number (1-10000)
  *  - activeListingLimit: number (1-100000)
+ *  - draftLimit?: number (1-1000) - số tin nháp giữ cùng lúc, bỏ trống thì giữ nguyên
  *  - monthlyPromotionQuota: number (0-10000)
  *  - priorityLevel: number (0-10)
  *

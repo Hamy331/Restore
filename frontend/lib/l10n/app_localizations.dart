@@ -4867,6 +4867,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your session has expired. Please sign in again.'**
   String get authSessionExpired;
+
+  /// No description provided for @draftsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts'**
+  String get draftsTitle;
+
+  /// No description provided for @draftsBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue a draft'**
+  String get draftsBannerTitle;
+
+  /// No description provided for @draftsBannerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpublished listings: {count}'**
+  String draftsBannerMessage(String count);
+
+  /// No description provided for @draftsBannerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get draftsBannerAction;
+
+  /// No description provided for @draftUntitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get draftUntitled;
+
+  /// No description provided for @draftNoCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'No category yet'**
+  String get draftNoCategory;
+
+  /// No description provided for @draftEditedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited {time}'**
+  String draftEditedAt(String time);
+
+  /// No description provided for @draftPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo} other{{count} photos}}'**
+  String draftPhotoCount(int count);
+
+  /// No description provided for @draftsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No drafts yet'**
+  String get draftsEmptyTitle;
+
+  /// No description provided for @draftsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'While posting, tap Save draft to finish it later.'**
+  String get draftsEmptyMessage;
+
+  /// No description provided for @draftsLoadFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load drafts'**
+  String get draftsLoadFailedTitle;
+
+  /// No description provided for @draftsLoadFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get draftsLoadFailedMessage;
+
+  /// No description provided for @draftOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this draft. It may have been published or deleted'**
+  String get draftOpenFailed;
+
+  /// No description provided for @draftDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete draft?'**
+  String get draftDeleteTitle;
+
+  /// No description provided for @draftDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The draft and its uploaded photos will be deleted permanently.'**
+  String get draftDeleteMessage;
+
+  /// No description provided for @draftDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete draft'**
+  String get draftDeleteConfirm;
+
+  /// No description provided for @draftDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft deleted'**
+  String get draftDeleted;
+
+  /// No description provided for @draftDeletedNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted draft “{title}”'**
+  String draftDeletedNamed(String title);
+
+  /// No description provided for @draftDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete the draft, please try again'**
+  String get draftDeleteFailed;
+
+  /// No description provided for @leaveDraftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save before leaving?'**
+  String get leaveDraftTitle;
+
+  /// No description provided for @leaveDraftMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Save a draft to finish it later.'**
+  String get leaveDraftMessage;
+
+  /// No description provided for @leaveDraftSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft and leave'**
+  String get leaveDraftSave;
+
+  /// No description provided for @leaveDraftDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave without saving'**
+  String get leaveDraftDiscard;
+
+  /// No description provided for @draftLimitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{limit} drafts reached'**
+  String draftLimitTitle(int limit);
+
+  /// No description provided for @draftLimitTitleUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft limit reached'**
+  String get draftLimitTitleUnknown;
+
+  /// No description provided for @draftLimitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account can keep up to {limit} drafts. Publish or delete an old draft to save this one.'**
+  String draftLimitMessage(int limit);
+
+  /// No description provided for @draftLimitMessageUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has reached its draft limit. Publish or delete an old draft to save this one.'**
+  String get draftLimitMessageUnknown;
+
+  /// No description provided for @draftLimitViewDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'View drafts'**
+  String get draftLimitViewDrafts;
+
+  /// No description provided for @draftsQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'{used}/{limit} drafts'**
+  String draftsQuota(int used, int limit);
+
+  /// No description provided for @listingImageTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'A photo is too large (max 5 MB). Remove it or pick another one.'**
+  String get listingImageTooLarge;
+
+  /// No description provided for @listingImageUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'A photo has an unsupported format (JPEG, PNG or WebP only). Remove it or pick another one.'**
+  String get listingImageUnsupported;
+
+  /// No description provided for @listingImageMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo is no longer on this device and was removed} other{{count} photos are no longer on this device and were removed}}. Pick them again, then save.'**
+  String listingImageMissing(int count);
+
+  /// No description provided for @listingSaveNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the server. What was saved is kept, please try again.'**
+  String get listingSaveNetworkError;
 }
 
 class _AppLocalizationsDelegate

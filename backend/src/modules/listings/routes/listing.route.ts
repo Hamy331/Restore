@@ -27,7 +27,7 @@ listingRouter.post('/', manageOwn, validate({ body: createListingBody }), listin
 listingRouter.get('/summary', manageOwn, listingController.summary);
 
 /**
- * Tin của tôi, mới tạo trước
+ * Tin của tôi, mới tạo trước (status=DRAFT: vừa sửa trước)
  *
  * Query params:
  *  - page?: number (mặc định 1)

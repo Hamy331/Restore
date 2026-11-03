@@ -1464,5 +1464,97 @@
   "postComposerNoListings": "You have no active listings to attach yet",
   "postComposerError": "Couldn't publish your post, please try again",
   "postComposerPosted": "Your post is live on the feed",
-  "authSessionExpired": "Your session has expired. Please sign in again."
+  "authSessionExpired": "Your session has expired. Please sign in again.",
+  "draftsTitle": "Drafts",
+  "draftsBannerTitle": "Continue a draft",
+  "draftsBannerMessage": "Unpublished listings: {count}",
+  "@draftsBannerMessage": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "draftsBannerAction": "View",
+  "draftUntitled": "Untitled",
+  "draftNoCategory": "No category yet",
+  "draftEditedAt": "Edited {time}",
+  "@draftEditedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "draftPhotoCount": "{count, plural, =1{1 photo} other{{count} photos}}",
+  "@draftPhotoCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "draftsEmptyTitle": "No drafts yet",
+  "draftsEmptyMessage": "While posting, tap Save draft to finish it later.",
+  "draftsLoadFailedTitle": "Couldn't load drafts",
+  "draftsLoadFailedMessage": "Check your connection and try again.",
+  "draftOpenFailed": "Couldn't open this draft. It may have been published or deleted",
+  "draftDeleteTitle": "Delete draft?",
+  "draftDeleteMessage": "The draft and its uploaded photos will be deleted permanently.",
+  "draftDeleteConfirm": "Delete draft",
+  "draftDeleted": "Draft deleted",
+  "draftDeletedNamed": "Deleted draft “{title}”",
+  "@draftDeletedNamed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "draftDeleteFailed": "Couldn't delete the draft, please try again",
+  "leaveDraftTitle": "Save before leaving?",
+  "leaveDraftMessage": "You have unsaved changes. Save a draft to finish it later.",
+  "leaveDraftSave": "Save draft and leave",
+  "leaveDraftDiscard": "Leave without saving",
+  "draftLimitTitle": "{limit} drafts reached",
+  "@draftLimitTitle": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "draftLimitTitleUnknown": "Draft limit reached",
+  "draftLimitMessage": "Your account can keep up to {limit} drafts. Publish or delete an old draft to save this one.",
+  "@draftLimitMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "draftLimitMessageUnknown": "Your account has reached its draft limit. Publish or delete an old draft to save this one.",
+  "draftLimitViewDrafts": "View drafts",
+  "draftsQuota": "{used}/{limit} drafts",
+  "@draftsQuota": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "listingImageTooLarge": "A photo is too large (max 5 MB). Remove it or pick another one.",
+  "listingImageUnsupported": "A photo has an unsupported format (JPEG, PNG or WebP only). Remove it or pick another one.",
+  "listingImageMissing": "{count, plural, =1{1 photo is no longer on this device and was removed} other{{count} photos are no longer on this device and were removed}}. Pick them again, then save.",
+  "@listingImageMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "listingSaveNetworkError": "Couldn't reach the server. What was saved is kept, please try again."
 }

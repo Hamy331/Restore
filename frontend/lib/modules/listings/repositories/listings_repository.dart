@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:restore/modules/home/data/home_mock_data.dart';
 import 'package:restore/shared/models/geo_point.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/category_model.dart';
 import '../data/mock_posting_quota_store.dart';
+import '../models/draft_quota.dart';
 import '../models/listing_draft.dart';
 import '../models/posting_quota.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
@@ -21,6 +23,9 @@ abstract class ListingsRepository {
   Future<ListingModel> detail(String id);
   Future<void> changeStatus(String id, ListingStatus status);
   Future<void> deleteDraft(String id);
+
+  /// Số tin nháp đang giữ và giới hạn của gói
+  Future<DraftQuota> draftQuota();
   Future<PagedResult<ListingModel>> browse({
     int page = 1,
     String q = '',
@@ -57,13 +62,21 @@ class MockListingsRepository implements ListingsRepository {
     sellerName: 'Bạn',
     exchangeWish: draft.exchangeWish,
     sellerType: draft.sellerType.name.toUpperCase(),
+    updatedAt: draft.updatedAt,
   );
   @override
   Future<PagedResult<ListingModel>> mine({int page = 1, String? status}) async {
-    final rows = _store.values
-        .where((draft) => status == null || draft.status.apiValue == status)
-        .map(_model)
-        .toList();
+    final rows =
+        _store.values
+            .where((draft) => status == null || draft.status.apiValue == status)
+            .map(_model)
+            .toList()
+          // Giống API: mới sửa trước
+          ..sort(
+            (a, b) => (b.updatedAt ?? DateTime(0)).compareTo(
+              a.updatedAt ?? DateTime(0),
+            ),
+          );
     return PagedResult(
       items: rows.skip((page - 1) * 20).take(20).toList(),
       page: page,
@@ -129,6 +142,14 @@ class MockListingsRepository implements ListingsRepository {
   Future<ListingDraft> getDraft(String id) async =>
       _store[id] ?? (throw StateError('Không tìm thấy nháp.'));
 
+  @override
+  Future<DraftQuota> draftQuota() async => DraftQuota(
+    used: _store.values
+        .where((draft) => draft.status == ListingStatus.draft)
+        .length,
+    limit: DraftQuota.personalLimit,
+  );
+
   String _newId() => 'listing_${DateTime.now().microsecondsSinceEpoch}';
 
   @override
@@ -137,6 +158,11 @@ class MockListingsRepository implements ListingsRepository {
     CategoryModel? category,
   ) async {
     await Future<void>.delayed(latency);
+    // Backend cũng chặn khi đã giữ đủ số tin nháp của gói
+    if (_store[draft.id]?.status != ListingStatus.draft &&
+        (await draftQuota()).isFull) {
+      throw ListingSaveException(draft, const DraftLimitReachedException());
+    }
     final saved = draft.copyWith(
       id: draft.id ?? _newId(),
       status: ListingStatus.draft,
@@ -175,28 +201,84 @@ class MockListingsRepository implements ListingsRepository {
   }
 }
 
+/// Ảnh không tải lên được vì [problem]; báo trước khi gửi lên máy chủ
+class ListingImageException implements Exception {
+  const ListingImageException(this.problem, {this.paths = const []});
+  final ListingImageProblem problem;
+
+  /// Ảnh trên máy gây lỗi (VD file ảnh đã bị xóa khỏi máy)
+  final List<String> paths;
+
+  @override
+  String toString() => 'ListingImageException($problem, $paths)';
+}
+
+/// [missing]: file ảnh đã chọn không còn trên máy (bộ nhớ tạm bị dọn)
+enum ListingImageProblem { tooLarge, unsupported, missing }
+
+/// Lưu / đăng tin lỗi giữa chừng. [draft] là bản đã lưu được tới lúc lỗi
+/// (đã có id, ảnh đã tải) để thử lại không tạo tin trùng, không tải lại ảnh.
 class ListingSaveException implements Exception {
   const ListingSaveException(this.draft, this.cause);
   final ListingDraft draft;
   final Object cause;
 
+  /// Ảnh quá lớn / sai định dạng
+  ListingImageProblem? get imageProblem {
+    final error = cause;
+    return error is ListingImageException ? error.problem : null;
+  }
+
+  /// Ảnh trên máy gây lỗi, VD ảnh không còn trên máy để bỏ khỏi tin
+  List<String> get imagePaths {
+    final error = cause;
+    return error is ListingImageException ? error.paths : const [];
+  }
+
+  /// Không tới được máy chủ hoặc chờ quá lâu
+  bool get isNetworkError {
+    final error = cause;
+    return error is DioException &&
+        const {
+          DioExceptionType.connectionTimeout,
+          DioExceptionType.sendTimeout,
+          DioExceptionType.receiveTimeout,
+          DioExceptionType.connectionError,
+        }.contains(error.type);
+  }
+
+  /// Câu báo lỗi máy chủ trả về (`error`), nếu có
+  String? get serverMessage {
+    final error = cause;
+    if (error is! DioException) return null;
+    final data = error.response?.data;
+    final message = data is Map ? data['error'] : null;
+    return message is String && message.trim().isNotEmpty ? message : null;
+  }
+
+  @override
+  String toString() => 'ListingSaveException(${draft.id}, $cause)';
+
   /// Chuyên mục đã đủ số tin cho phép (API trả 409 `POSTING_LIMIT_REACHED`)
   bool get isPostingLimitReached {
     final error = cause;
     if (error is PostingLimitReachedException) return true;
-    if (error is! DioException || error.response?.statusCode != 409) {
-      return false;
-    }
-    final data = error.response?.data;
-    return data is Map && data['code'] == PostingLimitReachedException.code;
+    return _conflictCode == PostingLimitReachedException.code;
   }
 
-  String get message {
+  /// Đã giữ đủ số tin nháp của gói (API trả 409 `DRAFT_LIMIT_REACHED`)
+  bool get isDraftLimitReached {
+    if (cause is DraftLimitReachedException) return true;
+    return _conflictCode == DraftLimitReachedException.code;
+  }
+
+  String? get _conflictCode {
     final error = cause;
-    if (error is DioException && error.response?.data is Map) {
-      return '${(error.response!.data as Map)['error'] ?? 'Không lưu được tin.'}';
+    if (error is! DioException || error.response?.statusCode != 409) {
+      return null;
     }
-    return 'Không lưu được tin. Ảnh đã tải và ID nháp được giữ để thử lại.';
+    final data = error.response?.data;
+    return data is Map ? '${data['code']}' : null;
   }
 }
 
@@ -333,6 +415,22 @@ class ApiListingsRepository implements ListingsRepository {
     void Function(ListingDraft) onProgress,
   ) async {
     final id = Uri.encodeComponent(working.id!);
+    // Đọc hết ảnh trên máy trước khi đổi gì trên máy chủ: thiếu ảnh nào thì
+    // báo đủ một lần để người dùng chọn lại
+    final local = <String, Uint8List>{};
+    final missing = <String>[];
+    for (final image in working.images) {
+      if (_remotePath(image) != null) continue;
+      try {
+        local[image] = await _readImage(image);
+      } on Exception catch (error) {
+        debugPrint('Không đọc được ảnh $image: $error');
+        missing.add(image);
+      }
+    }
+    if (missing.isNotEmpty) {
+      throw ListingImageException(ListingImageProblem.missing, paths: missing);
+    }
     final retained = working.images
         .map(_remotePath)
         .whereType<String>()
@@ -342,14 +440,19 @@ class ApiListingsRepository implements ListingsRepository {
     final images = [...working.images];
     for (var index = 0; index < images.length; index++) {
       if (_remotePath(images[index]) != null) continue;
-      final bytes = await _readImage(images[index]);
+      final bytes = local[images[index]]!;
       if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
-        throw StateError('Mỗi ảnh tối đa 5 MB.');
+        throw const ListingImageException(ListingImageProblem.tooLarge);
       }
       final uploaded = await _dio.post<Map<String, dynamic>>(
         '/listings/$id/images',
         data: bytes,
-        options: Options(contentType: _imageContentType(bytes)),
+        // Ảnh vài MB qua mạng chậm cần lâu hơn timeout mặc định (10 giây)
+        options: Options(
+          contentType: _imageContentType(bytes),
+          sendTimeout: _uploadTimeout,
+          receiveTimeout: _uploadTimeout,
+        ),
       );
       images[index] = _imageUrl(_data(uploaded)['url'] as String);
       onProgress(working.copyWith(images: List<String>.from(images)));
@@ -360,6 +463,8 @@ class ApiListingsRepository implements ListingsRepository {
     );
     return working.copyWith(images: images);
   }
+
+  static const Duration _uploadTimeout = Duration(seconds: 60);
 
   static String _imageContentType(Uint8List bytes) =>
       bytes.length >= 3 && bytes[0] == 255 && bytes[1] == 216 && bytes[2] == 255
@@ -374,7 +479,7 @@ class ApiListingsRepository implements ListingsRepository {
             String.fromCharCodes(bytes.take(4)) == 'RIFF' &&
             String.fromCharCodes(bytes.skip(8).take(4)) == 'WEBP'
       ? 'image/webp'
-      : throw StateError('Chỉ nhận JPEG, PNG hoặc WebP.');
+      : throw const ListingImageException(ListingImageProblem.unsupported);
 
   @override
   Future<ListingDraft> getDraft(String id) async {
@@ -421,8 +526,19 @@ class ApiListingsRepository implements ListingsRepository {
         data: {'status': status.apiValue},
       );
   @override
-  Future<void> deleteDraft(String id) =>
-      _dio.delete<void>('/listings/drafts/${Uri.encodeComponent(id)}');
+  Future<void> deleteDraft(String id) async {
+    try {
+      await _dio.delete<void>('/listings/drafts/${Uri.encodeComponent(id)}');
+    } on DioException catch (error) {
+      // Không còn tin nháp này (đã xóa ở nơi khác) thì coi như xóa xong
+      if (error.response?.statusCode != 404) rethrow;
+    }
+  }
+
+  @override
+  Future<DraftQuota> draftQuota() async => DraftQuota.fromJson(
+    _data(await _dio.get<Map<String, dynamic>>('/listings/drafts/quota')),
+  );
 
   @override
   Future<PagedResult<ListingModel>> browse({

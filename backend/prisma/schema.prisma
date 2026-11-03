@@ -156,6 +156,8 @@ model StorePackage {
   monthlyPrice          Decimal
   dailyListingLimit     Int
   activeListingLimit    Int
+  /// Số tin nháp được giữ cùng lúc
+  draftLimit            Int                 @default(3)
   monthlyPromotionQuota Int
   priorityLevel         Int
   subscriptions         StoreSubscription[]

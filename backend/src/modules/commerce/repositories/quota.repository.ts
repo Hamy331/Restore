@@ -29,6 +29,9 @@ export const countPublishedSince = (tx: Db, ownerId: string, since: Date) =>
 export const countActiveListings = (tx: Db, ownerId: string) =>
   tx.listing.count({ where: { ownerId, status: { in: ['PENDING', 'AVAILABLE', 'RESERVED'] } } });
 
+export const countDrafts = (tx: Db, ownerId: string) =>
+  tx.listing.count({ where: { ownerId, status: 'DRAFT' } });
+
 export const countIncludedPromotionsSince = (tx: Db, userId: string, since: Date) =>
   tx.promotion.count({ where: { userId, source: 'INCLUDED', createdAt: { gte: since } } });
 

@@ -2413,5 +2413,25 @@
   "draft delete": {
     "status": 204,
     "body": null
+  },
+  "draft over limit": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Bạn chỉ được giữ tối đa 3 tin nháp. Hãy đăng hoặc xóa bớt tin nháp.",
+      "code": "DRAFT_LIMIT_REACHED"
+    }
+  },
+  "draft quota full": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "used": 3,
+        "limit": 3,
+        "remaining": 0,
+        "tier": "PERSONAL"
+      }
+    }
   }
 }

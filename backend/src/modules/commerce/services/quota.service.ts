@@ -19,14 +19,33 @@ export async function storePackageForUser(tx: Db, userId: string, now: Date) {
   return { package: personal, endsAt: null, category: null };
 }
 
-/** Lượt đã dùng: tin đăng hôm nay, tin đang hoạt động, lượt đẩy tin kèm gói trong tháng */
+/** Lượt đã dùng: tin đăng hôm nay, tin đang hoạt động, tin nháp, lượt đẩy tin kèm gói trong tháng */
 export async function storeUsage(tx: Db, userId: string, now: Date) {
-  const [today, active, promotionsThisMonth] = await Promise.all([
+  const [today, active, drafts, promotionsThisMonth] = await Promise.all([
     quotaRepository.countPublishedSince(tx, userId, utcDayStart(now)),
     quotaRepository.countActiveListings(tx, userId),
+    quotaRepository.countDrafts(tx, userId),
     quotaRepository.countIncludedPromotionsSince(tx, userId, utcMonthStart(now)),
   ]);
-  return { today, active, promotionsThisMonth };
+  return { today, active, drafts, promotionsThisMonth };
+}
+
+/** Số tin nháp đang giữ và giới hạn theo gói (Cá nhân 3, Basic 10, Pro 30 theo seed) */
+export async function draftQuota(tx: Db, userId: string, now: Date) {
+  const [plan, used] = await Promise.all([
+    storePackageForUser(tx, userId, now),
+    quotaRepository.countDrafts(tx, userId),
+  ]);
+  const limit = plan.package.draftLimit;
+  return { used, limit, remaining: Math.max(0, limit - used), tier: plan.package.tier };
+}
+
+/** Còn chỗ thêm một tin nháp, không thì 409 DRAFT_LIMIT_REACHED */
+export async function assertDraftQuota(tx: Db, userId: string, now: Date) {
+  const quota = await draftQuota(tx, userId, now);
+  if (quota.used >= quota.limit) {
+    throw new AppError(409, 'DRAFT_LIMIT_REACHED', `Bạn chỉ được giữ tối đa ${quota.limit} tin nháp. Hãy đăng hoặc xóa bớt tin nháp.`);
+  }
 }
 
 /** Chạy [work] trong transaction SERIALIZABLE, thử lại khi xung đột; vẫn xung đột thì 503 QUOTA_BUSY */

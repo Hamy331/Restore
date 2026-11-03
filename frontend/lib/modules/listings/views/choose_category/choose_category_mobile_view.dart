@@ -18,6 +18,8 @@ import '../../widgets/posting_limit_sheet.dart';
 import 'widgets/category_card.dart';
 import 'widgets/category_list_skeleton.dart';
 import 'widgets/category_quota_label.dart';
+import 'widgets/drafts_banner.dart';
+import '../listing_drafts/listing_drafts_view.dart';
 import 'widgets/posting_quota_banner.dart';
 
 /// Bước 1: Chọn danh mục (danh sách lấy từ API / dữ liệu mẫu)
@@ -58,6 +60,27 @@ class ChooseCategoryMobileView extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: FadeSlideIn(
                       child: PostingQuotaBanner(quota: state.quota!),
+                    ),
+                  ),
+          ),
+        ),
+        BlocBuilder<CreateListingBloc, CreateListingState>(
+          buildWhen: (previous, current) =>
+              previous.drafts != current.drafts ||
+              previous.hasMoreDrafts != current.hasMoreDrafts,
+          builder: (context, state) => AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            alignment: Alignment.topCenter,
+            child: state.drafts.isEmpty
+                ? const SizedBox(width: double.infinity)
+                : Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: FadeSlideIn(
+                      child: DraftsBanner(
+                        count: state.drafts.length,
+                        hasMore: state.hasMoreDrafts,
+                        onTap: () => context.push(ListingDraftsView.path),
+                      ),
                     ),
                   ),
           ),

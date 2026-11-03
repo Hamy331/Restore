@@ -67,13 +67,15 @@ export const adminOrderQuery = z.record(z.string(), z.unknown()).transform((quer
 
 /** Body PUT /admin/store-packages/:id */
 export const storePackageBody = z.unknown().transform((value) => {
-  const body = object(value, ['name', 'monthlyPrice', 'dailyListingLimit', 'activeListingLimit', 'monthlyPromotionQuota', 'priorityLevel']);
+  const body = object(value, ['name', 'monthlyPrice', 'dailyListingLimit', 'activeListingLimit', 'draftLimit', 'monthlyPromotionQuota', 'priorityLevel']);
   const name = text(body.name, 'name', 3, 80), monthlyPrice = text(body.monthlyPrice, 'monthlyPrice', 1, 12);
   if (!/^(0|[1-9]\d{0,11})$/.test(monthlyPrice)) throw new AppError(400, 'INVALID_PRICE', 'Giá không hợp lệ.');
   return {
     name, monthlyPrice,
     dailyListingLimit: integer(body.dailyListingLimit, 1, 10000),
     activeListingLimit: integer(body.activeListingLimit, 1, 100000),
+    // Không gửi thì giữ nguyên giới hạn tin nháp hiện tại
+    ...(body.draftLimit === undefined ? {} : { draftLimit: integer(body.draftLimit, 1, 1000) }),
     monthlyPromotionQuota: integer(body.monthlyPromotionQuota, 0, 10000),
     priorityLevel: integer(body.priorityLevel, 0, 10),
   };

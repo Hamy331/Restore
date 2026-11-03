@@ -16,6 +16,7 @@ import 'widgets/listing_attribute_field.dart';
 import 'widgets/listing_condition_section.dart';
 import 'widgets/listing_details_header.dart';
 import 'widgets/listing_details_section.dart';
+import '../../utils/listing_save_error.dart';
 
 /// Bước 3: Tình trạng + thuộc tính theo danh mục (schema động), xem trước, đăng tin
 class ListingDetailsMobileView extends StatelessWidget {
@@ -28,7 +29,14 @@ class ListingDetailsMobileView extends StatelessWidget {
         TSnackBarHelper.showSuccess(context, message: l10n.listingSubmitted);
         context.go('/home');
       case RequestStatus.failure:
-        TSnackBarHelper.showError(context, message: l10n.publishFailed);
+        TSnackBarHelper.showError(
+          context,
+          message: listingSaveErrorText(
+            l10n,
+            state.saveError,
+            fallback: l10n.publishFailed,
+          ),
+        );
       case RequestStatus.idle || RequestStatus.loading:
         break;
     }

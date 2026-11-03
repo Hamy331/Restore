@@ -2705,4 +2705,140 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authSessionExpired =>
       'Your session has expired. Please sign in again.';
+
+  @override
+  String get draftsTitle => 'Drafts';
+
+  @override
+  String get draftsBannerTitle => 'Continue a draft';
+
+  @override
+  String draftsBannerMessage(String count) {
+    return 'Unpublished listings: $count';
+  }
+
+  @override
+  String get draftsBannerAction => 'View';
+
+  @override
+  String get draftUntitled => 'Untitled';
+
+  @override
+  String get draftNoCategory => 'No category yet';
+
+  @override
+  String draftEditedAt(String time) {
+    return 'Edited $time';
+  }
+
+  @override
+  String draftPhotoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get draftsEmptyTitle => 'No drafts yet';
+
+  @override
+  String get draftsEmptyMessage =>
+      'While posting, tap Save draft to finish it later.';
+
+  @override
+  String get draftsLoadFailedTitle => 'Couldn\'t load drafts';
+
+  @override
+  String get draftsLoadFailedMessage => 'Check your connection and try again.';
+
+  @override
+  String get draftOpenFailed =>
+      'Couldn\'t open this draft. It may have been published or deleted';
+
+  @override
+  String get draftDeleteTitle => 'Delete draft?';
+
+  @override
+  String get draftDeleteMessage =>
+      'The draft and its uploaded photos will be deleted permanently.';
+
+  @override
+  String get draftDeleteConfirm => 'Delete draft';
+
+  @override
+  String get draftDeleted => 'Draft deleted';
+
+  @override
+  String draftDeletedNamed(String title) {
+    return 'Deleted draft “$title”';
+  }
+
+  @override
+  String get draftDeleteFailed =>
+      'Couldn\'t delete the draft, please try again';
+
+  @override
+  String get leaveDraftTitle => 'Save before leaving?';
+
+  @override
+  String get leaveDraftMessage =>
+      'You have unsaved changes. Save a draft to finish it later.';
+
+  @override
+  String get leaveDraftSave => 'Save draft and leave';
+
+  @override
+  String get leaveDraftDiscard => 'Leave without saving';
+
+  @override
+  String draftLimitTitle(int limit) {
+    return '$limit drafts reached';
+  }
+
+  @override
+  String get draftLimitTitleUnknown => 'Draft limit reached';
+
+  @override
+  String draftLimitMessage(int limit) {
+    return 'Your account can keep up to $limit drafts. Publish or delete an old draft to save this one.';
+  }
+
+  @override
+  String get draftLimitMessageUnknown =>
+      'Your account has reached its draft limit. Publish or delete an old draft to save this one.';
+
+  @override
+  String get draftLimitViewDrafts => 'View drafts';
+
+  @override
+  String draftsQuota(int used, int limit) {
+    return '$used/$limit drafts';
+  }
+
+  @override
+  String get listingImageTooLarge =>
+      'A photo is too large (max 5 MB). Remove it or pick another one.';
+
+  @override
+  String get listingImageUnsupported =>
+      'A photo has an unsupported format (JPEG, PNG or WebP only). Remove it or pick another one.';
+
+  @override
+  String listingImageMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos are no longer on this device and were removed',
+      one: '1 photo is no longer on this device and was removed',
+    );
+    return '$_temp0. Pick them again, then save.';
+  }
+
+  @override
+  String get listingSaveNetworkError =>
+      'Couldn\'t reach the server. What was saved is kept, please try again.';
 }
