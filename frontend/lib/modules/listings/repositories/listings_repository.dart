@@ -253,15 +253,45 @@ class ApiListingsRepository implements ListingsRepository {
 
   @override
   Future<ListingDraft> saveDraft(ListingDraft draft, CategoryModel? category) =>
-      _save(draft, category, false);
+      _saveDraft(draft, category, publish: false);
+
+  /// Đăng tin thẳng (`POST /listings`, tin vào hàng chờ duyệt) rồi tải ảnh lên.
+  /// Bản nháp đã lưu trên máy chủ thì đăng qua luồng nháp như cũ.
   @override
-  Future<ListingDraft> publish(ListingDraft draft, CategoryModel? category) =>
-      _save(draft, category, true);
-  Future<ListingDraft> _save(
+  Future<ListingDraft> publish(ListingDraft draft, CategoryModel? category) {
+    if (draft.id != null && draft.status == ListingStatus.draft) {
+      return _saveDraft(draft, category, publish: true);
+    }
+    return _publishListing(draft, category);
+  }
+
+  Future<ListingDraft> _publishListing(
     ListingDraft draft,
     CategoryModel? category,
-    bool publish,
   ) async {
+    var working = draft;
+    try {
+      final payload = draft.toPayload(category: category);
+      // Lần đầu: tạo tin mới. Thử lại sau khi tải ảnh lỗi giữa chừng: tin đã
+      // tạo rồi nên chỉ cập nhật nội dung (không tạo trùng, không trừ thêm lượt)
+      final response = draft.id == null
+          ? await _dio.post<Map<String, dynamic>>('/listings', data: payload)
+          : await _dio.put<Map<String, dynamic>>(
+              '/listings/${Uri.encodeComponent(draft.id!)}',
+              data: payload,
+            );
+      working = _merge(draft, _data(response), images: draft.images);
+      return await _syncImages(working, (next) => working = next);
+    } catch (error) {
+      throw ListingSaveException(working, error);
+    }
+  }
+
+  Future<ListingDraft> _saveDraft(
+    ListingDraft draft,
+    CategoryModel? category, {
+    required bool publish,
+  }) async {
     var working = draft;
     try {
       if (publish && draft.id != null && draft.status == ListingStatus.draft) {
@@ -282,53 +312,10 @@ class ApiListingsRepository implements ListingsRepository {
               '/listings/drafts/${Uri.encodeComponent(draft.id!)}',
               data: payload,
             );
-      final data = _data(response);
-      working = _merge(draft, data, images: draft.images);
-      final id = Uri.encodeComponent(working.id!);
-      final retained = draft.images
-          .map(_remotePath)
-          .whereType<String>()
-          .toList();
-      // Free removed slots before uploading replacements. URLs must already belong to this listing.
-      await _dio.put<void>('/listings/$id/images', data: {'images': retained});
-      final images = [...draft.images];
-      for (var index = 0; index < images.length; index++) {
-        if (_remotePath(images[index]) != null) continue;
-        final bytes = await _readImage(images[index]);
-        if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
-          throw StateError('Mỗi ảnh tối đa 5 MB.');
-        }
-        final contentType =
-            bytes.length >= 3 &&
-                bytes[0] == 255 &&
-                bytes[1] == 216 &&
-                bytes[2] == 255
-            ? 'image/jpeg'
-            : bytes.length >= 8 &&
-                  bytes[0] == 137 &&
-                  bytes[1] == 80 &&
-                  bytes[2] == 78 &&
-                  bytes[3] == 71
-            ? 'image/png'
-            : bytes.length >= 12 &&
-                  String.fromCharCodes(bytes.take(4)) == 'RIFF' &&
-                  String.fromCharCodes(bytes.skip(8).take(4)) == 'WEBP'
-            ? 'image/webp'
-            : throw StateError('Chỉ nhận JPEG, PNG hoặc WebP.');
-        final uploaded = await _dio.post<Map<String, dynamic>>(
-          '/listings/$id/images',
-          data: bytes,
-          options: Options(contentType: contentType),
-        );
-        images[index] = _imageUrl(_data(uploaded)['url'] as String);
-        working = working.copyWith(images: List<String>.from(images));
-      }
-      await _dio.put<void>(
-        '/listings/$id/images',
-        data: {'images': images.map((image) => _remotePath(image)!).toList()},
-      );
-      working = working.copyWith(images: images);
+      working = _merge(draft, _data(response), images: draft.images);
+      working = await _syncImages(working, (next) => working = next);
       if (!publish) return working;
+      final id = Uri.encodeComponent(working.id!);
       final result = _data(
         await _dio.post<Map<String, dynamic>>('/listings/drafts/$id/publish'),
       );
@@ -337,6 +324,57 @@ class ApiListingsRepository implements ListingsRepository {
       throw ListingSaveException(working, error);
     }
   }
+
+  /// Đưa danh sách ảnh trên máy chủ về đúng [working.images]: bỏ ảnh đã xóa,
+  /// tải ảnh mới (ảnh trên máy) theo thứ tự rồi sắp xếp lại.
+  /// [onProgress] nhận bản mới sau mỗi ảnh để lỗi giữa chừng vẫn giữ ảnh đã tải.
+  Future<ListingDraft> _syncImages(
+    ListingDraft working,
+    void Function(ListingDraft) onProgress,
+  ) async {
+    final id = Uri.encodeComponent(working.id!);
+    final retained = working.images
+        .map(_remotePath)
+        .whereType<String>()
+        .toList();
+    // Free removed slots before uploading replacements. URLs must already belong to this listing.
+    await _dio.put<void>('/listings/$id/images', data: {'images': retained});
+    final images = [...working.images];
+    for (var index = 0; index < images.length; index++) {
+      if (_remotePath(images[index]) != null) continue;
+      final bytes = await _readImage(images[index]);
+      if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
+        throw StateError('Mỗi ảnh tối đa 5 MB.');
+      }
+      final uploaded = await _dio.post<Map<String, dynamic>>(
+        '/listings/$id/images',
+        data: bytes,
+        options: Options(contentType: _imageContentType(bytes)),
+      );
+      images[index] = _imageUrl(_data(uploaded)['url'] as String);
+      onProgress(working.copyWith(images: List<String>.from(images)));
+    }
+    await _dio.put<void>(
+      '/listings/$id/images',
+      data: {'images': images.map((image) => _remotePath(image)!).toList()},
+    );
+    return working.copyWith(images: images);
+  }
+
+  static String _imageContentType(Uint8List bytes) =>
+      bytes.length >= 3 && bytes[0] == 255 && bytes[1] == 216 && bytes[2] == 255
+      ? 'image/jpeg'
+      : bytes.length >= 8 &&
+            bytes[0] == 137 &&
+            bytes[1] == 80 &&
+            bytes[2] == 78 &&
+            bytes[3] == 71
+      ? 'image/png'
+      : bytes.length >= 12 &&
+            String.fromCharCodes(bytes.take(4)) == 'RIFF' &&
+            String.fromCharCodes(bytes.skip(8).take(4)) == 'WEBP'
+      ? 'image/webp'
+      : throw StateError('Chỉ nhận JPEG, PNG hoặc WebP.');
 
   @override
   Future<ListingDraft> getDraft(String id) async {

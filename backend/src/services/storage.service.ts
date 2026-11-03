@@ -69,12 +69,19 @@ function supabaseConfig() {
   return { url, key, bucket: process.env.SUPABASE_STORAGE_BUCKET?.trim() || 'media' };
 }
 
+/**
+ * Header xác thực Supabase. Secret key kiểu mới (`sb_secret_...`) không phải JWT nên chỉ gửi qua `apikey`;
+ * service_role key kiểu cũ (JWT, bị Supabase bỏ đầu năm 2027) gửi cả `Authorization`.
+ */
+export const authHeaders = (key: string): Record<string, string> =>
+  key.startsWith('sb_') ? { apikey: key } : { Authorization: `Bearer ${key}`, apikey: key };
+
 async function supabaseRequest(method: string, objectPath: string, init: { body?: BodyInit; headers?: Record<string, string> } = {}) {
   const { url, key, bucket } = supabaseConfig();
   return fetch(`${url}/storage/v1/object/${bucket}${objectPath}`, {
     method,
     body: init.body,
-    headers: { Authorization: `Bearer ${key}`, apikey: key, ...init.headers },
+    headers: { ...authHeaders(key), ...init.headers },
   });
 }
 
