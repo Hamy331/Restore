@@ -17,7 +17,7 @@ const guestOnlyAuthPaths = {'/welcome', '/login', '/register', '/verify-email'};
 bool isPublicAuthPath(String path) => publicAuthPaths.contains(path);
 
 bool isPublicRoute(String path) {
-  if (isPublicAuthPath(path) || path == '/home' || path == '/search') {
+  if (isPublicAuthPath(path) || path == '/home' || path == '/search' || path == '/blog') {
     return true;
   }
 
@@ -32,7 +32,7 @@ String? authRouteRedirect(AuthState authState, String path) {
   if (authState is AuthAuthenticated) {
     if (path.startsWith('/admin') && !authState.isAdmin) return '/home';
     if (guestOnlyAuthPaths.contains(path)) {
-      return '/home';
+      return authState.isAdmin ? '/admin' : '/home';
     }
   }
   return null;
