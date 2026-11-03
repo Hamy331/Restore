@@ -119,6 +119,37 @@ class StoreRepository {
   StoreRepository({Dio? dio}) : _dio = dio ?? ApiClient().dio;
   final Dio _dio;
 
+  Future<List<StorePackage>> adminStorePackages() async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/admin/store-packages',
+    );
+    return (response.data!['data'] as List)
+        .map(
+          (item) =>
+              StorePackage.fromJson(Map<String, dynamic>.from(item as Map)),
+        )
+        .toList();
+  }
+
+  Future<void> saveStorePackage(String id, Map<String, dynamic> data) =>
+      _dio.put<void>(
+        '/admin/store-packages/${Uri.encodeComponent(id)}',
+        data: data,
+      );
+  Future<Map<String, dynamic>> orderHistory(
+    String type,
+    int page,
+    String status,
+  ) async => Map<String, dynamic>.from(
+    (await _dio.get<Map<String, dynamic>>(
+          '/admin/${type == 'stores' ? 'store-orders' : 'promotion-orders'}',
+          queryParameters: {
+            'page': page,
+            if (status.isNotEmpty) 'status': status,
+          },
+        )).data!['data']
+        as Map,
+  );
   Future<List<StoreCategory>> categories() async {
     final response = await _dio.get<Map<String, dynamic>>('/stores/categories');
     return (response.data!['data'] as List)

@@ -5,6 +5,120 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/ui/responsive/responsive_content.dart';
 import '../../stores/data/store_repository.dart';
 
+class AdminOrderHistory extends StatefulWidget {
+  const AdminOrderHistory({required this.repository, super.key});
+  final StoreRepository repository;
+  @override
+  State<AdminOrderHistory> createState() => _AdminOrderHistoryState();
+}
+
+class _AdminOrderHistoryState extends State<AdminOrderHistory> {
+  String _type = 'stores', _status = '';
+  int _page = 1;
+  late Future<Map<String, dynamic>> _data = _load();
+  Future<Map<String, dynamic>> _load() =>
+      widget.repository.orderHistory(_type, _page, _status);
+  void _refresh() => setState(() => _data = _load());
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Lịch sử đơn mua')),
+    body: Column(
+      children: [
+        Wrap(
+          spacing: 12,
+          children: [
+            DropdownButton<String>(
+              value: _type,
+              items: const [
+                DropdownMenuItem(value: 'stores', child: Text('Cửa hàng')),
+                DropdownMenuItem(value: 'promotions', child: Text('Quảng cáo')),
+              ],
+              onChanged: (value) {
+                _type = value!;
+                _page = 1;
+                _refresh();
+              },
+            ),
+            DropdownButton<String>(
+              value: _status,
+              items: [
+                for (final value in ['', 'PENDING', 'CONFIRMED', 'REJECTED'])
+                  DropdownMenuItem(
+                    value: value,
+                    child: Text(value.isEmpty ? 'Tất cả' : value),
+                  ),
+              ],
+              onChanged: (value) {
+                _status = value!;
+                _page = 1;
+                _refresh();
+              },
+            ),
+          ],
+        ),
+        Expanded(
+          child: FutureBuilder<Map<String, dynamic>>(
+            future: _data,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: TextButton(
+                    onPressed: _refresh,
+                    child: const Text('Không tải được lịch sử. Thử lại'),
+                  ),
+                );
+              }
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final data = snapshot.data!, rows = data['items'] as List;
+              return ListView(
+                children: [
+                  for (final row in rows)
+                    ListTile(
+                      title: Text(
+                        '${row['package']['name']} · ${row['amount']} đ',
+                      ),
+                      subtitle: Text(
+                        '${row['user']['fullName']} · ${row['status']}\n${row['id']} · ${row['createdAt']}\nXử lý: ${row['decidedAt'] ?? 'Chưa xử lý'}',
+                      ),
+                    ),
+                  if (rows.isEmpty)
+                    const ListTile(title: Text('Không có đơn trong mục này.')),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: _page > 1
+                            ? () {
+                                _page--;
+                                _refresh();
+                              }
+                            : null,
+                        child: const Text('Trang trước'),
+                      ),
+                      Text('$_page'),
+                      TextButton(
+                        onPressed: _page * 25 < (data['total'] as int)
+                            ? () {
+                                _page++;
+                                _refresh();
+                              }
+                            : null,
+                        child: const Text('Trang sau'),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class AdminCommerceView extends StatefulWidget {
   const AdminCommerceView({this.repository, super.key});
   final StoreRepository? repository;
@@ -20,6 +134,7 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
       List<Map<String, dynamic>>,
       List<Map<String, dynamic>>,
       List<PromotionPackage>,
+      List<StorePackage>,
     )
   >
   _orders = _load();
@@ -30,13 +145,116 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
       List<Map<String, dynamic>>,
       List<Map<String, dynamic>>,
       List<PromotionPackage>,
+      List<StorePackage>,
     )
   >
   _load() async => (
     await _repository.pendingOrders('stores'),
     await _repository.pendingOrders('promotions'),
     await _repository.allPromotionPackages(),
+    await _repository.adminStorePackages(),
   );
+
+  Future<void> _editStorePackage(StorePackage item) async {
+    final fields = <String, String>{
+      'name': item.name,
+      'monthlyPrice': item.monthlyPrice,
+      'dailyListingLimit': '${item.dailyListingLimit}',
+      'activeListingLimit': '${item.activeListingLimit}',
+      'monthlyPromotionQuota': '${item.monthlyPromotionQuota}',
+      'priorityLevel': '${item.priorityLevel}',
+    };
+    final controllers = fields.map(
+      (key, value) => MapEntry(key, TextEditingController(text: value)),
+    );
+    var saving = false;
+    String error = '';
+    try {
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialog) => StatefulBuilder(
+          builder: (context, update) => AlertDialog(
+            title: Text('Cấu hình ${item.name}'),
+            content: SizedBox(
+              width: 460,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Thay đổi hạn mức áp dụng cho cả thuê bao hiện có. Giá mới áp dụng đơn mua mới.',
+                    ),
+                    for (final entry in controllers.entries)
+                      TextField(
+                        controller: entry.value,
+                        enabled: !saving,
+                        decoration: InputDecoration(
+                          labelText: const {
+                            'name': 'Tên gói',
+                            'monthlyPrice': 'Giá / 30 ngày',
+                            'dailyListingLimit': 'Tin / ngày',
+                            'activeListingLimit': 'Tin hoạt động',
+                            'monthlyPromotionQuota': 'Lượt quảng cáo / tháng',
+                            'priorityLevel': 'Mức ưu tiên',
+                          }[entry.key],
+                        ),
+                        keyboardType: entry.key == 'name'
+                            ? TextInputType.text
+                            : TextInputType.number,
+                      ),
+                    if (error.isNotEmpty)
+                      Text(
+                        error,
+                        style: const TextStyle(color: AppColors.error),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: saving ? null : () => Navigator.pop(dialog),
+                child: const Text('Hủy'),
+              ),
+              FilledButton(
+                onPressed: saving
+                    ? null
+                    : () async {
+                        update(() => saving = true);
+                        try {
+                          await _repository.saveStorePackage(item.id, {
+                            for (final entry in controllers.entries)
+                              entry.key:
+                                  ['name', 'monthlyPrice'].contains(entry.key)
+                                  ? entry.value.text
+                                  : int.parse(entry.value.text),
+                          });
+                          if (dialog.mounted) Navigator.pop(dialog);
+                          if (mounted) setState(() => _orders = _load());
+                        } catch (_) {
+                          if (dialog.mounted) {
+                            update(
+                              () => error =
+                                  'Dữ liệu không hợp lệ hoặc không lưu được gói.',
+                            );
+                          }
+                        } finally {
+                          if (dialog.mounted) update(() => saving = false);
+                        }
+                      },
+                child: const Text('Lưu cấu hình'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } finally {
+      for (final controller in controllers.values) {
+        controller.dispose();
+      }
+    }
+  }
 
   Future<void> _editPackage([PromotionPackage? item]) async {
     final name = TextEditingController(text: item?.name ?? '');
@@ -44,6 +262,7 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
     var kind = item?.kind ?? 'BUMP';
     var duration = item?.durationDays ?? 1;
     var active = item?.active ?? true;
+    var saving = false;
     final formKey = GlobalKey<FormState>();
     try {
       await showDialog<void>(
@@ -88,7 +307,7 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
                         decoration: const InputDecoration(
                           labelText: 'Thời hạn',
                         ),
-                        items: const [1, 3, 7]
+                        items: List.generate(30, (index) => index + 1)
                             .map(
                               (days) => DropdownMenuItem(
                                 value: days,
@@ -125,36 +344,43 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
                 child: const Text('Hủy'),
               ),
               FilledButton(
-                onPressed: () async {
-                  if (!formKey.currentState!.validate()) return;
-                  try {
-                    await _repository.savePromotionPackage(
-                      id: item?.id,
-                      name: name.text.trim(),
-                      kind: kind,
-                      durationDays: duration,
-                      price: price.text,
-                      priority: kind == item?.kind
-                          ? item!.priority
-                          : (kind == 'BUMP' ? 0 : 3),
-                      active: active,
-                    );
-                    if (!dialogContext.mounted) return;
-                    Navigator.pop(dialogContext);
-                    if (mounted) setState(() => _orders = _load());
-                  } catch (_) {
-                    if (dialogContext.mounted) {
-                      ScaffoldMessenger.of(dialogContext).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Không lưu được gói. Gói đã có giao dịch chỉ được sửa tên, giá và trạng thái.',
-                          ),
-                        ),
-                      );
-                    }
-                  }
-                },
-                child: const Text('Lưu'),
+                onPressed: saving
+                    ? null
+                    : () async {
+                        if (!formKey.currentState!.validate()) return;
+                        update(() => saving = true);
+                        try {
+                          await _repository.savePromotionPackage(
+                            id: item?.id,
+                            name: name.text.trim(),
+                            kind: kind,
+                            durationDays: duration,
+                            price: price.text,
+                            priority: kind == item?.kind
+                                ? item!.priority
+                                : (kind == 'BUMP' ? 0 : 3),
+                            active: active,
+                          );
+                          if (!dialogContext.mounted) return;
+                          Navigator.pop(dialogContext);
+                          if (mounted) setState(() => _orders = _load());
+                        } catch (_) {
+                          if (dialogContext.mounted) {
+                            ScaffoldMessenger.of(dialogContext).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Không lưu được gói. Gói đã có giao dịch chỉ được sửa tên, giá và trạng thái.',
+                                ),
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (dialogContext.mounted) {
+                            update(() => saving = false);
+                          }
+                        }
+                      },
+                child: Text(saving ? 'Đang lưu…' : 'Lưu'),
               ),
             ],
           ),
@@ -196,7 +422,7 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
         title: Text(confirm ? 'Xác nhận đã nhận thanh toán?' : 'Từ chối đơn?'),
         content: Text(
           confirm
-              ? 'Gói hoặc quảng cáo sẽ có hiệu lực ngay sau khi xác nhận. Hãy đối soát tiền trước.'
+              ? 'Gói cửa hàng có hiệu lực sau xác nhận; quảng cáo cùng loại đang chạy sẽ được nối tiếp. Hãy đối soát tiền trước.'
               : 'Đơn sẽ được đánh dấu từ chối.',
         ),
         actions: [
@@ -217,13 +443,31 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: AppColors.background,
-    appBar: AppBar(title: const Text('Xác nhận đơn cửa hàng & quảng cáo')),
+    appBar: AppBar(
+      title: const Text('Gói & đơn cửa hàng / quảng cáo'),
+      actions: [
+        TextButton(
+          onPressed: () => showDialog<void>(
+            context: context,
+            builder: (_) => Dialog(
+              child: SizedBox(
+                width: 900,
+                height: 700,
+                child: AdminOrderHistory(repository: _repository),
+              ),
+            ),
+          ),
+          child: const Text('Lịch sử đơn'),
+        ),
+      ],
+    ),
     body:
         FutureBuilder<
           (
             List<Map<String, dynamic>>,
             List<Map<String, dynamic>>,
             List<PromotionPackage>,
+            List<StorePackage>,
           )
         >(
           future: _orders,
@@ -239,9 +483,14 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
               }
               return const Center(child: CircularProgressIndicator());
             }
-            final (stores, promotions, packages) = snapshot.data!;
+            final (stores, promotions, packages, storePackages) =
+                snapshot.data!;
             return RefreshIndicator(
-              onRefresh: () async => setState(() => _orders = _load()),
+              onRefresh: () async {
+                final pending = _load();
+                setState(() => _orders = pending);
+                await pending;
+              },
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 children: [
@@ -271,6 +520,22 @@ class _AdminCommerceViewState extends State<AdminCommerceView> {
                           const Padding(
                             padding: EdgeInsets.only(top: 24),
                             child: Text('Không có đơn đang chờ.'),
+                          ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Cấu hình gói tài khoản',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        for (final item in storePackages)
+                          Card(
+                            child: ListTile(
+                              title: Text(item.name),
+                              subtitle: Text(
+                                '${item.monthlyPrice} đ / 30 ngày · ${item.dailyListingLimit} tin/ngày · ${item.activeListingLimit} tin hoạt động',
+                              ),
+                              trailing: const Icon(Icons.edit_outlined),
+                              onTap: () => _editStorePackage(item),
+                            ),
                           ),
                         const SizedBox(height: 24),
                         Row(
