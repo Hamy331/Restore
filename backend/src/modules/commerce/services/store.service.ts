@@ -29,6 +29,7 @@ export async function getMyStore(userId: string) {
       remaining: {
         listingsToday: Math.max(0, current.package.dailyListingLimit - usage.today),
         activeListings: Math.max(0, current.package.activeListingLimit - usage.active),
+        drafts: Math.max(0, current.package.draftLimit - usage.drafts),
         promotionsThisMonth: Math.max(0, current.package.monthlyPromotionQuota - usage.promotionsThisMonth),
       },
     };

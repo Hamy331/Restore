@@ -10,7 +10,14 @@ const draftRouter = Router();
 const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
 
 /**
- * Lưu nháp mới; mọi trường đều có thể trống
+ * Số tin nháp đang giữ và giới hạn theo gói (Cá nhân 3, Basic 10, Pro 30)
+ *
+ * Trả về: { used, limit, remaining, tier }
+ */
+draftRouter.get('/drafts/quota', manageOwn, draftController.quota);
+
+/**
+ * Lưu nháp mới; mọi trường đều có thể trống. Đủ số tin nháp của gói thì 409 DRAFT_LIMIT_REACHED
  *
  * Body: như khi đăng tin, không trường nào bắt buộc
  *
@@ -19,7 +26,7 @@ const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
 draftRouter.post('/drafts', manageOwn, validate({ body: draftBody }), draftController.create);
 
 /**
- * Sửa nháp, hoặc đưa tin đã đăng về nháp để sửa tiếp
+ * Sửa nháp, hoặc đưa tin đã đăng về nháp để sửa tiếp (tính vào số tin nháp, đủ thì 409 DRAFT_LIMIT_REACHED)
  *
  * Path params:
  *  - id: string - mã tin

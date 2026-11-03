@@ -2673,4 +2673,127 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get authSessionExpired =>
       'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+
+  @override
+  String get draftsTitle => 'Tin nháp';
+
+  @override
+  String get draftsBannerTitle => 'Soạn tiếp tin nháp';
+
+  @override
+  String draftsBannerMessage(String count) {
+    return 'Bạn có $count tin chưa đăng';
+  }
+
+  @override
+  String get draftsBannerAction => 'Xem';
+
+  @override
+  String get draftUntitled => 'Chưa có tiêu đề';
+
+  @override
+  String get draftNoCategory => 'Chưa chọn danh mục';
+
+  @override
+  String draftEditedAt(String time) {
+    return 'Sửa lúc $time';
+  }
+
+  @override
+  String draftPhotoCount(int count) {
+    return '$count ảnh';
+  }
+
+  @override
+  String get draftsEmptyTitle => 'Chưa có tin nháp';
+
+  @override
+  String get draftsEmptyMessage =>
+      'Khi đăng tin, bấm Lưu nháp để soạn tiếp lúc khác.';
+
+  @override
+  String get draftsLoadFailedTitle => 'Không tải được tin nháp';
+
+  @override
+  String get draftsLoadFailedMessage => 'Kiểm tra kết nối mạng rồi thử lại.';
+
+  @override
+  String get draftOpenFailed =>
+      'Không mở được tin nháp, có thể tin đã được đăng hoặc đã xóa';
+
+  @override
+  String get draftDeleteTitle => 'Xóa tin nháp?';
+
+  @override
+  String get draftDeleteMessage =>
+      'Tin nháp và ảnh đã tải lên sẽ bị xóa, không khôi phục được.';
+
+  @override
+  String get draftDeleteConfirm => 'Xóa nháp';
+
+  @override
+  String get draftDeleted => 'Đã xóa tin nháp';
+
+  @override
+  String draftDeletedNamed(String title) {
+    return 'Đã xóa tin nháp “$title”';
+  }
+
+  @override
+  String get draftDeleteFailed => 'Xóa tin nháp thất bại, vui lòng thử lại';
+
+  @override
+  String get leaveDraftTitle => 'Lưu tin trước khi thoát?';
+
+  @override
+  String get leaveDraftMessage =>
+      'Nội dung bạn vừa nhập chưa được lưu. Lưu nháp để soạn tiếp lúc khác.';
+
+  @override
+  String get leaveDraftSave => 'Lưu nháp và thoát';
+
+  @override
+  String get leaveDraftDiscard => 'Thoát, không lưu';
+
+  @override
+  String draftLimitTitle(int limit) {
+    return 'Đã đủ $limit tin nháp';
+  }
+
+  @override
+  String get draftLimitTitleUnknown => 'Đã đủ số tin nháp';
+
+  @override
+  String draftLimitMessage(int limit) {
+    return 'Tài khoản của bạn giữ được tối đa $limit tin nháp. Hãy đăng hoặc xóa bớt tin nháp cũ để lưu tin này.';
+  }
+
+  @override
+  String get draftLimitMessageUnknown =>
+      'Tài khoản của bạn đã giữ đủ số tin nháp. Hãy đăng hoặc xóa bớt tin nháp cũ để lưu tin này.';
+
+  @override
+  String get draftLimitViewDrafts => 'Xem tin nháp';
+
+  @override
+  String draftsQuota(int used, int limit) {
+    return 'Đang giữ $used/$limit tin nháp';
+  }
+
+  @override
+  String get listingImageTooLarge =>
+      'Có ảnh quá lớn (tối đa 5 MB). Hãy bỏ ảnh đó hoặc chọn ảnh khác.';
+
+  @override
+  String get listingImageUnsupported =>
+      'Có ảnh không đúng định dạng (chỉ nhận JPEG, PNG, WebP). Hãy bỏ ảnh đó hoặc chọn ảnh khác.';
+
+  @override
+  String listingImageMissing(int count) {
+    return '$count ảnh không còn trên máy nên đã được bỏ ra. Hãy chọn lại ảnh rồi lưu lại.';
+  }
+
+  @override
+  String get listingSaveNetworkError =>
+      'Không kết nối được máy chủ. Phần đã lưu được giữ lại, bạn thử lại nhé.';
 }

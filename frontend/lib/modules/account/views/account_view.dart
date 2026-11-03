@@ -10,6 +10,7 @@ import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
 import '../../auth/bloc/auth_context.dart';
 import 'package:restore/data/models/user_model.dart';
+import 'package:restore/modules/listings/views/listing_drafts/listing_drafts_view.dart';
 
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
@@ -100,6 +101,11 @@ class AccountView extends StatelessWidget {
                         label: l10n.savedListings,
                         trailing: 4.toString(),
                         onTap: () => context.push('/favorites'),
+                      ),
+                      _AccountItem(
+                        icon: AppIcons.saveDraft,
+                        label: l10n.draftsTitle,
+                        onTap: () => context.push(ListingDraftsView.path),
                       ),
                       _AccountItem(
                         icon: AppIcons.star,

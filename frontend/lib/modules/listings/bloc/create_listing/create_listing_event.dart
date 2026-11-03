@@ -124,3 +124,27 @@ class DraftSaveRequested extends CreateListingEvent {
 class PublishRequested extends CreateListingEvent {
   const PublishRequested();
 }
+
+/// Tải danh sách tin nháp; [loadMore] lấy thêm trang sau
+class DraftsRequested extends CreateListingEvent {
+  final bool loadMore;
+  const DraftsRequested({this.loadMore = false});
+  @override
+  List<Object?> get props => [loadMore];
+}
+
+/// Mở một tin nháp để soạn tiếp
+class DraftOpened extends CreateListingEvent {
+  final String id;
+  const DraftOpened(this.id);
+  @override
+  List<Object?> get props => [id];
+}
+
+/// Xóa một tin nháp (kèm ảnh của nó)
+class DraftDeleted extends CreateListingEvent {
+  final String id;
+  const DraftDeleted(this.id);
+  @override
+  List<Object?> get props => [id];
+}

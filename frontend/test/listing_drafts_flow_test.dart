@@ -1,0 +1,208 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/routes/app_router.dart';
+import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/auth/bloc/auth_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth_event.dart';
+import 'package:restore/modules/auth/data/auth_mock_data.dart';
+import 'package:restore/modules/auth/repositories/auth_repository.dart';
+import 'package:restore/modules/listings/models/listing_draft.dart';
+import 'package:restore/modules/listings/repositories/listings_repository.dart';
+
+/// Mở app (dữ liệu mẫu) đã đăng nhập
+Future<GoRouter> _openSignedIn(WidgetTester tester) async {
+  final values = <String, String>{};
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+    (call) async {
+      final a = Map<String, dynamic>.from(call.arguments as Map);
+      if (call.method == 'write') values[a['key']] = a['value'];
+      if (call.method == 'read') return values[a['key']];
+      if (call.method == 'delete') values.remove(a['key']);
+      return null;
+    },
+  );
+  tester.view.physicalSize = const Size(1125, 2436);
+  tester.view.devicePixelRatio = 3;
+  addTearDown(tester.view.reset);
+  final onError = FlutterError.onError;
+  FlutterError.onError = (details) {
+    if (details.exceptionAsString().contains('RenderFlex overflowed')) return;
+    onError?.call(details);
+  };
+  addTearDown(() => FlutterError.onError = onError);
+  final repo = MockAuthRepository(latency: Duration.zero);
+  final bloc = AuthBloc(repo)..add(const AuthCheckRequested());
+  await tester.runAsync(() => bloc.stream.first);
+  final user = (await tester.runAsync(
+    () => repo.login('minhanh@example.com', AuthMockData.password),
+  ))!;
+  bloc.add(LoggedIn(user));
+  final router = createAppRouter(bloc);
+  await tester.pumpWidget(
+    BlocProvider.value(
+      value: bloc,
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (_, _) => MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('vi')],
+          locale: const Locale('vi'),
+        ),
+      ),
+    ),
+  );
+  return router;
+}
+
+String _path(GoRouter router) =>
+    router.routerDelegate.currentConfiguration.last.matchedLocation;
+
+Future<void> _settle(WidgetTester tester, [int frames = 20]) async {
+  for (var i = 0; i < frames; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+}
+
+void main() {
+  testWidgets(
+    'bước 1 có tin nháp: mở danh sách, soạn tiếp, thoát thì hỏi lưu nháp',
+    (tester) async {
+      final store = MockListingsRepository(latency: Duration.zero);
+      final saved = (await tester.runAsync(
+        () => store.saveDraft(
+          const ListingDraft(
+            title: 'Tủ lạnh Toshiba cũ',
+            categoryId: 'electronics',
+          ),
+          null,
+        ),
+      ))!;
+      addTearDown(() => store.deleteDraft(saved.id!));
+
+      final router = await _openSignedIn(tester);
+      router.go('/home');
+      await _settle(tester);
+      router.push('/create-listing/category');
+      await _settle(tester);
+      expect(find.text('Soạn tiếp tin nháp'), findsOneWidget);
+
+      await tester.tap(find.text('Soạn tiếp tin nháp'));
+      await _settle(tester);
+      expect(find.text('Tin nháp'), findsOneWidget);
+      expect(find.text('Tủ lạnh Toshiba cũ'), findsOneWidget);
+
+      await tester.tap(find.text('Tủ lạnh Toshiba cũ'));
+      await _settle(tester);
+      expect(_path(router), '/create-listing/basic-info');
+      // Ô tiêu đề điền sẵn nội dung nháp
+      expect(
+        find.widgetWithText(TextField, 'Tủ lạnh Toshiba cũ'),
+        findsOneWidget,
+      );
+
+      // Về bước 1 (không hỏi vì chưa thoát luồng), sửa rồi thoát thì hỏi
+      await tester.tap(find.byIcon(AppIcons.back).first);
+      await _settle(tester);
+      expect(find.text('Lưu tin trước khi thoát?'), findsNothing);
+      expect(_path(router), '/create-listing/category');
+      await tester.tap(find.byIcon(AppIcons.back).first);
+      await _settle(tester);
+      // Vừa mở nháp, chưa sửa gì: thoát luôn
+      expect(_path(router), '/home');
+      await tester.pump(const Duration(seconds: 2));
+    },
+  );
+
+  testWidgets('nhập dở rồi thoát: hỏi lưu nháp, lưu xong mới thoát', (
+    tester,
+  ) async {
+    final router = await _openSignedIn(tester);
+    router.go('/home');
+    await _settle(tester);
+    router.push('/create-listing/category');
+    await _settle(tester);
+    await tester.tap(find.text('Đồ điện tử').first);
+    await _settle(tester);
+    // Ô đầu tiên của bước 2 là mô tả
+    await tester.enterText(find.byType(TextField).first, 'Máy giặt LG 9kg');
+    await _settle(tester, 3);
+    await tester.tap(find.byIcon(AppIcons.back).first);
+    await _settle(tester);
+    await tester.tap(find.byIcon(AppIcons.back).first);
+    await _settle(tester);
+    expect(find.text('Lưu tin trước khi thoát?'), findsOneWidget);
+
+    await tester.tap(find.text('Lưu nháp và thoát'));
+    await _settle(tester);
+    expect(_path(router), '/home');
+    final drafts = await tester.runAsync(
+      () => MockListingsRepository().mine(status: 'DRAFT'),
+    );
+    final draft = drafts!.items.firstWhere(
+      (item) =>
+          item.description == 'Máy giặt LG 9kg' &&
+          item.categoryId == 'electronics',
+    );
+    await tester.runAsync(() => MockListingsRepository().deleteDraft(draft.id));
+    // Chờ thông báo "Đã lưu nháp" tự đóng
+    await tester.pump(const Duration(seconds: 8));
+  });
+
+  testWidgets(
+    'bấm Lưu nháp: về trang chủ, lần đăng tin sau bắt đầu form trống',
+    (tester) async {
+      final router = await _openSignedIn(tester);
+      router.go('/home');
+      await _settle(tester);
+      router.push('/create-listing/category');
+      await _settle(tester);
+      await tester.tap(find.text('Đồ điện tử').first);
+      await _settle(tester);
+      await tester.enterText(find.byType(TextField).first, 'Nồi cơm điện');
+      await _settle(tester, 3);
+      await tester.tap(find.text('Lưu nháp'));
+      await tester.pump(const Duration(milliseconds: 100));
+      // Đang lưu: khóa nút quay lại và nội dung form
+      final back = tester.widget<IconButton>(
+        find.widgetWithIcon(IconButton, AppIcons.back).first,
+      );
+      expect(back.onPressed, isNull);
+      expect(
+        find.byWidgetPredicate((w) => w is IgnorePointer && w.ignoring),
+        findsWidgets,
+      );
+      await _settle(tester);
+      // Lưu xong thì về trang chủ
+      expect(_path(router), '/home');
+
+      router.push('/create-listing/category');
+      await _settle(tester);
+      await tester.tap(find.text('Đồ điện tử').first);
+      await _settle(tester);
+      expect(find.widgetWithText(TextField, 'Nồi cơm điện'), findsNothing);
+
+      final drafts = await tester.runAsync(
+        () => MockListingsRepository().mine(status: 'DRAFT'),
+      );
+      for (final item in drafts!.items) {
+        await tester.runAsync(
+          () => MockListingsRepository().deleteDraft(item.id),
+        );
+      }
+      await tester.pump(const Duration(seconds: 8));
+    },
+  );
+}

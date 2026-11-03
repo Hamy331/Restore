@@ -12,9 +12,9 @@ export const CONDITION_POLICIES: { condition: ListingCondition; name: string }[]
 
 export const STORE_PACKAGES: { id: string; tier: StoreTier; name: string; monthlyPrice: number; dailyListingLimit: number;
   activeListingLimit: number; monthlyPromotionQuota: number; priorityLevel: number }[] = [
-  { id: 'personal', tier: 'PERSONAL', name: 'Cá nhân', monthlyPrice: 0, dailyListingLimit: 3, activeListingLimit: 10, monthlyPromotionQuota: 0, priorityLevel: 0 },
-  { id: 'basic', tier: 'BASIC', name: 'Cửa hàng Basic', monthlyPrice: 99000, dailyListingLimit: 10, activeListingLimit: 30, monthlyPromotionQuota: 2, priorityLevel: 1 },
-  { id: 'pro', tier: 'PRO', name: 'Cửa hàng Pro', monthlyPrice: 299000, dailyListingLimit: 30, activeListingLimit: 100, monthlyPromotionQuota: 10, priorityLevel: 2 },
+  { id: 'personal', tier: 'PERSONAL', name: 'Cá nhân', monthlyPrice: 0, dailyListingLimit: 3, activeListingLimit: 10, draftLimit: 3, monthlyPromotionQuota: 0, priorityLevel: 0 },
+  { id: 'basic', tier: 'BASIC', name: 'Cửa hàng Basic', monthlyPrice: 99000, dailyListingLimit: 10, activeListingLimit: 30, draftLimit: 10, monthlyPromotionQuota: 2, priorityLevel: 1 },
+  { id: 'pro', tier: 'PRO', name: 'Cửa hàng Pro', monthlyPrice: 299000, dailyListingLimit: 30, activeListingLimit: 100, draftLimit: 30, monthlyPromotionQuota: 10, priorityLevel: 2 },
 ];
 
 export const PROMOTION_PACKAGES: { id: string; name: string; kind: PromotionKind; durationDays: number; price: number; priority: number }[] = [

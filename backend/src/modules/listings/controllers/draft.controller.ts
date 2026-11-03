@@ -25,3 +25,7 @@ export async function remove(req: AuthRequest, res: Response) {
   await draftService.deleteDraft(req.user!.userId, params.id);
   noContent(res);
 }
+
+export async function quota(req: AuthRequest, res: Response) {
+  ok(res, await draftService.getDraftQuota(req.user!.userId));
+}

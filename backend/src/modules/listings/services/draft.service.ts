@@ -1,6 +1,6 @@
 import { ListingStatus } from '@prisma/client';
 import { AppError } from '../../../common/errors/app-error.js';
-import { withQuotaTransaction } from '../../commerce/index.js';
+import { assertDraftQuota, draftQuota, withQuotaTransaction } from '../../commerce/index.js';
 import { DraftInput, toOwnerListingDto } from '../listing.dto.js';
 import { DRAFT_EDITABLE } from '../listing.type.js';
 import { createInput, validateAttributes } from '../listing.validator.js';
@@ -8,20 +8,29 @@ import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
 import { assertPublishable, assertQuota, requireOwnedListing, updateOwnedListing } from './listing.service.js';
 
-/** Lưu nháp mới; danh mục nếu có phải tồn tại */
+/** Số tin nháp đang giữ và giới hạn của gói */
+export const getDraftQuota = (ownerId: string) =>
+  listingRepository.transaction((tx) => draftQuota(tx, ownerId, new Date()));
+
+/** Lưu nháp mới; danh mục nếu có phải tồn tại, chưa vượt số tin nháp của gói */
 export async function createDraft(ownerId: string, data: DraftInput) {
   if (data.categoryId && !await listingRepository.findCategory(data.categoryId)) {
     throw new AppError(400, 'INVALID_DRAFT', 'Danh mục không tồn tại.', 'categoryId');
   }
-  const listing = await listingRepository.createListing({ ...data, ownerId, status: ListingStatus.DRAFT, images: [] });
+  const listing = await withQuotaTransaction(async (tx) => {
+    await assertDraftQuota(tx, ownerId, new Date());
+    return listingRepository.createListing({ ...data, ownerId, status: ListingStatus.DRAFT, images: [] }, tx);
+  });
   return toOwnerListingDto(listing);
 }
 
 /** Sửa nháp, hoặc đưa tin đã đăng về nháp để sửa tiếp */
 export async function updateDraft(ownerId: string, id: string, data: DraftInput) {
-  const listing = await listingRepository.transaction(async (tx) => {
+  const listing = await withQuotaTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (!DRAFT_EDITABLE.includes(current.status)) throw new AppError(409, 'DRAFT_CHANGED', 'Tin này không còn sửa được.');
+    // Đưa tin đã đăng về nháp cũng chiếm một chỗ nháp
+    if (current.status !== ListingStatus.DRAFT) await assertDraftQuota(tx, ownerId, new Date());
     if (data.categoryId && !await listingRepository.findActiveCategory(tx, data.categoryId)) {
       throw new AppError(400, 'INVALID_DRAFT', 'Danh mục không tồn tại.', 'categoryId');
     }

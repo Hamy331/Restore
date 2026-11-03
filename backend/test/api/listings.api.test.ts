@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { useApi } from './support/context.js';
 import { listingBody, PNG } from './support/fixtures.js';
@@ -80,4 +81,38 @@ test('listings: drafts', async () => {
   expect('draft delete after publish', await api.delete(`/listings/drafts/${id}`, { token: tokens.buyer }));
   const other = await api.post('/listings/drafts', { token: tokens.buyer, body: {} });
   expect('draft delete', await api.delete(`/listings/drafts/${other.body.data.id}`, { token: tokens.buyer }));
+});
+
+test('listings: my drafts, last edited first', async () => {
+  const { api, tokens } = ctx;
+  const first = (await api.post('/listings/drafts', { token: tokens.buyer, body: { title: 'Nháp một' } })).body.data.id;
+  const second = (await api.post('/listings/drafts', { token: tokens.buyer, body: { title: 'Nháp hai' } })).body.data.id;
+  await api.put(`/listings/drafts/${first}`, { token: tokens.buyer, body: { title: 'Nháp một đã sửa' } });
+  const drafts = await api.get('/listings/mine?status=DRAFT', { token: tokens.buyer });
+  assert.equal(drafts.status, 200);
+  assert.deepEqual(drafts.body.data.map((item: { id: string }) => item.id).slice(0, 2), [first, second]);
+  assert.equal(drafts.body.data[0].title, 'Nháp một đã sửa');
+  for (const id of [first, second]) await api.delete(`/listings/drafts/${id}`, { token: tokens.buyer });
+});
+
+test('listings: draft limit by package', async () => {
+  const { api, tokens } = ctx;
+  const start = await api.get('/listings/drafts/quota', { token: tokens.buyer });
+  assert.equal(start.status, 200);
+  assert.equal(start.body.data.limit, 3);
+  assert.equal(start.body.data.tier, 'PERSONAL');
+  const ids: string[] = [];
+  for (let i = start.body.data.used; i < start.body.data.limit; i++) {
+    const draft = await api.post('/listings/drafts', { token: tokens.buyer, body: { title: `Nháp ${i}` } });
+    assert.equal(draft.status, 201);
+    ids.push(draft.body.data.id);
+  }
+  expect('draft over limit', await api.post('/listings/drafts', { token: tokens.buyer, body: { title: 'Nháp thừa' } }));
+  expect('draft quota full', await api.get('/listings/drafts/quota', { token: tokens.buyer }));
+  // Xóa một nháp thì lưu được nháp mới
+  await api.delete(`/listings/drafts/${ids.pop()}`, { token: tokens.buyer });
+  const again = await api.post('/listings/drafts', { token: tokens.buyer, body: { title: 'Nháp mới' } });
+  assert.equal(again.status, 201);
+  ids.push(again.body.data.id);
+  for (const id of ids) await api.delete(`/listings/drafts/${id}`, { token: tokens.buyer });
 });

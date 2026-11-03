@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/data/models/enums/listing_status.dart';
+import '../../models/draft_quota.dart';
 import '../../models/listing_draft.dart';
 import '../../repositories/category_repository.dart';
 import '../../repositories/listings_repository.dart';
@@ -73,6 +76,9 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     );
     on<DraftSaveRequested>(_onDraftSaveRequested);
     on<PublishRequested>(_onPublishRequested);
+    on<DraftsRequested>(_onDraftsRequested);
+    on<DraftOpened>(_onDraftOpened);
+    on<DraftDeleted>(_onDraftDeleted);
   }
 
   final ListingsRepository _repository;
@@ -173,6 +179,16 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     Emitter<CreateListingState> emit,
   ) async {
     if (state.saveDraftStatus == RequestStatus.loading) return;
+    // Đã giữ đủ số tin nháp của gói: báo ngay, không gọi API
+    if (state.savingAddsDraft && (state.draftQuota?.isFull ?? false)) {
+      emit(
+        state.copyWith(
+          saveDraftStatus: RequestStatus.idle,
+          draftLimitHits: state.draftLimitHits + 1,
+        ),
+      );
+      return;
+    }
     emit(state.copyWith(saveDraftStatus: RequestStatus.loading));
     final sent = state.draft;
     try {
@@ -184,14 +200,70 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         state.copyWith(
           draft: state.draft.copyWith(
             id: saved.id,
+            status: saved.status,
             images: imagesUnchanged ? saved.images : null,
           ),
+          savedDraft: saved,
           saveDraftStatus: RequestStatus.success,
         ),
       );
-    } catch (_) {
-      emit(state.copyWith(saveDraftStatus: RequestStatus.failure));
+      add(const DraftsRequested());
+    } on ListingSaveException catch (error) {
+      debugPrint('Lưu nháp lỗi: $error');
+      if (!error.isDraftLimitReached) {
+        // Giữ id và ảnh đã tải để lần lưu sau sửa đúng tin này, không tạo
+        // nháp trùng và không tải lại ảnh
+        emit(
+          state.copyWith(
+            draft: _keepProgress(sent, error),
+            saveDraftStatus: RequestStatus.failure,
+            saveError: error,
+          ),
+        );
+        if (error.draft.id != null && sent.id == null) {
+          add(const DraftsRequested());
+        }
+        return;
+      }
+      // Số tin nháp trên máy đã cũ (VD lưu từ thiết bị khác): tải lại rồi báo
+      emit(
+        state.copyWith(
+          saveDraftStatus: RequestStatus.idle,
+          draftLimitHits: state.draftLimitHits + 1,
+        ),
+      );
+      add(const DraftsRequested());
+    } catch (error) {
+      emit(
+        state.copyWith(
+          saveDraftStatus: RequestStatus.failure,
+          saveError: error,
+        ),
+      );
     }
+  }
+
+  /// Bản đang soạn kèm phần đã lưu được trước khi lỗi: id, trạng thái và ảnh
+  /// đã tải (chỉ lấy ảnh khi người dùng chưa đổi bộ ảnh trong lúc chờ)
+  ListingDraft _keepProgress(ListingDraft sent, ListingSaveException error) {
+    final saved = error.draft;
+    final imagesUnchanged = state.draft.images == sent.images;
+    final kept = state.draft.copyWith(
+      id: saved.id,
+      status: saved.status,
+      images: imagesUnchanged && saved.images.length == sent.images.length
+          ? saved.images
+          : null,
+    );
+    // Ảnh không còn trên máy thì bỏ khỏi tin để người dùng chọn lại
+    final missing = error.imagePaths;
+    if (missing.isEmpty) return kept;
+    return kept.copyWith(
+      images: [
+        for (final image in kept.images)
+          if (!missing.contains(image)) image,
+      ],
+    );
   }
 
   Future<void> _onPublishRequested(
@@ -216,15 +288,24 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     }
 
     emit(state.copyWith(publishStatus: RequestStatus.loading));
+    final sent = state.draft;
     try {
-      final published = await _repository.publish(state.draft, state.category);
+      final published = await _repository.publish(sent, state.category);
       emit(
         state.copyWith(draft: published, publishStatus: RequestStatus.success),
       );
       add(const PostingQuotaRequested());
     } on ListingSaveException catch (error) {
+      debugPrint('Đăng tin lỗi: $error');
       if (!error.isPostingLimitReached) {
-        emit(state.copyWith(publishStatus: RequestStatus.failure));
+        // Tin đã tạo trên máy chủ: thử lại thì cập nhật đúng tin đó
+        emit(
+          state.copyWith(
+            draft: _keepProgress(sent, error),
+            publishStatus: RequestStatus.failure,
+            saveError: error,
+          ),
+        );
         return;
       }
       // Hạn mức trên máy đã cũ (VD đăng từ thiết bị khác): tải lại rồi báo
@@ -235,8 +316,194 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         ),
       );
       add(const PostingQuotaRequested());
-    } catch (_) {
-      emit(state.copyWith(publishStatus: RequestStatus.failure));
+    } catch (error) {
+      emit(
+        state.copyWith(publishStatus: RequestStatus.failure, saveError: error),
+      );
     }
+  }
+
+  static const String _draftStatus = 'DRAFT';
+
+  Future<void> _onDraftsRequested(
+    DraftsRequested event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    if (state.draftsStatus == RequestStatus.loading) return;
+    if (event.loadMore && !state.hasMoreDrafts) return;
+    final page = event.loadMore
+        ? state.drafts.length ~/ _draftsPageSize + 1
+        : 1;
+    emit(state.copyWith(draftsStatus: RequestStatus.loading));
+    // Có tin bị xóa trong lúc đang tải thì số liệu trả về đã cũ
+    final deletes = _draftDeletes;
+    if (!event.loadMore) {
+      try {
+        final quota = await _repository.draftQuota();
+        if (deletes == _draftDeletes) emit(state.copyWith(draftQuota: quota));
+      } catch (_) {
+        // Không tải được thì vẫn cho lưu, backend sẽ kiểm tra
+      }
+    }
+    try {
+      final result = await _repository.mine(page: page, status: _draftStatus);
+      // Bỏ tin đã xóa: kết quả có thể được gửi về trước khi xóa xong
+      final items = result.items.where(
+        (item) => !_deletedDraftIds.contains(item.id),
+      );
+      emit(
+        state.copyWith(
+          drafts: event.loadMore
+              ? [
+                  ...state.drafts,
+                  // Xóa bớt nháp làm lệch trang nên bỏ tin đã có
+                  ...items.where(
+                    (item) => state.drafts.every((old) => old.id != item.id),
+                  ),
+                ]
+              : items.toList(),
+          hasMoreDrafts: result.hasMore,
+          draftsStatus: RequestStatus.success,
+        ),
+      );
+    } catch (_) {
+      emit(state.copyWith(draftsStatus: RequestStatus.failure));
+    }
+  }
+
+  static const int _draftsPageSize = 20;
+
+  /// Tin nháp đã xóa (hoặc đang xóa) trong phiên này, để kết quả tải danh
+  /// sách về muộn không hiện lại chúng
+  final Set<String> _deletedDraftIds = {};
+
+  /// Đếm số lần xóa, để bỏ hạn mức nháp tải về trước khi xóa
+  int _draftDeletes = 0;
+
+  Future<void> _onDraftOpened(
+    DraftOpened event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    if (state.openDraftStatus == RequestStatus.loading) return;
+    emit(
+      state.copyWith(
+        openDraftStatus: RequestStatus.loading,
+        openingDraftId: event.id,
+      ),
+    );
+    try {
+      final loaded = await _repository.getDraft(event.id);
+      // Tin đã được đăng ở nơi khác thì không còn là nháp để soạn tiếp
+      if (loaded.status != ListingStatus.draft) {
+        throw StateError('Listing ${event.id} is no longer a draft');
+      }
+      final draft = state.quota == null
+          ? loaded
+          : loaded.copyWith(sellerType: state.quota!.accountType);
+      emit(
+        state.copyWith(
+          draft: draft,
+          savedDraft: draft,
+          showBasicInfoErrors: false,
+          showDetailErrors: false,
+          publishStatus: RequestStatus.idle,
+          saveDraftStatus: RequestStatus.idle,
+          openDraftStatus: RequestStatus.success,
+        ),
+      );
+    } catch (_) {
+      emit(state.copyWith(openDraftStatus: RequestStatus.failure));
+      add(const DraftsRequested());
+    }
+  }
+
+  Future<void> _onDraftDeleted(
+    DraftDeleted event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    // Bấm xóa lần nữa khi tin đang được xóa thì bỏ qua
+    if (!_deletedDraftIds.add(event.id)) return;
+    _draftDeletes++;
+    final before = state.drafts;
+    final title = before
+        .where((item) => item.id == event.id)
+        .map((item) => item.title.trim())
+        .firstOrNull;
+    // Ẩn ngay cho mượt, lỗi thì trả lại
+    emit(
+      state.copyWith(
+        drafts: [
+          for (final item in before)
+            if (item.id != event.id) item,
+        ],
+      ),
+    );
+    try {
+      await _repository.deleteDraft(event.id);
+      final quota = state.draftQuota;
+      emit(
+        state.copyWith(
+          draftQuota: quota == null
+              ? null
+              : DraftQuota(
+                  used: (quota.used - 1).clamp(0, quota.limit),
+                  limit: quota.limit,
+                ),
+          draftDeleteSuccesses: state.draftDeleteSuccesses + 1,
+          lastDeletedDraftTitle: title ?? '',
+        ),
+      );
+      // Đang soạn đúng tin vừa xóa thì coi như tin mới
+      if (state.draft.id == event.id) {
+        emit(
+          CreateListingState(
+            categories: state.categories,
+            categoriesStatus: state.categoriesStatus,
+            quota: state.quota,
+            draft: ListingDraft(sellerType: state.draft.sellerType),
+            drafts: state.drafts,
+            draftsStatus: state.draftsStatus,
+            hasMoreDrafts: state.hasMoreDrafts,
+            draftDeleteFailures: state.draftDeleteFailures,
+            draftDeleteSuccesses: state.draftDeleteSuccesses,
+            lastDeletedDraftTitle: state.lastDeletedDraftTitle,
+            draftQuota: state.draftQuota,
+            draftLimitHits: state.draftLimitHits,
+          ),
+        );
+      }
+    } catch (error) {
+      debugPrint('Delete draft ${event.id} failed: $error');
+      _deletedDraftIds.remove(event.id);
+      emit(
+        state.copyWith(
+          drafts: before,
+          draftDeleteFailures: state.draftDeleteFailures + 1,
+        ),
+      );
+    }
+  }
+
+  /// Lưu nháp rồi chờ kết quả (khi thoát luồng hoặc trước khi mở nháp khác).
+  /// true khi lưu xong; false khi lỗi hoặc đã đủ số tin nháp (view đã báo).
+  Future<bool> saveDraftAndWait() async {
+    final hits = state.draftLimitHits;
+    // Chỉ lấy kết quả của lần lưu này: sau trạng thái loading của nó (các
+    // sự kiện khác như tải danh sách nháp vẫn giữ trạng thái lưu cũ)
+    var started = false;
+    final result = stream.firstWhere((state) {
+      if (state.draftLimitHits != hits) return true;
+      if (state.saveDraftStatus == RequestStatus.loading) {
+        started = true;
+        return false;
+      }
+      return started &&
+          (state.saveDraftStatus == RequestStatus.success ||
+              state.saveDraftStatus == RequestStatus.failure);
+    });
+    add(const DraftSaveRequested());
+    final done = await result;
+    return done.draftLimitHits == hits &&
+        done.saveDraftStatus == RequestStatus.success;
   }
 }

@@ -55,6 +55,22 @@ class ListingDraft extends Equatable {
 
   String? get coverImage => images.isEmpty ? null : images.first;
 
+  /// Người dùng đã nhập gì đó đáng lưu nháp (chỉ chọn danh mục thì chưa tính)
+  bool get hasContent =>
+      images.isNotEmpty ||
+      title.trim().isNotEmpty ||
+      description.trim().isNotEmpty ||
+      price != null ||
+      exchangeWish.trim().isNotEmpty ||
+      address != null ||
+      condition != null ||
+      attributes.values.any((value) => value.trim().isNotEmpty);
+
+  /// Cùng nội dung người dùng nhập (bỏ qua id, trạng thái, thời điểm lưu
+  /// và loại người bán vốn lấy theo tài khoản)
+  bool sameContentAs(ListingDraft other) =>
+      _ContentKey(this) == _ContentKey(other);
+
   factory ListingDraft.fromListing(ListingModel model) => ListingDraft(
     id: model.id,
     categoryId: model.categoryId ?? '',
@@ -159,4 +175,28 @@ class ListingDraft extends Equatable {
     status,
     updatedAt,
   ];
+}
+
+/// Phần nội dung người dùng nhập của [ListingDraft], dùng để so sánh
+class _ContentKey extends Equatable {
+  _ContentKey(ListingDraft draft)
+    : props = [
+        draft.categoryId,
+        draft.images,
+        draft.title.trim(),
+        draft.description.trim(),
+        draft.tradeType,
+        draft.price,
+        draft.isNegotiable,
+        draft.exchangeWish.trim(),
+        draft.address,
+        draft.condition,
+        {
+          for (final entry in draft.attributes.entries)
+            if (entry.value.trim().isNotEmpty) entry.key: entry.value.trim(),
+        },
+      ];
+
+  @override
+  final List<Object?> props;
 }
