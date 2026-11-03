@@ -3,6 +3,7 @@ import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { storePackageForUser, storeUsage, withQuotaTransaction } from '../../commerce/index.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
+import { toCategoryDto } from '../../catalog/catalog.dto.js';
 import { ListingInput, MineQuery, toListingDto, toOwnerListingDto } from '../listing.dto.js';
 import { LISTING_EDITABLE } from '../listing.type.js';
 import { validateAttributes } from '../listing.validator.js';
@@ -128,5 +129,15 @@ export async function viewListing(viewer: Viewer, id: string) {
   const views = await listingRepository.incrementViewCount(id, hasPermission(viewer?.role, PERMISSION.LISTING_MODERATE), viewer?.userId ?? '');
   if (!views.length) throw new AppError(404, 'LISTING_NOT_FOUND', 'Tin không còn hiển thị.');
   listing.viewCount = views[0]!.viewCount;
-  return toListingDto(listing);
+  const [seller, category, sellerActiveListings, favorite] = await listingRepository.findDetailExtras(
+    listing.ownerId, listing.categoryId, id, viewer?.userId);
+  // Trang chi tiết (docs: listing-api-contract.md mục 5): người bán công khai, danh mục kèm thuộc tính
+  return {
+    ...toListingDto(listing),
+    seller,
+    category: category ? toCategoryDto(category) : listing.category,
+    sellerActiveListings,
+    isFavorite: !!favorite,
+    isOwner: viewer?.userId === listing.ownerId,
+  };
 }

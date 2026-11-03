@@ -79,6 +79,23 @@ export const findByImage = (url: string) =>
 
 /* ---------- Công khai ---------- */
 
+/** Thông tin thêm cho trang chi tiết tin: người bán công khai, danh mục đầy đủ, số tin đang bán, đã lưu chưa */
+export const findDetailExtras = (ownerId: string, categoryId: string | null, listingId: string, viewerId?: string) =>
+  Promise.all([
+    prisma.user.findUnique({
+      where: { id: ownerId },
+      select: {
+        id: true, fullName: true, username: true, avatarUrl: true, status: true,
+        ratingAverage: true, ratingCount: true, createdAt: true,
+      },
+    }),
+    categoryId ? prisma.category.findUnique({ where: { id: categoryId } }) : Promise.resolve(null),
+    prisma.listing.count({ where: { ownerId, status: 'AVAILABLE' } }),
+    viewerId
+      ? prisma.listingFavorite.findUnique({ where: { userId_listingId: { userId: viewerId, listingId } }, select: { listingId: true } })
+      : Promise.resolve(null),
+  ]);
+
 export const findVisible = (id: string) => prisma.listing.findFirst({ where: { ...visible, id }, select: listingSelect });
 
 /** Tăng lượt xem (trừ khi [skipCount]) và trả về lượt xem mới; rỗng nếu tin không còn hiển thị */

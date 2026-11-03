@@ -971,7 +971,92 @@
         "condition": "USED_GOOD",
         "category": {
           "id": "furniture",
-          "name": "Nội thất, trang trí"
+          "icon": "home",
+          "name": {
+            "en": "Furniture & decor",
+            "vi": "Nội thất, trang trí"
+          },
+          "imageUrl": "assets/images/marketplace/listing-lamp.png",
+          "attributes": [
+            {
+              "key": "home_type",
+              "type": "select",
+              "label": {
+                "en": "Product type",
+                "vi": "Loại sản phẩm"
+              },
+              "options": [
+                {
+                  "label": {
+                    "en": "Furniture",
+                    "vi": "Bàn ghế, tủ kệ"
+                  },
+                  "value": "furniture"
+                },
+                {
+                  "label": {
+                    "en": "Lighting",
+                    "vi": "Đèn"
+                  },
+                  "value": "lighting"
+                },
+                {
+                  "label": {
+                    "en": "Kitchenware",
+                    "vi": "Đồ bếp"
+                  },
+                  "value": "kitchenware"
+                },
+                {
+                  "label": {
+                    "en": "Decor",
+                    "vi": "Đồ trang trí"
+                  },
+                  "value": "decor"
+                },
+                {
+                  "label": {
+                    "en": "Bedding",
+                    "vi": "Chăn ga gối"
+                  },
+                  "value": "bedding"
+                }
+              ],
+              "required": true
+            },
+            {
+              "key": "material",
+              "hint": {
+                "en": "e.g. Oak, rattan",
+                "vi": "VD: Gỗ sồi, mây tre"
+              },
+              "type": "text",
+              "label": {
+                "en": "Material",
+                "vi": "Chất liệu"
+              },
+              "required": false,
+              "maxLength": 60
+            },
+            {
+              "key": "dimensions",
+              "hint": {
+                "en": "e.g. 120 x 60 x 75 cm",
+                "vi": "VD: 120 x 60 x 75 cm"
+              },
+              "type": "text",
+              "label": {
+                "en": "Dimensions",
+                "vi": "Kích thước"
+              },
+              "required": false,
+              "maxLength": 60
+            }
+          ],
+          "description": {
+            "en": "Furniture, lamps, kitchenware, decor...",
+            "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
+          }
         },
         "images": [],
         "createdAt": "2026-10-01T00:10:00.000Z",
@@ -983,7 +1068,20 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
-        "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh"
+        "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+        "seller": {
+          "id": "user-seller",
+          "fullName": "user-seller",
+          "username": "user_seller",
+          "avatarUrl": null,
+          "status": "ACTIVE",
+          "ratingAverage": 0,
+          "ratingCount": 0,
+          "createdAt": "2026-10-01T00:00:00.000Z"
+        },
+        "sellerActiveListings": 3,
+        "isFavorite": false,
+        "isOwner": false
       }
     }
   },
@@ -1720,7 +1818,28 @@
         "condition": "USED_GOOD",
         "category": {
           "id": "other",
-          "name": "Khác"
+          "icon": "other",
+          "name": {
+            "en": "Other",
+            "vi": "Khác"
+          },
+          "attributes": [
+            {
+              "key": "brand",
+              "hint": null,
+              "type": "text",
+              "label": {
+                "en": "Brand",
+                "vi": "Thương hiệu"
+              },
+              "required": false,
+              "maxLength": 60
+            }
+          ],
+          "description": {
+            "en": "Items that fit no other category",
+            "vi": "Các món đồ chưa có danh mục phù hợp"
+          }
         },
         "images": [
           "/api/v1/listings/media/<uuid>.png",
@@ -1735,7 +1854,20 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
-        "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh"
+        "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+        "seller": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "username": "user_buyer",
+          "avatarUrl": null,
+          "status": "ACTIVE",
+          "ratingAverage": 0,
+          "ratingCount": 0,
+          "createdAt": "2026-10-01T00:00:00.000Z"
+        },
+        "sellerActiveListings": 1,
+        "isFavorite": false,
+        "isOwner": false
       }
     }
   },
