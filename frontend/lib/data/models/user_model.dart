@@ -40,7 +40,8 @@ class UserModel extends Equatable {
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
     id: '${json['id']}',
-    email: json['email'] as String,
+    // Người dùng công khai (người bán, người đánh giá) không có email
+    email: json['email'] as String? ?? '',
     fullName: json['fullName'] as String? ?? '',
     username: json['username'] as String? ?? '',
     phone: json['phone'] as String?,
