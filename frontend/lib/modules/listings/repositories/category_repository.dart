@@ -1,3 +1,4 @@
+import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/core/network/api_client.dart';
 import '../data/listing_mock_data.dart';
 import 'package:restore/data/models/category_model.dart';
@@ -20,27 +21,34 @@ class MockCategoryRepository implements CategoryRepository {
   }
 }
 
-/// Gọi `GET /categories`. Danh mục ít thay đổi nên giữ lại trong bộ nhớ
-/// suốt phiên làm việc, tránh tải lại mỗi lần mở luồng đăng tin.
+/// Đọc danh mục hiện tại mỗi lần mở luồng, để áp dụng cấu hình admin mới.
 class ApiCategoryRepository implements CategoryRepository {
   ApiCategoryRepository({ApiClient? apiClient})
     : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
-  static List<CategoryModel>? _cache;
+  Future<Map<ListingCondition, String>> getActiveConditions() async {
+    final data =
+        (await _apiClient.dio.get<Map<String, dynamic>>(
+              '/conditions',
+            )).data!['data']
+            as List;
+    return {
+      for (final row in data)
+        if (ListingCondition.fromApi(row['condition']) case final value?)
+          value: row['name'] as String,
+    };
+  }
 
   @override
   Future<List<CategoryModel>> getCategories() async {
-    final cached = _cache;
-    if (cached != null) return cached;
-
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
       '/categories',
       queryParameters: const {'include': 'attributes'},
     );
     final data = response.data?['data'];
     if (data is! List) throw const FormatException('Missing response data');
-    return _cache = [
+    return [
       for (final item in data)
         CategoryModel.fromJson(Map<String, dynamic>.from(item as Map)),
     ];

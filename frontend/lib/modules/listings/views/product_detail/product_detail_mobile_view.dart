@@ -1,3 +1,4 @@
+import 'package:restore/modules/content/views/community_content_view.dart' show reportListing;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -279,7 +280,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
           category: category,
           values: detail.listing.attributes,
         ),
-      ProductDetailSafetyTips(onReport: _comingSoon),
+      ProductDetailSafetyTips(onReport: () => reportListing(context, detail.listing.id)),
     ];
 
     return SliverPadding(
