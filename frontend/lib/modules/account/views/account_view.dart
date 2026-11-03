@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../../../core/constants/app_icons.dart';
 import '../../../core/config/app_environment.dart';
@@ -422,8 +423,11 @@ class _AccountPage extends StatelessWidget {
                       items: [
                         _MenuItem(
                           AppIcons.settings,
-                          'Cài đặt tài khoản',
-                          onTap: () => _soon(dialogContext),
+                          AppLocalizations.of(context)!.settingsPageTitle,
+                          onTap: () {
+                            Navigator.of(dialogContext).pop();
+                            context.push('/settings');
+                          },
                         ),
                         _MenuItem(
                           AppIcons.help,

@@ -98,6 +98,258 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @feedPreviewBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get feedPreviewBadge;
+
+  /// No description provided for @feedForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get feedForYou;
+
+  /// No description provided for @feedFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get feedFollowing;
+
+  /// No description provided for @feedCompose.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a find or a story…'**
+  String get feedCompose;
+
+  /// No description provided for @feedDemo.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview • Posts and interactions stay on this device until restart.'**
+  String get feedDemo;
+
+  /// No description provided for @feedFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get feedFollow;
+
+  /// No description provided for @feedUnfollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfollow'**
+  String get feedUnfollow;
+
+  /// No description provided for @feedPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get feedPost;
+
+  /// No description provided for @feedNewPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a community post'**
+  String get feedNewPost;
+
+  /// No description provided for @feedTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to share?'**
+  String get feedTextHint;
+
+  /// No description provided for @feedAddPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get feedAddPhoto;
+
+  /// No description provided for @feedTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get feedTakePhoto;
+
+  /// No description provided for @feedRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get feedRemovePhoto;
+
+  /// No description provided for @feedComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get feedComments;
+
+  /// No description provided for @feedCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a comment…'**
+  String get feedCommentHint;
+
+  /// No description provided for @feedSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send comment'**
+  String get feedSend;
+
+  /// No description provided for @feedLike.
+  ///
+  /// In en, this message translates to:
+  /// **'Like'**
+  String get feedLike;
+
+  /// No description provided for @feedUnlike.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlike'**
+  String get feedUnlike;
+
+  /// No description provided for @feedEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts yet'**
+  String get feedEmpty;
+
+  /// No description provided for @feedFollowingEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow an author to see their posts here.'**
+  String get feedFollowingEmpty;
+
+  /// No description provided for @feedRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload preview'**
+  String get feedRetry;
+
+  /// No description provided for @feedLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load preview posts.'**
+  String get feedLoadError;
+
+  /// No description provided for @feedPhotoError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t select a photo. Please try again.'**
+  String get feedPhotoError;
+
+  /// No description provided for @feedViewListing.
+  ///
+  /// In en, this message translates to:
+  /// **'View listing'**
+  String get feedViewListing;
+
+  /// No description provided for @feedSampleListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample listing'**
+  String get feedSampleListing;
+
+  /// No description provided for @feedYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get feedYourName;
+
+  /// No description provided for @feedNoComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to comment.'**
+  String get feedNoComments;
+
+  /// No description provided for @feedNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are not connected in this preview.'**
+  String get feedNotifications;
+
+  /// No description provided for @feedAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About this preview'**
+  String get feedAbout;
+
+  /// No description provided for @feedAboutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Likes, follows, posts and comments are local demo data. They are not saved to a server.'**
+  String get feedAboutBody;
+
+  /// No description provided for @feedNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get feedNow;
+
+  /// No description provided for @feedMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute ago} other{{count} minutes ago}}'**
+  String feedMinutes(int count);
+
+  /// No description provided for @feedHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String feedHours(int count);
+
+  /// No description provided for @feedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String feedDays(int count);
+
+  /// No description provided for @feedLikes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 like} other{{count} likes}}'**
+  String feedLikes(int count);
+
+  /// No description provided for @feedCommentCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 comment} other{{count} comments}}'**
+  String feedCommentCount(int count);
+
+  /// No description provided for @settingsPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsPageTitle;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'App language'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsLanguageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the interface language. User posts keep their original language.'**
+  String get settingsLanguageHint;
+
+  /// No description provided for @settingsLanguageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your language preference.'**
+  String get settingsLanguageError;
+
+  /// No description provided for @feedRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add text or a photo before posting.'**
+  String get feedRequired;
+
+  /// No description provided for @feedDraftLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 2,000 characters'**
+  String get feedDraftLimit;
+
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:

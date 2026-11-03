@@ -9,6 +9,177 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get feedPreviewBadge => 'Preview';
+
+  @override
+  String get feedForYou => 'For you';
+
+  @override
+  String get feedFollowing => 'Following';
+
+  @override
+  String get feedCompose => 'Share a find or a story…';
+
+  @override
+  String get feedDemo =>
+      'Preview • Posts and interactions stay on this device until restart.';
+
+  @override
+  String get feedFollow => 'Follow';
+
+  @override
+  String get feedUnfollow => 'Unfollow';
+
+  @override
+  String get feedPost => 'Post';
+
+  @override
+  String get feedNewPost => 'Create a community post';
+
+  @override
+  String get feedTextHint => 'What would you like to share?';
+
+  @override
+  String get feedAddPhoto => 'Add photo';
+
+  @override
+  String get feedTakePhoto => 'Take photo';
+
+  @override
+  String get feedRemovePhoto => 'Remove photo';
+
+  @override
+  String get feedComments => 'Comments';
+
+  @override
+  String get feedCommentHint => 'Write a comment…';
+
+  @override
+  String get feedSend => 'Send comment';
+
+  @override
+  String get feedLike => 'Like';
+
+  @override
+  String get feedUnlike => 'Unlike';
+
+  @override
+  String get feedEmpty => 'No posts yet';
+
+  @override
+  String get feedFollowingEmpty => 'Follow an author to see their posts here.';
+
+  @override
+  String get feedRetry => 'Reload preview';
+
+  @override
+  String get feedLoadError => 'Couldn\'t load preview posts.';
+
+  @override
+  String get feedPhotoError => 'Couldn\'t select a photo. Please try again.';
+
+  @override
+  String get feedViewListing => 'View listing';
+
+  @override
+  String get feedSampleListing => 'Sample listing';
+
+  @override
+  String get feedYourName => 'You';
+
+  @override
+  String get feedNoComments => 'Be the first to comment.';
+
+  @override
+  String get feedNotifications =>
+      'Notifications are not connected in this preview.';
+
+  @override
+  String get feedAbout => 'About this preview';
+
+  @override
+  String get feedAboutBody =>
+      'Likes, follows, posts and comments are local demo data. They are not saved to a server.';
+
+  @override
+  String get feedNow => 'Just now';
+
+  @override
+  String feedMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes ago',
+      one: '1 minute ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feedHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feedDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feedLikes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count likes',
+      one: '1 like',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feedCommentCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count comments',
+      one: '1 comment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get settingsPageTitle => 'Settings';
+
+  @override
+  String get settingsLanguage => 'App language';
+
+  @override
+  String get settingsLanguageHint =>
+      'Choose the interface language. User posts keep their original language.';
+
+  @override
+  String get settingsLanguageError =>
+      'Couldn\'t save your language preference.';
+
+  @override
+  String get feedRequired => 'Add text or a photo before posting.';
+
+  @override
+  String get feedDraftLimit => 'Up to 2,000 characters';
+
+  @override
   String get appName => 'ReStore';
 
   @override

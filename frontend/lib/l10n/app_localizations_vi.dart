@@ -9,6 +9,147 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get feedPreviewBadge => 'Bản mẫu';
+
+  @override
+  String get feedForYou => 'Dành cho bạn';
+
+  @override
+  String get feedFollowing => 'Đang theo dõi';
+
+  @override
+  String get feedCompose => 'Bạn muốn chia sẻ điều gì?';
+
+  @override
+  String get feedDemo =>
+      'Bản mẫu • Bài viết và tương tác chỉ giữ trong phiên dùng này.';
+
+  @override
+  String get feedFollow => 'Theo dõi';
+
+  @override
+  String get feedUnfollow => 'Bỏ theo dõi';
+
+  @override
+  String get feedPost => 'Đăng bài';
+
+  @override
+  String get feedNewPost => 'Tạo bài cộng đồng';
+
+  @override
+  String get feedTextHint => 'Bạn muốn chia sẻ điều gì?';
+
+  @override
+  String get feedAddPhoto => 'Thêm ảnh';
+
+  @override
+  String get feedTakePhoto => 'Chụp ảnh';
+
+  @override
+  String get feedRemovePhoto => 'Xóa ảnh';
+
+  @override
+  String get feedComments => 'Bình luận';
+
+  @override
+  String get feedCommentHint => 'Viết bình luận…';
+
+  @override
+  String get feedSend => 'Gửi bình luận';
+
+  @override
+  String get feedLike => 'Thích';
+
+  @override
+  String get feedUnlike => 'Bỏ thích';
+
+  @override
+  String get feedEmpty => 'Chưa có bài viết';
+
+  @override
+  String get feedFollowingEmpty =>
+      'Theo dõi tác giả để xem bài viết của họ tại đây.';
+
+  @override
+  String get feedRetry => 'Tải lại bản mẫu';
+
+  @override
+  String get feedLoadError => 'Không tải được bài viết mẫu.';
+
+  @override
+  String get feedPhotoError => 'Không chọn được ảnh. Vui lòng thử lại.';
+
+  @override
+  String get feedViewListing => 'Xem tin';
+
+  @override
+  String get feedSampleListing => 'Tin đăng mẫu';
+
+  @override
+  String get feedYourName => 'Bạn';
+
+  @override
+  String get feedNoComments => 'Hãy là người đầu tiên bình luận.';
+
+  @override
+  String get feedNotifications =>
+      'Thông báo chưa được kết nối trong bản mẫu này.';
+
+  @override
+  String get feedAbout => 'Về bản mẫu';
+
+  @override
+  String get feedAboutBody =>
+      'Thích, theo dõi, bài viết và bình luận là dữ liệu mẫu trong phiên dùng. Chưa được lưu lên máy chủ.';
+
+  @override
+  String get feedNow => 'Vừa xong';
+
+  @override
+  String feedMinutes(int count) {
+    return '$count phút trước';
+  }
+
+  @override
+  String feedHours(int count) {
+    return '$count giờ trước';
+  }
+
+  @override
+  String feedDays(int count) {
+    return '$count ngày trước';
+  }
+
+  @override
+  String feedLikes(int count) {
+    return '$count lượt thích';
+  }
+
+  @override
+  String feedCommentCount(int count) {
+    return '$count bình luận';
+  }
+
+  @override
+  String get settingsPageTitle => 'Cài đặt';
+
+  @override
+  String get settingsLanguage => 'Ngôn ngữ ứng dụng';
+
+  @override
+  String get settingsLanguageHint =>
+      'Chọn ngôn ngữ giao diện. Bài viết người dùng giữ nguyên ngôn ngữ gốc.';
+
+  @override
+  String get settingsLanguageError => 'Không lưu được lựa chọn ngôn ngữ.';
+
+  @override
+  String get feedRequired => 'Thêm nội dung hoặc ảnh trước khi đăng.';
+
+  @override
+  String get feedDraftLimit => 'Tối đa 2.000 ký tự';
+
+  @override
   String get appName => 'ReStore';
 
   @override
