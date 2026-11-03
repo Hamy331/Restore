@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 
 void main() {
@@ -14,7 +16,17 @@ void main() {
     });
 
     await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(body: AccountView())),
+      const MaterialApp(
+        locale: Locale('vi'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Scaffold(body: AccountView()),
+      ),
     );
     await tester.pumpAndSettle();
 

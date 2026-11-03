@@ -1,4 +1,81 @@
 {
+  "feedPreviewBadge": "Bản mẫu",
+  "feedForYou": "Dành cho bạn",
+  "feedFollowing": "Đang theo dõi",
+  "feedCompose": "Bạn muốn chia sẻ điều gì?",
+  "feedDemo": "Bản mẫu • Bài viết và tương tác chỉ giữ trong phiên dùng này.",
+  "feedFollow": "Theo dõi",
+  "feedUnfollow": "Bỏ theo dõi",
+  "feedPost": "Đăng bài",
+  "feedNewPost": "Tạo bài cộng đồng",
+  "feedTextHint": "Bạn muốn chia sẻ điều gì?",
+  "feedAddPhoto": "Thêm ảnh",
+  "feedTakePhoto": "Chụp ảnh",
+  "feedRemovePhoto": "Xóa ảnh",
+  "feedComments": "Bình luận",
+  "feedCommentHint": "Viết bình luận…",
+  "feedSend": "Gửi bình luận",
+  "feedLike": "Thích",
+  "feedUnlike": "Bỏ thích",
+  "feedEmpty": "Chưa có bài viết",
+  "feedFollowingEmpty": "Theo dõi tác giả để xem bài viết của họ tại đây.",
+  "feedRetry": "Tải lại bản mẫu",
+  "feedLoadError": "Không tải được bài viết mẫu.",
+  "feedPhotoError": "Không chọn được ảnh. Vui lòng thử lại.",
+  "feedViewListing": "Xem tin",
+  "feedSampleListing": "Tin đăng mẫu",
+  "feedYourName": "Bạn",
+  "feedNoComments": "Hãy là người đầu tiên bình luận.",
+  "feedNotifications": "Thông báo chưa được kết nối trong bản mẫu này.",
+  "feedAbout": "Về bản mẫu",
+  "feedAboutBody": "Thích, theo dõi, bài viết và bình luận là dữ liệu mẫu trong phiên dùng. Chưa được lưu lên máy chủ.",
+  "feedNow": "Vừa xong",
+  "feedMinutes": "{count} phút trước",
+  "@feedMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedHours": "{count} giờ trước",
+  "@feedHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedDays": "{count} ngày trước",
+  "@feedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedLikes": "{count} lượt thích",
+  "@feedLikes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedCommentCount": "{count} bình luận",
+  "@feedCommentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPageTitle": "Cài đặt",
+  "settingsLanguage": "Ngôn ngữ ứng dụng",
+  "settingsLanguageHint": "Chọn ngôn ngữ giao diện. Bài viết người dùng giữ nguyên ngôn ngữ gốc.",
+  "settingsLanguageError": "Không lưu được lựa chọn ngôn ngữ.",
+  "feedRequired": "Thêm nội dung hoặc ảnh trước khi đăng.",
+  "feedDraftLimit": "Tối đa 2.000 ký tự",
   "appName": "ReStore",
   "loginTitle": "Đăng nhập vào tài khoản",
   "email": "Email",

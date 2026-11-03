@@ -21,6 +21,7 @@ class AppIcons {
   static const IconData chevronDown = LucideIcons.chevronDown300;
   static const IconData arrowUp = LucideIcons.arrowUp400;
   static const IconData more = LucideIcons.ellipsisVertical300;
+  static const IconData moreHorizontal = LucideIcons.ellipsis300;
   static const IconData menu = LucideIcons.menu300;
   static const IconData activity = LucideIcons.footprints300;
   static const IconData followUser = LucideIcons.userRoundPlus300;
@@ -51,6 +52,7 @@ class AppIcons {
   /// Đưa gợi ý lên ô tìm kiếm để sửa tiếp (mũi tên chéo lên trái)
   static const IconData fillQuery = LucideIcons.arrowUpLeft300;
   static const IconData send = LucideIcons.send300;
+  static const IconData copy = LucideIcons.copy300;
   static const IconData refresh = LucideIcons.rotateCw300;
   static const IconData renew = LucideIcons.refreshCw300;
   static const IconData swap = LucideIcons.arrowLeftRight300;

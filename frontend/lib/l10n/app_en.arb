@@ -1,4 +1,81 @@
 {
+  "feedPreviewBadge": "Preview",
+  "feedForYou": "For you",
+  "feedFollowing": "Following",
+  "feedCompose": "Share a find or a story…",
+  "feedDemo": "Preview • Posts and interactions stay on this device until restart.",
+  "feedFollow": "Follow",
+  "feedUnfollow": "Unfollow",
+  "feedPost": "Post",
+  "feedNewPost": "Create a community post",
+  "feedTextHint": "What would you like to share?",
+  "feedAddPhoto": "Add photo",
+  "feedTakePhoto": "Take photo",
+  "feedRemovePhoto": "Remove photo",
+  "feedComments": "Comments",
+  "feedCommentHint": "Write a comment…",
+  "feedSend": "Send comment",
+  "feedLike": "Like",
+  "feedUnlike": "Unlike",
+  "feedEmpty": "No posts yet",
+  "feedFollowingEmpty": "Follow an author to see their posts here.",
+  "feedRetry": "Reload preview",
+  "feedLoadError": "Couldn't load preview posts.",
+  "feedPhotoError": "Couldn't select a photo. Please try again.",
+  "feedViewListing": "View listing",
+  "feedSampleListing": "Sample listing",
+  "feedYourName": "You",
+  "feedNoComments": "Be the first to comment.",
+  "feedNotifications": "Notifications are not connected in this preview.",
+  "feedAbout": "About this preview",
+  "feedAboutBody": "Likes, follows, posts and comments are local demo data. They are not saved to a server.",
+  "feedNow": "Just now",
+  "feedMinutes": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "@feedMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@feedHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedDays": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@feedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedLikes": "{count, plural, =1{1 like} other{{count} likes}}",
+  "@feedLikes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedCommentCount": "{count, plural, =1{1 comment} other{{count} comments}}",
+  "@feedCommentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPageTitle": "Settings",
+  "settingsLanguage": "App language",
+  "settingsLanguageHint": "Choose the interface language. User posts keep their original language.",
+  "settingsLanguageError": "Couldn't save your language preference.",
+  "feedRequired": "Add text or a photo before posting.",
+  "feedDraftLimit": "Up to 2,000 characters",
   "appName": "ReStore",
   "loginTitle": "Login to your Account",
   "email": "Email",

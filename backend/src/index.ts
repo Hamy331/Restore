@@ -1,3 +1,4 @@
+import { feedRouter } from './modules/feeds/feed.route.js';
 import adminRouter from './modules/admin/admin.route.js';
 import contentRouter from './modules/admin/content.route.js';
 import { releaseExpiredSuspensions } from './lib/account-status.js';
@@ -58,6 +59,7 @@ app.use('/api/v1', catalogRouter);
 app.use('/api/v1/stores', storeRouter);
 app.use('/api/v1/promotions', promotionRouter);
 app.use('/api/v1/users', usersRouter);
+app.use('/api/v1', feedRouter);
 app.use('/api/v1/conversations', chatRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);

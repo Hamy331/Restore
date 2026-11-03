@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:restore/core/ui/layouts/t_foundation_placeholder_layout.dart';
+import 'package:restore/modules/feeds/views/feeds_view.dart';
+import 'package:restore/modules/account/views/language_settings_view.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 import 'package:restore/modules/chat/views/messages_view.dart';
 import 'package:restore/modules/chat/views/live_messages_view.dart';
@@ -39,8 +40,6 @@ import 'package:restore/core/utils/animations/app_page_transitions.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
 import 'package:restore/modules/shell/bloc/shell_badges_cubit.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
-import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/l10n/app_localizations.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -201,17 +200,7 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/feeds',
-              builder: (context, _) {
-                final l10n = AppLocalizations.of(context)!;
-                return TFoundationPlaceholderLayout(
-                  title: l10n.feedsTitle,
-                  message: l10n.feedsComingSoon,
-                  icon: AppIcons.feeds,
-                );
-              },
-            ),
+            GoRoute(path: '/feeds', builder: (_, _) => const FeedsView()),
           ],
         ),
         StatefulShellBranch(
@@ -262,11 +251,17 @@ final appRouter = GoRouter(
     ),
     // Chi tiết sản phẩm; extra là ListingModel của thẻ vừa bấm (tuỳ chọn)
     GoRoute(
+      path: '/settings',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const LanguageSettingsView(),
+    ),
+    GoRoute(
       path: '/listings/:id',
       parentNavigatorKey: _rootNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
         state: state,
         child: ProductDetailView(
+          demoPreview: state.uri.queryParameters['feedPreview'] == 'true',
           listingId: state.pathParameters['id']!,
           preview: state.extra is ListingModel
               ? state.extra! as ListingModel
