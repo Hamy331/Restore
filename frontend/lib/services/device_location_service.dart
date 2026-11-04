@@ -18,11 +18,8 @@ class DeviceLocationService {
   /// Độ chính xác vừa phải đủ cho "gần bạn", nhanh và ít tốn pin hơn GPS cao
   static const LocationSettings _settings = LocationSettings(
     accuracy: LocationAccuracy.medium,
-    timeLimit: Duration(seconds: 10),
+    timeLimit: Duration(seconds: 8),
   );
-
-  /// Vị trí đã biết gần đây vẫn đủ tốt cho việc gợi ý phường/xã
-  static const Duration _maxLastKnownAge = Duration(minutes: 5);
 
   Future<GeoPoint> getCurrentPosition() async {
     if (!await Geolocator.isLocationServiceEnabled()) {
@@ -42,13 +39,8 @@ class DeviceLocationService {
       );
     }
 
-    // Có vị trí mới đây thì trả ngay, không phải chờ GPS bắt tín hiệu
-    final lastKnown = await _lastKnownPosition();
-    if (lastKnown != null &&
-        DateTime.now().difference(lastKnown.timestamp) < _maxLastKnownAge) {
-      return GeoPoint(lastKnown.latitude, lastKnown.longitude);
-    }
-
+    // Luôn xin vị trí mới: vị trí đã lưu của hệ điều hành có thể là chỗ cũ
+    // (VD máy ảo vừa đổi vị trí nhưng vẫn trả tọa độ mặc định ở Mỹ)
     try {
       final position = await Geolocator.getCurrentPosition(
         locationSettings: _settings,
@@ -57,6 +49,7 @@ class DeviceLocationService {
     } catch (_) {
       // Hết thời gian chờ (thường gặp trong nhà hoặc máy ảo chưa đặt vị trí):
       // dùng vị trí cũ nếu có
+      final lastKnown = await _lastKnownPosition();
       if (lastKnown != null) {
         return GeoPoint(lastKnown.latitude, lastKnown.longitude);
       }

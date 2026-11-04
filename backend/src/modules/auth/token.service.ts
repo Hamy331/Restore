@@ -2,13 +2,14 @@ import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Role } from '@prisma/client';
 import { getRequiredEnv, getSecuritySecret } from '../../config/env.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 import * as repository from './auth.repository.js';
 
 const ISSUER = 'restore-api';
 const AUDIENCE = 'restore-mobile';
 const ACCESS_TTL_SECONDS = 15 * 60;
-const REFRESH_TTL_SECONDS = 30 * 24 * 60 * 60;
+/** Phiên đăng nhập 60 ngày, gia hạn mỗi lần refresh (refresh token xoay vòng) */
+const REFRESH_TTL_SECONDS = 60 * 24 * 60 * 60;
 const RESET_TTL_SECONDS = 10 * 60;
 
 type AuthUser = { id: string; email: string; role: Role; authVersion: number };

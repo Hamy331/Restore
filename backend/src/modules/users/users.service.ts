@@ -1,155 +1,47 @@
-import { Prisma } from '@prisma/client';
-import { prisma } from '../../lib/prisma.js';
-import { AppError } from '../../errors/app-error.js';
-import { parseFullName, parseUsername } from '../auth/auth.validation.js';
-import { publish } from '../chat/chat.events.js';
+import type { Prisma } from '@prisma/client';
+import { audit } from '../../common/audit/admin-audit.js';
+import { AppError } from '../../common/errors/app-error.js';
+import { toUserProfileDto } from './users.dto.js';
+import { changed } from '../../common/validation/admin-input.js';
+import * as usersRepository from './users.repository.js';
 
-const profileSelect = {
-  id: true, fullName: true, username: true, avatarUrl: true, bio: true, status: true,
-  ratingAverage: true, ratingCount: true, createdAt: true, lastActiveAt: true,
-  _count: { select: { followers: true, following: true } },
-} satisfies Prisma.UserSelect;
-
-const onlineThresholdMs = 2 * 60 * 1000;
-type ProfileRow = Prisma.UserGetPayload<{ select: typeof profileSelect }>;
-const formatProfile = (user: ProfileRow) => ({
-  id: user.id,
-  fullName: user.fullName,
-  username: user.username,
-  avatarUrl: user.avatarUrl,
-  bio: user.bio,
-  ratingAverage: user.ratingAverage,
-  ratingCount: user.ratingCount,
-  createdAt: user.createdAt,
-  followerCount: user._count.followers,
-  followingCount: user._count.following,
-  presence: {
-    isOnline: !!user.lastActiveAt && Date.now() - new Date(user.lastActiveAt).getTime() < onlineThresholdMs,
-    lastActiveAt: user.lastActiveAt,
-  },
-});
-
-// [viewerId] khác [id] thì kèm `isFollowing` cho trang hồ sơ công khai.
-export const getProfile = async (id: string, viewerId?: string) => {
-  const user = await prisma.user.findUnique({ where: { id }, select: profileSelect });
+/** Hồ sơ của người đang đăng nhập. Tài khoản không còn ACTIVE coi như hết phiên. */
+export async function getMyProfile(userId: string) {
+  const user = await usersRepository.findProfileById(userId);
   if (!user || user.status !== 'ACTIVE') {
-    throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
+    throw new AppError(401, 'ACCOUNT_UNAVAILABLE', 'Tài khoản không còn khả dụng.');
   }
-  if (!viewerId || viewerId === id) return formatProfile(user);
-  const follow = await prisma.userFollow.findUnique({
-    where: { followerId_followingId: { followerId: viewerId, followingId: id } },
-  });
-  return { ...formatProfile(user), isFollowing: !!follow };
-};
-
-const followPageSize = 20;
-export function followPage(value: unknown) {
-  if (value === undefined) return 1;
-  const page = Number(value);
-  if (!Number.isSafeInteger(page) || page < 1) {
-    throw new AppError(400, 'INVALID_PAGINATION', 'Trang không hợp lệ.');
-  }
-  return page;
+  return toUserProfileDto(user);
 }
 
-// Danh sách người theo dõi ([kind] = followers) hoặc đang theo dõi của [id].
-export const listFollows = async (
-  id: string,
-  viewerId: string,
-  kind: 'followers' | 'following',
-  pageValue: unknown,
-) => {
-  const page = followPage(pageValue);
-  const where = kind === 'followers'
-    ? { followingId: id, follower: { status: 'ACTIVE' as const } }
-    : { followerId: id, following: { status: 'ACTIVE' as const } };
-  const userSelect = {
-    id: true, fullName: true, username: true, avatarUrl: true,
-    followers: { where: { followerId: viewerId }, select: { followerId: true } },
-  } as const;
-  const [rows, total] = await prisma.$transaction([
-    prisma.userFollow.findMany({
-      where,
-      orderBy: [{ createdAt: 'desc' }],
-      skip: (page - 1) * followPageSize,
-      take: followPageSize,
-      select: { follower: { select: userSelect }, following: { select: userSelect } },
-    }),
-    prisma.userFollow.count({ where }),
-  ]);
-  return {
-    items: rows.map((row) => {
-      const user = kind === 'followers' ? row.follower : row.following;
-      return {
-        id: user.id, fullName: user.fullName, username: user.username, avatarUrl: user.avatarUrl,
-        isFollowing: user.followers.length > 0,
-        isMe: user.id === viewerId,
-      };
-    }),
-    hasMore: page * followPageSize < total,
-  };
-};
+/* ---------- Quản trị thành viên (dùng ở /admin/users và khi xử lý báo cáo) ---------- */
 
-export const updateProfile = async (id: string, body: unknown) => {
-  if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    throw new AppError(422, 'INVALID_PROFILE', 'Thông tin hồ sơ không hợp lệ.');
-  }
-  const input = body as Record<string, unknown>;
-  const allowed = ['fullName', 'username', 'bio', 'avatarUrl'];
-  if (!Object.keys(input).length || Object.keys(input).some((key) => !allowed.includes(key))) {
-    throw new AppError(422, 'INVALID_PROFILE_FIELDS', 'Hồ sơ chứa trường không hợp lệ.');
-  }
-  const data: Prisma.UserUpdateInput = {};
-  if ('fullName' in input) data.fullName = parseFullName(input.fullName);
-  if ('username' in input) data.username = parseUsername(input.username);
-  if ('bio' in input) {
-    if (input.bio !== null && (typeof input.bio !== 'string' || input.bio.trim().length > 300)) {
-      throw new AppError(422, 'INVALID_BIO', 'Giới thiệu tối đa 300 ký tự.', 'bio');
+export type SanctionAction = 'WARN' | 'SUSPEND' | 'BAN' | 'RESTORE';
+
+const SANCTION_STATUS = { SUSPEND: 'SUSPENDED', BAN: 'BANNED', RESTORE: 'ACTIVE' } as const;
+
+/** Hồ sơ thành viên cho trang quản trị (null nếu không có) */
+export const getAdminUser = (id: string) => usersRepository.findAdminUser(id);
+
+/**
+ * Cảnh cáo, tạm khóa [days] ngày, cấm hoặc mở lại tài khoản thành viên đã xác minh, trong transaction [tx].
+ * updatedAt phải khớp [expected] (409 ADMIN_STALE nếu không). Khóa/cấm/mở lại thì thu hồi mọi phiên. Ghi AdminAudit.
+ */
+export async function sanctionUser(tx: Prisma.TransactionClient, actorId: string, id: string, action: SanctionAction,
+  reason: string, days: number, expected: Date) {
+  const user = await usersRepository.findMember(tx, id);
+  if (!user || user.status === 'UNVERIFIED') throw new AppError(409, 'INVALID_USER_ACTION', 'Chỉ xử lý tài khoản thành viên đã xác minh.');
+  if (action === 'WARN') {
+    if (+user.updatedAt !== +expected) changed(0);
+  } else {
+    if ((action === 'RESTORE' && !['SUSPENDED', 'BANNED'].includes(user.status)) || (action !== 'RESTORE' && user.status === 'BANNED')) {
+      throw new AppError(409, 'INVALID_USER_ACTION', 'Trạng thái tài khoản không phù hợp.');
     }
-    data.bio = input.bio === null ? null : (input.bio as string).trim();
+    changed(await usersRepository.updateMemberStatus(tx, id, expected, {
+      status: SANCTION_STATUS[action],
+      suspendedUntil: action === 'SUSPEND' ? new Date(Date.now() + days * 86400000) : null,
+    }));
+    await usersRepository.revokeSessions(tx, id);
   }
-  if ('avatarUrl' in input) {
-    if (input.avatarUrl !== null && (typeof input.avatarUrl !== 'string' ||
-        input.avatarUrl.length > 2000 || !/^https:\/\//.test(input.avatarUrl))) {
-      throw new AppError(422, 'INVALID_AVATAR_URL', 'Ảnh đại diện cần URL HTTPS hợp lệ.', 'avatarUrl');
-    }
-    data.avatarUrl = input.avatarUrl as string | null;
-  }
-  try {
-    const user = await prisma.user.update({ where: { id }, data, select: profileSelect });
-    return formatProfile(user);
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-      throw new AppError(409, 'USERNAME_TAKEN', 'Tên người dùng đã được sử dụng.', 'username');
-    }
-    throw error;
-  }
-};
-
-export const heartbeat = async (id: string) => {
-  const user = await prisma.user.update({ where: { id }, data: { lastActiveAt: new Date() }, select: { lastActiveAt: true } });
-  const peers = await prisma.conversationMember.findMany({
-    where: { conversation: { members: { some: { userId: id } } }, userId: { not: id } },
-    select: { userId: true }, distinct: ['userId'],
-  });
-  publish(peers.map((peer) => peer.userId), 'presence', {
-    userId: id, isOnline: true, lastActiveAt: user.lastActiveAt,
-  });
-  return { isOnline: true, lastActiveAt: user.lastActiveAt };
-};
-
-export const follow = async (selfId: string, targetId: string) => {
-  if (selfId === targetId) throw new AppError(422, 'CANNOT_FOLLOW_SELF', 'Không thể theo dõi chính mình.');
-  const target = await prisma.user.findUnique({ where: { id: targetId }, select: { id: true, status: true } });
-  if (!target || target.status !== 'ACTIVE') throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
-  await prisma.userFollow.upsert({
-    where: { followerId_followingId: { followerId: selfId, followingId: targetId } },
-    create: { followerId: selfId, followingId: targetId }, update: {},
-  });
-  return { following: true };
-};
-
-export const unfollow = async (selfId: string, targetId: string) => {
-  await prisma.userFollow.deleteMany({ where: { followerId: selfId, followingId: targetId } });
-  return { following: false };
-};
+  await audit(tx, actorId, action, 'USER', id, reason, user, { days, status: action === 'WARN' ? user.status : SANCTION_STATUS[action] });
+}

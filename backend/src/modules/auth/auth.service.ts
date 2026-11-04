@@ -2,7 +2,7 @@ import { createHmac, randomInt, timingSafeEqual } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import { OtpPurpose, User } from '@prisma/client';
 import { getSecuritySecret } from '../../config/env.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 import { sendOtpEmail } from '../../services/email.service.js';
 import * as repository from './auth.repository.js';
 import * as tokens from './token.service.js';

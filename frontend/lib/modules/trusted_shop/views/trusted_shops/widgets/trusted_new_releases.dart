@@ -35,8 +35,8 @@ class TrustedNewReleases extends StatelessWidget {
         TrustedShopSectionHeader(
           title: l10n.trustedShopsNewReleasesTitle,
           subtitle: l10n.trustedShopsNewReleasesSubtitle,
-          icon: AppIcons.hot,
-          iconColor: accent,
+          eyebrow: l10n.trustedShopsNewReleasesEyebrow,
+          accent: accent,
         ),
         const SizedBox(height: 12),
         SizedBox(

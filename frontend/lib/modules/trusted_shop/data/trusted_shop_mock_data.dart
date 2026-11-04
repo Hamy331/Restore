@@ -352,7 +352,7 @@ class TrustedShopMockData {
     };
   }
 
-  /// Danh mục (JSON của `GET /categories`) có ít nhất một shop uy tín
+  /// Danh mục (JSON của `GET /catalog/categories`) có ít nhất một shop uy tín
   static List<Map<String, dynamic>> categories() {
     final ids = {
       for (final shop in shops) ...(shop['categoryIds'] as List).cast<String>(),

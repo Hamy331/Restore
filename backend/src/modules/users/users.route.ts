@@ -1,24 +1,36 @@
 import { Router, Response, NextFunction } from 'express';
-import { AuthRequest, verifyToken } from '../../middlewares/auth.middleware.js';
-import * as users from './users.service.js';
+import { PERMISSION } from '../../common/auth/permissions.js';
+import { ok } from '../../common/http/response.js';
+import { AuthRequest, requirePermission, verifyToken } from '../../middlewares/auth.middleware.js';
+import * as profile from './profile.service.js';
+import * as usersService from './users.service.js';
 
-const router = Router();
-router.use(verifyToken);
-const handle = (action: (req: AuthRequest) => Promise<unknown>, status = 200) =>
+/** /api/v1/users */
+const usersRouter = Router();
+
+const handle = (action: (req: AuthRequest) => Promise<unknown>) =>
   async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try { res.status(status).json({ success: true, data: await action(req) }); }
-    catch (error) { next(error); }
+    try { ok(res, await action(req)); } catch (error) { next(error); }
   };
 
-router.get('/me', handle((req) => users.getProfile(req.user!.userId)));
-router.patch('/me', handle((req) => users.updateProfile(req.user!.userId, req.body)));
-router.post('/me/heartbeat', handle((req) => users.heartbeat(req.user!.userId)));
-router.get('/:id', handle((req) => users.getProfile(req.params.id as string, req.user!.userId)));
-router.get('/:id/followers', handle((req) =>
-  users.listFollows(req.params.id as string, req.user!.userId, 'followers', req.query.page)));
-router.get('/:id/following', handle((req) =>
-  users.listFollows(req.params.id as string, req.user!.userId, 'following', req.query.page)));
-router.post('/:id/follow', handle((req) => users.follow(req.user!.userId, req.params.id as string)));
-router.delete('/:id/follow', handle((req) => users.unfollow(req.user!.userId, req.params.id as string)));
+/**
+ * Hồ sơ người đang đăng nhập: UserProfileDto (trang chủ dùng để chào và hiện
+ * avatar) cộng bio, số người theo dõi và trạng thái hoạt động (tab Tài khoản).
+ */
+usersRouter.get('/me', requirePermission(PERMISSION.PROFILE_READ), handle(async (req) => ({
+  ...await usersService.getMyProfile(req.user!.userId),
+  ...await profile.getProfile(req.user!.userId),
+})));
 
-export default router;
+usersRouter.use(verifyToken);
+usersRouter.patch('/me', handle((req) => profile.updateProfile(req.user!.userId, req.body)));
+usersRouter.post('/me/heartbeat', handle((req) => profile.heartbeat(req.user!.userId)));
+usersRouter.get('/:id', handle((req) => profile.getProfile(req.params.id as string, req.user!.userId)));
+usersRouter.get('/:id/followers', handle((req) =>
+  profile.listFollows(req.params.id as string, req.user!.userId, 'followers', req.query.page)));
+usersRouter.get('/:id/following', handle((req) =>
+  profile.listFollows(req.params.id as string, req.user!.userId, 'following', req.query.page)));
+usersRouter.post('/:id/follow', handle((req) => profile.follow(req.user!.userId, req.params.id as string)));
+usersRouter.delete('/:id/follow', handle((req) => profile.unfollow(req.user!.userId, req.params.id as string)));
+
+export default usersRouter;

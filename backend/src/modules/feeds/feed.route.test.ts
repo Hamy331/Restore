@@ -69,7 +69,7 @@ test('only the author can delete a post',async()=>{
  }finally{server.close();prisma.feedPost.findFirst=findFirst;prisma.feedPost.delete=remove;}
 });
 test('follow list pagination rejects invalid pages',async()=>{
- const {followPage}=await import('../users/users.service.js');
+ const {followPage}=await import('../users/profile.service.js');
  assert.equal(followPage(undefined),1);assert.equal(followPage('3'),3);
  for(const v of ['0','-1','1.5','x'])assert.throws(()=>followPage(v));
 });

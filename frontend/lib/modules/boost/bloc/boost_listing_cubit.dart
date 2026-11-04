@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/core/blocs/safe_emit.dart';
 
 enum BoostStep {
   packages,
@@ -29,7 +30,8 @@ class BoostListingState {
       );
 }
 
-class BoostListingCubit extends Cubit<BoostListingState> {
+class BoostListingCubit extends Cubit<BoostListingState>
+    with SafeEmit<BoostListingState> {
   BoostListingCubit() : super(const BoostListingState());
 
   void packageChanged(String value) => emit(state.copyWith(package: value));
