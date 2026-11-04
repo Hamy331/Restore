@@ -56,3 +56,6 @@ android/app/google-services.json
 android/app/google-services.json
 android/app/google-services.json
 android/app/google-services.json
+
+# Dữ liệu tỉnh/phường đóng gói trong app (chế độ mock)
+!assets/data/vn_locations.json

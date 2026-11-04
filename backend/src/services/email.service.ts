@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 import { ensureVerifiedEmailSender, getRequiredEnv } from '../config/env.js';
-import { AppError, isAppError } from '../errors/app-error.js';
+import { AppError, isAppError } from '../common/errors/app-error.js';
 
 type OtpPurpose = 'register' | 'forgot-password';
 

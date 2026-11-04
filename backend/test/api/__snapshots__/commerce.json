@@ -1,0 +1,973 @@
+{
+  "store me (personal)": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "package": {
+          "id": "personal",
+          "tier": "PERSONAL",
+          "name": "Cá nhân",
+          "monthlyPrice": "0",
+          "dailyListingLimit": 3,
+          "activeListingLimit": 10,
+          "draftLimit": 3,
+          "monthlyPromotionQuota": 0,
+          "priorityLevel": 0
+        },
+        "category": null,
+        "endsAt": null,
+        "pendingOrder": null,
+        "usage": {
+          "today": 0,
+          "active": 3,
+          "drafts": 0,
+          "promotionsThisMonth": 1
+        },
+        "remaining": {
+          "listingsToday": 3,
+          "activeListings": 7,
+          "drafts": 3,
+          "promotionsThisMonth": 0
+        }
+      }
+    }
+  },
+  "store me as admin": {
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Bạn không có quyền thực hiện thao tác này.",
+      "code": "FORBIDDEN"
+    }
+  },
+  "order invalid": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Gói cửa hàng hoặc danh mục không tồn tại.",
+      "code": "STORE_PACKAGE_NOT_FOUND"
+    }
+  },
+  "order basic": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-seller",
+        "packageId": "basic",
+        "categoryId": "furniture",
+        "amount": "99000",
+        "status": "PENDING",
+        "createdAt": "<date>",
+        "decidedAt": null,
+        "package": {
+          "id": "basic",
+          "tier": "BASIC",
+          "name": "Cửa hàng Basic",
+          "monthlyPrice": "99000",
+          "dailyListingLimit": 10,
+          "activeListingLimit": 30,
+          "draftLimit": 10,
+          "monthlyPromotionQuota": 2,
+          "priorityLevel": 1
+        },
+        "category": {
+          "active": true,
+          "id": "furniture",
+          "name": "Nội thất, trang trí",
+          "metadata": {
+            "id": "furniture",
+            "icon": "home",
+            "name": {
+              "en": "Furniture & decor",
+              "vi": "Nội thất, trang trí"
+            },
+            "imageUrl": "assets/images/marketplace/listing-lamp.png",
+            "attributes": [
+              {
+                "key": "home_type",
+                "type": "select",
+                "label": {
+                  "en": "Product type",
+                  "vi": "Loại sản phẩm"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Furniture",
+                      "vi": "Bàn ghế, tủ kệ"
+                    },
+                    "value": "furniture"
+                  },
+                  {
+                    "label": {
+                      "en": "Lighting",
+                      "vi": "Đèn"
+                    },
+                    "value": "lighting"
+                  },
+                  {
+                    "label": {
+                      "en": "Kitchenware",
+                      "vi": "Đồ bếp"
+                    },
+                    "value": "kitchenware"
+                  },
+                  {
+                    "label": {
+                      "en": "Decor",
+                      "vi": "Đồ trang trí"
+                    },
+                    "value": "decor"
+                  },
+                  {
+                    "label": {
+                      "en": "Bedding",
+                      "vi": "Chăn ga gối"
+                    },
+                    "value": "bedding"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "material",
+                "hint": {
+                  "en": "e.g. Oak, rattan",
+                  "vi": "VD: Gỗ sồi, mây tre"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Material",
+                  "vi": "Chất liệu"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "dimensions",
+                "hint": {
+                  "en": "e.g. 120 x 60 x 75 cm",
+                  "vi": "VD: 120 x 60 x 75 cm"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Dimensions",
+                  "vi": "Kích thước"
+                },
+                "required": false,
+                "maxLength": 60
+              }
+            ],
+            "description": {
+              "en": "Furniture, lamps, kitchenware, decor...",
+              "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
+            }
+          }
+        }
+      }
+    }
+  },
+  "order while pending": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Bạn đã có đơn gói cửa hàng đang chờ xác nhận.",
+      "code": "STORE_ORDER_PENDING"
+    }
+  },
+  "admin orders as user": {
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Bạn không có quyền thực hiện thao tác này.",
+      "code": "FORBIDDEN"
+    }
+  },
+  "admin orders": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "userId": "user-seller",
+          "packageId": "basic",
+          "categoryId": "furniture",
+          "amount": "99000",
+          "status": "PENDING",
+          "createdAt": "<date>",
+          "decidedAt": null,
+          "user": {
+            "id": "user-seller",
+            "email": "user-seller@restore.test",
+            "fullName": "user-seller"
+          },
+          "package": {
+            "id": "basic",
+            "tier": "BASIC",
+            "name": "Cửa hàng Basic",
+            "monthlyPrice": "99000",
+            "dailyListingLimit": 10,
+            "activeListingLimit": 30,
+            "draftLimit": 10,
+            "monthlyPromotionQuota": 2,
+            "priorityLevel": 1
+          },
+          "category": {
+            "active": true,
+            "id": "furniture",
+            "name": "Nội thất, trang trí",
+            "metadata": {
+              "id": "furniture",
+              "icon": "home",
+              "name": {
+                "en": "Furniture & decor",
+                "vi": "Nội thất, trang trí"
+              },
+              "imageUrl": "assets/images/marketplace/listing-lamp.png",
+              "attributes": [
+                {
+                  "key": "home_type",
+                  "type": "select",
+                  "label": {
+                    "en": "Product type",
+                    "vi": "Loại sản phẩm"
+                  },
+                  "options": [
+                    {
+                      "label": {
+                        "en": "Furniture",
+                        "vi": "Bàn ghế, tủ kệ"
+                      },
+                      "value": "furniture"
+                    },
+                    {
+                      "label": {
+                        "en": "Lighting",
+                        "vi": "Đèn"
+                      },
+                      "value": "lighting"
+                    },
+                    {
+                      "label": {
+                        "en": "Kitchenware",
+                        "vi": "Đồ bếp"
+                      },
+                      "value": "kitchenware"
+                    },
+                    {
+                      "label": {
+                        "en": "Decor",
+                        "vi": "Đồ trang trí"
+                      },
+                      "value": "decor"
+                    },
+                    {
+                      "label": {
+                        "en": "Bedding",
+                        "vi": "Chăn ga gối"
+                      },
+                      "value": "bedding"
+                    }
+                  ],
+                  "required": true
+                },
+                {
+                  "key": "material",
+                  "hint": {
+                    "en": "e.g. Oak, rattan",
+                    "vi": "VD: Gỗ sồi, mây tre"
+                  },
+                  "type": "text",
+                  "label": {
+                    "en": "Material",
+                    "vi": "Chất liệu"
+                  },
+                  "required": false,
+                  "maxLength": 60
+                },
+                {
+                  "key": "dimensions",
+                  "hint": {
+                    "en": "e.g. 120 x 60 x 75 cm",
+                    "vi": "VD: 120 x 60 x 75 cm"
+                  },
+                  "type": "text",
+                  "label": {
+                    "en": "Dimensions",
+                    "vi": "Kích thước"
+                  },
+                  "required": false,
+                  "maxLength": 60
+                }
+              ],
+              "description": {
+                "en": "Furniture, lamps, kitchenware, decor...",
+                "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "confirm order": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "orderId": "<uuid>",
+        "subscription": {
+          "id": "<uuid>",
+          "userId": "user-seller",
+          "packageId": "basic",
+          "categoryId": "furniture",
+          "startsAt": "<date>",
+          "endsAt": "<date>",
+          "updatedAt": "<date>",
+          "package": {
+            "id": "basic",
+            "tier": "BASIC",
+            "name": "Cửa hàng Basic",
+            "monthlyPrice": "99000",
+            "dailyListingLimit": 10,
+            "activeListingLimit": 30,
+            "draftLimit": 10,
+            "monthlyPromotionQuota": 2,
+            "priorityLevel": 1
+          },
+          "category": {
+            "active": true,
+            "id": "furniture",
+            "name": "Nội thất, trang trí",
+            "metadata": {
+              "id": "furniture",
+              "icon": "home",
+              "name": {
+                "en": "Furniture & decor",
+                "vi": "Nội thất, trang trí"
+              },
+              "imageUrl": "assets/images/marketplace/listing-lamp.png",
+              "attributes": [
+                {
+                  "key": "home_type",
+                  "type": "select",
+                  "label": {
+                    "en": "Product type",
+                    "vi": "Loại sản phẩm"
+                  },
+                  "options": [
+                    {
+                      "label": {
+                        "en": "Furniture",
+                        "vi": "Bàn ghế, tủ kệ"
+                      },
+                      "value": "furniture"
+                    },
+                    {
+                      "label": {
+                        "en": "Lighting",
+                        "vi": "Đèn"
+                      },
+                      "value": "lighting"
+                    },
+                    {
+                      "label": {
+                        "en": "Kitchenware",
+                        "vi": "Đồ bếp"
+                      },
+                      "value": "kitchenware"
+                    },
+                    {
+                      "label": {
+                        "en": "Decor",
+                        "vi": "Đồ trang trí"
+                      },
+                      "value": "decor"
+                    },
+                    {
+                      "label": {
+                        "en": "Bedding",
+                        "vi": "Chăn ga gối"
+                      },
+                      "value": "bedding"
+                    }
+                  ],
+                  "required": true
+                },
+                {
+                  "key": "material",
+                  "hint": {
+                    "en": "e.g. Oak, rattan",
+                    "vi": "VD: Gỗ sồi, mây tre"
+                  },
+                  "type": "text",
+                  "label": {
+                    "en": "Material",
+                    "vi": "Chất liệu"
+                  },
+                  "required": false,
+                  "maxLength": 60
+                },
+                {
+                  "key": "dimensions",
+                  "hint": {
+                    "en": "e.g. 120 x 60 x 75 cm",
+                    "vi": "VD: 120 x 60 x 75 cm"
+                  },
+                  "type": "text",
+                  "label": {
+                    "en": "Dimensions",
+                    "vi": "Kích thước"
+                  },
+                  "required": false,
+                  "maxLength": 60
+                }
+              ],
+              "description": {
+                "en": "Furniture, lamps, kitchenware, decor...",
+                "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "confirm again": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Đơn không còn ở trạng thái chờ.",
+      "code": "STORE_ORDER_NOT_PENDING"
+    }
+  },
+  "store me (basic)": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "package": {
+          "id": "basic",
+          "tier": "BASIC",
+          "name": "Cửa hàng Basic",
+          "monthlyPrice": "99000",
+          "dailyListingLimit": 10,
+          "activeListingLimit": 30,
+          "draftLimit": 10,
+          "monthlyPromotionQuota": 2,
+          "priorityLevel": 1
+        },
+        "category": {
+          "active": true,
+          "id": "furniture",
+          "name": "Nội thất, trang trí",
+          "metadata": {
+            "id": "furniture",
+            "icon": "home",
+            "name": {
+              "en": "Furniture & decor",
+              "vi": "Nội thất, trang trí"
+            },
+            "imageUrl": "assets/images/marketplace/listing-lamp.png",
+            "attributes": [
+              {
+                "key": "home_type",
+                "type": "select",
+                "label": {
+                  "en": "Product type",
+                  "vi": "Loại sản phẩm"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Furniture",
+                      "vi": "Bàn ghế, tủ kệ"
+                    },
+                    "value": "furniture"
+                  },
+                  {
+                    "label": {
+                      "en": "Lighting",
+                      "vi": "Đèn"
+                    },
+                    "value": "lighting"
+                  },
+                  {
+                    "label": {
+                      "en": "Kitchenware",
+                      "vi": "Đồ bếp"
+                    },
+                    "value": "kitchenware"
+                  },
+                  {
+                    "label": {
+                      "en": "Decor",
+                      "vi": "Đồ trang trí"
+                    },
+                    "value": "decor"
+                  },
+                  {
+                    "label": {
+                      "en": "Bedding",
+                      "vi": "Chăn ga gối"
+                    },
+                    "value": "bedding"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "material",
+                "hint": {
+                  "en": "e.g. Oak, rattan",
+                  "vi": "VD: Gỗ sồi, mây tre"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Material",
+                  "vi": "Chất liệu"
+                },
+                "required": false,
+                "maxLength": 60
+              },
+              {
+                "key": "dimensions",
+                "hint": {
+                  "en": "e.g. 120 x 60 x 75 cm",
+                  "vi": "VD: 120 x 60 x 75 cm"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Dimensions",
+                  "vi": "Kích thước"
+                },
+                "required": false,
+                "maxLength": 60
+              }
+            ],
+            "description": {
+              "en": "Furniture, lamps, kitchenware, decor...",
+              "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
+            }
+          }
+        },
+        "endsAt": "<date>",
+        "pendingOrder": null,
+        "usage": {
+          "today": 0,
+          "active": 3,
+          "drafts": 0,
+          "promotionsThisMonth": 1
+        },
+        "remaining": {
+          "listingsToday": 10,
+          "activeListings": 27,
+          "drafts": 10,
+          "promotionsThisMonth": 1
+        }
+      }
+    }
+  },
+  "reject order": {
+    "status": 200,
+    "body": {
+      "success": true
+    }
+  },
+  "redeem listing of other user": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy tin đang hiển thị của bạn.",
+      "code": "LISTING_NOT_FOUND"
+    }
+  },
+  "redeem": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-seller",
+        "listingId": "listing-1",
+        "packageId": "bump-1",
+        "source": "INCLUDED",
+        "orderId": null,
+        "startsAt": "<date>",
+        "endsAt": "<date>",
+        "createdAt": "<date>",
+        "package": {
+          "id": "bump-1",
+          "name": "Đẩy tin 1 ngày",
+          "kind": "BUMP",
+          "durationDays": 1,
+          "price": "10000",
+          "priority": 0,
+          "active": true
+        }
+      }
+    }
+  },
+  "redeem quota exhausted": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Bạn đã dùng hết lượt quảng cáo trong tháng.",
+      "code": "PROMOTION_QUOTA_EXHAUSTED"
+    }
+  },
+  "promotions mine": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "userId": "user-seller",
+          "listingId": "listing-1",
+          "packageId": "bump-1",
+          "source": "INCLUDED",
+          "orderId": null,
+          "startsAt": "<date>",
+          "endsAt": "<date>",
+          "createdAt": "<date>",
+          "package": {
+            "id": "bump-1",
+            "name": "Đẩy tin 1 ngày",
+            "kind": "BUMP",
+            "durationDays": 1,
+            "price": "10000",
+            "priority": 0,
+            "active": true
+          },
+          "listing": {
+            "id": "listing-1",
+            "title": "Bàn gỗ sồi thật",
+            "status": "AVAILABLE"
+          }
+        },
+        {
+          "id": "promotion-1",
+          "userId": "user-seller",
+          "listingId": "listing-3",
+          "packageId": "featured-1",
+          "source": "INCLUDED",
+          "orderId": null,
+          "startsAt": "2026-10-01T00:00:00.000Z",
+          "endsAt": "2099-01-01T00:00:00.000Z",
+          "createdAt": "<date>",
+          "package": {
+            "id": "featured-1",
+            "name": "Tin ưu tiên 1 ngày",
+            "kind": "FEATURED",
+            "durationDays": 1,
+            "price": "20000",
+            "priority": 3,
+            "active": true
+          },
+          "listing": {
+            "id": "listing-3",
+            "title": "Đèn bàn học cũ",
+            "status": "AVAILABLE"
+          }
+        }
+      ]
+    }
+  },
+  "order invalid body": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Tin đăng hoặc gói quảng cáo không hợp lệ.",
+      "code": "INVALID_PROMOTION"
+    }
+  },
+  "order featured": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-seller",
+        "listingId": "listing-2",
+        "packageId": "featured-3",
+        "amount": "57000",
+        "status": "PENDING",
+        "createdAt": "<date>",
+        "decidedAt": null,
+        "package": {
+          "id": "featured-3",
+          "name": "Tin ưu tiên 3 ngày",
+          "kind": "FEATURED",
+          "durationDays": 3,
+          "price": "57000",
+          "priority": 3,
+          "active": true
+        },
+        "listing": {
+          "id": "listing-2",
+          "title": "Ghế xoay văn phòng"
+        }
+      }
+    }
+  },
+  "order duplicate": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Tin này đã có đơn quảng cáo chờ xác nhận.",
+      "code": "PROMOTION_ORDER_PENDING"
+    }
+  },
+  "admin promotion orders": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "userId": "user-seller",
+          "listingId": "listing-2",
+          "packageId": "featured-3",
+          "amount": "57000",
+          "status": "PENDING",
+          "createdAt": "<date>",
+          "decidedAt": null,
+          "user": {
+            "id": "user-seller",
+            "email": "user-seller@restore.test",
+            "fullName": "user-seller"
+          },
+          "listing": {
+            "id": "listing-2",
+            "title": "Ghế xoay văn phòng",
+            "status": "AVAILABLE"
+          },
+          "package": {
+            "id": "featured-3",
+            "name": "Tin ưu tiên 3 ngày",
+            "kind": "FEATURED",
+            "durationDays": 3,
+            "price": "57000",
+            "priority": 3,
+            "active": true
+          }
+        }
+      ]
+    }
+  },
+  "confirm promotion order": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-seller",
+        "listingId": "listing-2",
+        "packageId": "featured-3",
+        "source": "PURCHASED",
+        "orderId": "<uuid>",
+        "startsAt": "<date>",
+        "endsAt": "<date>",
+        "createdAt": "<date>",
+        "package": {
+          "id": "featured-3",
+          "name": "Tin ưu tiên 3 ngày",
+          "kind": "FEATURED",
+          "durationDays": 3,
+          "price": "57000",
+          "priority": 3,
+          "active": true
+        }
+      }
+    }
+  },
+  "reject promotion order": {
+    "status": 200,
+    "body": {
+      "success": true
+    }
+  },
+  "recommended after featured": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing-3",
+          "title": "Đèn bàn học cũ",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:30:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:30:00.000Z",
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": true,
+          "isFavorite": false
+        },
+        {
+          "id": "listing-2",
+          "title": "Ghế xoay văn phòng",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": true,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:20:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:20:00.000Z",
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": true,
+          "isFavorite": false
+        }
+      ]
+    }
+  },
+  "create package as user": {
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Bạn không có quyền thực hiện thao tác này.",
+      "code": "FORBIDDEN"
+    }
+  },
+  "create package invalid": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Tên, loại, thời lượng, giá hoặc độ ưu tiên không hợp lệ.",
+      "code": "INVALID_PROMOTION_PACKAGE"
+    }
+  },
+  "create package": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "name": "Gói thử",
+        "kind": "BUMP",
+        "durationDays": 2,
+        "price": "15000",
+        "priority": 0,
+        "active": true
+      }
+    }
+  },
+  "update package": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "name": "Gói thử đã sửa",
+        "kind": "BUMP",
+        "durationDays": 2,
+        "price": "15000",
+        "priority": 0,
+        "active": true
+      }
+    }
+  },
+  "update package in use": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Gói đã có giao dịch. Chỉ được sửa tên, giá và trạng thái bán.",
+      "code": "PROMOTION_PACKAGE_IN_USE"
+    }
+  }
+}

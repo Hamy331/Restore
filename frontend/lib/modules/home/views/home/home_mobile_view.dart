@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/auth/auth_route_guard.dart';
+import 'package:restore/modules/auth/bloc/auth_context.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
+import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
+import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
+import 'package:restore/modules/location/models/area_option.dart';
+import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
@@ -79,7 +86,30 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   void _openCategory(CategoryModel category) =>
       context.push(CategoryDetailView.location(category.id), extra: category);
 
-  /// Tính năng chưa có trang riêng (thông báo, chọn khu vực...)
+  /// Tên khu vực trên nút đầu trang: tỉnh theo GPS / tự chọn, không có thì
+  /// "Toàn quốc"
+  String _areaLabel(AppLocalizations l10n, UserAreaState area) =>
+      switch (area.status) {
+        UserAreaStatus.locating => l10n.homeAreaLocating,
+        UserAreaStatus.nationwide => l10n.areaNationwide,
+        UserAreaStatus.ready => area.area?.displayName ?? l10n.areaNationwide,
+      };
+
+  /// Chọn khu vực khác (có thêm "Toàn quốc")
+  Future<void> _pickArea() async {
+    final userArea = context.read<UserAreaCubit>();
+    final result = await context.push<AreaPickResult>(
+      AreaSearchView.location(allowNationwide: true),
+    );
+    if (result == null) return;
+    if (result.nationwide) {
+      userArea.selectNationwide();
+    } else if (result.area case final area?) {
+      userArea.select(area);
+    }
+  }
+
+  /// Tính năng chưa có trang riêng (thông báo...)
   void _comingSoon() => TSnackBarHelper.showInfo(
     context,
     message: AppLocalizations.of(context)!.featureComingSoon,
@@ -94,6 +124,15 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     );
     if (favorite == null || !mounted) return;
     context.read<HomeCubit>().syncFavorite(id, favorite);
+  }
+
+  /// Khách bấm lưu tin thì mời đăng nhập, xong quay lại trang chủ
+  void _toggleFavorite(ListingCardItem item) {
+    if (!context.isSignedIn) {
+      context.go(loginPath(from: '/home'));
+      return;
+    }
+    context.read<HomeCubit>().toggleFavorite(item);
   }
 
   void _onQuickAction(HomeQuickAction action) {
@@ -115,6 +154,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     final l10n = AppLocalizations.of(context)!;
     final cubit = context.read<HomeCubit>();
     final padding = MediaQuery.paddingOf(context);
+    // Khách chưa đăng nhập: chuỗi rỗng, đầu trang hiện lời chào chung
+    final greetingName = context.watchUser()?.givenName ?? '';
 
     return ColoredBox(
       color: AppColors.surface,
@@ -145,13 +186,21 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(
-                          child: HomeTopBar(
-                            key: _topBarKey,
-                            areaName: state.areaName,
-                            greetingName: state.user == null
-                                ? ''
-                                : state.greetingName,
-                            onAreaTap: _comingSoon,
+                          child: ValueListenableBuilder(
+                            valueListenable: DevPlanOverride.plan,
+                            builder: (context, plan, _) =>
+                                BlocBuilder<UserAreaCubit, UserAreaState>(
+                                  builder: (context, area) => HomeTopBar(
+                                    key: _topBarKey,
+                                    areaName: _areaLabel(l10n, area),
+                                    greetingName: greetingName,
+                                    plan: plan,
+                                    onAreaTap: _pickArea,
+                                    onPlanTap: DevPlanOverride.enabled
+                                        ? DevPlanOverride.next
+                                        : null,
+                                  ),
+                                ),
                           ),
                         ),
                         SliverPersistentHeader(
@@ -224,12 +273,11 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
   List<Widget> _content(HomeState state) {
     final l10n = AppLocalizations.of(context)!;
-    final cubit = context.read<HomeCubit>();
 
     Widget card(ListingCardItem item) => AppListingCard(
       item: item,
       onTap: () => _openDetail(item),
-      onFavoriteTap: () => cubit.toggleFavorite(item),
+      onFavoriteTap: () => _toggleFavorite(item),
     );
 
     return [

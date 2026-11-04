@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/config/dev_plan_override.dart';
+import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
+import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import '../bloc/shell_badges_cubit.dart';
+import '../models/shell_quick_action.dart';
 import '../widgets/shell_ai_bubble.dart';
 import '../widgets/shell_bottom_nav.dart';
 import '../widgets/shell_nav_rail.dart';
@@ -37,6 +41,19 @@ class MainShell extends StatelessWidget {
     );
     // Cập nhật lại số tin chưa đọc mỗi lần đổi tab
     context.read<ShellBadgesCubit>().refresh();
+  }
+
+  /// Nút trong menu xoè của gói tier cao. Chỉ Đăng tin đã có trang, các
+  /// nút còn lại (poster shop, đẩy tin, thống kê, trang shop) báo sắp có.
+  void _quickAction(BuildContext context, ShellQuickAction action) {
+    if (action == ShellQuickAction.post) {
+      _select(context, 2);
+      return;
+    }
+    TSnackBarHelper.showInfo(
+      context,
+      message: AppLocalizations.of(context)!.featureComingSoon,
+    );
   }
 
   @override
@@ -78,11 +95,17 @@ class MainShell extends StatelessWidget {
           Positioned.fill(child: aiBubble),
         ],
       ),
-      bottomNavigationBar: BlocBuilder<ShellBadgesCubit, int>(
-        builder: (context, unread) => ShellBottomNav(
-          selectedIndex: _uiIndex,
-          onSelected: (i) => _select(context, i),
-          unreadMessages: unread,
+      // Gói lấy từ nút test đổi gói (chưa có API gói đăng ký)
+      bottomNavigationBar: ValueListenableBuilder(
+        valueListenable: DevPlanOverride.plan,
+        builder: (context, plan, _) => BlocBuilder<ShellBadgesCubit, int>(
+          builder: (context, unread) => ShellBottomNav(
+            selectedIndex: _uiIndex,
+            onSelected: (i) => _select(context, i),
+            unreadMessages: unread,
+            quickActions: ShellQuickAction.forPlan(plan),
+            onQuickAction: (action) => _quickAction(context, action),
+          ),
         ),
       ),
     );

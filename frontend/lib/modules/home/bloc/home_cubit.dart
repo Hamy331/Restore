@@ -27,14 +27,15 @@ class HomeCubit extends Cubit<HomeState> {
     if (!isClosed) super.emit(state);
   }
 
+  /// Người dùng không lấy ở đây mà đọc từ AuthBloc; đăng nhập / đăng xuất thì
+  /// HomeView gọi lại để tải lại trạng thái lưu tin và tin gợi ý.
+  ///
   /// [showLoading] false khi kéo để làm mới: giữ nội dung cũ tới khi có dữ liệu
   Future<void> load({bool showLoading = true}) async {
     if (showLoading) emit(state.copyWith(status: HomeStatus.loading));
     try {
       // Gọi song song, chờ đủ cả trang rồi mới hiển thị
-      final (user, areaName, banners, categories, recommended, latest) = await (
-        _homeRepository.getCurrentUser(),
-        _homeRepository.getAreaName(),
+      final (banners, categories, recommended, latest) = await (
         _homeRepository.getBanners(),
         _categoryRepository.getCategories(),
         _homeRepository.getRecommended(),
@@ -43,8 +44,6 @@ class HomeCubit extends Cubit<HomeState> {
       emit(
         state.copyWith(
           status: HomeStatus.ready,
-          user: user,
-          areaName: areaName,
           banners: banners,
           categories: categories,
           recommended: recommended,

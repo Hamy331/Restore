@@ -1,4 +1,4 @@
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 export const id = (v: unknown): string => {
   if (typeof v !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)) throw new AppError(400, 'INVALID_ID', 'Invalid ID');
   return v;

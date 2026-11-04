@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { createHash } from 'node:crypto';
 import { prisma } from '../../lib/prisma.js';
 import { AuthRequest, verifyToken } from '../../middlewares/auth.middleware.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 import { id, input, page } from './feed.input.js';
 export const feedRouter = Router();
 feedRouter.use(verifyToken);

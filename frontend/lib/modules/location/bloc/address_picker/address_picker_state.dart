@@ -26,6 +26,9 @@ class AddressPickerState extends Equatable {
 
   /// Toạ độ GPS nếu người dùng bấm "Dùng vị trí hiện tại"
   final GeoPoint? deviceGeoPoint;
+
+  /// Toạ độ của gợi ý địa chỉ người dùng chọn (chính xác hơn tâm phường/xã)
+  final GeoPoint? suggestedGeoPoint;
   final bool isLocating;
 
   /// Lỗi lần định vị gần nhất, kèm bộ đếm để view hiện thông báo mỗi lần lỗi
@@ -44,6 +47,7 @@ class AddressPickerState extends Equatable {
     this.ward,
     this.streetAddress = '',
     this.deviceGeoPoint,
+    this.suggestedGeoPoint,
     this.isLocating = false,
     this.locateError,
     this.locateErrorCount = 0,
@@ -52,7 +56,8 @@ class AddressPickerState extends Equatable {
 
   bool get canConfirm => province != null && ward != null;
 
-  /// Kết quả trả về: ưu tiên toạ độ GPS, nếu không có thì dùng tâm phường/xã
+  /// Kết quả trả về: ưu tiên toạ độ GPS, rồi toạ độ gợi ý địa chỉ, cuối cùng
+  /// là tâm phường/xã
   AddressInfo? get result {
     final province = this.province;
     final ward = this.ward;
@@ -61,7 +66,7 @@ class AddressPickerState extends Equatable {
       province: province,
       ward: ward,
       streetAddress: streetAddress.trim(),
-      geoPoint: deviceGeoPoint ?? ward.center,
+      geoPoint: deviceGeoPoint ?? suggestedGeoPoint ?? ward.center,
       isGeoPointFromDevice: deviceGeoPoint != null,
     );
   }
@@ -75,6 +80,7 @@ class AddressPickerState extends Equatable {
     AdministrativeUnitModel? Function()? ward,
     String? streetAddress,
     GeoPoint? Function()? deviceGeoPoint,
+    GeoPoint? Function()? suggestedGeoPoint,
     bool? isLocating,
     DeviceLocationError? locateError,
     int? locateErrorCount,
@@ -91,6 +97,9 @@ class AddressPickerState extends Equatable {
       deviceGeoPoint: deviceGeoPoint != null
           ? deviceGeoPoint()
           : this.deviceGeoPoint,
+      suggestedGeoPoint: suggestedGeoPoint != null
+          ? suggestedGeoPoint()
+          : this.suggestedGeoPoint,
       isLocating: isLocating ?? this.isLocating,
       locateError: locateError ?? this.locateError,
       locateErrorCount: locateErrorCount ?? this.locateErrorCount,
@@ -108,6 +117,7 @@ class AddressPickerState extends Equatable {
     ward,
     streetAddress,
     deviceGeoPoint,
+    suggestedGeoPoint,
     isLocating,
     locateError,
     locateErrorCount,

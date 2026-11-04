@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 
 const userSelect = { id: true, fullName: true, username: true, avatarUrl: true, lastActiveAt: true } satisfies Prisma.UserSelect;
 const messageSelect = { id: true, sequence: true, conversationId: true, senderId: true,

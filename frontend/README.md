@@ -384,7 +384,7 @@ flutter gen-l10n
 Hiện tại project tập trung vào ứng dụng mobile:
 
 - Android
-- iOS
+<!-- - iOS -->
 
 Flutter cũng hỗ trợ Web và các nền tảng khác nếu cần mở rộng trong tương lai.
 

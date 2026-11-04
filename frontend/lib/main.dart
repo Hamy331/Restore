@@ -14,10 +14,13 @@ import 'core/theme/theme.dart';
 import 'core/routes/app_router.dart';
 import 'modules/auth/bloc/auth_bloc.dart';
 import 'modules/auth/bloc/auth_event.dart';
-import 'modules/auth/bloc/auth_state.dart';
 import 'modules/auth/repositories/auth_repository.dart';
-import 'modules/auth/auth_route_guard.dart';
 import 'modules/chat/widgets/presence_reporter.dart';
+import 'modules/location/bloc/user_area/user_area_cubit.dart';
+import 'modules/location/repositories/location_repository.dart';
+import 'core/config/app_environment.dart';
+import 'core/network/api_client.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
@@ -40,52 +43,68 @@ Future<void> _initializeFirebase() async {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final AuthBloc _authBloc = AuthBloc(
+    AuthRepository(),
+    sessionExpired: ApiClient().sessionExpired,
+  )..add(const AuthCheckRequested());
+  late final GoRouter _router = createAppRouter(_authBloc);
+
+  @override
+  void dispose() {
+    _router.dispose();
+    _authBloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => AuthBloc(AuthRepository())..add(AppStarted()),
-        ),
+        BlocProvider.value(value: _authBloc),
         BlocProvider(create: (context) => LanguageBloc()),
+        // Mở app là xin quyền vị trí để hiện tỉnh/thành của người dùng
+        BlocProvider(
+          lazy: false,
+          create: (context) => UserAreaCubit(
+            locationRepository: AppEnvironment.useMockData
+                ? MockLocationRepository()
+                : ApiLocationRepository(),
+          )..locate(),
+        ),
       ],
+      // Gửi heartbeat khi đã đăng nhập để người khác thấy trạng thái online
       child: PresenceReporter(
-        child: BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            final path = appRouter.routeInformationProvider.value.uri.path;
-            if (state is AuthAuthenticated && isPublicAuthPath(path)) {
-              appRouter.go('/home');
-            } else if (state is AuthUnauthenticated && !isPublicRoute(path)) {
-              appRouter.go('/welcome');
-            }
+        child: ScreenUtilInit(
+          designSize: const Size(375, 812),
+          minTextAdapt: true,
+          splitScreenMode: false,
+          builder: (context, child) {
+            return BlocBuilder<LanguageBloc, LanguageState>(
+              builder: (context, languageState) {
+                return MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  locale: languageState.locale,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  supportedLocales: const [Locale('en'), Locale('vi')],
+                  theme: AppTheme.lightTheme,
+                  routerConfig: _router,
+                );
+              },
+            );
           },
-          child: ScreenUtilInit(
-            designSize: const Size(375, 812),
-            minTextAdapt: true,
-            splitScreenMode: false,
-            builder: (context, child) {
-              return BlocBuilder<LanguageBloc, LanguageState>(
-                builder: (context, languageState) {
-                  return MaterialApp.router(
-                    debugShowCheckedModeBanner: false,
-                    locale: languageState.locale,
-                    localizationsDelegates: const [
-                      AppLocalizations.delegate,
-                      GlobalMaterialLocalizations.delegate,
-                      GlobalWidgetsLocalizations.delegate,
-                      GlobalCupertinoLocalizations.delegate,
-                    ],
-                    supportedLocales: const [Locale('en'), Locale('vi')],
-                    theme: AppTheme.lightTheme,
-                    routerConfig: appRouter,
-                  );
-                },
-              );
-            },
-          ),
         ),
       ),
     );

@@ -14,6 +14,11 @@ class CategoriesRequested extends CreateListingEvent {
   const CategoriesRequested();
 }
 
+/// Tải hạn mức đăng tin của tài khoản (số tin đã dùng mỗi chuyên mục)
+class PostingQuotaRequested extends CreateListingEvent {
+  const PostingQuotaRequested();
+}
+
 class CategorySelected extends CreateListingEvent {
   final String categoryId;
   const CategorySelected(this.categoryId);
@@ -91,13 +96,6 @@ class AddressChanged extends CreateListingEvent {
   List<Object?> get props => [address];
 }
 
-class SellerTypeChanged extends CreateListingEvent {
-  final SellerType sellerType;
-  const SellerTypeChanged(this.sellerType);
-  @override
-  List<Object?> get props => [sellerType];
-}
-
 class ConditionChanged extends CreateListingEvent {
   final ListingCondition condition;
   const ConditionChanged(this.condition);
@@ -125,4 +123,28 @@ class DraftSaveRequested extends CreateListingEvent {
 
 class PublishRequested extends CreateListingEvent {
   const PublishRequested();
+}
+
+/// Tải danh sách tin nháp; [loadMore] lấy thêm trang sau
+class DraftsRequested extends CreateListingEvent {
+  final bool loadMore;
+  const DraftsRequested({this.loadMore = false});
+  @override
+  List<Object?> get props => [loadMore];
+}
+
+/// Mở một tin nháp để soạn tiếp
+class DraftOpened extends CreateListingEvent {
+  final String id;
+  const DraftOpened(this.id);
+  @override
+  List<Object?> get props => [id];
+}
+
+/// Xóa một tin nháp (kèm ảnh của nó)
+class DraftDeleted extends CreateListingEvent {
+  final String id;
+  const DraftDeleted(this.id);
+  @override
+  List<Object?> get props => [id];
 }

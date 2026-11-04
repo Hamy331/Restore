@@ -3,20 +3,9 @@
 class HomeMockData {
   HomeMockData._();
 
-  static const String areaName = 'TP. Hồ Chí Minh';
-
   static const String _camera = 'assets/images/marketplace/listing-camera.png';
   static const String _lamp = 'assets/images/marketplace/listing-lamp.png';
   static const String _chair = 'assets/images/marketplace/listing-chair.png';
-
-  static const Map<String, dynamic> currentUser = {
-    'id': 'user_me',
-    'email': 'minhanh@example.com',
-    'fullName': 'Nguyễn Minh Anh',
-    'username': 'minhanh',
-    'role': 'USER',
-    'status': 'ACTIVE',
-  };
 
   /// Banner trang chủ (ảnh 1200 × 600). Banner sự kiện của shop uy tín đã được
   /// admin duyệt đứng đầu, bấm vào mở trang Shop uy tín rồi vào thẳng shop.

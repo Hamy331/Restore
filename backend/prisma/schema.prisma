@@ -62,6 +62,7 @@ model User {
   storeOrders    StoreOrder[]
   promotions     Promotion[]
   promotionOrders PromotionOrder[]
+  wantedAlerts   WantedAlert[]
 
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
@@ -175,6 +176,7 @@ model Listing {
   promotions    Promotion[]
   favorites     ListingFavorite[]
   promotionOrders PromotionOrder[]
+  wantedAlertMatches WantedAlertMatch[]
 
   @@index([ownerId, publishedAt])
 }
@@ -197,6 +199,7 @@ model Category {
   listings       Listing[]
   subscriptions  StoreSubscription[]
   storeOrders    StoreOrder[]
+  wantedAlerts   WantedAlert[]
 }
 
 enum StoreTier {
@@ -212,6 +215,8 @@ model StorePackage {
   monthlyPrice          Decimal
   dailyListingLimit     Int
   activeListingLimit    Int
+  /// Số tin nháp được giữ cùng lúc
+  draftLimit            Int                 @default(3)
   monthlyPromotionQuota Int
   priorityLevel         Int
   subscriptions         StoreSubscription[]
@@ -443,4 +448,72 @@ model FeedCommentLike {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   @@id([commentId, userId])
+}
+
+/// Banner ảnh ở trang chủ (ảnh 1200 × 600). Admin quản lý qua /api/v1/home/admin/banners.
+model HomeBanner {
+  id        String    @id @default(uuid())
+  title     String
+  imageUrl  String?
+  route     String?
+  sortOrder Int       @default(0)
+  active    Boolean   @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([active, sortOrder])
+}
+
+enum WantedAlertMatchLevel {
+  BROAD
+  BALANCED
+  STRICT
+}
+
+/// "Báo khi có hàng": người dùng đặt trước món muốn mua. Khi admin duyệt một tin
+/// gần giống (điểm >= ngưỡng của matchLevel) thì ghi một WantedAlertMatch.
+/// API: /api/v1/wanted-alerts. Xóa dòng là dừng thông báo.
+model WantedAlert {
+  id            String                @id @default(uuid())
+  userId        String
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  keywords      String
+  categoryId    String?
+  category      Category?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  /// Khoảng giá VND, null là không giới hạn
+  minPrice      BigInt?
+  maxPrice      BigInt?
+  /// Rỗng là mọi tình trạng / mọi kiểu giao dịch ("buy", "exchange")
+  conditions    ListingCondition[]
+  dealTypes     String[]
+  /// Khu vực: mã tỉnh (areaLevel "province") hoặc mã phường ("ward"); null là toàn quốc
+  areaCode      String?
+  areaLevel     String?
+  areaLabel     String?
+  matchLevel    WantedAlertMatchLevel @default(BALANCED)
+  /// Lần cuối người dùng mở xem tin khớp; tin khớp sau mốc này là tin mới
+  seenAt        DateTime              @default(now())
+  lastMatchedAt DateTime?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  matches       WantedAlertMatch[]
+
+  @@index([userId, createdAt])
+  @@index([categoryId])
+}
+
+/// Một tin đã khớp một thông báo, kèm điểm giống 0..1
+model WantedAlertMatch {
+  alertId   String
+  alert     WantedAlert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  score     Float
+  matchedAt DateTime    @default(now())
+
+  @@id([alertId, listingId])
+  @@index([alertId, matchedAt])
+  @@index([listingId])
 }
