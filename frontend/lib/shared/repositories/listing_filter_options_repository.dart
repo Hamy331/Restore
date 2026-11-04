@@ -1,4 +1,4 @@
-import 'package:restore/core/network/api_client.dart';
+import 'package:restore/modules/listings/repositories/category_repository.dart';
 import 'package:restore/shared/data/listing_filter_mock_data.dart';
 import 'package:restore/shared/models/listing_filter_options.dart';
 
@@ -23,29 +23,20 @@ class MockListingFilterOptionsRepository
   }
 }
 
-/// Gọi `GET /listings/filter-options`
-/// → `{ data: { categories: [Category], priceRanges: [{ min?, max? }] } }`.
-/// Ít thay đổi nên giữ trong bộ nhớ suốt phiên, mở sheet lần sau hiện ngay.
+/// Danh mục lấy từ `GET /catalog/categories` (dùng chung cache với luồng
+/// đăng tin), mức giá gợi ý cố định trong app.
+/// Backend không có `GET /listings/filter-options`: gọi đường đó sẽ rơi vào
+/// `GET /listings/:id` và trả 404 "Không tìm thấy tin đăng".
 class ApiListingFilterOptionsRepository
     implements ListingFilterOptionsRepository {
-  ApiListingFilterOptionsRepository({ApiClient? apiClient})
-    : _apiClient = apiClient ?? ApiClient();
+  ApiListingFilterOptionsRepository({CategoryRepository? categoryRepository})
+    : _categoryRepository = categoryRepository ?? ApiCategoryRepository();
 
-  final ApiClient _apiClient;
-  static ListingFilterOptions? _cache;
+  final CategoryRepository _categoryRepository;
 
   @override
-  Future<ListingFilterOptions> getOptions() async {
-    final cached = _cache;
-    if (cached != null) return cached;
-
-    final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/listings/filter-options',
-    );
-    final data = response.data?['data'];
-    if (data is! Map) throw const FormatException('Missing response data');
-    return _cache = ListingFilterOptions.fromJson(
-      Map<String, dynamic>.from(data),
-    );
-  }
+  Future<ListingFilterOptions> getOptions() async => ListingFilterOptions(
+    categories: await _categoryRepository.getCategories(),
+    priceRanges: ListingFilterOptions.defaultPriceRanges,
+  );
 }
