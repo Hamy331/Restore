@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as catalogController from './catalog.controller.js';
-import { areaSearchQuery, provinceParams, reverseGeocodeQuery } from './catalog.validator.js';
+import { addressSuggestQuery, areaSearchQuery, provinceParams, reverseGeocodeQuery } from './catalog.validator.js';
 
 /** Dữ liệu tham chiếu công khai, gắn tại /api/v1/catalog */
 const catalogRouter = Router();
@@ -58,5 +58,18 @@ catalogRouter.get('/locations/reverse-geocode', validate({ query: reverseGeocode
  * Trả về: { data: [{ code, name, shortName, level, parentName?, center }], coverage: 'full' }
  */
 catalogRouter.get('/locations/search', validate({ query: areaSearchQuery }), catalogController.searchAreas);
+
+/**
+ * Gợi ý số nhà, tên đường khi nhập địa chỉ (nguồn chọn bằng ADDRESS_PROVIDER: photon | off; Photon/OpenStreetMap miễn phí)
+ *
+ * Query params:
+ *  - q: string - 2 đến 120 ký tự
+ *  - provinceCode, wardCode: string - tuỳ chọn, ưu tiên kết quả quanh đó (Photon lọc theo tỉnh)
+ *  - limit: number - 1 đến 10, mặc định 6
+ *
+ * Trả về: [{ label, description, provinceCode?, wardCode?, latitude?, longitude? }];
+ * 502 ADDRESS_SUGGEST_UNAVAILABLE khi nguồn gợi ý lỗi hoặc quá 4 giây
+ */
+catalogRouter.get('/locations/address-suggest', validate({ query: addressSuggestQuery }), catalogController.suggestAddress);
 
 export default catalogRouter;

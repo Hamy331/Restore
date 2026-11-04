@@ -28,6 +28,9 @@ export function findWard(code: unknown) {
   return WARD_BY_CODE.get(Object.hasOwn(LEGACY_WARD_CODES, code) ? LEGACY_WARD_CODES[code]! : code);
 }
 
+/** Tâm tỉnh: tâm phường mã nhỏ nhất (phường trung tâm cũ, VD Phường Ba Đình của Hà Nội) */
+export const provinceCenter = (code: string) => (Object.hasOwn(WARDS, code) ? WARDS[code]![0]?.center : undefined);
+
 /** Mọi phường (đều có tọa độ tâm) */
 export const wardsWithCenter = () => [...WARD_BY_CODE.values()];
 
@@ -82,7 +85,7 @@ export type AreaOption = { code: string; name: string; shortName?: string; level
  */
 const AREAS: { option: AreaOption; keys: string[]; parentKey?: string }[] = [
   ...PROVINCES.map((province) => ({
-    option: { code: province.code, name: province.name, shortName: province.shortName, level: province.level, center: WARDS[province.code]![0]!.center! },
+    option: { code: province.code, name: province.name, shortName: province.shortName, level: province.level, center: provinceCenter(province.code)! },
     keys: [fold(province.shortName ?? province.name), fold(province.name)],
   })),
   ...wardsWithCenter().map((ward) => {

@@ -593,6 +593,7 @@
   "streetAddressLabel": "House number, street",
   "streetAddressHint": "e.g. 12 Nguyen Hue",
   "streetAddressHelper": "Optional, never shown publicly",
+  "streetSuggestionsTitle": "Suggested addresses",
   "addressPrivacyNote": "Buyers only see the ward and province. Your location is used to show listings near you.",
   "confirmAddress": "Confirm address",
   "loadingLocations": "Loading...",

@@ -2,7 +2,7 @@ import { ListingCondition } from '@prisma/client';
 import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
 import { boolean, choice, object, text } from '../../common/validation/admin-input.js';
-import { int, parse, str } from '../../common/validation/schemas.js';
+import { int, optionalStr, parse, str } from '../../common/validation/schemas.js';
 import { findProvince, findWard } from './catalog.service.js';
 import { LOCATION_KEYS } from './catalog.type.js';
 
@@ -59,6 +59,14 @@ export const reverseGeocodeQuery = z.record(z.string(), z.unknown()).transform((
 
 export const provinceParams = z.object({ code: z.string() });
 
+/** Query GET /catalog/locations/address-suggest: q 2–120 ký tự, provinceCode/wardCode tuỳ chọn, limit 1–10 (mặc định 6) */
+export const addressSuggestQuery = z.record(z.string(), z.unknown()).transform((query) => ({
+  q: parse(str('q', { min: 2, max: 120 }), query.q),
+  provinceCode: parse(optionalStr('provinceCode', { max: 10 }), query.provinceCode),
+  wardCode: parse(optionalStr('wardCode', { max: 10 }), query.wardCode),
+  limit: parse(int('limit', { min: 1, max: 10, fallback: 6 }), query.limit),
+}));
+
 /** Query GET /catalog/locations/search: q 1–100 ký tự, limit 1–50 (mặc định 20) */
 export const areaSearchQuery = z.record(z.string(), z.unknown()).transform((query) => ({
   q: parse(str('q', { min: 1, max: 100 }), query.q),
@@ -102,3 +110,4 @@ export type ConditionParams = z.output<typeof conditionParams>;
 export type ConditionInput = z.output<typeof conditionBody>;
 export type ProvinceParams = z.output<typeof provinceParams>;
 export type AreaSearchQuery = z.output<typeof areaSearchQuery>;
+export type AddressSuggestQuery = z.output<typeof addressSuggestQuery>;

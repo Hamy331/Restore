@@ -1259,6 +1259,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get streetAddressHelper => 'Không bắt buộc, không hiển thị công khai';
 
   @override
+  String get streetSuggestionsTitle => 'Gợi ý địa chỉ';
+
+  @override
   String get addressPrivacyNote =>
       'Người mua chỉ thấy phường/xã và tỉnh/thành. Vị trí được dùng để gợi ý tin đăng gần bạn.';
 

@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/services/device_location_service.dart';
 import '../../data/vietnam_bounds.dart';
 import '../../models/address_info.dart';
+import '../../models/address_suggestion.dart';
+import '../../repositories/address_suggest_repository.dart';
 import 'package:restore/data/models/administrative_unit_model.dart';
 import '../../repositories/location_repository.dart';
 import 'address_picker_state.dart';
@@ -10,9 +12,11 @@ class AddressPickerCubit extends Cubit<AddressPickerState> {
   AddressPickerCubit({
     required LocationRepository repository,
     required DeviceLocationService locationService,
+    AddressSuggestRepository? suggestRepository,
     AddressInfo? initial,
   }) : _repository = repository,
        _locationService = locationService,
+       _suggestRepository = suggestRepository,
        super(
          AddressPickerState(
            province: initial?.province,
@@ -21,11 +25,18 @@ class AddressPickerCubit extends Cubit<AddressPickerState> {
            deviceGeoPoint: initial?.isGeoPointFromDevice == true
                ? initial?.geoPoint
                : null,
+           suggestedGeoPoint:
+               initial != null &&
+                   !initial.isGeoPointFromDevice &&
+                   initial.geoPoint != initial.ward.center
+               ? initial.geoPoint
+               : null,
          ),
        );
 
   final LocationRepository _repository;
   final DeviceLocationService _locationService;
+  final AddressSuggestRepository? _suggestRepository;
 
   /// Sheet địa chỉ đóng cubit ngay khi người dùng đóng sheet, trong khi các
   /// việc bất đồng bộ (lấy GPS, tải phường/xã) có thể xong sau đó. Bỏ qua các
@@ -62,6 +73,7 @@ class AddressPickerCubit extends Cubit<AddressPickerState> {
         ward: () => null,
         wards: const [],
         deviceGeoPoint: () => null,
+        suggestedGeoPoint: () => null,
         notice: () => null,
       ),
     );
@@ -74,13 +86,57 @@ class AddressPickerCubit extends Cubit<AddressPickerState> {
       state.copyWith(
         ward: () => ward,
         deviceGeoPoint: () => null,
+        suggestedGeoPoint: () => null,
         notice: () => null,
       ),
     );
   }
 
+  /// Gõ lại địa chỉ thì toạ độ của gợi ý đã chọn trước đó không còn đúng
   void changeStreetAddress(String value) =>
-      emit(state.copyWith(streetAddress: value));
+      emit(state.copyWith(streetAddress: value, suggestedGeoPoint: () => null));
+
+  /// Gợi ý số nhà, tên đường quanh tỉnh/phường đang chọn
+  Future<List<AddressSuggestion>> suggestStreets(String query) async {
+    final repository = _suggestRepository;
+    if (repository == null) return const [];
+    return repository.suggest(
+      query,
+      provinceCode: state.province?.code,
+      wardCode: state.ward?.code,
+    );
+  }
+
+  /// Chọn một gợi ý: ô địa chỉ đã điền sẵn qua [changeStreetAddress]. Chưa
+  /// chọn phường/xã thì chọn luôn tỉnh và phường của gợi ý; khớp phường thì
+  /// lấy toạ độ của gợi ý.
+  Future<void> applySuggestion(AddressSuggestion suggestion) async {
+    final provinceCode = suggestion.provinceCode;
+    final wardCode = suggestion.wardCode;
+    if (state.ward == null && provinceCode != null && wardCode != null) {
+      final province = state.provinces
+          .where((unit) => unit.code == provinceCode)
+          .firstOrNull;
+      if (province != null) {
+        if (province.code != state.province?.code) {
+          await selectProvince(province);
+        } else if (state.wardsStatus != LoadStatus.success) {
+          await _loadWards(province.code);
+        }
+        final ward = state.wards
+            .where((unit) => unit.code == wardCode)
+            .firstOrNull;
+        if (ward != null && state.ward == null) selectWard(ward);
+      }
+    }
+    final point = suggestion.point;
+    if (point != null &&
+        state.ward != null &&
+        state.ward!.code == wardCode &&
+        state.deviceGeoPoint == null) {
+      emit(state.copyWith(suggestedGeoPoint: () => point));
+    }
+  }
 
   Future<void> retryWards() async {
     final province = state.province;
