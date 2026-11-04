@@ -2414,6 +2414,12 @@ abstract class AppLocalizations {
   /// **'Optional, never shown publicly'**
   String get streetAddressHelper;
 
+  /// No description provided for @streetSuggestionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested addresses'**
+  String get streetSuggestionsTitle;
+
   /// No description provided for @addressPrivacyNote.
   ///
   /// In en, this message translates to:

@@ -1265,6 +1265,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get streetAddressHelper => 'Optional, never shown publicly';
 
   @override
+  String get streetSuggestionsTitle => 'Suggested addresses';
+
+  @override
   String get addressPrivacyNote =>
       'Buyers only see the ward and province. Your location is used to show listings near you.';
 

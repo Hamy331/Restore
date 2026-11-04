@@ -552,6 +552,7 @@
   "streetAddressLabel": "Số nhà, tên đường",
   "streetAddressHint": "VD: 12 Nguyễn Huệ",
   "streetAddressHelper": "Không bắt buộc, không hiển thị công khai",
+  "streetSuggestionsTitle": "Gợi ý địa chỉ",
   "addressPrivacyNote": "Người mua chỉ thấy phường/xã và tỉnh/thành. Vị trí được dùng để gợi ý tin đăng gần bạn.",
   "confirmAddress": "Xác nhận địa chỉ",
   "loadingLocations": "Đang tải danh sách...",

@@ -3,7 +3,8 @@ import { ok } from '../../common/http/response.js';
 import { getInput, ValidatedInput } from '../../middlewares/validate.middleware.js';
 import * as catalogService from './catalog.service.js';
 import { Coordinates, LOCATION_COVERAGE } from './catalog.type.js';
-import type { AreaSearchQuery, ProvinceParams } from './catalog.validator.js';
+import type { AddressSuggestQuery, AreaSearchQuery, ProvinceParams } from './catalog.validator.js';
+import { suggestAddresses } from './address-suggest.service.js';
 
 /** API địa chỉ trả thêm coverage ('full': toàn quốc) ngoài data, như API cũ */
 const withCoverage = (res: Response, data: unknown) => res.json({ success: true, data, coverage: LOCATION_COVERAGE });
@@ -27,6 +28,10 @@ export function listWards(_req: Request, res: Response) {
 export function searchAreas(_req: Request, res: Response) {
   const { q, limit } = getInput<ValidatedInput<AreaSearchQuery>>(res).query;
   withCoverage(res, catalogService.searchAreas(q, limit));
+}
+
+export async function suggestAddress(_req: Request, res: Response) {
+  ok(res, await suggestAddresses(getInput<ValidatedInput<AddressSuggestQuery>>(res).query));
 }
 
 export function reverseGeocode(_req: Request, res: Response) {
