@@ -2534,6 +2534,12 @@ abstract class AppLocalizations {
   /// **'Change area'**
   String get homeChangeArea;
 
+  /// No description provided for @homeAreaLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Locating...'**
+  String get homeAreaLocating;
+
   /// No description provided for @homeForYouTitle.
   ///
   /// In en, this message translates to:

@@ -35,8 +35,7 @@ class HomeCubit extends Cubit<HomeState> {
     if (showLoading) emit(state.copyWith(status: HomeStatus.loading));
     try {
       // Gọi song song, chờ đủ cả trang rồi mới hiển thị
-      final (areaName, banners, categories, recommended, latest) = await (
-        _homeRepository.getAreaName(),
+      final (banners, categories, recommended, latest) = await (
         _homeRepository.getBanners(),
         _categoryRepository.getCategories(),
         _homeRepository.getRecommended(),
@@ -45,7 +44,6 @@ class HomeCubit extends Cubit<HomeState> {
       emit(
         state.copyWith(
           status: HomeStatus.ready,
-          areaName: areaName,
           banners: banners,
           categories: categories,
           recommended: recommended,

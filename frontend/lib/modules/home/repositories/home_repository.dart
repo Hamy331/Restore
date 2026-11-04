@@ -7,13 +7,12 @@ import '../models/home_banner.dart';
 import '../models/home_listing_filter.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 
-/// Nguồn dữ liệu cho trang chủ (danh mục lấy từ CategoryRepository)
+/// Nguồn dữ liệu cho trang chủ (danh mục lấy từ CategoryRepository, khu vực
+/// từ UserAreaCubit)
 abstract class HomeRepository {
   /// Số tin tối đa mỗi lượt tải
   static const int pageSize = 10;
 
-  /// Tên khu vực đang xem, VD "TP. Hồ Chí Minh"
-  Future<String> getAreaName();
   Future<List<HomeBanner>> getBanners();
 
   /// Tin gợi ý riêng cho người dùng (tối đa [pageSize] tin)
@@ -39,9 +38,6 @@ class MockHomeRepository implements HomeRepository {
         json,
       ).copyWith(isFavorite: MockFavoriteStore.contains('${json['id']}')),
   ];
-
-  @override
-  Future<String> getAreaName() async => HomeMockData.areaName;
 
   @override
   Future<List<HomeBanner>> getBanners() async {
@@ -96,12 +92,6 @@ class ApiHomeRepository implements HomeRepository {
     : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
-
-  @override
-  Future<String> getAreaName() async {
-    final data = (await _get('/home/area'))['data'];
-    return data is Map ? '${data['name'] ?? ''}' : '';
-  }
 
   @override
   Future<List<HomeBanner>> getBanners() async =>

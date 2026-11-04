@@ -8,7 +8,6 @@ enum HomeStatus { loading, ready, failure }
 
 class HomeState extends Equatable {
   final HomeStatus status;
-  final String areaName;
   final List<HomeBanner> banners;
   final List<CategoryModel> categories;
   final List<ListingCardItem> recommended;
@@ -24,7 +23,6 @@ class HomeState extends Equatable {
 
   const HomeState({
     this.status = HomeStatus.loading,
-    this.areaName = '',
     this.banners = const [],
     this.categories = const [],
     this.recommended = const [],
@@ -36,7 +34,6 @@ class HomeState extends Equatable {
 
   HomeState copyWith({
     HomeStatus? status,
-    String? areaName,
     List<HomeBanner>? banners,
     List<CategoryModel>? categories,
     List<ListingCardItem>? recommended,
@@ -46,7 +43,6 @@ class HomeState extends Equatable {
     bool? isLoadingMore,
   }) => HomeState(
     status: status ?? this.status,
-    areaName: areaName ?? this.areaName,
     banners: banners ?? this.banners,
     categories: categories ?? this.categories,
     recommended: recommended ?? this.recommended,
@@ -59,7 +55,6 @@ class HomeState extends Equatable {
   @override
   List<Object?> get props => [
     status,
-    areaName,
     banners,
     categories,
     recommended,

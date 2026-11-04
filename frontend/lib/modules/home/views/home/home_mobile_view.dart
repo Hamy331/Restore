@@ -11,6 +11,10 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/auth/auth_route_guard.dart';
 import 'package:restore/modules/auth/bloc/auth_context.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
+import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
+import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
+import 'package:restore/modules/location/models/area_option.dart';
+import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
@@ -82,7 +86,30 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   void _openCategory(CategoryModel category) =>
       context.push(CategoryDetailView.location(category.id), extra: category);
 
-  /// Tính năng chưa có trang riêng (thông báo, chọn khu vực...)
+  /// Tên khu vực trên nút đầu trang: tỉnh theo GPS / tự chọn, không có thì
+  /// "Toàn quốc"
+  String _areaLabel(AppLocalizations l10n, UserAreaState area) =>
+      switch (area.status) {
+        UserAreaStatus.locating => l10n.homeAreaLocating,
+        UserAreaStatus.nationwide => l10n.areaNationwide,
+        UserAreaStatus.ready => area.area?.displayName ?? l10n.areaNationwide,
+      };
+
+  /// Chọn khu vực khác (có thêm "Toàn quốc")
+  Future<void> _pickArea() async {
+    final userArea = context.read<UserAreaCubit>();
+    final result = await context.push<AreaPickResult>(
+      AreaSearchView.location(allowNationwide: true),
+    );
+    if (result == null) return;
+    if (result.nationwide) {
+      userArea.selectNationwide();
+    } else if (result.area case final area?) {
+      userArea.select(area);
+    }
+  }
+
+  /// Tính năng chưa có trang riêng (thông báo...)
   void _comingSoon() => TSnackBarHelper.showInfo(
     context,
     message: AppLocalizations.of(context)!.featureComingSoon,
@@ -161,16 +188,19 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                         SliverToBoxAdapter(
                           child: ValueListenableBuilder(
                             valueListenable: DevPlanOverride.plan,
-                            builder: (context, plan, _) => HomeTopBar(
-                              key: _topBarKey,
-                              areaName: state.areaName,
-                              greetingName: greetingName,
-                              plan: plan,
-                              onAreaTap: _comingSoon,
-                              onPlanTap: DevPlanOverride.enabled
-                                  ? DevPlanOverride.next
-                                  : null,
-                            ),
+                            builder: (context, plan, _) =>
+                                BlocBuilder<UserAreaCubit, UserAreaState>(
+                                  builder: (context, area) => HomeTopBar(
+                                    key: _topBarKey,
+                                    areaName: _areaLabel(l10n, area),
+                                    greetingName: greetingName,
+                                    plan: plan,
+                                    onAreaTap: _pickArea,
+                                    onPlanTap: DevPlanOverride.enabled
+                                        ? DevPlanOverride.next
+                                        : null,
+                                  ),
+                                ),
                           ),
                         ),
                         SliverPersistentHeader(

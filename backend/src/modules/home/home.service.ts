@@ -1,11 +1,14 @@
 import { AppError } from '../../common/errors/app-error.js';
-import { distanceKm, findProvince, wardsWithCenter } from '../catalog/index.js';
+import { findProvince, locatePoint, type Unit } from '../catalog/index.js';
 import { AreaDto, BannerInput, toHomeBannerDto } from './home.dto.js';
 import * as homeRepository from './home.repository.js';
-import { MAX_AREA_DISTANCE_KM, NATIONWIDE_AREA } from './home.type.js';
+import { NATIONWIDE_AREA } from './home.type.js';
 
 /** Bản chụp JSON của banner để lưu vào AdminAudit */
 const snapshot = (value: unknown) => JSON.parse(JSON.stringify(value));
+
+/** Khu vực từ tỉnh: tên đầy đủ và tên ngắn ("Hồ Chí Minh") để app hiển thị gọn */
+const toArea = (province: Unit): AreaDto => ({ code: province.code, name: province.name, shortName: province.shortName ?? province.name });
 
 /**
  * Khu vực đang xem ở trang chủ.
@@ -15,17 +18,11 @@ export function resolveArea(input: { provinceCode?: string; point?: { latitude: 
   if (input.provinceCode) {
     const province = findProvince(input.provinceCode);
     if (!province) throw new AppError(404, 'AREA_NOT_FOUND', 'Không tìm thấy tỉnh/thành này.', 'provinceCode');
-    return { code: province.code, name: province.name };
+    return toArea(province);
   }
   if (input.point) {
-    const point = input.point;
-    const nearest = wardsWithCenter()
-      .map((ward) => ({ ward, distance: distanceKm(point, ward.center) }))
-      .sort((a, b) => a.distance - b.distance)[0];
-    const province = nearest && nearest.distance <= MAX_AREA_DISTANCE_KM
-      ? findProvince(nearest.ward.parentCode)
-      : undefined;
-    if (province) return { code: province.code, name: province.name };
+    const province = locatePoint(input.point)?.province;
+    if (province) return toArea(province);
   }
   return NATIONWIDE_AREA;
 }

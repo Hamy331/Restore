@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { findWard } from '../src/modules/catalog/catalog.service.js';
 import { listingLocation } from '../src/modules/catalog/catalog.validator.js';
 import { DEMO_BANNERS, DEMO_LISTINGS, DEMO_PASSWORD, DEMO_SELLERS, demoImages } from './seed/demo.js';
 
@@ -48,7 +49,7 @@ async function seedDemo() {
   let featured = 0;
   for (const [index, item] of DEMO_LISTINGS.entries()) {
     if (!categories.has(item.categoryId)) throw new Error(`Không có danh mục ${item.categoryId}`);
-    const [provinceCode] = item.ward.split('-');
+    const provinceCode = findWard(item.ward)?.parentCode;
     const location = listingLocation({ provinceCode, wardCode: item.ward, streetAddress: '' });
     // Lệch vài phút giữa các tin để thứ tự "mới nhất" ổn định
     const publishedAt = new Date(now - item.daysAgo * DAY - index * 7 * 60 * 1000);

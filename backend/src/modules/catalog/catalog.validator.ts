@@ -2,7 +2,8 @@ import { ListingCondition } from '@prisma/client';
 import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
 import { boolean, choice, object, text } from '../../common/validation/admin-input.js';
-import { PROVINCES, WARDS } from './catalog.data.js';
+import { int, parse, str } from '../../common/validation/schemas.js';
+import { findProvince, findWard } from './catalog.service.js';
 import { LOCATION_KEYS } from './catalog.type.js';
 
 /* ---------- Tọa độ, địa chỉ tin (dùng chung với listings, home) ---------- */
@@ -27,8 +28,9 @@ export function listingLocation(value: unknown) {
   if (Object.keys(body).some((key) => !LOCATION_KEYS.includes(key))) {
     throw new AppError(400, 'INVALID_LOCATION', 'Địa chỉ chứa trường không được hỗ trợ.', 'location');
   }
-  const province = PROVINCES.find((unit) => unit.code === body.provinceCode);
-  const ward = province && WARDS[province.code]?.find((unit) => unit.code === body.wardCode);
+  const province = findProvince(body.provinceCode);
+  const found = findWard(body.wardCode);
+  const ward = province && found?.parentCode === province.code ? found : undefined;
   const streetAddress = body.streetAddress ?? '';
   if (!province || !ward || typeof streetAddress !== 'string' || streetAddress.trim().length > 200 ||
     !['device', 'ward_center'].includes(String(body.geoSource ?? 'ward_center'))) {
@@ -56,6 +58,12 @@ export const reverseGeocodeQuery = z.record(z.string(), z.unknown()).transform((
 });
 
 export const provinceParams = z.object({ code: z.string() });
+
+/** Query GET /catalog/locations/search: q 1–100 ký tự, limit 1–50 (mặc định 20) */
+export const areaSearchQuery = z.record(z.string(), z.unknown()).transform((query) => ({
+  q: parse(str('q', { min: 1, max: 100 }), query.q),
+  limit: parse(int('limit', { min: 1, max: 50, fallback: 20 }), query.limit),
+}));
 
 /* ---------- Quản trị ---------- */
 
@@ -93,3 +101,4 @@ export type UpdateCategoryInput = z.output<typeof updateCategoryBody>;
 export type ConditionParams = z.output<typeof conditionParams>;
 export type ConditionInput = z.output<typeof conditionBody>;
 export type ProvinceParams = z.output<typeof provinceParams>;
+export type AreaSearchQuery = z.output<typeof areaSearchQuery>;

@@ -814,14 +814,14 @@
           "attributes": {},
           "location": {
             "provinceCode": "79",
-            "wardCode": "79-SG",
+            "wardCode": "26740",
             "province": {
               "code": "79",
-              "name": "TP. Hồ Chí Minh",
+              "name": "Thành phố Hồ Chí Minh",
               "level": "province"
             },
             "ward": {
-              "code": "79-SG",
+              "code": "26740",
               "name": "Phường Sài Gòn",
               "level": "ward",
               "center": {
@@ -850,7 +850,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
-          "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
           "isFavorite": false
@@ -872,14 +872,14 @@
           "attributes": {},
           "location": {
             "provinceCode": "79",
-            "wardCode": "79-SG",
+            "wardCode": "26740",
             "province": {
               "code": "79",
-              "name": "TP. Hồ Chí Minh",
+              "name": "Thành phố Hồ Chí Minh",
               "level": "province"
             },
             "ward": {
-              "code": "79-SG",
+              "code": "26740",
               "name": "Phường Sài Gòn",
               "level": "ward",
               "center": {
@@ -908,7 +908,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
-          "areaLabel": "Phường Sài Gòn, TP. Hồ Chí Minh",
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
           "isFavorite": false

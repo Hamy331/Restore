@@ -1332,6 +1332,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeChangeArea => 'Change area';
 
   @override
+  String get homeAreaLocating => 'Locating...';
+
+  @override
   String get homeForYouTitle => 'Picked for you';
 
   @override

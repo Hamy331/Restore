@@ -12,6 +12,8 @@ import 'package:restore/modules/auth/bloc/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth_event.dart';
 import 'package:restore/modules/auth/data/auth_mock_data.dart';
 import 'package:restore/modules/auth/repositories/auth_repository.dart';
+import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
+import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/modules/listings/models/listing_draft.dart';
 import 'package:restore/modules/listings/repositories/listings_repository.dart';
 
@@ -46,8 +48,16 @@ Future<GoRouter> _openSignedIn(WidgetTester tester) async {
   bloc.add(LoggedIn(user));
   final router = createAppRouter(bloc);
   await tester.pumpWidget(
-    BlocProvider.value(
-      value: bloc,
+    MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: bloc),
+        // Không định vị trong test: nút khu vực hiện "Toàn quốc"
+        BlocProvider(
+          create: (_) => UserAreaCubit(
+            locationRepository: MockLocationRepository(latency: Duration.zero),
+          )..selectNationwide(),
+        ),
+      ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
         builder: (_, _) => MaterialApp.router(

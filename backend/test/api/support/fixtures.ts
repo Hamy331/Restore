@@ -11,5 +11,5 @@ export const listingBody = (title = 'Tin tạo qua API thử') => ({
   price: '250000',
   condition: 'USED_GOOD',
   categoryId: 'other',
-  location: { provinceCode: '79', wardCode: '79-SG', streetAddress: '1 Đường Thử' },
+  location: { provinceCode: '79', wardCode: '26740', streetAddress: '1 Đường Thử' },
 });

@@ -11,7 +11,7 @@ export type BannerIdParams = { id: string };
 /* ---------- Ra ---------- */
 
 /** Khu vực ở đầu trang chủ; code = null nghĩa là "Toàn quốc" */
-export type AreaDto = { code: string | null; name: string };
+export type AreaDto = { code: string | null; name: string; shortName?: string };
 
 /** Banner cho app: đúng với HomeBanner.fromJson ở Flutter */
 export type HomeBannerDto = { id: string; imageUrl: string | null; route: string | null };
