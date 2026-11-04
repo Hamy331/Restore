@@ -28,7 +28,7 @@ test('wanted alerts: preview, create, match on approval, seen, delete', async ()
   expect('preview own listings excluded', await api.post('/wanted-alerts/preview', { token: tokens.seller, body: wanted('ghế xoay văn phòng') }));
 
   const alert = expect('create', await api.post('/wanted-alerts', { token: tokens.buyer,
-    body: wanted('ghế công thái học', { categoryId: 'other', area: { code: '79-SG', level: 'ward', label: 'Sài Gòn' }, dealTypes: ['buy'] }) }));
+    body: wanted('ghế công thái học', { categoryId: 'other', area: { code: '26740', level: 'ward', label: 'Sài Gòn' }, dealTypes: ['buy'] }) }));
   const id = alert.body.data.id;
   expect('create strict', await api.post('/wanted-alerts', { token: tokens.buyer, body: wanted('ghế công thái học màu đỏ ergonomic', { matchLevel: 'STRICT' }) }));
   expect('seller own alert', await api.post('/wanted-alerts', { token: tokens.seller, body: wanted('ghế công thái học') }));

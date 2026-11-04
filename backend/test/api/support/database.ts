@@ -19,7 +19,7 @@ const location = (provinceCode: string, wardCode: string, provinceName: string, 
   ward: { code: wardCode, name: wardName, level: 'ward', parentCode: provinceCode, center: { latitude, longitude } },
   latitude, longitude, geoSource: 'ward_center',
 });
-export const SAIGON = location('79', '79-SG', 'TP. Hồ Chí Minh', 'Phường Sài Gòn', 10.7769, 106.7009);
+export const SAIGON = location('79', '26740', 'Thành phố Hồ Chí Minh', 'Phường Sài Gòn', 10.7769, 106.7009);
 
 /** Dữ liệu cố định cho mọi file test: id cố định để snapshot ổn định. */
 export async function seedFixtures() {

@@ -3,8 +3,6 @@
 class HomeMockData {
   HomeMockData._();
 
-  static const String areaName = 'TP. Hồ Chí Minh';
-
   static const String _camera = 'assets/images/marketplace/listing-camera.png';
   static const String _lamp = 'assets/images/marketplace/listing-lamp.png';
   static const String _chair = 'assets/images/marketplace/listing-chair.png';

@@ -3,9 +3,9 @@ import { ok } from '../../common/http/response.js';
 import { getInput, ValidatedInput } from '../../middlewares/validate.middleware.js';
 import * as catalogService from './catalog.service.js';
 import { Coordinates, LOCATION_COVERAGE } from './catalog.type.js';
-import type { ProvinceParams } from './catalog.validator.js';
+import type { AreaSearchQuery, ProvinceParams } from './catalog.validator.js';
 
-/** API địa chỉ trả thêm coverage: 'sample' ngoài data, như API cũ */
+/** API địa chỉ trả thêm coverage ('full': toàn quốc) ngoài data, như API cũ */
 const withCoverage = (res: Response, data: unknown) => res.json({ success: true, data, coverage: LOCATION_COVERAGE });
 
 export async function listConditions(_req: Request, res: Response) {
@@ -22,6 +22,11 @@ export function listProvinces(_req: Request, res: Response) {
 
 export function listWards(_req: Request, res: Response) {
   withCoverage(res, catalogService.listWards(getInput<ValidatedInput<undefined, ProvinceParams>>(res).params.code));
+}
+
+export function searchAreas(_req: Request, res: Response) {
+  const { q, limit } = getInput<ValidatedInput<AreaSearchQuery>>(res).query;
+  withCoverage(res, catalogService.searchAreas(q, limit));
 }
 
 export function reverseGeocode(_req: Request, res: Response) {

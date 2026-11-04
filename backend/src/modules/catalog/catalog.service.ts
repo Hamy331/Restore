@@ -1,8 +1,9 @@
 import { AppError } from '../../common/errors/app-error.js';
-import { PROVINCES, WARDS } from './catalog.data.js';
+import { LEGACY_WARD_CODES, PROVINCES, WARDS } from './catalog.data.js';
 import { toCategoryDto } from './catalog.dto.js';
 import * as catalogRepository from './catalog.repository.js';
 import { CATEGORY_ORDER, Coordinates, MAX_REVERSE_GEOCODE_KM, Unit } from './catalog.type.js';
+import { wardCodeAt } from './location.geo.js';
 
 /* ---------- Địa lý (dùng chung với home, listings) ---------- */
 
@@ -14,13 +15,38 @@ export function distanceKm(a: Coordinates, b: Coordinates) {
   return 6371 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
 }
 
-export const findProvince = (code: unknown) => PROVINCES.find((unit) => unit.code === code);
+type WardWithCenter = Unit & { center: Coordinates };
 
-/** Phường/xã theo mã (tìm trong mọi tỉnh) */
-export const findWard = (code: unknown) => Object.values(WARDS).flat().find((unit) => unit.code === code);
+const PROVINCE_BY_CODE = new Map(PROVINCES.map((unit) => [unit.code, unit]));
+const WARD_BY_CODE = new Map(Object.values(WARDS).flat().map((unit) => [unit.code, unit as WardWithCenter]));
 
-/** Mọi phường có tọa độ tâm */
-export const wardsWithCenter = () => Object.values(WARDS).flat().filter((unit): unit is Unit & { center: Coordinates } => !!unit.center);
+export const findProvince = (code: unknown) => (typeof code === 'string' ? PROVINCE_BY_CODE.get(code) : undefined);
+
+/** Phường/xã theo mã (tìm trong mọi tỉnh), nhận cả mã mẫu cũ ("79-SG") */
+export function findWard(code: unknown) {
+  if (typeof code !== 'string') return undefined;
+  return WARD_BY_CODE.get(Object.hasOwn(LEGACY_WARD_CODES, code) ? LEGACY_WARD_CODES[code]! : code);
+}
+
+/** Mọi phường (đều có tọa độ tâm) */
+export const wardsWithCenter = () => [...WARD_BY_CODE.values()];
+
+/**
+ * Phường và tỉnh chứa điểm GPS: theo ranh giới phường; điểm ngoài mọi ranh giới (biển, sai số GPS
+ * sát bờ) lấy phường có tâm gần nhất trong MAX_REVERSE_GEOCODE_KM. undefined nếu ngoài Việt Nam.
+ */
+export function locatePoint(point: Coordinates) {
+  let ward = findWard(wardCodeAt(point));
+  if (!ward) {
+    let best = MAX_REVERSE_GEOCODE_KM;
+    for (const candidate of WARD_BY_CODE.values()) {
+      const distance = distanceKm(point, candidate.center);
+      if (distance <= best) [ward, best] = [candidate, distance];
+    }
+  }
+  const province = ward && findProvince(ward.parentCode);
+  return ward && province ? { province, ward } : undefined;
+}
 
 /* ---------- API công khai ---------- */
 
@@ -39,15 +65,54 @@ export const listProvinces = () => PROVINCES;
 
 export function listWards(provinceCode: string) {
   const wards = Object.hasOwn(WARDS, provinceCode) ? WARDS[provinceCode] : undefined;
-  if (!wards) throw new AppError(404, 'LOCATION_NOT_FOUND', 'Chưa có dữ liệu địa chỉ cho tỉnh này.');
+  if (!wards) throw new AppError(404, 'LOCATION_NOT_FOUND', 'Không tìm thấy tỉnh/thành này.');
   return wards;
 }
 
-/** Phường gần GPS nhất (trong 30 km) và tỉnh của nó */
+/** Chữ thường, bỏ dấu tiếng Việt (kể cả đ), gộp khoảng trắng */
+const fold = (input: string) =>
+  input.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/\s+/g, ' ').trim();
+
+/** Khu vực để chọn (trang chọn khu vực, Gần bạn): tỉnh/thành hoặc phường/xã kèm tâm */
+export type AreaOption = { code: string; name: string; shortName?: string; level: string; parentName?: string; center: Coordinates };
+
+/**
+ * Mọi khu vực tìm được, tỉnh trước. Tâm tỉnh lấy tâm phường mã nhỏ nhất (phường trung tâm cũ,
+ * VD Phường Ba Đình của Hà Nội), vì tâm hình học của tỉnh có đảo (Khánh Hoà, Trường Sa) rơi ra biển.
+ */
+const AREAS: { option: AreaOption; keys: string[]; parentKey?: string }[] = [
+  ...PROVINCES.map((province) => ({
+    option: { code: province.code, name: province.name, shortName: province.shortName, level: province.level, center: WARDS[province.code]![0]!.center! },
+    keys: [fold(province.shortName ?? province.name), fold(province.name)],
+  })),
+  ...wardsWithCenter().map((ward) => {
+    const province = findProvince(ward.parentCode)!;
+    return {
+      option: { code: ward.code, name: ward.name, shortName: ward.shortName, level: ward.level, parentName: province.name, center: ward.center },
+      keys: [fold(ward.shortName ?? ward.name), fold(ward.name)],
+      parentKey: fold(province.name),
+    };
+  }),
+];
+
+/**
+ * Tìm khu vực theo tên, không phân biệt dấu: khớp tên trước (khớp từ đầu tên ngắn lên đầu),
+ * rồi tới phường thuộc tỉnh có tên khớp.
+ */
+export function searchAreas(query: string, limit: number) {
+  const q = fold(query);
+  if (!q) return [];
+  const byName = AREAS.filter((area) => area.keys.some((key) => key.includes(q)))
+    .map((area, index) => ({ area, rank: area.keys[0]!.startsWith(q) ? 0 : 1, index }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map(({ area }) => area);
+  const byParent = AREAS.filter((area) => !area.keys.some((key) => key.includes(q)) && area.parentKey?.includes(q));
+  return [...byName, ...byParent].slice(0, limit).map((area) => area.option);
+}
+
+/** Phường và tỉnh chứa GPS, 404 nếu ngoài Việt Nam */
 export function reverseGeocode(point: Coordinates) {
-  const ward = wardsWithCenter().sort((a, b) => distanceKm(point, a.center) - distanceKm(point, b.center))[0];
-  if (!ward || distanceKm(point, ward.center) > MAX_REVERSE_GEOCODE_KM) {
-    throw new AppError(404, 'LOCATION_NOT_FOUND', 'GPS nằm ngoài vùng dữ liệu địa chỉ.');
-  }
-  return { province: findProvince(ward.parentCode), ward };
+  const found = locatePoint(point);
+  if (!found) throw new AppError(404, 'LOCATION_NOT_FOUND', 'GPS nằm ngoài Việt Nam.');
+  return found;
 }

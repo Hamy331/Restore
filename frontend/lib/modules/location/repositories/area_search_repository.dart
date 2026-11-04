@@ -1,7 +1,6 @@
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/core/utils/helpers/vietnamese_text.dart';
 import 'package:restore/data/models/administrative_unit_model.dart';
-import 'package:restore/shared/models/geo_point.dart';
 
 import '../data/location_mock_data.dart';
 import '../models/area_option.dart';
@@ -20,7 +19,7 @@ abstract class AreaSearchRepository {
   Future<void> deleteRecent(String code);
 }
 
-/// Đọc dữ liệu mẫu của LocationMockData (6 thành phố lớn).
+/// Tìm trong bộ dữ liệu địa chỉ thật đóng gói trong app (LocationMockData).
 /// Danh sách gần đây giữ trong bộ nhớ nên còn khi mở lại trang.
 class MockAreaSearchRepository implements AreaSearchRepository {
   MockAreaSearchRepository({this.latency = const Duration(milliseconds: 200)});
@@ -29,61 +28,44 @@ class MockAreaSearchRepository implements AreaSearchRepository {
 
   static const int _recentLimit = 8;
   static final List<AreaOption> _recent = [];
+  static Future<List<AreaOption>>? _areas;
 
-  /// Mọi khu vực mẫu; tâm tỉnh/thành lấy trung bình tâm các phường
-  static final List<AreaOption> _areas = () {
-    final areas = <AreaOption>[];
-    for (final json in LocationMockData.provinces) {
-      final province = AdministrativeUnitModel.fromJson(json);
-      final wards = [
-        for (final ward
-            in LocationMockData.wardsByProvince[province.code] ??
-                const <Map<String, dynamic>>[])
-          AdministrativeUnitModel.fromJson(ward),
-      ];
-      final centers = [
-        for (final ward in wards)
-          if (ward.center != null) ward.center!,
-      ];
-      if (centers.isEmpty) continue;
-      areas.add(
-        AreaOption(
-          code: province.code,
-          name: province.name,
-          level: AdministrativeLevel.province,
-          center: GeoPoint(
-            centers.map((c) => c.latitude).reduce((a, b) => a + b) /
-                centers.length,
-            centers.map((c) => c.longitude).reduce((a, b) => a + b) /
-                centers.length,
-          ),
-        ),
-      );
-      for (final ward in wards) {
-        final center = ward.center;
-        if (center == null) continue;
-        areas.add(
+  /// Mọi khu vực, tỉnh/thành trước rồi tới phường/xã (dựng một lần)
+  static Future<List<AreaOption>> _allAreas() => _areas ??= () async {
+    final data = await LocationMockData.load();
+    return [
+      for (final province in data.provinces)
+        if (data.provinceCenter(province.code) case final center?)
           AreaOption(
-            code: ward.code,
-            name: ward.name,
-            level: AdministrativeLevel.ward,
-            parentName: province.name,
+            code: province.code,
+            name: province.name,
+            shortName: province.shortName,
+            level: AdministrativeLevel.province,
             center: center,
           ),
-        );
-      }
-    }
-    return areas;
+      for (final province in data.provinces)
+        for (final ward in data.wardsByProvince[province.code] ?? const [])
+          if (ward.center case final center?)
+            AreaOption(
+              code: ward.code,
+              name: ward.name,
+              shortName: ward.shortName,
+              level: AdministrativeLevel.ward,
+              parentName: province.name,
+              center: center,
+            ),
+    ];
   }();
 
   @override
   Future<List<AreaOption>> search(String query) async {
     await Future<void>.delayed(latency);
+    final areas = await _allAreas();
     // Khớp tên trước, khớp tên tỉnh/thành chứa nó sau
-    final byName = _areas.where(
+    final byName = areas.where(
       (area) => VietnameseText.matches(area.name, query),
     );
-    final byParent = _areas.where(
+    final byParent = areas.where(
       (area) =>
           !VietnameseText.matches(area.name, query) &&
           VietnameseText.matches(area.label, query),
@@ -111,8 +93,8 @@ class MockAreaSearchRepository implements AreaSearchRepository {
 }
 
 /// Gọi backend:
-/// - `GET /catalog/locations/search?q=&limit=` → `{ data: [{ code, name, level, parentName, center }] }`
-/// - `GET /users/me/recent-areas` → cùng cấu trúc, mới nhất trước
+/// - `GET /catalog/locations/search?q=&limit=` → `{ data: [{ code, name, shortName, level, parentName, center }] }`
+/// - `GET /users/me/recent-areas` → cùng cấu trúc, mới nhất trước (backend chưa có, lỗi thì ẩn phần gần đây)
 /// - `POST /users/me/recent-areas` `{ code }`
 /// - `DELETE /users/me/recent-areas/:code`
 class ApiAreaSearchRepository implements AreaSearchRepository {

@@ -1325,6 +1325,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeChangeArea => 'Đổi khu vực';
 
   @override
+  String get homeAreaLocating => 'Đang định vị...';
+
+  @override
   String get homeForYouTitle => 'Dành cho bạn';
 
   @override

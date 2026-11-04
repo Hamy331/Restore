@@ -71,7 +71,8 @@
       "success": true,
       "data": {
         "code": "79",
-        "name": "TP. Hồ Chí Minh"
+        "name": "Thành phố Hồ Chí Minh",
+        "shortName": "Hồ Chí Minh"
       }
     }
   },
@@ -81,7 +82,8 @@
       "success": true,
       "data": {
         "code": "79",
-        "name": "TP. Hồ Chí Minh"
+        "name": "Thành phố Hồ Chí Minh",
+        "shortName": "Hồ Chí Minh"
       }
     }
   },

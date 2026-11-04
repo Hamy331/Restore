@@ -9,8 +9,10 @@ import { areaQuery, bannerBody } from './home.validator.js';
 const parseAreaQuery = (query: unknown) => parse(areaQuery, query);
 
 test('home area resolves province code, GPS point and falls back to nationwide', () => {
-  assert.deepEqual(resolveArea({ provinceCode: '79' }), { code: '79', name: 'TP. Hồ Chí Minh' });
-  assert.deepEqual(resolveArea({ point: { latitude: 10.7769, longitude: 106.7009 } }), { code: '79', name: 'TP. Hồ Chí Minh' });
+  const hcm = { code: '79', name: 'Thành phố Hồ Chí Minh', shortName: 'Hồ Chí Minh' };
+  assert.deepEqual(resolveArea({ provinceCode: '79' }), hcm);
+  assert.deepEqual(resolveArea({ point: { latitude: 10.7769, longitude: 106.7009 } }), hcm);
+  assert.deepEqual(resolveArea({ point: { latitude: 21.0285, longitude: 105.8542 } })?.code, '01');
   assert.deepEqual(resolveArea({ point: { latitude: 0, longitude: 0 } }), NATIONWIDE_AREA);
   assert.deepEqual(resolveArea({}), NATIONWIDE_AREA);
   assert.throws(() => resolveArea({ provinceCode: 'xx' }), AppError);

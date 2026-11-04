@@ -15,6 +15,9 @@ import 'core/routes/app_router.dart';
 import 'modules/auth/bloc/auth_bloc.dart';
 import 'modules/auth/bloc/auth_event.dart';
 import 'modules/auth/repositories/auth_repository.dart';
+import 'modules/location/bloc/user_area/user_area_cubit.dart';
+import 'modules/location/repositories/location_repository.dart';
+import 'core/config/app_environment.dart';
 import 'core/network/api_client.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -66,6 +69,15 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider.value(value: _authBloc),
         BlocProvider(create: (context) => LanguageBloc()),
+        // Mở app là xin quyền vị trí để hiện tỉnh/thành của người dùng
+        BlocProvider(
+          lazy: false,
+          create: (context) => UserAreaCubit(
+            locationRepository: AppEnvironment.useMockData
+                ? MockLocationRepository()
+                : ApiLocationRepository(),
+          )..locate(),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),

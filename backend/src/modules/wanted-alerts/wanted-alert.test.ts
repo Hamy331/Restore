@@ -33,7 +33,7 @@ const alert: MatchableAlert = {
 };
 const listing: MatchableListing = {
   title: 'Ghế xoay văn phòng', description: '', price: 1_200_000, condition: 'USED_GOOD', allowSale: true, allowExchange: false,
-  categoryId: 'furniture', provinceCode: '79', wardCode: '79-SG', createdAt: new Date('2026-10-02T00:00:00Z'),
+  categoryId: 'furniture', provinceCode: '79', wardCode: '26740', createdAt: new Date('2026-10-02T00:00:00Z'),
 };
 
 test('matchListing applies hard filters before scoring', () => {
@@ -45,23 +45,23 @@ test('matchListing applies hard filters before scoring', () => {
   assert.equal(matchListing({ ...alert, dealTypes: ['exchange'] }, listing), null);
   assert.equal(matchListing({ ...alert, conditions: ['NEW'] }, listing), null);
   assert.equal(matchListing({ ...alert, areaCode: '01' }, listing), null);
-  assert.ok(matchListing({ ...alert, areaCode: '79-SG', areaLevel: 'ward' }, listing) != null);
+  assert.ok(matchListing({ ...alert, areaCode: '26740', areaLevel: 'ward' }, listing) != null);
   assert.equal(matchListing({ ...alert, keywords: 'ghế xoay gaming màu đỏ', matchLevel: 'STRICT' }, listing), null);
 });
 
 test('draft body normalizes the app payload', () => {
   assert.deepEqual(draft({
     keywords: ' Ghế xoay ', categoryId: 'furniture', minPrice: 100000, maxPrice: '2000000', conditions: ['USED_GOOD', 'USED_GOOD'],
-    dealTypes: ['buy'], area: { code: '79-SG', level: 'ward', label: 'bỏ qua' }, matchLevel: 'STRICT',
+    dealTypes: ['buy'], area: { code: '26740', level: 'ward', label: 'bỏ qua' }, matchLevel: 'STRICT',
   }), {
     keywords: 'Ghế xoay', categoryId: 'furniture', minPrice: 100000, maxPrice: 2000000, conditions: ['USED_GOOD'], dealTypes: ['buy'],
-    areaCode: '79-SG', areaLevel: 'ward', areaLabel: 'Phường Sài Gòn, TP. Hồ Chí Minh', matchLevel: 'STRICT',
+    areaCode: '26740', areaLevel: 'ward', areaLabel: 'Phường Sài Gòn, Thành phố Hồ Chí Minh', matchLevel: 'STRICT',
   });
   assert.deepEqual(draft({ keywords: 'máy ảnh', categoryId: null, minPrice: null, conditions: null, area: null }), {
     keywords: 'máy ảnh', categoryId: null, minPrice: null, maxPrice: null, conditions: [], dealTypes: [],
     areaCode: null, areaLevel: null, areaLabel: null, matchLevel: 'BALANCED',
   });
-  assert.equal(draft({ keywords: 'xe', area: { code: '79', level: 'province' } }).areaLabel, 'TP. Hồ Chí Minh');
+  assert.equal(draft({ keywords: 'xe', area: { code: '79', level: 'province' } }).areaLabel, 'Thành phố Hồ Chí Minh');
 });
 
 test('draft body rejects invalid fields', () => {
