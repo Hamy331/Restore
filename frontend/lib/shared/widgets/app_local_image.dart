@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 
-/// Hiển thị ảnh từ asset (`assets/...`), URL (`http...`) hoặc file trên máy
-/// (đường dẫn trả về từ image_picker). Lỗi tải ảnh sẽ hiện icon dự phòng.
 const _listingMediaPath = '/listings/media/';
 
+/// Hiển thị ảnh từ asset (`assets/...`), URL (`http...`) hoặc file trên máy
+/// (đường dẫn trả về từ image_picker). Lỗi tải ảnh sẽ hiện icon dự phòng.
 class AppLocalImage extends StatefulWidget {
   final String path;
   final BoxFit fit;
