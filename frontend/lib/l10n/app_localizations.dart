@@ -227,8 +227,20 @@ abstract class AppLocalizations {
   /// No description provided for @feedLoadError.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t load preview posts.'**
+  /// **'Couldn\'t load the feed.'**
   String get feedLoadError;
+
+  /// No description provided for @feedActionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get feedActionError;
+
+  /// No description provided for @feedPublishError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t publish your post. Please try again.'**
+  String get feedPublishError;
 
   /// No description provided for @feedPhotoError.
   ///
@@ -349,6 +361,456 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Up to 2,000 characters'**
   String get feedDraftLimit;
+
+  /// No description provided for @feedDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete post'**
+  String get feedDelete;
+
+  /// No description provided for @feedDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this post? This can\'t be undone.'**
+  String get feedDeleteConfirm;
+
+  /// No description provided for @feedDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Post deleted'**
+  String get feedDeleted;
+
+  /// No description provided for @feedReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report post'**
+  String get feedReport;
+
+  /// No description provided for @feedReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you reporting this post?'**
+  String get feedReportTitle;
+
+  /// No description provided for @feedReportSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam or advertising'**
+  String get feedReportSpam;
+
+  /// No description provided for @feedReportScam.
+  ///
+  /// In en, this message translates to:
+  /// **'Scam or fraud'**
+  String get feedReportScam;
+
+  /// No description provided for @feedReportOffensive.
+  ///
+  /// In en, this message translates to:
+  /// **'Offensive content'**
+  String get feedReportOffensive;
+
+  /// No description provided for @feedReportOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get feedReportOther;
+
+  /// No description provided for @feedReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Report sent. Thank you!'**
+  String get feedReported;
+
+  /// No description provided for @feedViewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View profile'**
+  String get feedViewProfile;
+
+  /// No description provided for @feedLoadMoreError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more posts.'**
+  String get feedLoadMoreError;
+
+  /// No description provided for @feedDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard post?'**
+  String get feedDiscardTitle;
+
+  /// No description provided for @feedDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'ve written will be lost.'**
+  String get feedDiscardBody;
+
+  /// No description provided for @feedDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get feedDiscard;
+
+  /// No description provided for @feedKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get feedKeepEditing;
+
+  /// No description provided for @feedCharCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/2,000'**
+  String feedCharCount(int count);
+
+  /// No description provided for @feedCloseImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Close image'**
+  String get feedCloseImage;
+
+  /// No description provided for @accEditPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get accEditPage;
+
+  /// No description provided for @accMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu and settings'**
+  String get accMenu;
+
+  /// No description provided for @accLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your profile. Tap to retry'**
+  String get accLoadError;
+
+  /// No description provided for @accLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get accLoading;
+
+  /// No description provided for @accFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get accFollowing;
+
+  /// No description provided for @accFollowers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get accFollowers;
+
+  /// No description provided for @accListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get accListings;
+
+  /// No description provided for @accPosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Posts'**
+  String get accPosts;
+
+  /// No description provided for @accAddBio.
+  ///
+  /// In en, this message translates to:
+  /// **'＋  Add a bio'**
+  String get accAddBio;
+
+  /// No description provided for @accRating.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} ({count} reviews)'**
+  String accRating(String rating, int count);
+
+  /// No description provided for @accNoRating.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get accNoRating;
+
+  /// No description provided for @accTabVisible.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE ({count})'**
+  String accTabVisible(int count);
+
+  /// No description provided for @accTabPending.
+  ///
+  /// In en, this message translates to:
+  /// **'PENDING ({count})'**
+  String accTabPending(int count);
+
+  /// No description provided for @accTabHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'HIDDEN ({count})'**
+  String accTabHidden(int count);
+
+  /// No description provided for @accEmptyVisible.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no active listings'**
+  String get accEmptyVisible;
+
+  /// No description provided for @accEmptyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings awaiting review'**
+  String get accEmptyPending;
+
+  /// No description provided for @accEmptyHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'No hidden listings'**
+  String get accEmptyHidden;
+
+  /// No description provided for @accPostListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a listing'**
+  String get accPostListing;
+
+  /// No description provided for @accPosted.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted {time}'**
+  String accPosted(String time);
+
+  /// No description provided for @accViews.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} views'**
+  String accViews(int count);
+
+  /// No description provided for @accHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get accHide;
+
+  /// No description provided for @accShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get accShow;
+
+  /// No description provided for @accBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost'**
+  String get accBoost;
+
+  /// No description provided for @accLoadListingsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your listings.'**
+  String get accLoadListingsError;
+
+  /// No description provided for @accUpdateListingError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update the listing.'**
+  String get accUpdateListingError;
+
+  /// No description provided for @accLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get accLogout;
+
+  /// No description provided for @accLogoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out of ReStore?'**
+  String get accLogoutConfirm;
+
+  /// No description provided for @accCloseMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Close menu'**
+  String get accCloseMenu;
+
+  /// No description provided for @accEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get accEditTitle;
+
+  /// No description provided for @accDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get accDisplayName;
+
+  /// No description provided for @accUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get accUsername;
+
+  /// No description provided for @accBio.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get accBio;
+
+  /// No description provided for @accSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get accSave;
+
+  /// No description provided for @accChangeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get accChangeAvatar;
+
+  /// No description provided for @accRemoveAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get accRemoveAvatar;
+
+  /// No description provided for @accNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a display name.'**
+  String get accNameRequired;
+
+  /// No description provided for @accUsernameInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'3–30 characters: lowercase letters, numbers, dots or underscores.'**
+  String get accUsernameInvalid;
+
+  /// No description provided for @accUsernameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'This username is already taken.'**
+  String get accUsernameTaken;
+
+  /// No description provided for @accSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your profile. Please try again.'**
+  String get accSaveError;
+
+  /// No description provided for @accAvatarUploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t upload the photo. Please try again.'**
+  String get accAvatarUploadError;
+
+  /// No description provided for @accUserNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found.'**
+  String get accUserNotFound;
+
+  /// No description provided for @accFollowListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No one here yet'**
+  String get accFollowListEmpty;
+
+  /// No description provided for @accComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is under development'**
+  String get accComingSoon;
+
+  /// No description provided for @accActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get accActivity;
+
+  /// No description provided for @accProPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro plan'**
+  String get accProPlan;
+
+  /// No description provided for @accCreateStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a store'**
+  String get accCreateStore;
+
+  /// No description provided for @accCoins.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore coins'**
+  String get accCoins;
+
+  /// No description provided for @accSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get accSaved;
+
+  /// No description provided for @accSavedSearches.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved searches'**
+  String get accSavedSearches;
+
+  /// No description provided for @accRecentlyViewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently viewed'**
+  String get accRecentlyViewed;
+
+  /// No description provided for @accMyReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'My reviews'**
+  String get accMyReviews;
+
+  /// No description provided for @accTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction history'**
+  String get accTransactions;
+
+  /// No description provided for @accStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores / brand pages'**
+  String get accStores;
+
+  /// No description provided for @accHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get accHelp;
+
+  /// No description provided for @accFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get accFeedback;
+
+  /// No description provided for @accEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get accEdit;
+
+  /// No description provided for @accMoreOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get accMoreOptions;
 
   /// No description provided for @appName.
   ///

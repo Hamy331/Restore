@@ -11,7 +11,7 @@ Future<void> showFeedComments(
   FeedsCubit cubit,
   FeedPost post,
 ) {
-  cubit.comments(post.id);
+  cubit.loadComments(post.id);
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -81,14 +81,16 @@ class _CommentsState extends State<_Comments> {
     return BlocBuilder<FeedsCubit, FeedsState>(
       builder: (context, state) {
         final cubit = context.read<FeedsCubit>();
-        final comments = cubit.find(widget.postId)?.comments ?? <FeedComment>[];
+        final comments = state.comments[widget.postId] ?? const <FeedComment>[];
         return Column(
           children: [
             if (cubit.pending.contains('comments:${widget.postId}'))
               const LinearProgressIndicator(),
-            if (state.error != null)
+            // Chưa tải được bình luận lần nào và không còn đang tải: cho thử lại.
+            if (!state.comments.containsKey(widget.postId) &&
+                !cubit.pending.contains('comments:${widget.postId}'))
               TextButton(
-                onPressed: () => cubit.comments(widget.postId),
+                onPressed: () => cubit.loadComments(widget.postId),
                 child: Text(l.retry),
               ),
 
@@ -116,15 +118,17 @@ class _CommentsState extends State<_Comments> {
                   else
                     SliverList.builder(
                       itemCount: comments.length,
-                      itemBuilder: (_, index) =>
-                          _CommentTile(comment: comments[index]),
+                      itemBuilder: (_, index) => _CommentTile(
+                        postId: widget.postId,
+                        comment: comments[index],
+                      ),
                     ),
                 ],
               ),
             ),
             if (cubit.commentCursors[widget.postId] != null)
               TextButton(
-                onPressed: () => cubit.comments(widget.postId, more: true),
+                onPressed: () => cubit.loadComments(widget.postId, more: true),
                 child: const Icon(Icons.expand_more),
               ),
             DecoratedBox(
@@ -135,7 +139,7 @@ class _CommentsState extends State<_Comments> {
                 padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
                 child: Row(
                   children: [
-                    FeedAvatar(name: l.feedYourName, size: 32),
+                    FeedAvatar.me(state.me, fallbackName: l.feedYourName),
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
@@ -189,19 +193,22 @@ class _CommentsState extends State<_Comments> {
 }
 
 class _CommentTile extends StatelessWidget {
-  const _CommentTile({required this.comment});
+  const _CommentTile({required this.postId, required this.comment});
+  final String postId;
   final FeedComment comment;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final name = comment.author.isEmpty ? l.feedYourName : comment.author;
+    final name = comment.author.name.isEmpty
+        ? l.feedYourName
+        : comment.author.name;
     final small = Theme.of(context).textTheme.bodySmall;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 16, 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FeedAvatar(name: name, size: 32, avatarUrl: comment.avatarUrl),
+          FeedAvatar(name: name, size: 32, avatarUrl: comment.author.avatarUrl),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -243,7 +250,7 @@ class _CommentTile extends StatelessWidget {
                       child: InkWell(
                         onTap: () => context
                             .read<FeedsCubit>()
-                            .toggleCommentLike(comment),
+                            .toggleCommentLike(postId, comment),
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(minHeight: 40),
                           child: Padding(

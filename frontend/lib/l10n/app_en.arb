@@ -20,7 +20,9 @@
   "feedEmpty": "No posts yet",
   "feedFollowingEmpty": "Follow an author to see their posts here.",
   "feedRetry": "Reload preview",
-  "feedLoadError": "Couldn't load preview posts.",
+  "feedLoadError": "Couldn't load the feed.",
+  "feedActionError": "Something went wrong. Please try again.",
+  "feedPublishError": "Couldn't publish your post. Please try again.",
   "feedPhotoError": "Couldn't select a photo. Please try again.",
   "feedViewListing": "View listing",
   "feedSampleListing": "Sample listing",
@@ -76,6 +78,133 @@
   "settingsLanguageError": "Couldn't save your language preference.",
   "feedRequired": "Add text or a photo before posting.",
   "feedDraftLimit": "Up to 2,000 characters",
+  "feedDelete": "Delete post",
+  "feedDeleteConfirm": "Delete this post? This can't be undone.",
+  "feedDeleted": "Post deleted",
+  "feedReport": "Report post",
+  "feedReportTitle": "Why are you reporting this post?",
+  "feedReportSpam": "Spam or advertising",
+  "feedReportScam": "Scam or fraud",
+  "feedReportOffensive": "Offensive content",
+  "feedReportOther": "Something else",
+  "feedReported": "Report sent. Thank you!",
+  "feedViewProfile": "View profile",
+  "feedLoadMoreError": "Couldn't load more posts.",
+  "feedDiscardTitle": "Discard post?",
+  "feedDiscardBody": "What you've written will be lost.",
+  "feedDiscard": "Discard",
+  "feedKeepEditing": "Keep editing",
+  "feedCharCount": "{count}/2,000",
+  "@feedCharCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedCloseImage": "Close image",
+  "accEditPage": "Edit profile",
+  "accMenu": "Menu and settings",
+  "accLoadError": "Couldn't load your profile. Tap to retry",
+  "accLoading": "Loading…",
+  "accFollowing": "Following",
+  "accFollowers": "Followers",
+  "accListings": "Listings",
+  "accPosts": "Posts",
+  "accAddBio": "＋  Add a bio",
+  "accRating": "{rating} ({count} reviews)",
+  "@accRating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accNoRating": "No reviews yet",
+  "accTabVisible": "ACTIVE ({count})",
+  "@accTabVisible": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accTabPending": "PENDING ({count})",
+  "@accTabPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accTabHidden": "HIDDEN ({count})",
+  "@accTabHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accEmptyVisible": "You have no active listings",
+  "accEmptyPending": "No listings awaiting review",
+  "accEmptyHidden": "No hidden listings",
+  "accPostListing": "Post a listing",
+  "accPosted": "Posted {time}",
+  "@accPosted": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "accViews": "{count} views",
+  "@accViews": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accHide": "Hide",
+  "accShow": "Show",
+  "accBoost": "Boost",
+  "accLoadListingsError": "Couldn't load your listings.",
+  "accUpdateListingError": "Couldn't update the listing.",
+  "accLogout": "Log out",
+  "accLogoutConfirm": "Log out of ReStore?",
+  "accCloseMenu": "Close menu",
+  "accEditTitle": "Edit profile",
+  "accDisplayName": "Display name",
+  "accUsername": "Username",
+  "accBio": "Bio",
+  "accSave": "Save",
+  "accChangeAvatar": "Change photo",
+  "accRemoveAvatar": "Remove photo",
+  "accNameRequired": "Enter a display name.",
+  "accUsernameInvalid": "3–30 characters: lowercase letters, numbers, dots or underscores.",
+  "accUsernameTaken": "This username is already taken.",
+  "accSaveError": "Couldn't save your profile. Please try again.",
+  "accAvatarUploadError": "Couldn't upload the photo. Please try again.",
+  "accUserNotFound": "User not found.",
+  "accFollowListEmpty": "No one here yet",
+  "accComingSoon": "This feature is under development",
+  "accActivity": "Activity",
+  "accProPlan": "Pro plan",
+  "accCreateStore": "Create a store",
+  "accCoins": "ReStore coins",
+  "accSaved": "Saved",
+  "accSavedSearches": "Saved searches",
+  "accRecentlyViewed": "Recently viewed",
+  "accMyReviews": "My reviews",
+  "accTransactions": "Transaction history",
+  "accStores": "Stores / brand pages",
+  "accHelp": "Help",
+  "accFeedback": "Send feedback",
+  "accEdit": "Edit",
+  "accMoreOptions": "More options",
   "appName": "ReStore",
   "loginTitle": "Login to your Account",
   "email": "Email",

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:restore/modules/feeds/repositories/feeds_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,6 +9,7 @@ import 'package:restore/core/theme/theme.dart';
 import 'package:restore/modules/feeds/bloc/feeds_cubit.dart';
 import 'package:restore/modules/feeds/views/feeds_view.dart';
 import 'package:restore/modules/feeds/views/widgets/feed_post_card.dart';
+
 Widget host(Locale locale, Widget child) => MaterialApp(
   theme: AppTheme.lightTheme,
   locale: locale,
@@ -29,21 +31,103 @@ void main() {
     expect(await cubit.publish(' ', null), false);
     expect(await cubit.comment(post, ' '), false);
     await cubit.toggleLike(post);
-    expect(post.likes, 25);
-    await cubit.toggleLike(post);
-    expect(post.likes, 24);
+    expect(cubit.find(post.id)!.likes, 25);
+    await cubit.toggleLike(cubit.find(post.id)!);
+    expect(cubit.find(post.id)!.likes, 24);
     await cubit.load(following: true);
     expect(cubit.state.posts, isEmpty);
     await cubit.load(following: false);
     await cubit.toggleFollow(post.authorId);
     await cubit.load(following: true);
     expect(cubit.state.posts.length, 1);
+    await cubit.load(following: false);
     expect(await cubit.publish('New post', null), true);
     expect(cubit.state.posts.first.text, 'New post');
     await cubit.load();
     expect(cubit.state.posts.first.text, 'New post');
     await cubit.close();
   });
+
+  test('like is optimistic and reverts when the request fails', () async {
+    final repository = FakeFeedsRepository()..failLike = true;
+    final cubit = FeedsCubit(repository: repository);
+    await cubit.load();
+    final post = cubit.state.posts.first;
+    final request = cubit.toggleLike(post);
+    expect(cubit.find(post.id)!.liked, isTrue);
+    expect(cubit.find(post.id)!.likes, 25);
+    await request;
+    expect(cubit.find(post.id)!.liked, isFalse);
+    expect(cubit.find(post.id)!.likes, 24);
+    await cubit.close();
+  });
+
+  test(
+    'unfollowing in the following tab removes posts without reloading',
+    () async {
+      final repository = FakeFeedsRepository();
+      final cubit = FeedsCubit(repository: repository);
+      await cubit.load(following: false);
+      await cubit.toggleFollow('Minh Anh');
+      await cubit.load(following: true);
+      expect(cubit.state.posts.length, 1);
+      final loads = repository.feedLoads;
+      await cubit.toggleFollow('Minh Anh');
+      expect(cubit.state.posts, isEmpty);
+      expect(repository.feedLoads, loads);
+      await cubit.close();
+    },
+  );
+
+  test('publishing stays on the current tab', () async {
+    final cubit = FeedsCubit(repository: FakeFeedsRepository());
+    await cubit.loadMe();
+    expect(cubit.state.me?.name, 'Me');
+    await cubit.load(following: true);
+    expect(await cubit.publish('Hello', null), true);
+    expect(cubit.state.onlyFollowing, isTrue);
+    expect(cubit.state.posts.where((p) => p.text == 'Hello'), isEmpty);
+    await cubit.close();
+  });
+
+  test('profile feed only loads the author and deletes own posts', () async {
+    final repository = FakeFeedsRepository();
+    final cubit = FeedsCubit(repository: repository, authorId: 'me');
+    await cubit.load();
+    expect(cubit.state.posts, isEmpty);
+    expect(await cubit.publish('Mine', null), true);
+    final mine = cubit.state.posts.single;
+    expect(mine.isMine, isTrue);
+    expect(await cubit.delete(mine), isTrue);
+    expect(cubit.state.posts, isEmpty);
+    expect(repository.rows.where((r) => r['id'] == mine.id), isEmpty);
+    await cubit.close();
+  });
+
+  test('reports go through the moderation endpoint', () async {
+    final repository = FakeFeedsRepository();
+    final cubit = FeedsCubit(repository: repository);
+    await cubit.load();
+    expect(await cubit.report(cubit.state.posts.first, 'Spam'), isTrue);
+    expect(repository.reports, ['Minh Anh:Spam']);
+    await cubit.close();
+  });
+
+  test('load more failure stops auto paging until retried', () async {
+    final repository = FakeFeedsRepository()..pageSize = 1;
+    final cubit = FeedsCubit(repository: repository);
+    await cubit.load();
+    repository.failNextPage = true;
+    await cubit.loadMore();
+    expect(cubit.state.loadMoreFailed, isTrue);
+    await cubit.loadMore();
+    expect(cubit.state.posts.length, 1);
+    await cubit.loadMore(retry: true);
+    expect(cubit.state.loadMoreFailed, isFalse);
+    expect(cubit.state.posts.length, 2);
+    await cubit.close();
+  });
+
   for (final code in ['vi', 'en']) {
     for (final width in [360.0, 375.0, 412.0, 768.0, 1024.0]) {
       testWidgets('feed fits $width in $code', (tester) async {
@@ -61,12 +145,13 @@ void main() {
           find.text(code == 'vi' ? 'Dành cho bạn' : 'For you'),
           findsOneWidget,
         );
-        expect(
-          find.text(code == 'vi' ? 'Feeds' : 'Dành cho bạn'),
-          findsNothing,
-        );
         expect(tester.takeException(), isNull);
-        final menu = find.ancestor(of: find.byIcon(AppIcons.moreHorizontal).first, matching: find.byType(IconButton)).first;
+        final menu = find
+            .ancestor(
+              of: find.byIcon(AppIcons.moreHorizontal).first,
+              matching: find.byType(IconButton),
+            )
+            .first;
         final contentRight = width <= 680 ? width : (width + 680) / 2;
         expect(
           tester.getRect(menu).right,
@@ -105,6 +190,8 @@ void main() {
       isNull,
     );
     await tester.enterText(find.byType(TextField), 'My pre-loved find');
+    await tester.pump();
+    expect(find.text('17/2,000'), findsOneWidget);
     tester.view.viewInsets = const FakeViewPadding(bottom: 260);
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Post'));
@@ -127,6 +214,29 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('closing a dirty draft asks before discarding', (tester) async {
+    await tester.pumpWidget(
+      host(const Locale('en'), FeedsView(repository: FakeFeedsRepository())),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Share a find or a story…'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Draft');
+    await tester.pump();
+    await tester.tap(find.byTooltip('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.text('Discard post?'), findsOneWidget);
+    await tester.tap(find.text('Keep editing'));
+    await tester.pumpAndSettle();
+    expect(find.text('Draft'), findsOneWidget);
+    await tester.tap(find.byTooltip('Cancel'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Discard'));
+    await tester.pumpAndSettle();
+    expect(find.text('Draft'), findsNothing);
+    expect(find.text('Share a find or a story…'), findsOneWidget);
+  });
+
   testWidgets('post has no copy action and follows from the menu', (
     tester,
   ) async {
@@ -143,6 +253,7 @@ void main() {
     expect(find.byIcon(AppIcons.copy), findsNothing);
     await tester.tap(find.byIcon(AppIcons.moreHorizontal).first);
     await tester.pumpAndSettle();
+    expect(find.text('Report post'), findsOneWidget);
     await tester.tap(find.text('Follow'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Following'));
@@ -151,22 +262,23 @@ void main() {
     expect(find.text('Hoàng Huy'), findsNothing);
   });
 
-  testWidgets('listing post without a photo renders', (tester) async {
+  testWidgets('own post menu deletes after confirmation', (tester) async {
     final cubit = FeedsCubit(repository: FakeFeedsRepository());
     addTearDown(cubit.close);
+    final post = FeedPost.fromJson({...fakePost('A'), 'isMine': true});
     await tester.pumpWidget(
-      host(
-        const Locale('en'),
-        FeedPostCard(
-          cubit: cubit,
-          post: FeedPost.fromJson({
-            ...fakePost('A'),
-            'listing': {'id': 'l1', 'title': 'Lamp', 'price': '1000'},
-          }),
-        ),
-      ),
+      host(const Locale('en'), FeedPostCard(cubit: cubit, post: post)),
     );
-    expect(find.text('Lamp'), findsOneWidget);
+    await tester.tap(find.byIcon(AppIcons.moreHorizontal));
+    await tester.pumpAndSettle();
+    expect(find.text('Follow'), findsNothing);
+    expect(find.text('Report post'), findsNothing);
+    await tester.tap(find.text('Delete post'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text("Delete this post? This can't be undone."),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 }
@@ -186,55 +298,95 @@ Map<String, dynamic> fakePost(String name) => {
 };
 
 class FakeFeedsRepository extends FeedsRepository {
+  FakeFeedsRepository() : super(dio: Dio());
   final rows = [fakePost('Minh Anh'), fakePost('Hoàng Huy')];
-  final Map<String, List<Map<String, dynamic>>> replies = {};
+  final Map<String, List<FeedComment>> replies = {};
+  final List<String> reports = [];
+  bool failLike = false, failNextPage = false;
+  int feedLoads = 0, pageSize = 20, _created = 0;
+
   @override
-  Future<Map<String, dynamic>> get(
-    String path, [
-    Map<String, dynamic>? query,
-  ]) async {
-    if (path.endsWith('/comments'))
-      return {'items': replies[path.split('/')[2]] ?? [], 'nextCursor': null};
-    return {
-      'items': rows
-          .where(
-            (p) =>
-                query?['tab'] != 'following' || p['isFollowingAuthor'] == true,
-          )
-          .toList(),
-      'nextCursor': null,
+  Future<FeedUser> me() async =>
+      const FeedUser(id: 'me', name: 'Me', avatarUrl: null);
+
+  @override
+  Future<FeedPage<FeedPost>> posts({
+    bool following = false,
+    String? authorId,
+    String? cursor,
+  }) async {
+    if (cursor != null && failNextPage) {
+      failNextPage = false;
+      throw Exception('offline');
+    }
+    feedLoads++;
+    final matching = rows
+        .where(
+          (p) =>
+              (!following || p['isFollowingAuthor'] == true) &&
+              (authorId == null || p['author']['id'] == authorId),
+        )
+        .toList();
+    final start = cursor == null ? 0 : int.parse(cursor);
+    final end = (start + pageSize).clamp(0, matching.length);
+    return FeedPage([
+      for (final row in matching.sublist(start, end)) FeedPost.fromJson(row),
+    ], end < matching.length ? '$end' : null);
+  }
+
+  @override
+  Future<FeedPost> publish(String text, String? imageUrl) async {
+    final row = {
+      ...fakePost('me'),
+      'id': 'new-${_created++}',
+      'text': text,
+      'isMine': true,
+      'likeCount': 0,
     };
+    rows.insert(0, row);
+    return FeedPost.fromJson(row);
   }
 
   @override
-  Future<dynamic> post(String path, Map<String, dynamic> data) async {
-    if (path.endsWith('/comments')) {
-      final id = path.split('/')[2];
-      (replies[id] ??= []).add({
-        'id': 'c1',
-        'author': {'id': 'me', 'fullName': 'Me', 'avatarUrl': null},
-        'text': data['text'],
-        'createdAt': DateTime.now().toUtc().toIso8601String(),
-        'likeCount': 0,
-        'likedByMe': false,
-      });
-      return replies[id]!.last;
-    } else
-      rows.insert(0, {...fakePost('me'), 'text': data['text'], 'isMine': true});
-    return {};
+  Future<void> delete(String postId) async =>
+      rows.removeWhere((r) => r['id'] == postId);
+
+  @override
+  Future<FeedPage<FeedComment>> comments(
+    String postId, {
+    String? cursor,
+  }) async => FeedPage(replies[postId] ?? [], null);
+
+  @override
+  Future<FeedComment> comment(String postId, String text) async {
+    final created = FeedComment(
+      id: 'c${replies.length}',
+      author: const FeedUser(id: 'me', name: 'Me'),
+      text: text,
+      createdAt: DateTime.now(),
+    );
+    (replies[postId] ??= []).add(created);
+    return created;
   }
 
   @override
-  Future<Map<String, dynamic>> like(String path, bool value) async => {
-    'likedByMe': value,
-    'likeCount': path.startsWith('/feeds/')
-        ? (value ? 25 : 24)
-        : (value ? 1 : 0),
-  };
+  Future<({bool liked, int likes})> likePost(String id, bool value) async {
+    if (failLike) throw Exception('offline');
+    return (liked: value, likes: value ? 25 : 24);
+  }
+
+  @override
+  Future<({bool liked, int likes})> likeComment(String id, bool value) async =>
+      (liked: value, likes: value ? 1 : 0);
+
   @override
   Future<void> follow(String id, bool value) async {
     for (final p in rows) {
       if (p['author']['id'] == id) p['isFollowingAuthor'] = value;
     }
   }
+
+  @override
+  Future<void> report(FeedPost post, String reason) async =>
+      reports.add('${post.authorId}:$reason');
 }

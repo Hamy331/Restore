@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/modules/feeds/views/feeds_view.dart';
+import 'package:restore/modules/account/repositories/profile_repository.dart';
+import 'package:restore/modules/account/views/follow_list_view.dart';
 import 'package:restore/modules/account/views/language_settings_view.dart';
+import 'package:restore/modules/account/views/public_profile_view.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 import 'package:restore/modules/chat/views/messages_view.dart';
 import 'package:restore/modules/chat/views/live_messages_view.dart';
@@ -254,6 +257,30 @@ final appRouter = GoRouter(
       path: '/settings',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (_, _) => const LanguageSettingsView(),
+    ),
+    // Hồ sơ công khai và danh sách theo dõi (?tab=followers|following)
+    GoRoute(
+      path: '/users/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: PublicProfileView(userId: state.pathParameters['id']!),
+      ),
+      routes: [
+        GoRoute(
+          path: 'follows',
+          parentNavigatorKey: _rootNavigatorKey,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: FollowListView(
+              userId: state.pathParameters['id']!,
+              initial: state.uri.queryParameters['tab'] == 'following'
+                  ? FollowListKind.following
+                  : FollowListKind.followers,
+            ),
+          ),
+        ),
+      ],
     ),
     GoRoute(
       path: '/listings/:id',

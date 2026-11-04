@@ -8,7 +8,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../home/views/home/widgets/home_header_icon_button.dart';
 import '../bloc/feeds_cubit.dart';
 import 'widgets/feed_composer.dart';
-import 'widgets/feed_post_card.dart';
+import 'widgets/feed_post_list.dart';
 import 'widgets/feed_shared.dart';
 
 class FeedsView extends StatelessWidget {
@@ -16,7 +16,9 @@ class FeedsView extends StatelessWidget {
   final FeedsRepository? repository;
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) => FeedsCubit(repository: repository)..load(),
+    create: (_) => FeedsCubit(repository: repository)
+      ..load()
+      ..loadMe(),
     child: const _FeedsPage(),
   );
 }
@@ -66,13 +68,13 @@ class _FeedsPage extends StatelessWidget {
                           if (state.error != null) {
                             feedNotice(
                               context,
-                              AppLocalizations.of(context)!.feedLoadError,
+                              AppLocalizations.of(context)!.feedActionError,
                             );
                           }
                         },
                         builder: (context, state) {
                           final cubit = context.read<FeedsCubit>();
-                          if (state.loading) {
+                          if (state.loading && state.posts.isEmpty) {
                             return const Center(
                               child: CircularProgressIndicator(),
                             );
@@ -94,12 +96,8 @@ class _FeedsPage extends StatelessWidget {
                           return RefreshIndicator(
                             onRefresh: () => cubit.load(),
                             child: NotificationListener<ScrollNotification>(
-                              onNotification: (n) {
-                                if (n.metrics.extentAfter < 300) {
-                                  cubit.loadMore();
-                                }
-                                return false;
-                              },
+                              onNotification: (n) =>
+                                  feedScrollListener(cubit, n),
                               child: CustomScrollView(
                                 physics: const BouncingScrollPhysics(
                                   parent: AlwaysScrollableScrollPhysics(),
@@ -122,8 +120,11 @@ class _FeedsPage extends StatelessWidget {
                                             ),
                                           ],
                                         ),
-                                        _ComposePrompt(cubit: cubit),
-                                        if (state.visible.isEmpty)
+                                        _ComposePrompt(
+                                          cubit: cubit,
+                                          me: state.me,
+                                        ),
+                                        if (state.posts.isEmpty)
                                           Padding(
                                             padding: const EdgeInsets.all(32),
                                             child: Text(
@@ -136,23 +137,7 @@ class _FeedsPage extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                                  SliverList(
-                                    delegate: SliverChildBuilderDelegate(
-                                      (context, index) => RepaintBoundary(
-                                        child: FeedPostCard(
-                                          post: state.visible[index],
-                                          cubit: cubit,
-                                        ),
-                                      ),
-                                      childCount: state.visible.length,
-                                    ),
-                                  ),
-                                  if (state.loadingMore)
-                                    const SliverToBoxAdapter(
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    ),
+                                  ...feedPostSlivers(cubit, state),
                                   const SliverToBoxAdapter(
                                     child: SizedBox(height: 180),
                                   ),
@@ -175,8 +160,9 @@ class _FeedsPage extends StatelessWidget {
 }
 
 class _ComposePrompt extends StatelessWidget {
-  const _ComposePrompt({required this.cubit});
+  const _ComposePrompt({required this.cubit, this.me});
   final FeedsCubit cubit;
+  final FeedUser? me;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -193,7 +179,7 @@ class _ComposePrompt extends StatelessWidget {
               onTap: () => showFeedComposer(context, cubit),
               child: Row(
                 children: [
-                  FeedAvatar(name: l.feedYourName),
+                  FeedAvatar.me(me, fallbackName: l.feedYourName),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
