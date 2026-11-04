@@ -43,7 +43,7 @@ class ApiCategoryRepository implements CategoryRepository {
   @override
   Future<List<CategoryModel>> getCategories() async {
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/categories',
+      '/catalog/categories',
       queryParameters: const {'include': 'attributes'},
     );
     final data = response.data?['data'];

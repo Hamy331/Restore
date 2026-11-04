@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:restore/shared/models/localized_text.dart';
 import 'category_attribute.dart';
 
-/// Danh mục đăng tin, nhận từ API `GET /categories`.
+/// Danh mục đăng tin, nhận từ API `GET /catalog/categories`.
 /// Mỗi danh mục tự mang bộ thuộc tính riêng nên app hỗ trợ mọi loại hàng.
 class ListingCategory extends Equatable {
   final String id;

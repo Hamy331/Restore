@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 
+const _listingMediaPath = '/listings/media/';
+
 /// Hiển thị ảnh từ asset (`assets/...`), URL (`http...`) hoặc file trên máy
 /// (đường dẫn trả về từ image_picker). Lỗi tải ảnh sẽ hiện icon dự phòng.
 class AppLocalImage extends StatefulWidget {
@@ -110,6 +112,17 @@ class _AppLocalImageState extends State<AppLocalImage> {
         errorBuilder: errorBuilder,
       );
     }
+    // Ảnh tin trên máy chủ: tin chưa duyệt chỉ chủ tin xem được nên gửi kèm token
+    if (path.startsWith('http') && path.contains(_listingMediaPath)) {
+      return _AuthorizedNetworkImage(
+        url: path,
+        fit: fit,
+        width: width,
+        height: height,
+        cacheWidth: cacheWidth,
+        errorBuilder: errorBuilder,
+      );
+    }
     // Trên web, image_picker trả về blob URL nên đọc như ảnh mạng
     if (kIsWeb || path.startsWith('http')) {
       return Image.network(
@@ -130,4 +143,54 @@ class _AppLocalImageState extends State<AppLocalImage> {
       errorBuilder: errorBuilder,
     );
   }
+}
+
+/// Ảnh mạng kèm header `Authorization` (đọc token một lần khi hiển thị)
+class _AuthorizedNetworkImage extends StatefulWidget {
+  const _AuthorizedNetworkImage({
+    required this.url,
+    required this.fit,
+    required this.errorBuilder,
+    this.width,
+    this.height,
+    this.cacheWidth,
+  });
+
+  final String url;
+  final BoxFit fit;
+  final double? width;
+  final double? height;
+  final int? cacheWidth;
+  final ImageErrorWidgetBuilder errorBuilder;
+
+  @override
+  State<_AuthorizedNetworkImage> createState() =>
+      _AuthorizedNetworkImageState();
+}
+
+class _AuthorizedNetworkImageState extends State<_AuthorizedNetworkImage> {
+  late final Future<String?> _token = ApiClient().tokenStorage
+      .readAccessToken();
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<String?>(
+    future: _token,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return SizedBox(width: widget.width, height: widget.height);
+      }
+      final token = snapshot.data;
+      return Image.network(
+        widget.url,
+        fit: widget.fit,
+        width: widget.width,
+        height: widget.height,
+        cacheWidth: widget.cacheWidth,
+        headers: token == null || token.isEmpty
+            ? null
+            : {'Authorization': 'Bearer $token'},
+        errorBuilder: widget.errorBuilder,
+      );
+    },
+  );
 }

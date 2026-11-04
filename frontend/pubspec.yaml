@@ -41,6 +41,7 @@ dependencies:
   # Utils
   flutter_screenutil: ^5.9.0
   image_picker: ^1.1.2
+  path_provider: ^2.1.5
   geolocator: ^14.0.2
   # State management
   dio: ^5.11.1
@@ -100,6 +101,7 @@ flutter:
     - assets/images/marketplace/
     - assets/images/banners/
     - assets/logos/
+    - assets/data/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

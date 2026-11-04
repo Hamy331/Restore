@@ -101,9 +101,10 @@ class MockNearbyRepository implements NearbyRepository {
 
 /// Gọi backend:
 /// - `GET /users/me/location` → `{ data: { label, latitude, longitude } }`
-/// - `GET /listings/nearby?latitude=&longitude=&radiusKm=&deal=&sort=&categoryId=
-///   &minPrice=&maxPrice=&condition=&page=&limit=`
+/// - `GET /listings?filter=nearby&latitude=&longitude=&radiusKm=&categoryId=
+///   &minPrice=&maxPrice=&condition=&allowExchange=&page=&limit=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
+///   (backend luôn xếp gần nhất trước)
 class ApiNearbyRepository implements NearbyRepository {
   ApiNearbyRepository({ApiClient? apiClient})
     : _apiClient = apiClient ?? ApiClient();
@@ -124,10 +125,15 @@ class ApiNearbyRepository implements NearbyRepository {
     int page = 1,
   }) async {
     final json = await _get(
-      '/listings/nearby',
+      '/listings',
       query: {
-        ...origin.toJson(),
         ...filter.toQuery(),
+        'filter': 'nearby',
+        ...origin.toJson(),
+        // Chỉ chọn "trao đổi" thì lọc tin nhận đổi
+        if (filter.dealTypes.length == 1 &&
+            filter.dealTypes.contains(ListingDealType.exchange))
+          'allowExchange': 'true',
         'page': page,
         'limit': NearbyRepository.pageSize,
       },

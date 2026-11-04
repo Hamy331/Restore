@@ -1,0 +1,569 @@
+{
+  "upload media as user": {
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Bạn không có quyền thực hiện thao tác này.",
+      "code": "FORBIDDEN"
+    }
+  },
+  "upload media": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "url": "/api/v1/content/media/<uuid>.png"
+      }
+    }
+  },
+  "media before publish (guest)": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không có ảnh.",
+      "code": "IMAGE_NOT_FOUND"
+    }
+  },
+  "create post invalid slug": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Slug chỉ gồm chữ thường, số, dấu gạch ngang.",
+      "code": "INVALID_SLUG"
+    }
+  },
+  "create post": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Mẹo mua đồ cũ an toàn",
+        "slug": "meo-mua-do-cu",
+        "content": "Nội dung bài viết đủ dài để qua kiểm tra.",
+        "category": "Hướng dẫn",
+        "coverUrl": "/api/v1/content/media/<uuid>.png",
+        "listingIds": [
+          "listing-1"
+        ],
+        "status": "PUBLISHED",
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "admin posts": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "items": [
+          {
+            "id": "<uuid>",
+            "title": "Mẹo mua đồ cũ an toàn",
+            "slug": "meo-mua-do-cu",
+            "content": "Nội dung bài viết đủ dài để qua kiểm tra.",
+            "category": "Hướng dẫn",
+            "coverUrl": "/api/v1/content/media/<uuid>.png",
+            "listingIds": [
+              "listing-1"
+            ],
+            "status": "PUBLISHED",
+            "createdAt": "<date>",
+            "updatedAt": "<date>"
+          }
+        ],
+        "total": 1,
+        "page": 1
+      }
+    }
+  },
+  "update post": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Mẹo mua đồ cũ an toàn hơn",
+        "slug": "meo-mua-do-cu",
+        "content": "Nội dung bài viết đủ dài để qua kiểm tra.",
+        "category": "Hướng dẫn",
+        "coverUrl": "/api/v1/content/media/<uuid>.png",
+        "listingIds": [
+          "listing-1"
+        ],
+        "status": "PUBLISHED",
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "update post stale": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Dữ liệu đã đổi. Tải lại trước khi thao tác.",
+      "code": "ADMIN_STALE"
+    }
+  },
+  "public posts": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "items": [
+          {
+            "id": "<uuid>",
+            "slug": "meo-mua-do-cu",
+            "title": "Mẹo mua đồ cũ an toàn hơn",
+            "category": "Hướng dẫn",
+            "coverUrl": "/api/v1/content/media/<uuid>.png",
+            "createdAt": "<date>"
+          }
+        ]
+      }
+    }
+  },
+  "public post detail": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Mẹo mua đồ cũ an toàn hơn",
+        "slug": "meo-mua-do-cu",
+        "content": "Nội dung bài viết đủ dài để qua kiểm tra.",
+        "category": "Hướng dẫn",
+        "coverUrl": "/api/v1/content/media/<uuid>.png",
+        "listingIds": [
+          "listing-1"
+        ],
+        "status": "PUBLISHED",
+        "createdAt": "<date>",
+        "updatedAt": "<date>",
+        "listings": [
+          {
+            "id": "listing-1",
+            "title": "Bàn gỗ sồi thật",
+            "price": "1200000",
+            "images": []
+          }
+        ]
+      }
+    }
+  },
+  "public post missing": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy bài viết.",
+      "code": "POST_NOT_FOUND"
+    }
+  },
+  "media after publish (guest)": {
+    "status": 200,
+    "body": {
+      "bytes": 70
+    }
+  },
+  "create knowledge": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Chính sách đổi trả",
+        "content": "Người mua có thể đổi trả trong 3 ngày.",
+        "indexedText": null,
+        "syncedAt": null,
+        "active": true,
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "upload knowledge": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Huong dan dang tin",
+        "content": "Đăng tin cần ít nhất một ảnh rõ nét.",
+        "indexedText": null,
+        "syncedAt": null,
+        "active": true,
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "sync knowledge": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "indexed": true
+      }
+    }
+  },
+  "catalog sync": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "categories": 10,
+        "syncedAt": "<date>"
+      }
+    }
+  },
+  "admin knowledge": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "items": [
+          {
+            "id": "system-catalog",
+            "title": "Danh mục và thuộc tính sản phẩm",
+            "content": "appliances: Đồ gia dụng\n{\"id\":\"appliances\",\"icon\":\"appliance\",\"name\":{\"en\":\"Appliances\",\"vi\":\"Đồ gia dụng\"},\"imageUrl\":null,\"attributes\":[{\"key\":\"appliance_type\",\"type\":\"select\",\"label\":{\"en\":\"Product type\",\"vi\":\"Loại sản phẩm\"},\"options\":[{\"label\":{\"en\":\"Fridge\",\"vi\":\"Tủ lạnh\"},\"value\":\"fridge\"},{\"label\":{\"en\":\"Washing machine\",\"vi\":\"Máy giặt\"},\"value\":\"washer\"},{\"label\":{\"en\":\"Air conditioner\",\"vi\":\"Điều hoà\"},\"value\":\"air_conditioner\"},{\"label\":{\"en\":\"Water heater\",\"vi\":\"Bình nóng lạnh\"},\"value\":\"water_heater\"},{\"label\":{\"en\":\"Kitchen appliance\",\"vi\":\"Đồ dùng nhà bếp\"},\"value\":\"kitchen\"},{\"label\":{\"en\":\"Other\",\"vi\":\"Khác\"},\"value\":\"other\"}],\"required\":true},{\"key\":\"brand\",\"hint\":{\"en\":\"e.g. Panasonic, LG\",\"vi\":\"VD: Panasonic, LG\"},\"type\":\"text\",\"label\":{\"en\":\"Brand\",\"vi\":\"Hãng\"},\"required\":false,\"maxLength\":60},{\"key\":\"capacity\",\"hint\":{\"en\":\"e.g. 9 kg, 1.5 HP, 300 L\",\"vi\":\"VD: 9 kg, 1.5 HP, 300 L\"},\"type\":\"text\",\"label\":{\"en\":\"Capacity\",\"vi\":\"Công suất / dung tích\"},\"required\":false,\"maxLength\":60},{\"key\":\"power\",\"max\":20000,\"min\":0,\"type\":\"number\",\"unit\":\"W\",\"label\":{\"en\":\"Power\",\"vi\":\"Công suất điện\"},\"required\":false},{\"key\":\"warranty\",\"type\":\"select\",\"label\":{\"en\":\"Warranty\",\"vi\":\"Bảo hành\"},\"options\":[{\"label\":{\"en\":\"No warranty\",\"vi\":\"Hết bảo hành\"},\"value\":\"none\"},{\"label\":{\"en\":\"Manufacturer warranty\",\"vi\":\"Còn bảo hành hãng\"},\"value\":\"manufacturer\"},{\"label\":{\"en\":\"Store warranty\",\"vi\":\"Bảo hành cửa hàng\"},\"value\":\"store\"}],\"required\":false}],\"description\":{\"en\":\"Fridges, washing machines, air conditioners...\",\"vi\":\"Tủ lạnh, máy giặt, điều hoà...\"}}\n\nbooks: Sách, văn phòng phẩm\n{\"id\":\"books\",\"icon\":\"book\",\"name\":{\"en\":\"Books & stationery\",\"vi\":\"Sách, văn phòng phẩm\"},\"attributes\":[{\"key\":\"genre\",\"type\":\"select\",\"label\":{\"en\":\"Genre\",\"vi\":\"Thể loại\"},\"options\":[{\"label\":{\"en\":\"Textbook\",\"vi\":\"Giáo trình, sách giáo khoa\"},\"value\":\"textbook\"},{\"label\":{\"en\":\"Novel, comics\",\"vi\":\"Tiểu thuyết, truyện\"},\"value\":\"novel\"},{\"label\":{\"en\":\"Self-help, business\",\"vi\":\"Kỹ năng, kinh tế\"},\"value\":\"skills\"},{\"label\":{\"en\":\"Children\",\"vi\":\"Thiếu nhi\"},\"value\":\"kids\"},{\"label\":{\"en\":\"Stationery\",\"vi\":\"Văn phòng phẩm\"},\"value\":\"stationery\"}],\"required\":true},{\"key\":\"author\",\"hint\":null,\"type\":\"text\",\"label\":{\"en\":\"Author\",\"vi\":\"Tác giả\"},\"required\":false,\"maxLength\":60},{\"key\":\"quantity\",\"max\":1000,\"min\":1,\"type\":\"number\",\"unit\":{\"en\":\"books\",\"vi\":\"cuốn\"},\"label\":{\"en\":\"Quantity\",\"vi\":\"Số lượng\"},\"required\":false}],\"description\":{\"en\":\"Textbooks, novels, course books...\",\"vi\":\"Sách giáo khoa, truyện, giáo trình...\"}}\n\nelectronics: Đồ điện tử\n{\"id\":\"electronics\",\"icon\":\"electronics\",\"name\":{\"en\":\"Electronics\",\"vi\":\"Đồ điện tử\"},\"imageUrl\":\"assets/images/marketplace/listing-camera.png\",\"attributes\":[{\"key\":\"device_type\",\"type\":\"select\",\"label\":{\"en\":\"Device type\",\"vi\":\"Loại thiết bị\"},\"options\":[{\"label\":{\"en\":\"Laptop\",\"vi\":\"Laptop\"},\"value\":\"laptop\"},{\"label\":{\"en\":\"Tablet\",\"vi\":\"Máy tính bảng\"},\"value\":\"tablet\"},{\"label\":{\"en\":\"Camera\",\"vi\":\"Máy ảnh, máy quay\"},\"value\":\"camera\"},{\"label\":{\"en\":\"Headphones, speakers\",\"vi\":\"Tai nghe, loa\"},\"value\":\"audio\"},{\"label\":{\"en\":\"Smartwatch\",\"vi\":\"Đồng hồ thông minh\"},\"value\":\"smartwatch\"},{\"label\":{\"en\":\"TV, monitor\",\"vi\":\"Tivi, màn hình\"},\"value\":\"tv\"},{\"label\":{\"en\":\"Game console\",\"vi\":\"Máy chơi game\"},\"value\":\"gaming\"},{\"label\":{\"en\":\"Other\",\"vi\":\"Khác\"},\"value\":\"other\"}],\"required\":true},{\"key\":\"brand\",\"hint\":{\"en\":\"e.g. Sony, Canon, Dell\",\"vi\":\"VD: Sony, Canon, Dell\"},\"type\":\"text\",\"label\":{\"en\":\"Brand\",\"vi\":\"Hãng\"},\"required\":true,\"maxLength\":60},{\"key\":\"model\",\"hint\":{\"en\":\"e.g. Alpha A7 III\",\"vi\":\"VD: Alpha A7 III\"},\"type\":\"text\",\"label\":{\"en\":\"Model\",\"vi\":\"Model\"},\"required\":false,\"maxLength\":60},{\"key\":\"warranty\",\"type\":\"select\",\"label\":{\"en\":\"Warranty\",\"vi\":\"Bảo hành\"},\"options\":[{\"label\":{\"en\":\"No warranty\",\"vi\":\"Hết bảo hành\"},\"value\":\"none\"},{\"label\":{\"en\":\"Manufacturer warranty\",\"vi\":\"Còn bảo hành hãng\"},\"value\":\"manufacturer\"},{\"label\":{\"en\":\"Store warranty\",\"vi\":\"Bảo hành cửa hàng\"},\"value\":\"store\"}],\"required\":false},{\"key\":\"has_accessories\",\"type\":\"boolean\",\"label\":{\"en\":\"Includes box & accessories\",\"vi\":\"Còn đủ phụ kiện, hộp\"}}],\"description\":{\"en\":\"Laptops, cameras, headphones, tablets...\",\"vi\":\"Laptop, máy ảnh, tai nghe, máy tính bảng...\"}}\n\nfashion: Thời trang\n{\"id\":\"fashion\",\"icon\":\"fashion\",\"name\":{\"en\":\"Fashion\",\"vi\":\"Thời trang\"},\"imageUrl\":null,\"attributes\":[{\"key\":\"product_type\",\"type\":\"select\",\"label\":{\"en\":\"Product type\",\"vi\":\"Loại sản phẩm\"},\"options\":[{\"label\":{\"en\":\"Clothes\",\"vi\":\"Quần áo\"},\"value\":\"clothes\"},{\"label\":{\"en\":\"Shoes\",\"vi\":\"Giày dép\"},\"value\":\"shoes\"},{\"label\":{\"en\":\"Bags\",\"vi\":\"Túi xách\"},\"value\":\"bags\"},{\"label\":{\"en\":\"Accessories\",\"vi\":\"Phụ kiện\"},\"value\":\"accessories\"},{\"label\":{\"en\":\"Watches\",\"vi\":\"Đồng hồ\"},\"value\":\"watch\"}],\"required\":true},{\"key\":\"gender\",\"type\":\"select\",\"label\":{\"en\":\"For\",\"vi\":\"Dành cho\"},\"options\":[{\"label\":{\"en\":\"Men\",\"vi\":\"Nam\"},\"value\":\"men\"},{\"label\":{\"en\":\"Women\",\"vi\":\"Nữ\"},\"value\":\"women\"},{\"label\":{\"en\":\"Unisex\",\"vi\":\"Unisex\"},\"value\":\"unisex\"},{\"label\":{\"en\":\"Kids\",\"vi\":\"Trẻ em\"},\"value\":\"kids\"}],\"required\":false},{\"key\":\"size\",\"hint\":{\"en\":\"e.g. M, 42, 28\",\"vi\":\"VD: M, 42, 28\"},\"type\":\"text\",\"label\":{\"en\":\"Size\",\"vi\":\"Kích cỡ\"},\"required\":false,\"maxLength\":60},{\"key\":\"brand\",\"hint\":{\"en\":\"e.g. Uniqlo, Nike\",\"vi\":\"VD: Uniqlo, Nike\"},\"type\":\"text\",\"label\":{\"en\":\"Brand\",\"vi\":\"Thương hiệu\"},\"required\":false,\"maxLength\":60},{\"key\":\"material\",\"hint\":{\"en\":\"e.g. Cotton, leather\",\"vi\":\"VD: Cotton, da thật\"},\"type\":\"text\",\"label\":{\"en\":\"Material\",\"vi\":\"Chất liệu\"},\"required\":false,\"maxLength\":60}],\"description\":{\"en\":\"Clothes, shoes, bags...\",\"vi\":\"Quần áo, giày dép, túi xách...\"}}\n\nfurniture: Nội thất, trang trí\n{\"id\":\"furniture\",\"icon\":\"home\",\"name\":{\"en\":\"Furniture & decor\",\"vi\":\"Nội thất, trang trí\"},\"imageUrl\":\"assets/images/marketplace/listing-lamp.png\",\"attributes\":[{\"key\":\"home_type\",\"type\":\"select\",\"label\":{\"en\":\"Product type\",\"vi\":\"Loại sản phẩm\"},\"options\":[{\"label\":{\"en\":\"Furniture\",\"vi\":\"Bàn ghế, tủ kệ\"},\"value\":\"furniture\"},{\"label\":{\"en\":\"Lighting\",\"vi\":\"Đèn\"},\"value\":\"lighting\"},{\"label\":{\"en\":\"Kitchenware\",\"vi\":\"Đồ bếp\"},\"value\":\"kitchenware\"},{\"label\":{\"en\":\"Decor\",\"vi\":\"Đồ trang trí\"},\"value\":\"decor\"},{\"label\":{\"en\":\"Bedding\",\"vi\":\"Chăn ga gối\"},\"value\":\"bedding\"}],\"required\":true},{\"key\":\"material\",\"hint\":{\"en\":\"e.g. Oak, rattan\",\"vi\":\"VD: Gỗ sồi, mây tre\"},\"type\":\"text\",\"label\":{\"en\":\"Material\",\"vi\":\"Chất liệu\"},\"required\":false,\"maxLength\":60},{\"key\":\"dimensions\",\"hint\":{\"en\":\"e.g. 120 x 60 x 75 cm\",\"vi\":\"VD: 120 x 60 x 75 cm\"},\"type\":\"text\",\"label\":{\"en\":\"Dimensions\",\"vi\":\"Kích thước\"},\"required\":false,\"maxLength\":60}],\"description\":{\"en\":\"Furniture, lamps, kitchenware, decor...\",\"vi\":\"Bàn ghế, đèn, đồ bếp, đồ trang trí...\"}}\n\nother: Khác\n{\"id\":\"other\",\"icon\":\"other\",\"name\":{\"en\":\"Other\",\"vi\":\"Khác\"},\"attributes\":[{\"key\":\"brand\",\"hint\":null,\"type\":\"text\",\"label\":{\"en\":\"Brand\",\"vi\":\"Thương hiệu\"},\"required\":false,\"maxLength\":60}],\"description\":{\"en\":\"Items that fit no other category\",\"vi\":\"Các món đồ chưa có danh mục phù hợp\"}}\n\npets: Thú cưng\n{\"id\":\"pets\",\"icon\":\"pet\",\"name\":{\"en\":\"Pets\",\"vi\":\"Thú cưng\"},\"imageUrl\":null,\"attributes\":[{\"key\":\"pet_type\",\"type\":\"select\",\"label\":{\"en\":\"Type\",\"vi\":\"Loại\"},\"options\":[{\"label\":{\"en\":\"Dog\",\"vi\":\"Chó\"},\"value\":\"dog\"},{\"label\":{\"en\":\"Cat\",\"vi\":\"Mèo\"},\"value\":\"cat\"},{\"label\":{\"en\":\"Bird\",\"vi\":\"Chim\"},\"value\":\"bird\"},{\"label\":{\"en\":\"Fish\",\"vi\":\"Cá cảnh\"},\"value\":\"fish\"},{\"label\":{\"en\":\"Accessories, food\",\"vi\":\"Phụ kiện, thức ăn\"},\"value\":\"accessories\"}],\"required\":true},{\"key\":\"breed\",\"hint\":{\"en\":\"e.g. Poodle\",\"vi\":\"VD: Poodle, Mèo Anh lông ngắn\"},\"type\":\"text\",\"label\":{\"en\":\"Breed\",\"vi\":\"Giống\"},\"required\":false,\"maxLength\":60},{\"key\":\"age_months\",\"max\":360,\"min\":0,\"type\":\"number\",\"unit\":{\"en\":\"months\",\"vi\":\"tháng\"},\"label\":{\"en\":\"Age\",\"vi\":\"Tuổi\"},\"required\":false},{\"key\":\"pet_gender\",\"type\":\"select\",\"label\":{\"en\":\"Gender\",\"vi\":\"Giới tính\"},\"options\":[{\"label\":{\"en\":\"Male\",\"vi\":\"Đực\"},\"value\":\"male\"},{\"label\":{\"en\":\"Female\",\"vi\":\"Cái\"},\"value\":\"female\"}],\"required\":false},{\"key\":\"vaccinated\",\"type\":\"boolean\",\"label\":{\"en\":\"Vaccinated\",\"vi\":\"Đã tiêm phòng\"}}],\"description\":{\"en\":\"Dogs, cats, birds, pet accessories...\",\"vi\":\"Chó, mèo, chim, phụ kiện thú cưng...\"}}\n\nphones: Điện thoại\n{\"id\":\"phones\",\"icon\":\"phone\",\"name\":{\"en\":\"Phones\",\"vi\":\"Điện thoại\"},\"imageUrl\":null,\"attributes\":[{\"key\":\"brand\",\"type\":\"select\",\"label\":{\"en\":\"Brand\",\"vi\":\"Hãng\"},\"options\":[{\"value\":\"Apple\"},{\"value\":\"Samsung\"},{\"value\":\"Xiaomi\"},{\"value\":\"OPPO\"},{\"value\":\"vivo\"},{\"value\":\"realme\"},{\"value\":\"Nokia\"},{\"value\":\"Google\"},{\"value\":\"Sony\"},{\"value\":\"ASUS\"},{\"label\":{\"en\":\"Other\",\"vi\":\"Hãng khác\"},\"value\":\"other\"}],\"required\":true},{\"key\":\"model\",\"hint\":{\"en\":\"e.g. iPhone 14 Pro Max\",\"vi\":\"VD: iPhone 14 Pro Max\"},\"type\":\"text\",\"label\":{\"en\":\"Model\",\"vi\":\"Dòng máy\"},\"required\":true,\"maxLength\":60},{\"key\":\"storage\",\"type\":\"select\",\"label\":{\"en\":\"Storage\",\"vi\":\"Dung lượng\"},\"options\":[{\"value\":\"32 GB\"},{\"value\":\"64 GB\"},{\"value\":\"128 GB\"},{\"value\":\"256 GB\"},{\"value\":\"512 GB\"},{\"value\":\"1 TB\"}],\"required\":false},{\"key\":\"color\",\"type\":\"select\",\"label\":{\"en\":\"Color\",\"vi\":\"Màu sắc\"},\"options\":[{\"label\":{\"en\":\"Black\",\"vi\":\"Đen\"},\"value\":\"black\"},{\"label\":{\"en\":\"White\",\"vi\":\"Trắng\"},\"value\":\"white\"},{\"label\":{\"en\":\"Silver\",\"vi\":\"Bạc\"},\"value\":\"silver\"},{\"label\":{\"en\":\"Gold\",\"vi\":\"Vàng\"},\"value\":\"gold\"},{\"label\":{\"en\":\"Gray\",\"vi\":\"Xám\"},\"value\":\"gray\"},{\"label\":{\"en\":\"Blue\",\"vi\":\"Xanh dương\"},\"value\":\"blue\"},{\"label\":{\"en\":\"Green\",\"vi\":\"Xanh lá\"},\"value\":\"green\"},{\"label\":{\"en\":\"Red\",\"vi\":\"Đỏ\"},\"value\":\"red\"},{\"label\":{\"en\":\"Purple\",\"vi\":\"Tím\"},\"value\":\"purple\"},{\"label\":{\"en\":\"Pink\",\"vi\":\"Hồng\"},\"value\":\"pink\"}],\"required\":false},{\"key\":\"origin\",\"type\":\"select\",\"label\":{\"en\":\"Origin\",\"vi\":\"Xuất xứ\"},\"options\":[{\"label\":{\"en\":\"Official VN/A\",\"vi\":\"Chính hãng VN/A\"},\"value\":\"vn_a\"},{\"label\":{\"en\":\"International\",\"vi\":\"Quốc tế\"},\"value\":\"international\"},{\"label\":{\"en\":\"Carrier locked\",\"vi\":\"Bản lock\"},\"value\":\"lock\"}],\"required\":false},{\"key\":\"battery_health\",\"max\":100,\"min\":1,\"type\":\"number\",\"unit\":\"%\",\"label\":{\"en\":\"Battery health\",\"vi\":\"Tình trạng pin\"},\"required\":false},{\"key\":\"warranty\",\"type\":\"select\",\"label\":{\"en\":\"Warranty\",\"vi\":\"Bảo hành\"},\"options\":[{\"label\":{\"en\":\"No warranty\",\"vi\":\"Hết bảo hành\"},\"value\":\"none\"},{\"label\":{\"en\":\"Manufacturer warranty\",\"vi\":\"Còn bảo hành hãng\"},\"value\":\"manufacturer\"},{\"label\":{\"en\":\"Store warranty\",\"vi\":\"Bảo hành cửa hàng\"},\"value\":\"store\"}],\"required\":false}],\"description\":{\"en\":\"iPhone, Samsung, Xiaomi, OPPO...\",\"vi\":\"iPhone, Samsung, Xiaomi, OPPO...\"}}\n\nsports: Thể thao, dã ngoại\n{\"id\":\"sports\",\"icon\":\"sport\",\"name\":{\"en\":\"Sports & outdoors\",\"vi\":\"Thể thao, dã ngoại\"},\"attributes\":[{\"key\":\"sport_type\",\"hint\":{\"en\":\"e.g. Gym, camping\",\"vi\":\"VD: Gym, cầu lông, cắm trại\"},\"type\":\"text\",\"label\":{\"en\":\"Sport\",\"vi\":\"Môn thể thao\"},\"required\":true,\"maxLength\":60},{\"key\":\"brand\",\"hint\":null,\"type\":\"text\",\"label\":{\"en\":\"Brand\",\"vi\":\"Thương hiệu\"},\"required\":false,\"maxLength\":60},{\"key\":\"size\",\"hint\":null,\"type\":\"text\",\"label\":{\"en\":\"Size\",\"vi\":\"Kích cỡ\"},\"required\":false,\"maxLength\":60}],\"description\":{\"en\":\"Gym gear, sport bikes, camping...\",\"vi\":\"Dụng cụ tập, xe đạp thể thao, đồ cắm trại...\"}}\n\nvehicles: Xe cộ\n{\"id\":\"vehicles\",\"icon\":\"vehicle\",\"name\":{\"en\":\"Vehicles\",\"vi\":\"Xe cộ\"},\"imageUrl\":null,\"attributes\":[{\"key\":\"vehicle_type\",\"type\":\"select\",\"label\":{\"en\":\"Vehicle type\",\"vi\":\"Loại xe\"},\"options\":[{\"label\":{\"en\":\"Motorbike\",\"vi\":\"Xe máy\"},\"value\":\"motorbike\"},{\"label\":{\"en\":\"Electric bike\",\"vi\":\"Xe điện\"},\"value\":\"ebike\"},{\"label\":{\"en\":\"Bicycle\",\"vi\":\"Xe đạp\"},\"value\":\"bicycle\"},{\"label\":{\"en\":\"Car\",\"vi\":\"Ô tô\"},\"value\":\"car\"},{\"label\":{\"en\":\"Parts\",\"vi\":\"Phụ tùng\"},\"value\":\"parts\"}],\"required\":true},{\"key\":\"brand\",\"hint\":{\"en\":\"e.g. Honda, Yamaha\",\"vi\":\"VD: Honda, Yamaha, VinFast\"},\"type\":\"text\",\"label\":{\"en\":\"Brand\",\"vi\":\"Hãng\"},\"required\":true,\"maxLength\":60},{\"key\":\"model\",\"hint\":{\"en\":\"e.g. Vision 2022\",\"vi\":\"VD: Vision 2022\"},\"type\":\"text\",\"label\":{\"en\":\"Model\",\"vi\":\"Dòng xe\"},\"required\":false,\"maxLength\":60},{\"key\":\"year\",\"max\":2030,\"min\":1980,\"type\":\"number\",\"unit\":null,\"label\":{\"en\":\"Year\",\"vi\":\"Năm sản xuất\"},\"required\":false},{\"key\":\"mileage\",\"max\":2000000,\"min\":0,\"type\":\"number\",\"unit\":\"km\",\"label\":{\"en\":\"Mileage\",\"vi\":\"Số km đã đi\"},\"required\":false},{\"key\":\"engine_cc\",\"max\":10000,\"min\":0,\"type\":\"number\",\"unit\":\"cc\",\"label\":{\"en\":\"Engine capacity\",\"vi\":\"Dung tích xi lanh\"},\"required\":false},{\"key\":\"has_papers\",\"type\":\"boolean\",\"label\":{\"en\":\"Has registration papers\",\"vi\":\"Còn giấy tờ chính chủ\"}}],\"description\":{\"en\":\"Motorbikes, bicycles, cars, parts...\",\"vi\":\"Xe máy, xe đạp, ô tô, phụ tùng...\"}}",
+            "indexedText": "appliances: do gia dung\n{\"id\":\"appliances\",\"icon\":\"appliance\",\"name\":{\"en\":\"appliances\",\"vi\":\"do gia dung\"},\"imageurl\":null,\"attributes\":[{\"key\":\"appliance_type\",\"type\":\"select\",\"label\":{\"en\":\"product type\",\"vi\":\"loai san pham\"},\"options\":[{\"label\":{\"en\":\"fridge\",\"vi\":\"tu lanh\"},\"value\":\"fridge\"},{\"label\":{\"en\":\"washing machine\",\"vi\":\"may giat\"},\"value\":\"washer\"},{\"label\":{\"en\":\"air conditioner\",\"vi\":\"dieu hoa\"},\"value\":\"air_conditioner\"},{\"label\":{\"en\":\"water heater\",\"vi\":\"binh nong lanh\"},\"value\":\"water_heater\"},{\"label\":{\"en\":\"kitchen appliance\",\"vi\":\"do dung nha bep\"},\"value\":\"kitchen\"},{\"label\":{\"en\":\"other\",\"vi\":\"khac\"},\"value\":\"other\"}],\"required\":true},{\"key\":\"brand\",\"hint\":{\"en\":\"e.g. panasonic, lg\",\"vi\":\"vd: panasonic, lg\"},\"type\":\"text\",\"label\":{\"en\":\"brand\",\"vi\":\"hang\"},\"required\":false,\"maxlength\":60},{\"key\":\"capacity\",\"hint\":{\"en\":\"e.g. 9 kg, 1.5 hp, 300 l\",\"vi\":\"vd: 9 kg, 1.5 hp, 300 l\"},\"type\":\"text\",\"label\":{\"en\":\"capacity\",\"vi\":\"cong suat / dung tich\"},\"required\":false,\"maxlength\":60},{\"key\":\"power\",\"max\":20000,\"min\":0,\"type\":\"number\",\"unit\":\"w\",\"label\":{\"en\":\"power\",\"vi\":\"cong suat dien\"},\"required\":false},{\"key\":\"warranty\",\"type\":\"select\",\"label\":{\"en\":\"warranty\",\"vi\":\"bao hanh\"},\"options\":[{\"label\":{\"en\":\"no warranty\",\"vi\":\"het bao hanh\"},\"value\":\"none\"},{\"label\":{\"en\":\"manufacturer warranty\",\"vi\":\"con bao hanh hang\"},\"value\":\"manufacturer\"},{\"label\":{\"en\":\"store warranty\",\"vi\":\"bao hanh cua hang\"},\"value\":\"store\"}],\"required\":false}],\"description\":{\"en\":\"fridges, washing machines, air conditioners...\",\"vi\":\"tu lanh, may giat, dieu hoa...\"}}\n\nbooks: sach, van phong pham\n{\"id\":\"books\",\"icon\":\"book\",\"name\":{\"en\":\"books & stationery\",\"vi\":\"sach, van phong pham\"},\"attributes\":[{\"key\":\"genre\",\"type\":\"select\",\"label\":{\"en\":\"genre\",\"vi\":\"the loai\"},\"options\":[{\"label\":{\"en\":\"textbook\",\"vi\":\"giao trinh, sach giao khoa\"},\"value\":\"textbook\"},{\"label\":{\"en\":\"novel, comics\",\"vi\":\"tieu thuyet, truyen\"},\"value\":\"novel\"},{\"label\":{\"en\":\"self-help, business\",\"vi\":\"ky nang, kinh te\"},\"value\":\"skills\"},{\"label\":{\"en\":\"children\",\"vi\":\"thieu nhi\"},\"value\":\"kids\"},{\"label\":{\"en\":\"stationery\",\"vi\":\"van phong pham\"},\"value\":\"stationery\"}],\"required\":true},{\"key\":\"author\",\"hint\":null,\"type\":\"text\",\"label\":{\"en\":\"author\",\"vi\":\"tac gia\"},\"required\":false,\"maxlength\":60},{\"key\":\"quantity\",\"max\":1000,\"min\":1,\"type\":\"number\",\"unit\":{\"en\":\"books\",\"vi\":\"cuon\"},\"label\":{\"en\":\"quantity\",\"vi\":\"so luong\"},\"required\":false}],\"description\":{\"en\":\"textbooks, novels, course books...\",\"vi\":\"sach giao khoa, truyen, giao trinh...\"}}\n\nelectronics: do dien tu\n{\"id\":\"electronics\",\"icon\":\"electronics\",\"name\":{\"en\":\"electronics\",\"vi\":\"do dien tu\"},\"imageurl\":\"assets/images/marketplace/listing-camera.png\",\"attributes\":[{\"key\":\"device_type\",\"type\":\"select\",\"label\":{\"en\":\"device type\",\"vi\":\"loai thiet bi\"},\"options\":[{\"label\":{\"en\":\"laptop\",\"vi\":\"laptop\"},\"value\":\"laptop\"},{\"label\":{\"en\":\"tablet\",\"vi\":\"may tinh bang\"},\"value\":\"tablet\"},{\"label\":{\"en\":\"camera\",\"vi\":\"may anh, may quay\"},\"value\":\"camera\"},{\"label\":{\"en\":\"headphones, speakers\",\"vi\":\"tai nghe, loa\"},\"value\":\"audio\"},{\"label\":{\"en\":\"smartwatch\",\"vi\":\"dong ho thong minh\"},\"value\":\"smartwatch\"},{\"label\":{\"en\":\"tv, monitor\",\"vi\":\"tivi, man hinh\"},\"value\":\"tv\"},{\"label\":{\"en\":\"game console\",\"vi\":\"may choi game\"},\"value\":\"gaming\"},{\"label\":{\"en\":\"other\",\"vi\":\"khac\"},\"value\":\"other\"}],\"required\":true},{\"key\":\"brand\",\"hint\":{\"en\":\"e.g. sony, canon, dell\",\"vi\":\"vd: sony, canon, dell\"},\"type\":\"text\",\"label\":{\"en\":\"brand\",\"vi\":\"hang\"},\"required\":true,\"maxlength\":60},{\"key\":\"model\",\"hint\":{\"en\":\"e.g. alpha a7 iii\",\"vi\":\"vd: alpha a7 iii\"},\"type\":\"text\",\"label\":{\"en\":\"model\",\"vi\":\"model\"},\"required\":false,\"maxlength\":60},{\"key\":\"warranty\",\"type\":\"select\",\"label\":{\"en\":\"warranty\",\"vi\":\"bao hanh\"},\"options\":[{\"label\":{\"en\":\"no warranty\",\"vi\":\"het bao hanh\"},\"value\":\"none\"},{\"label\":{\"en\":\"manufacturer warranty\",\"vi\":\"con bao hanh hang\"},\"value\":\"manufacturer\"},{\"label\":{\"en\":\"store warranty\",\"vi\":\"bao hanh cua hang\"},\"value\":\"store\"}],\"required\":false},{\"key\":\"has_accessories\",\"type\":\"boolean\",\"label\":{\"en\":\"includes box & accessories\",\"vi\":\"con du phu kien, hop\"}}],\"description\":{\"en\":\"laptops, cameras, headphones, tablets...\",\"vi\":\"laptop, may anh, tai nghe, may tinh bang...\"}}\n\nfashion: thoi trang\n{\"id\":\"fashion\",\"icon\":\"fashion\",\"name\":{\"en\":\"fashion\",\"vi\":\"thoi trang\"},\"imageurl\":null,\"attributes\":[{\"key\":\"product_type\",\"type\":\"select\",\"label\":{\"en\":\"product type\",\"vi\":\"loai san pham\"},\"options\":[{\"label\":{\"en\":\"clothes\",\"vi\":\"quan ao\"},\"value\":\"clothes\"},{\"label\":{\"en\":\"shoes\",\"vi\":\"giay dep\"},\"value\":\"shoes\"},{\"label\":{\"en\":\"bags\",\"vi\":\"tui xach\"},\"value\":\"bags\"},{\"label\":{\"en\":\"accessories\",\"vi\":\"phu kien\"},\"value\":\"accessories\"},{\"label\":{\"en\":\"watches\",\"vi\":\"dong ho\"},\"value\":\"watch\"}],\"required\":true},{\"key\":\"gender\",\"type\":\"select\",\"label\":{\"en\":\"for\",\"vi\":\"danh cho\"},\"options\":[{\"label\":{\"en\":\"men\",\"vi\":\"nam\"},\"value\":\"men\"},{\"label\":{\"en\":\"women\",\"vi\":\"nu\"},\"value\":\"women\"},{\"label\":{\"en\":\"unisex\",\"vi\":\"unisex\"},\"value\":\"unisex\"},{\"label\":{\"en\":\"kids\",\"vi\":\"tre em\"},\"value\":\"kids\"}],\"required\":false},{\"key\":\"size\",\"hint\":{\"en\":\"e.g. m, 42, 28\",\"vi\":\"vd: m, 42, 28\"},\"type\":\"text\",\"label\":{\"en\":\"size\",\"vi\":\"kich co\"},\"required\":false,\"maxlength\":60},{\"key\":\"brand\",\"hint\":{\"en\":\"e.g. uniqlo, nike\",\"vi\":\"vd: uniqlo, nike\"},\"type\":\"text\",\"label\":{\"en\":\"brand\",\"vi\":\"thuong hieu\"},\"required\":false,\"maxlength\":60},{\"key\":\"material\",\"hint\":{\"en\":\"e.g. cotton, leather\",\"vi\":\"vd: cotton, da that\"},\"type\":\"text\",\"label\":{\"en\":\"material\",\"vi\":\"chat lieu\"},\"required\":false,\"maxlength\":60}],\"description\":{\"en\":\"clothes, shoes, bags...\",\"vi\":\"quan ao, giay dep, tui xach...\"}}\n\nfurniture: noi that, trang tri\n{\"id\":\"furniture\",\"icon\":\"home\",\"name\":{\"en\":\"furniture & decor\",\"vi\":\"noi that, trang tri\"},\"imageurl\":\"assets/images/marketplace/listing-lamp.png\",\"attributes\":[{\"key\":\"home_type\",\"type\":\"select\",\"label\":{\"en\":\"product type\",\"vi\":\"loai san pham\"},\"options\":[{\"label\":{\"en\":\"furniture\",\"vi\":\"ban ghe, tu ke\"},\"value\":\"furniture\"},{\"label\":{\"en\":\"lighting\",\"vi\":\"den\"},\"value\":\"lighting\"},{\"label\":{\"en\":\"kitchenware\",\"vi\":\"do bep\"},\"value\":\"kitchenware\"},{\"label\":{\"en\":\"decor\",\"vi\":\"do trang tri\"},\"value\":\"decor\"},{\"label\":{\"en\":\"bedding\",\"vi\":\"chan ga goi\"},\"value\":\"bedding\"}],\"required\":true},{\"key\":\"material\",\"hint\":{\"en\":\"e.g. oak, rattan\",\"vi\":\"vd: go soi, may tre\"},\"type\":\"text\",\"label\":{\"en\":\"material\",\"vi\":\"chat lieu\"},\"required\":false,\"maxlength\":60},{\"key\":\"dimensions\",\"hint\":{\"en\":\"e.g. 120 x 60 x 75 cm\",\"vi\":\"vd: 120 x 60 x 75 cm\"},\"type\":\"text\",\"label\":{\"en\":\"dimensions\",\"vi\":\"kich thuoc\"},\"required\":false,\"maxlength\":60}],\"description\":{\"en\":\"furniture, lamps, kitchenware, decor...\",\"vi\":\"ban ghe, den, do bep, do trang tri...\"}}\n\nother: khac\n{\"id\":\"other\",\"icon\":\"other\",\"name\":{\"en\":\"other\",\"vi\":\"khac\"},\"attributes\":[{\"key\":\"brand\",\"hint\":null,\"type\":\"text\",\"label\":{\"en\":\"brand\",\"vi\":\"thuong hieu\"},\"required\":false,\"maxlength\":60}],\"description\":{\"en\":\"items that fit no other category\",\"vi\":\"cac mon do chua co danh muc phu hop\"}}\n\npets: thu cung\n{\"id\":\"pets\",\"icon\":\"pet\",\"name\":{\"en\":\"pets\",\"vi\":\"thu cung\"},\"imageurl\":null,\"attributes\":[{\"key\":\"pet_type\",\"type\":\"select\",\"label\":{\"en\":\"type\",\"vi\":\"loai\"},\"options\":[{\"label\":{\"en\":\"dog\",\"vi\":\"cho\"},\"value\":\"dog\"},{\"label\":{\"en\":\"cat\",\"vi\":\"meo\"},\"value\":\"cat\"},{\"label\":{\"en\":\"bird\",\"vi\":\"chim\"},\"value\":\"bird\"},{\"label\":{\"en\":\"fish\",\"vi\":\"ca canh\"},\"value\":\"fish\"},{\"label\":{\"en\":\"accessories, food\",\"vi\":\"phu kien, thuc an\"},\"value\":\"accessories\"}],\"required\":true},{\"key\":\"breed\",\"hint\":{\"en\":\"e.g. poodle\",\"vi\":\"vd: poodle, meo anh long ngan\"},\"type\":\"text\",\"label\":{\"en\":\"breed\",\"vi\":\"giong\"},\"required\":false,\"maxlength\":60},{\"key\":\"age_months\",\"max\":360,\"min\":0,\"type\":\"number\",\"unit\":{\"en\":\"months\",\"vi\":\"thang\"},\"label\":{\"en\":\"age\",\"vi\":\"tuoi\"},\"required\":false},{\"key\":\"pet_gender\",\"type\":\"select\",\"label\":{\"en\":\"gender\",\"vi\":\"gioi tinh\"},\"options\":[{\"label\":{\"en\":\"male\",\"vi\":\"duc\"},\"value\":\"male\"},{\"label\":{\"en\":\"female\",\"vi\":\"cai\"},\"value\":\"female\"}],\"required\":false},{\"key\":\"vaccinated\",\"type\":\"boolean\",\"label\":{\"en\":\"vaccinated\",\"vi\":\"da tiem phong\"}}],\"description\":{\"en\":\"dogs, cats, birds, pet accessories...\",\"vi\":\"cho, meo, chim, phu kien thu cung...\"}}\n\nphones: dien thoai\n{\"id\":\"phones\",\"icon\":\"phone\",\"name\":{\"en\":\"phones\",\"vi\":\"dien thoai\"},\"imageurl\":null,\"attributes\":[{\"key\":\"brand\",\"type\":\"select\",\"label\":{\"en\":\"brand\",\"vi\":\"hang\"},\"options\":[{\"value\":\"apple\"},{\"value\":\"samsung\"},{\"value\":\"xiaomi\"},{\"value\":\"oppo\"},{\"value\":\"vivo\"},{\"value\":\"realme\"},{\"value\":\"nokia\"},{\"value\":\"google\"},{\"value\":\"sony\"},{\"value\":\"asus\"},{\"label\":{\"en\":\"other\",\"vi\":\"hang khac\"},\"value\":\"other\"}],\"required\":true},{\"key\":\"model\",\"hint\":{\"en\":\"e.g. iphone 14 pro max\",\"vi\":\"vd: iphone 14 pro max\"},\"type\":\"text\",\"label\":{\"en\":\"model\",\"vi\":\"dong may\"},\"required\":true,\"maxlength\":60},{\"key\":\"storage\",\"type\":\"select\",\"label\":{\"en\":\"storage\",\"vi\":\"dung luong\"},\"options\":[{\"value\":\"32 gb\"},{\"value\":\"64 gb\"},{\"value\":\"128 gb\"},{\"value\":\"256 gb\"},{\"value\":\"512 gb\"},{\"value\":\"1 tb\"}],\"required\":false},{\"key\":\"color\",\"type\":\"select\",\"label\":{\"en\":\"color\",\"vi\":\"mau sac\"},\"options\":[{\"label\":{\"en\":\"black\",\"vi\":\"den\"},\"value\":\"black\"},{\"label\":{\"en\":\"white\",\"vi\":\"trang\"},\"value\":\"white\"},{\"label\":{\"en\":\"silver\",\"vi\":\"bac\"},\"value\":\"silver\"},{\"label\":{\"en\":\"gold\",\"vi\":\"vang\"},\"value\":\"gold\"},{\"label\":{\"en\":\"gray\",\"vi\":\"xam\"},\"value\":\"gray\"},{\"label\":{\"en\":\"blue\",\"vi\":\"xanh duong\"},\"value\":\"blue\"},{\"label\":{\"en\":\"green\",\"vi\":\"xanh la\"},\"value\":\"green\"},{\"label\":{\"en\":\"red\",\"vi\":\"do\"},\"value\":\"red\"},{\"label\":{\"en\":\"purple\",\"vi\":\"tim\"},\"value\":\"purple\"},{\"label\":{\"en\":\"pink\",\"vi\":\"hong\"},\"value\":\"pink\"}],\"required\":false},{\"key\":\"origin\",\"type\":\"select\",\"label\":{\"en\":\"origin\",\"vi\":\"xuat xu\"},\"options\":[{\"label\":{\"en\":\"official vn/a\",\"vi\":\"chinh hang vn/a\"},\"value\":\"vn_a\"},{\"label\":{\"en\":\"international\",\"vi\":\"quoc te\"},\"value\":\"international\"},{\"label\":{\"en\":\"carrier locked\",\"vi\":\"ban lock\"},\"value\":\"lock\"}],\"required\":false},{\"key\":\"battery_health\",\"max\":100,\"min\":1,\"type\":\"number\",\"unit\":\"%\",\"label\":{\"en\":\"battery health\",\"vi\":\"tinh trang pin\"},\"required\":false},{\"key\":\"warranty\",\"type\":\"select\",\"label\":{\"en\":\"warranty\",\"vi\":\"bao hanh\"},\"options\":[{\"label\":{\"en\":\"no warranty\",\"vi\":\"het bao hanh\"},\"value\":\"none\"},{\"label\":{\"en\":\"manufacturer warranty\",\"vi\":\"con bao hanh hang\"},\"value\":\"manufacturer\"},{\"label\":{\"en\":\"store warranty\",\"vi\":\"bao hanh cua hang\"},\"value\":\"store\"}],\"required\":false}],\"description\":{\"en\":\"iphone, samsung, xiaomi, oppo...\",\"vi\":\"iphone, samsung, xiaomi, oppo...\"}}\n\nsports: the thao, da ngoai\n{\"id\":\"sports\",\"icon\":\"sport\",\"name\":{\"en\":\"sports & outdoors\",\"vi\":\"the thao, da ngoai\"},\"attributes\":[{\"key\":\"sport_type\",\"hint\":{\"en\":\"e.g. gym, camping\",\"vi\":\"vd: gym, cau long, cam trai\"},\"type\":\"text\",\"label\":{\"en\":\"sport\",\"vi\":\"mon the thao\"},\"required\":true,\"maxlength\":60},{\"key\":\"brand\",\"hint\":null,\"type\":\"text\",\"label\":{\"en\":\"brand\",\"vi\":\"thuong hieu\"},\"required\":false,\"maxlength\":60},{\"key\":\"size\",\"hint\":null,\"type\":\"text\",\"label\":{\"en\":\"size\",\"vi\":\"kich co\"},\"required\":false,\"maxlength\":60}],\"description\":{\"en\":\"gym gear, sport bikes, camping...\",\"vi\":\"dung cu tap, xe dap the thao, do cam trai...\"}}\n\nvehicles: xe co\n{\"id\":\"vehicles\",\"icon\":\"vehicle\",\"name\":{\"en\":\"vehicles\",\"vi\":\"xe co\"},\"imageurl\":null,\"attributes\":[{\"key\":\"vehicle_type\",\"type\":\"select\",\"label\":{\"en\":\"vehicle type\",\"vi\":\"loai xe\"},\"options\":[{\"label\":{\"en\":\"motorbike\",\"vi\":\"xe may\"},\"value\":\"motorbike\"},{\"label\":{\"en\":\"electric bike\",\"vi\":\"xe dien\"},\"value\":\"ebike\"},{\"label\":{\"en\":\"bicycle\",\"vi\":\"xe dap\"},\"value\":\"bicycle\"},{\"label\":{\"en\":\"car\",\"vi\":\"o to\"},\"value\":\"car\"},{\"label\":{\"en\":\"parts\",\"vi\":\"phu tung\"},\"value\":\"parts\"}],\"required\":true},{\"key\":\"brand\",\"hint\":{\"en\":\"e.g. honda, yamaha\",\"vi\":\"vd: honda, yamaha, vinfast\"},\"type\":\"text\",\"label\":{\"en\":\"brand\",\"vi\":\"hang\"},\"required\":true,\"maxlength\":60},{\"key\":\"model\",\"hint\":{\"en\":\"e.g. vision 2022\",\"vi\":\"vd: vision 2022\"},\"type\":\"text\",\"label\":{\"en\":\"model\",\"vi\":\"dong xe\"},\"required\":false,\"maxlength\":60},{\"key\":\"year\",\"max\":2030,\"min\":1980,\"type\":\"number\",\"unit\":null,\"label\":{\"en\":\"year\",\"vi\":\"nam san xuat\"},\"required\":false},{\"key\":\"mileage\",\"max\":2000000,\"min\":0,\"type\":\"number\",\"unit\":\"km\",\"label\":{\"en\":\"mileage\",\"vi\":\"so km da di\"},\"required\":false},{\"key\":\"engine_cc\",\"max\":10000,\"min\":0,\"type\":\"number\",\"unit\":\"cc\",\"label\":{\"en\":\"engine capacity\",\"vi\":\"dung tich xi lanh\"},\"required\":false},{\"key\":\"has_papers\",\"type\":\"boolean\",\"label\":{\"en\":\"has registration papers\",\"vi\":\"con giay to chinh chu\"}}],\"description\":{\"en\":\"motorbikes, bicycles, cars, parts...\",\"vi\":\"xe may, xe dap, o to, phu tung...\"}}",
+            "syncedAt": "<date>",
+            "active": true,
+            "createdAt": "<date>",
+            "updatedAt": "<date>"
+          },
+          {
+            "id": "<uuid>",
+            "title": "Chính sách đổi trả",
+            "content": "Người mua có thể đổi trả trong 3 ngày.",
+            "indexedText": "chinh sach doi tra\nnguoi mua co the doi tra trong 3 ngay.",
+            "syncedAt": "<date>",
+            "active": true,
+            "createdAt": "<date>",
+            "updatedAt": "<date>"
+          },
+          {
+            "id": "<uuid>",
+            "title": "Huong dan dang tin",
+            "content": "Đăng tin cần ít nhất một ảnh rõ nét.",
+            "indexedText": null,
+            "syncedAt": null,
+            "active": true,
+            "createdAt": "<date>",
+            "updatedAt": "<date>"
+          }
+        ],
+        "total": 3,
+        "page": 1
+      }
+    }
+  },
+  "search knowledge": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "mode": "lexical",
+        "documents": [
+          {
+            "id": "<uuid>",
+            "title": "Chính sách đổi trả",
+            "content": "Người mua có thể đổi trả trong 3 ngày.",
+            "syncedAt": "<date>"
+          }
+        ]
+      }
+    }
+  },
+  "search knowledge too short": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "q: cần 2–100 ký tự.",
+      "code": "INVALID_ADMIN_INPUT",
+      "field": "q"
+    }
+  },
+  "update knowledge": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Chính sách đổi trả mới",
+        "content": "Người mua có thể đổi trả trong 5 ngày.",
+        "indexedText": null,
+        "syncedAt": null,
+        "active": true,
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "delete knowledge": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "deleted": true
+      }
+    }
+  },
+  "report self": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Không tự báo cáo mình.",
+      "code": "INVALID_REPORT"
+    }
+  },
+  "report listing": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "reporterId": "user-buyer",
+        "targetType": "LISTING",
+        "targetId": "listing-1",
+        "reason": "Tin giả mạo",
+        "evidence": "Ảnh lấy từ mạng.",
+        "status": "OPEN",
+        "decision": null,
+        "resolution": null,
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "report duplicate": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Bạn đã có báo cáo đang chờ xử lý.",
+      "code": "REPORT_EXISTS"
+    }
+  },
+  "reports mine": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "reporterId": "user-buyer",
+          "targetType": "LISTING",
+          "targetId": "listing-1",
+          "reason": "Tin giả mạo",
+          "evidence": "Ảnh lấy từ mạng.",
+          "status": "OPEN",
+          "decision": null,
+          "resolution": null,
+          "createdAt": "<date>",
+          "updatedAt": "<date>"
+        }
+      ]
+    }
+  },
+  "admin reports": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "items": [
+          {
+            "id": "<uuid>",
+            "reporterId": "user-buyer",
+            "targetType": "LISTING",
+            "targetId": "listing-1",
+            "reason": "Tin giả mạo",
+            "evidence": "Ảnh lấy từ mạng.",
+            "status": "OPEN",
+            "decision": null,
+            "resolution": null,
+            "createdAt": "<date>",
+            "updatedAt": "<date>"
+          }
+        ],
+        "total": 1,
+        "page": 1
+      }
+    }
+  },
+  "admin report target": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "listing-1",
+        "title": "Bàn gỗ sồi thật",
+        "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+        "price": "1200000",
+        "status": "AVAILABLE",
+        "images": [],
+        "reviewReason": null,
+        "updatedAt": "<date>",
+        "categoryId": "furniture",
+        "ownerId": "user-seller",
+        "condition": "USED_GOOD",
+        "owner": {
+          "id": "user-seller",
+          "fullName": "user-seller"
+        },
+        "category": {
+          "id": "furniture",
+          "name": "Nội thất, trang trí"
+        }
+      }
+    }
+  },
+  "resolve report wrong action": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Hành động không phù hợp đối tượng.",
+      "code": "INVALID_DECISION"
+    }
+  },
+  "resolve report": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "updated": true
+      }
+    }
+  },
+  "create ticket": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "userId": "user-buyer",
+        "subject": "Không đăng được tin",
+        "status": "OPEN",
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "reply ticket": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "ticketId": "<uuid>",
+        "authorId": "user-buyer",
+        "isAdmin": false,
+        "content": "Mình gửi thêm ảnh chụp.",
+        "createdAt": "<date>"
+      }
+    }
+  },
+  "reply ticket of other user": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy yêu cầu đang mở của bạn.",
+      "code": "TICKET_NOT_FOUND"
+    }
+  },
+  "my tickets": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "userId": "user-buyer",
+          "subject": "Không đăng được tin",
+          "status": "OPEN",
+          "createdAt": "<date>",
+          "updatedAt": "<date>",
+          "messages": [
+            {
+              "id": "<uuid>",
+              "ticketId": "<uuid>",
+              "authorId": "user-buyer",
+              "isAdmin": false,
+              "content": "Ứng dụng báo lỗi khi đăng.",
+              "createdAt": "<date>"
+            },
+            {
+              "id": "<uuid>",
+              "ticketId": "<uuid>",
+              "authorId": "user-buyer",
+              "isAdmin": false,
+              "content": "Mình gửi thêm ảnh chụp.",
+              "createdAt": "<date>"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "admin tickets": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "items": [
+          {
+            "id": "<uuid>",
+            "userId": "user-buyer",
+            "subject": "Không đăng được tin",
+            "status": "OPEN",
+            "createdAt": "<date>",
+            "updatedAt": "<date>",
+            "messages": [
+              {
+                "id": "<uuid>",
+                "ticketId": "<uuid>",
+                "authorId": "user-buyer",
+                "isAdmin": false,
+                "content": "Ứng dụng báo lỗi khi đăng.",
+                "createdAt": "<date>"
+              },
+              {
+                "id": "<uuid>",
+                "ticketId": "<uuid>",
+                "authorId": "user-buyer",
+                "isAdmin": false,
+                "content": "Mình gửi thêm ảnh chụp.",
+                "createdAt": "<date>"
+              }
+            ]
+          }
+        ],
+        "total": 1,
+        "page": 1
+      }
+    }
+  },
+  "admin reply ticket": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "ticketId": "<uuid>",
+        "authorId": "user-admin",
+        "isAdmin": true,
+        "content": "Bạn thử cập nhật ứng dụng.",
+        "createdAt": "<date>"
+      }
+    }
+  },
+  "admin close ticket": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "updated": true
+      }
+    }
+  }
+}

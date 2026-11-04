@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
-import { isAppError } from '../errors/app-error.js';
+import { isAppError } from '../common/errors/app-error.js';
 
 export const notFoundHandler = (_req: Request, res: Response) =>
   res.status(404).json({ success: false, error: 'Không tìm thấy API.', code: 'NOT_FOUND' });

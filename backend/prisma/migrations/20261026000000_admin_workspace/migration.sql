@@ -1,16 +1,11 @@
--- CreateEnum
 CREATE TYPE "ReportStatus" AS ENUM ('OPEN', 'RESOLVED', 'DISMISSED');
 
--- CreateEnum
 CREATE TYPE "PostStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'HIDDEN', 'ARCHIVED');
 
--- AlterTable
 ALTER TABLE "User" ADD COLUMN     "suspendedUntil" TIMESTAMP(3);
 
--- AlterTable
 ALTER TABLE "Category" ADD COLUMN     "active" BOOLEAN NOT NULL DEFAULT true;
 
--- CreateTable
 CREATE TABLE "AdminAudit" (
     "id" TEXT NOT NULL,
     "actorId" TEXT NOT NULL,
@@ -25,7 +20,6 @@ CREATE TABLE "AdminAudit" (
     CONSTRAINT "AdminAudit_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "ConditionPolicy" (
     "condition" "ListingCondition" NOT NULL,
     "name" TEXT NOT NULL,
@@ -35,7 +29,6 @@ CREATE TABLE "ConditionPolicy" (
     CONSTRAINT "ConditionPolicy_pkey" PRIMARY KEY ("condition")
 );
 
--- CreateTable
 CREATE TABLE "ViolationReport" (
     "id" TEXT NOT NULL,
     "reporterId" TEXT NOT NULL,
@@ -52,7 +45,6 @@ CREATE TABLE "ViolationReport" (
     CONSTRAINT "ViolationReport_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "BlogPost" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -68,7 +60,6 @@ CREATE TABLE "BlogPost" (
     CONSTRAINT "BlogPost_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "SupportTicket" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -80,7 +71,6 @@ CREATE TABLE "SupportTicket" (
     CONSTRAINT "SupportTicket_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "SupportMessage" (
     "id" TEXT NOT NULL,
     "ticketId" TEXT NOT NULL,
@@ -92,7 +82,6 @@ CREATE TABLE "SupportMessage" (
     CONSTRAINT "SupportMessage_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "KnowledgeDocument" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -106,37 +95,26 @@ CREATE TABLE "KnowledgeDocument" (
     CONSTRAINT "KnowledgeDocument_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
 CREATE INDEX "AdminAudit_targetType_targetId_createdAt_idx" ON "AdminAudit"("targetType", "targetId", "createdAt");
 
--- CreateIndex
 CREATE INDEX "AdminAudit_createdAt_idx" ON "AdminAudit"("createdAt");
 
--- CreateIndex
 CREATE INDEX "ViolationReport_status_createdAt_idx" ON "ViolationReport"("status", "createdAt");
 
--- CreateIndex
 CREATE INDEX "ViolationReport_reporterId_idx" ON "ViolationReport"("reporterId");
 
--- CreateIndex
 CREATE UNIQUE INDEX "BlogPost_slug_key" ON "BlogPost"("slug");
 
--- CreateIndex
 CREATE INDEX "BlogPost_status_createdAt_idx" ON "BlogPost"("status", "createdAt");
 
--- CreateIndex
 CREATE INDEX "SupportTicket_userId_createdAt_idx" ON "SupportTicket"("userId", "createdAt");
 
--- CreateIndex
 CREATE INDEX "SupportTicket_status_updatedAt_idx" ON "SupportTicket"("status", "updatedAt");
 
--- CreateIndex
 CREATE INDEX "SupportMessage_ticketId_createdAt_idx" ON "SupportMessage"("ticketId", "createdAt");
 
--- CreateIndex
 CREATE INDEX "KnowledgeDocument_active_idx" ON "KnowledgeDocument"("active");
 
--- AddForeignKey
 ALTER TABLE "SupportMessage" ADD CONSTRAINT "SupportMessage_ticketId_fkey" FOREIGN KEY ("ticketId") REFERENCES "SupportTicket"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "AdminAudit" ENABLE ROW LEVEL SECURITY;

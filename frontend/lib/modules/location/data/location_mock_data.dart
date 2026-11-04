@@ -1,73 +1,80 @@
-/// Dữ liệu mẫu dạng JSON giống response API `/locations/...`.
-/// Chỉ gồm 6 thành phố trực thuộc trung ương và vài phường tiêu biểu,
-/// toạ độ tâm là gần đúng. Danh sách đầy đủ 34 tỉnh/thành và các phường/xã
-/// sẽ do backend cung cấp (seed từ bộ dữ liệu hành chính chính thức).
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+import 'package:restore/data/models/administrative_unit_model.dart';
+import 'package:restore/shared/models/geo_point.dart';
+
+/// Dữ liệu địa chỉ thật cho chế độ mock: 34 tỉnh/thành và 3.321 phường/xã/đặc khu
+/// (cùng bộ dữ liệu với backend, xem backend/scripts/locations/build.py), đóng gói
+/// trong `assets/data/vn_locations.json`. Đọc một lần rồi giữ trong bộ nhớ.
+///
+/// Định dạng gọn để file nhỏ (khoảng 210 KB):
+/// `{ provinces: [[code, name, shortName]], wards: { provinceCode: [[code, name, shortName, lat, lon]] } }`
 class LocationMockData {
-  LocationMockData._();
+  LocationMockData._(this.provinces, this.wardsByProvince);
 
-  static const List<Map<String, dynamic>> provinces = [
-    {'code': '79', 'name': 'TP. Hồ Chí Minh', 'level': 'province'},
-    {'code': '01', 'name': 'TP. Hà Nội', 'level': 'province'},
-    {'code': '48', 'name': 'TP. Đà Nẵng', 'level': 'province'},
-    {'code': '31', 'name': 'TP. Hải Phòng', 'level': 'province'},
-    {'code': '92', 'name': 'TP. Cần Thơ', 'level': 'province'},
-    {'code': '46', 'name': 'TP. Huế', 'level': 'province'},
-  ];
+  static const String assetPath = 'assets/data/vn_locations.json';
 
-  static final Map<String, List<Map<String, dynamic>>> wardsByProvince = {
-    '79': [
-      _ward('79-SG', 'Phường Sài Gòn', '79', 10.7769, 106.7009),
-      _ward('79-BT', 'Phường Bến Thành', '79', 10.7725, 106.6980),
-      _ward('79-TD', 'Phường Tân Định', '79', 10.7905, 106.6897),
-      _ward('79-BC', 'Phường Bàn Cờ', '79', 10.7700, 106.6800),
-      _ward('79-XH', 'Phường Xuân Hòa', '79', 10.7790, 106.6890),
-      _ward('79-GV', 'Phường Gò Vấp', '79', 10.8387, 106.6653),
-      _ward('79-AK', 'Phường An Khánh', '79', 10.7880, 106.7310),
-      _ward('79-THD', 'Phường Thủ Đức', '79', 10.8494, 106.7537),
-    ],
-    '01': [
-      _ward('01-HK', 'Phường Hoàn Kiếm', '01', 21.0285, 105.8542),
-      _ward('01-CN', 'Phường Cửa Nam', '01', 21.0245, 105.8412),
-      _ward('01-BD', 'Phường Ba Đình', '01', 21.0368, 105.8346),
-      _ward('01-NH', 'Phường Ngọc Hà', '01', 21.0390, 105.8200),
-      _ward('01-DD', 'Phường Đống Đa', '01', 21.0180, 105.8290),
-      _ward('01-CG', 'Phường Cầu Giấy', '01', 21.0333, 105.7940),
-      _ward('01-HBT', 'Phường Hai Bà Trưng', '01', 21.0090, 105.8580),
-    ],
-    '48': [
-      _ward('48-HC', 'Phường Hải Châu', '48', 16.0600, 108.2200),
-      _ward('48-HCU', 'Phường Hòa Cường', '48', 16.0400, 108.2200),
-      _ward('48-TK', 'Phường Thanh Khê', '48', 16.0670, 108.1900),
-      _ward('48-ST', 'Phường Sơn Trà', '48', 16.0860, 108.2440),
-      _ward('48-NHS', 'Phường Ngũ Hành Sơn', '48', 16.0010, 108.2560),
-    ],
-    '31': [
-      _ward('31-HB', 'Phường Hồng Bàng', '31', 20.8650, 106.6830),
-      _ward('31-LC', 'Phường Lê Chân', '31', 20.8500, 106.6800),
-      _ward('31-NQ', 'Phường Ngô Quyền', '31', 20.8600, 106.7000),
-    ],
-    '92': [
-      _ward('92-NK', 'Phường Ninh Kiều', '92', 10.0340, 105.7880),
-      _ward('92-CK', 'Phường Cái Khế', '92', 10.0450, 105.7850),
-      _ward('92-BTH', 'Phường Bình Thủy', '92', 10.0700, 105.7500),
-    ],
-    '46': [
-      _ward('46-PX', 'Phường Phú Xuân', '46', 16.4700, 107.5800),
-      _ward('46-TH', 'Phường Thuận Hóa', '46', 16.4600, 107.5900),
-    ],
-  };
+  static Future<LocationMockData>? _loading;
 
-  static Map<String, dynamic> _ward(
-    String code,
-    String name,
-    String provinceCode,
-    double latitude,
-    double longitude,
-  ) => {
-    'code': code,
-    'name': name,
-    'level': 'ward',
-    'parentCode': provinceCode,
-    'center': {'latitude': latitude, 'longitude': longitude},
-  };
+  /// Tỉnh/thành theo mã
+  final List<AdministrativeUnitModel> provinces;
+
+  /// Phường/xã theo mã tỉnh, mỗi phường có tâm (điểm nằm trong ranh giới)
+  final Map<String, List<AdministrativeUnitModel>> wardsByProvince;
+
+  /// Đọc bộ dữ liệu (chỉ đọc file ở lần gọi đầu)
+  static Future<LocationMockData> load({AssetBundle? bundle}) =>
+      _loading ??= _read(bundle ?? rootBundle).catchError((Object error) {
+        _loading = null;
+        throw error;
+      });
+
+  static Future<LocationMockData> _read(AssetBundle bundle) async {
+    final json =
+        jsonDecode(await bundle.loadString(assetPath)) as Map<String, dynamic>;
+    final provinces = [
+      for (final row in json['provinces'] as List)
+        AdministrativeUnitModel(
+          code: row[0] as String,
+          name: row[1] as String,
+          shortName: row[2] as String,
+          level: AdministrativeLevel.province,
+        ),
+    ];
+    final wards = <String, List<AdministrativeUnitModel>>{
+      for (final MapEntry(:key, :value)
+          in (json['wards'] as Map<String, dynamic>).entries)
+        key: [
+          for (final row in value as List)
+            AdministrativeUnitModel(
+              code: row[0] as String,
+              name: row[1] as String,
+              shortName: row[2] as String,
+              level: AdministrativeLevel.ward,
+              parentCode: key,
+              center: GeoPoint(
+                (row[3] as num).toDouble(),
+                (row[4] as num).toDouble(),
+              ),
+            ),
+        ],
+    };
+    return LocationMockData._(provinces, wards);
+  }
+
+  AdministrativeUnitModel? provinceOf(String code) {
+    for (final province in provinces) {
+      if (province.code == code) return province;
+    }
+    return null;
+  }
+
+  /// Tâm tỉnh/thành: tâm phường có mã nhỏ nhất (phường trung tâm, VD Phường
+  /// Ba Đình của Hà Nội), giống backend
+  GeoPoint? provinceCenter(String code) =>
+      wardsByProvince[code]?.firstOrNull?.center;
+
+  Iterable<AdministrativeUnitModel> get allWards =>
+      wardsByProvince.values.expand((wards) => wards);
 }

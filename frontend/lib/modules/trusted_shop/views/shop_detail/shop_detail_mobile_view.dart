@@ -268,8 +268,7 @@ class _ShopDetailMobileViewState extends State<ShopDetailMobileView> {
           child: TrustedShopSectionHeader(
             title: l10n.shopDetailEventsTitle,
             subtitle: l10n.shopDetailEventsSubtitle,
-            icon: AppIcons.event,
-            iconColor: ShopLogo.accentOf(shop.shop),
+            accent: ShopLogo.accentOf(shop.shop),
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 12)),
@@ -288,8 +287,7 @@ class _ShopDetailMobileViewState extends State<ShopDetailMobileView> {
           subtitle: shop == null
               ? null
               : l10n.shopListingCount(shop.shop.listingCount),
-          icon: AppIcons.listings,
-          iconColor: shop == null
+          accent: shop == null
               ? AppColors.primaryDark
               : ShopLogo.accentOf(shop.shop),
         ),

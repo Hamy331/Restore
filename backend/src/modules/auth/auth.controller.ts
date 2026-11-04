@@ -1,123 +1,55 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthRequest } from '../../middlewares/auth.middleware.js';
+import { getInput, ValidatedInput } from '../../middlewares/validate.middleware.js';
+import type { EmailInput, LoginInput, OtpInput, RefreshTokenInput, RegisterInput, ResetPasswordInput } from './auth.dto.js';
 import * as authService from './auth.service.js';
-import {
-  parseEmail,
-  parseFullName,
-  parseLoginPassword,
-  parseOtp,
-  parsePassword,
-  parseToken,
-  parseUsername,
-} from './auth.validation.js';
 
-export const getMe = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  try {
-    const user = await authService.getCurrentUser(req.user!.userId);
-    return res.status(200).json({ success: true, data: user });
-  } catch (error) {
-    next(error);
-  }
-};
+/* Phản hồi giữ đúng như API cũ: một số API có thêm `message`, một số trải kết quả service ra ngoài `data`. */
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.loginUser(
-      parseEmail(req.body?.email),
-      parseLoginPassword(req.body?.password),
-    );
-    return res.status(200).json({ success: true, message: 'Đăng nhập thành công.', data: result });
-  } catch (error) {
-    next(error);
-  }
-};
+const bodyOf = <B>(res: Response) => getInput<ValidatedInput<undefined, undefined, B>>(res).body;
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.registerUser({
-      email: parseEmail(req.body?.email),
-      password: parsePassword(req.body?.password),
-      username: parseUsername(req.body?.username),
-      fullName: parseFullName(req.body?.fullName),
-    });
-    return res.status(201).json({
-      success: true,
-      message: 'Đăng ký thành công. Vui lòng xác minh email.',
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export async function getMe(req: AuthRequest, res: Response) {
+  res.status(200).json({ success: true, data: await authService.getCurrentUser(req.user!.userId) });
+}
 
-export const resendRegistrationOtp = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.resendRegistrationOtp(parseEmail(req.body?.email));
-    return res.status(200).json({ success: true, ...result });
-  } catch (error) {
-    next(error);
-  }
-};
+export async function login(_req: Request, res: Response) {
+  const { email, password } = bodyOf<LoginInput>(res);
+  res.status(200).json({ success: true, message: 'Đăng nhập thành công.', data: await authService.loginUser(email, password) });
+}
 
-export const verifyRegistrationOtp = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.verifyRegistrationOtp(
-      parseEmail(req.body?.email),
-      parseOtp(req.body?.otp),
-    );
-    return res.status(200).json({ success: true, message: 'Email đã được xác minh.', data: result });
-  } catch (error) {
-    next(error);
-  }
-};
+export async function register(_req: Request, res: Response) {
+  const data = await authService.registerUser(bodyOf<RegisterInput>(res));
+  res.status(201).json({ success: true, message: 'Đăng ký thành công. Vui lòng xác minh email.', data });
+}
 
-export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.forgotPassword(parseEmail(req.body?.email));
-    return res.status(200).json({ success: true, ...result });
-  } catch (error) {
-    next(error);
-  }
-};
+export async function resendRegistrationOtp(_req: Request, res: Response) {
+  res.status(200).json({ success: true, ...await authService.resendRegistrationOtp(bodyOf<EmailInput>(res).email) });
+}
 
-export const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.verifyPasswordResetOtp(
-      parseEmail(req.body?.email),
-      parseOtp(req.body?.otp),
-    );
-    return res.status(200).json({ success: true, data: result });
-  } catch (error) {
-    next(error);
-  }
-};
+export async function verifyRegistrationOtp(_req: Request, res: Response) {
+  const { email, otp } = bodyOf<OtpInput>(res);
+  res.status(200).json({ success: true, message: 'Email đã được xác minh.', data: await authService.verifyRegistrationOtp(email, otp) });
+}
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.resetPassword(
-      parseToken(req.body?.resetToken, 'resetToken'),
-      parsePassword(req.body?.newPassword, 'newPassword'),
-    );
-    return res.status(200).json({ success: true, ...result });
-  } catch (error) {
-    next(error);
-  }
-};
+export async function forgotPassword(_req: Request, res: Response) {
+  res.status(200).json({ success: true, ...await authService.forgotPassword(bodyOf<EmailInput>(res).email) });
+}
 
-export const refresh = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.refreshSession(parseToken(req.body?.refreshToken, 'refreshToken'));
-    return res.status(200).json({ success: true, data: result });
-  } catch (error) {
-    next(error);
-  }
-};
+export async function verifyOtp(_req: Request, res: Response) {
+  const { email, otp } = bodyOf<OtpInput>(res);
+  res.status(200).json({ success: true, data: await authService.verifyPasswordResetOtp(email, otp) });
+}
 
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    await authService.logout(parseToken(req.body?.refreshToken, 'refreshToken'));
-    return res.status(200).json({ success: true, message: 'Đăng xuất thành công.' });
-  } catch (error) {
-    next(error);
-  }
-};
+export async function resetPassword(_req: Request, res: Response) {
+  const { resetToken, newPassword } = bodyOf<ResetPasswordInput>(res);
+  res.status(200).json({ success: true, ...await authService.resetPassword(resetToken, newPassword) });
+}
+
+export async function refresh(_req: Request, res: Response) {
+  res.status(200).json({ success: true, data: await authService.refreshSession(bodyOf<RefreshTokenInput>(res).refreshToken) });
+}
+
+export async function logout(_req: Request, res: Response) {
+  await authService.logout(bodyOf<RefreshTokenInput>(res).refreshToken);
+  res.status(200).json({ success: true, message: 'Đăng xuất thành công.' });
+}

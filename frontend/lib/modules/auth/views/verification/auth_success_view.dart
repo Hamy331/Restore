@@ -65,7 +65,8 @@ class AuthSuccessView extends StatelessWidget {
             label: actionLabel,
             onPressed: () {
               if (authenticateOnContinue) {
-                context.read<AuthBloc>().add(const LoggedIn(role: 'USER'));
+                // Token đã lưu lúc xác minh OTP: nạp lại phiên, router tự sang /home
+                context.read<AuthBloc>().add(const AuthCheckRequested());
               } else {
                 context.go(destination);
               }

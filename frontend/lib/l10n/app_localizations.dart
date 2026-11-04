@@ -278,23 +278,11 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsTitle;
 
-  /// No description provided for @profileName.
+  /// No description provided for @memberSince.
   ///
   /// In en, this message translates to:
-  /// **'Ngo Tuong Phat'**
-  String get profileName;
-
-  /// No description provided for @memberSince2022.
-  ///
-  /// In en, this message translates to:
-  /// **'Member since 2022'**
-  String get memberSince2022;
-
-  /// No description provided for @maskedPhoneArea.
-  ///
-  /// In en, this message translates to:
-  /// **'090 ••• 1234 · District 1, HCMC'**
-  String get maskedPhoneArea;
+  /// **'Member since {year}'**
+  String memberSince(String year);
 
   /// No description provided for @editProfile.
   ///
@@ -2426,6 +2414,12 @@ abstract class AppLocalizations {
   /// **'Optional, never shown publicly'**
   String get streetAddressHelper;
 
+  /// No description provided for @streetSuggestionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested addresses'**
+  String get streetSuggestionsTitle;
+
   /// No description provided for @addressPrivacyNote.
   ///
   /// In en, this message translates to:
@@ -2545,6 +2539,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change area'**
   String get homeChangeArea;
+
+  /// No description provided for @homeAreaLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Locating...'**
+  String get homeAreaLocating;
 
   /// No description provided for @homeForYouTitle.
   ///
@@ -4381,6 +4381,744 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check your connection and try again.'**
   String get shopDetailLoadErrorBody;
+
+  /// No description provided for @postingQuotaPersonalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal account'**
+  String get postingQuotaPersonalTitle;
+
+  /// No description provided for @postingQuotaBannerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Free listings per category: {min} to {max} active at a time. Each listing stays up for {days} days.'**
+  String postingQuotaBannerMessage(int min, int max, int days);
+
+  /// No description provided for @postingRulesAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View rules'**
+  String get postingRulesAction;
+
+  /// No description provided for @postingQuotaUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'{used}/{limit} used'**
+  String postingQuotaUsage(int used, int limit);
+
+  /// No description provided for @postingQuotaFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit of {limit} reached'**
+  String postingQuotaFull(int limit);
+
+  /// No description provided for @postingQuotaLastSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'1 slot left'**
+  String get postingQuotaLastSlot;
+
+  /// No description provided for @postingQuotaRemainingInCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining}/{limit} slots left in this category'**
+  String postingQuotaRemainingInCategory(int remaining, int limit);
+
+  /// No description provided for @postingLimitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Category limit reached'**
+  String get postingLimitTitle;
+
+  /// No description provided for @postingLimitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal accounts can have up to {limit} active listings in {category}. Free up a slot to post a new one.'**
+  String postingLimitMessage(int limit, String category);
+
+  /// No description provided for @postingLimitWaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to free a slot'**
+  String get postingLimitWaysTitle;
+
+  /// No description provided for @postingLimitTipSold.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark items you have sold as Sold'**
+  String get postingLimitTipSold;
+
+  /// No description provided for @postingLimitTipHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide listings you no longer want to sell'**
+  String get postingLimitTipHide;
+
+  /// No description provided for @postingLimitTipExpire.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings expire after {days} days and free their slot'**
+  String postingLimitTipExpire(int days);
+
+  /// No description provided for @manageMyListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage my listings'**
+  String get manageMyListings;
+
+  /// No description provided for @chooseAnotherCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Other category'**
+  String get chooseAnotherCategory;
+
+  /// No description provided for @postingRulesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting rules'**
+  String get postingRulesTitle;
+
+  /// No description provided for @postingRulesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'For personal sellers'**
+  String get postingRulesSubtitle;
+
+  /// No description provided for @postingRuleLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'{min} to {max} free active listings per category, depending on the category. High-value items such as phones and vehicles get 1.'**
+  String postingRuleLimit(int min, int max);
+
+  /// No description provided for @postingRuleCounted.
+  ///
+  /// In en, this message translates to:
+  /// **'Only active and pending listings count. Sold, hidden or expired listings do not.'**
+  String get postingRuleCounted;
+
+  /// No description provided for @postingRuleDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Each listing is shown for {days} days after it is approved.'**
+  String postingRuleDuration(int days);
+
+  /// No description provided for @postingRuleFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting is free. Every listing is reviewed before it goes live.'**
+  String get postingRuleFree;
+
+  /// No description provided for @postingRulePersonalUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal accounts are for selling your own used items. If you post many items regularly like a business, ReStore may move you to a business account.'**
+  String get postingRulePersonalUse;
+
+  /// No description provided for @postingRuleBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Business plan (coming soon): up to {limit} listings per category. Shop plan: your own shop page.'**
+  String postingRuleBusiness(int limit);
+
+  /// No description provided for @homeGreetingPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi pro seller {name} 👋'**
+  String homeGreetingPro(String name);
+
+  /// No description provided for @homeGreetingShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi shop owner {name} 👋'**
+  String homeGreetingShop(String name);
+
+  /// No description provided for @planPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get planPersonal;
+
+  /// No description provided for @planPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro seller'**
+  String get planPro;
+
+  /// No description provided for @planShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get planShop;
+
+  /// No description provided for @devPlanTag.
+  ///
+  /// In en, this message translates to:
+  /// **'TEST'**
+  String get devPlanTag;
+
+  /// No description provided for @devPlanSwitchTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch plan to test the UI (in-app only)'**
+  String get devPlanSwitchTooltip;
+
+  /// No description provided for @quickMenuOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open quick menu'**
+  String get quickMenuOpen;
+
+  /// No description provided for @quickMenuClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close quick menu'**
+  String get quickMenuClose;
+
+  /// No description provided for @quickActionPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get quickActionPost;
+
+  /// No description provided for @quickActionPoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop poster'**
+  String get quickActionPoster;
+
+  /// No description provided for @quickActionBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost'**
+  String get quickActionBoost;
+
+  /// No description provided for @quickActionStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get quickActionStats;
+
+  /// No description provided for @quickActionShopPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop page'**
+  String get quickActionShopPage;
+
+  /// No description provided for @trustedShopsFamousEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Official'**
+  String get trustedShopsFamousEyebrow;
+
+  /// No description provided for @trustedShopsDealsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'On sale'**
+  String get trustedShopsDealsEyebrow;
+
+  /// No description provided for @trustedShopsNewReleasesEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just launched'**
+  String get trustedShopsNewReleasesEyebrow;
+
+  /// No description provided for @trustedShopsNewShopsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Newly verified'**
+  String get trustedShopsNewShopsEyebrow;
+
+  /// No description provided for @trustedShopsShowcaseEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'By brand'**
+  String get trustedShopsShowcaseEyebrow;
+
+  /// No description provided for @trustedShopsAllProductsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get trustedShopsAllProductsEyebrow;
+
+  /// No description provided for @feedsComposePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s on your mind? Share an item or ask the community'**
+  String get feedsComposePrompt;
+
+  /// No description provided for @postAudienceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see this post?'**
+  String get postAudienceTitle;
+
+  /// No description provided for @postAudienceEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get postAudienceEveryone;
+
+  /// No description provided for @postAudienceEveryoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone on ReStore can see it'**
+  String get postAudienceEveryoneDesc;
+
+  /// No description provided for @postAudienceFollowers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get postAudienceFollowers;
+
+  /// No description provided for @postAudienceFollowersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only people who follow you'**
+  String get postAudienceFollowersDesc;
+
+  /// No description provided for @postAudienceOnlyMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Only me'**
+  String get postAudienceOnlyMe;
+
+  /// No description provided for @postAudienceOnlyMeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved privately on your page'**
+  String get postAudienceOnlyMeDesc;
+
+  /// No description provided for @postComposerSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get postComposerSubmit;
+
+  /// No description provided for @postComposerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share an item, a buying tip or ask the community...'**
+  String get postComposerHint;
+
+  /// No description provided for @postComposerRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get postComposerRemovePhoto;
+
+  /// No description provided for @postComposerCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover'**
+  String get postComposerCover;
+
+  /// No description provided for @postComposerListingTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing'**
+  String get postComposerListingTag;
+
+  /// No description provided for @postComposerRemoveAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get postComposerRemoveAttachment;
+
+  /// No description provided for @postComposerWithOne.
+  ///
+  /// In en, this message translates to:
+  /// **'With {name}'**
+  String postComposerWithOne(String name);
+
+  /// No description provided for @postComposerWithMany.
+  ///
+  /// In en, this message translates to:
+  /// **'With {name} and {count} others'**
+  String postComposerWithMany(String name, int count);
+
+  /// No description provided for @postComposerBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Background colour'**
+  String get postComposerBackground;
+
+  /// No description provided for @postComposerBackgroundDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Background colours are for short posts without photos'**
+  String get postComposerBackgroundDisabled;
+
+  /// No description provided for @postComposerNoBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'No background'**
+  String get postComposerNoBackground;
+
+  /// No description provided for @postComposerAttachListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach listing'**
+  String get postComposerAttachListing;
+
+  /// No description provided for @postComposerAttachListingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show one of your listings in this post'**
+  String get postComposerAttachListingHint;
+
+  /// No description provided for @postComposerTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic'**
+  String get postComposerTopic;
+
+  /// No description provided for @postComposerTopicHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Helps the right people find your post'**
+  String get postComposerTopicHint;
+
+  /// No description provided for @postComposerTagFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag people'**
+  String get postComposerTagFriends;
+
+  /// No description provided for @postComposerTagFriendsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'People you follow'**
+  String get postComposerTagFriendsHint;
+
+  /// No description provided for @postComposerTaggedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tagged'**
+  String postComposerTaggedCount(int count);
+
+  /// No description provided for @postComposerEmoji.
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get postComposerEmoji;
+
+  /// No description provided for @postComposerPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get postComposerPhoto;
+
+  /// No description provided for @postComposerVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get postComposerVideo;
+
+  /// No description provided for @postComposerLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get postComposerLink;
+
+  /// No description provided for @postComposerLinkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a web link to share'**
+  String get postComposerLinkHint;
+
+  /// No description provided for @postComposerLinkInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This link doesn\'t look right'**
+  String get postComposerLinkInvalid;
+
+  /// No description provided for @postComposerLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get postComposerLocation;
+
+  /// No description provided for @postComposerTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get postComposerTakePhoto;
+
+  /// No description provided for @postComposerOpenGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get postComposerOpenGallery;
+
+  /// No description provided for @postComposerDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get postComposerDone;
+
+  /// No description provided for @postComposerLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load post options, trying again'**
+  String get postComposerLoadError;
+
+  /// No description provided for @postComposerDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard this post?'**
+  String get postComposerDiscardTitle;
+
+  /// No description provided for @postComposerDiscardMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'ve written won\'t be saved'**
+  String get postComposerDiscardMessage;
+
+  /// No description provided for @postComposerKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep writing'**
+  String get postComposerKeepEditing;
+
+  /// No description provided for @postComposerDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard post'**
+  String get postComposerDiscard;
+
+  /// No description provided for @postComposerPhotoLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add up to {count} photos'**
+  String postComposerPhotoLimit(int count);
+
+  /// No description provided for @postComposerPhotoPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore needs photo access. Please allow it in Settings.'**
+  String get postComposerPhotoPermission;
+
+  /// No description provided for @postComposerNoListings.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no active listings to attach yet'**
+  String get postComposerNoListings;
+
+  /// No description provided for @postComposerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t publish your post, please try again'**
+  String get postComposerError;
+
+  /// No description provided for @postComposerPosted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your post is live on the feed'**
+  String get postComposerPosted;
+
+  /// No description provided for @authSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again.'**
+  String get authSessionExpired;
+
+  /// No description provided for @draftsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts'**
+  String get draftsTitle;
+
+  /// No description provided for @draftsBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue a draft'**
+  String get draftsBannerTitle;
+
+  /// No description provided for @draftsBannerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpublished listings: {count}'**
+  String draftsBannerMessage(String count);
+
+  /// No description provided for @draftsBannerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get draftsBannerAction;
+
+  /// No description provided for @draftUntitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get draftUntitled;
+
+  /// No description provided for @draftNoCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'No category yet'**
+  String get draftNoCategory;
+
+  /// No description provided for @draftEditedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited {time}'**
+  String draftEditedAt(String time);
+
+  /// No description provided for @draftPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo} other{{count} photos}}'**
+  String draftPhotoCount(int count);
+
+  /// No description provided for @draftsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No drafts yet'**
+  String get draftsEmptyTitle;
+
+  /// No description provided for @draftsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'While posting, tap Save draft to finish it later.'**
+  String get draftsEmptyMessage;
+
+  /// No description provided for @draftsLoadFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load drafts'**
+  String get draftsLoadFailedTitle;
+
+  /// No description provided for @draftsLoadFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get draftsLoadFailedMessage;
+
+  /// No description provided for @draftOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this draft. It may have been published or deleted'**
+  String get draftOpenFailed;
+
+  /// No description provided for @draftDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete draft?'**
+  String get draftDeleteTitle;
+
+  /// No description provided for @draftDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The draft and its uploaded photos will be deleted permanently.'**
+  String get draftDeleteMessage;
+
+  /// No description provided for @draftDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete draft'**
+  String get draftDeleteConfirm;
+
+  /// No description provided for @draftDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft deleted'**
+  String get draftDeleted;
+
+  /// No description provided for @draftDeletedNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted draft “{title}”'**
+  String draftDeletedNamed(String title);
+
+  /// No description provided for @draftDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete the draft, please try again'**
+  String get draftDeleteFailed;
+
+  /// No description provided for @leaveDraftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save before leaving?'**
+  String get leaveDraftTitle;
+
+  /// No description provided for @leaveDraftMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Save a draft to finish it later.'**
+  String get leaveDraftMessage;
+
+  /// No description provided for @leaveDraftSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft and leave'**
+  String get leaveDraftSave;
+
+  /// No description provided for @leaveDraftDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave without saving'**
+  String get leaveDraftDiscard;
+
+  /// No description provided for @draftLimitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{limit} drafts reached'**
+  String draftLimitTitle(int limit);
+
+  /// No description provided for @draftLimitTitleUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft limit reached'**
+  String get draftLimitTitleUnknown;
+
+  /// No description provided for @draftLimitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account can keep up to {limit} drafts. Publish or delete an old draft to save this one.'**
+  String draftLimitMessage(int limit);
+
+  /// No description provided for @draftLimitMessageUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has reached its draft limit. Publish or delete an old draft to save this one.'**
+  String get draftLimitMessageUnknown;
+
+  /// No description provided for @draftLimitViewDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'View drafts'**
+  String get draftLimitViewDrafts;
+
+  /// No description provided for @draftsQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'{used}/{limit} drafts'**
+  String draftsQuota(int used, int limit);
+
+  /// No description provided for @listingImageTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'A photo is too large (max 5 MB). Remove it or pick another one.'**
+  String get listingImageTooLarge;
+
+  /// No description provided for @listingImageUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'A photo has an unsupported format (JPEG, PNG or WebP only). Remove it or pick another one.'**
+  String get listingImageUnsupported;
+
+  /// No description provided for @listingImageMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo is no longer on this device and was removed} other{{count} photos are no longer on this device and were removed}}. Pick them again, then save.'**
+  String listingImageMissing(int count);
+
+  /// No description provided for @listingSaveNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the server. What was saved is kept, please try again.'**
+  String get listingSaveNetworkError;
 }
 
 class _AppLocalizationsDelegate

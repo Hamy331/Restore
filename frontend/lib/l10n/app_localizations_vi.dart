@@ -105,13 +105,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsTitle => 'Cài đặt';
 
   @override
-  String get profileName => 'Ngô Tường Phát';
-
-  @override
-  String get memberSince2022 => 'Thành viên từ 2022';
-
-  @override
-  String get maskedPhoneArea => '090 ••• 1234 · Quận 1, TP.HCM';
+  String memberSince(String year) {
+    return 'Thành viên từ $year';
+  }
 
   @override
   String get editProfile => 'Chỉnh sửa hồ sơ';
@@ -1263,6 +1259,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get streetAddressHelper => 'Không bắt buộc, không hiển thị công khai';
 
   @override
+  String get streetSuggestionsTitle => 'Gợi ý địa chỉ';
+
+  @override
   String get addressPrivacyNote =>
       'Người mua chỉ thấy phường/xã và tỉnh/thành. Vị trí được dùng để gợi ý tin đăng gần bạn.';
 
@@ -1327,6 +1326,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get homeChangeArea => 'Đổi khu vực';
+
+  @override
+  String get homeAreaLocating => 'Đang định vị...';
 
   @override
   String get homeForYouTitle => 'Dành cho bạn';
@@ -2385,4 +2387,440 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get shopDetailLoadErrorBody =>
       'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get postingQuotaPersonalTitle => 'Tài khoản cá nhân';
+
+  @override
+  String postingQuotaBannerMessage(int min, int max, int days) {
+    return 'Mỗi chuyên mục được $min đến $max tin miễn phí đang hiển thị. Mỗi tin hiển thị $days ngày.';
+  }
+
+  @override
+  String get postingRulesAction => 'Xem quy định';
+
+  @override
+  String postingQuotaUsage(int used, int limit) {
+    return 'Đã đăng $used/$limit tin';
+  }
+
+  @override
+  String postingQuotaFull(int limit) {
+    return 'Đã đủ $limit tin';
+  }
+
+  @override
+  String get postingQuotaLastSlot => 'Còn 1 lượt đăng';
+
+  @override
+  String postingQuotaRemainingInCategory(int remaining, int limit) {
+    return 'Còn $remaining/$limit lượt đăng trong chuyên mục này';
+  }
+
+  @override
+  String get postingLimitTitle => 'Chuyên mục đã đủ số tin';
+
+  @override
+  String postingLimitMessage(int limit, String category) {
+    return 'Tài khoản cá nhân được đăng tối đa $limit tin đang hiển thị trong mục $category. Hãy giải phóng một suất để đăng tin mới.';
+  }
+
+  @override
+  String get postingLimitWaysTitle => 'Cách giải phóng suất đăng';
+
+  @override
+  String get postingLimitTipSold => 'Đánh dấu “Đã bán” cho món đã bán xong';
+
+  @override
+  String get postingLimitTipHide => 'Ẩn tin bạn không còn muốn bán';
+
+  @override
+  String postingLimitTipExpire(int days) {
+    return 'Tin hết hạn sau $days ngày cũng được trả lại suất';
+  }
+
+  @override
+  String get manageMyListings => 'Quản lý tin đăng';
+
+  @override
+  String get chooseAnotherCategory => 'Chọn mục khác';
+
+  @override
+  String get postingRulesTitle => 'Quy định đăng tin';
+
+  @override
+  String get postingRulesSubtitle => 'Áp dụng cho người bán cá nhân';
+
+  @override
+  String postingRuleLimit(int min, int max) {
+    return 'Mỗi chuyên mục được $min đến $max tin miễn phí đang hiển thị. Món giá trị cao như điện thoại, xe cộ chỉ được 1 tin.';
+  }
+
+  @override
+  String get postingRuleCounted =>
+      'Chỉ tính tin đang hiển thị và đang chờ duyệt. Tin đã bán, đã ẩn hoặc hết hạn không bị tính.';
+
+  @override
+  String postingRuleDuration(int days) {
+    return 'Mỗi tin hiển thị $days ngày kể từ khi được duyệt.';
+  }
+
+  @override
+  String get postingRuleFree =>
+      'Đăng tin miễn phí. Mỗi tin được kiểm duyệt trước khi hiển thị.';
+
+  @override
+  String get postingRulePersonalUse =>
+      'Tài khoản cá nhân dành cho việc bán đồ của chính bạn. Nếu đăng bán nhiều và thường xuyên như kinh doanh, ReStore có thể chuyển bạn sang tài khoản bán chuyên.';
+
+  @override
+  String postingRuleBusiness(int limit) {
+    return 'Gói Bán chuyên (sắp ra mắt): tối đa $limit tin mỗi chuyên mục. Gói Cửa hàng có thêm trang cửa hàng riêng.';
+  }
+
+  @override
+  String homeGreetingPro(String name) {
+    return 'Chào nhà bán chuyên $name 👋';
+  }
+
+  @override
+  String homeGreetingShop(String name) {
+    return 'Chào chủ shop $name 👋';
+  }
+
+  @override
+  String get planPersonal => 'Cá nhân';
+
+  @override
+  String get planPro => 'Bán chuyên';
+
+  @override
+  String get planShop => 'Cửa hàng';
+
+  @override
+  String get devPlanTag => 'TEST';
+
+  @override
+  String get devPlanSwitchTooltip =>
+      'Đổi gói để test giao diện (chỉ đổi trong app)';
+
+  @override
+  String get quickMenuOpen => 'Mở menu nhanh';
+
+  @override
+  String get quickMenuClose => 'Đóng menu nhanh';
+
+  @override
+  String get quickActionPost => 'Đăng tin';
+
+  @override
+  String get quickActionPoster => 'Poster shop';
+
+  @override
+  String get quickActionBoost => 'Đẩy tin';
+
+  @override
+  String get quickActionStats => 'Thống kê';
+
+  @override
+  String get quickActionShopPage => 'Trang shop';
+
+  @override
+  String get trustedShopsFamousEyebrow => 'Chính hãng';
+
+  @override
+  String get trustedShopsDealsEyebrow => 'Đang giảm giá';
+
+  @override
+  String get trustedShopsNewReleasesEyebrow => 'Vừa ra mắt';
+
+  @override
+  String get trustedShopsNewShopsEyebrow => 'Mới xác minh';
+
+  @override
+  String get trustedShopsShowcaseEyebrow => 'Theo nhãn hàng';
+
+  @override
+  String get trustedShopsAllProductsEyebrow => 'Khám phá';
+
+  @override
+  String get feedsComposePrompt =>
+      'Bạn đang nghĩ gì? Khoe món đồ hay hỏi cộng đồng';
+
+  @override
+  String get postAudienceTitle => 'Ai được xem bài này?';
+
+  @override
+  String get postAudienceEveryone => 'Mọi người';
+
+  @override
+  String get postAudienceEveryoneDesc => 'Ai trên ReStore cũng xem được';
+
+  @override
+  String get postAudienceFollowers => 'Người theo dõi';
+
+  @override
+  String get postAudienceFollowersDesc => 'Chỉ người đang theo dõi bạn';
+
+  @override
+  String get postAudienceOnlyMe => 'Chỉ mình tôi';
+
+  @override
+  String get postAudienceOnlyMeDesc => 'Lưu riêng trên trang của bạn';
+
+  @override
+  String get postComposerSubmit => 'Đăng';
+
+  @override
+  String get postComposerHint =>
+      'Khoe món đồ, chia sẻ kinh nghiệm hay hỏi cộng đồng...';
+
+  @override
+  String get postComposerRemovePhoto => 'Bỏ ảnh';
+
+  @override
+  String get postComposerCover => 'Ảnh bìa';
+
+  @override
+  String get postComposerListingTag => 'Tin đăng của bạn';
+
+  @override
+  String get postComposerRemoveAttachment => 'Bỏ';
+
+  @override
+  String postComposerWithOne(String name) {
+    return 'Cùng $name';
+  }
+
+  @override
+  String postComposerWithMany(String name, int count) {
+    return 'Cùng $name và $count người khác';
+  }
+
+  @override
+  String get postComposerBackground => 'Nền màu';
+
+  @override
+  String get postComposerBackgroundDisabled =>
+      'Nền màu chỉ dùng cho bài ngắn, chưa có ảnh';
+
+  @override
+  String get postComposerNoBackground => 'Không dùng nền';
+
+  @override
+  String get postComposerAttachListing => 'Gắn tin đăng';
+
+  @override
+  String get postComposerAttachListingHint =>
+      'Hiện một tin đăng của bạn trong bài viết';
+
+  @override
+  String get postComposerTopic => 'Chủ đề';
+
+  @override
+  String get postComposerTopicHint => 'Giúp đúng người tìm thấy bài của bạn';
+
+  @override
+  String get postComposerTagFriends => 'Gắn thẻ';
+
+  @override
+  String get postComposerTagFriendsHint => 'Những người bạn đang theo dõi';
+
+  @override
+  String postComposerTaggedCount(int count) {
+    return 'Đã gắn $count người';
+  }
+
+  @override
+  String get postComposerEmoji => 'Biểu cảm';
+
+  @override
+  String get postComposerPhoto => 'Ảnh';
+
+  @override
+  String get postComposerVideo => 'Video';
+
+  @override
+  String get postComposerLink => 'Liên kết';
+
+  @override
+  String get postComposerLinkHint => 'Dán đường dẫn trang web muốn chia sẻ';
+
+  @override
+  String get postComposerLinkInvalid => 'Liên kết chưa đúng';
+
+  @override
+  String get postComposerLocation => 'Vị trí';
+
+  @override
+  String get postComposerTakePhoto => 'Chụp ảnh';
+
+  @override
+  String get postComposerOpenGallery => 'Thư viện';
+
+  @override
+  String get postComposerDone => 'Xong';
+
+  @override
+  String get postComposerLoadError =>
+      'Chưa tải được tuỳ chọn bài viết, đang thử lại';
+
+  @override
+  String get postComposerDiscardTitle => 'Bỏ bài viết này?';
+
+  @override
+  String get postComposerDiscardMessage =>
+      'Nội dung bạn vừa viết sẽ không được lưu';
+
+  @override
+  String get postComposerKeepEditing => 'Tiếp tục viết';
+
+  @override
+  String get postComposerDiscard => 'Bỏ bài viết';
+
+  @override
+  String postComposerPhotoLimit(int count) {
+    return 'Mỗi bài tối đa $count ảnh';
+  }
+
+  @override
+  String get postComposerPhotoPermission =>
+      'ReStore cần quyền truy cập ảnh. Vui lòng bật trong Cài đặt.';
+
+  @override
+  String get postComposerNoListings =>
+      'Bạn chưa có tin đăng nào đang hiển thị để gắn';
+
+  @override
+  String get postComposerError => 'Chưa đăng được bài, vui lòng thử lại';
+
+  @override
+  String get postComposerPosted => 'Bài viết đã lên Bảng tin';
+
+  @override
+  String get authSessionExpired =>
+      'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+
+  @override
+  String get draftsTitle => 'Tin nháp';
+
+  @override
+  String get draftsBannerTitle => 'Soạn tiếp tin nháp';
+
+  @override
+  String draftsBannerMessage(String count) {
+    return 'Bạn có $count tin chưa đăng';
+  }
+
+  @override
+  String get draftsBannerAction => 'Xem';
+
+  @override
+  String get draftUntitled => 'Chưa có tiêu đề';
+
+  @override
+  String get draftNoCategory => 'Chưa chọn danh mục';
+
+  @override
+  String draftEditedAt(String time) {
+    return 'Sửa lúc $time';
+  }
+
+  @override
+  String draftPhotoCount(int count) {
+    return '$count ảnh';
+  }
+
+  @override
+  String get draftsEmptyTitle => 'Chưa có tin nháp';
+
+  @override
+  String get draftsEmptyMessage =>
+      'Khi đăng tin, bấm Lưu nháp để soạn tiếp lúc khác.';
+
+  @override
+  String get draftsLoadFailedTitle => 'Không tải được tin nháp';
+
+  @override
+  String get draftsLoadFailedMessage => 'Kiểm tra kết nối mạng rồi thử lại.';
+
+  @override
+  String get draftOpenFailed =>
+      'Không mở được tin nháp, có thể tin đã được đăng hoặc đã xóa';
+
+  @override
+  String get draftDeleteTitle => 'Xóa tin nháp?';
+
+  @override
+  String get draftDeleteMessage =>
+      'Tin nháp và ảnh đã tải lên sẽ bị xóa, không khôi phục được.';
+
+  @override
+  String get draftDeleteConfirm => 'Xóa nháp';
+
+  @override
+  String get draftDeleted => 'Đã xóa tin nháp';
+
+  @override
+  String draftDeletedNamed(String title) {
+    return 'Đã xóa tin nháp “$title”';
+  }
+
+  @override
+  String get draftDeleteFailed => 'Xóa tin nháp thất bại, vui lòng thử lại';
+
+  @override
+  String get leaveDraftTitle => 'Lưu tin trước khi thoát?';
+
+  @override
+  String get leaveDraftMessage =>
+      'Nội dung bạn vừa nhập chưa được lưu. Lưu nháp để soạn tiếp lúc khác.';
+
+  @override
+  String get leaveDraftSave => 'Lưu nháp và thoát';
+
+  @override
+  String get leaveDraftDiscard => 'Thoát, không lưu';
+
+  @override
+  String draftLimitTitle(int limit) {
+    return 'Đã đủ $limit tin nháp';
+  }
+
+  @override
+  String get draftLimitTitleUnknown => 'Đã đủ số tin nháp';
+
+  @override
+  String draftLimitMessage(int limit) {
+    return 'Tài khoản của bạn giữ được tối đa $limit tin nháp. Hãy đăng hoặc xóa bớt tin nháp cũ để lưu tin này.';
+  }
+
+  @override
+  String get draftLimitMessageUnknown =>
+      'Tài khoản của bạn đã giữ đủ số tin nháp. Hãy đăng hoặc xóa bớt tin nháp cũ để lưu tin này.';
+
+  @override
+  String get draftLimitViewDrafts => 'Xem tin nháp';
+
+  @override
+  String draftsQuota(int used, int limit) {
+    return 'Đang giữ $used/$limit tin nháp';
+  }
+
+  @override
+  String get listingImageTooLarge =>
+      'Có ảnh quá lớn (tối đa 5 MB). Hãy bỏ ảnh đó hoặc chọn ảnh khác.';
+
+  @override
+  String get listingImageUnsupported =>
+      'Có ảnh không đúng định dạng (chỉ nhận JPEG, PNG, WebP). Hãy bỏ ảnh đó hoặc chọn ảnh khác.';
+
+  @override
+  String listingImageMissing(int count) {
+    return '$count ảnh không còn trên máy nên đã được bỏ ra. Hãy chọn lại ảnh rồi lưu lại.';
+  }
+
+  @override
+  String get listingSaveNetworkError =>
+      'Không kết nối được máy chủ. Phần đã lưu được giữ lại, bạn thử lại nhé.';
 }

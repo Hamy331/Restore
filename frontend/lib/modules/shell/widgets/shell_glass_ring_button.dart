@@ -102,10 +102,26 @@ class _ShellGlassRingButtonState extends State<ShellGlassRingButton> {
                         onTap: widget.onTap,
                         customBorder: const CircleBorder(),
                         child: Center(
-                          child: Icon(
-                            widget.icon,
-                            size: size * 0.44,
-                            color: AppColors.primaryDark,
+                          // Đổi icon (VD đổi gói) thì xoay và phóng nhẹ
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 280),
+                            transitionBuilder: (child, animation) =>
+                                RotationTransition(
+                                  turns: Tween(
+                                    begin: -0.25,
+                                    end: 0.0,
+                                  ).animate(animation),
+                                  child: ScaleTransition(
+                                    scale: animation,
+                                    child: child,
+                                  ),
+                                ),
+                            child: Icon(
+                              widget.icon,
+                              key: ValueKey(widget.icon),
+                              size: size * 0.44,
+                              color: AppColors.primaryDark,
+                            ),
                           ),
                         ),
                       ),

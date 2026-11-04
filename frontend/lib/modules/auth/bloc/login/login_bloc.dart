@@ -2,8 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/auth_repository.dart';
 import 'login_event.dart';
 import 'login_state.dart';
+import 'package:restore/core/blocs/safe_emit.dart';
 
-class LoginBloc extends Bloc<LoginEvent, LoginState> {
+class LoginBloc extends Bloc<LoginEvent, LoginState> with SafeEmit<LoginState> {
   final AuthRepository _authRepository;
 
   LoginBloc(this._authRepository) : super(LoginInitial()) {
@@ -22,12 +23,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(LoginLoading());
 
     try {
-      final user = await _authRepository.loginWithEmailAndPassword(
-        event.email,
-        event.password,
-      );
-
-      emit(LoginSuccess(user['role'] as String? ?? 'USER'));
+      final user = await _authRepository.login(event.email, event.password);
+      emit(LoginSuccess(user));
     } on AuthException catch (e) {
       emit(LoginFailure(e.message, code: e.code));
     } catch (e) {

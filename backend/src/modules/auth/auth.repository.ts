@@ -1,7 +1,7 @@
 import { releaseExpiredSuspensions } from '../../lib/account-status.js';
 import { OtpPurpose, Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
-import { AppError } from '../../errors/app-error.js';
+import { AppError } from '../../common/errors/app-error.js';
 
 const publicUserSelect = {
   id: true,
@@ -23,18 +23,25 @@ export const findUserByEmail = async (email: string) => { const user=await prism
 export const findPublicUserById = (id: string) =>
   prisma.user.findUnique({ where: { id }, select: publicUserSelect });
 
+const authUserSelect = {
+  id: true,
+  email: true,
+  role: true,
+  status: true,
+  authVersion: true,
+  suspendedUntil: true,
+} satisfies Prisma.UserSelect;
+
+/**
+ * Người dùng cho middleware xác thực (chạy ở mọi request có token).
+ * Chỉ mở transaction gỡ đình chỉ khi tài khoản thật sự đang bị đình chỉ và đã hết hạn,
+ * để request thường chỉ tốn một câu SELECT (pool Supabase rất ít kết nối).
+ */
 export const findAuthUserById = async (id: string) => {
+  const user = await prisma.user.findUnique({ where: { id }, select: authUserSelect });
+  if (user?.status !== 'SUSPENDED' || !user.suspendedUntil || user.suspendedUntil > new Date()) return user;
   await releaseExpiredSuspensions(id);
-  return prisma.user.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      email: true,
-      role: true,
-      status: true,
-      authVersion: true,
-    },
-  });
+  return prisma.user.findUnique({ where: { id }, select: authUserSelect });
 };
 
 export const findUserByUsername = (username: string) =>
