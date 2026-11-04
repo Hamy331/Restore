@@ -49,3 +49,27 @@ test('following feed is constrained to the authenticated follower',async()=>{
  const {followingFilter}=await import('./feed.route.js');
  assert.deepEqual(followingFilter('current-user'),{author:{status:'ACTIVE',followers:{some:{followerId:'current-user'}}}});
 });
+
+test('only the author can delete a post',async()=>{
+ const {prisma}=await import('../../lib/prisma.js');
+ const postId='12345678-1234-1234-1234-123456789012';
+ const findFirst=prisma.feedPost.findFirst,remove=prisma.feedPost.delete;let deleted=0;
+ prisma.feedPost.findFirst=(async()=>({id:postId,authorId:'author'})) as never;
+ prisma.feedPost.delete=(async()=>{deleted++;}) as never;
+ const app=express();app.use((req,_res,next)=>{(req as never as {user:object}).user={userId:req.headers['x-user'],role:'USER'};next();});
+ const route=(feedRouter.stack as {route?:{path:string;methods:Record<string,boolean>;stack:{handle:express.RequestHandler}[]}}[]).find(l=>l.route?.path==='/feeds/:id'&&l.route.methods.delete)!.route!;
+ app.delete('/feeds/:id',route.stack.at(-1)!.handle);
+ app.use((e:{statusCode?:number;code?:string},_q:express.Request,s:express.Response,_n:express.NextFunction)=>{s.status(e.statusCode??500).json({code:e.code});});
+ const server=http.createServer(app).listen(0);
+ try{
+  const port=(server.address() as {port:number}).port;
+  const call=(user:string)=>fetch(`http://127.0.0.1:${port}/feeds/${postId}`,{method:'DELETE',headers:{'x-user':user}});
+  assert.equal((await call('someone-else')).status,403);assert.equal(deleted,0);
+  assert.equal((await call('author')).status,200);assert.equal(deleted,1);
+ }finally{server.close();prisma.feedPost.findFirst=findFirst;prisma.feedPost.delete=remove;}
+});
+test('follow list pagination rejects invalid pages',async()=>{
+ const {followPage}=await import('../users/users.service.js');
+ assert.equal(followPage(undefined),1);assert.equal(followPage('3'),3);
+ for(const v of ['0','-1','1.5','x'])assert.throws(()=>followPage(v));
+});

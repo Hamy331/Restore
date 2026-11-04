@@ -4,6 +4,10 @@ paths:
       tags: [Feed]
       summary: get /feeds
       security: [{bearerAuth: []}]
+      parameters:
+        - {in: query, name: tab, schema: {type: string, enum: [for-you, following]}}
+        - {in: query, name: authorId, description: Only posts by this author, schema: {type: string, format: uuid}}
+        - {in: query, name: cursor, schema: {type: string}}
       responses:
         '200':
           description: Success envelope with data; see modules/feeds/README.md for payloads
@@ -14,10 +18,27 @@ paths:
       summary: post /feeds
       security: [{bearerAuth: []}]
       responses:
-        '200':
-          description: Success envelope with data; see modules/feeds/README.md for payloads
+        '201':
+          description: The created post, in the same shape as a GET /feeds item
         '401':
           description: Authentication required
+  /api/v1/feeds/{id}:
+    delete:
+      tags: [Feed]
+      summary: Delete a post (author only)
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: '{ deleted: true }'
+        '403':
+          description: Not the post author
+        '404':
+          description: Post unavailable
   /api/v1/feeds/{id}/like:
     put:
       tags: [Feed]

@@ -20,7 +20,9 @@
   "feedEmpty": "Chưa có bài viết",
   "feedFollowingEmpty": "Theo dõi tác giả để xem bài viết của họ tại đây.",
   "feedRetry": "Tải lại bản mẫu",
-  "feedLoadError": "Không tải được bài viết mẫu.",
+  "feedLoadError": "Không tải được bảng tin.",
+  "feedActionError": "Không thực hiện được thao tác. Vui lòng thử lại.",
+  "feedPublishError": "Không đăng được bài viết. Vui lòng thử lại.",
   "feedPhotoError": "Không chọn được ảnh. Vui lòng thử lại.",
   "feedViewListing": "Xem tin",
   "feedSampleListing": "Tin đăng mẫu",
@@ -76,6 +78,133 @@
   "settingsLanguageError": "Không lưu được lựa chọn ngôn ngữ.",
   "feedRequired": "Thêm nội dung hoặc ảnh trước khi đăng.",
   "feedDraftLimit": "Tối đa 2.000 ký tự",
+  "feedDelete": "Xóa bài viết",
+  "feedDeleteConfirm": "Xóa bài viết này? Không thể hoàn tác.",
+  "feedDeleted": "Đã xóa bài viết",
+  "feedReport": "Báo cáo bài viết",
+  "feedReportTitle": "Vì sao bạn báo cáo bài viết này?",
+  "feedReportSpam": "Spam hoặc quảng cáo",
+  "feedReportScam": "Lừa đảo",
+  "feedReportOffensive": "Nội dung phản cảm",
+  "feedReportOther": "Lý do khác",
+  "feedReported": "Đã gửi báo cáo. Cảm ơn bạn!",
+  "feedViewProfile": "Xem trang cá nhân",
+  "feedLoadMoreError": "Không tải thêm được bài viết.",
+  "feedDiscardTitle": "Bỏ bài viết?",
+  "feedDiscardBody": "Nội dung bạn đã nhập sẽ bị mất.",
+  "feedDiscard": "Bỏ",
+  "feedKeepEditing": "Tiếp tục viết",
+  "feedCharCount": "{count}/2.000",
+  "@feedCharCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedCloseImage": "Đóng ảnh",
+  "accEditPage": "Chỉnh sửa trang",
+  "accMenu": "Menu và cài đặt",
+  "accLoadError": "Không tải được hồ sơ. Bấm để thử lại",
+  "accLoading": "Đang tải…",
+  "accFollowing": "Đang theo dõi",
+  "accFollowers": "Người theo dõi",
+  "accListings": "Tin đăng",
+  "accPosts": "Bài viết",
+  "accAddBio": "＋  Thêm giới thiệu",
+  "accRating": "{rating} ({count} đánh giá)",
+  "@accRating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accNoRating": "Chưa có đánh giá",
+  "accTabVisible": "ĐANG HIỂN THỊ ({count})",
+  "@accTabVisible": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accTabPending": "CHỜ DUYỆT ({count})",
+  "@accTabPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accTabHidden": "ĐÃ ẨN ({count})",
+  "@accTabHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accEmptyVisible": "Chưa có tin đang hiển thị",
+  "accEmptyPending": "Chưa có tin chờ duyệt",
+  "accEmptyHidden": "Chưa có tin đã ẩn",
+  "accPostListing": "Đăng tin",
+  "accPosted": "Đăng {time}",
+  "@accPosted": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "accViews": "{count} lượt xem",
+  "@accViews": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accHide": "Ẩn tin",
+  "accShow": "Hiện tin",
+  "accBoost": "Đẩy tin",
+  "accLoadListingsError": "Không tải được tin đăng.",
+  "accUpdateListingError": "Không cập nhật được tin đăng.",
+  "accLogout": "Đăng xuất",
+  "accLogoutConfirm": "Đăng xuất khỏi ReStore?",
+  "accCloseMenu": "Đóng menu",
+  "accEditTitle": "Chỉnh sửa hồ sơ",
+  "accDisplayName": "Tên hiển thị",
+  "accUsername": "Tên người dùng",
+  "accBio": "Giới thiệu",
+  "accSave": "Lưu",
+  "accChangeAvatar": "Đổi ảnh đại diện",
+  "accRemoveAvatar": "Xóa ảnh",
+  "accNameRequired": "Nhập tên hiển thị.",
+  "accUsernameInvalid": "3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.",
+  "accUsernameTaken": "Tên người dùng đã được sử dụng.",
+  "accSaveError": "Không lưu được hồ sơ. Vui lòng thử lại.",
+  "accAvatarUploadError": "Không tải được ảnh lên. Vui lòng thử lại.",
+  "accUserNotFound": "Không tìm thấy người dùng.",
+  "accFollowListEmpty": "Chưa có ai",
+  "accComingSoon": "Tính năng này đang được phát triển",
+  "accActivity": "Hoạt động",
+  "accProPlan": "Gói Pro",
+  "accCreateStore": "Tạo cửa hàng",
+  "accCoins": "Xu ReStore",
+  "accSaved": "Đã lưu",
+  "accSavedSearches": "Tìm kiếm đã lưu",
+  "accRecentlyViewed": "Xem gần đây",
+  "accMyReviews": "Đánh giá từ tôi",
+  "accTransactions": "Lịch sử giao dịch",
+  "accStores": "Cửa hàng / chuyên trang",
+  "accHelp": "Trợ giúp",
+  "accFeedback": "Đóng góp ý kiến",
+  "accEdit": "Chỉnh sửa",
+  "accMoreOptions": "Thêm tùy chọn",
   "appName": "ReStore",
   "loginTitle": "Đăng nhập vào tài khoản",
   "email": "Email",

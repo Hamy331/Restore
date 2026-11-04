@@ -1,8 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/enums/listing_status.dart';
+import '../../../shared/models/paged_result.dart';
 import '../../listings/repositories/listings_repository.dart';
 
-enum AccountListingStatus { visible, pending, hidden }
+enum AccountListingStatus {
+  visible(ListingStatus.available),
+  pending(ListingStatus.pending),
+  hidden(ListingStatus.hidden);
+
+  const AccountListingStatus(this.listingStatus);
+  final ListingStatus listingStatus;
+}
 
 class AccountListing {
   const AccountListing({
@@ -10,9 +18,9 @@ class AccountListing {
     required this.title,
     required this.price,
     required this.category,
-    required this.posted,
     required this.views,
     required this.image,
+    this.createdAt,
     this.status = AccountListingStatus.visible,
   });
 
@@ -20,7 +28,7 @@ class AccountListing {
   final String title;
   final int price;
   final String category;
-  final String posted;
+  final DateTime? createdAt;
   final int views;
   final String image;
   final AccountListingStatus status;
@@ -30,127 +38,220 @@ class AccountListing {
     title: title,
     price: price,
     category: category,
-    posted: posted,
+    createdAt: createdAt,
     views: views,
     image: image,
     status: value,
   );
 }
 
+/// Nguồn tin đăng của tài khoản; bản API bọc [ListingsRepository], bản mẫu
+/// nằm ở `data/account_mock_listings.dart`.
+abstract class AccountListingsSource {
+  Future<PagedResult<AccountListing>> mine(
+    AccountListingStatus status, {
+    int page = 1,
+  });
+  Future<void> changeStatus(String id, AccountListingStatus status);
+}
+
+class ApiAccountListingsSource implements AccountListingsSource {
+  ApiAccountListingsSource(this._repository);
+  final ListingsRepository _repository;
+
+  @override
+  Future<PagedResult<AccountListing>> mine(
+    AccountListingStatus status, {
+    int page = 1,
+  }) async {
+    final result = await _repository.mine(
+      page: page,
+      status: status.listingStatus.apiValue,
+    );
+    return PagedResult(
+      page: result.page,
+      hasMore: result.hasMore,
+      totalItems: result.totalItems,
+      items: [
+        for (final item in result.items)
+          AccountListing(
+            id: item.id,
+            title: item.title,
+            price: item.price ?? 0,
+            category: item.categoryName,
+            createdAt: item.createdAt,
+            views: item.viewCount,
+            image: item.coverImage ?? '',
+            status: status,
+          ),
+      ],
+    );
+  }
+
+  @override
+  Future<void> changeStatus(String id, AccountListingStatus status) =>
+      _repository.changeStatus(id, status.listingStatus);
+}
+
+class AccountListingsTab {
+  const AccountListingsTab({
+    this.items = const [],
+    this.page = 0,
+    this.hasMore = false,
+    this.total = 0,
+  });
+  final List<AccountListing> items;
+  final int page;
+  final bool hasMore;
+  final int total;
+}
+
+enum AccountListingsError { load, update }
+
 class AccountProfileState {
   const AccountProfileState({
-    required this.listings,
+    this.tabs = const {},
     this.selected = AccountListingStatus.visible,
+    this.loading = true,
+    this.loadingMore = false,
     this.error,
   });
 
-  final List<AccountListing> listings;
+  final Map<AccountListingStatus, AccountListingsTab> tabs;
   final AccountListingStatus selected;
-  final String? error;
+  final bool loading;
+  final bool loadingMore;
+  final AccountListingsError? error;
 
-  int count(AccountListingStatus status) =>
-      listings.where((listing) => listing.status == status).length;
+  int count(AccountListingStatus status) => tabs[status]?.total ?? 0;
 
-  List<AccountListing> get displayed =>
-      listings.where((listing) => listing.status == selected).toList();
+  List<AccountListing> get displayed => tabs[selected]?.items ?? const [];
+
+  AccountProfileState copyWith({
+    Map<AccountListingStatus, AccountListingsTab>? tabs,
+    AccountListingStatus? selected,
+    bool? loading,
+    bool? loadingMore,
+    AccountListingsError? error,
+  }) => AccountProfileState(
+    tabs: tabs ?? this.tabs,
+    selected: selected ?? this.selected,
+    loading: loading ?? this.loading,
+    loadingMore: loadingMore ?? this.loadingMore,
+    error: error,
+  );
 }
 
-/// Dữ liệu mẫu khớp Figma; tách khỏi view để có thể thay bằng API tài khoản.
+/// Tin đăng của tôi: mỗi tab tải trang đầu để lấy số lượng, cuộn tới cuối
+/// thì tải thêm trang tiếp theo của tab đang chọn.
 class AccountProfileCubit extends Cubit<AccountProfileState> {
-  AccountProfileCubit({ListingsRepository? repository})
-    : _repository = repository,
-      super(
-        const AccountProfileState(
-          listings: [
-            AccountListing(
-              id: '101',
-              title: 'Máy ảnh Fujifilm X-T20 kèm kit',
-              price: 7900000,
-              category: 'Điện tử',
-              posted: '2 ngày trước',
-              views: 128,
-              image: 'assets/images/marketplace/detail-fujifilm.jpg',
-            ),
-            AccountListing(
-              id: '102',
-              title: 'Tai nghe Sony WH-1000XM4',
-              price: 3200000,
-              category: 'Điện tử',
-              posted: '4 ngày trước',
-              views: 86,
-              image: 'assets/images/marketplace/detail-headphones.jpg',
-            ),
-            AccountListing(
-              id: '103',
-              title: 'Kệ sách gỗ thông 4 tầng',
-              price: 650000,
-              category: 'Nội thất',
-              posted: '1 tuần trước',
-              views: 41,
-              image: 'assets/images/marketplace/detail-bookshelf.jpg',
-            ),
-          ],
+  AccountProfileCubit(this._source) : super(const AccountProfileState());
+
+  final AccountListingsSource _source;
+
+  AccountListingsTab _tab(PagedResult<AccountListing> result) =>
+      AccountListingsTab(
+        items: result.items,
+        page: result.page,
+        hasMore: result.hasMore,
+        total: result.totalItems ?? result.items.length,
+      );
+
+  Future<void> load() async {
+    try {
+      final results = await Future.wait([
+        for (final status in AccountListingStatus.values) _source.mine(status),
+      ]);
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          loading: false,
+          tabs: {
+            for (final status in AccountListingStatus.values)
+              status: _tab(results[status.index]),
+          },
         ),
-      ) {
-    if (_repository != null) {
-      emit(const AccountProfileState(listings: []));
-      load();
+      );
+    } catch (_) {
+      if (!isClosed) {
+        emit(state.copyWith(loading: false, error: AccountListingsError.load));
+      }
     }
   }
 
-  final ListingsRepository? _repository;
-
-  Future<void> load() async {
-    final repository = _repository;
-    if (repository == null) return;
+  Future<void> loadMore() async {
+    final status = state.selected, tab = state.tabs[status];
+    if (tab == null || !tab.hasMore || state.loadingMore) return;
+    emit(state.copyWith(loadingMore: true));
     try {
-      final listings = <AccountListing>[];
-      var page = 1;
-      while (true) {
-        final result = await repository.mine(page: page++);
-        for (final item in result.items) {
-          final status = switch (item.status) {
-            ListingStatus.available => AccountListingStatus.visible,
-            ListingStatus.pending => AccountListingStatus.pending,
-            ListingStatus.hidden => AccountListingStatus.hidden,
-            _ => null,
-          };
-          if (status == null) continue;
-          listings.add(AccountListing(
-            id: item.id, title: item.title, price: item.price ?? 0,
-            category: item.categoryId ?? '',
-            posted: item.createdAt?.toLocal().toString().split(' ').first ?? '',
-            views: item.viewCount, image: item.coverImage ?? '', status: status,
-          ));
-        }
-        if (!result.hasMore) break;
-      }
-      if (!isClosed) emit(AccountProfileState(listings: listings, selected: state.selected));
+      final result = await _source.mine(status, page: tab.page + 1);
+      if (isClosed) return;
+      final ids = tab.items.map((item) => item.id).toSet();
+      emit(
+        state.copyWith(
+          loadingMore: false,
+          tabs: {
+            ...state.tabs,
+            status: AccountListingsTab(
+              items: [
+                ...tab.items,
+                ...result.items.where((item) => !ids.contains(item.id)),
+              ],
+              page: result.page,
+              hasMore: result.hasMore,
+              total: result.totalItems ?? tab.total,
+            ),
+          },
+        ),
+      );
     } catch (_) {
-      if (!isClosed) emit(AccountProfileState(listings: state.listings, selected: state.selected, error: 'Không tải được tin đăng.'));
+      if (!isClosed) {
+        emit(
+          state.copyWith(loadingMore: false, error: AccountListingsError.load),
+        );
+      }
     }
   }
 
   void select(AccountListingStatus status) =>
-      emit(AccountProfileState(listings: state.listings, selected: status));
+      emit(state.copyWith(selected: status));
 
+  /// Chuyển tin sang tab mới ngay trên giao diện sau khi API thành công.
   Future<void> setStatus(String id, AccountListingStatus status) async {
-    if (_repository != null) {
-      try {
-        await _repository.changeStatus(id, status == AccountListingStatus.hidden ? ListingStatus.hidden : ListingStatus.available);
-      } catch (_) {
-        if (!isClosed) emit(AccountProfileState(listings: state.listings, selected: state.selected, error: 'Không cập nhật được tin đăng.'));
-        return;
+    AccountListing? item;
+    for (final tab in state.tabs.values) {
+      for (final listing in tab.items) {
+        if (listing.id == id) item = listing;
       }
     }
+    if (item == null || item.status == status) return;
+    try {
+      await _source.changeStatus(id, status);
+    } catch (_) {
+      if (!isClosed) emit(state.copyWith(error: AccountListingsError.update));
+      return;
+    }
     if (isClosed) return;
+    final from = state.tabs[item.status] ?? const AccountListingsTab();
+    final to = state.tabs[status] ?? const AccountListingsTab();
     emit(
-    AccountProfileState(
-      selected: state.selected,
-      listings: state.listings
-          .map((item) => item.id == id ? item.withStatus(status) : item)
-          .toList(),
-    ),
-  );
+      state.copyWith(
+        tabs: {
+          ...state.tabs,
+          item.status: AccountListingsTab(
+            items: from.items.where((listing) => listing.id != id).toList(),
+            page: from.page,
+            hasMore: from.hasMore,
+            total: from.total - 1,
+          ),
+          status: AccountListingsTab(
+            items: [item.withStatus(status), ...to.items],
+            page: to.page,
+            hasMore: to.hasMore,
+            total: to.total + 1,
+          ),
+        },
+      ),
+    );
   }
 }

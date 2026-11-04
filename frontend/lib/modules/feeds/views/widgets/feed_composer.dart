@@ -58,8 +58,38 @@ class _ComposerState extends State<_Composer> {
       Navigator.pop(context);
     } else {
       setState(() => submitted = false);
-      feedNotice(context, l.feedRequired);
+      feedNotice(
+        context,
+        text.text.trim().isEmpty && image == null
+            ? l.feedRequired
+            : l.feedPublishError,
+      );
     }
+  }
+
+  bool get dirty => text.text.trim().isNotEmpty || image != null;
+
+  Future<void> confirmDiscard() async {
+    final l = AppLocalizations.of(context)!;
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: Text(l.feedDiscardTitle),
+        content: Text(l.feedDiscardBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialog, false),
+            child: Text(l.feedKeepEditing),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialog, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l.feedDiscard),
+          ),
+        ],
+      ),
+    );
+    if (discard == true && mounted) Navigator.pop(context);
   }
 
   @override
@@ -70,6 +100,23 @@ class _ComposerState extends State<_Composer> {
         !submitted &&
         !picking &&
         (text.text.trim().isNotEmpty || image != null);
+    // Navigator.pop khi đăng thành công không đi qua PopScope; nút đóng và
+    // nút back của hệ thống thì có, nên hỏi trước khi bỏ nội dung đã nhập.
+    return PopScope(
+      canPop: !dirty,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && !submitted) confirmDiscard();
+      },
+      child: _buildPage(context, l, small, canPost),
+    );
+  }
+
+  Widget _buildPage(
+    BuildContext context,
+    AppLocalizations l,
+    TextStyle? small,
+    bool canPost,
+  ) {
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: SafeArea(
@@ -82,29 +129,18 @@ class _ComposerState extends State<_Composer> {
                   IconButton(
                     tooltip: l.cancel,
                     icon: const Icon(AppIcons.close, size: 22),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.maybePop(context),
                   ),
                   const SizedBox(width: 4),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l.feedNewPost,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          l.feedDraftLimit,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: small?.copyWith(fontSize: 11),
-                        ),
-                      ],
+                    child: Text(
+                      l.feedNewPost,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -190,7 +226,7 @@ class _ComposerState extends State<_Composer> {
                     child: Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Text(
-                        l.feedDraftLimit,
+                        l.feedCharCount(text.text.length),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.end,

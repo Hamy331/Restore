@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
-import '../../../../core/utils/formatters/currency_formatter.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_local_image.dart';
 import '../../bloc/feeds_cubit.dart';
 import 'feed_comments_sheet.dart';
+import 'feed_image_viewer.dart';
 import 'feed_shared.dart';
+
+/// Mở trang hồ sơ của tác giả; bài của mình thì về tab Tài khoản.
+void openFeedAuthor(BuildContext context, FeedPost post) => post.isMine
+    ? context.go('/account')
+    : context.push('/users/${post.authorId}');
 
 Future<void> _postMenu(BuildContext context, FeedsCubit cubit, FeedPost post) {
   final l = AppLocalizations.of(context)!;
@@ -20,18 +25,116 @@ Future<void> _postMenu(BuildContext context, FeedsCubit cubit, FeedPost post) {
     builder: (sheet) => Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (!post.isMine)
+        if (post.isMine)
           ListTile(
-            leading: const Icon(AppIcons.user),
+            leading: const Icon(AppIcons.delete, color: AppColors.error),
+            title: Text(
+              l.feedDelete,
+              style: const TextStyle(color: AppColors.error),
+            ),
+            onTap: () {
+              Navigator.pop(sheet);
+              _confirmDelete(context, cubit, post);
+            },
+          )
+        else ...[
+          ListTile(
+            leading: const Icon(AppIcons.followUser),
             title: Text(following ? l.feedUnfollow : l.feedFollow),
             onTap: () {
               Navigator.pop(sheet);
               cubit.toggleFollow(post.authorId);
             },
           ),
+          if (cubit.authorId == null)
+            ListTile(
+              leading: const Icon(AppIcons.user),
+              title: Text(l.feedViewProfile),
+              onTap: () {
+                Navigator.pop(sheet);
+                openFeedAuthor(context, post);
+              },
+            ),
+          ListTile(
+            leading: const Icon(AppIcons.report),
+            title: Text(l.feedReport),
+            onTap: () {
+              Navigator.pop(sheet);
+              _report(context, cubit, post);
+            },
+          ),
+        ],
       ],
     ),
   );
+}
+
+Future<void> _confirmDelete(
+  BuildContext context,
+  FeedsCubit cubit,
+  FeedPost post,
+) async {
+  final l = AppLocalizations.of(context)!;
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (dialog) => AlertDialog(
+      content: Text(l.feedDeleteConfirm),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialog, false),
+          child: Text(l.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(dialog, true),
+          style: TextButton.styleFrom(foregroundColor: AppColors.error),
+          child: Text(l.feedDelete),
+        ),
+      ],
+    ),
+  );
+  if (confirmed == true && await cubit.delete(post) && context.mounted) {
+    feedNotice(context, l.feedDeleted);
+  }
+}
+
+Future<void> _report(
+  BuildContext context,
+  FeedsCubit cubit,
+  FeedPost post,
+) async {
+  final l = AppLocalizations.of(context)!;
+  final reason = await showModalBottomSheet<String>(
+    context: context,
+    useSafeArea: true,
+    useRootNavigator: true,
+    backgroundColor: AppColors.surface,
+    builder: (sheet) => Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text(
+            l.feedReportTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+        for (final reason in [
+          l.feedReportSpam,
+          l.feedReportScam,
+          l.feedReportOffensive,
+          l.feedReportOther,
+        ])
+          ListTile(
+            title: Text(reason),
+            onTap: () => Navigator.pop(sheet, reason),
+          ),
+      ],
+    ),
+  );
+  if (reason != null && await cubit.report(post, reason) && context.mounted) {
+    feedNotice(context, l.feedReported);
+  }
 }
 
 class FeedPostCard extends StatelessWidget {
@@ -41,7 +144,13 @@ class FeedPostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final name = post.author;
+    final name = post.author.name.isEmpty && post.isMine
+        ? l.feedYourName
+        : post.author.name;
+    // Trên trang hồ sơ, bài nào cũng là của người đang xem nên không mở lại.
+    final onAuthorTap = cubit.authorId == null
+        ? () => openFeedAuthor(context, post)
+        : null;
     return DecoratedBox(
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border)),
@@ -53,7 +162,10 @@ class FeedPostCard extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: FeedAvatar(name: name, avatarUrl: post.avatarUrl),
+              child: GestureDetector(
+                onTap: onAuthorTap,
+                child: FeedAvatar(name: name, avatarUrl: post.author.avatarUrl),
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -63,16 +175,19 @@ class FeedPostCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: AppColors.primaryDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
+                        child: GestureDetector(
+                          onTap: onAuthorTap,
+                          child: Text(
+                            name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: AppColors.primaryDark,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -106,22 +221,28 @@ class FeedPostCard extends StatelessWidget {
                       ),
                     ),
                   if (post.image != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 260),
-                        child: AppLocalImage(
-                          path: post.image!,
-                          width: double.infinity,
-                          fit: BoxFit.fitWidth,
-                          cacheWidth: 900,
+                    GestureDetector(
+                      onTap: () => showFeedImage(
+                        context,
+                        post.image!,
+                        heroTag: 'feed-image-${post.id}',
+                      ),
+                      child: Hero(
+                        tag: 'feed-image-${post.id}',
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 360),
+                            child: AppLocalImage(
+                              path: post.image!,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              cacheWidth: 900,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  if (post.listingId != null &&
-                      post.listingTitle != null &&
-                      post.price != null)
-                    _ListingCard(post: post),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -217,80 +338,6 @@ class _LikePill extends StatelessWidget {
               ),
             ],
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ListingCard extends StatelessWidget {
-  const _ListingCard({required this.post});
-  final FeedPost post;
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    );
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: Material(
-        color: AppColors.background,
-        shape: shape,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.push('/listings/${post.listingId}'),
-          child: Padding(
-            padding: const EdgeInsets.all(6),
-            child: Row(
-              children: [
-                if (post.image != null) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: AppLocalImage(
-                      path: post.image!,
-                      width: 36,
-                      cacheWidth: 150,
-                      height: 36,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        post.listingTitle!,
-                        style: const TextStyle(fontSize: 12),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        CurrencyFormatter.formatVnd(
-                          post.price!,
-                          locale: l.localeName,
-                        ),
-                        style: const TextStyle(
-                          color: AppColors.primaryDark,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l.feedViewListing,
-                  style: const TextStyle(
-                    color: AppColors.primaryDark,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );

@@ -13,7 +13,11 @@ const handle = (action: (req: AuthRequest) => Promise<unknown>, status = 200) =>
 router.get('/me', handle((req) => users.getProfile(req.user!.userId)));
 router.patch('/me', handle((req) => users.updateProfile(req.user!.userId, req.body)));
 router.post('/me/heartbeat', handle((req) => users.heartbeat(req.user!.userId)));
-router.get('/:id', handle((req) => users.getProfile(req.params.id as string)));
+router.get('/:id', handle((req) => users.getProfile(req.params.id as string, req.user!.userId)));
+router.get('/:id/followers', handle((req) =>
+  users.listFollows(req.params.id as string, req.user!.userId, 'followers', req.query.page)));
+router.get('/:id/following', handle((req) =>
+  users.listFollows(req.params.id as string, req.user!.userId, 'following', req.query.page)));
 router.post('/:id/follow', handle((req) => users.follow(req.user!.userId, req.params.id as string)));
 router.delete('/:id/follow', handle((req) => users.unfollow(req.user!.userId, req.params.id as string)));
 

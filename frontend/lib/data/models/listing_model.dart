@@ -34,6 +34,7 @@ class ListingModel extends Equatable {
 
   /// (đề xuất) Danh mục và thuộc tính theo danh mục (jsonb)
   final String? categoryId;
+  final String categoryName;
   final Map<String, Object?> attributes;
 
   /// (đề xuất) Mã tỉnh/thành, phường/xã và toạ độ cho tính năng "gần bạn"
@@ -64,6 +65,7 @@ class ListingModel extends Equatable {
     this.createdAt,
     this.updatedAt,
     this.categoryId,
+    this.categoryName = '',
     this.attributes = const {},
     this.provinceCode,
     this.wardCode,
@@ -121,6 +123,7 @@ class ListingModel extends Equatable {
       createdAt: DateTime.tryParse('${json['createdAt']}'),
       updatedAt: DateTime.tryParse('${json['updatedAt']}'),
       categoryId: json['categoryId'] as String?,
+      categoryName: (json['category'] as Map?)?['name'] as String? ?? '',
       attributes: Map<String, Object?>.from(json['attributes'] as Map? ?? {}),
       provinceCode: location is Map
           ? location['provinceCode'] as String?
@@ -170,6 +173,7 @@ class ListingModel extends Equatable {
     createdAt,
     updatedAt,
     categoryId,
+    categoryName,
     attributes,
     provinceCode,
     wardCode,

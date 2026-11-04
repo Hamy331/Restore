@@ -1,43 +1,100 @@
+class FeedUser {
+  const FeedUser({required this.id, required this.name, this.avatarUrl});
+  FeedUser.fromJson(Map<String, dynamic> j)
+    : id = '${j['id'] ?? ''}',
+      name = j['fullName'] as String? ?? '',
+      avatarUrl = j['avatarUrl'] as String?;
+  final String id, name;
+  final String? avatarUrl;
+}
+
 class FeedComment {
+  const FeedComment({
+    required this.id,
+    required this.author,
+    required this.text,
+    required this.createdAt,
+    this.likes = 0,
+    this.liked = false,
+  });
   FeedComment.fromJson(Map<String, dynamic> j)
     : id = j['id'],
-      authorId = j['author']['id'],
-      author = j['author']['fullName'],
-      avatarUrl = j['author']['avatarUrl'],
+      author = FeedUser.fromJson(Map<String, dynamic>.from(j['author'])),
       text = j['text'],
-      createdAt = DateTime.parse(j['createdAt']),
-      likes = j['likeCount'],
-      liked = j['likedByMe'];
-  final String id, authorId, author, text;
-  final String? avatarUrl;
+      createdAt = DateTime.parse('${j['createdAt']}'),
+      likes = (j['likeCount'] as num?)?.toInt() ?? 0,
+      liked = j['likedByMe'] == true;
+  final String id, text;
+  final FeedUser author;
   final DateTime createdAt;
-  int likes;
-  bool liked;
+  final int likes;
+  final bool liked;
+
+  FeedComment copyWith({int? likes, bool? liked}) => FeedComment(
+    id: id,
+    author: author,
+    text: text,
+    createdAt: createdAt,
+    likes: likes ?? this.likes,
+    liked: liked ?? this.liked,
+  );
 }
 
 class FeedPost {
+  const FeedPost({
+    required this.id,
+    required this.author,
+    required this.text,
+    required this.createdAt,
+    this.image,
+    this.isMine = false,
+    this.likes = 0,
+    this.liked = false,
+    this.following = false,
+    this.commentCount = 0,
+  });
   FeedPost.fromJson(Map<String, dynamic> j)
     : id = j['id'],
-      authorId = j['author']['id'],
-      author = j['author']['fullName'],
-      avatarUrl = j['author']['avatarUrl'],
-      text = j['text'],
-      createdAt = DateTime.parse(j['createdAt']),
+      author = FeedUser.fromJson(Map<String, dynamic>.from(j['author'])),
+      text = j['text'] ?? '',
+      createdAt = DateTime.parse('${j['createdAt']}'),
       image = j['imageUrl'],
-      listingId = j['listing']?['id'],
-      listingTitle = j['listing']?['title'],
-      price = int.tryParse('${j['listing']?['price']}'),
-      likes = j['likeCount'],
-      liked = j['likedByMe'],
-      isMine = j['isMine'],
-      following = j['isFollowingAuthor'],
-      commentCount = j['commentCount'];
-  final String id, authorId, author, text;
+      likes = (j['likeCount'] as num?)?.toInt() ?? 0,
+      liked = j['likedByMe'] == true,
+      isMine = j['isMine'] == true,
+      following = j['isFollowingAuthor'] == true,
+      commentCount = (j['commentCount'] as num?)?.toInt() ?? 0;
+  final String id, text;
+  final FeedUser author;
   final DateTime createdAt;
-  final String? avatarUrl, image, listingId, listingTitle;
-  final int? price;
-  final bool isMine;
-  int likes, commentCount;
-  bool liked, following;
-  List<FeedComment> comments = [];
+  final String? image;
+  final bool isMine, liked, following;
+  final int likes, commentCount;
+
+  String get authorId => author.id;
+
+  FeedPost copyWith({
+    int? likes,
+    bool? liked,
+    bool? following,
+    int? commentCount,
+  }) => FeedPost(
+    id: id,
+    author: author,
+    text: text,
+    createdAt: createdAt,
+    image: image,
+    isMine: isMine,
+    likes: likes ?? this.likes,
+    liked: liked ?? this.liked,
+    following: following ?? this.following,
+    commentCount: commentCount ?? this.commentCount,
+  );
+}
+
+/// Một trang kết quả phân trang bằng con trỏ.
+class FeedPage<T> {
+  const FeedPage(this.items, this.nextCursor);
+  final List<T> items;
+  final String? nextCursor;
 }

@@ -29,12 +29,65 @@ const formatProfile = (user: ProfileRow) => ({
   },
 });
 
-export const getProfile = async (id: string) => {
+// [viewerId] khác [id] thì kèm `isFollowing` cho trang hồ sơ công khai.
+export const getProfile = async (id: string, viewerId?: string) => {
   const user = await prisma.user.findUnique({ where: { id }, select: profileSelect });
   if (!user || user.status !== 'ACTIVE') {
     throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
   }
-  return formatProfile(user);
+  if (!viewerId || viewerId === id) return formatProfile(user);
+  const follow = await prisma.userFollow.findUnique({
+    where: { followerId_followingId: { followerId: viewerId, followingId: id } },
+  });
+  return { ...formatProfile(user), isFollowing: !!follow };
+};
+
+const followPageSize = 20;
+export function followPage(value: unknown) {
+  if (value === undefined) return 1;
+  const page = Number(value);
+  if (!Number.isSafeInteger(page) || page < 1) {
+    throw new AppError(400, 'INVALID_PAGINATION', 'Trang không hợp lệ.');
+  }
+  return page;
+}
+
+// Danh sách người theo dõi ([kind] = followers) hoặc đang theo dõi của [id].
+export const listFollows = async (
+  id: string,
+  viewerId: string,
+  kind: 'followers' | 'following',
+  pageValue: unknown,
+) => {
+  const page = followPage(pageValue);
+  const where = kind === 'followers'
+    ? { followingId: id, follower: { status: 'ACTIVE' as const } }
+    : { followerId: id, following: { status: 'ACTIVE' as const } };
+  const userSelect = {
+    id: true, fullName: true, username: true, avatarUrl: true,
+    followers: { where: { followerId: viewerId }, select: { followerId: true } },
+  } as const;
+  const [rows, total] = await prisma.$transaction([
+    prisma.userFollow.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }],
+      skip: (page - 1) * followPageSize,
+      take: followPageSize,
+      select: { follower: { select: userSelect }, following: { select: userSelect } },
+    }),
+    prisma.userFollow.count({ where }),
+  ]);
+  return {
+    items: rows.map((row) => {
+      const user = kind === 'followers' ? row.follower : row.following;
+      return {
+        id: user.id, fullName: user.fullName, username: user.username, avatarUrl: user.avatarUrl,
+        isFollowing: user.followers.length > 0,
+        isMe: user.id === viewerId,
+      };
+    }),
+    hasMore: page * followPageSize < total,
+  };
 };
 
 export const updateProfile = async (id: string, body: unknown) => {

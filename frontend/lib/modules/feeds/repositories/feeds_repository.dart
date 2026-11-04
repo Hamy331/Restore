@@ -1,47 +1,115 @@
 import 'package:dio/dio.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../../core/network/api_client.dart';
+import '../../../services/image_upload_service.dart';
+import '../models/feed_models.dart';
 
 class FeedsRepository {
-  final Dio dio = ApiClient().dio;
-  Future<Map<String, dynamic>> get(
+  FeedsRepository({Dio? dio, ImageUploadService? uploader})
+    : _dio = dio ?? ApiClient().dio,
+      _uploader = uploader;
+  final Dio _dio;
+  final ImageUploadService? _uploader;
+
+  Future<Map<String, dynamic>> _get(
     String path, [
     Map<String, dynamic>? query,
   ]) async => Map<String, dynamic>.from(
-    (await dio.get(path, queryParameters: query)).data['data'],
+    (await _dio.get(path, queryParameters: query)).data['data'],
   );
-  Future<dynamic> post(String path, Map<String, dynamic> data) async =>
-      (await dio.post(path, data: data)).data['data'];
-  Future<Map<String, dynamic>> like(String path, bool value) async =>
-      Map<String, dynamic>.from(
-        (await dio.request(
-          path,
-          options: Options(method: value ? 'PUT' : 'DELETE'),
-        )).data['data'],
+
+  Future<FeedUser> me() async => FeedUser.fromJson(await _get('/users/me'));
+
+  /// [authorId] khác null thì chỉ lấy bài của tác giả đó (trang hồ sơ).
+  Future<FeedPage<FeedPost>> posts({
+    bool following = false,
+    String? authorId,
+    String? cursor,
+  }) async {
+    final data = await _get('/feeds', {
+      'tab': following ? 'following' : 'for-you',
+      'authorId': ?authorId,
+      'cursor': ?cursor,
+    });
+    return FeedPage([
+      for (final j in data['items'] as List)
+        FeedPost.fromJson(Map<String, dynamic>.from(j)),
+    ], data['nextCursor']);
+  }
+
+  Future<FeedPost> publish(String text, String? imageUrl) async =>
+      FeedPost.fromJson(
+        Map<String, dynamic>.from(
+          (await _dio.post(
+            '/feeds',
+            data: {'text': text, 'imageUrl': imageUrl},
+          )).data['data'],
+        ),
       );
-  Future<void> follow(String id, bool value) async {
-    await dio.request(
-      '/users/$id/follow',
+
+  Future<void> delete(String postId) async {
+    await _dio.delete('/feeds/$postId');
+  }
+
+  Future<({bool liked, int likes})> likePost(String id, bool value) =>
+      _like('/feeds/$id/like', value);
+
+  Future<({bool liked, int likes})> likeComment(String id, bool value) =>
+      _like('/feed-comments/$id/like', value);
+
+  Future<({bool liked, int likes})> _like(String path, bool value) async {
+    final data = (await _dio.request(
+      path,
+      options: Options(method: value ? 'PUT' : 'DELETE'),
+    )).data['data'];
+    return (
+      liked: data['likedByMe'] == true,
+      likes: (data['likeCount'] as num).toInt(),
+    );
+  }
+
+  Future<FeedPage<FeedComment>> comments(
+    String postId, {
+    String? cursor,
+  }) async {
+    final data = await _get('/feeds/$postId/comments', {'cursor': ?cursor});
+    return FeedPage([
+      for (final j in data['items'] as List)
+        FeedComment.fromJson(Map<String, dynamic>.from(j)),
+    ], data['nextCursor']);
+  }
+
+  Future<FeedComment> comment(String postId, String text) async =>
+      FeedComment.fromJson(
+        Map<String, dynamic>.from(
+          (await _dio.post(
+            '/feeds/$postId/comments',
+            data: {'text': text},
+          )).data['data'],
+        ),
+      );
+
+  Future<void> follow(String userId, bool value) async {
+    await _dio.request(
+      '/users/$userId/follow',
       options: Options(method: value ? 'POST' : 'DELETE'),
     );
   }
 
-  Future<String> upload(String path) async {
-    final bytes = await XFile(path).readAsBytes();
-    if (bytes.length > 5 * 1024 * 1024) throw Exception('Image exceeds 5 MB');
-    final type = bytes.length > 12 && bytes[0] == 137
-        ? 'image/png'
-        : bytes.length > 12 && bytes[0] == 82
-        ? 'image/webp'
-        : 'image/jpeg';
-    final response = await dio.post(
-      '/media/images',
-      data: Stream.value(bytes),
-      options: Options(
-        contentType: type,
-        headers: {'Content-Length': bytes.length},
-      ),
+  /// Báo cáo bài viết qua luồng kiểm duyệt hiện có: đối tượng là tác giả,
+  /// bằng chứng ghi rõ bài viết bị báo cáo.
+  Future<void> report(FeedPost post, String reason) async {
+    final content = post.text.isNotEmpty ? post.text : post.image ?? '';
+    await _dio.post(
+      '/content/reports',
+      data: {
+        'targetType': 'USER',
+        'targetId': post.authorId,
+        'reason': reason,
+        'evidence': 'Bài viết bảng tin ${post.id}: $content',
+      },
     );
-    return response.data['data']['imageUrl'];
   }
+
+  Future<String> upload(String path) =>
+      (_uploader ?? ImageUploadService(dio: _dio)).upload(path);
 }
