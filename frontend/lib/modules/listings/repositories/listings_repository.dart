@@ -5,6 +5,7 @@ import 'package:restore/shared/models/geo_point.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:restore/shared/models/paged_result.dart';
 import 'package:dio/dio.dart';
+import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/category_model.dart';
 import '../data/mock_posting_quota_store.dart';
@@ -147,7 +148,7 @@ class MockListingsRepository implements ListingsRepository {
     used: _store.values
         .where((draft) => draft.status == ListingStatus.draft)
         .length,
-    limit: DraftQuota.personalLimit,
+    limit: DraftQuota.mockLimitFor(DevPlanOverride.plan.value),
   );
 
   String _newId() => 'listing_${DateTime.now().microsecondsSinceEpoch}';

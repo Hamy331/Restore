@@ -4559,8 +4559,50 @@ abstract class AppLocalizations {
   /// No description provided for @devPlanSwitchTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Switch plan for testing (mock data only)'**
+  /// **'Switch plan to test the UI (in-app only)'**
   String get devPlanSwitchTooltip;
+
+  /// No description provided for @quickMenuOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open quick menu'**
+  String get quickMenuOpen;
+
+  /// No description provided for @quickMenuClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close quick menu'**
+  String get quickMenuClose;
+
+  /// No description provided for @quickActionPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get quickActionPost;
+
+  /// No description provided for @quickActionPoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop poster'**
+  String get quickActionPoster;
+
+  /// No description provided for @quickActionBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost'**
+  String get quickActionBoost;
+
+  /// No description provided for @quickActionStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get quickActionStats;
+
+  /// No description provided for @quickActionShopPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop page'**
+  String get quickActionShopPage;
 
   /// No description provided for @trustedShopsFamousEyebrow.
   ///

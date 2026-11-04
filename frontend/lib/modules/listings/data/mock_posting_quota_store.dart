@@ -1,3 +1,6 @@
+import 'package:restore/core/config/dev_plan_override.dart';
+import 'package:restore/data/models/enums/subscription_plan.dart';
+
 import 'posting_quota_mock_data.dart';
 
 /// Số tin đã dùng của từng chuyên mục khi chạy dữ liệu mẫu, giữ trong bộ
@@ -13,7 +16,17 @@ class MockPostingQuotaStore {
     for (final item in _seed) item['categoryId'] as String: item['used'] as int,
   };
 
+  /// Giới hạn theo gói đang test: Bán chuyên 15, Cửa hàng 30 tin mỗi
+  /// chuyên mục; Cá nhân theo bảng từng chuyên mục
   static int limitOf(String categoryId) {
+    switch (DevPlanOverride.plan.value) {
+      case SubscriptionPlan.pro:
+        return PostingQuotaMockData.proLimit;
+      case SubscriptionPlan.shop:
+        return PostingQuotaMockData.shopLimit;
+      case SubscriptionPlan.personal:
+        break;
+    }
     for (final item in _seed) {
       if (item['categoryId'] == categoryId) return item['limit'] as int;
     }

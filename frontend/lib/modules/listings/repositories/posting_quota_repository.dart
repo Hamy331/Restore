@@ -1,4 +1,6 @@
+import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/network/api_client.dart';
+import 'package:restore/data/models/enums/subscription_plan.dart';
 import '../data/mock_posting_quota_store.dart';
 import '../data/posting_quota_mock_data.dart';
 import '../models/posting_quota.dart';
@@ -19,8 +21,16 @@ class MockPostingQuotaRepository implements PostingQuotaRepository {
   @override
   Future<PostingQuota> getQuota() async {
     await Future<void>.delayed(latency);
+    // Loại tài khoản và giới hạn đi theo gói đang chọn ở nút test đổi gói
+    final plan = DevPlanOverride.plan.value;
     return PostingQuota.fromJson({
       ...PostingQuotaMockData.quota,
+      if (plan != SubscriptionPlan.personal) ...{
+        'accountType': 'business',
+        'defaultLimit': plan == SubscriptionPlan.shop
+            ? PostingQuotaMockData.shopLimit
+            : PostingQuotaMockData.proLimit,
+      },
       'categories': [
         for (final entry in MockPostingQuotaStore.used.entries)
           {

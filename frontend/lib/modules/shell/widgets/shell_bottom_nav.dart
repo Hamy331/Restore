@@ -6,21 +6,29 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 
-import 'shell_glass_ring_button.dart';
+import '../models/shell_quick_action.dart';
+import 'shell_fan_menu.dart';
 
 /// Thanh điều hướng kính mờ bám đáy màn hình, mép trên lồi cong ở giữa
 /// để ôm nút Đăng tin tròn (index 2).
+/// Gói tier cao có [quickActions]: nút giữa đổi icon và mở menu xoè.
 /// Nội dung cuộn phía sau được làm mờ qua mặt kính (MainShell bật extendBody).
 class ShellBottomNav extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
   final int unreadMessages;
 
+  /// Nút xoè quanh nút giữa theo gói, rỗng thì nút giữa là dấu + thường
+  final List<ShellQuickAction> quickActions;
+  final ValueChanged<ShellQuickAction>? onQuickAction;
+
   const ShellBottomNav({
     super.key,
     required this.selectedIndex,
     required this.onSelected,
     this.unreadMessages = 0,
+    this.quickActions = const [],
+    this.onQuickAction,
   });
 
   /// Độ cao phần lồi phía trên mép thanh
@@ -95,11 +103,11 @@ class ShellBottomNav extends StatelessWidget {
             left: 0,
             right: 0,
             child: Center(
-              child: ShellGlassRingButton(
-                icon: AppIcons.add,
-                label: l10n.createListing,
+              child: ShellFanMenu(
+                actions: quickActions,
                 size: _centerButtonSize,
-                onTap: () => select(2),
+                onPostTap: () => select(2),
+                onAction: (action) => onQuickAction?.call(action),
               ),
             ),
           ),

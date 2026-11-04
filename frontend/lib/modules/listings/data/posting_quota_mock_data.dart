@@ -8,6 +8,10 @@ class PostingQuotaMockData {
 
   static const int personalLimit = 2;
 
+  /// Gói Bán chuyên và Cửa hàng (tài liệu hạn mức, mục Loại tài khoản)
+  static const int proLimit = 15;
+  static const int shopLimit = 30;
+
   static final Map<String, dynamic> quota = {
     'accountType': 'personal',
     'defaultLimit': personalLimit,
