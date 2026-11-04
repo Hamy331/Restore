@@ -106,13 +106,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get profileName => 'Ngo Tuong Phat';
-
-  @override
-  String get memberSince2022 => 'Member since 2022';
-
-  @override
-  String get maskedPhoneArea => '090 ••• 1234 · District 1, HCMC';
+  String memberSince(String year) {
+    return 'Member since $year';
+  }
 
   @override
   String get editProfile => 'Edit profile';
@@ -1269,6 +1265,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get streetAddressHelper => 'Optional, never shown publicly';
 
   @override
+  String get streetSuggestionsTitle => 'Suggested addresses';
+
+  @override
   String get addressPrivacyNote =>
       'Buyers only see the ward and province. Your location is used to show listings near you.';
 
@@ -1334,6 +1333,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeChangeArea => 'Change area';
+
+  @override
+  String get homeAreaLocating => 'Locating...';
 
   @override
   String get homeForYouTitle => 'Picked for you';
@@ -2417,4 +2419,453 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopDetailLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get postingQuotaPersonalTitle => 'Personal account';
+
+  @override
+  String postingQuotaBannerMessage(int min, int max, int days) {
+    return 'Free listings per category: $min to $max active at a time. Each listing stays up for $days days.';
+  }
+
+  @override
+  String get postingRulesAction => 'View rules';
+
+  @override
+  String postingQuotaUsage(int used, int limit) {
+    return '$used/$limit used';
+  }
+
+  @override
+  String postingQuotaFull(int limit) {
+    return 'Limit of $limit reached';
+  }
+
+  @override
+  String get postingQuotaLastSlot => '1 slot left';
+
+  @override
+  String postingQuotaRemainingInCategory(int remaining, int limit) {
+    return '$remaining/$limit slots left in this category';
+  }
+
+  @override
+  String get postingLimitTitle => 'Category limit reached';
+
+  @override
+  String postingLimitMessage(int limit, String category) {
+    return 'Personal accounts can have up to $limit active listings in $category. Free up a slot to post a new one.';
+  }
+
+  @override
+  String get postingLimitWaysTitle => 'How to free a slot';
+
+  @override
+  String get postingLimitTipSold => 'Mark items you have sold as Sold';
+
+  @override
+  String get postingLimitTipHide => 'Hide listings you no longer want to sell';
+
+  @override
+  String postingLimitTipExpire(int days) {
+    return 'Listings expire after $days days and free their slot';
+  }
+
+  @override
+  String get manageMyListings => 'Manage my listings';
+
+  @override
+  String get chooseAnotherCategory => 'Other category';
+
+  @override
+  String get postingRulesTitle => 'Posting rules';
+
+  @override
+  String get postingRulesSubtitle => 'For personal sellers';
+
+  @override
+  String postingRuleLimit(int min, int max) {
+    return '$min to $max free active listings per category, depending on the category. High-value items such as phones and vehicles get 1.';
+  }
+
+  @override
+  String get postingRuleCounted =>
+      'Only active and pending listings count. Sold, hidden or expired listings do not.';
+
+  @override
+  String postingRuleDuration(int days) {
+    return 'Each listing is shown for $days days after it is approved.';
+  }
+
+  @override
+  String get postingRuleFree =>
+      'Posting is free. Every listing is reviewed before it goes live.';
+
+  @override
+  String get postingRulePersonalUse =>
+      'Personal accounts are for selling your own used items. If you post many items regularly like a business, ReStore may move you to a business account.';
+
+  @override
+  String postingRuleBusiness(int limit) {
+    return 'Business plan (coming soon): up to $limit listings per category. Shop plan: your own shop page.';
+  }
+
+  @override
+  String homeGreetingPro(String name) {
+    return 'Hi pro seller $name 👋';
+  }
+
+  @override
+  String homeGreetingShop(String name) {
+    return 'Hi shop owner $name 👋';
+  }
+
+  @override
+  String get planPersonal => 'Personal';
+
+  @override
+  String get planPro => 'Pro seller';
+
+  @override
+  String get planShop => 'Shop';
+
+  @override
+  String get devPlanTag => 'TEST';
+
+  @override
+  String get devPlanSwitchTooltip => 'Switch plan to test the UI (in-app only)';
+
+  @override
+  String get quickMenuOpen => 'Open quick menu';
+
+  @override
+  String get quickMenuClose => 'Close quick menu';
+
+  @override
+  String get quickActionPost => 'Post';
+
+  @override
+  String get quickActionPoster => 'Shop poster';
+
+  @override
+  String get quickActionBoost => 'Boost';
+
+  @override
+  String get quickActionStats => 'Insights';
+
+  @override
+  String get quickActionShopPage => 'Shop page';
+
+  @override
+  String get trustedShopsFamousEyebrow => 'Official';
+
+  @override
+  String get trustedShopsDealsEyebrow => 'On sale';
+
+  @override
+  String get trustedShopsNewReleasesEyebrow => 'Just launched';
+
+  @override
+  String get trustedShopsNewShopsEyebrow => 'Newly verified';
+
+  @override
+  String get trustedShopsShowcaseEyebrow => 'By brand';
+
+  @override
+  String get trustedShopsAllProductsEyebrow => 'Explore';
+
+  @override
+  String get feedsComposePrompt =>
+      'What\'s on your mind? Share an item or ask the community';
+
+  @override
+  String get postAudienceTitle => 'Who can see this post?';
+
+  @override
+  String get postAudienceEveryone => 'Everyone';
+
+  @override
+  String get postAudienceEveryoneDesc => 'Anyone on ReStore can see it';
+
+  @override
+  String get postAudienceFollowers => 'Followers';
+
+  @override
+  String get postAudienceFollowersDesc => 'Only people who follow you';
+
+  @override
+  String get postAudienceOnlyMe => 'Only me';
+
+  @override
+  String get postAudienceOnlyMeDesc => 'Saved privately on your page';
+
+  @override
+  String get postComposerSubmit => 'Post';
+
+  @override
+  String get postComposerHint =>
+      'Share an item, a buying tip or ask the community...';
+
+  @override
+  String get postComposerRemovePhoto => 'Remove photo';
+
+  @override
+  String get postComposerCover => 'Cover';
+
+  @override
+  String get postComposerListingTag => 'Your listing';
+
+  @override
+  String get postComposerRemoveAttachment => 'Remove';
+
+  @override
+  String postComposerWithOne(String name) {
+    return 'With $name';
+  }
+
+  @override
+  String postComposerWithMany(String name, int count) {
+    return 'With $name and $count others';
+  }
+
+  @override
+  String get postComposerBackground => 'Background colour';
+
+  @override
+  String get postComposerBackgroundDisabled =>
+      'Background colours are for short posts without photos';
+
+  @override
+  String get postComposerNoBackground => 'No background';
+
+  @override
+  String get postComposerAttachListing => 'Attach listing';
+
+  @override
+  String get postComposerAttachListingHint =>
+      'Show one of your listings in this post';
+
+  @override
+  String get postComposerTopic => 'Topic';
+
+  @override
+  String get postComposerTopicHint => 'Helps the right people find your post';
+
+  @override
+  String get postComposerTagFriends => 'Tag people';
+
+  @override
+  String get postComposerTagFriendsHint => 'People you follow';
+
+  @override
+  String postComposerTaggedCount(int count) {
+    return '$count tagged';
+  }
+
+  @override
+  String get postComposerEmoji => 'Emoji';
+
+  @override
+  String get postComposerPhoto => 'Photos';
+
+  @override
+  String get postComposerVideo => 'Video';
+
+  @override
+  String get postComposerLink => 'Link';
+
+  @override
+  String get postComposerLinkHint => 'Paste a web link to share';
+
+  @override
+  String get postComposerLinkInvalid => 'This link doesn\'t look right';
+
+  @override
+  String get postComposerLocation => 'Location';
+
+  @override
+  String get postComposerTakePhoto => 'Take photo';
+
+  @override
+  String get postComposerOpenGallery => 'Gallery';
+
+  @override
+  String get postComposerDone => 'Done';
+
+  @override
+  String get postComposerLoadError =>
+      'Couldn\'t load post options, trying again';
+
+  @override
+  String get postComposerDiscardTitle => 'Discard this post?';
+
+  @override
+  String get postComposerDiscardMessage =>
+      'What you\'ve written won\'t be saved';
+
+  @override
+  String get postComposerKeepEditing => 'Keep writing';
+
+  @override
+  String get postComposerDiscard => 'Discard post';
+
+  @override
+  String postComposerPhotoLimit(int count) {
+    return 'You can add up to $count photos';
+  }
+
+  @override
+  String get postComposerPhotoPermission =>
+      'ReStore needs photo access. Please allow it in Settings.';
+
+  @override
+  String get postComposerNoListings =>
+      'You have no active listings to attach yet';
+
+  @override
+  String get postComposerError =>
+      'Couldn\'t publish your post, please try again';
+
+  @override
+  String get postComposerPosted => 'Your post is live on the feed';
+
+  @override
+  String get authSessionExpired =>
+      'Your session has expired. Please sign in again.';
+
+  @override
+  String get draftsTitle => 'Drafts';
+
+  @override
+  String get draftsBannerTitle => 'Continue a draft';
+
+  @override
+  String draftsBannerMessage(String count) {
+    return 'Unpublished listings: $count';
+  }
+
+  @override
+  String get draftsBannerAction => 'View';
+
+  @override
+  String get draftUntitled => 'Untitled';
+
+  @override
+  String get draftNoCategory => 'No category yet';
+
+  @override
+  String draftEditedAt(String time) {
+    return 'Edited $time';
+  }
+
+  @override
+  String draftPhotoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get draftsEmptyTitle => 'No drafts yet';
+
+  @override
+  String get draftsEmptyMessage =>
+      'While posting, tap Save draft to finish it later.';
+
+  @override
+  String get draftsLoadFailedTitle => 'Couldn\'t load drafts';
+
+  @override
+  String get draftsLoadFailedMessage => 'Check your connection and try again.';
+
+  @override
+  String get draftOpenFailed =>
+      'Couldn\'t open this draft. It may have been published or deleted';
+
+  @override
+  String get draftDeleteTitle => 'Delete draft?';
+
+  @override
+  String get draftDeleteMessage =>
+      'The draft and its uploaded photos will be deleted permanently.';
+
+  @override
+  String get draftDeleteConfirm => 'Delete draft';
+
+  @override
+  String get draftDeleted => 'Draft deleted';
+
+  @override
+  String draftDeletedNamed(String title) {
+    return 'Deleted draft “$title”';
+  }
+
+  @override
+  String get draftDeleteFailed =>
+      'Couldn\'t delete the draft, please try again';
+
+  @override
+  String get leaveDraftTitle => 'Save before leaving?';
+
+  @override
+  String get leaveDraftMessage =>
+      'You have unsaved changes. Save a draft to finish it later.';
+
+  @override
+  String get leaveDraftSave => 'Save draft and leave';
+
+  @override
+  String get leaveDraftDiscard => 'Leave without saving';
+
+  @override
+  String draftLimitTitle(int limit) {
+    return '$limit drafts reached';
+  }
+
+  @override
+  String get draftLimitTitleUnknown => 'Draft limit reached';
+
+  @override
+  String draftLimitMessage(int limit) {
+    return 'Your account can keep up to $limit drafts. Publish or delete an old draft to save this one.';
+  }
+
+  @override
+  String get draftLimitMessageUnknown =>
+      'Your account has reached its draft limit. Publish or delete an old draft to save this one.';
+
+  @override
+  String get draftLimitViewDrafts => 'View drafts';
+
+  @override
+  String draftsQuota(int used, int limit) {
+    return '$used/$limit drafts';
+  }
+
+  @override
+  String get listingImageTooLarge =>
+      'A photo is too large (max 5 MB). Remove it or pick another one.';
+
+  @override
+  String get listingImageUnsupported =>
+      'A photo has an unsupported format (JPEG, PNG or WebP only). Remove it or pick another one.';
+
+  @override
+  String listingImageMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos are no longer on this device and were removed',
+      one: '1 photo is no longer on this device and was removed',
+    );
+    return '$_temp0. Pick them again, then save.';
+  }
+
+  @override
+  String get listingSaveNetworkError =>
+      'Couldn\'t reach the server. What was saved is kept, please try again.';
 }

@@ -1,0 +1,227 @@
+{
+  "users/me": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "user-buyer",
+        "email": "user-buyer@restore.test",
+        "fullName": "user-buyer",
+        "username": "user_buyer",
+        "phone": null,
+        "avatarUrl": null,
+        "role": "USER",
+        "status": "ACTIVE",
+        "ratingAverage": 0,
+        "ratingCount": 0,
+        "createdAt": "2026-10-01T00:00:00.000Z",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "users/me admin": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "user-admin",
+        "email": "user-admin@restore.test",
+        "fullName": "user-admin",
+        "username": "user_admin",
+        "phone": null,
+        "avatarUrl": null,
+        "role": "ADMIN",
+        "status": "ACTIVE",
+        "ratingAverage": 0,
+        "ratingCount": 0,
+        "createdAt": "2026-10-01T00:00:00.000Z",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "users/me guest": {
+    "status": 401,
+    "body": {
+      "success": false,
+      "error": "Vui lòng đăng nhập để tiếp tục.",
+      "code": "AUTH_REQUIRED"
+    }
+  },
+  "users/me bad token": {
+    "status": 401,
+    "body": {
+      "success": false,
+      "error": "Phiên đăng nhập không hợp lệ hoặc đã hết hạn.",
+      "code": "INVALID_ACCESS_TOKEN"
+    }
+  },
+  "area default": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "code": null,
+        "name": "Toàn quốc"
+      }
+    }
+  },
+  "area by province": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "code": "79",
+        "name": "Thành phố Hồ Chí Minh",
+        "shortName": "Hồ Chí Minh"
+      }
+    }
+  },
+  "area by gps": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "code": "79",
+        "name": "Thành phố Hồ Chí Minh",
+        "shortName": "Hồ Chí Minh"
+      }
+    }
+  },
+  "area unknown province": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy tỉnh/thành này.",
+      "code": "AREA_NOT_FOUND",
+      "field": "provinceCode"
+    }
+  },
+  "area half coordinates": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Cần đủ latitude và longitude hợp lệ.",
+      "code": "INVALID_LOCATION",
+      "field": "location"
+    }
+  },
+  "banners": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "banner-1",
+          "imageUrl": "https://cdn.restore.test/b1.jpg",
+          "route": "/trusted-shops"
+        }
+      ]
+    }
+  },
+  "admin banners as user": {
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Bạn không có quyền thực hiện thao tác này.",
+      "code": "FORBIDDEN"
+    }
+  },
+  "admin banners": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "banner-1",
+          "title": "Banner thử",
+          "imageUrl": "https://cdn.restore.test/b1.jpg",
+          "route": "/trusted-shops",
+          "sortOrder": 1,
+          "active": true,
+          "startsAt": null,
+          "endsAt": null,
+          "createdAt": "<date>",
+          "updatedAt": "<date>"
+        }
+      ]
+    }
+  },
+  "create banner without json": {
+    "status": 415,
+    "body": {
+      "success": false,
+      "error": "Header Content-Type phải là application/json.",
+      "code": "UNSUPPORTED_MEDIA_TYPE"
+    }
+  },
+  "create banner invalid route": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "route phải bắt đầu bằng \"/\".",
+      "code": "INVALID_INPUT",
+      "field": "route"
+    }
+  },
+  "create banner": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Banner mới",
+        "imageUrl": "https://cdn.restore.test/new.jpg",
+        "route": "/ai-assistant",
+        "sortOrder": 0,
+        "active": true,
+        "startsAt": null,
+        "endsAt": null,
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "update banner": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Banner mới",
+        "imageUrl": "https://cdn.restore.test/new.jpg",
+        "route": "/ai-assistant",
+        "sortOrder": 0,
+        "active": false,
+        "startsAt": null,
+        "endsAt": null,
+        "createdAt": "<date>",
+        "updatedAt": "<date>"
+      }
+    }
+  },
+  "banners after update": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "banner-1",
+          "imageUrl": "https://cdn.restore.test/b1.jpg",
+          "route": "/trusted-shops"
+        }
+      ]
+    }
+  },
+  "delete banner": {
+    "status": 204,
+    "body": null
+  },
+  "delete missing banner": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy banner.",
+      "code": "BANNER_NOT_FOUND"
+    }
+  }
+}

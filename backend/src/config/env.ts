@@ -1,4 +1,5 @@
-import { AppError } from '../errors/app-error.js';
+import { AppError } from '../common/errors/app-error.js';
+import { validateStorageEnvironment } from '../services/storage.service.js';
 
 export const getRequiredEnv = (name: string): string => {
   const value = process.env[name]?.trim();
@@ -31,6 +32,7 @@ export const validateEnvironment = () => {
   } else {
     getRequiredEnv('JWT_SECRET');
   }
+  validateStorageEnvironment();
 
   if (process.env.NODE_ENV === 'production' && from.endsWith('@resend.dev')) {
     throw new Error(

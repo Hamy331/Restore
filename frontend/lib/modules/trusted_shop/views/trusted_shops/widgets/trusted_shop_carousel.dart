@@ -4,12 +4,12 @@ import '../../../models/trusted_shop_item.dart';
 import '../../../widgets/trusted_shop_section_header.dart';
 import 'trusted_shop_card.dart';
 
-/// Một khu shop (Thương hiệu nổi tiếng, Mới gia nhập...): tiêu đề kèm icon
+/// Một khu shop (Thương hiệu nổi tiếng, Mới gia nhập...): tiêu đề kèm nhãn
 /// màu của khu và hàng thẻ shop cuộn ngang
 class TrustedShopCarousel extends StatelessWidget {
   final String title;
   final String subtitle;
-  final IconData icon;
+  final String eyebrow;
   final Color accent;
   final List<TrustedShopItem> shops;
   final ValueChanged<TrustedShopItem> onShopTap;
@@ -19,7 +19,7 @@ class TrustedShopCarousel extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
-    required this.icon,
+    required this.eyebrow,
     required this.accent,
     required this.shops,
     required this.onShopTap,
@@ -34,8 +34,8 @@ class TrustedShopCarousel extends StatelessWidget {
         TrustedShopSectionHeader(
           title: title,
           subtitle: subtitle,
-          icon: icon,
-          iconColor: accent,
+          eyebrow: eyebrow,
+          accent: accent,
         ),
         const SizedBox(height: 14),
         SizedBox(

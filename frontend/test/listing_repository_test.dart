@@ -123,4 +123,75 @@ void main() {
       expect(published.status, ListingStatus.pending);
     },
   );
+
+  test(
+    'publish creates the listing directly, retry updates it instead of creating again',
+    () async {
+      final dio = Dio(BaseOptions(baseUrl: 'http://localhost:3000/api/v1'));
+      final calls = <String>[];
+      var uploads = 0;
+      var failUpload = true;
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (request, handler) {
+            calls.add('${request.method} ${request.path}');
+            Object body = {'success': true};
+            if (request.path == '/listings' ||
+                request.path == '/listings/new') {
+              body = {
+                'data': {'id': 'new', 'status': 'PENDING', 'images': []},
+              };
+            } else if (request.method == 'POST' &&
+                request.path.endsWith('/images')) {
+              uploads++;
+              if (uploads == 2 && failUpload) {
+                handler.reject(
+                  DioException(
+                    requestOptions: request,
+                    type: DioExceptionType.connectionError,
+                  ),
+                );
+                return;
+              }
+              body = {
+                'data': {'url': '/api/v1/listings/media/$uploads.png'},
+              };
+            }
+            handler.resolve(
+              Response(requestOptions: request, data: body, statusCode: 200),
+            );
+          },
+        ),
+      );
+      final repository = ApiListingsRepository(
+        dio: dio,
+        readImage: (_) =>
+            Future.value(Uint8List.fromList([255, 216, 255, 224])),
+      );
+      ListingDraft? partial;
+      try {
+        await repository.publish(
+          const ListingDraft(images: ['/a.jpg', '/b.jpg']),
+          null,
+        );
+        fail('Expected second upload to fail');
+      } on ListingSaveException catch (error) {
+        partial = error.draft;
+      }
+      expect(partial.id, 'new');
+      expect(partial.status, ListingStatus.pending);
+      expect(
+        partial.images.first,
+        'http://localhost:3000/api/v1/listings/media/1.png',
+      );
+      failUpload = false;
+      final published = await repository.publish(partial, null);
+      expect(calls.where((call) => call == 'POST /listings'), hasLength(1));
+      expect(calls, contains('PUT /listings/new'));
+      expect(calls.where((call) => call.contains('drafts')), isEmpty);
+      expect(uploads, 3);
+      expect(published.status, ListingStatus.pending);
+      expect(published.images, hasLength(2));
+    },
+  );
 }

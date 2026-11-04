@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/theme/app_glass.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
@@ -14,6 +15,7 @@ import '../bloc/address_picker/address_picker_cubit.dart';
 import '../bloc/address_picker/address_picker_state.dart';
 import '../models/address_info.dart';
 import 'package:restore/data/models/administrative_unit_model.dart';
+import '../repositories/address_suggest_repository.dart';
 import '../repositories/location_repository.dart';
 import 'address_street_field.dart';
 import 'current_location_button.dart';
@@ -21,14 +23,21 @@ import 'location_notice_card.dart';
 
 /// Mở sheet chọn địa chỉ (tỉnh/thành → phường/xã → số nhà) hoặc lấy từ GPS.
 /// Cần [LocationRepository] và [DeviceLocationService] trong cây widget.
+/// [suggestRepository] để test; mặc định theo USE_MOCK_DATA.
 Future<AddressInfo?> showAddressPickerSheet(
   BuildContext context, {
   AddressInfo? initial,
+  AddressSuggestRepository? suggestRepository,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final cubit = AddressPickerCubit(
     repository: context.read<LocationRepository>(),
     locationService: context.read<DeviceLocationService>(),
+    suggestRepository:
+        suggestRepository ??
+        (AppEnvironment.useMockData
+            ? MockAddressSuggestRepository()
+            : ApiAddressSuggestRepository()),
     initial: initial,
   )..loadProvinces();
 
@@ -196,6 +205,8 @@ class _AddressPickerBody extends StatelessWidget {
                     AddressStreetField(
                       initialValue: state.streetAddress,
                       onChanged: cubit.changeStreetAddress,
+                      suggest: cubit.suggestStreets,
+                      onSuggestionSelected: cubit.applySuggestion,
                     ),
                     const SizedBox(height: 16),
                     _PrivacyNote(text: l10n.addressPrivacyNote),

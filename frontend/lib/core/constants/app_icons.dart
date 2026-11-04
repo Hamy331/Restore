@@ -39,6 +39,11 @@ class AppIcons {
 
   // Hành động
   static const IconData add = LucideIcons.plus300;
+
+  /// Nút giữa thanh điều hướng của gói tier cao (mở menu xoè)
+  static const IconData quickMenu = LucideIcons.layoutGrid400;
+  static const IconData posterPromo = LucideIcons.megaphone300;
+  static const IconData stats = LucideIcons.chartColumn300;
   static const IconData saveDraft = LucideIcons.save400;
   static const IconData search = LucideIcons.search300;
   static const IconData searchEmpty = LucideIcons.searchX300;
@@ -94,6 +99,16 @@ class AppIcons {
   static const IconData imageBroken = LucideIcons.imageOff300;
   static const IconData zoomIn = LucideIcons.zoomIn300;
   static const IconData expand = LucideIcons.maximize300;
+
+  // Viết bài (Bảng tin)
+  static const IconData emoji = LucideIcons.smile300;
+  static const IconData video = LucideIcons.squarePlay300;
+  static const IconData link = LucideIcons.link300;
+  static const IconData topic = LucideIcons.hash300;
+  static const IconData tagFriend = LucideIcons.userRoundPlus300;
+  static const IconData textStyle = LucideIcons.caseSensitive300;
+  static const IconData audienceFollowers = LucideIcons.usersRound300;
+  static const IconData remove = LucideIcons.circleX300;
 
   // Vị trí
   static const IconData location = LucideIcons.mapPin300;

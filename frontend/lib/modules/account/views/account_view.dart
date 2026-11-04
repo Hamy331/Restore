@@ -9,6 +9,9 @@ import '../../../core/ui/responsive/responsive_content.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
+import '../../auth/bloc/auth_context.dart';
+import 'package:restore/data/models/user_model.dart';
+import 'package:restore/modules/listings/views/listing_drafts/listing_drafts_view.dart';
 
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
@@ -16,6 +19,9 @@ class AccountView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // Trang này chỉ vào được khi đã đăng nhập (router chặn khách)
+    final user = context.watchUser();
+    if (user == null) return const SizedBox.shrink();
     return SafeArea(
       bottom: false,
       child: Column(
@@ -58,6 +64,7 @@ class AccountView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _IdentityCard(
+                        user: user,
                         onEdit: () => context.push('/account/edit'),
                       ),
                       const SizedBox(height: 10),
@@ -97,10 +104,15 @@ class AccountView extends StatelessWidget {
                         onTap: () => context.push('/favorites'),
                       ),
                       _AccountItem(
+                        icon: AppIcons.saveDraft,
+                        label: l10n.draftsTitle,
+                        onTap: () => context.push(ListingDraftsView.path),
+                      ),
+                      _AccountItem(
                         icon: AppIcons.star,
                         label: l10n.reviews,
                         trailing: 48.toString(),
-                        onTap: () => context.push('/seller/minh-anh/reviews'),
+                        onTap: () => context.push('/seller/${user.id}/reviews'),
                       ),
                       _AccountItem(
                         icon: AppIcons.notification,
@@ -158,9 +170,26 @@ class AccountView extends StatelessWidget {
 }
 
 class _IdentityCard extends StatelessWidget {
-  const _IdentityCard({required this.onEdit});
+  const _IdentityCard({required this.user, required this.onEdit});
 
+  final UserModel user;
   final VoidCallback onEdit;
+
+  /// Chữ cái đầu của chữ đầu và chữ cuối họ tên (VD "Nguyễn Minh Anh" → "NA")
+  String get _initials {
+    final words = user.fullName.trim().split(RegExp(r'\s+'));
+    final first = words.first.isEmpty ? user.email : words.first;
+    final last = words.length > 1 ? words.last : '';
+    return '${first.characters.first}${last.isEmpty ? '' : last.characters.first}'
+        .toUpperCase();
+  }
+
+  /// Che số điện thoại, giữ 3 số đầu và 4 số cuối (VD "090 ••• 1234")
+  static String _maskPhone(String phone) {
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    if (digits.length < 7) return phone;
+    return '${digits.substring(0, 3)} ••• ${digits.substring(digits.length - 4)}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -174,12 +203,15 @@ class _IdentityCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 32,
             backgroundColor: AppColors.infoBg,
+            foregroundImage: user.avatarUrl == null
+                ? null
+                : NetworkImage(user.avatarUrl!),
             child: Text(
-              'TP',
-              style: TextStyle(
+              _initials,
+              style: const TextStyle(
                 color: Color(0xFF1E3A8A),
                 fontWeight: FontWeight.w700,
               ),
@@ -191,23 +223,25 @@ class _IdentityCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.profileName,
+                  user.fullName.isEmpty ? user.username : user.fullName,
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  l10n.memberSince2022,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
+                if (user.createdAt case final createdAt?) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    l10n.memberSince(createdAt.year.toString()),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 3),
                 Text(
-                  l10n.maskedPhoneArea,
+                  user.phone == null ? user.email : _maskPhone(user.phone!),
                   style: const TextStyle(
                     fontSize: 11,
                     color: AppColors.textSecondary,

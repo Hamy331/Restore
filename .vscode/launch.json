@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "ReStore (API thật)",
+        "type": "dart",
+        "request": "launch",
+        "cwd": "frontend",
+        "program": "lib/main.dart",
+        "toolArgs": ["--dart-define=USE_MOCK_DATA=false"]
+      },
+      {
+        "name": "ReStore (dữ liệu mẫu)",
+        "type": "dart",
+        "request": "launch",
+        "cwd": "frontend",
+        "program": "lib/main.dart"
+      }
+    ]
+  }

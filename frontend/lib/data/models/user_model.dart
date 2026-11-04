@@ -35,9 +35,13 @@ class UserModel extends Equatable {
     this.updatedAt,
   });
 
+  /// Tên gọi trong lời chào: chữ cuối của họ tên (VD "Nguyễn Minh Anh" → "Anh")
+  String get givenName => fullName.trim().split(RegExp(r'\s+')).last;
+
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
     id: '${json['id']}',
-    email: json['email'] as String,
+    // Người dùng công khai (người bán, người đánh giá) không có email
+    email: json['email'] as String? ?? '',
     fullName: json['fullName'] as String? ?? '',
     username: json['username'] as String? ?? '',
     phone: json['phone'] as String?,

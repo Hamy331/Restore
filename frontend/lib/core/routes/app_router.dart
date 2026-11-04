@@ -6,20 +6,23 @@ import 'package:restore/modules/admin/presentation/admin_workspace.dart';
 import 'package:restore/modules/admin/presentation/admin_commerce.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:restore/core/ui/layouts/t_foundation_placeholder_layout.dart';
 import 'package:restore/modules/account/views/account_view.dart';
 import 'package:restore/modules/chat/views/messages_view.dart';
 import 'package:restore/modules/home/views/home/home_view.dart';
+import 'package:restore/modules/feed/views/feeds/feeds_view.dart';
+import 'package:restore/modules/feed/views/post_composer/post_composer_view.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_event.dart';
 import 'package:restore/modules/listings/repositories/category_repository.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/listings/repositories/listings_repository.dart';
+import 'package:restore/modules/listings/repositories/posting_quota_repository.dart';
 import 'package:restore/modules/listings/views/basic_info/basic_info_view.dart';
 import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
 import 'package:restore/modules/listings/views/listing_details/listing_details_view.dart';
 import 'package:restore/modules/listings/views/listing_preview/listing_preview_view.dart';
+import 'package:restore/modules/listings/views/listing_drafts/listing_drafts_view.dart';
 import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
@@ -42,8 +45,6 @@ import 'package:restore/core/utils/animations/app_page_transitions.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
 import 'package:restore/modules/shell/bloc/shell_badges_cubit.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
-import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/l10n/app_localizations.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -62,20 +63,24 @@ import '../../modules/boost/bloc/boost_listing_cubit.dart';
 import '../../modules/boost/views/boost_listing_view.dart';
 import '../../modules/auth/bloc/auth_bloc.dart';
 import '../../modules/auth/auth_route_guard.dart';
+import '../../modules/auth/views/splash/splash_view.dart';
+import 'router_refresh_stream.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-final appRouter = GoRouter(
+/// Router của app. Chạy lại `redirect` mỗi khi [authBloc] đổi trạng thái,
+/// nên mọi chuyển trang theo đăng nhập / đăng xuất / hết phiên nằm ở
+/// [authRouteRedirect], các trang không tự `go` sau khi đăng nhập.
+GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/welcome',
+  initialLocation: splashPath,
+  refreshListenable: RouterRefreshStream(authBloc.stream),
   // Đường dẫn chưa có trang (VD tính năng chưa làm) thì đưa về trang chủ;
   // bộ chặn đăng nhập sẽ tự chuyển sang /login nếu chưa đăng nhập
   onException: (_, _, router) => router.go('/home'),
-  redirect: (context, state) {
-    final authState = context.read<AuthBloc>().state;
-    return authRouteRedirect(authState, state.uri.path);
-  },
+  redirect: (_, state) => authRouteRedirect(authBloc.state, state.uri),
   routes: [
+    GoRoute(path: splashPath, builder: (_, _) => const SplashView()),
     GoRoute(path:'/blog',parentNavigatorKey:_rootNavigatorKey,builder:(_,_)=>const CommunityContentView(blog:true)),
     GoRoute(path:'/support',parentNavigatorKey:_rootNavigatorKey,builder:(_,_)=>const CommunityContentView()),
     if (kDebugMode || const bool.fromEnvironment('ENABLE_ADMIN_PREVIEW'))
@@ -160,14 +165,21 @@ final appRouter = GoRouter(
           ),
         ],
         child: BlocProvider(
-          create: (_) => CreateListingBloc(
-            listingsRepository: AppEnvironment.useMockData
-                ? MockListingsRepository()
-                : ApiListingsRepository(),
-            categoryRepository: AppEnvironment.useMockData
-                ? MockCategoryRepository()
-                : ApiCategoryRepository(),
-          )..add(const CategoriesRequested()),
+          create: (_) =>
+              CreateListingBloc(
+                  listingsRepository: AppEnvironment.useMockData
+                      ? MockListingsRepository()
+                      : ApiListingsRepository(),
+                  categoryRepository: AppEnvironment.useMockData
+                      ? MockCategoryRepository()
+                      : ApiCategoryRepository(),
+                  postingQuotaRepository: AppEnvironment.useMockData
+                      ? MockPostingQuotaRepository()
+                      : ApiPostingQuotaRepository(),
+                )
+                ..add(const CategoriesRequested())
+                ..add(const PostingQuotaRequested())
+                ..add(const DraftsRequested()),
           child: child,
         ),
       ),
@@ -191,6 +203,14 @@ final appRouter = GoRouter(
           pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
             state: state,
             child: const ListingDetailsView(),
+          ),
+        ),
+        // Tin nháp: soạn tiếp tin đã lưu (mở từ bước 1 hoặc trang Tài khoản)
+        GoRoute(
+          path: ListingDraftsView.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: const ListingDraftsView(),
           ),
         ),
         GoRoute(
@@ -217,17 +237,7 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/feeds',
-              builder: (context, _) {
-                final l10n = AppLocalizations.of(context)!;
-                return TFoundationPlaceholderLayout(
-                  title: l10n.feedsTitle,
-                  message: l10n.feedsComingSoon,
-                  icon: AppIcons.feeds,
-                );
-              },
-            ),
+            GoRoute(path: FeedsView.path, builder: (_, _) => const FeedsView()),
           ],
         ),
         StatefulShellBranch(
@@ -241,6 +251,17 @@ final appRouter = GoRouter(
           ],
         ),
       ],
+    ),
+    // Viết bài lên Bảng tin; panel=photos mở sẵn lưới ảnh
+    GoRoute(
+      path: PostComposerView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide<String>(
+        state: state,
+        child: PostComposerView(
+          openPhotos: state.uri.queryParameters['panel'] == 'photos',
+        ),
+      ),
     ),
     GoRoute(
       path: '/messages/:id',

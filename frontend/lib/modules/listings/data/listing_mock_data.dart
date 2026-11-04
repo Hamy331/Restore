@@ -1,6 +1,6 @@
 import 'package:restore/core/constants/app_images.dart';
 
-/// Dữ liệu mẫu dạng JSON, đúng cấu trúc response `GET /categories` ở backend.
+/// Dữ liệu mẫu dạng JSON, đúng cấu trúc response `GET /catalog/categories` ở backend.
 /// Mỗi danh mục tự khai báo bộ thuộc tính (attributes) nên thêm loại hàng mới
 /// chỉ cần thêm dữ liệu, không phải sửa giao diện.
 /// TODO: Khi backend có API thì dùng ApiCategoryRepository thay cho dữ liệu này.

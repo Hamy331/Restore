@@ -45,9 +45,7 @@
   "invalidOtpError": "Mã OTP không đúng. Kiểm tra và thử lại.",
   "accountTitle": "Tài khoản",
   "settingsTitle": "Cài đặt",
-  "profileName": "Ngô Tường Phát",
-  "memberSince2022": "Thành viên từ 2022",
-  "maskedPhoneArea": "090 ••• 1234 · Quận 1, TP.HCM",
+  "memberSince": "Thành viên từ {year}",
   "editProfile": "Chỉnh sửa hồ sơ",
   "activeListings": "Tin đang đăng",
   "soldListings": "Tin đã bán",
@@ -554,6 +552,7 @@
   "streetAddressLabel": "Số nhà, tên đường",
   "streetAddressHint": "VD: 12 Nguyễn Huệ",
   "streetAddressHelper": "Không bắt buộc, không hiển thị công khai",
+  "streetSuggestionsTitle": "Gợi ý địa chỉ",
   "addressPrivacyNote": "Người mua chỉ thấy phường/xã và tỉnh/thành. Vị trí được dùng để gợi ý tin đăng gần bạn.",
   "confirmAddress": "Xác nhận địa chỉ",
   "loadingLocations": "Đang tải danh sách...",
@@ -581,6 +580,7 @@
   "homeHeadline": "Hôm nay bạn muốn săn gì?",
   "homeSearchHint": "Tìm đồ cũ, đồ trao đổi...",
   "homeChangeArea": "Đổi khu vực",
+  "homeAreaLocating": "Đang định vị...",
   "homeForYouTitle": "Dành cho bạn",
   "homeLatestTitle": "Tin đăng mới",
   "homeSeeAll": "Xem tất cả",
@@ -1216,5 +1216,209 @@
   "shopDetailEmptyBody": "Theo dõi shop để biết ngay khi có sản phẩm mới.",
   "shopDetailEndOfList": "Bạn đã xem hết sản phẩm của shop",
   "shopDetailLoadErrorTitle": "Chưa tải được trang shop",
-  "shopDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé."
+  "shopDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "postingQuotaPersonalTitle": "Tài khoản cá nhân",
+  "postingQuotaBannerMessage": "Mỗi chuyên mục được {min} đến {max} tin miễn phí đang hiển thị. Mỗi tin hiển thị {days} ngày.",
+  "@postingQuotaBannerMessage": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRulesAction": "Xem quy định",
+  "postingQuotaUsage": "Đã đăng {used}/{limit} tin",
+  "@postingQuotaUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaFull": "Đã đủ {limit} tin",
+  "@postingQuotaFull": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaLastSlot": "Còn 1 lượt đăng",
+  "postingQuotaRemainingInCategory": "Còn {remaining}/{limit} lượt đăng trong chuyên mục này",
+  "@postingQuotaRemainingInCategory": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLimitTitle": "Chuyên mục đã đủ số tin",
+  "postingLimitMessage": "Tài khoản cá nhân được đăng tối đa {limit} tin đang hiển thị trong mục {category}. Hãy giải phóng một suất để đăng tin mới.",
+  "@postingLimitMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "postingLimitWaysTitle": "Cách giải phóng suất đăng",
+  "postingLimitTipSold": "Đánh dấu “Đã bán” cho món đã bán xong",
+  "postingLimitTipHide": "Ẩn tin bạn không còn muốn bán",
+  "postingLimitTipExpire": "Tin hết hạn sau {days} ngày cũng được trả lại suất",
+  "@postingLimitTipExpire": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "manageMyListings": "Quản lý tin đăng",
+  "chooseAnotherCategory": "Chọn mục khác",
+  "postingRulesTitle": "Quy định đăng tin",
+  "postingRulesSubtitle": "Áp dụng cho người bán cá nhân",
+  "postingRuleLimit": "Mỗi chuyên mục được {min} đến {max} tin miễn phí đang hiển thị. Món giá trị cao như điện thoại, xe cộ chỉ được 1 tin.",
+  "@postingRuleLimit": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRuleCounted": "Chỉ tính tin đang hiển thị và đang chờ duyệt. Tin đã bán, đã ẩn hoặc hết hạn không bị tính.",
+  "postingRuleDuration": "Mỗi tin hiển thị {days} ngày kể từ khi được duyệt.",
+  "@postingRuleDuration": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingRuleFree": "Đăng tin miễn phí. Mỗi tin được kiểm duyệt trước khi hiển thị.",
+  "postingRulePersonalUse": "Tài khoản cá nhân dành cho việc bán đồ của chính bạn. Nếu đăng bán nhiều và thường xuyên như kinh doanh, ReStore có thể chuyển bạn sang tài khoản bán chuyên.",
+  "postingRuleBusiness": "Gói Bán chuyên (sắp ra mắt): tối đa {limit} tin mỗi chuyên mục. Gói Cửa hàng có thêm trang cửa hàng riêng.",
+  "@postingRuleBusiness": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGreetingPro": "Chào nhà bán chuyên {name} 👋",
+  "homeGreetingShop": "Chào chủ shop {name} 👋",
+  "planPersonal": "Cá nhân",
+  "planPro": "Bán chuyên",
+  "planShop": "Cửa hàng",
+  "devPlanTag": "TEST",
+  "devPlanSwitchTooltip": "Đổi gói để test giao diện (chỉ đổi trong app)",
+  "quickMenuOpen": "Mở menu nhanh",
+  "quickMenuClose": "Đóng menu nhanh",
+  "quickActionPost": "Đăng tin",
+  "quickActionPoster": "Poster shop",
+  "quickActionBoost": "Đẩy tin",
+  "quickActionStats": "Thống kê",
+  "quickActionShopPage": "Trang shop",
+  "trustedShopsFamousEyebrow": "Chính hãng",
+  "trustedShopsDealsEyebrow": "Đang giảm giá",
+  "trustedShopsNewReleasesEyebrow": "Vừa ra mắt",
+  "trustedShopsNewShopsEyebrow": "Mới xác minh",
+  "trustedShopsShowcaseEyebrow": "Theo nhãn hàng",
+  "trustedShopsAllProductsEyebrow": "Khám phá",
+  "feedsComposePrompt": "Bạn đang nghĩ gì? Khoe món đồ hay hỏi cộng đồng",
+  "postAudienceTitle": "Ai được xem bài này?",
+  "postAudienceEveryone": "Mọi người",
+  "postAudienceEveryoneDesc": "Ai trên ReStore cũng xem được",
+  "postAudienceFollowers": "Người theo dõi",
+  "postAudienceFollowersDesc": "Chỉ người đang theo dõi bạn",
+  "postAudienceOnlyMe": "Chỉ mình tôi",
+  "postAudienceOnlyMeDesc": "Lưu riêng trên trang của bạn",
+  "postComposerSubmit": "Đăng",
+  "postComposerHint": "Khoe món đồ, chia sẻ kinh nghiệm hay hỏi cộng đồng...",
+  "postComposerRemovePhoto": "Bỏ ảnh",
+  "postComposerCover": "Ảnh bìa",
+  "postComposerListingTag": "Tin đăng của bạn",
+  "postComposerRemoveAttachment": "Bỏ",
+  "postComposerWithOne": "Cùng {name}",
+  "postComposerWithMany": "Cùng {name} và {count} người khác",
+  "postComposerBackground": "Nền màu",
+  "postComposerBackgroundDisabled": "Nền màu chỉ dùng cho bài ngắn, chưa có ảnh",
+  "postComposerNoBackground": "Không dùng nền",
+  "postComposerAttachListing": "Gắn tin đăng",
+  "postComposerAttachListingHint": "Hiện một tin đăng của bạn trong bài viết",
+  "postComposerTopic": "Chủ đề",
+  "postComposerTopicHint": "Giúp đúng người tìm thấy bài của bạn",
+  "postComposerTagFriends": "Gắn thẻ",
+  "postComposerTagFriendsHint": "Những người bạn đang theo dõi",
+  "postComposerTaggedCount": "Đã gắn {count} người",
+  "postComposerEmoji": "Biểu cảm",
+  "postComposerPhoto": "Ảnh",
+  "postComposerVideo": "Video",
+  "postComposerLink": "Liên kết",
+  "postComposerLinkHint": "Dán đường dẫn trang web muốn chia sẻ",
+  "postComposerLinkInvalid": "Liên kết chưa đúng",
+  "postComposerLocation": "Vị trí",
+  "postComposerTakePhoto": "Chụp ảnh",
+  "postComposerOpenGallery": "Thư viện",
+  "postComposerDone": "Xong",
+  "postComposerLoadError": "Chưa tải được tuỳ chọn bài viết, đang thử lại",
+  "postComposerDiscardTitle": "Bỏ bài viết này?",
+  "postComposerDiscardMessage": "Nội dung bạn vừa viết sẽ không được lưu",
+  "postComposerKeepEditing": "Tiếp tục viết",
+  "postComposerDiscard": "Bỏ bài viết",
+  "postComposerPhotoLimit": "Mỗi bài tối đa {count} ảnh",
+  "postComposerPhotoPermission": "ReStore cần quyền truy cập ảnh. Vui lòng bật trong Cài đặt.",
+  "postComposerNoListings": "Bạn chưa có tin đăng nào đang hiển thị để gắn",
+  "postComposerError": "Chưa đăng được bài, vui lòng thử lại",
+  "postComposerPosted": "Bài viết đã lên Bảng tin",
+  "authSessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+  "draftsTitle": "Tin nháp",
+  "draftsBannerTitle": "Soạn tiếp tin nháp",
+  "draftsBannerMessage": "Bạn có {count} tin chưa đăng",
+  "draftsBannerAction": "Xem",
+  "draftUntitled": "Chưa có tiêu đề",
+  "draftNoCategory": "Chưa chọn danh mục",
+  "draftEditedAt": "Sửa lúc {time}",
+  "draftPhotoCount": "{count} ảnh",
+  "draftsEmptyTitle": "Chưa có tin nháp",
+  "draftsEmptyMessage": "Khi đăng tin, bấm Lưu nháp để soạn tiếp lúc khác.",
+  "draftsLoadFailedTitle": "Không tải được tin nháp",
+  "draftsLoadFailedMessage": "Kiểm tra kết nối mạng rồi thử lại.",
+  "draftOpenFailed": "Không mở được tin nháp, có thể tin đã được đăng hoặc đã xóa",
+  "draftDeleteTitle": "Xóa tin nháp?",
+  "draftDeleteMessage": "Tin nháp và ảnh đã tải lên sẽ bị xóa, không khôi phục được.",
+  "draftDeleteConfirm": "Xóa nháp",
+  "draftDeleted": "Đã xóa tin nháp",
+  "draftDeletedNamed": "Đã xóa tin nháp “{title}”",
+  "draftDeleteFailed": "Xóa tin nháp thất bại, vui lòng thử lại",
+  "leaveDraftTitle": "Lưu tin trước khi thoát?",
+  "leaveDraftMessage": "Nội dung bạn vừa nhập chưa được lưu. Lưu nháp để soạn tiếp lúc khác.",
+  "leaveDraftSave": "Lưu nháp và thoát",
+  "leaveDraftDiscard": "Thoát, không lưu",
+  "draftLimitTitle": "Đã đủ {limit} tin nháp",
+  "draftLimitTitleUnknown": "Đã đủ số tin nháp",
+  "draftLimitMessage": "Tài khoản của bạn giữ được tối đa {limit} tin nháp. Hãy đăng hoặc xóa bớt tin nháp cũ để lưu tin này.",
+  "draftLimitMessageUnknown": "Tài khoản của bạn đã giữ đủ số tin nháp. Hãy đăng hoặc xóa bớt tin nháp cũ để lưu tin này.",
+  "draftLimitViewDrafts": "Xem tin nháp",
+  "draftsQuota": "Đang giữ {used}/{limit} tin nháp",
+  "listingImageTooLarge": "Có ảnh quá lớn (tối đa 5 MB). Hãy bỏ ảnh đó hoặc chọn ảnh khác.",
+  "listingImageUnsupported": "Có ảnh không đúng định dạng (chỉ nhận JPEG, PNG, WebP). Hãy bỏ ảnh đó hoặc chọn ảnh khác.",
+  "listingImageMissing": "{count} ảnh không còn trên máy nên đã được bỏ ra. Hãy chọn lại ảnh rồi lưu lại.",
+  "listingSaveNetworkError": "Không kết nối được máy chủ. Phần đã lưu được giữ lại, bạn thử lại nhé."
 }

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { verifyAccessToken } from '../modules/auth/token.service.js';
 import { Role } from '@prisma/client';
 import { findAuthUserById } from '../modules/auth/auth.repository.js';
+import { hasPermission, Permission } from '../common/auth/permissions.js';
 
 export interface AuthRequest extends Request {
   user?: { userId: string; email: string; role: Role };
@@ -51,7 +52,20 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
   }
 };
 
-export const authorizeRoles = (...allowedRoles: Role[]) =>
+/**
+ * Cho phép cả khách lẫn người đã đăng nhập.
+ * - Không gửi header Authorization: đi tiếp với req.user = undefined.
+ * - Có gửi header: kiểm tra như verifyToken; token sai/hết hạn trả 401
+ *   để app tự refresh token rồi gọi lại.
+ */
+export const optionalAuth = (req: AuthRequest, res: Response, next: NextFunction) =>
+  req.headers.authorization ? verifyToken(req, res, next) : next();
+
+/**
+ * Chỉ kiểm tra quyền, dùng sau verifyToken (req.user đã có).
+ * 401 AUTH_REQUIRED nếu chưa đăng nhập, 403 FORBIDDEN nếu vai trò thiếu quyền.
+ */
+export const authorizePermission = (...permissions: Permission[]) =>
   (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({
@@ -60,7 +74,7 @@ export const authorizeRoles = (...allowedRoles: Role[]) =>
         code: 'AUTH_REQUIRED',
       });
     }
-    if (!allowedRoles.includes(req.user.role)) {
+    if (!hasPermission(req.user.role, ...permissions)) {
       return res.status(403).json({
         success: false,
         error: 'Bạn không có quyền thực hiện thao tác này.',
@@ -69,3 +83,13 @@ export const authorizeRoles = (...allowedRoles: Role[]) =>
     }
     next();
   };
+
+/**
+ * Bắt buộc đăng nhập và có đủ quyền. Gộp verifyToken + authorizePermission trong một middleware.
+ * Dùng: router.post('/:id/favorite', requirePermission(PERMISSION.FAVORITE_WRITE), handler)
+ */
+export const requirePermission = (...permissions: Permission[]) => {
+  const check = authorizePermission(...permissions);
+  return (req: AuthRequest, res: Response, next: NextFunction) =>
+    verifyToken(req, res, (error?: unknown) => (error ? next(error) : check(req, res, next)));
+};

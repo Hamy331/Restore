@@ -6,6 +6,8 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../auth_validators.dart';
 import '../../bloc/auth_bloc.dart';
 import '../../bloc/auth_event.dart';
+import '../../bloc/auth_state.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../bloc/login/login_bloc.dart';
 import '../../bloc/login/login_event.dart';
 import '../../bloc/login/login_state.dart';
@@ -37,7 +39,8 @@ class _LoginMobileViewState extends State<LoginMobileView> {
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          context.read<AuthBloc>().add(LoggedIn(role: state.role));
+          // Router tự chuyển về trang đang định vào (?from=) hoặc /home
+          context.read<AuthBloc>().add(LoggedIn(state.user));
         }
       },
       builder: (context, state) => AuthScreen(
@@ -58,6 +61,17 @@ class _LoginMobileViewState extends State<LoginMobileView> {
                 'Đăng nhập để lưu tin, nhắn tin và đăng bán.',
                 style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
+              // Bị đăng xuất vì phiên hết hạn (không phải tự đăng xuất)
+              if (context.select<AuthBloc, bool>(
+                (bloc) =>
+                    bloc.state is AuthUnauthenticated &&
+                    (bloc.state as AuthUnauthenticated).sessionExpired,
+              )) ...[
+                const SizedBox(height: 16),
+                AuthFeedback(
+                  message: AppLocalizations.of(context)!.authSessionExpired,
+                ),
+              ],
               const SizedBox(height: 27),
               AuthTextField(
                 label: 'Email',
