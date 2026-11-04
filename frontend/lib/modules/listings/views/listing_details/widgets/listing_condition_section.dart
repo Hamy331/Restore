@@ -5,46 +5,77 @@ import 'package:restore/core/utils/animations/app_animation_durations.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_field_message.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
+import '../../../repositories/category_repository.dart';
 
-/// Danh sách mức tình trạng sản phẩm (dùng chung mọi danh mục), mỗi mức có mô tả ngắn
-/// để người bán chọn đúng dù là điện thoại, quần áo hay đồ nội thất.
-class ListingConditionSection extends StatelessWidget {
-  final ListingCondition? selected;
-  final bool hasError;
-  final ValueChanged<ListingCondition> onSelected;
-
+class ListingConditionSection extends StatefulWidget {
   const ListingConditionSection({
     super.key,
     required this.selected,
     required this.onSelected,
     this.hasError = false,
+    this.loadConditions,
   });
-
+  final ListingCondition? selected;
+  final bool hasError;
+  final ValueChanged<ListingCondition> onSelected;
+  final Future<Map<ListingCondition, String>> Function()? loadConditions;
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+  State<ListingConditionSection> createState() =>
+      _ListingConditionSectionState();
+}
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final condition in ListingCondition.values) ...[
-          _ConditionTile(
-            title: condition.label(l10n),
-            description: condition.description(l10n),
-            isSelected: condition == selected,
-            hasError: hasError,
-            onTap: () => onSelected(condition),
+class _ListingConditionSectionState extends State<ListingConditionSection> {
+  late Future<Map<ListingCondition, String>> _options = _load();
+  Future<Map<ListingCondition, String>> _load() =>
+      widget.loadConditions?.call() ??
+      (AppEnvironment.useMockData
+          ? Future.value({
+              for (final value in ListingCondition.values) value: '',
+            })
+          : ApiCategoryRepository().getActiveConditions());
+  @override
+  Widget build(
+    BuildContext context,
+  ) => FutureBuilder<Map<ListingCondition, String>>(
+    future: _options,
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return TextButton(
+          onPressed: () => setState(() => _options = _load()),
+          child: const Text('Không tải được tình trạng. Thử lại'),
+        );
+      }
+      if (!snapshot.hasData) return const LinearProgressIndicator();
+      final l10n = AppLocalizations.of(context)!;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (snapshot.data!.isEmpty)
+            const Text(
+              'Chưa có tình trạng được phép sử dụng. Vui lòng liên hệ hỗ trợ.',
+            ),
+          for (final entry in snapshot.data!.entries)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: _ConditionTile(
+                title: entry.value.isEmpty
+                    ? entry.key.label(l10n)
+                    : entry.value,
+                description: entry.key.description(l10n),
+                isSelected: entry.key == widget.selected,
+                hasError: widget.hasError,
+                onTap: () => widget.onSelected(entry.key),
+              ),
+            ),
+          AppFieldMessage(
+            errorText: widget.hasError ? l10n.fieldSelectRequiredError : null,
           ),
-          if (condition != ListingCondition.values.last)
-            const SizedBox(height: 8),
         ],
-        AppFieldMessage(
-          errorText: hasError ? l10n.fieldSelectRequiredError : null,
-        ),
-      ],
-    );
-  }
+      );
+    },
+  );
 }
 
 class _ConditionTile extends StatelessWidget {
@@ -96,9 +127,7 @@ class _ConditionTile extends StatelessWidget {
                 AnimatedSwitcher(
                   duration: AppAnimationDurations.fast,
                   child: Icon(
-                    isSelected
-                        ? AppIcons.radioOn
-                        : AppIcons.radioOff,
+                    isSelected ? AppIcons.radioOn : AppIcons.radioOff,
                     key: ValueKey(isSelected),
                     size: 20,
                     color: isSelected
