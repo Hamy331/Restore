@@ -39,6 +39,11 @@ class AppIcons {
 
   // Hành động
   static const IconData add = LucideIcons.plus300;
+
+  /// Nút giữa thanh điều hướng của gói tier cao (mở menu xoè)
+  static const IconData quickMenu = LucideIcons.layoutGrid400;
+  static const IconData posterPromo = LucideIcons.megaphone300;
+  static const IconData stats = LucideIcons.chartColumn300;
   static const IconData saveDraft = LucideIcons.save400;
   static const IconData search = LucideIcons.search300;
   static const IconData searchEmpty = LucideIcons.searchX300;

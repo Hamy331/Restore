@@ -2502,7 +2502,28 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get devPlanSwitchTooltip =>
-      'Đổi gói để test (chỉ khi dùng dữ liệu mẫu)';
+      'Đổi gói để test giao diện (chỉ đổi trong app)';
+
+  @override
+  String get quickMenuOpen => 'Mở menu nhanh';
+
+  @override
+  String get quickMenuClose => 'Đóng menu nhanh';
+
+  @override
+  String get quickActionPost => 'Đăng tin';
+
+  @override
+  String get quickActionPoster => 'Poster shop';
+
+  @override
+  String get quickActionBoost => 'Đẩy tin';
+
+  @override
+  String get quickActionStats => 'Thống kê';
+
+  @override
+  String get quickActionShopPage => 'Trang shop';
 
   @override
   String get trustedShopsFamousEyebrow => 'Chính hãng';

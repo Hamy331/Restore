@@ -2533,7 +2533,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get devPlanTag => 'TEST';
 
   @override
-  String get devPlanSwitchTooltip => 'Switch plan for testing (mock data only)';
+  String get devPlanSwitchTooltip => 'Switch plan to test the UI (in-app only)';
+
+  @override
+  String get quickMenuOpen => 'Open quick menu';
+
+  @override
+  String get quickMenuClose => 'Close quick menu';
+
+  @override
+  String get quickActionPost => 'Post';
+
+  @override
+  String get quickActionPoster => 'Shop poster';
+
+  @override
+  String get quickActionBoost => 'Boost';
+
+  @override
+  String get quickActionStats => 'Insights';
+
+  @override
+  String get quickActionShopPage => 'Shop page';
 
   @override
   String get trustedShopsFamousEyebrow => 'Official';

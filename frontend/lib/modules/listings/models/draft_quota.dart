@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:restore/data/models/enums/subscription_plan.dart';
 
 /// Số tin nháp đang giữ so với giới hạn của gói, nhận từ API
 /// `GET /listings/drafts/quota`. Gói Cá nhân 3, Cửa hàng Basic 10, Pro 30
@@ -11,6 +12,13 @@ class DraftQuota extends Equatable {
 
   /// Giới hạn mặc định của tài khoản cá nhân (dữ liệu mẫu)
   static const int personalLimit = 3;
+
+  /// Giới hạn mẫu theo gói: Cá nhân 3, Bán chuyên 10, Cửa hàng 30
+  static int mockLimitFor(SubscriptionPlan plan) => switch (plan) {
+    SubscriptionPlan.personal => personalLimit,
+    SubscriptionPlan.pro => 10,
+    SubscriptionPlan.shop => 30,
+  };
 
   int get remaining => (limit - used).clamp(0, limit);
   bool get isFull => used >= limit;
