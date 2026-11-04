@@ -1,4 +1,9 @@
+import 'package:restore/modules/content/views/community_content_view.dart';
+import 'package:restore/modules/admin/presentation/admin_live_workspace.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:restore/modules/admin/presentation/admin_workspace.dart';
+import 'package:restore/modules/admin/presentation/admin_commerce.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/modules/account/views/account_view.dart';
@@ -76,6 +81,19 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
   redirect: (_, state) => authRouteRedirect(authBloc.state, state.uri),
   routes: [
     GoRoute(path: splashPath, builder: (_, _) => const SplashView()),
+    GoRoute(path:'/blog',parentNavigatorKey:_rootNavigatorKey,builder:(_,_)=>const CommunityContentView(blog:true)),
+    GoRoute(path:'/support',parentNavigatorKey:_rootNavigatorKey,builder:(_,_)=>const CommunityContentView()),
+    if (kDebugMode || const bool.fromEnvironment('ENABLE_ADMIN_PREVIEW'))
+      GoRoute(
+        path: '/admin-preview',
+        builder: (context, _) => AdminWorkspace(onExit: () => context.go('/welcome')),
+      ),
+    GoRoute(path: '/admin',parentNavigatorKey:_rootNavigatorKey,builder:(_,_)=>const AdminLiveWorkspace()),
+    GoRoute(
+      path: '/admin/commerce',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const AdminCommerceView(),
+    ),
     GoRoute(path: '/welcome', builder: (_, _) => const WelcomeView()),
     GoRoute(
       path: '/login',

@@ -1,3 +1,4 @@
+import '../../auth/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -137,7 +138,19 @@ class AccountView extends StatelessWidget {
                       _AccountItem(
                         icon: AppIcons.help,
                         label: l10n.help,
-                        onTap: () => context.push('/settings'),
+                        onTap: () => context.push('/support'),
+                      ),
+                      if (context.watch<AuthBloc>().state
+                          case AuthAuthenticated(isAdmin: true))
+                        _AccountItem(
+                          icon: AppIcons.settings,
+                          label: 'Quản trị hệ thống',
+                          onTap: () => context.push('/admin'),
+                        ),
+                      _AccountItem(
+                        icon: AppIcons.feeds,
+                        label: 'Blog ReStore',
+                        onTap: () => context.push('/blog'),
                       ),
                       _AccountItem(
                         icon: AppIcons.logout,

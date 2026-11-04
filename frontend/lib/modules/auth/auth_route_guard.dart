@@ -28,7 +28,7 @@ bool isPublicAuthPath(String path) => publicAuthPaths.contains(path);
 
 /// Khách chưa đăng nhập vẫn xem được: trang auth, trang chủ, tìm kiếm, chi tiết tin, trang người bán
 bool isPublicRoute(String path) {
-  if (isPublicAuthPath(path) || path == '/home' || path == '/search') {
+  if (isPublicAuthPath(path) || path == '/home' || path == '/search' || path == '/blog') {
     return true;
   }
 
@@ -42,7 +42,8 @@ bool isPublicRoute(String path) {
 /// - Đang khôi phục phiên: giữ ở /splash, nhớ trang đang định vào trong `?from=`.
 /// - Chưa đăng nhập mà vào trang cần tài khoản: sang /login?from=..., đăng nhập
 ///   xong quay lại đúng trang đó.
-/// - Đã đăng nhập mà ở trang dành cho khách: về `from` hoặc /home.
+/// - Đã đăng nhập mà ở trang dành cho khách: về `from`, hoặc /admin (admin) / /home.
+/// - Không phải admin mà vào /admin...: về /home.
 String? authRouteRedirect(AuthState authState, Uri uri) {
   final path = uri.path;
   final from = _safeFrom(uri.queryParameters['from']);
@@ -53,8 +54,10 @@ String? authRouteRedirect(AuthState authState, Uri uri) {
   }
 
   if (authState is AuthAuthenticated) {
+    // Trang quản trị chỉ dành cho admin
+    if (path.startsWith('/admin') && !authState.isAdmin) return '/home';
     if (path == splashPath || guestOnlyAuthPaths.contains(path)) {
-      return from ?? '/home';
+      return from ?? (authState.isAdmin ? '/admin' : '/home');
     }
     return null;
   }
