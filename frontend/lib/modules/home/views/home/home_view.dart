@@ -10,18 +10,24 @@ import '../../repositories/home_repository.dart';
 import 'home_mobile_view.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  const HomeView({super.key, this.homeRepository, this.categoryRepository});
+  final HomeRepository? homeRepository;
+  final CategoryRepository? categoryRepository;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => HomeCubit(
-        homeRepository: AppEnvironment.useMockData
-            ? MockHomeRepository()
-            : ApiHomeRepository(),
-        categoryRepository: AppEnvironment.useMockData
-            ? MockCategoryRepository()
-            : ApiCategoryRepository(),
+        homeRepository:
+            homeRepository ??
+            (AppEnvironment.useMockData
+                ? MockHomeRepository()
+                : ApiHomeRepository()),
+        categoryRepository:
+            categoryRepository ??
+            (AppEnvironment.useMockData
+                ? MockCategoryRepository()
+                : ApiCategoryRepository()),
       )..load(),
       // Trang chủ được giữ trong thanh điều hướng nên không tạo lại khi
       // đăng nhập / đăng xuất: tải lại để tin gợi ý và tin đã lưu đúng người

@@ -30,7 +30,7 @@ class ApiCategoryRepository implements CategoryRepository {
   Future<Map<ListingCondition, String>> getActiveConditions() async {
     final data =
         (await _apiClient.dio.get<Map<String, dynamic>>(
-              '/conditions',
+              '/catalog/conditions',
             )).data!['data']
             as List;
     return {

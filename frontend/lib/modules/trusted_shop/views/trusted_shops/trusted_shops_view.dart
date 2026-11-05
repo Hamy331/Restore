@@ -14,7 +14,8 @@ import 'trusted_shops_mobile_view.dart';
 class TrustedShopsView extends StatelessWidget {
   final String? openShopId;
 
-  const TrustedShopsView({super.key, this.openShopId});
+  const TrustedShopsView({super.key, this.openShopId, this.repository});
+  final TrustedShopRepository? repository;
 
   static const String path = '/trusted-shops';
 
@@ -26,9 +27,11 @@ class TrustedShopsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => TrustedShopsCubit(
-        repository: AppEnvironment.useMockData
-            ? MockTrustedShopRepository()
-            : ApiTrustedShopRepository(),
+        repository:
+            repository ??
+            (AppEnvironment.useMockData
+                ? MockTrustedShopRepository()
+                : ApiTrustedShopRepository()),
       )..start(),
       child: TResponsiveLayout(
         mobile: TrustedShopsMobileView(openShopId: openShopId),

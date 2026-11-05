@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:restore/core/network/api_client.dart';
+import 'package:restore/modules/listings/repositories/category_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
@@ -8,6 +10,33 @@ import 'package:restore/modules/listings/repositories/listings_repository.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
 void main() {
+  test('condition options use the namespaced catalog endpoint', () async {
+    final client = ApiClient();
+    String? requestedPath;
+    final fixture = InterceptorsWrapper(
+      onRequest: (request, handler) {
+        requestedPath = request.path;
+        handler.resolve(
+          Response(
+            requestOptions: request,
+            data: <String, dynamic>{
+              'data': [
+                {'condition': 'NEW', 'name': 'Mới'},
+              ],
+            },
+            statusCode: 200,
+          ),
+        );
+      },
+    );
+    client.dio.interceptors.insert(0, fixture);
+    addTearDown(() => client.dio.interceptors.remove(fixture));
+    final options = await ApiCategoryRepository(
+      apiClient: client,
+    ).getActiveConditions();
+    expect(requestedPath, '/catalog/conditions');
+    expect(options.values.single, 'Mới');
+  });
   test('owner draft resumes unset condition/price and server media origin', () {
     final item = ListingModel.fromJson({
       'id': 'draft',
