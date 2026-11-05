@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:restore/modules/feeds/repositories/feeds_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,9 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/core/theme/theme.dart';
-import 'package:restore/modules/feeds/bloc/feeds_cubit.dart';
-import 'package:restore/modules/feeds/views/feeds_view.dart';
-import 'package:restore/modules/feeds/views/widgets/feed_post_card.dart';
+import 'package:restore/modules/feeds/bloc/feeds/feeds_cubit.dart';
+import 'package:restore/modules/feeds/models/feed_models.dart';
+import 'package:restore/modules/feeds/views/feeds/feeds_view.dart';
+import 'package:restore/modules/feeds/widgets/feed_post_card.dart';
 
 Widget host(Locale locale, Widget child) => MaterialApp(
   theme: AppTheme.lightTheme,
@@ -297,8 +297,7 @@ Map<String, dynamic> fakePost(String name) => {
   'isFollowingAuthor': false,
 };
 
-class FakeFeedsRepository extends FeedsRepository {
-  FakeFeedsRepository() : super(dio: Dio());
+class FakeFeedsRepository implements FeedsRepository {
   final rows = [fakePost('Minh Anh'), fakePost('Hoàng Huy')];
   final Map<String, List<FeedComment>> replies = {};
   final List<String> reports = [];
@@ -389,4 +388,7 @@ class FakeFeedsRepository extends FeedsRepository {
   @override
   Future<void> report(FeedPost post, String reason) async =>
       reports.add('${post.authorId}:$reason');
+
+  @override
+  Future<String> upload(String path) async => 'https://example.test/$path';
 }

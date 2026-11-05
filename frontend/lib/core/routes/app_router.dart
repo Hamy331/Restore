@@ -6,18 +6,19 @@ import 'package:restore/modules/admin/presentation/admin_workspace.dart';
 import 'package:restore/modules/admin/presentation/admin_commerce.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:restore/modules/account/repositories/profile_repository.dart';
-import 'package:restore/modules/account/views/follow_list_view.dart';
-import 'package:restore/modules/account/views/language_settings_view.dart';
-import 'package:restore/modules/account/views/public_profile_view.dart';
-import 'package:restore/modules/account/views/account_view.dart';
-import 'package:restore/modules/chat/views/messages_view.dart';
-import 'package:restore/modules/chat/views/live_messages_view.dart';
-import 'package:restore/modules/chat/views/live_chat_conversation_view.dart';
-import 'package:restore/modules/home/views/home/home_view.dart';
 // Tab Bảng tin dùng module feeds (danh sách + đăng bài có API); màn soạn bài
 // nhiều tuỳ chọn của module feed vẫn ở /feeds/compose.
-import 'package:restore/modules/feeds/views/feeds_view.dart';
+import 'package:restore/modules/feeds/views/feeds/feeds_view.dart';
+import 'package:restore/modules/account/models/profile_models.dart';
+import 'package:restore/modules/account/views/follow_list/follow_list_view.dart';
+import 'package:restore/modules/account/views/language_settings/language_settings_view.dart';
+import 'package:restore/modules/account/views/public_profile/public_profile_view.dart';
+import 'package:restore/modules/account/views/account/account_view.dart';
+import 'package:restore/modules/chat/views/messages/messages_view.dart';
+import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
+import 'package:restore/modules/chat/views/conversation/live_chat_conversation_view.dart';
+import 'package:restore/modules/home/views/home/home_view.dart';
+
 import 'package:restore/modules/feed/views/post_composer/post_composer_view.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
@@ -66,7 +67,7 @@ import '../../modules/auth/views/register/register_view.dart';
 import '../../modules/auth/views/verification/auth_success_view.dart';
 import '../../modules/auth/views/verification/email_verification_view.dart';
 import '../../modules/auth/views/welcome/welcome_view.dart';
-import '../../modules/chat/views/chat_conversation_view.dart';
+import '../../modules/chat/views/conversation/chat_conversation_view.dart';
 import '../../modules/boost/bloc/boost_listing_cubit.dart';
 import '../../modules/boost/views/boost_listing_view.dart';
 import '../../modules/auth/bloc/auth_bloc.dart';
@@ -167,23 +168,15 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
           RepositoryProvider(create: (_) => MediaPickerService()),
           RepositoryProvider(create: (_) => DeviceLocationService()),
           RepositoryProvider<LocationRepository>(
-            create: (_) => AppEnvironment.useMockData
-                ? MockLocationRepository()
-                : ApiLocationRepository(),
+            create: (_) => ApiLocationRepository(),
           ),
         ],
         child: BlocProvider(
           create: (_) =>
               CreateListingBloc(
-                  listingsRepository: AppEnvironment.useMockData
-                      ? MockListingsRepository()
-                      : ApiListingsRepository(),
-                  categoryRepository: AppEnvironment.useMockData
-                      ? MockCategoryRepository()
-                      : ApiCategoryRepository(),
-                  postingQuotaRepository: AppEnvironment.useMockData
-                      ? MockPostingQuotaRepository()
-                      : ApiPostingQuotaRepository(),
+                  listingsRepository: ApiListingsRepository(),
+                  categoryRepository: ApiCategoryRepository(),
+                  postingQuotaRepository: ApiPostingQuotaRepository(),
                 )
                 ..add(const CategoriesRequested())
                 ..add(const PostingQuotaRequested())
@@ -341,7 +334,6 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
         state: state,
         child: ProductDetailView(
-          demoPreview: state.uri.queryParameters['feedPreview'] == 'true',
           listingId: state.pathParameters['id']!,
           preview: state.extra is ListingModel
               ? state.extra! as ListingModel

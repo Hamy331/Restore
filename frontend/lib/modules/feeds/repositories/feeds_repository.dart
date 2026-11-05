@@ -3,8 +3,32 @@ import '../../../core/network/api_client.dart';
 import '../../../services/image_upload_service.dart';
 import '../models/feed_models.dart';
 
-class FeedsRepository {
-  FeedsRepository({Dio? dio, ImageUploadService? uploader})
+typedef LikeResult = ({bool liked, int likes});
+
+/// Hợp đồng dữ liệu bảng tin
+abstract class FeedsRepository {
+  Future<FeedUser> me();
+
+  /// [authorId] khác null thì chỉ lấy bài của tác giả đó (trang hồ sơ).
+  Future<FeedPage<FeedPost>> posts({
+    bool following = false,
+    String? authorId,
+    String? cursor,
+  });
+  Future<FeedPost> publish(String text, String? imageUrl);
+  Future<void> delete(String postId);
+  Future<LikeResult> likePost(String id, bool value);
+  Future<LikeResult> likeComment(String id, bool value);
+  Future<FeedPage<FeedComment>> comments(String postId, {String? cursor});
+  Future<FeedComment> comment(String postId, String text);
+  Future<void> follow(String userId, bool value);
+  Future<void> report(FeedPost post, String reason);
+  Future<String> upload(String path);
+}
+
+/// Gọi backend `/feeds`, `/feed-comments`, `/users/:id/follow`
+class ApiFeedsRepository implements FeedsRepository {
+  ApiFeedsRepository({Dio? dio, ImageUploadService? uploader})
     : _dio = dio ?? ApiClient().dio,
       _uploader = uploader;
   final Dio _dio;
@@ -17,9 +41,10 @@ class FeedsRepository {
     (await _dio.get(path, queryParameters: query)).data['data'],
   );
 
+  @override
   Future<FeedUser> me() async => FeedUser.fromJson(await _get('/users/me'));
 
-  /// [authorId] khác null thì chỉ lấy bài của tác giả đó (trang hồ sơ).
+  @override
   Future<FeedPage<FeedPost>> posts({
     bool following = false,
     String? authorId,
@@ -36,6 +61,7 @@ class FeedsRepository {
     ], data['nextCursor']);
   }
 
+  @override
   Future<FeedPost> publish(String text, String? imageUrl) async =>
       FeedPost.fromJson(
         Map<String, dynamic>.from(
@@ -46,17 +72,20 @@ class FeedsRepository {
         ),
       );
 
+  @override
   Future<void> delete(String postId) async {
     await _dio.delete('/feeds/$postId');
   }
 
-  Future<({bool liked, int likes})> likePost(String id, bool value) =>
+  @override
+  Future<LikeResult> likePost(String id, bool value) =>
       _like('/feeds/$id/like', value);
 
-  Future<({bool liked, int likes})> likeComment(String id, bool value) =>
+  @override
+  Future<LikeResult> likeComment(String id, bool value) =>
       _like('/feed-comments/$id/like', value);
 
-  Future<({bool liked, int likes})> _like(String path, bool value) async {
+  Future<LikeResult> _like(String path, bool value) async {
     final data = (await _dio.request(
       path,
       options: Options(method: value ? 'PUT' : 'DELETE'),
@@ -67,6 +96,7 @@ class FeedsRepository {
     );
   }
 
+  @override
   Future<FeedPage<FeedComment>> comments(
     String postId, {
     String? cursor,
@@ -78,6 +108,7 @@ class FeedsRepository {
     ], data['nextCursor']);
   }
 
+  @override
   Future<FeedComment> comment(String postId, String text) async =>
       FeedComment.fromJson(
         Map<String, dynamic>.from(
@@ -88,6 +119,7 @@ class FeedsRepository {
         ),
       );
 
+  @override
   Future<void> follow(String userId, bool value) async {
     await _dio.request(
       '/users/$userId/follow',
@@ -97,6 +129,7 @@ class FeedsRepository {
 
   /// Báo cáo bài viết qua luồng kiểm duyệt hiện có: đối tượng là tác giả,
   /// bằng chứng ghi rõ bài viết bị báo cáo.
+  @override
   Future<void> report(FeedPost post, String reason) async {
     final content = post.text.isNotEmpty ? post.text : post.image ?? '';
     await _dio.post(
@@ -110,6 +143,7 @@ class FeedsRepository {
     );
   }
 
+  @override
   Future<String> upload(String path) =>
       (_uploader ?? ImageUploadService(dio: _dio)).upload(path);
 }

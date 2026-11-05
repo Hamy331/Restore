@@ -2,19 +2,27 @@ import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import '../core/network/api_client.dart';
 
-/// Tải ảnh cục bộ lên `POST /media/images` (Cloudinary), trả về URL HTTPS.
-/// Dùng chung cho ảnh bài viết và ảnh đại diện.
+/// Mục đích ảnh; backend lưu mỗi loại vào một khu riêng (feeds, avatars).
+enum ImagePurpose { feed, avatar }
+
+/// Tải ảnh cục bộ lên `POST /media/images`, trả về đường dẫn `/api/v1/media/...`.
+/// Lưu nguyên đường dẫn này lên server; khi hiển thị thì `resolveMediaUrl`
+/// ghép thêm origin của API.
 class ImageUploadService {
   ImageUploadService({Dio? dio}) : _dio = dio ?? ApiClient().dio;
   final Dio _dio;
 
   static const maxBytes = 5 * 1024 * 1024;
 
-  Future<String> upload(String path) async {
+  Future<String> upload(
+    String path, {
+    ImagePurpose purpose = ImagePurpose.feed,
+  }) async {
     final bytes = await XFile(path).readAsBytes();
     if (bytes.length > maxBytes) throw const ImageTooLargeException();
     final response = await _dio.post(
       '/media/images',
+      queryParameters: {'purpose': purpose.name},
       data: Stream.value(bytes),
       options: Options(
         contentType: contentType(bytes),

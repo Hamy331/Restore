@@ -1,14 +1,20 @@
-class FeedUser {
+import '../../../core/network/media_url.dart';
+import 'package:equatable/equatable.dart';
+
+class FeedUser extends Equatable {
   const FeedUser({required this.id, required this.name, this.avatarUrl});
   FeedUser.fromJson(Map<String, dynamic> j)
     : id = '${j['id'] ?? ''}',
       name = j['fullName'] as String? ?? '',
-      avatarUrl = j['avatarUrl'] as String?;
+      avatarUrl = resolveMediaUrl(j['avatarUrl'] as String?);
   final String id, name;
   final String? avatarUrl;
+
+  @override
+  List<Object?> get props => [id, name, avatarUrl];
 }
 
-class FeedComment {
+class FeedComment extends Equatable {
   const FeedComment({
     required this.id,
     required this.author,
@@ -38,9 +44,12 @@ class FeedComment {
     likes: likes ?? this.likes,
     liked: liked ?? this.liked,
   );
+
+  @override
+  List<Object?> get props => [id, author, text, createdAt, likes, liked];
 }
 
-class FeedPost {
+class FeedPost extends Equatable {
   const FeedPost({
     required this.id,
     required this.author,
@@ -58,7 +67,7 @@ class FeedPost {
       author = FeedUser.fromJson(Map<String, dynamic>.from(j['author'])),
       text = j['text'] ?? '',
       createdAt = DateTime.parse('${j['createdAt']}'),
-      image = j['imageUrl'],
+      image = resolveMediaUrl(j['imageUrl'] as String?),
       likes = (j['likeCount'] as num?)?.toInt() ?? 0,
       liked = j['likedByMe'] == true,
       isMine = j['isMine'] == true,
@@ -90,6 +99,20 @@ class FeedPost {
     following: following ?? this.following,
     commentCount: commentCount ?? this.commentCount,
   );
+
+  @override
+  List<Object?> get props => [
+    id,
+    author,
+    text,
+    createdAt,
+    image,
+    isMine,
+    likes,
+    liked,
+    following,
+    commentCount,
+  ];
 }
 
 /// Một trang kết quả phân trang bằng con trỏ.

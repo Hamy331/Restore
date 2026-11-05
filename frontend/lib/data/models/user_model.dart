@@ -1,3 +1,4 @@
+import 'package:restore/core/network/media_url.dart';
 import 'package:equatable/equatable.dart';
 import 'package:restore/data/models/enums/account_status.dart';
 import 'package:restore/data/models/enums/user_role.dart';
@@ -45,7 +46,7 @@ class UserModel extends Equatable {
     fullName: json['fullName'] as String? ?? '',
     username: json['username'] as String? ?? '',
     phone: json['phone'] as String?,
-    avatarUrl: json['avatarUrl'] as String?,
+    avatarUrl: resolveMediaUrl(json['avatarUrl'] as String?),
     role: UserRole.fromApi(json['role'] as String?),
     status: AccountStatus.fromApi(json['status'] as String?),
     ratingAverage: (json['ratingAverage'] as num?)?.toDouble() ?? 0,

@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/modules/account/bloc/account_profile_cubit.dart';
-import 'package:restore/modules/account/bloc/follow_list_cubit.dart';
-import 'package:restore/modules/account/bloc/public_profile_cubit.dart';
-import 'package:restore/modules/account/bloc/user_profile_cubit.dart';
-import 'package:restore/modules/account/data/account_mock_listings.dart';
-import 'package:restore/modules/account/repositories/profile_repository.dart';
-import 'package:restore/modules/account/views/account_view.dart';
+import 'package:restore/modules/account/bloc/account_listings/account_listings_cubit.dart';
+import 'package:restore/modules/account/models/account_listing.dart';
+import 'package:restore/modules/account/bloc/follow_list/follow_list_cubit.dart';
+import 'package:restore/modules/account/bloc/public_profile/public_profile_cubit.dart';
+import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dart';
+import 'package:restore/modules/account/bloc/user_profile/user_profile_state.dart';
+import 'package:restore/modules/account/models/profile_models.dart';
+import 'support/fake_account_listings_repository.dart';
+import 'support/fake_profile_repository.dart';
+import 'package:restore/modules/account/views/account/account_view.dart';
 
 Widget host(Widget child) => MaterialApp(
   locale: const Locale('vi'),
@@ -33,7 +36,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    await tester.pumpWidget(host(const AccountView()));
+    await tester.pumpWidget(host(account()));
     await tester.pumpAndSettle();
 
     expect(find.text('Nguyễn Hoàng Huy'), findsOneWidget);
@@ -89,7 +92,7 @@ void main() {
   testWidgets('edit dialog validates and reports a taken username', (
     tester,
   ) async {
-    await tester.pumpWidget(host(const AccountView()));
+    await tester.pumpWidget(host(account()));
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Chỉnh sửa trang'));
     await tester.pumpAndSettle();
@@ -109,7 +112,7 @@ void main() {
   });
 
   test('listings load per tab and move between tabs', () async {
-    final cubit = AccountProfileCubit(MockAccountListingsSource());
+    final cubit = AccountListingsCubit(FakeAccountListingsRepository());
     await cubit.load();
     expect(cubit.state.count(AccountListingStatus.visible), 3);
     expect(cubit.state.count(AccountListingStatus.hidden), 0);
@@ -122,7 +125,7 @@ void main() {
   });
 
   test('public profile follows and updates the follower count', () async {
-    final cubit = PublicProfileCubit(MockProfileRepository(), 'other');
+    final cubit = PublicProfileCubit(FakeProfileRepository(), 'other');
     await cubit.load();
     expect(cubit.state.profile!.isFollowing, isFalse);
     await cubit.toggleFollow();
@@ -145,7 +148,7 @@ void main() {
   });
 
   test('saving maps backend username errors', () async {
-    final cubit = UserProfileCubit(MockProfileRepository());
+    final cubit = UserProfileCubit(FakeProfileRepository());
     await cubit.load();
     expect(
       await cubit.update({'username': 'taken'}),
@@ -157,7 +160,7 @@ void main() {
   });
 }
 
-class _FollowRepository extends MockProfileRepository {
+class _FollowRepository extends FakeProfileRepository {
   final followed = <String>[];
   @override
   Future<void> follow(String id) async => followed.add(id);
@@ -171,3 +174,9 @@ class _FollowRepository extends MockProfileRepository {
     hasMore: false,
   );
 }
+
+/// Trang tài khoản dùng dữ liệu trong bộ nhớ thay cho API.
+Widget account() => AccountView(
+  profileRepository: FakeProfileRepository(),
+  listingsRepository: FakeAccountListingsRepository(),
+);
