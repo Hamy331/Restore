@@ -20,7 +20,12 @@ abstract class FeedsRepository {
   Future<LikeResult> likePost(String id, bool value);
   Future<LikeResult> likeComment(String id, bool value);
   Future<FeedPage<FeedComment>> comments(String postId, {String? cursor});
-  Future<FeedComment> comment(String postId, String text);
+  Future<FeedComment> comment(
+    String postId,
+    String text, {
+    String? imageUrl,
+    String? parentId,
+  });
   Future<void> follow(String userId, bool value);
   Future<void> report(FeedPost post, String reason);
   Future<String> upload(String path);
@@ -109,15 +114,19 @@ class ApiFeedsRepository implements FeedsRepository {
   }
 
   @override
-  Future<FeedComment> comment(String postId, String text) async =>
-      FeedComment.fromJson(
-        Map<String, dynamic>.from(
-          (await _dio.post(
-            '/feeds/$postId/comments',
-            data: {'text': text},
-          )).data['data'],
-        ),
-      );
+  Future<FeedComment> comment(
+    String postId,
+    String text, {
+    String? imageUrl,
+    String? parentId,
+  }) async => FeedComment.fromJson(
+    Map<String, dynamic>.from(
+      (await _dio.post(
+        '/feeds/$postId/comments',
+        data: {'text': text, 'imageUrl': ?imageUrl, 'parentId': ?parentId},
+      )).data['data'],
+    ),
+  );
 
   @override
   Future<void> follow(String userId, bool value) async {

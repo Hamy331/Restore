@@ -20,17 +20,22 @@ class FeedComment extends Equatable {
     required this.author,
     required this.text,
     required this.createdAt,
+    this.image,
+    this.parentId,
     this.likes = 0,
     this.liked = false,
   });
   FeedComment.fromJson(Map<String, dynamic> j)
     : id = j['id'],
       author = FeedUser.fromJson(Map<String, dynamic>.from(j['author'])),
-      text = j['text'],
+      text = j['text'] ?? '',
+      image = resolveMediaUrl(j['imageUrl'] as String?),
+      parentId = j['parentId'] as String?,
       createdAt = DateTime.parse('${j['createdAt']}'),
       likes = (j['likeCount'] as num?)?.toInt() ?? 0,
       liked = j['likedByMe'] == true;
   final String id, text;
+  final String? image, parentId;
   final FeedUser author;
   final DateTime createdAt;
   final int likes;
@@ -41,12 +46,23 @@ class FeedComment extends Equatable {
     author: author,
     text: text,
     createdAt: createdAt,
+    image: image,
+    parentId: parentId,
     likes: likes ?? this.likes,
     liked: liked ?? this.liked,
   );
 
   @override
-  List<Object?> get props => [id, author, text, createdAt, likes, liked];
+  List<Object?> get props => [
+    id,
+    author,
+    text,
+    createdAt,
+    likes,
+    liked,
+    image,
+    parentId,
+  ];
 }
 
 class FeedPost extends Equatable {

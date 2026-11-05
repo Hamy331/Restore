@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/core/config/app_environment.dart';
-import 'package:restore/modules/auth/bloc/auth_bloc.dart';
-import 'package:restore/modules/auth/bloc/auth_state.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_state.dart';
 
 /// Gửi heartbeat khi người dùng đang mở ứng dụng; backend suy ra online trong 2 phút.
 class PresenceReporter extends StatefulWidget {

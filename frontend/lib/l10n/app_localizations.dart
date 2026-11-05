@@ -5791,6 +5791,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t reach the server. What was saved is kept, please try again.'**
   String get listingSaveNetworkError;
+
+  /// No description provided for @feedReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get feedReply;
+
+  /// No description provided for @feedHideReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide replies'**
+  String get feedHideReplies;
+
+  /// No description provided for @feedViewReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'View {count} replies'**
+  String feedViewReplies(int count);
+
+  /// No description provided for @feedReplyTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {name}'**
+  String feedReplyTo(String name);
+
+  /// No description provided for @feedCancelReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel reply'**
+  String get feedCancelReply;
+
+  /// No description provided for @feedMoreComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more comments'**
+  String get feedMoreComments;
 }
 
 class _AppLocalizationsDelegate

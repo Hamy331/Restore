@@ -3263,4 +3263,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get listingSaveNetworkError =>
       'Couldn\'t reach the server. What was saved is kept, please try again.';
+
+  @override
+  String get feedReply => 'Reply';
+
+  @override
+  String get feedHideReplies => 'Hide replies';
+
+  @override
+  String feedViewReplies(int count) {
+    return 'View $count replies';
+  }
+
+  @override
+  String feedReplyTo(String name) {
+    return 'Replying to $name';
+  }
+
+  @override
+  String get feedCancelReply => 'Cancel reply';
+
+  @override
+  String get feedMoreComments => 'Load more comments';
 }

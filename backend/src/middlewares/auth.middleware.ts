@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { verifyAccessToken } from '../modules/auth/token.service.js';
+import { verifyAccessToken } from '../modules/auth/services/token.service.js';
 import { Role } from '@prisma/client';
-import { findAuthUserById } from '../modules/auth/auth.repository.js';
+import { findAuthUserById } from '../modules/auth/repositories/auth.repository.js';
 import { hasPermission, Permission } from '../common/auth/permissions.js';
 
 export interface AuthRequest extends Request {

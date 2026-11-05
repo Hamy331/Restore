@@ -2,8 +2,8 @@ import http from 'node:http';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
-import { input, page } from './feed.input.js';
-import { feedRouter } from './feed.route.js';
+import { input, page } from './feed.validator.js';
+import { feedRouter } from './routes/feed.route.js';
 test('rejects empty, oversized, spoofed and local image posts',()=>{
  assert.equal(input({text:' hello '}).text,'hello');
  for(const b of [{text:' '},{text:'a'.repeat(2001)},{text:'ok',authorId:'other'},{imageUrl:'blob:local'}])assert.throws(()=>input(b));
@@ -23,21 +23,21 @@ test('requires authentication before accessing data',async()=>{
 });
 
 test('post likes are idempotent with duplicate concurrent requests',async()=>{
- const {setPostLike}=await import('./feed.route.js');const values=new Set<string>();
+ const {setPostLike}=await import('./services/feed.service.js');const values=new Set<string>();
  const db={createMany:async({data,skipDuplicates}:any)=>{assert.equal(skipDuplicates,true);for(const x of data)values.add(x.postId+':'+x.userId);},deleteMany:async({where}:any)=>{values.delete(where.postId+':'+where.userId);},count:async()=>values.size};
  await Promise.all(Array.from({length:10},()=>setPostLike('post','user',true,db as never)));
  assert.equal(values.size,1);
  await setPostLike('post','user',false,db as never);await setPostLike('post','user',false,db as never);assert.equal(values.size,0);
 });
 test('pagination only emits cursor when more rows exist, retaining tied IDs',async()=>{
- const {slice}=await import('./feed.route.js');const createdAt=new Date('2026-11-03');
+ const {slice}=await import('./services/feed.service.js');const createdAt=new Date('2026-11-03');
  const result=slice([{id:'b',createdAt},{id:'a',createdAt}],1);
  assert.equal(result.items[0]?.id,'b');assert.equal(JSON.parse(Buffer.from(result.nextCursor!,'base64url').toString()).id,'b');
  assert.equal(slice([{id:'a',createdAt}],1).nextCursor,null);
 });
 
 test('missing or unavailable posts return 404 without database writes',async()=>{
- const {prisma}=await import('../../lib/prisma.js');const {post}=await import('./feed.route.js');
+ const {prisma}=await import('../../lib/prisma.js');const {post}=await import('./services/feed.service.js');
  const original=prisma.feedPost.findFirst;
  try {
   prisma.feedPost.findFirst=(async(args:unknown)=>{assert.deepEqual(args,{where:{id:'12345678-1234-1234-1234-123456789012',author:{status:'ACTIVE'}}});return null;}) as typeof original;
@@ -46,7 +46,7 @@ test('missing or unavailable posts return 404 without database writes',async()=>
 });
 
 test('following feed is constrained to the authenticated follower',async()=>{
- const {followingFilter}=await import('./feed.route.js');
+ const {followingFilter}=await import('./services/feed.service.js');
  assert.deepEqual(followingFilter('current-user'),{author:{status:'ACTIVE',followers:{some:{followerId:'current-user'}}}});
 });
 
@@ -69,7 +69,7 @@ test('only the author can delete a post',async()=>{
  }finally{server.close();prisma.feedPost.findFirst=findFirst;prisma.feedPost.delete=remove;}
 });
 test('follow list pagination rejects invalid pages',async()=>{
- const {followPage}=await import('../users/profile.service.js');
+ const {followPage}=await import('../users/services/profile.service.js');
  assert.equal(followPage(undefined),1);assert.equal(followPage('3'),3);
  for(const v of ['0','-1','1.5','x'])assert.throws(()=>followPage(v));
 });
@@ -100,4 +100,16 @@ test('posts only accept images uploaded to the feeds area',()=>{
  const ok='/api/v1/media/feeds/12345678-1234-1234-1234-123456789012_12345678-1234-1234-1234-123456789012.jpg';
  assert.equal(input({imageUrl:ok}).imageUrl,ok);
  for(const imageUrl of [ok.replace('/feeds/','/avatars/'),'https://evil.example/a.jpg','/api/v1/media/feeds/../x.jpg'])assert.throws(()=>input({imageUrl}),{code:'INVALID_IMAGE'});
+});
+
+test('comments accept uploaded images and reply IDs while rejecting invalid payloads', () => {
+  const parentId = '12345678-1234-1234-1234-123456789012';
+  const imageUrl = `/api/v1/media/feeds/${parentId}_${parentId}.jpg`;
+  const comment = input({ imageUrl, parentId }, true);
+  assert.equal(comment.imageUrl, imageUrl);
+  assert.equal(comment.parentId, parentId);
+  assert.equal(comment.text, '');
+  for (const body of [{ text: '' }, { text: 'Hi', parentId: 'invalid' }, { imageUrl: 'blob:local' }, { text: 'Hi', listingId: parentId }]) {
+    assert.throws(() => input(body, true));
+  }
 });

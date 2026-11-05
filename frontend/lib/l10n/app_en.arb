@@ -1764,5 +1764,25 @@
       }
     }
   },
-  "listingSaveNetworkError": "Couldn't reach the server. What was saved is kept, please try again."
+  "listingSaveNetworkError": "Couldn't reach the server. What was saved is kept, please try again.",
+  "feedReply": "Reply",
+  "feedHideReplies": "Hide replies",
+  "feedViewReplies": "View {count} replies",
+  "feedReplyTo": "Replying to {name}",
+  "feedCancelReply": "Cancel reply",
+  "feedMoreComments": "Load more comments",
+  "@feedViewReplies": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@feedReplyTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

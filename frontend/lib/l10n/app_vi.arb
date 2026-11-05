@@ -9,7 +9,7 @@
   "feedTextHint": "Bạn muốn chia sẻ điều gì?",
   "feedAddPhoto": "Thêm ảnh",
   "feedTakePhoto": "Chụp ảnh",
-  "feedRemovePhoto": "Xóa ảnh",
+  "feedRemovePhoto": "Bỏ ảnh",
   "feedComments": "Bình luận",
   "feedCommentHint": "Viết bình luận…",
   "feedSend": "Gửi bình luận",
@@ -1619,5 +1619,25 @@
   "listingImageTooLarge": "Có ảnh quá lớn (tối đa 5 MB). Hãy bỏ ảnh đó hoặc chọn ảnh khác.",
   "listingImageUnsupported": "Có ảnh không đúng định dạng (chỉ nhận JPEG, PNG, WebP). Hãy bỏ ảnh đó hoặc chọn ảnh khác.",
   "listingImageMissing": "{count} ảnh không còn trên máy nên đã được bỏ ra. Hãy chọn lại ảnh rồi lưu lại.",
-  "listingSaveNetworkError": "Không kết nối được máy chủ. Phần đã lưu được giữ lại, bạn thử lại nhé."
+  "listingSaveNetworkError": "Không kết nối được máy chủ. Phần đã lưu được giữ lại, bạn thử lại nhé.",
+  "feedReply": "Trả lời",
+  "feedHideReplies": "Ẩn trả lời",
+  "feedViewReplies": "Xem {count} trả lời",
+  "feedReplyTo": "Đang trả lời {name}",
+  "feedCancelReply": "Hủy trả lời",
+  "feedMoreComments": "Xem thêm bình luận",
+  "@feedViewReplies": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@feedReplyTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

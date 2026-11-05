@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import { verifyToken } from '../../../middlewares/auth.middleware.js';
+import * as controller from '../controllers/feed.controller.js';
+export const feedRouter = Router();
+feedRouter.use(verifyToken);
+feedRouter.get('/feeds', controller.listPosts);
+feedRouter.post('/feeds', controller.createPost);
+feedRouter.delete('/feeds/:id', controller.deletePost);
+feedRouter.get('/feeds/:id/comments', controller.listComments);
+feedRouter.post('/feeds/:id/comments', controller.createComment);
+feedRouter.put('/feeds/:id/like', controller.likePost);
+feedRouter.delete('/feeds/:id/like', controller.unlikePost);
+feedRouter.put('/feed-comments/:id/like', controller.likeComment);
+feedRouter.delete('/feed-comments/:id/like', controller.unlikeComment);

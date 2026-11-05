@@ -8,14 +8,16 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/routes/app_router.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/modules/auth/bloc/auth_bloc.dart';
-import 'package:restore/modules/auth/bloc/auth_event.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 import 'package:restore/modules/auth/data/auth_mock_data.dart';
 import 'package:restore/modules/auth/repositories/auth_repository.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/modules/listings/models/listing_draft.dart';
+import 'package:restore/modules/listings/repositories/category_repository.dart';
 import 'package:restore/modules/listings/repositories/listings_repository.dart';
+import 'package:restore/modules/listings/repositories/posting_quota_repository.dart';
 
 /// Mở app (dữ liệu mẫu) đã đăng nhập
 Future<GoRouter> _openSignedIn(WidgetTester tester) async {
@@ -46,7 +48,15 @@ Future<GoRouter> _openSignedIn(WidgetTester tester) async {
     () => repo.login('minhanh@example.com', AuthMockData.password),
   ))!;
   bloc.add(LoggedIn(user));
-  final router = createAppRouter(bloc);
+  final router = createAppRouter(
+    bloc,
+    createListing: CreateListingRepositories(
+      listings: MockListingsRepository(),
+      categories: MockCategoryRepository(),
+      postingQuota: MockPostingQuotaRepository(),
+      location: MockLocationRepository(),
+    ),
+  );
   await tester.pumpWidget(
     MultiBlocProvider(
       providers: [
