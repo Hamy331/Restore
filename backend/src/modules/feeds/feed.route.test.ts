@@ -73,3 +73,31 @@ test('follow list pagination rejects invalid pages',async()=>{
  assert.equal(followPage(undefined),1);assert.equal(followPage('3'),3);
  for(const v of ['0','-1','1.5','x'])assert.throws(()=>followPage(v));
 });
+
+test('media uploads go to their own area and are named after the uploader',async()=>{
+ const {mkdtemp,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const path=await import('node:path');
+ const {uploadMedia,readMedia,isMediaUrl,mediaPurpose}=await import('../media/media.service.js');
+ const root=await mkdtemp(path.join(tmpdir(),'media-'));const saved={driver:process.env.STORAGE_DRIVER,root:process.env.STORAGE_DISK_ROOT};
+ process.env.STORAGE_DRIVER='disk';process.env.STORAGE_DISK_ROOT=root;
+ try{
+  const user='12345678-1234-1234-1234-123456789012';
+  const feed=await uploadMedia(user,'feed',Buffer.from([255,216,255,0]));
+  const avatar=await uploadMedia(user,mediaPurpose('avatar'),Buffer.from([137,80,78,71,13,10,26,10,0]));
+  assert.match(feed,new RegExp(`^/api/v1/media/feeds/${user}_[0-9a-f-]{36}\.jpg$`));
+  assert.match(avatar,/^\/api\/v1\/media\/avatars\/.+\.png$/);
+  assert.ok(isMediaUrl(feed,'feed'));assert.ok(!isMediaUrl(feed,'avatar'));assert.ok(!isMediaUrl('https://evil.example/a.jpg','feed'));
+  const [area,name]=feed.split('/').slice(-2);
+  assert.equal((await readMedia(area!,name!)).contentType,'image/jpeg');
+  await assert.rejects(readMedia('listings',name!),{code:'MEDIA_NOT_FOUND'});
+  await assert.rejects(uploadMedia(user,'feed',Buffer.from('not an image')),{code:'INVALID_IMAGE'});
+  assert.throws(()=>mediaPurpose('listing'),{code:'INVALID_PURPOSE'});
+ }finally{
+  for(const [k,v] of [['STORAGE_DRIVER',saved.driver],['STORAGE_DISK_ROOT',saved.root]] as const){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  await rm(root,{recursive:true,force:true});
+ }
+});
+test('posts only accept images uploaded to the feeds area',()=>{
+ const ok='/api/v1/media/feeds/12345678-1234-1234-1234-123456789012_12345678-1234-1234-1234-123456789012.jpg';
+ assert.equal(input({imageUrl:ok}).imageUrl,ok);
+ for(const imageUrl of [ok.replace('/feeds/','/avatars/'),'https://evil.example/a.jpg','/api/v1/media/feeds/../x.jpg'])assert.throws(()=>input({imageUrl}),{code:'INVALID_IMAGE'});
+});

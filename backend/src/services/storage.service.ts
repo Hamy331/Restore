@@ -11,8 +11,9 @@ import path from 'node:path';
  * Module nghiệp vụ chỉ gọi putObject / getObject / removeObject, không biết file nằm ở đâu.
  */
 
-/** Thư mục logic: listings = ảnh tin, admin = ảnh nội dung (bìa bài viết) */
-export type StorageArea = 'listings' | 'admin';
+/** Thư mục logic: listings = ảnh tin, admin = ảnh nội dung (bìa bài viết),
+ *  feeds = ảnh bài viết bảng tin, avatars = ảnh đại diện */
+export type StorageArea = 'listings' | 'admin' | 'feeds' | 'avatars';
 
 export const STORAGE_DRIVERS = ['disk', 'supabase'] as const;
 export type StorageDriver = (typeof STORAGE_DRIVERS)[number];

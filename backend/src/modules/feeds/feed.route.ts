@@ -1,6 +1,5 @@
-import { Router, Response, NextFunction, raw } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import { Prisma } from '@prisma/client';
-import { createHash } from 'node:crypto';
 import { prisma } from '../../lib/prisma.js';
 import { AuthRequest, verifyToken } from '../../middlewares/auth.middleware.js';
 import { AppError } from '../../common/errors/app-error.js';
@@ -74,21 +73,6 @@ for (const like of [true, false]) {
     return { likedByMe: like, likeCount: await prisma.feedCommentLike.count({ where: { commentId: c.id } }) };
   }));
 }
-feedRouter.post('/media/images', raw({ type: ['image/jpeg', 'image/png', 'image/webp'], limit: '5mb' }), handle(async r => {
-  const b = r.body;
-  if (!Buffer.isBuffer(b) || !b.length || !(b.subarray(0,3).equals(Buffer.from([255,216,255])) || b.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])) || (b.toString('ascii',0,4) === 'RIFF' && b.toString('ascii',8,12) === 'WEBP'))) throw new AppError(415, 'INVALID_IMAGE', 'JPEG, PNG or WebP required');
-  const cloud = process.env.CLOUDINARY_CLOUD_NAME, key = process.env.CLOUDINARY_API_KEY, secret = process.env.CLOUDINARY_API_SECRET;
-  if (!cloud || !key || !secret) throw new AppError(503, 'UPLOAD_NOT_CONFIGURED', 'Image upload is not configured');
-  const timestamp = String(Math.floor(Date.now()/1000)), folder = 'restore/feeds';
-  const signature = createHash('sha1').update(`folder=${folder}&timestamp=${timestamp}${secret}`).digest('hex');
-  const form = new FormData();
-  form.append('file', new Blob([new Uint8Array(b)]));
-  for (const [k,v] of Object.entries({ timestamp, folder, signature, api_key: key })) form.append(k,v);
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`, { method: 'POST', body: form, signal: AbortSignal.timeout(30000) });
-  if (!response.ok) throw new AppError(502, 'UPLOAD_FAILED', 'Image upload failed');
-  const data = await response.json() as { secure_url: string };
-  return { imageUrl: data.secure_url };
-}, 201));
 
 export async function setPostLike(postId: string, userId: string, like: boolean, db = prisma.feedPostLike) {
   if (like) await db.createMany({ data: [{ postId, userId }], skipDuplicates: true });
