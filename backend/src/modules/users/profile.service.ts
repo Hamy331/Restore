@@ -3,6 +3,7 @@ import { prisma } from '../../lib/prisma.js';
 import { AppError } from '../../common/errors/app-error.js';
 import { fullName as parseFullName, username as parseUsername } from '../auth/auth.validator.js';
 import { publish } from '../chat/chat.events.js';
+import { isMediaUrl } from '../media/media.service.js';
 
 const profileSelect = {
   id: true, fullName: true, username: true, avatarUrl: true, bio: true, status: true,
@@ -109,7 +110,7 @@ export const updateProfile = async (id: string, body: unknown) => {
     data.bio = input.bio === null ? null : (input.bio as string).trim();
   }
   if ('avatarUrl' in input) {
-    if (input.avatarUrl !== null && (typeof input.avatarUrl !== 'string' ||
+    if (input.avatarUrl !== null && !isMediaUrl(input.avatarUrl, 'avatar') && (typeof input.avatarUrl !== 'string' ||
         input.avatarUrl.length > 2000 || !/^https:\/\//.test(input.avatarUrl))) {
       throw new AppError(422, 'INVALID_AVATAR_URL', 'Ảnh đại diện cần URL HTTPS hợp lệ.', 'avatarUrl');
     }
