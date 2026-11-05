@@ -46,6 +46,7 @@ class MockListingsRepository implements ListingsRepository {
   final Duration latency;
   static final Map<String, ListingDraft> _store = {};
   static final Set<String> _favorites = {};
+  static int _nextId = 0;
   ListingModel _model(ListingDraft draft) => ListingModel(
     id: draft.id!,
     ownerId: 'mock-user',
@@ -151,7 +152,8 @@ class MockListingsRepository implements ListingsRepository {
     limit: DraftQuota.mockLimitFor(DevPlanOverride.plan.value),
   );
 
-  String _newId() => 'listing_${DateTime.now().microsecondsSinceEpoch}';
+  String _newId() =>
+      'listing_${DateTime.now().microsecondsSinceEpoch}_${_nextId++}';
 
   @override
   Future<ListingDraft> saveDraft(

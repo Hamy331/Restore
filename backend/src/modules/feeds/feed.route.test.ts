@@ -4,6 +4,22 @@ import assert from 'node:assert/strict';
 import express from 'express';
 import { input, page } from './feed.validator.js';
 import { feedRouter } from './routes/feed.route.js';
+
+test('feed auth protects registered routes and leaves unknown paths to 404', async () => {
+  const app = express();
+  app.use(feedRouter);
+  app.use((_req, res) => { res.sendStatus(404); });
+  const server = http.createServer(app);
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  const baseUrl = `http://127.0.0.1:${(server.address() as {port:number}).port}`;
+  try {
+    assert.equal((await fetch(`${baseUrl}/feeds`)).status, 401);
+    assert.equal((await fetch(`${baseUrl}/missing-api`)).status, 404);
+  } finally {
+    server.closeAllConnections();
+    await new Promise<void>(resolve => server.close(() => resolve()));
+  }
+});
 test('rejects empty, oversized, spoofed and local image posts',()=>{
  assert.equal(input({text:' hello '}).text,'hello');
  for(const b of [{text:' '},{text:'a'.repeat(2001)},{text:'ok',authorId:'other'},{imageUrl:'blob:local'}])assert.throws(()=>input(b));

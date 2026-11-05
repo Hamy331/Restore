@@ -234,6 +234,8 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
                     child: CustomScrollView(
                       controller: _scrollController,
                       // Dựng sẵn các khu phía dưới để thanh mục cuộn tới được
+                      // Flutter 3.35 in CI still uses this cache API.
+                      // ignore: deprecated_member_use
                       cacheExtent: 3000,
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
