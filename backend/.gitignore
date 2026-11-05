@@ -42,3 +42,9 @@ skills-lock.json
 .DS_Store
 docs/
 Thumbs.db
+# Include the Feed OpenAPI contract.
+!src/docs/
+!src/docs/swagger/
+!src/docs/swagger/feed.swagger.yaml
+src/docs/swagger/*
+!src/docs/swagger/feed.swagger.yaml

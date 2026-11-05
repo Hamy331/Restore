@@ -93,9 +93,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
                     tooltip: _obscured ? 'Hiện mật khẩu' : 'Ẩn mật khẩu',
                     onPressed: () => setState(() => _obscured = !_obscured),
                     icon: Icon(
-                      _obscured
-                          ? AppIcons.hidden
-                          : AppIcons.visible,
+                      _obscured ? AppIcons.hidden : AppIcons.visible,
                       size: 20,
                       color: AppColors.textSecondary,
                     ),

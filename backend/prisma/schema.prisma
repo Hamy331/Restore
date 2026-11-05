@@ -26,6 +26,10 @@ enum OtpPurpose {
 }
 
 model User {
+  feedPosts FeedPost[]
+  feedComments FeedComment[]
+  feedLikes FeedPostLike[]
+  feedCommentLikes FeedCommentLike[]
   id             String        @id @default(uuid())
   email          String        @unique
   password       String?       
@@ -33,6 +37,8 @@ model User {
   username       String        @unique
   phone          String?
   avatarUrl      String?
+  bio            String?        @db.VarChar(300)
+  lastActiveAt   DateTime?
   role           Role          @default(USER)
   status         AccountStatus @default(UNVERIFIED)
   suspendedUntil DateTime?
@@ -50,12 +56,64 @@ model User {
   listings       Listing[]
   favorites      ListingFavorite[]
   authSessions   AuthSession[]
+  chatMembers    ConversationMember[]
+  chatMessages   Message[]
   storeSubscription StoreSubscription?
   storeOrders    StoreOrder[]
   promotions     Promotion[]
   promotionOrders PromotionOrder[]
   wantedAlerts   WantedAlert[]
+
+  followers      UserFollow[]  @relation("FollowedUser")
+  following      UserFollow[]  @relation("FollowingUser")
+
   @@index([status, suspendedUntil])
+}
+
+model UserFollow {
+  followerId String
+  followingId String
+  createdAt DateTime @default(now())
+  follower User @relation("FollowingUser", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("FollowedUser", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followingId])
+}
+
+model Conversation {
+  id        String @id @default(uuid())
+  pairKey   String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members   ConversationMember[]
+  messages  Message[]
+}
+
+model ConversationMember {
+  conversationId String
+  userId String
+  lastReadSequence Int @default(0)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id String @id @default(uuid())
+  sequence Int @unique @default(autoincrement())
+  conversationId String
+  senderId String
+  clientId String
+  text String @db.VarChar(2000)
+  createdAt DateTime @default(now())
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, clientId])
+  @@index([conversationId, sequence])
 }
 
 model AuthSession {
@@ -91,6 +149,7 @@ enum ListingStatus {
 }
 
 model Listing {
+  feedPosts FeedPost[]
   id            String           @id @default(uuid())
   ownerId       String
   owner         User             @relation(fields: [ownerId], references: [id])
@@ -346,6 +405,54 @@ model KnowledgeDocument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([active])
+}
+model FeedPost {
+  id String @id @default(uuid())
+  authorId String
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  text String @db.VarChar(2000)
+  imageUrl String?
+  listingId String?
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  likes FeedPostLike[]
+  comments FeedComment[]
+  @@index([createdAt, id])
+  @@index([authorId, createdAt, id])
+}
+model FeedPostLike {
+  postId String
+  userId String
+  post FeedPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@id([postId, userId])
+}
+model FeedComment {
+  id String @id @default(uuid())
+  postId String
+  authorId String
+  post FeedPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  text String @db.VarChar(2000)
+  imageUrl String?
+  parentId String?
+  parent FeedComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies FeedComment[] @relation("CommentReplies")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  likes FeedCommentLike[]
+  @@index([postId, createdAt, id])
+  @@index([parentId, createdAt, id])
+}
+model FeedCommentLike {
+  commentId String
+  userId String
+  comment FeedComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@id([commentId, userId])
 }
 
 /// Banner ảnh ở trang chủ (ảnh 1200 × 600). Admin quản lý qua /api/v1/home/admin/banners.

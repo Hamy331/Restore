@@ -2,5 +2,6 @@ import 'package:flutter/material.dart';
 
 class LanguageState {
   final Locale locale;
-  LanguageState(this.locale);
+  final bool saveFailed;
+  LanguageState(this.locale, {this.saveFailed = false});
 }

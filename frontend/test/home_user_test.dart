@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:restore/core/network/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,8 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/routes/app_router.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/modules/auth/bloc/auth_bloc.dart';
-import 'package:restore/modules/auth/bloc/auth_event.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 import 'package:restore/modules/auth/data/auth_mock_data.dart';
 import 'package:restore/modules/auth/repositories/auth_repository.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
@@ -41,6 +43,77 @@ Future<(AuthBloc, GoRouter, MockAuthRepository)> _openApp(
     onError?.call(details);
   };
   addTearDown(() => FlutterError.onError = onError);
+  // Auth và profile là hai API riêng; profile phải trả về tài khoản
+  // tương ứng với token của phiên đang đăng nhập.
+  final dio = ApiClient().dio;
+  final profileApi = InterceptorsWrapper(
+    onRequest: (options, handler) {
+      if (options.path == '/listings' ||
+          options.path == '/listings/recommended' ||
+          options.path == '/home/banners' ||
+          options.path == '/catalog/categories') {
+        final isListing = options.path.startsWith('/listings');
+        handler.resolve(
+          Response(
+            requestOptions: options,
+            data: <String, dynamic>{
+              'success': true,
+              'data': [
+                if (isListing)
+                  {
+                    'id': 'home-listing',
+                    'title': 'Tin đăng thử nghiệm',
+                    'price': '100000',
+                    'status': 'AVAILABLE',
+                    'images': <String>[],
+                  },
+              ],
+              'pagination': {
+                'page': 1,
+                'totalItems': isListing ? 1 : 0,
+                'totalPages': 1,
+              },
+            },
+            statusCode: 200,
+          ),
+        );
+        return;
+      }
+      if (options.path == '/users/me') {
+        final authorization = options.headers['Authorization'] as String?;
+        final account = AuthMockData.accounts.firstWhere(
+          (account) =>
+              authorization ==
+              'Bearer ${AuthMockData.tokenPrefix}${account['email']}',
+        );
+        handler.resolve(
+          Response(
+            requestOptions: options,
+            data: <String, dynamic>{'success': true, 'data': account},
+            statusCode: 200,
+          ),
+        );
+        return;
+      }
+      if (options.path == '/listings/mine') {
+        handler.resolve(
+          Response(
+            requestOptions: options,
+            data: <String, dynamic>{
+              'success': true,
+              'data': <dynamic>[],
+              'pagination': {'page': 1, 'totalItems': 0, 'totalPages': 0},
+            },
+            statusCode: 200,
+          ),
+        );
+        return;
+      }
+      handler.next(options);
+    },
+  );
+  dio.interceptors.add(profileApi);
+  addTearDown(() => dio.interceptors.remove(profileApi));
   final repo = MockAuthRepository(latency: Duration.zero);
   final bloc = AuthBloc(repo)..add(const AuthCheckRequested());
   await tester.runAsync(() => bloc.stream.first);
@@ -132,9 +205,9 @@ void main() {
       router.go('/account');
       await _settle(tester);
       expect(find.text('Nguyễn Minh Anh'), findsOneWidget);
-      expect(find.text('NA'), findsOneWidget);
-      expect(find.text('Thành viên từ 2022'), findsOneWidget);
-      expect(find.text('090 ••• 1234'), findsOneWidget);
+      expect(find.text('NM'), findsOneWidget);
+      expect(find.text('@minhanh'), findsOneWidget);
+      expect(find.text('Người theo dõi'), findsOneWidget);
 
       await tester.runAsync(() => repo.logout());
       bloc.add(const LoggedOut());

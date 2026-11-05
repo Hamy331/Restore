@@ -15,7 +15,14 @@ class PostComposerView extends StatelessWidget {
   /// Mở sẵn lưới ảnh (bấm nút ảnh ở Bảng tin)
   final bool openPhotos;
 
-  const PostComposerView({super.key, this.openPhotos = false});
+  const PostComposerView({
+    super.key,
+    this.openPhotos = false,
+    this.repository,
+    this.recentPhotosRepository,
+  });
+  final FeedPostRepository? repository;
+  final RecentPhotosRepository? recentPhotosRepository;
 
   static const String path = '/feeds/compose';
 
@@ -28,12 +35,16 @@ class PostComposerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => PostComposerCubit(
-        repository: AppEnvironment.useMockData
-            ? MockFeedPostRepository()
-            : ApiFeedPostRepository(),
-        recentPhotosRepository: AppEnvironment.useMockData
-            ? MockRecentPhotosRepository()
-            : DeviceRecentPhotosRepository(),
+        repository:
+            repository ??
+            (AppEnvironment.useMockData
+                ? MockFeedPostRepository()
+                : ApiFeedPostRepository()),
+        recentPhotosRepository:
+            recentPhotosRepository ??
+            (AppEnvironment.useMockData
+                ? MockRecentPhotosRepository()
+                : DeviceRecentPhotosRepository()),
         initialPanel: openPhotos
             ? PostComposerPanel.photos
             : PostComposerPanel.none,

@@ -6,14 +6,14 @@ import 'app_environment.dart';
 /// Gói đang giả lập, để đổi nhanh giữa Cá nhân / Bán chuyên / Cửa hàng mà
 /// không cần đăng ký thật. Đang mở cho cả khi gọi API để demo giao diện;
 /// đổi gói ở đây chỉ đổi giao diện trong app, backend vẫn tính theo gói
-/// thật. Tắt khi build phát hành: `--dart-define=DEV_PLAN_SWITCH=false`.
+/// thật. Chỉ bật khi cần demo bằng `--dart-define=DEV_PLAN_SWITCH=true`.
 /// Khi có API gói đăng ký, gói lấy từ tài khoản và nút này tắt hẳn.
 class DevPlanOverride {
   DevPlanOverride._();
 
   static const bool _switchDefine = bool.fromEnvironment(
     'DEV_PLAN_SWITCH',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   /// Hiện nút TEST đổi gói ở trang chủ

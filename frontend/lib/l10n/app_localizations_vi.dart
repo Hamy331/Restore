@@ -9,6 +9,371 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get feedForYou => 'Dành cho bạn';
+
+  @override
+  String get feedFollowing => 'Đang theo dõi';
+
+  @override
+  String get feedCompose => 'Bạn muốn chia sẻ điều gì?';
+
+  @override
+  String get feedFollow => 'Theo dõi';
+
+  @override
+  String get feedUnfollow => 'Bỏ theo dõi';
+
+  @override
+  String get feedPost => 'Đăng bài';
+
+  @override
+  String get feedNewPost => 'Tạo bài cộng đồng';
+
+  @override
+  String get feedTextHint => 'Bạn muốn chia sẻ điều gì?';
+
+  @override
+  String get feedAddPhoto => 'Thêm ảnh';
+
+  @override
+  String get feedTakePhoto => 'Chụp ảnh';
+
+  @override
+  String get feedRemovePhoto => 'Bỏ ảnh';
+
+  @override
+  String get feedComments => 'Bình luận';
+
+  @override
+  String get feedCommentHint => 'Viết bình luận…';
+
+  @override
+  String get feedSend => 'Gửi bình luận';
+
+  @override
+  String get feedLike => 'Thích';
+
+  @override
+  String get feedUnlike => 'Bỏ thích';
+
+  @override
+  String get feedEmpty => 'Chưa có bài viết';
+
+  @override
+  String get feedFollowingEmpty =>
+      'Theo dõi tác giả để xem bài viết của họ tại đây.';
+
+  @override
+  String get feedLoadError => 'Không tải được bảng tin.';
+
+  @override
+  String get feedActionError =>
+      'Không thực hiện được thao tác. Vui lòng thử lại.';
+
+  @override
+  String get feedPublishError => 'Không đăng được bài viết. Vui lòng thử lại.';
+
+  @override
+  String get feedPhotoError => 'Không chọn được ảnh. Vui lòng thử lại.';
+
+  @override
+  String get feedYourName => 'Bạn';
+
+  @override
+  String get feedNoComments => 'Hãy là người đầu tiên bình luận.';
+
+  @override
+  String get feedNotifications => 'Tính năng thông báo đang được phát triển.';
+
+  @override
+  String get feedNow => 'Vừa xong';
+
+  @override
+  String feedMinutes(int count) {
+    return '$count phút trước';
+  }
+
+  @override
+  String feedHours(int count) {
+    return '$count giờ trước';
+  }
+
+  @override
+  String feedDays(int count) {
+    return '$count ngày trước';
+  }
+
+  @override
+  String feedLikes(int count) {
+    return '$count lượt thích';
+  }
+
+  @override
+  String feedCommentCount(int count) {
+    return '$count bình luận';
+  }
+
+  @override
+  String get settingsPageTitle => 'Cài đặt';
+
+  @override
+  String get settingsLanguage => 'Ngôn ngữ ứng dụng';
+
+  @override
+  String get settingsLanguageHint =>
+      'Chọn ngôn ngữ giao diện. Bài viết người dùng giữ nguyên ngôn ngữ gốc.';
+
+  @override
+  String get settingsLanguageError => 'Không lưu được lựa chọn ngôn ngữ.';
+
+  @override
+  String get feedRequired => 'Thêm nội dung hoặc ảnh trước khi đăng.';
+
+  @override
+  String get feedDraftLimit => 'Tối đa 2.000 ký tự';
+
+  @override
+  String get feedDelete => 'Xóa bài viết';
+
+  @override
+  String get feedDeleteConfirm => 'Xóa bài viết này? Không thể hoàn tác.';
+
+  @override
+  String get feedDeleted => 'Đã xóa bài viết';
+
+  @override
+  String get feedReport => 'Báo cáo bài viết';
+
+  @override
+  String get feedReportTitle => 'Vì sao bạn báo cáo bài viết này?';
+
+  @override
+  String get feedReportSpam => 'Spam hoặc quảng cáo';
+
+  @override
+  String get feedReportScam => 'Lừa đảo';
+
+  @override
+  String get feedReportOffensive => 'Nội dung phản cảm';
+
+  @override
+  String get feedReportOther => 'Lý do khác';
+
+  @override
+  String get feedReported => 'Đã gửi báo cáo. Cảm ơn bạn!';
+
+  @override
+  String get feedViewProfile => 'Xem trang cá nhân';
+
+  @override
+  String get feedLoadMoreError => 'Không tải thêm được bài viết.';
+
+  @override
+  String get feedDiscardTitle => 'Bỏ bài viết?';
+
+  @override
+  String get feedDiscardBody => 'Nội dung bạn đã nhập sẽ bị mất.';
+
+  @override
+  String get feedDiscard => 'Bỏ';
+
+  @override
+  String get feedKeepEditing => 'Tiếp tục viết';
+
+  @override
+  String feedCharCount(int count) {
+    return '$count/2.000';
+  }
+
+  @override
+  String get feedCloseImage => 'Đóng ảnh';
+
+  @override
+  String get accEditPage => 'Chỉnh sửa trang';
+
+  @override
+  String get accMenu => 'Menu và cài đặt';
+
+  @override
+  String get accLoadError => 'Không tải được hồ sơ. Bấm để thử lại';
+
+  @override
+  String get accLoading => 'Đang tải…';
+
+  @override
+  String get accFollowing => 'Đang theo dõi';
+
+  @override
+  String get accFollowers => 'Người theo dõi';
+
+  @override
+  String get accListings => 'Tin đăng';
+
+  @override
+  String get accPosts => 'Bài viết';
+
+  @override
+  String get accAddBio => '＋  Thêm giới thiệu';
+
+  @override
+  String accRating(String rating, int count) {
+    return '$rating ($count đánh giá)';
+  }
+
+  @override
+  String get accNoRating => 'Chưa có đánh giá';
+
+  @override
+  String accTabVisible(int count) {
+    return 'ĐANG HIỂN THỊ ($count)';
+  }
+
+  @override
+  String accTabPending(int count) {
+    return 'CHỜ DUYỆT ($count)';
+  }
+
+  @override
+  String accTabHidden(int count) {
+    return 'ĐÃ ẨN ($count)';
+  }
+
+  @override
+  String get accEmptyVisible => 'Chưa có tin đang hiển thị';
+
+  @override
+  String get accEmptyPending => 'Chưa có tin chờ duyệt';
+
+  @override
+  String get accEmptyHidden => 'Chưa có tin đã ẩn';
+
+  @override
+  String get accPostListing => 'Đăng tin';
+
+  @override
+  String accPosted(String time) {
+    return 'Đăng $time';
+  }
+
+  @override
+  String accViews(int count) {
+    return '$count lượt xem';
+  }
+
+  @override
+  String get accHide => 'Ẩn tin';
+
+  @override
+  String get accShow => 'Hiện tin';
+
+  @override
+  String get accBoost => 'Đẩy tin';
+
+  @override
+  String get accLoadListingsError => 'Không tải được tin đăng.';
+
+  @override
+  String get accUpdateListingError => 'Không cập nhật được tin đăng.';
+
+  @override
+  String get accLogout => 'Đăng xuất';
+
+  @override
+  String get accLogoutConfirm => 'Đăng xuất khỏi ReStore?';
+
+  @override
+  String get accCloseMenu => 'Đóng menu';
+
+  @override
+  String get accEditTitle => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get accDisplayName => 'Tên hiển thị';
+
+  @override
+  String get accUsername => 'Tên người dùng';
+
+  @override
+  String get accBio => 'Giới thiệu';
+
+  @override
+  String get accSave => 'Lưu';
+
+  @override
+  String get accChangeAvatar => 'Đổi ảnh đại diện';
+
+  @override
+  String get accRemoveAvatar => 'Xóa ảnh';
+
+  @override
+  String get accNameRequired => 'Nhập tên hiển thị.';
+
+  @override
+  String get accUsernameInvalid =>
+      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.';
+
+  @override
+  String get accUsernameTaken => 'Tên người dùng đã được sử dụng.';
+
+  @override
+  String get accSaveError => 'Không lưu được hồ sơ. Vui lòng thử lại.';
+
+  @override
+  String get accAvatarUploadError =>
+      'Không tải được ảnh lên. Vui lòng thử lại.';
+
+  @override
+  String get accUserNotFound => 'Không tìm thấy người dùng.';
+
+  @override
+  String get accFollowListEmpty => 'Chưa có ai';
+
+  @override
+  String get accComingSoon => 'Tính năng này đang được phát triển';
+
+  @override
+  String get accActivity => 'Hoạt động';
+
+  @override
+  String get accProPlan => 'Gói Pro';
+
+  @override
+  String get accCreateStore => 'Tạo cửa hàng';
+
+  @override
+  String get accCoins => 'Xu ReStore';
+
+  @override
+  String get accSaved => 'Đã lưu';
+
+  @override
+  String get accSavedSearches => 'Tìm kiếm đã lưu';
+
+  @override
+  String get accRecentlyViewed => 'Xem gần đây';
+
+  @override
+  String get accMyReviews => 'Đánh giá từ tôi';
+
+  @override
+  String get accTransactions => 'Lịch sử giao dịch';
+
+  @override
+  String get accStores => 'Cửa hàng / chuyên trang';
+
+  @override
+  String get accHelp => 'Trợ giúp';
+
+  @override
+  String get accFeedback => 'Đóng góp ý kiến';
+
+  @override
+  String get accEdit => 'Chỉnh sửa';
+
+  @override
+  String get accMoreOptions => 'Thêm tùy chọn';
+
+  @override
   String get appName => 'ReStore';
 
   @override
@@ -2823,4 +3188,26 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get listingSaveNetworkError =>
       'Không kết nối được máy chủ. Phần đã lưu được giữ lại, bạn thử lại nhé.';
+
+  @override
+  String get feedReply => 'Trả lời';
+
+  @override
+  String get feedHideReplies => 'Ẩn trả lời';
+
+  @override
+  String feedViewReplies(int count) {
+    return 'Xem $count trả lời';
+  }
+
+  @override
+  String feedReplyTo(String name) {
+    return 'Đang trả lời $name';
+  }
+
+  @override
+  String get feedCancelReply => 'Hủy trả lời';
+
+  @override
+  String get feedMoreComments => 'Xem thêm bình luận';
 }

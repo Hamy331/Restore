@@ -5,7 +5,7 @@ import 'package:restore/core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/helpers/t_snackbar_helper.dart';
 import '../../../../shared/widgets/app_button.dart';
-import '../../auth_validators.dart';
+import '../../utils/auth_validators.dart';
 import '../../bloc/register/register_bloc.dart';
 import '../../bloc/register/register_event.dart';
 import '../../bloc/register/register_state.dart';
@@ -84,10 +84,7 @@ class _RegisterMobileViewState extends State<RegisterMobileView> {
                                     padding: EdgeInsets.zero,
                                     alignment: Alignment.centerLeft,
                                     onPressed: () => context.go('/welcome'),
-                                    icon: const Icon(
-                                      AppIcons.back,
-                                      size: 23,
-                                    ),
+                                    icon: const Icon(AppIcons.back, size: 23),
                                   ),
                                   const SizedBox(width: 4),
                                   const Text(

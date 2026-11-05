@@ -12,9 +12,10 @@ import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'core/theme/theme.dart';
 import 'core/routes/app_router.dart';
-import 'modules/auth/bloc/auth_bloc.dart';
-import 'modules/auth/bloc/auth_event.dart';
+import 'modules/auth/bloc/auth/auth_bloc.dart';
+import 'modules/auth/bloc/auth/auth_event.dart';
 import 'modules/auth/repositories/auth_repository.dart';
+import 'modules/chat/widgets/presence_reporter.dart';
 import 'modules/location/bloc/user_area/user_area_cubit.dart';
 import 'modules/location/repositories/location_repository.dart';
 import 'core/config/app_environment.dart';
@@ -79,29 +80,32 @@ class _MyAppState extends State<MyApp> {
           )..locate(),
         ),
       ],
-      child: ScreenUtilInit(
-        designSize: const Size(375, 812),
-        minTextAdapt: true,
-        splitScreenMode: false,
-        builder: (context, child) {
-          return BlocBuilder<LanguageBloc, LanguageState>(
-            builder: (context, languageState) {
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                locale: languageState.locale,
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [Locale('en'), Locale('vi')],
-                theme: AppTheme.lightTheme,
-                routerConfig: _router,
-              );
-            },
-          );
-        },
+      // Gửi heartbeat khi đã đăng nhập để người khác thấy trạng thái online
+      child: PresenceReporter(
+        child: ScreenUtilInit(
+          designSize: const Size(375, 812),
+          minTextAdapt: true,
+          splitScreenMode: false,
+          builder: (context, child) {
+            return BlocBuilder<LanguageBloc, LanguageState>(
+              builder: (context, languageState) {
+                return MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  locale: languageState.locale,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  supportedLocales: const [Locale('en'), Locale('vi')],
+                  theme: AppTheme.lightTheme,
+                  routerConfig: _router,
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

@@ -28,8 +28,11 @@ export function useApi(name: string) {
   });
 
   after(async () => {
-    ctx.book.save();
-    await ctx.api?.stop();
+    try {
+      ctx.book.save();
+    } finally {
+      await ctx.api?.stop();
+    }
   });
 
   /** Ghi phản hồi vào snapshot và trả lại để bước sau dùng tiếp */

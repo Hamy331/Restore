@@ -6,10 +6,19 @@ import 'package:restore/modules/admin/presentation/admin_workspace.dart';
 import 'package:restore/modules/admin/presentation/admin_commerce.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:restore/modules/account/views/account_view.dart';
-import 'package:restore/modules/chat/views/messages_view.dart';
+// Tab Bảng tin dùng module feeds (danh sách + đăng bài có API); màn soạn bài
+// nhiều tuỳ chọn của module feed vẫn ở /feeds/compose.
+import 'package:restore/modules/feeds/views/feeds/feeds_view.dart';
+import 'package:restore/modules/account/models/profile_models.dart';
+import 'package:restore/modules/account/views/follow_list/follow_list_view.dart';
+import 'package:restore/modules/account/views/language_settings/language_settings_view.dart';
+import 'package:restore/modules/account/views/public_profile/public_profile_view.dart';
+import 'package:restore/modules/account/views/account/account_view.dart';
+import 'package:restore/modules/chat/views/messages/messages_view.dart';
+import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
+import 'package:restore/modules/chat/views/conversation/live_chat_conversation_view.dart';
 import 'package:restore/modules/home/views/home/home_view.dart';
-import 'package:restore/modules/feed/views/feeds/feeds_view.dart';
+
 import 'package:restore/modules/feed/views/post_composer/post_composer_view.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/listings/bloc/create_listing/create_listing_bloc.dart';
@@ -51,18 +60,18 @@ import '../../modules/auth/bloc/login/login_bloc.dart';
 import '../../modules/auth/bloc/register/register_bloc.dart';
 import '../../modules/auth/repositories/auth_repository.dart';
 import '../../modules/auth/views/login/login_view.dart';
-import '../../modules/auth/views/recovery/forgot_password_otp_view.dart';
-import '../../modules/auth/views/recovery/forgot_password_view.dart';
-import '../../modules/auth/views/recovery/reset_password_view.dart';
+import '../../modules/auth/views/forgot_password_otp/forgot_password_otp_view.dart';
+import '../../modules/auth/views/forgot_password/forgot_password_view.dart';
+import '../../modules/auth/views/reset_password/reset_password_view.dart';
 import '../../modules/auth/views/register/register_view.dart';
-import '../../modules/auth/views/verification/auth_success_view.dart';
-import '../../modules/auth/views/verification/email_verification_view.dart';
+import '../../modules/auth/views/auth_success/auth_success_view.dart';
+import '../../modules/auth/views/email_verification/email_verification_view.dart';
 import '../../modules/auth/views/welcome/welcome_view.dart';
-import '../../modules/chat/views/chat_conversation_view.dart';
+import '../../modules/chat/views/conversation/chat_conversation_view.dart';
 import '../../modules/boost/bloc/boost_listing_cubit.dart';
 import '../../modules/boost/views/boost_listing_view.dart';
-import '../../modules/auth/bloc/auth_bloc.dart';
-import '../../modules/auth/auth_route_guard.dart';
+import '../../modules/auth/bloc/auth/auth_bloc.dart';
+import '../../modules/auth/utils/auth_route_guard.dart';
 import '../../modules/auth/views/splash/splash_view.dart';
 import 'router_refresh_stream.dart';
 
@@ -71,7 +80,24 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 /// Router của app. Chạy lại `redirect` mỗi khi [authBloc] đổi trạng thái,
 /// nên mọi chuyển trang theo đăng nhập / đăng xuất / hết phiên nằm ở
 /// [authRouteRedirect], các trang không tự `go` sau khi đăng nhập.
-GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
+/// Repository của luồng đăng tin; app dùng API, test truyền bản mock.
+class CreateListingRepositories {
+  const CreateListingRepositories({
+    this.listings,
+    this.categories,
+    this.postingQuota,
+    this.location,
+  });
+  final ListingsRepository? listings;
+  final CategoryRepository? categories;
+  final PostingQuotaRepository? postingQuota;
+  final LocationRepository? location;
+}
+
+GoRouter createAppRouter(
+  AuthBloc authBloc, {
+  CreateListingRepositories createListing = const CreateListingRepositories(),
+}) => GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: splashPath,
   refreshListenable: RouterRefreshStream(authBloc.stream),
@@ -81,14 +107,27 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
   redirect: (_, state) => authRouteRedirect(authBloc.state, state.uri),
   routes: [
     GoRoute(path: splashPath, builder: (_, _) => const SplashView()),
-    GoRoute(path:'/blog',parentNavigatorKey:_rootNavigatorKey,builder:(_,_)=>const CommunityContentView(blog:true)),
-    GoRoute(path:'/support',parentNavigatorKey:_rootNavigatorKey,builder:(_,_)=>const CommunityContentView()),
+    GoRoute(
+      path: '/blog',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const CommunityContentView(blog: true),
+    ),
+    GoRoute(
+      path: '/support',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const CommunityContentView(),
+    ),
     if (kDebugMode || const bool.fromEnvironment('ENABLE_ADMIN_PREVIEW'))
       GoRoute(
         path: '/admin-preview',
-        builder: (context, _) => AdminWorkspace(onExit: () => context.go('/welcome')),
+        builder: (context, _) =>
+            AdminWorkspace(onExit: () => context.go('/welcome')),
       ),
-    GoRoute(path: '/admin',parentNavigatorKey:_rootNavigatorKey,builder:(_,_)=>const AdminLiveWorkspace()),
+    GoRoute(
+      path: '/admin',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const AdminLiveWorkspace(),
+    ),
     GoRoute(
       path: '/admin/commerce',
       parentNavigatorKey: _rootNavigatorKey,
@@ -159,23 +198,18 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
           RepositoryProvider(create: (_) => MediaPickerService()),
           RepositoryProvider(create: (_) => DeviceLocationService()),
           RepositoryProvider<LocationRepository>(
-            create: (_) => AppEnvironment.useMockData
-                ? MockLocationRepository()
-                : ApiLocationRepository(),
+            create: (_) => createListing.location ?? ApiLocationRepository(),
           ),
         ],
         child: BlocProvider(
           create: (_) =>
               CreateListingBloc(
-                  listingsRepository: AppEnvironment.useMockData
-                      ? MockListingsRepository()
-                      : ApiListingsRepository(),
-                  categoryRepository: AppEnvironment.useMockData
-                      ? MockCategoryRepository()
-                      : ApiCategoryRepository(),
-                  postingQuotaRepository: AppEnvironment.useMockData
-                      ? MockPostingQuotaRepository()
-                      : ApiPostingQuotaRepository(),
+                  listingsRepository:
+                      createListing.listings ?? ApiListingsRepository(),
+                  categoryRepository:
+                      createListing.categories ?? ApiCategoryRepository(),
+                  postingQuotaRepository:
+                      createListing.postingQuota ?? ApiPostingQuotaRepository(),
                 )
                 ..add(const CategoriesRequested())
                 ..add(const PostingQuotaRequested())
@@ -237,12 +271,17 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: FeedsView.path, builder: (_, _) => const FeedsView()),
+            GoRoute(path: '/feeds', builder: (_, _) => const FeedsView()),
           ],
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/messages', builder: (_, _) => const MessagesView()),
+            GoRoute(
+              path: '/messages',
+              builder: (_, _) => AppEnvironment.useMockData
+                  ? const MessagesView()
+                  : const LiveMessagesView(),
+            ),
           ],
         ),
         StatefulShellBranch(
@@ -266,7 +305,11 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
     GoRoute(
       path: '/messages/:id',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const ChatConversationView(),
+      builder: (_, state) => AppEnvironment.useMockData
+          ? const ChatConversationView()
+          : LiveChatConversationView(
+              conversationId: state.pathParameters['id']!,
+            ),
     ),
     GoRoute(
       path: '/messages/:id/offer/:stage',
@@ -289,6 +332,35 @@ GoRouter createAppRouter(AuthBloc authBloc) => GoRouter(
       ),
     ),
     // Chi tiết sản phẩm; extra là ListingModel của thẻ vừa bấm (tuỳ chọn)
+    GoRoute(
+      path: '/settings',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const LanguageSettingsView(),
+    ),
+    // Hồ sơ công khai và danh sách theo dõi (?tab=followers|following)
+    GoRoute(
+      path: '/users/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: PublicProfileView(userId: state.pathParameters['id']!),
+      ),
+      routes: [
+        GoRoute(
+          path: 'follows',
+          parentNavigatorKey: _rootNavigatorKey,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: FollowListView(
+              userId: state.pathParameters['id']!,
+              initial: state.uri.queryParameters['tab'] == 'following'
+                  ? FollowListKind.following
+                  : FollowListKind.followers,
+            ),
+          ),
+        ),
+      ],
+    ),
     GoRoute(
       path: '/listings/:id',
       parentNavigatorKey: _rootNavigatorKey,
