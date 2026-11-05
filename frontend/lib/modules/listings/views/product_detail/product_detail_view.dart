@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 import 'package:restore/data/models/listing_model.dart';
 
@@ -22,9 +21,7 @@ class ProductDetailView extends StatelessWidget {
       create: (_) => ProductDetailCubit(
         listingId: listingId,
         preview: preview,
-        repository: AppEnvironment.useMockData
-            ? MockProductDetailRepository()
-            : ApiProductDetailRepository(),
+        repository: ApiProductDetailRepository(),
       )..load(),
       child: const TResponsiveLayout(mobile: ProductDetailMobileView()),
     );

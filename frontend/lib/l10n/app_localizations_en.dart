@@ -9,6 +9,401 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get feedForYou => 'For you';
+
+  @override
+  String get feedFollowing => 'Following';
+
+  @override
+  String get feedCompose => 'Share a find or a story…';
+
+  @override
+  String get feedFollow => 'Follow';
+
+  @override
+  String get feedUnfollow => 'Unfollow';
+
+  @override
+  String get feedPost => 'Post';
+
+  @override
+  String get feedNewPost => 'Create a community post';
+
+  @override
+  String get feedTextHint => 'What would you like to share?';
+
+  @override
+  String get feedAddPhoto => 'Add photo';
+
+  @override
+  String get feedTakePhoto => 'Take photo';
+
+  @override
+  String get feedRemovePhoto => 'Remove photo';
+
+  @override
+  String get feedComments => 'Comments';
+
+  @override
+  String get feedCommentHint => 'Write a comment…';
+
+  @override
+  String get feedSend => 'Send comment';
+
+  @override
+  String get feedLike => 'Like';
+
+  @override
+  String get feedUnlike => 'Unlike';
+
+  @override
+  String get feedEmpty => 'No posts yet';
+
+  @override
+  String get feedFollowingEmpty => 'Follow an author to see their posts here.';
+
+  @override
+  String get feedLoadError => 'Couldn\'t load the feed.';
+
+  @override
+  String get feedActionError => 'Something went wrong. Please try again.';
+
+  @override
+  String get feedPublishError =>
+      'Couldn\'t publish your post. Please try again.';
+
+  @override
+  String get feedPhotoError => 'Couldn\'t select a photo. Please try again.';
+
+  @override
+  String get feedYourName => 'You';
+
+  @override
+  String get feedNoComments => 'Be the first to comment.';
+
+  @override
+  String get feedNotifications => 'Notifications are coming soon.';
+
+  @override
+  String get feedNow => 'Just now';
+
+  @override
+  String feedMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes ago',
+      one: '1 minute ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feedHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feedDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feedLikes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count likes',
+      one: '1 like',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feedCommentCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count comments',
+      one: '1 comment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get settingsPageTitle => 'Settings';
+
+  @override
+  String get settingsLanguage => 'App language';
+
+  @override
+  String get settingsLanguageHint =>
+      'Choose the interface language. User posts keep their original language.';
+
+  @override
+  String get settingsLanguageError =>
+      'Couldn\'t save your language preference.';
+
+  @override
+  String get feedRequired => 'Add text or a photo before posting.';
+
+  @override
+  String get feedDraftLimit => 'Up to 2,000 characters';
+
+  @override
+  String get feedDelete => 'Delete post';
+
+  @override
+  String get feedDeleteConfirm => 'Delete this post? This can\'t be undone.';
+
+  @override
+  String get feedDeleted => 'Post deleted';
+
+  @override
+  String get feedReport => 'Report post';
+
+  @override
+  String get feedReportTitle => 'Why are you reporting this post?';
+
+  @override
+  String get feedReportSpam => 'Spam or advertising';
+
+  @override
+  String get feedReportScam => 'Scam or fraud';
+
+  @override
+  String get feedReportOffensive => 'Offensive content';
+
+  @override
+  String get feedReportOther => 'Something else';
+
+  @override
+  String get feedReported => 'Report sent. Thank you!';
+
+  @override
+  String get feedViewProfile => 'View profile';
+
+  @override
+  String get feedLoadMoreError => 'Couldn\'t load more posts.';
+
+  @override
+  String get feedDiscardTitle => 'Discard post?';
+
+  @override
+  String get feedDiscardBody => 'What you\'ve written will be lost.';
+
+  @override
+  String get feedDiscard => 'Discard';
+
+  @override
+  String get feedKeepEditing => 'Keep editing';
+
+  @override
+  String feedCharCount(int count) {
+    return '$count/2,000';
+  }
+
+  @override
+  String get feedCloseImage => 'Close image';
+
+  @override
+  String get accEditPage => 'Edit profile';
+
+  @override
+  String get accMenu => 'Menu and settings';
+
+  @override
+  String get accLoadError => 'Couldn\'t load your profile. Tap to retry';
+
+  @override
+  String get accLoading => 'Loading…';
+
+  @override
+  String get accFollowing => 'Following';
+
+  @override
+  String get accFollowers => 'Followers';
+
+  @override
+  String get accListings => 'Listings';
+
+  @override
+  String get accPosts => 'Posts';
+
+  @override
+  String get accAddBio => '＋  Add a bio';
+
+  @override
+  String accRating(String rating, int count) {
+    return '$rating ($count reviews)';
+  }
+
+  @override
+  String get accNoRating => 'No reviews yet';
+
+  @override
+  String accTabVisible(int count) {
+    return 'ACTIVE ($count)';
+  }
+
+  @override
+  String accTabPending(int count) {
+    return 'PENDING ($count)';
+  }
+
+  @override
+  String accTabHidden(int count) {
+    return 'HIDDEN ($count)';
+  }
+
+  @override
+  String get accEmptyVisible => 'You have no active listings';
+
+  @override
+  String get accEmptyPending => 'No listings awaiting review';
+
+  @override
+  String get accEmptyHidden => 'No hidden listings';
+
+  @override
+  String get accPostListing => 'Post a listing';
+
+  @override
+  String accPosted(String time) {
+    return 'Posted $time';
+  }
+
+  @override
+  String accViews(int count) {
+    return '$count views';
+  }
+
+  @override
+  String get accHide => 'Hide';
+
+  @override
+  String get accShow => 'Show';
+
+  @override
+  String get accBoost => 'Boost';
+
+  @override
+  String get accLoadListingsError => 'Couldn\'t load your listings.';
+
+  @override
+  String get accUpdateListingError => 'Couldn\'t update the listing.';
+
+  @override
+  String get accLogout => 'Log out';
+
+  @override
+  String get accLogoutConfirm => 'Log out of ReStore?';
+
+  @override
+  String get accCloseMenu => 'Close menu';
+
+  @override
+  String get accEditTitle => 'Edit profile';
+
+  @override
+  String get accDisplayName => 'Display name';
+
+  @override
+  String get accUsername => 'Username';
+
+  @override
+  String get accBio => 'Bio';
+
+  @override
+  String get accSave => 'Save';
+
+  @override
+  String get accChangeAvatar => 'Change photo';
+
+  @override
+  String get accRemoveAvatar => 'Remove photo';
+
+  @override
+  String get accNameRequired => 'Enter a display name.';
+
+  @override
+  String get accUsernameInvalid =>
+      '3–30 characters: lowercase letters, numbers, dots or underscores.';
+
+  @override
+  String get accUsernameTaken => 'This username is already taken.';
+
+  @override
+  String get accSaveError => 'Couldn\'t save your profile. Please try again.';
+
+  @override
+  String get accAvatarUploadError =>
+      'Couldn\'t upload the photo. Please try again.';
+
+  @override
+  String get accUserNotFound => 'User not found.';
+
+  @override
+  String get accFollowListEmpty => 'No one here yet';
+
+  @override
+  String get accComingSoon => 'This feature is under development';
+
+  @override
+  String get accActivity => 'Activity';
+
+  @override
+  String get accProPlan => 'Pro plan';
+
+  @override
+  String get accCreateStore => 'Create a store';
+
+  @override
+  String get accCoins => 'ReStore coins';
+
+  @override
+  String get accSaved => 'Saved';
+
+  @override
+  String get accSavedSearches => 'Saved searches';
+
+  @override
+  String get accRecentlyViewed => 'Recently viewed';
+
+  @override
+  String get accMyReviews => 'My reviews';
+
+  @override
+  String get accTransactions => 'Transaction history';
+
+  @override
+  String get accStores => 'Stores / brand pages';
+
+  @override
+  String get accHelp => 'Help';
+
+  @override
+  String get accFeedback => 'Send feedback';
+
+  @override
+  String get accEdit => 'Edit';
+
+  @override
+  String get accMoreOptions => 'More options';
+
+  @override
   String get appName => 'ReStore';
 
   @override
@@ -2868,4 +3263,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get listingSaveNetworkError =>
       'Couldn\'t reach the server. What was saved is kept, please try again.';
+
+  @override
+  String get feedReply => 'Reply';
+
+  @override
+  String get feedHideReplies => 'Hide replies';
+
+  @override
+  String feedViewReplies(int count) {
+    return 'View $count replies';
+  }
+
+  @override
+  String feedReplyTo(String name) {
+    return 'Replying to $name';
+  }
+
+  @override
+  String get feedCancelReply => 'Cancel reply';
+
+  @override
+  String get feedMoreComments => 'Load more comments';
 }

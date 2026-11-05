@@ -4716,5 +4716,75 @@
       "error": "Không tìm thấy API.",
       "code": "NOT_FOUND"
     }
+  },
+  "area search": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "code": "26740",
+          "name": "Phường Sài Gòn",
+          "shortName": "Sài Gòn",
+          "level": "ward",
+          "parentName": "Thành phố Hồ Chí Minh",
+          "center": {
+            "latitude": 10.780926,
+            "longitude": 106.70418
+          }
+        }
+      ],
+      "coverage": "full"
+    }
+  },
+  "area search province": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "code": "01",
+          "name": "Thành phố Hà Nội",
+          "shortName": "Hà Nội",
+          "level": "province",
+          "center": {
+            "latitude": 21.03853,
+            "longitude": 105.838061
+          }
+        },
+        {
+          "code": "00004",
+          "name": "Phường Ba Đình",
+          "shortName": "Ba Đình",
+          "level": "ward",
+          "parentName": "Thành phố Hà Nội",
+          "center": {
+            "latitude": 21.03853,
+            "longitude": 105.838061
+          }
+        },
+        {
+          "code": "00008",
+          "name": "Phường Ngọc Hà",
+          "shortName": "Ngọc Hà",
+          "level": "ward",
+          "parentName": "Thành phố Hà Nội",
+          "center": {
+            "latitude": 21.038124,
+            "longitude": 105.816315
+          }
+        }
+      ],
+      "coverage": "full"
+    }
+  },
+  "area search missing q": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "q phải là chuỗi từ 1 đến 100 ký tự.",
+      "code": "INVALID_INPUT",
+      "field": "q"
+    }
   }
 }

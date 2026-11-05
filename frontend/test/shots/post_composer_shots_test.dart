@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'package:restore/modules/feed/repositories/feed_post_repository.dart';
+import 'package:restore/modules/feed/repositories/recent_photos_repository.dart';
+import '../support/load_test_fonts.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -18,16 +19,6 @@ import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/data/models/administrative_unit_model.dart';
 import 'package:restore/shared/models/geo_point.dart';
 
-Future<void> _loadFont(String family, List<String> paths) async {
-  final loader = FontLoader(family);
-  for (final path in paths) {
-    loader.addFont(
-      Future.value(ByteData.sublistView(File(path).readAsBytesSync())),
-    );
-  }
-  await loader.load();
-}
-
 Widget _app() {
   final router = GoRouter(
     initialLocation: FeedsView.path,
@@ -37,6 +28,8 @@ Widget _app() {
         path: PostComposerView.path,
         builder: (_, state) => PostComposerView(
           openPhotos: state.uri.queryParameters['panel'] == 'photos',
+          repository: MockFeedPostRepository(latency: Duration.zero),
+          recentPhotosRepository: MockRecentPhotosRepository(),
         ),
       ),
     ],
@@ -88,26 +81,7 @@ Future<void> _shot(WidgetTester tester, String name) async {
 }
 
 void main() {
-  setUpAll(() async {
-    final fonts =
-        '${Platform.environment['FLUTTER_ROOT']}'
-        '/bin/cache/artifacts/material_fonts';
-    await _loadFont('Roboto', [
-      for (final w in ['Regular', 'Medium', 'Bold', 'Black', 'Light', 'Thin'])
-        '$fonts/Roboto-$w.ttf',
-    ]);
-    final lucide =
-        '${Platform.environment['HOME']}/.pub-cache/hosted/pub.dev/'
-        'lucide_icons_flutter-3.1.25/assets';
-    await _loadFont('packages/lucide_icons_flutter/Lucide', [
-      '$lucide/lucide.ttf',
-    ]);
-    for (final w in [100, 200, 300, 400, 500, 600]) {
-      await _loadFont('packages/lucide_icons_flutter/Lucide$w', [
-        '$lucide/build_font/LucideVariable-w$w.ttf',
-      ]);
-    }
-  });
+  setUpAll(loadTestFonts);
 
   testWidgets('post composer shots', (tester) async {
     tester.view.physicalSize = const Size(1170, 2532);

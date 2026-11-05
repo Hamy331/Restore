@@ -9,13 +9,21 @@ class PagedResult<T> extends Equatable {
   final int page;
   final bool hasMore;
 
+  /// Tổng số bản ghi nếu API trả `pagination.totalItems`
+  final int? totalItems;
+
   const PagedResult({
     required this.items,
     required this.page,
     required this.hasMore,
+    this.totalItems,
   });
 
-  const PagedResult.empty() : items = const [], page = 0, hasMore = false;
+  const PagedResult.empty()
+    : items = const [],
+      page = 0,
+      hasMore = false,
+      totalItems = 0;
 
   /// Thiếu `meta.hasMore` thì coi là còn nếu trang này đầy
   factory PagedResult.fromJson(
@@ -37,9 +45,15 @@ class PagedResult<T> extends Equatable {
         : pagination is Map && pagination['totalPages'] is num
         ? page < (pagination['totalPages'] as num)
         : items.length >= pageSize;
-    return PagedResult(items: items, page: page, hasMore: hasMore);
+    final total = pagination is Map ? pagination['totalItems'] : null;
+    return PagedResult(
+      items: items,
+      page: page,
+      hasMore: hasMore,
+      totalItems: total is num ? total.toInt() : null,
+    );
   }
 
   @override
-  List<Object?> get props => [items, page, hasMore];
+  List<Object?> get props => [items, page, hasMore, totalItems];
 }

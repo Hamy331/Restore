@@ -110,8 +110,8 @@ Restore/
     │   ├── docs/swagger/            # File *.swagger.yaml theo module
     │   │
     │   └── modules/                 # (P) = mẫu phẳng, (N) = mẫu nhóm
-    │       ├── auth/            (P) # Đăng ký, đăng nhập, OTP, refresh token
-    │       ├── users/           (P) # Hồ sơ người dùng, /users/me
+    │       ├── auth/            (N) # Đăng ký, đăng nhập, OTP, refresh token
+    │       ├── users/           (N) # Hồ sơ người dùng, /users/me
     │       ├── home/            (P) # Banner và khu vực của trang chủ
     │       ├── catalog/         (P) # Danh mục, tình trạng sản phẩm, tỉnh/phường (catalog.data.ts, dữ liệu mẫu tĩnh)
     │       ├── listings/        (N) # Tin đăng, nháp, ảnh, feed, lưu tin, duyệt tin
