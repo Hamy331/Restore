@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/user_model.dart';
 import 'package:restore/services/token_storage.dart';
@@ -22,10 +21,8 @@ class AuthException implements Exception {
 /// (Keychain / Keystore / localStorage có mã hóa). Refresh token sống 60 ngày
 /// và xoay vòng mỗi lần làm mới, nên người dùng còn mở app thì phiên tự gia hạn.
 abstract class AuthRepository {
-  /// [MockAuthRepository] khi chạy với dữ liệu mẫu (`USE_MOCK_DATA`, mặc định),
-  /// [ApiAuthRepository] khi `--dart-define=USE_MOCK_DATA=false`.
-  factory AuthRepository() =>
-      AppEnvironment.useMockData ? MockAuthRepository() : ApiAuthRepository();
+  /// App dùng API thật. Test có thể truyền repository mẫu trực tiếp.
+  factory AuthRepository() => ApiAuthRepository();
 
   /// Đăng nhập và lưu phiên
   Future<UserModel> login(String email, String password);
