@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../services/media_picker_service.dart';
+import '../../../shared/widgets/app_local_image.dart';
 import '../bloc/feeds/feeds_cubit.dart';
 import '../bloc/feeds/feeds_state.dart';
 import '../models/feed_models.dart';
+import 'feed_image_viewer.dart';
 import 'feed_shared.dart';
 
 Future<void> showFeedComments(
@@ -14,17 +17,19 @@ Future<void> showFeedComments(
   FeedPost post,
 ) {
   cubit.loadComments(post.id);
+  cubit.loadMe();
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     useRootNavigator: true,
     backgroundColor: AppColors.surface,
+    constraints: const BoxConstraints(maxWidth: 640),
     builder: (context) => Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: DraggableScrollableSheet(
         expand: false,
-        initialChildSize: .6,
+        initialChildSize: .7,
         minChildSize: .4,
         maxChildSize: .95,
         builder: (_, controller) => BlocProvider.value(
@@ -46,35 +51,69 @@ class _Comments extends StatefulWidget {
 
 class _CommentsState extends State<_Comments> {
   final text = TextEditingController();
-  bool sending = false;
+  final focus = FocusNode();
+  final expanded = <String>{};
+  FeedComment? replying;
+  String? image;
+  bool sending = false, picking = false;
+
   @override
   void dispose() {
     text.dispose();
+    focus.dispose();
     super.dispose();
   }
 
+  Future<void> pick() async {
+    setState(() => picking = true);
+    try {
+      final images = await MediaPickerService().pickImages(
+        source: MediaSource.gallery,
+        limit: 1,
+      );
+      if (mounted && images.isNotEmpty) setState(() => image = images.first);
+    } catch (_) {
+      if (mounted) {
+        feedNotice(context, AppLocalizations.of(context)!.feedPhotoError);
+      }
+    } finally {
+      if (mounted) setState(() => picking = false);
+    }
+  }
+
   Future<void> send() async {
-    if (sending) return;
-    setState(() => sending = true);
-    final post = context.read<FeedsCubit>().find(widget.postId);
-    if (post == null ||
-        !await context.read<FeedsCubit>().comment(post, text.text) ||
-        !mounted) {
-      if (mounted) setState(() => sending = false);
+    if (sending || picking || (text.text.trim().isEmpty && image == null)) {
       return;
     }
-    text.clear();
-    sending = false;
-    setState(() {});
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller = widget.controller;
-      if (!mounted || !controller.hasClients) return;
-      controller.animateTo(
-        controller.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
+    final cubit = context.read<FeedsCubit>();
+    final post = cubit.find(widget.postId);
+    if (post == null) return;
+    setState(() => sending = true);
+    final parentId = replying?.parentId ?? replying?.id;
+    final success = await cubit.comment(
+      post,
+      text.text,
+      image: image,
+      parentId: parentId,
+    );
+    if (!mounted) return;
+    setState(() {
+      sending = false;
+      if (success) {
+        text.clear();
+        image = null;
+        replying = null;
+        if (parentId != null) expanded.add(parentId);
+      }
     });
+    if (!success) {
+      feedNotice(context, AppLocalizations.of(context)!.feedPublishError);
+    }
+  }
+
+  void reply(FeedComment comment) {
+    setState(() => replying = comment);
+    focus.requestFocus();
   }
 
   @override
@@ -84,104 +123,238 @@ class _CommentsState extends State<_Comments> {
       builder: (context, state) {
         final cubit = context.read<FeedsCubit>();
         final comments = state.comments[widget.postId] ?? const <FeedComment>[];
+        final ids = comments.map((c) => c.id).toSet();
+        final roots = comments
+            .where((c) => c.parentId == null || !ids.contains(c.parentId))
+            .toList();
+        final replies = <String, List<FeedComment>>{};
+        for (final comment in comments) {
+          if (comment.parentId != null) {
+            replies.putIfAbsent(comment.parentId!, () => []).add(comment);
+          }
+        }
         return Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+              child: Row(
+                children: [
+                  const SizedBox(width: 40),
+                  Expanded(
+                    child: Text(
+                      '${l.feedComments} (${cubit.find(widget.postId)?.commentCount ?? 0})',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: MaterialLocalizations.of(
+                      context,
+                    ).closeButtonTooltip,
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
             if (state.isPending('comments:${widget.postId}'))
               const LinearProgressIndicator(),
-            // Chưa tải được bình luận lần nào và không còn đang tải: cho thử lại.
-            if (!state.comments.containsKey(widget.postId) &&
-                !state.isPending('comments:${widget.postId}'))
-              TextButton(
-                onPressed: () => cubit.loadComments(widget.postId),
-                child: Text(l.retry),
-              ),
-
             Expanded(
               child: CustomScrollView(
                 controller: widget.controller,
                 slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                      child: Text(
-                        comments.isEmpty
-                            ? l.feedComments
-                            : '${l.feedComments} (${cubit.find(widget.postId)?.commentCount ?? 0})',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleMedium,
+                  if (!state.comments.containsKey(widget.postId) &&
+                      !state.isPending('comments:${widget.postId}'))
+                    SliverToBoxAdapter(
+                      child: TextButton(
+                        onPressed: () => cubit.loadComments(widget.postId),
+                        child: Text(l.retry),
                       ),
-                    ),
-                  ),
-                  if (comments.isEmpty)
+                    )
+                  else if (comments.isEmpty &&
+                      !state.isPending('comments:${widget.postId}'))
                     SliverFillRemaining(
                       hasScrollBody: false,
                       child: Center(child: Text(l.feedNoComments)),
                     )
                   else
                     SliverList.builder(
-                      itemCount: comments.length,
-                      itemBuilder: (_, index) => _CommentTile(
-                        postId: widget.postId,
-                        comment: comments[index],
+                      itemCount: roots.length,
+                      itemBuilder: (_, index) {
+                        final root = roots[index];
+                        final children =
+                            replies[root.id] ?? const <FeedComment>[];
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _CommentTile(
+                              postId: widget.postId,
+                              comment: root,
+                              onReply: () => reply(root),
+                            ),
+                            if (children.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 56),
+                                child: TextButton(
+                                  onPressed: () => setState(() {
+                                    expanded.contains(root.id)
+                                        ? expanded.remove(root.id)
+                                        : expanded.add(root.id);
+                                  }),
+                                  child: Text(
+                                    expanded.contains(root.id)
+                                        ? l.feedHideReplies
+                                        : l.feedViewReplies(children.length),
+                                  ),
+                                ),
+                              ),
+                            if (expanded.contains(root.id))
+                              for (final child in children)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 40),
+                                  child: _CommentTile(
+                                    postId: widget.postId,
+                                    comment: child,
+                                    onReply: () => reply(child),
+                                  ),
+                                ),
+                          ],
+                        );
+                      },
+                    ),
+                  if (state.hasMoreComments(widget.postId))
+                    SliverToBoxAdapter(
+                      child: TextButton(
+                        onPressed: state.isPending('comments:${widget.postId}')
+                            ? null
+                            : () =>
+                                  cubit.loadComments(widget.postId, more: true),
+                        child: Text(l.feedMoreComments),
                       ),
                     ),
                 ],
               ),
             ),
-            if (state.hasMoreComments(widget.postId))
-              TextButton(
-                onPressed: () => cubit.loadComments(widget.postId, more: true),
-                child: const Icon(Icons.expand_more),
-              ),
-            DecoratedBox(
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: AppColors.border)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
-                child: Row(
+            SafeArea(
+              top: false,
+              child: Container(
+                decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(color: AppColors.border)),
+                ),
+                padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    FeedAvatar.me(state.me, fallbackName: l.feedYourName),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: text,
-                        maxLength: 2000,
-                        maxLines: 3,
-                        minLines: 1,
-                        onChanged: (_) => setState(() {}),
-                        decoration: InputDecoration(
-                          hintText: l.feedCommentHint,
-                          counterText: '',
-                          isDense: true,
-                          filled: true,
-                          fillColor: AppColors.background,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 10,
+                    if (replying != null)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              l.feedReplyTo(replying!.author.name),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.primaryDark,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
+                          IconButton(
+                            tooltip: l.feedCancelReply,
+                            onPressed: sending
+                                ? null
+                                : () => setState(() => replying = null),
+                            icon: const Icon(Icons.close, size: 18),
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
+                        ],
+                      ),
+                    if (image != null)
+                      Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: AppLocalImage(
+                              path: image!,
+                              width: 64,
+                              height: 64,
+                            ),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
+                          IconButton(
+                            tooltip: l.feedRemovePhoto,
+                            onPressed: sending
+                                ? null
+                                : () => setState(() => image = null),
+                            icon: const Icon(Icons.close),
+                          ),
+                        ],
+                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: FeedAvatar.me(
+                            state.me,
+                            fallbackName: l.feedYourName,
                           ),
                         ),
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: l.feedSend,
-                      color: AppColors.primaryDark,
-                      icon: const Icon(AppIcons.send),
-                      onPressed: sending || text.text.trim().isEmpty
-                          ? null
-                          : send,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: text,
+                            focusNode: focus,
+                            enabled: !sending,
+                            maxLength: 2000,
+                            maxLines: 3,
+                            minLines: 1,
+                            onChanged: (_) => setState(() {}),
+                            decoration: InputDecoration(
+                              hintText: l.feedCommentHint,
+                              counterText: '',
+                              isDense: true,
+                              filled: true,
+                              fillColor: AppColors.background,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: l.feedAddPhoto,
+                          onPressed: sending || picking ? null : pick,
+                          icon: const Icon(Icons.image_outlined),
+                          color: AppColors.primaryDark,
+                        ),
+                        IconButton(
+                          tooltip: l.feedSend,
+                          onPressed:
+                              sending ||
+                                  picking ||
+                                  (text.text.trim().isEmpty && image == null)
+                              ? null
+                              : send,
+                          icon: sending
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(AppIcons.send),
+                          color: AppColors.primaryDark,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -195,93 +368,109 @@ class _CommentsState extends State<_Comments> {
 }
 
 class _CommentTile extends StatelessWidget {
-  const _CommentTile({required this.postId, required this.comment});
+  const _CommentTile({
+    required this.postId,
+    required this.comment,
+    required this.onReply,
+  });
   final String postId;
   final FeedComment comment;
+  final VoidCallback onReply;
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final small = Theme.of(
+      context,
+    ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary);
     final name = comment.author.name.isEmpty
         ? l.feedYourName
         : comment.author.name;
-    final small = Theme.of(context).textTheme.bodySmall;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 4, 16, 4),
+      padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           FeedAvatar(name: name, size: 32, avatarUrl: comment.author.avatarUrl),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(comment.text),
-                      ],
-                    ),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
                   ),
                 ),
-                Row(
-                  children: [
-                    const SizedBox(width: 12),
-                    Text(feedTime(l, comment.createdAt), style: small),
-                    const SizedBox(width: 4),
-                    Tooltip(
-                      message: comment.liked ? l.feedUnlike : l.feedLike,
-                      child: InkWell(
-                        onTap: () => context
-                            .read<FeedsCubit>()
-                            .toggleCommentLike(postId, comment),
+                if (comment.text.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3),
+                    child: Text(
+                      comment.text,
+                      style: const TextStyle(fontSize: 14, height: 1.4),
+                    ),
+                  ),
+                if (comment.image != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: GestureDetector(
+                      onTap: () => showFeedImage(
+                        context,
+                        comment.image!,
+                        heroTag: 'comment-${comment.id}',
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
                         child: ConstrainedBox(
-                          constraints: const BoxConstraints(minHeight: 40),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Center(
-                              widthFactor: 1,
-                              child: Text(
-                                l.feedLike,
-                                style: small?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: comment.liked
-                                      ? AppColors.error
-                                      : AppColors.textSecondary,
-                                ),
-                              ),
-                            ),
+                          constraints: const BoxConstraints(
+                            maxWidth: 180,
+                            maxHeight: 180,
+                          ),
+                          child: AppLocalImage(
+                            path: comment.image!,
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
                     ),
-                    if (comment.likes > 0)
-                      Semantics(
-                        label: l.feedLikes(comment.likes),
-                        child: Text('${comment.likes}', style: small),
+                  ),
+                Row(
+                  children: [
+                    Text(feedTime(l, comment.createdAt), style: small),
+                    TextButton(
+                      onPressed: onReply,
+                      child: Text(
+                        l.feedReply,
+                        style: small?.copyWith(fontWeight: FontWeight.w600),
                       ),
+                    ),
                   ],
                 ),
               ],
             ),
+          ),
+          Column(
+            children: [
+              IconButton(
+                tooltip: comment.liked ? l.feedUnlike : l.feedLike,
+                isSelected: comment.liked,
+                onPressed: () => context.read<FeedsCubit>().toggleCommentLike(
+                  postId,
+                  comment,
+                ),
+                icon: Icon(
+                  comment.liked ? Icons.favorite : Icons.favorite_border,
+                  size: 21,
+                  color: comment.liked
+                      ? AppColors.error
+                      : AppColors.textSecondary,
+                ),
+              ),
+              if (comment.likes > 0) Text('${comment.likes}', style: small),
+            ],
           ),
         ],
       ),

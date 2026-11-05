@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
+import 'package:restore/modules/auth/repositories/auth_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -13,16 +16,19 @@ import 'support/fake_account_listings_repository.dart';
 import 'support/fake_profile_repository.dart';
 import 'package:restore/modules/account/views/account/account_view.dart';
 
-Widget host(Widget child) => MaterialApp(
-  locale: const Locale('vi'),
-  supportedLocales: AppLocalizations.supportedLocales,
-  localizationsDelegates: const [
-    AppLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-  ],
-  home: Scaffold(body: child),
+Widget host(Widget child) => BlocProvider(
+  create: (_) => AuthBloc(MockAuthRepository(latency: Duration.zero)),
+  child: MaterialApp(
+    locale: const Locale('vi'),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    home: Scaffold(body: child),
+  ),
 );
 
 void main() {

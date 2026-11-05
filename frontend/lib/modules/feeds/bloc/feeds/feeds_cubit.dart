@@ -233,13 +233,26 @@ class FeedsCubit extends Cubit<FeedsState> {
     }
   }
 
-  Future<bool> comment(FeedPost post, String text) async {
+  Future<bool> comment(
+    FeedPost post,
+    String text, {
+    String? image,
+    String? parentId,
+  }) async {
     final key = 'send:${post.id}';
-    if (text.trim().isEmpty || text.length > 2000 || !_begin(key)) {
+    if ((text.trim().isEmpty && image == null) ||
+        text.length > 2000 ||
+        !_begin(key)) {
       return false;
     }
     try {
-      final created = await repository.comment(post.id, text.trim());
+      final imageUrl = image == null ? null : await repository.upload(image);
+      final created = await repository.comment(
+        post.id,
+        text.trim(),
+        imageUrl: imageUrl,
+        parentId: parentId,
+      );
       final latest = find(post.id) ?? post;
       _emit(
         state.copyWith(

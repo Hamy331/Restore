@@ -39,7 +39,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get feedTakePhoto => 'Chụp ảnh';
 
   @override
-  String get feedRemovePhoto => 'Xóa ảnh';
+  String get feedRemovePhoto => 'Bỏ ảnh';
 
   @override
   String get feedComments => 'Bình luận';
@@ -3188,4 +3188,26 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get listingSaveNetworkError =>
       'Không kết nối được máy chủ. Phần đã lưu được giữ lại, bạn thử lại nhé.';
+
+  @override
+  String get feedReply => 'Trả lời';
+
+  @override
+  String get feedHideReplies => 'Ẩn trả lời';
+
+  @override
+  String feedViewReplies(int count) {
+    return 'Xem $count trả lời';
+  }
+
+  @override
+  String feedReplyTo(String name) {
+    return 'Đang trả lời $name';
+  }
+
+  @override
+  String get feedCancelReply => 'Hủy trả lời';
+
+  @override
+  String get feedMoreComments => 'Xem thêm bình luận';
 }

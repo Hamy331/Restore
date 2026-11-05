@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/core/config/app_environment.dart';
-import 'package:restore/modules/auth/bloc/auth_bloc.dart';
-import 'package:restore/modules/auth/bloc/auth_state.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_state.dart';
 import 'package:restore/modules/listings/repositories/category_repository.dart';
 
 import '../../bloc/home_cubit.dart';

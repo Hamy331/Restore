@@ -8,8 +8,8 @@ import { contentRouter } from './modules/content/index.js';
 import { listingsRouter } from './modules/listings/index.js';
 import { usersRouter } from './modules/users/index.js';
 import { wantedAlertRouter } from './modules/wanted-alerts/index.js';
-import chatRouter from './modules/chat/chat.route.js';
-import { feedRouter } from './modules/feeds/feed.route.js';
+import { chatRouter } from './modules/chat/index.js';
+import { feedRouter } from './modules/feeds/index.js';
 import { mediaRouter } from './modules/media/media.route.js';
 
 /** Toàn bộ API, gắn dưới tiền tố /api/v1 trong app.ts. */

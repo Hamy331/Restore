@@ -1,4 +1,4 @@
-import type { UserProfile } from './users.repository.js';
+import type { UserProfile } from './repositories/users.repository.js';
 
 /** Hồ sơ trả cho app: không có password, OTP, authVersion */
 export type UserProfileDto = {

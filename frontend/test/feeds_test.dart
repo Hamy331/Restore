@@ -24,6 +24,68 @@ Widget host(Locale locale, Widget child) => MaterialApp(
 );
 
 void main() {
+  for (final width in [360.0, 768.0]) {
+    testWidgets('comment threads and hearts fit $width', (tester) async {
+      tester.view.physicalSize = Size(width, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final repository = FakeFeedsRepository();
+      await tester.pumpWidget(
+        host(const Locale('en'), FeedsView(repository: repository)),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Comments').first);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'First comment');
+      await tester.pump();
+      await tester.tap(find.byTooltip('Send comment'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reply').first);
+      await tester.pumpAndSettle();
+      expect(find.text('Replying to Me'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'A reply');
+      await tester.pump();
+      await tester.tap(find.byTooltip('Send comment'));
+      await tester.pumpAndSettle();
+      expect(find.text('A reply'), findsOneWidget);
+      expect(
+        repository.replies.values.first.last.parentId,
+        repository.replies.values.first.first.id,
+      );
+      await tester.tap(find.byTooltip('Like').last);
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.favorite), findsOneWidget);
+      await tester.tap(find.text('Hide replies'));
+      await tester.pumpAndSettle();
+      expect(find.text('A reply'), findsNothing);
+      await tester.tap(find.text('View 1 replies'));
+      await tester.pumpAndSettle();
+      expect(find.text('A reply'), findsOneWidget);
+      expect(find.byTooltip('Add photo'), findsWidgets);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  test(
+    'image-only replies preserve their image and parent after liking',
+    () async {
+      final repository = FakeFeedsRepository();
+      final cubit = FeedsCubit(repository: repository);
+      addTearDown(cubit.close);
+      await cubit.load();
+      final post = cubit.state.posts.first;
+      expect(
+        await cubit.comment(post, '', image: 'picked.jpg', parentId: 'parent'),
+        isTrue,
+      );
+      final comment = cubit.state.comments[post.id]!.single;
+      expect(comment.parentId, 'parent');
+      expect(comment.image, isNotNull);
+      await cubit.toggleCommentLike(post.id, comment);
+      expect(cubit.state.comments[post.id]!.single.image, comment.image);
+      expect(cubit.state.comments[post.id]!.single.parentId, 'parent');
+    },
+  );
   test('API feed handles validation, likes, follows and publishing', () async {
     final cubit = FeedsCubit(repository: FakeFeedsRepository());
     await cubit.load();
@@ -357,11 +419,18 @@ class FakeFeedsRepository implements FeedsRepository {
   }) async => FeedPage(replies[postId] ?? [], null);
 
   @override
-  Future<FeedComment> comment(String postId, String text) async {
+  Future<FeedComment> comment(
+    String postId,
+    String text, {
+    String? imageUrl,
+    String? parentId,
+  }) async {
     final created = FeedComment(
-      id: 'c${replies.length}',
+      id: 'c${replies.values.fold<int>(0, (total, items) => total + items.length)}',
       author: const FeedUser(id: 'me', name: 'Me'),
       text: text,
+      image: imageUrl,
+      parentId: parentId,
       createdAt: DateTime.now(),
     );
     (replies[postId] ??= []).add(created);

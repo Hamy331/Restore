@@ -436,10 +436,15 @@ model FeedComment {
   post FeedPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   text String @db.VarChar(2000)
+  imageUrl String?
+  parentId String?
+  parent FeedComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies FeedComment[] @relation("CommentReplies")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   likes FeedCommentLike[]
   @@index([postId, createdAt, id])
+  @@index([parentId, createdAt, id])
 }
 model FeedCommentLike {
   commentId String

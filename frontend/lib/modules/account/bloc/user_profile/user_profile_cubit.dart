@@ -1,13 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../services/image_upload_service.dart';
 import '../../repositories/profile_repository.dart';
+import '../../models/profile_models.dart';
 import 'user_profile_state.dart';
 
-/// Hồ sơ của chính người dùng (tab Tài khoản).
+/// Hồ sơ của chính người dùng (tab Tài khoản). [initial] là thông tin của
+/// người đang đăng nhập (AuthBloc) để hiện ngay trong lúc tải số liệu đầy đủ.
 class UserProfileCubit extends Cubit<UserProfileState> {
-  UserProfileCubit(this._repository, {ImageUploadService? uploader})
-    : _uploader = uploader,
-      super(const UserProfileState());
+  UserProfileCubit(
+    this._repository, {
+    ImageUploadService? uploader,
+    ProfileData? initial,
+  }) : _uploader = uploader,
+       super(UserProfileState(profile: initial, loading: initial == null));
   final ProfileRepository _repository;
   final ImageUploadService? _uploader;
 
