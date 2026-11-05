@@ -9,9 +9,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get feedPreviewBadge => 'Preview';
-
-  @override
   String get feedForYou => 'For you';
 
   @override
@@ -19,10 +16,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedCompose => 'Share a find or a story…';
-
-  @override
-  String get feedDemo =>
-      'Preview • Posts and interactions stay on this device until restart.';
 
   @override
   String get feedFollow => 'Follow';
@@ -70,9 +63,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedFollowingEmpty => 'Follow an author to see their posts here.';
 
   @override
-  String get feedRetry => 'Reload preview';
-
-  @override
   String get feedLoadError => 'Couldn\'t load the feed.';
 
   @override
@@ -86,27 +76,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedPhotoError => 'Couldn\'t select a photo. Please try again.';
 
   @override
-  String get feedViewListing => 'View listing';
-
-  @override
-  String get feedSampleListing => 'Sample listing';
-
-  @override
   String get feedYourName => 'You';
 
   @override
   String get feedNoComments => 'Be the first to comment.';
 
   @override
-  String get feedNotifications =>
-      'Notifications are not connected in this preview.';
-
-  @override
-  String get feedAbout => 'About this preview';
-
-  @override
-  String get feedAboutBody =>
-      'Likes, follows, posts and comments are local demo data. They are not saved to a server.';
+  String get feedNotifications => 'Notifications are coming soon.';
 
   @override
   String get feedNow => 'Just now';

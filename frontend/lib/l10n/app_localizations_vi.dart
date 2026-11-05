@@ -9,9 +9,6 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get feedPreviewBadge => 'Bản mẫu';
-
-  @override
   String get feedForYou => 'Dành cho bạn';
 
   @override
@@ -19,10 +16,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feedCompose => 'Bạn muốn chia sẻ điều gì?';
-
-  @override
-  String get feedDemo =>
-      'Bản mẫu • Bài viết và tương tác chỉ giữ trong phiên dùng này.';
 
   @override
   String get feedFollow => 'Theo dõi';
@@ -71,9 +64,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Theo dõi tác giả để xem bài viết của họ tại đây.';
 
   @override
-  String get feedRetry => 'Tải lại bản mẫu';
-
-  @override
   String get feedLoadError => 'Không tải được bảng tin.';
 
   @override
@@ -87,27 +77,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get feedPhotoError => 'Không chọn được ảnh. Vui lòng thử lại.';
 
   @override
-  String get feedViewListing => 'Xem tin';
-
-  @override
-  String get feedSampleListing => 'Tin đăng mẫu';
-
-  @override
   String get feedYourName => 'Bạn';
 
   @override
   String get feedNoComments => 'Hãy là người đầu tiên bình luận.';
 
   @override
-  String get feedNotifications =>
-      'Thông báo chưa được kết nối trong bản mẫu này.';
-
-  @override
-  String get feedAbout => 'Về bản mẫu';
-
-  @override
-  String get feedAboutBody =>
-      'Thích, theo dõi, bài viết và bình luận là dữ liệu mẫu trong phiên dùng. Chưa được lưu lên máy chủ.';
+  String get feedNotifications => 'Tính năng thông báo đang được phát triển.';
 
   @override
   String get feedNow => 'Vừa xong';

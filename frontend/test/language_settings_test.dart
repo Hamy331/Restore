@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:restore/core/blocs/language/language_bloc.dart';
 import 'package:restore/core/blocs/language/language_state.dart';
-import 'package:restore/modules/account/views/language_settings_view.dart';
+import 'package:restore/modules/account/views/language_settings/language_settings_view.dart';
 import 'feeds_test.dart' show host;
 
 void main() {

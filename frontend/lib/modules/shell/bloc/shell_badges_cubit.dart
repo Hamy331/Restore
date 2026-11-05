@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
 
@@ -8,22 +7,15 @@ class ShellBadgesCubit extends Cubit<int> {
   ShellBadgesCubit({required ChatRepository chatRepository})
     : _chatRepository = chatRepository,
       super(0) {
-    if (chatRepository is ApiChatRepository) {
-      _events = chatRepository.events(_cancel).listen(
-        (event) {
-          if (event == 'message' || event == 'read') unawaited(refresh());
-        },
-        onError: (Object _) {},
-      );
-    }
+    _events = chatRepository.events().listen((event) {
+      if (event == 'message' || event == 'read') unawaited(refresh());
+    }, onError: (Object _) {});
   }
 
-  final _cancel = CancelToken();
   StreamSubscription<String>? _events;
 
   @override
   Future<void> close() async {
-    _cancel.cancel();
     await _events?.cancel();
     await super.close();
   }

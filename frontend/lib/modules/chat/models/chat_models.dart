@@ -1,4 +1,7 @@
-class ChatPerson {
+import '../../../core/network/media_url.dart';
+import 'package:equatable/equatable.dart';
+
+class ChatPerson extends Equatable {
   const ChatPerson({
     required this.id,
     required this.fullName,
@@ -17,14 +20,17 @@ class ChatPerson {
   factory ChatPerson.fromJson(Map<String, dynamic> json) => ChatPerson(
     id: json['id'] as String,
     fullName: json['fullName'] as String? ?? '',
-    avatarUrl: json['avatarUrl'] as String?,
+    avatarUrl: resolveMediaUrl(json['avatarUrl'] as String?),
     lastActiveAt: DateTime.tryParse(
       json['lastActiveAt'] as String? ?? '',
     )?.toLocal(),
   );
+
+  @override
+  List<Object?> get props => [id, fullName, avatarUrl, lastActiveAt];
 }
 
-class ChatMessage {
+class ChatMessage extends Equatable {
   const ChatMessage({
     required this.id,
     required this.senderId,
@@ -42,9 +48,12 @@ class ChatMessage {
     text: json['text'] as String,
     createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
   );
+
+  @override
+  List<Object?> get props => [id, senderId, text, createdAt];
 }
 
-class ChatConversation {
+class ChatConversation extends Equatable {
   const ChatConversation({
     required this.id,
     required this.otherUser,
@@ -69,6 +78,9 @@ class ChatConversation {
               )
             : null,
       );
+
+  @override
+  List<Object?> get props => [id, otherUser, unreadCount, lastMessage];
 }
 
 String activityLabel(ChatPerson person) {

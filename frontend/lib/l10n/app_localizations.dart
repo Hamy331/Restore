@@ -98,12 +98,6 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
-  /// No description provided for @feedPreviewBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Preview'**
-  String get feedPreviewBadge;
-
   /// No description provided for @feedForYou.
   ///
   /// In en, this message translates to:
@@ -121,12 +115,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share a find or a story…'**
   String get feedCompose;
-
-  /// No description provided for @feedDemo.
-  ///
-  /// In en, this message translates to:
-  /// **'Preview • Posts and interactions stay on this device until restart.'**
-  String get feedDemo;
 
   /// No description provided for @feedFollow.
   ///
@@ -218,12 +206,6 @@ abstract class AppLocalizations {
   /// **'Follow an author to see their posts here.'**
   String get feedFollowingEmpty;
 
-  /// No description provided for @feedRetry.
-  ///
-  /// In en, this message translates to:
-  /// **'Reload preview'**
-  String get feedRetry;
-
   /// No description provided for @feedLoadError.
   ///
   /// In en, this message translates to:
@@ -248,18 +230,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t select a photo. Please try again.'**
   String get feedPhotoError;
 
-  /// No description provided for @feedViewListing.
-  ///
-  /// In en, this message translates to:
-  /// **'View listing'**
-  String get feedViewListing;
-
-  /// No description provided for @feedSampleListing.
-  ///
-  /// In en, this message translates to:
-  /// **'Sample listing'**
-  String get feedSampleListing;
-
   /// No description provided for @feedYourName.
   ///
   /// In en, this message translates to:
@@ -275,20 +245,8 @@ abstract class AppLocalizations {
   /// No description provided for @feedNotifications.
   ///
   /// In en, this message translates to:
-  /// **'Notifications are not connected in this preview.'**
+  /// **'Notifications are coming soon.'**
   String get feedNotifications;
-
-  /// No description provided for @feedAbout.
-  ///
-  /// In en, this message translates to:
-  /// **'About this preview'**
-  String get feedAbout;
-
-  /// No description provided for @feedAboutBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Likes, follows, posts and comments are local demo data. They are not saved to a server.'**
-  String get feedAboutBody;
 
   /// No description provided for @feedNow.
   ///
