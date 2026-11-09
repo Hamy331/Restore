@@ -21,6 +21,8 @@ export const PERMISSION = {
   STORE_PURCHASE: 'store:purchase',
   /** Mua và dùng gói đẩy tin: GET /promotions/my, POST /promotions/redeem, POST /promotions/orders */
   PROMOTION_PURCHASE: 'promotion:purchase',
+  /** Ví Xu ReStore: /credits/wallet, /credits/transactions, /credits/topups */
+  CREDIT_PURCHASE: 'credit:purchase',
 
   /** Báo cáo vi phạm: POST /content/reports, GET /content/reports/mine */
   REPORT_SUBMIT: 'report:submit',
@@ -61,6 +63,7 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     PERMISSION.FAVORITE_WRITE,
     PERMISSION.STORE_PURCHASE,
     PERMISSION.PROMOTION_PURCHASE,
+    PERMISSION.CREDIT_PURCHASE,
     PERMISSION.REPORT_SUBMIT,
     PERMISSION.SUPPORT_TICKET,
     PERMISSION.WANTED_ALERT_MANAGE,

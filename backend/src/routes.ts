@@ -5,6 +5,7 @@ import { catalogRouter } from './modules/catalog/index.js';
 import { homeRouter } from './modules/home/index.js';
 import { promotionRouter, storeRouter } from './modules/commerce/index.js';
 import { contentRouter } from './modules/content/index.js';
+import { creditRouter } from './modules/credits/index.js';
 import { listingsRouter } from './modules/listings/index.js';
 import { usersRouter } from './modules/users/index.js';
 import { wantedAlertRouter } from './modules/wanted-alerts/index.js';
@@ -24,6 +25,7 @@ apiRouter.use('/wanted-alerts', wantedAlertRouter);
 
 apiRouter.use('/stores', storeRouter);
 apiRouter.use('/promotions', promotionRouter);
+apiRouter.use('/credits', creditRouter);
 apiRouter.use('/content', contentRouter);
 apiRouter.use('/admin', adminRouter);
 apiRouter.use('/catalog', catalogRouter);

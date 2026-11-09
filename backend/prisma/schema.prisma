@@ -63,6 +63,8 @@ model User {
   promotions     Promotion[]
   promotionOrders PromotionOrder[]
   wantedAlerts   WantedAlert[]
+  creditTopups   CreditTopupOrder[]
+  creditTransactions CreditTransaction[]
 
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
@@ -521,4 +523,89 @@ model WantedAlertMatch {
   @@id([alertId, listingId])
   @@index([alertId, matchedAt])
   @@index([listingId])
+}
+
+/// Xu ReStore (credit). 1 xu = 1.000 đ. Số dư = tổng CreditTransaction.amount
+enum CreditPayMethod {
+  VNPAY
+  VIETQR
+}
+
+enum TopupStatus {
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
+enum CreditTxnType {
+  TOPUP
+  BONUS
+  SPEND
+  REFUND
+  EXPIRE
+  ADJUST
+}
+
+/// Xu nạp (PAID) hay xu tặng (BONUS); tiêu xu tặng trước
+enum CreditBucket {
+  PAID
+  BONUS
+}
+
+/// Gói nạp xu, admin sửa được
+model CreditPackage {
+  id           String             @id
+  priceVnd     Int
+  credits      Int
+  bonusCredits Int                @default(0)
+  popular      Boolean            @default(false)
+  active       Boolean            @default(true)
+  sortOrder    Int                @default(0)
+  orders       CreditTopupOrder[]
+}
+
+/// Đơn nạp xu; chỉ chuyển PAID khi cổng xác nhận (IPN có chữ ký) hoặc cổng thử
+model CreditTopupOrder {
+  id            String              @id @default(uuid())
+  /// Mã ngắn ghi vào nội dung chuyển khoản
+  code          String              @unique
+  userId        String
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  packageId     String
+  package       CreditPackage       @relation(fields: [packageId], references: [id])
+  method        CreditPayMethod
+  amountVnd     Int
+  credits       Int
+  bonusCredits  Int                 @default(0)
+  status        TopupStatus         @default(PENDING)
+  /// Mã giao dịch của cổng, mỗi mã chỉ cộng xu một lần
+  providerTxnId String?             @unique
+  expiresAt     DateTime
+  paidAt        DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  transactions  CreditTransaction[]
+
+  @@index([userId, status])
+}
+
+/// Sổ cái xu: chỉ thêm, không sửa, không xoá
+model CreditTransaction {
+  id           String            @id @default(uuid())
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         CreditTxnType
+  bucket       CreditBucket
+  /// Dương là cộng, âm là trừ
+  amount       Int
+  expiresAt    DateTime?
+  topupOrderId String?
+  topupOrder   CreditTopupOrder? @relation(fields: [topupOrderId], references: [id], onDelete: SetNull)
+  note         String?
+  createdAt    DateTime          @default(now())
+
+  @@unique([topupOrderId, type])
+  @@index([userId, createdAt])
 }

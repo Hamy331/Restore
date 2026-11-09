@@ -187,7 +187,7 @@
   "accActivity": "Activity",
   "accProPlan": "Pro plan",
   "accCreateStore": "Create a store",
-  "accCoins": "ReStore coins",
+  "accCoins": "ReStore Points",
   "accSaved": "Saved",
   "accSavedSearches": "Saved searches",
   "accRecentlyViewed": "Recently viewed",
@@ -1784,5 +1784,156 @@
         "type": "String"
       }
     }
-  }
+  },
+  "creditTitle": "ReStore Points",
+  "creditAvailable": "Available points",
+  "creditPoints": "{count, plural, =1{{amount} point} other{{amount} points}}",
+  "@creditPoints": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "creditUnit": "points",
+  "creditPaidLabel": "Purchased",
+  "creditBonusLabel": "Bonus",
+  "creditHeldLabel": "On hold",
+  "creditBonusExpiry": "Bonus points start expiring on {date}.",
+  "@creditBonusExpiry": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "creditHeldHint": "Points on hold belong to listings awaiting review and come back if a listing is rejected.",
+  "creditTopupAction": "Buy points",
+  "creditUsesTitle": "Use points to",
+  "creditUsePostMore": "Post more",
+  "creditUseBoost": "Boost a listing",
+  "creditUseUpgrade": "Upgrade plan",
+  "creditRecentTitle": "Recent activity",
+  "creditSeeAll": "See all",
+  "creditEmptyHistory": "No point activity yet",
+  "creditLoadError": "Couldn't load your points",
+  "creditHistoryTitle": "Points history",
+  "creditFilterAll": "All",
+  "creditFilterTopup": "Purchases",
+  "creditFilterSpend": "Spent",
+  "creditFilterRefund": "Refunds",
+  "creditTxnTopup": "Points purchase",
+  "creditTxnBonus": "Bonus points",
+  "creditTxnSpend": "Points spent",
+  "creditTxnRefund": "Points refunded",
+  "creditTxnExpire": "Points expired",
+  "creditTxnAdjust": "Adjustment",
+  "creditTxnOrder": "Order {code}",
+  "@creditTxnOrder": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "creditTopupTitle": "Choose a pack",
+  "creditRate": "1 point = 1,000 VND. Bigger packs include bonus points.",
+  "creditPopular": "Popular",
+  "creditBonusTag": "+{amount} bonus",
+  "@creditBonusTag": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "creditNoBonus": "No bonus",
+  "creditTerms": "Points can only be used in ReStore. They can't be cashed out or transferred to anyone. Bonus points are used first and expire after 90 days.",
+  "creditContinue": "Continue · {price}",
+  "@creditContinue": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "creditConfirmTitle": "Confirm purchase",
+  "creditSummaryPack": "Pack",
+  "creditSummaryReceive": "You get",
+  "creditSummaryTotal": "Total",
+  "creditReceiveWithBonus": "{total} points ({bonus} bonus)",
+  "@creditReceiveWithBonus": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "bonus": {
+        "type": "String"
+      }
+    }
+  },
+  "creditPayMethodTitle": "Payment method",
+  "creditMethodVnpay": "VNPay",
+  "creditMethodVnpayDesc": "ATM card, international card or bank QR.",
+  "creditMethodVietqr": "VietQR bank transfer",
+  "creditMethodVietqrDesc": "Scan with any banking app. Points arrive when the money does.",
+  "creditSandboxNote": "Test mode (sandbox): no real money is charged.",
+  "creditAgree": "I agree that points can't be exchanged back for cash, unless a payment fails or is charged twice.",
+  "creditPayAction": "Pay {price}",
+  "@creditPayAction": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "creditPayVnpayTitle": "Pay with VNPay",
+  "creditPayBankTitle": "Bank transfer",
+  "creditOrderCode": "Order code",
+  "creditGatewayNotConnected": "VNPay isn't connected yet. Use the test buttons below to try the flow.",
+  "creditSimulateTitle": "Simulate the payment result (test mode only)",
+  "creditSimulateSuccess": "Paid",
+  "creditSimulateFail": "Failed",
+  "creditScanQr": "Scan with any banking app",
+  "creditAccountNo": "Account number",
+  "creditAccountName": "Account name",
+  "creditTransferContent": "Transfer note",
+  "creditQrExpires": "Code expires at {time}",
+  "@creditQrExpires": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "creditWaitingTransfer": "Waiting for your transfer. Keep the transfer note as is so the points arrive automatically.",
+  "creditVietQrUnavailable": "The receiving bank account isn't set up on the server yet.",
+  "creditCopied": "Copied",
+  "creditCopy": "Copy",
+  "creditCancelOrder": "Cancel order",
+  "creditResultTitle": "Result",
+  "creditSuccessTitle": "Purchase complete",
+  "creditSuccessAmount": "+{amount} points",
+  "@creditSuccessAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "creditSuccessBody": "The points are in your wallet.",
+  "creditPendingTitle": "Waiting for confirmation",
+  "creditPendingBody": "Your points will arrive as soon as the payment is confirmed. You can leave this page.",
+  "creditFailTitle": "Purchase not completed",
+  "creditFailBody": "The payment was cancelled or expired. You haven't been charged.",
+  "creditCheckAgain": "Check again",
+  "creditTryAgain": "Try again",
+  "creditDone": "Done",
+  "creditBackToWallet": "Back to wallet",
+  "creditErrorTooManyPending": "You have too many unpaid orders. Wait 15 minutes for them to expire or cancel one.",
+  "creditErrorGeneric": "Something went wrong, please try again.",
+  "creditPackagesError": "Couldn't load point packs"
 }

@@ -25,3 +25,12 @@ export const PROMOTION_PACKAGES: { id: string; name: string; kind: PromotionKind
   { id: 'featured-3', name: 'Tin ưu tiên 3 ngày', kind: 'FEATURED', durationDays: 3, price: 57000, priority: 3 },
   { id: 'featured-7', name: 'Tin ưu tiên 7 ngày', kind: 'FEATURED', durationDays: 7, price: 126000, priority: 3 },
 ];
+
+/** Gói nạp Xu ReStore (1 xu = 1.000 đ); credits là xu nạp, bonusCredits là xu tặng */
+export const CREDIT_PACKAGES: { id: string; priceVnd: number; credits: number; bonusCredits: number; popular: boolean; sortOrder: number }[] = [
+  { id: 'p20', priceVnd: 20000, credits: 20, bonusCredits: 0, popular: false, sortOrder: 1 },
+  { id: 'p50', priceVnd: 50000, credits: 50, bonusCredits: 2, popular: false, sortOrder: 2 },
+  { id: 'p100', priceVnd: 100000, credits: 100, bonusCredits: 10, popular: true, sortOrder: 3 },
+  { id: 'p200', priceVnd: 200000, credits: 200, bonusCredits: 30, popular: false, sortOrder: 4 },
+  { id: 'p500', priceVnd: 500000, credits: 500, bonusCredits: 100, popular: false, sortOrder: 5 },
+];

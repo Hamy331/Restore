@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @accCoins.
   ///
   /// In en, this message translates to:
-  /// **'ReStore coins'**
+  /// **'ReStore Points'**
   String get accCoins;
 
   /// No description provided for @accSaved.
@@ -5827,6 +5827,498 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load more comments'**
   String get feedMoreComments;
+
+  /// No description provided for @creditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore Points'**
+  String get creditTitle;
+
+  /// No description provided for @creditAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available points'**
+  String get creditAvailable;
+
+  /// No description provided for @creditPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{amount} point} other{{amount} points}}'**
+  String creditPoints(int count, String amount);
+
+  /// No description provided for @creditUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'points'**
+  String get creditUnit;
+
+  /// No description provided for @creditPaidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchased'**
+  String get creditPaidLabel;
+
+  /// No description provided for @creditBonusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus'**
+  String get creditBonusLabel;
+
+  /// No description provided for @creditHeldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'On hold'**
+  String get creditHeldLabel;
+
+  /// No description provided for @creditBonusExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus points start expiring on {date}.'**
+  String creditBonusExpiry(String date);
+
+  /// No description provided for @creditHeldHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Points on hold belong to listings awaiting review and come back if a listing is rejected.'**
+  String get creditHeldHint;
+
+  /// No description provided for @creditTopupAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy points'**
+  String get creditTopupAction;
+
+  /// No description provided for @creditUsesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use points to'**
+  String get creditUsesTitle;
+
+  /// No description provided for @creditUsePostMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Post more'**
+  String get creditUsePostMore;
+
+  /// No description provided for @creditUseBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost a listing'**
+  String get creditUseBoost;
+
+  /// No description provided for @creditUseUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade plan'**
+  String get creditUseUpgrade;
+
+  /// No description provided for @creditRecentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent activity'**
+  String get creditRecentTitle;
+
+  /// No description provided for @creditSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get creditSeeAll;
+
+  /// No description provided for @creditEmptyHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No point activity yet'**
+  String get creditEmptyHistory;
+
+  /// No description provided for @creditLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your points'**
+  String get creditLoadError;
+
+  /// No description provided for @creditHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Points history'**
+  String get creditHistoryTitle;
+
+  /// No description provided for @creditFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get creditFilterAll;
+
+  /// No description provided for @creditFilterTopup.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases'**
+  String get creditFilterTopup;
+
+  /// No description provided for @creditFilterSpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get creditFilterSpend;
+
+  /// No description provided for @creditFilterRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get creditFilterRefund;
+
+  /// No description provided for @creditTxnTopup.
+  ///
+  /// In en, this message translates to:
+  /// **'Points purchase'**
+  String get creditTxnTopup;
+
+  /// No description provided for @creditTxnBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus points'**
+  String get creditTxnBonus;
+
+  /// No description provided for @creditTxnSpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Points spent'**
+  String get creditTxnSpend;
+
+  /// No description provided for @creditTxnRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Points refunded'**
+  String get creditTxnRefund;
+
+  /// No description provided for @creditTxnExpire.
+  ///
+  /// In en, this message translates to:
+  /// **'Points expired'**
+  String get creditTxnExpire;
+
+  /// No description provided for @creditTxnAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment'**
+  String get creditTxnAdjust;
+
+  /// No description provided for @creditTxnOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order {code}'**
+  String creditTxnOrder(String code);
+
+  /// No description provided for @creditTopupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a pack'**
+  String get creditTopupTitle;
+
+  /// No description provided for @creditRate.
+  ///
+  /// In en, this message translates to:
+  /// **'1 point = 1,000 VND. Bigger packs include bonus points.'**
+  String get creditRate;
+
+  /// No description provided for @creditPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get creditPopular;
+
+  /// No description provided for @creditBonusTag.
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} bonus'**
+  String creditBonusTag(String amount);
+
+  /// No description provided for @creditNoBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'No bonus'**
+  String get creditNoBonus;
+
+  /// No description provided for @creditTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Points can only be used in ReStore. They can\'t be cashed out or transferred to anyone. Bonus points are used first and expire after 90 days.'**
+  String get creditTerms;
+
+  /// No description provided for @creditContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue · {price}'**
+  String creditContinue(String price);
+
+  /// No description provided for @creditConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm purchase'**
+  String get creditConfirmTitle;
+
+  /// No description provided for @creditSummaryPack.
+  ///
+  /// In en, this message translates to:
+  /// **'Pack'**
+  String get creditSummaryPack;
+
+  /// No description provided for @creditSummaryReceive.
+  ///
+  /// In en, this message translates to:
+  /// **'You get'**
+  String get creditSummaryReceive;
+
+  /// No description provided for @creditSummaryTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get creditSummaryTotal;
+
+  /// No description provided for @creditReceiveWithBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'{total} points ({bonus} bonus)'**
+  String creditReceiveWithBonus(String total, String bonus);
+
+  /// No description provided for @creditPayMethodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get creditPayMethodTitle;
+
+  /// No description provided for @creditMethodVnpay.
+  ///
+  /// In en, this message translates to:
+  /// **'VNPay'**
+  String get creditMethodVnpay;
+
+  /// No description provided for @creditMethodVnpayDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'ATM card, international card or bank QR.'**
+  String get creditMethodVnpayDesc;
+
+  /// No description provided for @creditMethodVietqr.
+  ///
+  /// In en, this message translates to:
+  /// **'VietQR bank transfer'**
+  String get creditMethodVietqr;
+
+  /// No description provided for @creditMethodVietqrDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan with any banking app. Points arrive when the money does.'**
+  String get creditMethodVietqrDesc;
+
+  /// No description provided for @creditSandboxNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Test mode (sandbox): no real money is charged.'**
+  String get creditSandboxNote;
+
+  /// No description provided for @creditAgree.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree that points can\'t be exchanged back for cash, unless a payment fails or is charged twice.'**
+  String get creditAgree;
+
+  /// No description provided for @creditPayAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {price}'**
+  String creditPayAction(String price);
+
+  /// No description provided for @creditPayVnpayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with VNPay'**
+  String get creditPayVnpayTitle;
+
+  /// No description provided for @creditPayBankTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank transfer'**
+  String get creditPayBankTitle;
+
+  /// No description provided for @creditOrderCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Order code'**
+  String get creditOrderCode;
+
+  /// No description provided for @creditGatewayNotConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'VNPay isn\'t connected yet. Use the test buttons below to try the flow.'**
+  String get creditGatewayNotConnected;
+
+  /// No description provided for @creditSimulateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate the payment result (test mode only)'**
+  String get creditSimulateTitle;
+
+  /// No description provided for @creditSimulateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get creditSimulateSuccess;
+
+  /// No description provided for @creditSimulateFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get creditSimulateFail;
+
+  /// No description provided for @creditScanQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan with any banking app'**
+  String get creditScanQr;
+
+  /// No description provided for @creditAccountNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Account number'**
+  String get creditAccountNo;
+
+  /// No description provided for @creditAccountName.
+  ///
+  /// In en, this message translates to:
+  /// **'Account name'**
+  String get creditAccountName;
+
+  /// No description provided for @creditTransferContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer note'**
+  String get creditTransferContent;
+
+  /// No description provided for @creditQrExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Code expires at {time}'**
+  String creditQrExpires(String time);
+
+  /// No description provided for @creditWaitingTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for your transfer. Keep the transfer note as is so the points arrive automatically.'**
+  String get creditWaitingTransfer;
+
+  /// No description provided for @creditVietQrUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The receiving bank account isn\'t set up on the server yet.'**
+  String get creditVietQrUnavailable;
+
+  /// No description provided for @creditCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get creditCopied;
+
+  /// No description provided for @creditCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get creditCopy;
+
+  /// No description provided for @creditCancelOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get creditCancelOrder;
+
+  /// No description provided for @creditResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get creditResultTitle;
+
+  /// No description provided for @creditSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase complete'**
+  String get creditSuccessTitle;
+
+  /// No description provided for @creditSuccessAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} points'**
+  String creditSuccessAmount(String amount);
+
+  /// No description provided for @creditSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The points are in your wallet.'**
+  String get creditSuccessBody;
+
+  /// No description provided for @creditPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for confirmation'**
+  String get creditPendingTitle;
+
+  /// No description provided for @creditPendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your points will arrive as soon as the payment is confirmed. You can leave this page.'**
+  String get creditPendingBody;
+
+  /// No description provided for @creditFailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase not completed'**
+  String get creditFailTitle;
+
+  /// No description provided for @creditFailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment was cancelled or expired. You haven\'t been charged.'**
+  String get creditFailBody;
+
+  /// No description provided for @creditCheckAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get creditCheckAgain;
+
+  /// No description provided for @creditTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get creditTryAgain;
+
+  /// No description provided for @creditDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get creditDone;
+
+  /// No description provided for @creditBackToWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to wallet'**
+  String get creditBackToWallet;
+
+  /// No description provided for @creditErrorTooManyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'You have too many unpaid orders. Wait 15 minutes for them to expire or cancel one.'**
+  String get creditErrorTooManyPending;
+
+  /// No description provided for @creditErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong, please try again.'**
+  String get creditErrorGeneric;
+
+  /// No description provided for @creditPackagesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load point packs'**
+  String get creditPackagesError;
 }
 
 class _AppLocalizationsDelegate
