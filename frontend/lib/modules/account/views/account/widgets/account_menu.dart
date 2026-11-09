@@ -6,6 +6,7 @@ import '../../../../../core/constants/app_icons.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../auth/bloc/auth/auth_bloc.dart';
 import '../../../../auth/bloc/auth/auth_event.dart';
+import '../../../../credits/views/credit_wallet/credit_wallet_view.dart';
 import '../../../../trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import '../../../widgets/profile_header.dart';
 
@@ -47,7 +48,11 @@ void showAccountMenu(BuildContext context) {
                   children: [
                     _MenuGroup(
                       items: [
-                        _MenuItem(AppIcons.wallet, l.accCoins, onTap: soon),
+                        _MenuItem(
+                          AppIcons.wallet,
+                          l.accCoins,
+                          onTap: () => open(CreditWalletView.path),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),

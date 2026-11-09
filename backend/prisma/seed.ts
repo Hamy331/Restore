@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { CATEGORY_ORDER } from '../src/modules/catalog/catalog.type.js';
 import { CATEGORIES } from './seed/categories.js';
-import { CONDITION_POLICIES, PROMOTION_PACKAGES, STORE_PACKAGES } from './seed/reference.js';
+import { CONDITION_POLICIES, CREDIT_PACKAGES, PROMOTION_PACKAGES, STORE_PACKAGES } from './seed/reference.js';
 
 /**
  * Seed dữ liệu tham chiếu: danh mục, tình trạng sản phẩm, gói cửa hàng, gói đẩy tin.
@@ -20,7 +20,7 @@ async function main() {
   if (ids !== CATEGORY_ORDER.join(',')) {
     throw new Error(`prisma/seed/categories.ts (${ids}) phải cùng thứ tự với CATEGORY_ORDER trong catalog.type.ts`);
   }
-  const counts = { categories: 0, conditions: 0, storePackages: 0, promotionPackages: 0 };
+  const counts = { categories: 0, conditions: 0, storePackages: 0, promotionPackages: 0, creditPackages: 0 };
 
   for (const category of CATEGORIES) {
     const data = { name: category.name.vi, metadata: category as Prisma.InputJsonObject };
@@ -39,6 +39,9 @@ async function main() {
   }
   for (const item of PROMOTION_PACKAGES) {
     counts.promotionPackages += (await prisma.promotionPackage.createMany({ data: [{ ...item, active: true }], skipDuplicates: true })).count;
+  }
+  for (const item of CREDIT_PACKAGES) {
+    counts.creditPackages += (await prisma.creditPackage.createMany({ data: [item], skipDuplicates: true })).count;
   }
   console.log(`Seed xong${sync ? ' (--sync)' : ''}:`, counts);
 }

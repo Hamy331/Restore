@@ -371,7 +371,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accCreateStore => 'Create a store';
 
   @override
-  String get accCoins => 'ReStore coins';
+  String get accCoins => 'ReStore Points';
 
   @override
   String get accSaved => 'Saved';
@@ -3285,4 +3285,288 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedMoreComments => 'Load more comments';
+
+  @override
+  String get creditTitle => 'ReStore Points';
+
+  @override
+  String get creditAvailable => 'Available points';
+
+  @override
+  String creditPoints(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$amount points',
+      one: '$amount point',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get creditUnit => 'points';
+
+  @override
+  String get creditPaidLabel => 'Purchased';
+
+  @override
+  String get creditBonusLabel => 'Bonus';
+
+  @override
+  String get creditHeldLabel => 'On hold';
+
+  @override
+  String creditBonusExpiry(String date) {
+    return 'Bonus points start expiring on $date.';
+  }
+
+  @override
+  String get creditHeldHint =>
+      'Points on hold belong to listings awaiting review and come back if a listing is rejected.';
+
+  @override
+  String get creditTopupAction => 'Buy points';
+
+  @override
+  String get creditUsesTitle => 'Use points to';
+
+  @override
+  String get creditUsePostMore => 'Post more';
+
+  @override
+  String get creditUseBoost => 'Boost a listing';
+
+  @override
+  String get creditUseUpgrade => 'Upgrade plan';
+
+  @override
+  String get creditRecentTitle => 'Recent activity';
+
+  @override
+  String get creditSeeAll => 'See all';
+
+  @override
+  String get creditEmptyHistory => 'No point activity yet';
+
+  @override
+  String get creditLoadError => 'Couldn\'t load your points';
+
+  @override
+  String get creditHistoryTitle => 'Points history';
+
+  @override
+  String get creditFilterAll => 'All';
+
+  @override
+  String get creditFilterTopup => 'Purchases';
+
+  @override
+  String get creditFilterSpend => 'Spent';
+
+  @override
+  String get creditFilterRefund => 'Refunds';
+
+  @override
+  String get creditTxnTopup => 'Points purchase';
+
+  @override
+  String get creditTxnBonus => 'Bonus points';
+
+  @override
+  String get creditTxnSpend => 'Points spent';
+
+  @override
+  String get creditTxnRefund => 'Points refunded';
+
+  @override
+  String get creditTxnExpire => 'Points expired';
+
+  @override
+  String get creditTxnAdjust => 'Adjustment';
+
+  @override
+  String creditTxnOrder(String code) {
+    return 'Order $code';
+  }
+
+  @override
+  String get creditTopupTitle => 'Choose a pack';
+
+  @override
+  String get creditRate =>
+      '1 point = 1,000 VND. Bigger packs include bonus points.';
+
+  @override
+  String get creditPopular => 'Popular';
+
+  @override
+  String creditBonusTag(String amount) {
+    return '+$amount bonus';
+  }
+
+  @override
+  String get creditNoBonus => 'No bonus';
+
+  @override
+  String get creditTerms =>
+      'Points can only be used in ReStore. They can\'t be cashed out or transferred to anyone. Bonus points are used first and expire after 90 days.';
+
+  @override
+  String creditContinue(String price) {
+    return 'Continue · $price';
+  }
+
+  @override
+  String get creditConfirmTitle => 'Confirm purchase';
+
+  @override
+  String get creditSummaryPack => 'Pack';
+
+  @override
+  String get creditSummaryReceive => 'You get';
+
+  @override
+  String get creditSummaryTotal => 'Total';
+
+  @override
+  String creditReceiveWithBonus(String total, String bonus) {
+    return '$total points ($bonus bonus)';
+  }
+
+  @override
+  String get creditPayMethodTitle => 'Payment method';
+
+  @override
+  String get creditMethodVnpay => 'VNPay';
+
+  @override
+  String get creditMethodVnpayDesc =>
+      'ATM card, international card or bank QR.';
+
+  @override
+  String get creditMethodVietqr => 'VietQR bank transfer';
+
+  @override
+  String get creditMethodVietqrDesc =>
+      'Scan with any banking app. Points arrive when the money does.';
+
+  @override
+  String get creditSandboxNote =>
+      'Test mode (sandbox): no real money is charged.';
+
+  @override
+  String get creditAgree =>
+      'I agree that points can\'t be exchanged back for cash, unless a payment fails or is charged twice.';
+
+  @override
+  String creditPayAction(String price) {
+    return 'Pay $price';
+  }
+
+  @override
+  String get creditPayVnpayTitle => 'Pay with VNPay';
+
+  @override
+  String get creditPayBankTitle => 'Bank transfer';
+
+  @override
+  String get creditOrderCode => 'Order code';
+
+  @override
+  String get creditGatewayNotConnected =>
+      'VNPay isn\'t connected yet. Use the test buttons below to try the flow.';
+
+  @override
+  String get creditSimulateTitle =>
+      'Simulate the payment result (test mode only)';
+
+  @override
+  String get creditSimulateSuccess => 'Paid';
+
+  @override
+  String get creditSimulateFail => 'Failed';
+
+  @override
+  String get creditScanQr => 'Scan with any banking app';
+
+  @override
+  String get creditAccountNo => 'Account number';
+
+  @override
+  String get creditAccountName => 'Account name';
+
+  @override
+  String get creditTransferContent => 'Transfer note';
+
+  @override
+  String creditQrExpires(String time) {
+    return 'Code expires at $time';
+  }
+
+  @override
+  String get creditWaitingTransfer =>
+      'Waiting for your transfer. Keep the transfer note as is so the points arrive automatically.';
+
+  @override
+  String get creditVietQrUnavailable =>
+      'The receiving bank account isn\'t set up on the server yet.';
+
+  @override
+  String get creditCopied => 'Copied';
+
+  @override
+  String get creditCopy => 'Copy';
+
+  @override
+  String get creditCancelOrder => 'Cancel order';
+
+  @override
+  String get creditResultTitle => 'Result';
+
+  @override
+  String get creditSuccessTitle => 'Purchase complete';
+
+  @override
+  String creditSuccessAmount(String amount) {
+    return '+$amount points';
+  }
+
+  @override
+  String get creditSuccessBody => 'The points are in your wallet.';
+
+  @override
+  String get creditPendingTitle => 'Waiting for confirmation';
+
+  @override
+  String get creditPendingBody =>
+      'Your points will arrive as soon as the payment is confirmed. You can leave this page.';
+
+  @override
+  String get creditFailTitle => 'Purchase not completed';
+
+  @override
+  String get creditFailBody =>
+      'The payment was cancelled or expired. You haven\'t been charged.';
+
+  @override
+  String get creditCheckAgain => 'Check again';
+
+  @override
+  String get creditTryAgain => 'Try again';
+
+  @override
+  String get creditDone => 'Done';
+
+  @override
+  String get creditBackToWallet => 'Back to wallet';
+
+  @override
+  String get creditErrorTooManyPending =>
+      'You have too many unpaid orders. Wait 15 minutes for them to expire or cancel one.';
+
+  @override
+  String get creditErrorGeneric => 'Something went wrong, please try again.';
+
+  @override
+  String get creditPackagesError => 'Couldn\'t load point packs';
 }

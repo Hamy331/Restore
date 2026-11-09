@@ -1,4 +1,7 @@
 import 'package:restore/modules/content/views/community_content_view.dart';
+import 'package:restore/modules/credits/views/credit_history/credit_history_view.dart';
+import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
+import 'package:restore/modules/credits/views/credit_wallet/credit_wallet_view.dart';
 import 'package:restore/modules/admin/presentation/admin_live_workspace.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -434,6 +437,32 @@ GoRouter createAppRouter(
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const WantedAlertsView(),
+      ),
+    ),
+    GoRoute(
+      path: CreditWalletView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const CreditWalletView(),
+      ),
+    ),
+    GoRoute(
+      path: CreditTopupView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: CreditTopupView(
+          preselectId: state.uri.queryParameters['package'],
+        ),
+      ),
+    ),
+    GoRoute(
+      path: CreditHistoryView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const CreditHistoryView(),
       ),
     ),
     // Tạo thông báo; q là món cần tìm điền sẵn, from=alerts khi mở từ trang

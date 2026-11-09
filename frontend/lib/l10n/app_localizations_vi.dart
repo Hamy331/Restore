@@ -3210,4 +3210,284 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feedMoreComments => 'Xem thêm bình luận';
+
+  @override
+  String get creditTitle => 'Xu ReStore';
+
+  @override
+  String get creditAvailable => 'Số xu có thể dùng';
+
+  @override
+  String creditPoints(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$amount xu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get creditUnit => 'xu';
+
+  @override
+  String get creditPaidLabel => 'Xu nạp';
+
+  @override
+  String get creditBonusLabel => 'Xu tặng';
+
+  @override
+  String get creditHeldLabel => 'Đang giữ';
+
+  @override
+  String creditBonusExpiry(String date) {
+    return 'Xu tặng bắt đầu hết hạn ngày $date.';
+  }
+
+  @override
+  String get creditHeldHint =>
+      'Xu đang giữ là của tin chờ duyệt, tin bị từ chối thì xu trả lại ví.';
+
+  @override
+  String get creditTopupAction => 'Nạp xu';
+
+  @override
+  String get creditUsesTitle => 'Dùng xu để';
+
+  @override
+  String get creditUsePostMore => 'Đăng thêm tin';
+
+  @override
+  String get creditUseBoost => 'Đẩy tin';
+
+  @override
+  String get creditUseUpgrade => 'Nâng gói';
+
+  @override
+  String get creditRecentTitle => 'Giao dịch gần đây';
+
+  @override
+  String get creditSeeAll => 'Xem tất cả';
+
+  @override
+  String get creditEmptyHistory => 'Chưa có giao dịch xu nào';
+
+  @override
+  String get creditLoadError => 'Không tải được ví xu';
+
+  @override
+  String get creditHistoryTitle => 'Lịch sử xu';
+
+  @override
+  String get creditFilterAll => 'Tất cả';
+
+  @override
+  String get creditFilterTopup => 'Nạp';
+
+  @override
+  String get creditFilterSpend => 'Đã dùng';
+
+  @override
+  String get creditFilterRefund => 'Hoàn';
+
+  @override
+  String get creditTxnTopup => 'Nạp xu';
+
+  @override
+  String get creditTxnBonus => 'Xu tặng kèm gói';
+
+  @override
+  String get creditTxnSpend => 'Dùng xu';
+
+  @override
+  String get creditTxnRefund => 'Hoàn xu';
+
+  @override
+  String get creditTxnExpire => 'Xu hết hạn';
+
+  @override
+  String get creditTxnAdjust => 'Điều chỉnh';
+
+  @override
+  String creditTxnOrder(String code) {
+    return 'Đơn $code';
+  }
+
+  @override
+  String get creditTopupTitle => 'Chọn gói nạp';
+
+  @override
+  String get creditRate => '1 xu = 1.000 đ. Gói lớn được tặng thêm xu.';
+
+  @override
+  String get creditPopular => 'Phổ biến';
+
+  @override
+  String creditBonusTag(String amount) {
+    return 'tặng $amount xu';
+  }
+
+  @override
+  String get creditNoBonus => 'Không kèm tặng';
+
+  @override
+  String get creditTerms =>
+      'Xu chỉ dùng trong ReStore: không rút ra tiền, không chuyển cho người khác. Xu tặng được dùng trước và hết hạn sau 90 ngày.';
+
+  @override
+  String creditContinue(String price) {
+    return 'Tiếp tục · $price';
+  }
+
+  @override
+  String get creditConfirmTitle => 'Xác nhận nạp xu';
+
+  @override
+  String get creditSummaryPack => 'Gói nạp';
+
+  @override
+  String get creditSummaryReceive => 'Xu nhận';
+
+  @override
+  String get creditSummaryTotal => 'Tổng thanh toán';
+
+  @override
+  String creditReceiveWithBonus(String total, String bonus) {
+    return '$total xu (gồm $bonus xu tặng)';
+  }
+
+  @override
+  String get creditPayMethodTitle => 'Cách thanh toán';
+
+  @override
+  String get creditMethodVnpay => 'VNPay';
+
+  @override
+  String get creditMethodVnpayDesc => 'Thẻ ATM, thẻ quốc tế hoặc QR ngân hàng.';
+
+  @override
+  String get creditMethodVietqr => 'Chuyển khoản VietQR';
+
+  @override
+  String get creditMethodVietqrDesc =>
+      'Quét mã bằng app ngân hàng, xu vào khi tiền về.';
+
+  @override
+  String get creditSandboxNote => 'Chế độ thử (sandbox): không trừ tiền thật.';
+
+  @override
+  String get creditAgree =>
+      'Tôi đồng ý: xu không đổi lại thành tiền mặt, trừ khi thanh toán bị lỗi hoặc bị trừ hai lần.';
+
+  @override
+  String creditPayAction(String price) {
+    return 'Thanh toán $price';
+  }
+
+  @override
+  String get creditPayVnpayTitle => 'Thanh toán VNPay';
+
+  @override
+  String get creditPayBankTitle => 'Chuyển khoản';
+
+  @override
+  String get creditOrderCode => 'Mã đơn';
+
+  @override
+  String get creditGatewayNotConnected =>
+      'Cổng VNPay chưa được kết nối. Dùng các nút thử bên dưới để chạy thử luồng.';
+
+  @override
+  String get creditSimulateTitle =>
+      'Giả lập kết quả thanh toán (chỉ ở chế độ thử)';
+
+  @override
+  String get creditSimulateSuccess => 'Đã trả tiền';
+
+  @override
+  String get creditSimulateFail => 'Thất bại';
+
+  @override
+  String get creditScanQr => 'Quét bằng app ngân hàng bất kỳ';
+
+  @override
+  String get creditAccountNo => 'Số tài khoản';
+
+  @override
+  String get creditAccountName => 'Chủ tài khoản';
+
+  @override
+  String get creditTransferContent => 'Nội dung';
+
+  @override
+  String creditQrExpires(String time) {
+    return 'Mã hết hạn lúc $time';
+  }
+
+  @override
+  String get creditWaitingTransfer =>
+      'Đang chờ tiền về. Giữ nguyên nội dung chuyển khoản để xu vào tự động.';
+
+  @override
+  String get creditVietQrUnavailable =>
+      'Máy chủ chưa cấu hình tài khoản nhận chuyển khoản.';
+
+  @override
+  String get creditCopied => 'Đã sao chép';
+
+  @override
+  String get creditCopy => 'Sao chép';
+
+  @override
+  String get creditCancelOrder => 'Huỷ đơn';
+
+  @override
+  String get creditResultTitle => 'Kết quả';
+
+  @override
+  String get creditSuccessTitle => 'Nạp thành công';
+
+  @override
+  String creditSuccessAmount(String amount) {
+    return '+$amount xu';
+  }
+
+  @override
+  String get creditSuccessBody => 'Xu đã vào ví của bạn.';
+
+  @override
+  String get creditPendingTitle => 'Đang chờ xác nhận';
+
+  @override
+  String get creditPendingBody =>
+      'Xu sẽ vào ví ngay khi cổng thanh toán xác nhận. Bạn có thể rời trang này.';
+
+  @override
+  String get creditFailTitle => 'Chưa nạp được';
+
+  @override
+  String get creditFailBody =>
+      'Giao dịch đã bị huỷ hoặc hết hạn. Bạn chưa bị trừ tiền.';
+
+  @override
+  String get creditCheckAgain => 'Kiểm tra lại';
+
+  @override
+  String get creditTryAgain => 'Thử lại';
+
+  @override
+  String get creditDone => 'Xong';
+
+  @override
+  String get creditBackToWallet => 'Về ví xu';
+
+  @override
+  String get creditErrorTooManyPending =>
+      'Bạn đang có quá nhiều đơn nạp chưa thanh toán. Đợi 15 phút để đơn hết hạn hoặc huỷ bớt.';
+
+  @override
+  String get creditErrorGeneric => 'Không thực hiện được, vui lòng thử lại.';
+
+  @override
+  String get creditPackagesError => 'Không tải được gói nạp';
 }
