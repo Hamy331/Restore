@@ -55,3 +55,10 @@ export function vietQrImageUrl(account: VietQrAccount, amountVnd: number, conten
  */
 export const sandboxEnabled = (env: NodeJS.ProcessEnv = process.env) =>
   env.NODE_ENV !== 'production' && (env.PAYMENT_MODE ?? 'sandbox') !== 'live';
+
+/**
+ * Chế độ debug: bỏ qua cổng thật (ZaloPay), đơn tạo xong chỉ trả bằng nút giả lập.
+ * Chỉ có tác dụng khi sandbox đang bật, production luôn đi qua cổng.
+ */
+export const gatewaySkipped = (env: NodeJS.ProcessEnv = process.env) =>
+  sandboxEnabled(env) && env.PAYMENT_SKIP_GATEWAY?.trim().toLowerCase() === 'true';

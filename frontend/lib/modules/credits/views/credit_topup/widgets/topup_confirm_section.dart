@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/data/models/enums/credit_enums.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
@@ -53,25 +54,26 @@ class TopupConfirmSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        for (final method in CreditPayMethod.values) ...[
+        for (final method in CreditPayMethod.selectable) ...[
           TopupOptionCard(
             selected: method == state.method,
             onTap: () => cubit.selectMethod(method),
             child: Row(
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 64,
+                  height: 44,
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.border),
                   ),
-                  child: Icon(
-                    method == CreditPayMethod.vnpay
-                        ? AppIcons.wallet
-                        : AppIcons.copy,
-                    size: 20,
-                    color: AppColors.primaryDark,
+                  child: Image.asset(
+                    method == CreditPayMethod.vietQr
+                        ? AppImages.appLogos.vietQr
+                        : AppImages.appLogos.zaloPay,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -89,8 +91,8 @@ class TopupConfirmSection extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        method == CreditPayMethod.vnpay
-                            ? l10n.creditMethodVnpayDesc
+                        method == CreditPayMethod.zaloPay
+                            ? l10n.creditMethodZalopayDesc
                             : l10n.creditMethodVietqrDesc,
                         style: const TextStyle(
                           fontSize: 12,

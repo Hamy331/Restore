@@ -3360,10 +3360,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get creditPayMethodTitle => 'Cách thanh toán';
 
   @override
-  String get creditMethodVnpay => 'VNPay';
+  String get creditMethodZalopay => 'ZaloPay';
 
   @override
-  String get creditMethodVnpayDesc => 'Thẻ ATM, thẻ quốc tế hoặc QR ngân hàng.';
+  String get creditMethodZalopayDesc =>
+      'Ví ZaloPay, thẻ ATM nội địa hoặc thẻ quốc tế.';
 
   @override
   String get creditMethodVietqr => 'Chuyển khoản VietQR';
@@ -3385,7 +3386,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get creditPayVnpayTitle => 'Thanh toán VNPay';
+  String get creditPayZalopayTitle => 'Thanh toán ZaloPay';
 
   @override
   String get creditPayBankTitle => 'Chuyển khoản';
@@ -3395,7 +3396,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get creditGatewayNotConnected =>
-      'Cổng VNPay chưa được kết nối. Dùng các nút thử bên dưới để chạy thử luồng.';
+      'Đang bỏ qua cổng ZaloPay (chế độ debug hoặc máy chủ chưa có khoá). Dùng các nút bên dưới để giả lập kết quả.';
+
+  @override
+  String get creditOpenGateway => 'Mở trang thanh toán ZaloPay';
+
+  @override
+  String get creditWaitingGateway =>
+      'Thanh toán xong trên trang ZaloPay rồi quay lại đây, xu sẽ tự cập nhật.';
 
   @override
   String get creditSimulateTitle =>

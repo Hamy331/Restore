@@ -33,7 +33,7 @@ creditRouter.get('/transactions', buyer, validate({ query: historyQuery }), cred
  *
  * Body:
  *  - packageId: string
- *  - method: VNPAY | VIETQR
+ *  - method: ZALOPAY | VIETQR
  *
  * Trả về: 201 { id, code, status, amountVnd, credits, bonusCredits, expiresAt, payment: { sandbox, payUrl, vietQr } }
  */

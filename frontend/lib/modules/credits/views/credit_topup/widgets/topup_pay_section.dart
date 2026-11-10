@@ -9,11 +9,12 @@ import 'package:restore/data/models/enums/credit_enums.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_action_buttons.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../bloc/credit_topup/credit_topup_cubit.dart';
 import '../../../utils/credit_format.dart';
 
-/// Bước 3: trả tiền. VNPay (chưa nối cổng thật) hoặc mã VietQR, kèm nút giả
+/// Bước 3: trả tiền. Trang ZaloPay (mở ngoài app) hoặc mã VietQR, kèm nút giả
 /// lập kết quả khi backend ở chế độ thử. Xu chỉ vào khi backend xác nhận.
 class TopupPaySection extends StatelessWidget {
   const TopupPaySection({super.key});
@@ -30,7 +31,7 @@ class TopupPaySection extends StatelessWidget {
         if (order.method == CreditPayMethod.vietQr)
           _VietQrPanel(order: order)
         else
-          _VnpayPanel(order: order),
+          _GatewayPanel(order: order, busy: busy),
         if (order.sandbox) ...[
           const SizedBox(height: 16),
           Text(
@@ -77,14 +78,29 @@ class TopupPaySection extends StatelessWidget {
   }
 }
 
-class _VnpayPanel extends StatelessWidget {
+class _GatewayPanel extends StatelessWidget {
   final CreditTopupModel order;
+  final bool busy;
 
-  const _VnpayPanel({required this.order});
+  const _GatewayPanel({required this.order, required this.busy});
+
+  Future<void> _open(BuildContext context, String url) async {
+    final opened = await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!opened && context.mounted) {
+      TSnackBarHelper.showError(
+        context,
+        message: AppLocalizations.of(context)!.creditErrorGeneric,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final payUrl = order.payUrl;
     return AppGlassContainer(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -108,28 +124,90 @@ class _VnpayPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.warningBg,
-              borderRadius: BorderRadius.circular(14),
+          if (payUrl == null)
+            _Hint(
+              text: l10n.creditGatewayNotConnected,
+              color: AppColors.warning,
+              background: AppColors.warningBg,
+            )
+          else ...[
+            AppPrimaryActionButton(
+              label: l10n.creditOpenGateway,
+              icon: AppIcons.wallet,
+              onPressed: () => _open(context, payUrl),
             ),
-            child: Row(
+            const SizedBox(height: 14),
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(AppIcons.info, size: 18, color: AppColors.warning),
+                const Padding(
+                  padding: EdgeInsets.only(top: 2),
+                  child: SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    l10n.creditGatewayNotConnected,
+                    l10n.creditWaitingGateway,
                     style: const TextStyle(
                       fontSize: 13,
                       height: 1.5,
-                      color: AppColors.warning,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ),
               ],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: busy
+                    ? null
+                    : context.read<CreditTopupCubit>().checkNow,
+                child: Text(l10n.creditCheckAgain),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Hint extends StatelessWidget {
+  final String text;
+  final Color color;
+  final Color background;
+
+  const _Hint({
+    required this.text,
+    required this.color,
+    required this.background,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(AppIcons.info, size: 18, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 13, height: 1.5, color: color),
             ),
           ),
         ],

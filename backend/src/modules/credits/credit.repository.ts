@@ -45,6 +45,22 @@ export const createOrder = (tx: Db, data: Prisma.CreditTopupOrderUncheckedCreate
 
 export const findOrder = (tx: Db, id: string) => tx.creditTopupOrder.findUnique({ where: { id } });
 
+export const findOrderByProviderRef = (tx: Db, providerRef: string) => tx.creditTopupOrder.findUnique({ where: { providerRef } });
+
+/** Gắn mã đơn và trang thanh toán của cổng vào đơn vừa tạo */
+export const attachGateway = (tx: Db, id: string, data: { providerRef: string; payUrl: string }) =>
+  tx.creditTopupOrder.update({ where: { id }, data });
+
+/**
+ * Cổng đã nhận tiền: đổi sang PAID nếu đơn chưa PAID/REFUNDED. Đơn đã hết hạn hoặc bị huỷ
+ * trên app mà khách vẫn trả xong trên cổng thì vẫn ghi nhận, vì tiền đã bị trừ.
+ */
+export const markOrderPaid = async (tx: Db, id: string, data: { providerTxnId: string; paidAt: Date }) =>
+  (await tx.creditTopupOrder.updateMany({
+    where: { id, status: { in: [TopupStatus.PENDING, TopupStatus.EXPIRED, TopupStatus.FAILED] } },
+    data: { ...data, status: TopupStatus.PAID },
+  })).count;
+
 /** Đổi trạng thái chỉ khi đơn còn PENDING; trả về số dòng đã đổi (0 = người khác đã xử lý) */
 export const decidePending = async (tx: Db, id: string, data: Prisma.CreditTopupOrderUncheckedUpdateInput) =>
   (await tx.creditTopupOrder.updateMany({ where: { id, status: TopupStatus.PENDING }, data })).count;

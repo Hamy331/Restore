@@ -21,7 +21,7 @@ class CreditTopupCubit extends Cubit<CreditTopupState> {
 
   final CreditRepository _repository;
 
-  /// Khoảng hỏi lại trạng thái khi đang chờ tiền chuyển khoản về
+  /// Khoảng hỏi lại trạng thái khi đang chờ tiền về (VietQR hoặc trả trên trang ZaloPay)
   final Duration pollInterval;
   Timer? _poll;
 
@@ -65,7 +65,8 @@ class CreditTopupCubit extends Cubit<CreditTopupState> {
   }
 
   /// Lùi một bước. Trả false khi đang ở bước đầu hoặc kết quả (để trang đóng).
-  /// Đang trả tiền thì lùi về xác nhận và bỏ đơn (đơn tự hết hạn sau 15 phút).
+  /// Đang trả tiền thì lùi về xác nhận và huỷ đơn chưa trả trên máy chủ, để
+  /// không dồn đơn chờ (mỗi người tối đa 3 đơn).
   bool back() {
     switch (state.step) {
       case TopupStep.confirm:
@@ -73,6 +74,7 @@ class CreditTopupCubit extends Cubit<CreditTopupState> {
         return true;
       case TopupStep.pay:
         _stopPolling();
+        _abandon(state.order);
         emit(state.copyWith(step: TopupStep.confirm, clearOrder: true));
         return true;
       case TopupStep.choose:
@@ -90,7 +92,7 @@ class CreditTopupCubit extends Cubit<CreditTopupState> {
       final order = await _repository.createTopup(pack.id, state.method);
       if (isClosed) return;
       emit(state.copyWith(busy: false, order: order, step: TopupStep.pay));
-      if (order.method == CreditPayMethod.vietQr) _startPolling();
+      _startPolling();
     } on CreditException catch (error) {
       if (isClosed) return;
       emit(state.copyWith(busy: false, errorCode: error.code ?? ''));
@@ -138,6 +140,13 @@ class CreditTopupCubit extends Cubit<CreditTopupState> {
     emit(state.copyWith(step: TopupStep.confirm, clearOrder: true));
   }
 
+  /// Huỷ đơn đang chờ khi người dùng bỏ ngang. Lỗi thì thôi: đơn tự hết hạn
+  /// sau 15 phút, và đơn đã trả xong trên cổng thì máy chủ không cho huỷ.
+  void _abandon(CreditTopupModel? order) {
+    if (order == null || order.status != TopupStatus.pending) return;
+    _repository.cancelTopup(order.id).ignore();
+  }
+
   void _startPolling() {
     _stopPolling();
     _poll = Timer.periodic(pollInterval, (_) => _pollOnce());
@@ -147,6 +156,9 @@ class CreditTopupCubit extends Cubit<CreditTopupState> {
     _poll?.cancel();
     _poll = null;
   }
+
+  /// Hỏi ngay (VD vừa quay lại từ trang ZaloPay); vẫn chờ thì ở lại bước trả
+  Future<void> checkNow() => _pollOnce();
 
   /// Hỏi lặng lẽ; đơn hết chờ (đã trả, huỷ, hết hạn) thì sang kết quả
   Future<void> _pollOnce() async {
@@ -170,6 +182,7 @@ class CreditTopupCubit extends Cubit<CreditTopupState> {
   @override
   Future<void> close() {
     _stopPolling();
+    if (state.step == TopupStep.pay) _abandon(state.order);
     return super.close();
   }
 }

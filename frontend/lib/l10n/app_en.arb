@@ -1876,8 +1876,8 @@
     }
   },
   "creditPayMethodTitle": "Payment method",
-  "creditMethodVnpay": "VNPay",
-  "creditMethodVnpayDesc": "ATM card, international card or bank QR.",
+  "creditMethodZalopay": "ZaloPay",
+  "creditMethodZalopayDesc": "ZaloPay wallet, local ATM card or international card.",
   "creditMethodVietqr": "VietQR bank transfer",
   "creditMethodVietqrDesc": "Scan with any banking app. Points arrive when the money does.",
   "creditSandboxNote": "Test mode (sandbox): no real money is charged.",
@@ -1890,10 +1890,12 @@
       }
     }
   },
-  "creditPayVnpayTitle": "Pay with VNPay",
+  "creditPayZalopayTitle": "Pay with ZaloPay",
   "creditPayBankTitle": "Bank transfer",
   "creditOrderCode": "Order code",
-  "creditGatewayNotConnected": "VNPay isn't connected yet. Use the test buttons below to try the flow.",
+  "creditGatewayNotConnected": "ZaloPay is skipped (debug mode or no server keys). Use the buttons below to simulate the result.",
+  "creditOpenGateway": "Open ZaloPay checkout",
+  "creditWaitingGateway": "Finish paying on the ZaloPay page, then come back here. Your points update automatically.",
   "creditSimulateTitle": "Simulate the payment result (test mode only)",
   "creditSimulateSuccess": "Paid",
   "creditSimulateFail": "Failed",

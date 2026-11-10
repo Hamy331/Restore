@@ -6086,17 +6086,17 @@ abstract class AppLocalizations {
   /// **'Payment method'**
   String get creditPayMethodTitle;
 
-  /// No description provided for @creditMethodVnpay.
+  /// No description provided for @creditMethodZalopay.
   ///
   /// In en, this message translates to:
-  /// **'VNPay'**
-  String get creditMethodVnpay;
+  /// **'ZaloPay'**
+  String get creditMethodZalopay;
 
-  /// No description provided for @creditMethodVnpayDesc.
+  /// No description provided for @creditMethodZalopayDesc.
   ///
   /// In en, this message translates to:
-  /// **'ATM card, international card or bank QR.'**
-  String get creditMethodVnpayDesc;
+  /// **'ZaloPay wallet, local ATM card or international card.'**
+  String get creditMethodZalopayDesc;
 
   /// No description provided for @creditMethodVietqr.
   ///
@@ -6128,11 +6128,11 @@ abstract class AppLocalizations {
   /// **'Pay {price}'**
   String creditPayAction(String price);
 
-  /// No description provided for @creditPayVnpayTitle.
+  /// No description provided for @creditPayZalopayTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pay with VNPay'**
-  String get creditPayVnpayTitle;
+  /// **'Pay with ZaloPay'**
+  String get creditPayZalopayTitle;
 
   /// No description provided for @creditPayBankTitle.
   ///
@@ -6149,8 +6149,20 @@ abstract class AppLocalizations {
   /// No description provided for @creditGatewayNotConnected.
   ///
   /// In en, this message translates to:
-  /// **'VNPay isn\'t connected yet. Use the test buttons below to try the flow.'**
+  /// **'ZaloPay is skipped (debug mode or no server keys). Use the buttons below to simulate the result.'**
   String get creditGatewayNotConnected;
+
+  /// No description provided for @creditOpenGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Open ZaloPay checkout'**
+  String get creditOpenGateway;
+
+  /// No description provided for @creditWaitingGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish paying on the ZaloPay page, then come back here. Your points update automatically.'**
+  String get creditWaitingGateway;
 
   /// No description provided for @creditSimulateTitle.
   ///

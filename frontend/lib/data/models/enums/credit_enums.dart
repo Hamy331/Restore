@@ -1,7 +1,13 @@
 /// Cách trả tiền khi nạp xu (CreditPayMethod)
 enum CreditPayMethod {
-  vnpay('VNPAY'),
-  vietQr('VIETQR');
+  zaloPay('ZALOPAY'),
+  vietQr('VIETQR'),
+
+  /// Đơn cũ trước khi đổi sang ZaloPay; không còn cho chọn
+  vnpay('VNPAY');
+
+  /// Cách trả người dùng được chọn khi nạp
+  static const selectable = [zaloPay, vietQr];
 
   const CreditPayMethod(this.apiValue);
 
@@ -9,7 +15,7 @@ enum CreditPayMethod {
 
   static CreditPayMethod fromApi(String? value) => values.firstWhere(
     (method) => method.apiValue == value,
-    orElse: () => CreditPayMethod.vnpay,
+    orElse: () => CreditPayMethod.zaloPay,
   );
 }
 

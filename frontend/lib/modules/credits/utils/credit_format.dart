@@ -48,7 +48,8 @@ class CreditFormat {
 
   static String methodName(AppLocalizations l10n, CreditPayMethod method) =>
       switch (method) {
-        CreditPayMethod.vnpay => l10n.creditMethodVnpay,
+        CreditPayMethod.zaloPay => l10n.creditMethodZalopay,
+        CreditPayMethod.vnpay => 'VNPay',
         CreditPayMethod.vietQr => l10n.creditMethodVietqr,
       };
 
