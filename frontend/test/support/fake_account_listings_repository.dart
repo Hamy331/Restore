@@ -3,6 +3,7 @@ import 'package:restore/modules/account/repositories/account_listings_repository
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/modules/listings/models/listing_enums.dart';
 import 'package:restore/modules/listings/models/posting_quota.dart';
+import 'package:restore/modules/listings/repositories/listings_repository.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
 /// Ba tin đăng trong bộ nhớ cho test tab tin đăng.
@@ -75,13 +76,25 @@ class FakeAccountListingsRepository implements AccountListingsRepository {
   @override
   Future<void> extend(String id) async {}
 
+  /// Tin đã được đẩy, theo thứ tự
+  final boosted = <String>[];
+
   @override
-  Future<PostingQuota> postingQuota() async => const PostingQuota(
+  Future<BoostResult> boost(String id) async {
+    boosted.add(id);
+    return const BoostResult(free: false, credits: 6, freeLeft: 0);
+  }
+
+  /// Hạn mức trả về cho màn quản lý tin (đẩy tin, gia hạn)
+  PostingQuota quota = const PostingQuota(
     accountType: SellerType.personal,
     defaultLimit: 2,
     displayDays: 60,
     businessLimit: 30,
   );
+
+  @override
+  Future<PostingQuota> postingQuota() async => quota;
 
   @override
   Future<CategoryModel?> category(String id) async => null;

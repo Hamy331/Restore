@@ -2,6 +2,7 @@ import { StoreTier } from '@prisma/client';
 import { AppError } from '../../../common/errors/app-error.js';
 import { storePackageForUser, storeUsage } from '../../commerce/index.js';
 import { availableCredits, holdForListing } from '../../credits/index.js';
+import { boostPrice } from '../listing-lifecycle.js';
 import { DISPLAY_DAYS, personalQuota, RECENT_WINDOW_DAYS } from '../posting-quota.js';
 import type { Db } from '../repositories/listing.repository.js';
 import * as quotaRepository from '../repositories/posting-quota.repository.js';
@@ -24,8 +25,15 @@ export async function postingQuota(tx: Db, ownerId: string, now: Date, excludeId
     availableCredits(tx, ownerId),
   ]);
   const daily = { used: usage.today, limit: plan.package.dailyListingLimit };
+  const discount = plan.package.boostDiscountPercent;
+  const boost = {
+    freePerMonth: plan.package.monthlyPromotionQuota,
+    freeLeft: Math.max(0, plan.package.monthlyPromotionQuota - usage.promotionsThisMonth),
+    discountPercent: discount,
+  };
+  const boostCredits = new Map(rules.map((rule) => [rule.id, boostPrice(rule.boostCredits, discount)]));
   const common = { tier: plan.package.tier, displayDays: DISPLAY_DAYS, recentWindowDays: RECENT_WINDOW_DAYS,
-    businessLimit: BUSINESS_LIMIT, daily, wallet: { available: wallet } };
+    businessLimit: BUSINESS_LIMIT, daily, wallet: { available: wallet }, boost };
 
   if (plan.package.tier !== StoreTier.PERSONAL) {
     const active = await quotaRepository.countActiveByCategory(tx, ownerId);
@@ -36,14 +44,16 @@ export async function postingQuota(tx: Db, ownerId: string, now: Date, excludeId
       total: { used: usage.active, limit },
       categories: rules.map((rule) => ({
         categoryId: rule.id, used: active.get(rule.id) ?? 0, limit, recentUsed: 0, recentLimit: 0,
-        extraCredits: null, extendCredits: rule.extraListingCredits, displayDays: rule.displayDays, freeAvailable: free, blockedBy: free ? null : 'TOTAL' as const,
+        extraCredits: null, extendCredits: rule.extraListingCredits, displayDays: rule.displayDays, boostCredits: boostCredits.get(rule.id)!,
+        freeAvailable: free, blockedBy: free ? null : 'TOTAL' as const,
       })),
     };
   }
 
   const counts = await quotaRepository.countFreeByCategory(tx, ownerId, new Date(now.getTime() - RECENT_WINDOW_DAYS * DAY_MS), excludeId);
   const quota = personalQuota(rules, counts, plan.package.activeListingLimit);
-  return { ...common, accountType: 'personal' as const, defaultLimit: 2, ...quota };
+  const categories = quota.categories.map((item) => ({ ...item, boostCredits: boostCredits.get(item.categoryId)! }));
+  return { ...common, accountType: 'personal' as const, defaultLimit: 2, ...quota, categories };
 }
 
 export type PostingSlotOptions = {

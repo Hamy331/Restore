@@ -15,6 +15,11 @@
         "wallet": {
           "available": 0
         },
+        "boost": {
+          "freePerMonth": 0,
+          "freeLeft": 0,
+          "discountPercent": 0
+        },
         "accountType": "personal",
         "defaultLimit": 2,
         "total": {
@@ -22,42 +27,6 @@
           "limit": 5
         },
         "categories": [
-          {
-            "categoryId": "other",
-            "used": 0,
-            "limit": 2,
-            "recentUsed": 0,
-            "recentLimit": 4,
-            "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "phones",
-            "used": 0,
-            "limit": 1,
-            "recentUsed": 0,
-            "recentLimit": 2,
-            "extraCredits": 15,
-            "extendCredits": 15,
-            "displayDays": 30,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "electronics",
-            "used": 0,
-            "limit": 1,
-            "recentUsed": 0,
-            "recentLimit": 2,
-            "extraCredits": 15,
-            "extendCredits": 15,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
           {
             "categoryId": "appliances",
             "used": 0,
@@ -68,55 +37,8 @@
             "extendCredits": 10,
             "displayDays": 60,
             "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "pets",
-            "used": 0,
-            "limit": 1,
-            "recentUsed": 0,
-            "recentLimit": 2,
-            "extraCredits": 10,
-            "extendCredits": 10,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "furniture",
-            "used": 0,
-            "limit": 2,
-            "recentUsed": 0,
-            "recentLimit": 4,
-            "extraCredits": 10,
-            "extendCredits": 10,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "fashion",
-            "used": 0,
-            "limit": 2,
-            "recentUsed": 0,
-            "recentLimit": 4,
-            "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "sports",
-            "used": 0,
-            "limit": 2,
-            "recentUsed": 0,
-            "recentLimit": 4,
-            "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
+            "blockedBy": null,
+            "boostCredits": 6
           },
           {
             "categoryId": "books",
@@ -128,7 +50,99 @@
             "extendCredits": 5,
             "displayDays": 60,
             "freeAvailable": true,
-            "blockedBy": null
+            "blockedBy": null,
+            "boostCredits": 4
+          },
+          {
+            "categoryId": "electronics",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 15,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10
+          },
+          {
+            "categoryId": "fashion",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4
+          },
+          {
+            "categoryId": "furniture",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 10,
+            "extendCredits": 10,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6
+          },
+          {
+            "categoryId": "other",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4
+          },
+          {
+            "categoryId": "pets",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 10,
+            "extendCredits": 10,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6
+          },
+          {
+            "categoryId": "phones",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 15,
+            "displayDays": 30,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10
+          },
+          {
+            "categoryId": "sports",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4
           },
           {
             "categoryId": "vehicles",
@@ -140,7 +154,8 @@
             "extendCredits": 15,
             "displayDays": 30,
             "freeAvailable": true,
-            "blockedBy": null
+            "blockedBy": null,
+            "boostCredits": 10
           }
         ]
       }
@@ -706,6 +721,67 @@
       "code": "LISTING_NOT_FOUND"
     }
   },
+  "boost with points": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "free": false,
+        "credits": 4,
+        "startsAt": "<date>",
+        "endsAt": "<date>",
+        "freeLeft": 0
+      }
+    }
+  },
+  "boost too soon": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Tin vừa được đẩy, mỗi tin đẩy tối đa 1 lần mỗi ngày.",
+      "code": "BOOST_TOO_SOON",
+      "details": {
+        "availableAt": "<date>"
+      }
+    }
+  },
+  "boost hidden": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy tin đăng của bạn.",
+      "code": "LISTING_NOT_FOUND"
+    }
+  },
+  "boost free": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "free": true,
+        "credits": 0,
+        "startsAt": "<date>",
+        "endsAt": "<date>",
+        "freeLeft": 0
+      }
+    }
+  },
+  "boost discounted": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "free": false,
+        "credits": 2,
+        "startsAt": "<date>",
+        "endsAt": "<date>",
+        "freeLeft": 0
+      }
+    }
+  },
   "quota after": {
     "status": 200,
     "body": {
@@ -720,7 +796,12 @@
           "limit": 3
         },
         "wallet": {
-          "available": 40
+          "available": 34
+        },
+        "boost": {
+          "freePerMonth": 0,
+          "freeLeft": 0,
+          "discountPercent": 0
         },
         "accountType": "personal",
         "defaultLimit": 2,
@@ -729,42 +810,6 @@
           "limit": 5
         },
         "categories": [
-          {
-            "categoryId": "other",
-            "used": 2,
-            "limit": 2,
-            "recentUsed": 1,
-            "recentLimit": 4,
-            "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
-            "freeAvailable": false,
-            "blockedBy": "CATEGORY"
-          },
-          {
-            "categoryId": "phones",
-            "used": 0,
-            "limit": 1,
-            "recentUsed": 0,
-            "recentLimit": 2,
-            "extraCredits": 15,
-            "extendCredits": 15,
-            "displayDays": 30,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "electronics",
-            "used": 0,
-            "limit": 1,
-            "recentUsed": 0,
-            "recentLimit": 2,
-            "extraCredits": 15,
-            "extendCredits": 15,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
           {
             "categoryId": "appliances",
             "used": 0,
@@ -775,55 +820,8 @@
             "extendCredits": 10,
             "displayDays": 60,
             "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "pets",
-            "used": 0,
-            "limit": 1,
-            "recentUsed": 0,
-            "recentLimit": 2,
-            "extraCredits": 10,
-            "extendCredits": 10,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "furniture",
-            "used": 0,
-            "limit": 2,
-            "recentUsed": 0,
-            "recentLimit": 4,
-            "extraCredits": 10,
-            "extendCredits": 10,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "fashion",
-            "used": 0,
-            "limit": 2,
-            "recentUsed": 0,
-            "recentLimit": 4,
-            "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
-          },
-          {
-            "categoryId": "sports",
-            "used": 0,
-            "limit": 2,
-            "recentUsed": 0,
-            "recentLimit": 4,
-            "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
-            "freeAvailable": true,
-            "blockedBy": null
+            "blockedBy": null,
+            "boostCredits": 6
           },
           {
             "categoryId": "books",
@@ -835,7 +833,99 @@
             "extendCredits": 5,
             "displayDays": 60,
             "freeAvailable": true,
-            "blockedBy": null
+            "blockedBy": null,
+            "boostCredits": 4
+          },
+          {
+            "categoryId": "electronics",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 15,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10
+          },
+          {
+            "categoryId": "fashion",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4
+          },
+          {
+            "categoryId": "furniture",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 10,
+            "extendCredits": 10,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6
+          },
+          {
+            "categoryId": "other",
+            "used": 2,
+            "limit": 2,
+            "recentUsed": 1,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "freeAvailable": false,
+            "blockedBy": "CATEGORY",
+            "boostCredits": 4
+          },
+          {
+            "categoryId": "pets",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 10,
+            "extendCredits": 10,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6
+          },
+          {
+            "categoryId": "phones",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 15,
+            "displayDays": 30,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10
+          },
+          {
+            "categoryId": "sports",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4
           },
           {
             "categoryId": "vehicles",
@@ -847,7 +937,8 @@
             "extendCredits": 15,
             "displayDays": 30,
             "freeAvailable": true,
-            "blockedBy": null
+            "blockedBy": null,
+            "boostCredits": 10
           }
         ]
       }

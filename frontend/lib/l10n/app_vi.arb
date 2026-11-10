@@ -1869,5 +1869,51 @@
       }
     }
   },
-  "postingPayNowNote": "Xu bị trừ ngay khi tin hiện lại, không cần duyệt lại."
+  "postingPayNowNote": "Xu bị trừ ngay khi tin hiện lại, không cần duyệt lại.",
+  "boostSheetMessage": "Tin được đưa lên đầu danh sách trong 24 giờ.",
+  "boostFreeNote": "Dùng 1 lượt miễn phí của gói, còn {left}/{perMonth} lượt tháng này.",
+  "@boostFreeNote": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      },
+      "perMonth": {
+        "type": "int"
+      }
+    }
+  },
+  "boostPayNote": "Giá {credits} xu, trừ ngay khi đẩy.",
+  "@boostPayNote": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "boostDiscountNote": "Gói của bạn được giảm {percent}%.",
+  "@boostDiscountNote": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "boostUseFree": "Đẩy miễn phí",
+  "boostPay": "Đẩy tin · {credits} xu",
+  "@boostPay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "boostDone": "Đã đẩy tin lên đầu",
+  "boostTooSoon": "Tin vừa được đẩy. Bạn đẩy lại được sau {hours} giờ nữa.",
+  "@boostTooSoon": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  }
 }

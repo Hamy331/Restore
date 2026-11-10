@@ -13,6 +13,7 @@
           "activeListingLimit": 5,
           "draftLimit": 3,
           "monthlyPromotionQuota": 0,
+          "boostDiscountPercent": 0,
           "priorityLevel": 0
         },
         "category": null,
@@ -70,7 +71,8 @@
           "dailyListingLimit": 10,
           "activeListingLimit": 30,
           "draftLimit": 10,
-          "monthlyPromotionQuota": 2,
+          "monthlyPromotionQuota": 5,
+          "boostDiscountPercent": 20,
           "priorityLevel": 1
         },
         "category": {
@@ -168,7 +170,8 @@
           },
           "freeListingLimit": 2,
           "extraListingCredits": 10,
-          "displayDays": 60
+          "displayDays": 60,
+          "boostCredits": 6
         }
       }
     }
@@ -216,7 +219,8 @@
             "dailyListingLimit": 10,
             "activeListingLimit": 30,
             "draftLimit": 10,
-            "monthlyPromotionQuota": 2,
+            "monthlyPromotionQuota": 5,
+            "boostDiscountPercent": 20,
             "priorityLevel": 1
           },
           "category": {
@@ -314,7 +318,8 @@
             },
             "freeListingLimit": 2,
             "extraListingCredits": 10,
-            "displayDays": 60
+            "displayDays": 60,
+            "boostCredits": 6
           }
         }
       ]
@@ -342,7 +347,8 @@
             "dailyListingLimit": 10,
             "activeListingLimit": 30,
             "draftLimit": 10,
-            "monthlyPromotionQuota": 2,
+            "monthlyPromotionQuota": 5,
+            "boostDiscountPercent": 20,
             "priorityLevel": 1
           },
           "category": {
@@ -440,7 +446,8 @@
             },
             "freeListingLimit": 2,
             "extraListingCredits": 10,
-            "displayDays": 60
+            "displayDays": 60,
+            "boostCredits": 6
           }
         }
       }
@@ -467,7 +474,8 @@
           "dailyListingLimit": 10,
           "activeListingLimit": 30,
           "draftLimit": 10,
-          "monthlyPromotionQuota": 2,
+          "monthlyPromotionQuota": 5,
+          "boostDiscountPercent": 20,
           "priorityLevel": 1
         },
         "category": {
@@ -565,7 +573,8 @@
           },
           "freeListingLimit": 2,
           "extraListingCredits": 10,
-          "displayDays": 60
+          "displayDays": 60,
+          "boostCredits": 6
         },
         "endsAt": "<date>",
         "pendingOrder": null,
@@ -579,7 +588,7 @@
           "listingsToday": 10,
           "activeListings": 27,
           "drafts": 10,
-          "promotionsThisMonth": 1
+          "promotionsThisMonth": 4
         }
       }
     }
@@ -628,8 +637,8 @@
     "status": 409,
     "body": {
       "success": false,
-      "error": "Bạn đã dùng hết lượt quảng cáo trong tháng.",
-      "code": "PROMOTION_QUOTA_EXHAUSTED"
+      "error": "Tin đang có quảng cáo cùng loại.",
+      "code": "PROMOTION_ALREADY_ACTIVE"
     }
   },
   "promotions mine": {

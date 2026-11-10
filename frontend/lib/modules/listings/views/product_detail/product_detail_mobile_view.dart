@@ -14,6 +14,9 @@ import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import '../../bloc/product_detail/product_detail_cubit.dart';
 import '../../bloc/product_detail/product_detail_state.dart';
 import '../../models/product_detail.dart';
+import '../../repositories/listings_repository.dart';
+import '../../repositories/posting_quota_repository.dart';
+import '../../widgets/boost_listing_sheet.dart';
 import 'widgets/product_detail_attributes.dart';
 import 'widgets/product_detail_bottom_bar.dart';
 import 'widgets/product_detail_description.dart';
@@ -81,6 +84,24 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
   void _close() {
     final state = _cubit.state;
     context.pop(state.favoriteChanged ? state.detail!.isFavorite : null);
+  }
+
+  /// Chủ tin đẩy tin lên đầu bằng lượt tặng của gói hoặc bằng xu
+  Future<void> _onBoost(ProductDetail detail) async {
+    if (!detail.isAvailable) {
+      TSnackBarHelper.showInfo(
+        context,
+        message: _l10n.boostUnavailableDescription,
+      );
+      return;
+    }
+    await boostListingWithCredits(
+      context,
+      title: detail.listing.title,
+      categoryId: detail.listing.categoryId,
+      loadQuota: ApiPostingQuotaRepository().getQuota,
+      boost: () => ApiListingsRepository().boost(detail.listing.id),
+    );
   }
 
   void _comingSoon() =>
@@ -251,7 +272,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
                     onOffer: () => _onOffer(detail),
                     onBuy: () => _onBuy(detail),
                     onEdit: _comingSoon,
-                    onBoost: () => context.push('/boost/${detail.listing.id}'),
+                    onBoost: () => _onBoost(detail),
                   ),
           ),
         );

@@ -75,5 +75,24 @@ test('posting quota: pay with points, expiry, reactivate, extend, duplicates', a
   assert.equal((await wallet()).available, 40);
   assert.equal(expect('extend too early', await api.post(`/listings/${a}/extend`, { token })).body.code, 'EXTEND_TOO_EARLY');
   expect('extend hidden', await api.post('/listings/listing-1/extend', { token }));
+
+  const boosted = expect('boost with points', await api.post(`/listings/${a}/boost`, { token }));
+  assert.deepEqual([boosted.body.data.free, boosted.body.data.credits], [false, 4]);
+  assert.equal((await wallet()).available, 36);
+  assert.equal(expect('boost too soon', await api.post(`/listings/${a}/boost`, { token })).body.code, 'BOOST_TOO_SOON');
+  expect('boost hidden', await api.post('/listings/listing-1/boost', { token }));
+  const past = new Date(Date.now() - 1000);
+  await prisma.promotion.updateMany({ where: { listingId: a }, data: { endsAt: past } });
+  await prisma.storePackage.update({ where: { id: 'personal' }, data: { monthlyPromotionQuota: 1, boostDiscountPercent: 50 } });
+  try {
+    const gift = expect('boost free', await api.post(`/listings/${a}/boost`, { token }));
+    assert.deepEqual([gift.body.data.free, gift.body.data.credits, gift.body.data.freeLeft], [true, 0, 0]);
+    await prisma.promotion.updateMany({ where: { listingId: a }, data: { endsAt: past } });
+    const discounted = expect('boost discounted', await api.post(`/listings/${a}/boost`, { token }));
+    assert.deepEqual([discounted.body.data.free, discounted.body.data.credits], [false, 2]);
+    assert.equal((await wallet()).available, 34);
+  } finally {
+    await prisma.storePackage.update({ where: { id: 'personal' }, data: { monthlyPromotionQuota: 0, boostDiscountPercent: 0 } });
+  }
   expect('quota after', await api.get('/listings/posting-quota', { token }));
 });

@@ -93,84 +93,90 @@ class ChooseCategoryMobileView extends StatelessWidget {
       step: CreateListingStep.category,
       showSaveDraft: false,
       children: [
-        BlocBuilder<CreateListingBloc, CreateListingState>(
-          buildWhen: (previous, current) => previous.quota != current.quota,
-          builder: (context, state) => AnimatedSize(
-            duration: const Duration(milliseconds: 250),
-            alignment: Alignment.topCenter,
-            child: state.quota == null
-                ? const SizedBox(width: double.infinity)
-                : Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: FadeSlideIn(
-                      child: PostingQuotaBanner(quota: state.quota!),
-                    ),
-                  ),
-          ),
-        ),
-        BlocBuilder<CreateListingBloc, CreateListingState>(
-          buildWhen: (previous, current) =>
-              previous.drafts != current.drafts ||
-              previous.hasMoreDrafts != current.hasMoreDrafts,
-          builder: (context, state) => AnimatedSize(
-            duration: const Duration(milliseconds: 250),
-            alignment: Alignment.topCenter,
-            child: state.drafts.isEmpty
-                ? const SizedBox(width: double.infinity)
-                : Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: FadeSlideIn(
-                      child: DraftsBanner(
-                        count: state.drafts.length,
-                        hasMore: state.hasMoreDrafts,
-                        onTap: () => context.push(ListingDraftsView.path),
-                      ),
-                    ),
-                  ),
-          ),
-        ),
-        AppGlassContainer(
+        // Chờ tải xong danh mục, hạn mức và tin nháp rồi mới hiện tất cả cùng
+        // lúc: hiện danh mục trước khi biết hạn mức thì người bán chọn nhầm
+        // chuyên mục đã hết suất
+        _ReadyGate(
+          loading: const AppGlassContainer(child: CategoryListSkeleton()),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                child: Text(
-                  l10n.chooseCategorySubtitle,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
+              BlocBuilder<CreateListingBloc, CreateListingState>(
+                buildWhen: (previous, current) =>
+                    previous.quota != current.quota,
+                builder: (context, state) => state.quota == null
+                    ? const SizedBox(width: double.infinity)
+                    : Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: PostingQuotaBanner(quota: state.quota!),
+                      ),
               ),
               BlocBuilder<CreateListingBloc, CreateListingState>(
                 buildWhen: (previous, current) =>
-                    previous.categoriesStatus != current.categoriesStatus ||
-                    previous.categories != current.categories ||
-                    previous.quota != current.quota,
-                builder: (context, state) => AnimatedSwitcher(
+                    previous.drafts != current.drafts ||
+                    previous.hasMoreDrafts != current.hasMoreDrafts,
+                builder: (context, state) => AnimatedSize(
                   duration: const Duration(milliseconds: 250),
-                  child: switch (state.categoriesStatus) {
-                    RequestStatus.success => _CategoryList(
-                      categories: state.categories,
-                      quota: state.quota,
-                      onSelect: (category) => _onSelect(context, category),
-                    ),
-                    RequestStatus.failure => FeedbackView(
-                      icon: AppIcons.offline,
-                      title: l10n.loadCategoriesFailedTitle,
-                      message: l10n.loadCategoriesFailedMessage,
-                      action: FilledButton(
-                        onPressed: () => context.read<CreateListingBloc>().add(
-                          const CategoriesRequested(),
+                  alignment: Alignment.topCenter,
+                  child: state.drafts.isEmpty
+                      ? const SizedBox(width: double.infinity)
+                      : Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: DraftsBanner(
+                            count: state.drafts.length,
+                            hasMore: state.hasMoreDrafts,
+                            onTap: () => context.push(ListingDraftsView.path),
+                          ),
                         ),
-                        child: Text(l10n.retry),
+                ),
+              ),
+              AppGlassContainer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                      child: Text(
+                        l10n.chooseCategorySubtitle,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.3,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
-                    _ => const CategoryListSkeleton(),
-                  },
+                    BlocBuilder<CreateListingBloc, CreateListingState>(
+                      buildWhen: (previous, current) =>
+                          previous.categoriesStatus !=
+                              current.categoriesStatus ||
+                          previous.categories != current.categories ||
+                          previous.quota != current.quota,
+                      builder: (context, state) => AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        child: switch (state.categoriesStatus) {
+                          RequestStatus.success => _CategoryList(
+                            categories: state.categories,
+                            quota: state.quota,
+                            onSelect: (category) =>
+                                _onSelect(context, category),
+                          ),
+                          RequestStatus.failure => FeedbackView(
+                            icon: AppIcons.offline,
+                            title: l10n.loadCategoriesFailedTitle,
+                            message: l10n.loadCategoriesFailedMessage,
+                            action: FilledButton(
+                              onPressed: () => context
+                                  .read<CreateListingBloc>()
+                                  .add(const CategoriesRequested()),
+                              child: Text(l10n.retry),
+                            ),
+                          ),
+                          _ => const CategoryListSkeleton(),
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -179,6 +185,41 @@ class ChooseCategoryMobileView extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Hiện [loading] cho tới khi [CreateListingState.chooseCategoryReady], sau
+/// đó hiện [child] một lần (tải lại hạn mức / nháp về sau không ẩn lại).
+class _ReadyGate extends StatefulWidget {
+  const _ReadyGate({required this.loading, required this.child});
+  final Widget loading;
+  final Widget child;
+
+  @override
+  State<_ReadyGate> createState() => _ReadyGateState();
+}
+
+class _ReadyGateState extends State<_ReadyGate> {
+  bool _ready = false;
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<CreateListingBloc, CreateListingState>(
+        buildWhen: (previous, current) =>
+            !_ready &&
+            previous.chooseCategoryReady != current.chooseCategoryReady,
+        builder: (context, state) {
+          _ready = _ready || state.chooseCategoryReady;
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: _ready
+                ? FadeSlideIn(key: const ValueKey('ready'), child: widget.child)
+                : KeyedSubtree(
+                    key: const ValueKey('loading'),
+                    child: widget.loading,
+                  ),
+          );
+        },
+      );
 }
 
 class _CategoryList extends StatelessWidget {

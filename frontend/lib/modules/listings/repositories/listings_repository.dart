@@ -42,6 +42,10 @@ abstract class ListingsRepository {
 
   /// Gia hạn tin đang hiển thị thêm một kỳ, trả xu theo chuyên mục
   Future<void> extend(String id);
+
+  /// Đẩy tin đang hiển thị lên đầu 1 ngày: dùng lượt tặng của gói, hết lượt
+  /// thì trả xu. Lỗi 409 ném [ListingBoostException].
+  Future<BoostResult> boost(String id);
   Future<void> deleteDraft(String id);
 
   /// Số tin nháp đang giữ và giới hạn của gói
@@ -124,6 +128,10 @@ class MockListingsRepository implements ListingsRepository {
 
   @override
   Future<void> extend(String id) async {}
+
+  @override
+  Future<BoostResult> boost(String id) async =>
+      const BoostResult(free: false, credits: 4, freeLeft: 0);
 
   @override
   Future<void> deleteDraft(String id) async {
@@ -256,6 +264,45 @@ enum ListingImageProblem { tooLarge, unsupported, missing }
 
 /// Tin cũ trùng với tin đang đăng. [active]: tin cũ đang hiển thị / chờ
 /// duyệt (không đăng được), ngược lại tin cũ đã ẩn / hết hạn (nên kích hoạt lại)
+/// Kết quả đẩy tin: [free] = dùng lượt tặng của gói, không thì trả [credits] xu
+class BoostResult {
+  const BoostResult({
+    required this.free,
+    required this.credits,
+    required this.freeLeft,
+  });
+  final bool free;
+  final int credits;
+
+  /// Lượt đẩy tin miễn phí còn lại trong tháng
+  final int freeLeft;
+
+  factory BoostResult.fromJson(Map<String, dynamic> json) => BoostResult(
+    free: json['free'] == true,
+    credits: (json['credits'] as num?)?.toInt() ?? 0,
+    freeLeft: (json['freeLeft'] as num?)?.toInt() ?? 0,
+  );
+}
+
+/// Backend từ chối đẩy tin (HTTP 409): [code] như `BOOST_TOO_SOON`,
+/// `NOT_ENOUGH_CREDITS`, `LISTING_NOT_BOOSTABLE`
+class ListingBoostException implements Exception {
+  const ListingBoostException(
+    this.code, {
+    this.message,
+    this.details = const {},
+  });
+  final String code;
+  final String? message;
+  final Map<String, dynamic> details;
+
+  static const tooSoon = 'BOOST_TOO_SOON';
+  static const notEnoughCredits = 'NOT_ENOUGH_CREDITS';
+
+  @override
+  String toString() => 'ListingBoostException($code)';
+}
+
 class DuplicateListing {
   const DuplicateListing({required this.listingId, required this.active});
   final String listingId;
@@ -633,6 +680,29 @@ class ApiListingsRepository implements ListingsRepository {
   @override
   Future<void> extend(String id) =>
       _dio.post<void>('/listings/${Uri.encodeComponent(id)}/extend');
+
+  @override
+  Future<BoostResult> boost(String id) async {
+    try {
+      return BoostResult.fromJson(
+        _data(
+          await _dio.post<Map<String, dynamic>>(
+            '/listings/${Uri.encodeComponent(id)}/boost',
+          ),
+        ),
+      );
+    } on DioException catch (error) {
+      final data = error.response?.data;
+      if (error.response?.statusCode != 409 || data is! Map) rethrow;
+      final details = data['details'];
+      throw ListingBoostException(
+        '${data['code']}',
+        message: data['error'] as String?,
+        details: details is Map ? Map<String, dynamic>.from(details) : const {},
+      );
+    }
+  }
+
   @override
   Future<void> deleteDraft(String id) async {
     try {

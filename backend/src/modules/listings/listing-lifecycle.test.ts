@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { addDays, approvedExpiry, canExtend, daysLeft, extendedExpiry, isExpired, normalizeTitle } from './listing-lifecycle.js';
+import { addDays, approvedExpiry, boostPrice, canExtend, daysLeft, extendedExpiry, isExpired, normalizeTitle } from './listing-lifecycle.js';
 
 const now = new Date('2026-11-11T00:00:00Z');
 
@@ -28,4 +28,12 @@ test('extend only within one period and adds to the remaining time', () => {
 test('titles match regardless of accents, case and punctuation', () => {
   assert.equal(normalizeTitle('Điện thoại  iPhone 13 - Pro!'), normalizeTitle('dien thoai iphone 13 pro'));
   assert.notEqual(normalizeTitle('iPhone 13'), normalizeTitle('iPhone 14'));
+});
+
+test('boost price: tier discount, rounded, never below 1 xu', () => {
+  assert.equal(boostPrice(10, 0), 10);
+  assert.equal(boostPrice(10, 20), 8);
+  assert.equal(boostPrice(6, 30), 4);
+  assert.equal(boostPrice(4, 30), 3);
+  assert.equal(boostPrice(1, 90), 1);
 });

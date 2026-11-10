@@ -30,7 +30,9 @@ listingRouter.post('/', manageOwn, validate({ body: createListingBody }), listin
  *
  * Trả về: { accountType: personal | business, tier, displayDays, recentWindowDays, defaultLimit, businessLimit,
  *   total: { used, limit }, daily: { used, limit }, wallet: { available },
- *   categories: [{ categoryId, used, limit, recentUsed, recentLimit, extraCredits, extendCredits, displayDays, freeAvailable, blockedBy }] }
+ *   boost: { freePerMonth, freeLeft, discountPercent },
+ *   categories: [{ categoryId, used, limit, recentUsed, recentLimit, extraCredits, extendCredits, displayDays, boostCredits,
+ *     freeAvailable, blockedBy }] }
  */
 listingRouter.get('/posting-quota', manageOwn, listingController.postingQuota);
 
@@ -95,6 +97,18 @@ listingRouter.patch('/:id/status', manageOwn, validate({ params: listingIdParams
  * Lỗi 409: EXTEND_TOO_EARLY (còn hơn một kỳ hiển thị), LISTING_NOT_EXTENDABLE, NOT_ENOUGH_CREDITS
  */
 listingRouter.post('/:id/extend', manageOwn, validate({ params: listingIdParams }), listingController.extend);
+
+/**
+ * Đẩy tin đang hiển thị lên đầu 1 ngày: dùng lượt tặng của gói trong tháng, hết lượt thì trả xu
+ * (Category.boostCredits, giảm theo StorePackage.boostDiscountPercent)
+ *
+ * Path params:
+ *  - id: string - mã tin
+ *
+ * Trả về: { listingId, free, credits, startsAt, endsAt, freeLeft }
+ * Lỗi 409: BOOST_TOO_SOON { details: { availableAt } }, LISTING_NOT_BOOSTABLE, NOT_ENOUGH_CREDITS
+ */
+listingRouter.post('/:id/boost', manageOwn, validate({ params: listingIdParams }), listingController.boost);
 
 /**
  * Chi tiết tin công khai, tăng lượt xem (không tính chủ tin và người kiểm duyệt)

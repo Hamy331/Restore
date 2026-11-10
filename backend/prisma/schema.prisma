@@ -212,6 +212,8 @@ model Category {
   extraListingCredits Int            @default(5)
   /// Số ngày một tin được hiển thị (cũng là số ngày mỗi lần gia hạn)
   displayDays         Int            @default(60)
+  /// Giá (xu) một lần đẩy tin lên đầu, trước khi giảm theo gói
+  boostCredits        Int            @default(5)
   listings       Listing[]
   subscriptions  StoreSubscription[]
   storeOrders    StoreOrder[]
@@ -234,6 +236,8 @@ model StorePackage {
   /// Số tin nháp được giữ cùng lúc
   draftLimit            Int                 @default(3)
   monthlyPromotionQuota Int
+  /// Phần trăm giảm giá đẩy tin bằng xu của gói
+  boostDiscountPercent  Int                 @default(0)
   priorityLevel         Int
   subscriptions         StoreSubscription[]
   orders                StoreOrder[]
