@@ -3,13 +3,16 @@ import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
 import { HISTORY_FILTERS } from './credit.type.js';
 
-/** Body POST /credits/topups: { packageId, method: VNPAY | VIETQR } */
+/** Cách trả đang mở: ZaloPay (cổng) và VietQR (chuyển khoản). VNPay chưa có khoá nên chưa nhận. */
+export const TOPUP_METHODS: readonly CreditPayMethod[] = [CreditPayMethod.ZALOPAY, CreditPayMethod.VIETQR];
+
+/** Body POST /credits/topups: { packageId, method: ZALOPAY | VIETQR } */
 export const topupBody = z.unknown().transform((body) => {
   const { packageId, method } = (body ?? {}) as Record<string, unknown>;
   if (typeof packageId !== 'string' || !packageId || packageId.length > 100) {
     throw new AppError(400, 'INVALID_TOPUP', 'Gói nạp không hợp lệ.', 'packageId');
   }
-  if (!Object.values(CreditPayMethod).includes(method as CreditPayMethod)) {
+  if (!TOPUP_METHODS.includes(method as CreditPayMethod)) {
     throw new AppError(400, 'INVALID_TOPUP', 'Cách thanh toán không hợp lệ.', 'method');
   }
   return { packageId, method: method as CreditPayMethod };

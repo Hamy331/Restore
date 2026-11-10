@@ -6,7 +6,7 @@ enum TopupStep {
   /// Xem lại, chọn cách trả, đồng ý điều khoản
   confirm,
 
-  /// Đang trả tiền (cổng VNPay hoặc mã VietQR)
+  /// Đang trả tiền (cổng ZaloPay hoặc mã VietQR)
   pay,
 
   /// Thành công / đang chờ / thất bại

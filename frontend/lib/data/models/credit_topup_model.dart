@@ -46,7 +46,7 @@ class CreditTopupModel extends Equatable {
   /// Đang ở chế độ thử: được giả lập kết quả trả tiền
   final bool sandbox;
 
-  /// URL cổng thanh toán (VNPay), null khi chưa nối cổng
+  /// Trang thanh toán của cổng (ZaloPay), null khi máy chủ chưa cấu hình cổng
   final String? payUrl;
   final VietQrInfo? vietQr;
 

@@ -3437,11 +3437,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creditPayMethodTitle => 'Payment method';
 
   @override
-  String get creditMethodVnpay => 'VNPay';
+  String get creditMethodZalopay => 'ZaloPay';
 
   @override
-  String get creditMethodVnpayDesc =>
-      'ATM card, international card or bank QR.';
+  String get creditMethodZalopayDesc =>
+      'ZaloPay wallet, local ATM card or international card.';
 
   @override
   String get creditMethodVietqr => 'VietQR bank transfer';
@@ -3464,7 +3464,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get creditPayVnpayTitle => 'Pay with VNPay';
+  String get creditPayZalopayTitle => 'Pay with ZaloPay';
 
   @override
   String get creditPayBankTitle => 'Bank transfer';
@@ -3474,7 +3474,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get creditGatewayNotConnected =>
-      'VNPay isn\'t connected yet. Use the test buttons below to try the flow.';
+      'ZaloPay is skipped (debug mode or no server keys). Use the buttons below to simulate the result.';
+
+  @override
+  String get creditOpenGateway => 'Open ZaloPay checkout';
+
+  @override
+  String get creditWaitingGateway =>
+      'Finish paying on the ZaloPay page, then come back here. Your points update automatically.';
 
   @override
   String get creditSimulateTitle =>

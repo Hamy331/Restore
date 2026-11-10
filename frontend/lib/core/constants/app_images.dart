@@ -11,6 +11,8 @@ class AppImages {
 class AppLogos {
   const AppLogos();
   final String appLogo = 'assets/logos/app-logo.png';
+  final String zaloPay = 'assets/logos/zalopay.png';
+  final String vietQr = 'assets/logos/vietqr.png';
 }
 
 class AppIcons {

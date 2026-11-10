@@ -35,7 +35,7 @@ class CreditTopupMobileView extends StatelessWidget {
         TopupStep.pay =>
           state.order?.method == CreditPayMethod.vietQr
               ? l10n.creditPayBankTitle
-              : l10n.creditPayVnpayTitle,
+              : l10n.creditPayZalopayTitle,
         TopupStep.result => l10n.creditResultTitle,
       };
 

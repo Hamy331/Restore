@@ -35,7 +35,7 @@ class CreditMockData {
       'createdAt': now.subtract(const Duration(days: 7)).toIso8601String(),
       'topupOrder': {
         'code': 'RS8F2K1X',
-        'method': 'VNPAY',
+        'method': 'ZALOPAY',
         'amountVnd': 100000,
       },
     },
@@ -48,7 +48,7 @@ class CreditMockData {
       'expiresAt': now.add(const Duration(days: 83)).toIso8601String(),
       'topupOrder': {
         'code': 'RS8F2K1X',
-        'method': 'VNPAY',
+        'method': 'ZALOPAY',
         'amountVnd': 100000,
       },
     },

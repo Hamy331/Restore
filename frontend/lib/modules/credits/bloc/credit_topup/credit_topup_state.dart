@@ -30,7 +30,7 @@ class CreditTopupState extends Equatable {
     this.loadStatus = TopupLoadStatus.loading,
     this.packages = const [],
     this.selectedId,
-    this.method = CreditPayMethod.vnpay,
+    this.method = CreditPayMethod.zaloPay,
     this.agreed = false,
     this.busy = false,
     this.order,
