@@ -2019,5 +2019,69 @@
         "type": "int"
       }
     }
-  }
+  },
+  "accExpiresIn": "{days} days left",
+  "@accExpiresIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpired": "Expired",
+  "accReactivate": "Reactivate",
+  "accReactivated": "Listing reactivated",
+  "accExtend": "Extend listing",
+  "accExtendMessage": "Show this listing for {days} more days for {credits} points. Points are spent right away, no new review needed.",
+  "@accExtendMessage": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtendPay": "Extend · {credits} points",
+  "@accExtendPay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtendTooEarly": "You can extend once {days} days or fewer are left.",
+  "@accExtendTooEarly": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtended": "Listing extended",
+  "postingPayReactivate": "Reactivate · {credits} points",
+  "@postingPayReactivate": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLater": "Later",
+  "duplicateActiveTitle": "You already posted this",
+  "duplicateActiveMessage": "A matching listing of yours is live or waiting for review, so there is no need to post it again.",
+  "duplicateInactiveTitle": "Reuse your old listing?",
+  "duplicateInactiveMessage": "You have a matching listing that is hidden or expired. Reactivate it to keep its views and saves.",
+  "duplicateOpenOld": "See old listing",
+  "duplicatePostNew": "Post new anyway",
+  "postingPayReactivateTitle": "Show this listing again for {credits} points",
+  "@postingPayReactivateTitle": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayNowNote": "Points are spent as soon as the listing is shown again, no new review needed."
 }

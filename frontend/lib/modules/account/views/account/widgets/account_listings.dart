@@ -12,6 +12,7 @@ import '../../../bloc/account_listings/account_listings_cubit.dart';
 import '../../../bloc/account_listings/account_listings_state.dart';
 import '../../../models/account_listing.dart';
 import 'account_menu.dart';
+import 'listing_lifecycle_actions.dart';
 import '../../../widgets/profile_header.dart';
 
 /// Các sliver của mục "Tin đăng": tab trạng thái, danh sách và tải thêm.
@@ -151,11 +152,20 @@ class _ListingRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final isHidden = item.status == AccountListingStatus.hidden;
+    final now = DateTime.now();
+    final expired = item.isExpiredAt(now);
+    final daysLeft = item.daysLeftAt(now);
     final meta = [
       if (item.category.isNotEmpty) item.category,
       if (item.createdAt != null) l.accPosted(feedTime(l, item.createdAt!)),
       l.accViews(item.views),
     ].join(' · ');
+    // Hạn hiển thị: tin đang hiện thì còn bao nhiêu ngày, tin ẩn vì quá hạn thì báo hết hạn
+    final expiry = expired
+        ? l.accExpired
+        : item.status == AccountListingStatus.visible && daysLeft != null
+        ? l.accExpiresIn(daysLeft)
+        : null;
     return Column(
       children: [
         const Divider(height: 1, color: AppColors.border),
@@ -214,6 +224,20 @@ class _ListingRow extends StatelessWidget {
                         color: AppColors.textSecondary,
                       ),
                     ),
+                    if (expiry != null) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        expiry,
+                        style: TextStyle(
+                          fontFamily: profileFontFamily,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: expired || (daysLeft ?? 99) <= 3
+                              ? AppColors.error
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -233,13 +257,13 @@ class _ListingRow extends StatelessWidget {
             const SizedBox(width: 4),
             Expanded(
               child: _RowAction(
-                isHidden ? l.accShow : l.accHide,
-                onTap: () => context.read<AccountListingsCubit>().setStatus(
-                  item.id,
-                  isHidden
-                      ? AccountListingStatus.visible
-                      : AccountListingStatus.hidden,
-                ),
+                isHidden ? (expired ? l.accReactivate : l.accShow) : l.accHide,
+                onTap: () => isHidden
+                    ? showAccountListing(context, item)
+                    : context.read<AccountListingsCubit>().setStatus(
+                        item.id,
+                        AccountListingStatus.hidden,
+                      ),
               ),
             ),
             const SizedBox(width: 4),
@@ -252,17 +276,34 @@ class _ListingRow extends StatelessWidget {
             ),
             SizedBox(
               width: 30,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
-                tooltip: l.accMoreOptions,
-                onPressed: () => showComingSoon(context),
-                icon: const Icon(
-                  AppIcons.more,
-                  size: 19,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              child: item.status == AccountListingStatus.visible
+                  ? PopupMenuButton<VoidCallback>(
+                      padding: EdgeInsets.zero,
+                      tooltip: l.accMoreOptions,
+                      onSelected: (action) => action(),
+                      itemBuilder: (_) => [
+                        PopupMenuItem(
+                          value: () => extendAccountListing(context, item),
+                          child: Text(l.accExtend),
+                        ),
+                      ],
+                      icon: const Icon(
+                        AppIcons.more,
+                        size: 19,
+                        color: AppColors.textPrimary,
+                      ),
+                    )
+                  : IconButton(
+                      padding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                      tooltip: l.accMoreOptions,
+                      onPressed: () => showComingSoon(context),
+                      icon: const Icon(
+                        AppIcons.more,
+                        size: 19,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
             ),
           ],
         ),

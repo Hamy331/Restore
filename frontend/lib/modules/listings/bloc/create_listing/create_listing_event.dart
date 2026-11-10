@@ -130,10 +130,16 @@ class PublishRequested extends CreateListingEvent {
   /// Người dùng đã đồng ý trả xu cho tin vượt hạn mức
   final bool payWithCredits;
 
-  const PublishRequested({this.payWithCredits = false});
+  /// Vẫn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn
+  final bool allowDuplicate;
+
+  const PublishRequested({
+    this.payWithCredits = false,
+    this.allowDuplicate = false,
+  });
 
   @override
-  List<Object?> get props => [payWithCredits];
+  List<Object?> get props => [payWithCredits, allowDuplicate];
 }
 
 /// Tải danh sách tin nháp; [loadMore] lấy thêm trang sau

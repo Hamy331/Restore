@@ -39,15 +39,15 @@ export const CREDIT_PACKAGES: { id: string; priceVnd: number; credits: number; b
  * Hạn mức tài khoản Cá nhân theo chuyên mục: số tin miễn phí đang hiển thị và giá (xu) mỗi tin vượt.
  * Tổng toàn tài khoản là activeListingLimit của gói PERSONAL (5).
  */
-export const POSTING_LIMITS: Record<string, { freeListingLimit: number; extraListingCredits: number }> = {
-  phones: { freeListingLimit: 1, extraListingCredits: 15 },
-  vehicles: { freeListingLimit: 1, extraListingCredits: 15 },
-  electronics: { freeListingLimit: 1, extraListingCredits: 15 },
-  appliances: { freeListingLimit: 1, extraListingCredits: 10 },
-  pets: { freeListingLimit: 1, extraListingCredits: 10 },
-  furniture: { freeListingLimit: 2, extraListingCredits: 10 },
-  fashion: { freeListingLimit: 2, extraListingCredits: 5 },
-  sports: { freeListingLimit: 2, extraListingCredits: 5 },
-  other: { freeListingLimit: 2, extraListingCredits: 5 },
-  books: { freeListingLimit: 3, extraListingCredits: 5 },
+export const POSTING_LIMITS: Record<string, { freeListingLimit: number; extraListingCredits: number; displayDays: number }> = {
+  phones: { freeListingLimit: 1, extraListingCredits: 15, displayDays: 30 },
+  vehicles: { freeListingLimit: 1, extraListingCredits: 15, displayDays: 30 },
+  electronics: { freeListingLimit: 1, extraListingCredits: 15, displayDays: 60 },
+  appliances: { freeListingLimit: 1, extraListingCredits: 10, displayDays: 60 },
+  pets: { freeListingLimit: 1, extraListingCredits: 10, displayDays: 60 },
+  furniture: { freeListingLimit: 2, extraListingCredits: 10, displayDays: 60 },
+  fashion: { freeListingLimit: 2, extraListingCredits: 5, displayDays: 60 },
+  sports: { freeListingLimit: 2, extraListingCredits: 5, displayDays: 60 },
+  other: { freeListingLimit: 2, extraListingCredits: 5, displayDays: 60 },
+  books: { freeListingLimit: 3, extraListingCredits: 5, displayDays: 60 },
 };

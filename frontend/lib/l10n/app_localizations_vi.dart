@@ -3556,4 +3556,76 @@ class AppLocalizationsVi extends AppLocalizations {
   String postingQuotaPaidHint(int credits) {
     return 'Hết suất? Đăng thêm bằng xu, từ $credits xu một tin.';
   }
+
+  @override
+  String accExpiresIn(int days) {
+    return 'Còn $days ngày';
+  }
+
+  @override
+  String get accExpired => 'Hết hạn';
+
+  @override
+  String get accReactivate => 'Kích hoạt lại';
+
+  @override
+  String get accReactivated => 'Đã kích hoạt lại tin';
+
+  @override
+  String get accExtend => 'Gia hạn tin';
+
+  @override
+  String accExtendMessage(int days, int credits) {
+    return 'Tin hiển thị thêm $days ngày với $credits xu. Xu bị trừ ngay, không cần duyệt lại.';
+  }
+
+  @override
+  String accExtendPay(int credits) {
+    return 'Gia hạn · $credits xu';
+  }
+
+  @override
+  String accExtendTooEarly(int days) {
+    return 'Gia hạn được khi tin còn tối đa $days ngày.';
+  }
+
+  @override
+  String get accExtended => 'Đã gia hạn tin';
+
+  @override
+  String postingPayReactivate(int credits) {
+    return 'Kích hoạt · $credits xu';
+  }
+
+  @override
+  String get postingLater => 'Để sau';
+
+  @override
+  String get duplicateActiveTitle => 'Bạn đã có tin này';
+
+  @override
+  String get duplicateActiveMessage =>
+      'Tin giống vậy của bạn đang hiển thị hoặc chờ duyệt, không cần đăng thêm.';
+
+  @override
+  String get duplicateInactiveTitle => 'Dùng lại tin cũ?';
+
+  @override
+  String get duplicateInactiveMessage =>
+      'Bạn có tin giống vậy đã ẩn hoặc hết hạn. Kích hoạt lại tin cũ để giữ lượt xem và lượt lưu.';
+
+  @override
+  String get duplicateOpenOld => 'Xem tin cũ';
+
+  @override
+  String get duplicatePostNew => 'Vẫn đăng mới';
+
+  @override
+  String postingPayReactivateTitle(int credits) {
+    return 'Hiện lại tin này với $credits xu';
+  }
+
+  @override
+  String get postingPayNowNote =>
+      'Xu bị trừ ngay khi tin hiện lại, không cần duyệt lại.';
 }

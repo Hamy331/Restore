@@ -177,6 +177,8 @@ model Listing {
   publishedAt   DateTime?
   /// Số xu đã giữ/trừ để đăng tin vượt hạn mức; 0 = tin dùng suất miễn phí
   paidCredits   Int              @default(0)
+  /// Hết hạn hiển thị (duyệt / kích hoạt lại / gia hạn mới đặt); quá hạn thì tự ẩn
+  expiresAt     DateTime?
   updatedAt     DateTime         @updatedAt
   creditHolds   CreditHold[]
   promotions    Promotion[]
@@ -186,6 +188,7 @@ model Listing {
 
   @@index([ownerId, publishedAt])
   @@index([ownerId, categoryId, status])
+  @@index([status, expiresAt])
 }
 
 model ListingFavorite {
@@ -207,6 +210,8 @@ model Category {
   freeListingLimit    Int            @default(2)
   /// Giá (xu) một tin vượt hạn mức, hiển thị 60 ngày
   extraListingCredits Int            @default(5)
+  /// Số ngày một tin được hiển thị (cũng là số ngày mỗi lần gia hạn)
+  displayDays         Int            @default(60)
   listings       Listing[]
   subscriptions  StoreSubscription[]
   storeOrders    StoreOrder[]

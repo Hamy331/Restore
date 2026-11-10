@@ -3,7 +3,7 @@ import { created, noContent, ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
 import type { DraftInput, ListingIdParams } from '../listing.dto.js';
-import { wantsToPay } from './listing.controller.js';
+import { allowsDuplicate, wantsToPay } from './listing.controller.js';
 import * as draftService from '../services/draft.service.js';
 
 export async function create(req: AuthRequest, res: Response) {
@@ -18,7 +18,7 @@ export async function update(req: AuthRequest, res: Response) {
 
 export async function publish(req: AuthRequest, res: Response) {
   const { params } = getInput<ValidatedInput<undefined, ListingIdParams>>(res);
-  ok(res, await draftService.publishDraft(req.user!.userId, params.id, wantsToPay(req)));
+  ok(res, await draftService.publishDraft(req.user!.userId, params.id, wantsToPay(req), allowsDuplicate(req)));
 }
 
 export async function remove(req: AuthRequest, res: Response) {

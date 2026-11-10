@@ -19,7 +19,10 @@ export function listingInput(value: unknown, draft = false) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('Dữ liệu tin không hợp lệ.');
   const body = value as Record<string, unknown>;
   const allowed = ['title','description','price','condition','categoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes'];
-  if (Object.keys(body).some((key) => !allowed.includes(key))) fail('Tin có trường không được hỗ trợ.');
+  // Cờ của thao tác đăng (trả xu, vẫn đăng dù trùng): controller đọc riêng, không thuộc nội dung tin
+  const flags = draft ? [] : ['payWithCredits', 'allowDuplicate'];
+  if (Object.keys(body).some((key) => !allowed.includes(key) && !flags.includes(key))) fail('Tin có trường không được hỗ trợ.');
+  if (flags.some((key) => body[key] !== undefined && typeof body[key] !== 'boolean')) fail('Dữ liệu tin không hợp lệ.');
   const title = body.title ?? '', description = body.description ?? '';
   if (typeof title !== 'string' || title.trim().length > 70 || (!draft && title.trim().length < 5)) fail('Tiêu đề cần từ 5 đến 70 ký tự.', 'title');
   if (typeof description !== 'string' || description.trim().length > 1500 || (!draft && description.trim().length < 10)) fail('Mô tả cần từ 10 đến 1500 ký tự.', 'description');
@@ -134,14 +137,16 @@ export const favoriteIdParams = idParam(64);
 export const createListingBody = z.unknown().transform(createInput);
 export const draftBody = z.unknown().transform(draftInput);
 
-/** Body PATCH /:id/status: { status: AVAILABLE | HIDDEN | SOLD | EXCHANGED } */
+/** Body PATCH /:id/status: { status: AVAILABLE | HIDDEN | SOLD | EXCHANGED, payWithCredits?: boolean } */
 export const statusBody = z.unknown().transform((body) => {
-  const target = (body as { status?: unknown } | undefined)?.status;
+  const input = body as { status?: unknown; payWithCredits?: unknown } | undefined;
+  const target = input?.status;
   if (typeof target !== 'string' || !OWNER_STATUS_TARGETS.includes(target as ListingStatus) ||
-      !body || Object.keys(body).some((key) => key !== 'status')) {
+      !body || Object.keys(body).some((key) => key !== 'status' && key !== 'payWithCredits') ||
+      (input?.payWithCredits !== undefined && typeof input?.payWithCredits !== 'boolean')) {
     throw new AppError(400, 'INVALID_STATUS', 'Trạng thái tin không hợp lệ.');
   }
-  return { status: target as ListingStatus };
+  return { status: target as ListingStatus, payWithCredits: input?.payWithCredits === true };
 });
 
 /**

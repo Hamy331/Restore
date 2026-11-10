@@ -8,9 +8,12 @@ import * as listingService from '../services/listing.service.js';
 /** Body có payWithCredits: true khi người dùng đồng ý trả xu cho tin vượt hạn mức */
 export const wantsToPay = (req: AuthRequest) => (req.body as { payWithCredits?: unknown } | undefined)?.payWithCredits === true;
 
+/** Body có allowDuplicate: true khi người dùng vẫn muốn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn */
+export const allowsDuplicate = (req: AuthRequest) => (req.body as { allowDuplicate?: unknown } | undefined)?.allowDuplicate === true;
+
 export async function create(req: AuthRequest, res: Response) {
   const { body } = getInput<ValidatedInput<undefined, undefined, ListingInput>>(res);
-  created(res, await listingService.createListing(req.user!.userId, body, wantsToPay(req)));
+  created(res, await listingService.createListing(req.user!.userId, body, wantsToPay(req), allowsDuplicate(req)));
 }
 
 export async function update(req: AuthRequest, res: Response) {
@@ -20,7 +23,12 @@ export async function update(req: AuthRequest, res: Response) {
 
 export async function changeStatus(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, StatusInput>>(res);
-  ok(res, await listingService.changeStatus(req.user!.userId, params.id, body.status));
+  ok(res, await listingService.changeStatus(req.user!.userId, params.id, body.status, body.payWithCredits));
+}
+
+export async function extend(req: AuthRequest, res: Response) {
+  const { params } = getInput<ValidatedInput<undefined, ListingIdParams, undefined>>(res);
+  ok(res, await listingService.extendListing(req.user!.userId, params.id));
 }
 
 export async function postingQuota(req: AuthRequest, res: Response) {

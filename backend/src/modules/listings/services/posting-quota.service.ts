@@ -36,7 +36,7 @@ export async function postingQuota(tx: Db, ownerId: string, now: Date, excludeId
       total: { used: usage.active, limit },
       categories: rules.map((rule) => ({
         categoryId: rule.id, used: active.get(rule.id) ?? 0, limit, recentUsed: 0, recentLimit: 0,
-        extraCredits: null, freeAvailable: free, blockedBy: free ? null : 'TOTAL' as const,
+        extraCredits: null, extendCredits: rule.extraListingCredits, displayDays: rule.displayDays, freeAvailable: free, blockedBy: free ? null : 'TOTAL' as const,
       })),
     };
   }

@@ -36,6 +36,8 @@ export const listingSelect = {
   createdAt: true,
   viewCount: true,
   publishedAt: true,
+  expiresAt: true,
+  paidCredits: true,
   owner: { select: { id: true, fullName: true, ratingAverage: true, ratingCount: true } },
 } as const;
 
@@ -45,15 +47,16 @@ export type ListingRecord = Prisma.ListingGetPayload<{ select: typeof listingSel
  * Listing cho app: { id, ownerId, title, description, price (chuỗi số), isNegotiable, condition, status,
  *   allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
  *   categoryId, category { id, name }, owner { id, fullName, ratingAverage, ratingCount },
- *   viewCount, createdAt, updatedAt, publishedAt, areaLabel }
+ *   viewCount, createdAt, updatedAt, publishedAt, expiresAt, areaLabel } (+ paidCredits cho chủ tin)
  *
  * Người xem không phải chủ tin chỉ thấy vị trí tới mức phường (không lộ số nhà).
  * areaLabel: "Phường, Tỉnh" để hiện trên thẻ tin.
  */
 export function toListingDto(listing: ListingRecord, owner = false) {
+  const { paidCredits, ...rest } = listing;
   const location = owner ? listing.location : publicLocation(listing.location);
   const address = listing.location as { province?: { name?: string }; ward?: { name?: string } } | null;
-  return { ...listing, price: listing.price.toString(), location,
+  return { ...rest, ...(owner && { paidCredits }), price: listing.price.toString(), location,
     areaLabel: address ? [address.ward?.name, address.province?.name].filter(Boolean).join(', ') : '' };
 }
 

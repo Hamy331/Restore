@@ -5,6 +5,7 @@ import { ADMIN_PAGE_SIZE, changed, text } from '../../../common/validation/admin
 import { withQuotaTransaction } from '../../commerce/index.js';
 import { captureListingHold, releaseListingHold } from '../../credits/index.js';
 import { AdminDecisionInput, AdminListingQuery, DecisionInput, toOwnerListingDto } from '../listing.dto.js';
+import { approvedExpiry } from '../listing-lifecycle.js';
 import type { ModerationAction } from '../listing.type.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { runApprovalHooks } from './approval-hooks.js';
@@ -23,6 +24,7 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
   if (!item) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy tin.');
   const allowed = item.status === 'PENDING' ? ['APPROVE', 'REJECT', 'REQUEST_CHANGES'] : item.status === 'AVAILABLE' ? ['REMOVE'] : [];
   if (!allowed.includes(action)) throw new AppError(409, 'INVALID_DECISION', 'Tin không ở trạng thái cho phép.');
+  let expiresAt: Date | undefined;
   if (action === 'APPROVE') {
     if (!item.images.length) throw new AppError(400, 'INVALID_LISTING', 'Tin cần ít nhất một ảnh.');
     const [category, condition] = await Promise.all([
@@ -32,11 +34,13 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
     if (!category || !item.condition || condition?.active === false) {
       throw new AppError(409, 'INVALID_LISTING', 'Danh mục hoặc tình trạng không còn được sử dụng.');
     }
+    // Bắt đầu tính thời gian hiển thị; tin sửa lại lúc còn hạn giữ hạn cũ
+    expiresAt = approvedExpiry(item.expiresAt, new Date(), category.displayDays);
   }
   const status = action === 'APPROVE' ? ListingStatus.AVAILABLE : ListingStatus.REJECTED;
   // Tin bị từ chối / gỡ không còn suất đã trả: sửa lại để đăng thì phải xin suất mới
   changed(await listingRepository.updateWhereVersion(tx, id, item.status, expected,
-    { status, reviewReason: action === 'APPROVE' ? null : reason, ...(action !== 'APPROVE' && { paidCredits: 0 }) }));
+    { status, reviewReason: action === 'APPROVE' ? null : reason, ...(expiresAt ? { expiresAt } : { paidCredits: 0 }) }));
   await audit(tx, actorId, action, 'LISTING', id, reason, { status: item.status }, { status });
   if (action === 'APPROVE') {
     // Xu giữ khi gửi tin vượt hạn mức được trừ hẳn

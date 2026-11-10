@@ -21,15 +21,27 @@ abstract class ListingsRepository {
 
   /// Đăng tin. [payWithCredits]: người dùng đã đồng ý trả xu khi hết suất
   /// miễn phí (backend giữ xu, duyệt thì trừ, từ chối thì hoàn).
+  /// [allowDuplicate]: vẫn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn.
   Future<ListingDraft> publish(
     ListingDraft draft,
     CategoryModel? category, {
     bool payWithCredits = false,
+    bool allowDuplicate = false,
   });
   Future<ListingDraft> getDraft(String id);
   Future<PagedResult<ListingModel>> mine({int page = 1, String? status});
   Future<ListingModel> detail(String id);
-  Future<void> changeStatus(String id, ListingStatus status);
+
+  /// Đổi trạng thái tin. Hiện lại tin đã hết hạn = kích hoạt lại: tính như
+  /// đăng mới, hết suất miễn phí thì cần [payWithCredits].
+  Future<void> changeStatus(
+    String id,
+    ListingStatus status, {
+    bool payWithCredits = false,
+  });
+
+  /// Gia hạn tin đang hiển thị thêm một kỳ, trả xu theo chuyên mục
+  Future<void> extend(String id);
   Future<void> deleteDraft(String id);
 
   /// Số tin nháp đang giữ và giới hạn của gói
@@ -102,9 +114,16 @@ class MockListingsRepository implements ListingsRepository {
           ).firstWhere((item) => item['id'] == id),
         );
   @override
-  Future<void> changeStatus(String id, ListingStatus status) async {
+  Future<void> changeStatus(
+    String id,
+    ListingStatus status, {
+    bool payWithCredits = false,
+  }) async {
     _store[id] = (await getDraft(id)).copyWith(status: status);
   }
+
+  @override
+  Future<void> extend(String id) async {}
 
   @override
   Future<void> deleteDraft(String id) async {
@@ -187,6 +206,7 @@ class MockListingsRepository implements ListingsRepository {
     ListingDraft draft,
     CategoryModel? category, {
     bool payWithCredits = false,
+    bool allowDuplicate = false,
   }) async {
     await Future<void>.delayed(latency);
     final categoryId = draft.categoryId;
@@ -233,6 +253,17 @@ class ListingImageException implements Exception {
 
 /// [missing]: file ảnh đã chọn không còn trên máy (bộ nhớ tạm bị dọn)
 enum ListingImageProblem { tooLarge, unsupported, missing }
+
+/// Tin cũ trùng với tin đang đăng. [active]: tin cũ đang hiển thị / chờ
+/// duyệt (không đăng được), ngược lại tin cũ đã ẩn / hết hạn (nên kích hoạt lại)
+class DuplicateListing {
+  const DuplicateListing({required this.listingId, required this.active});
+  final String listingId;
+  final bool active;
+
+  static const activeCode = 'DUPLICATE_LISTING';
+  static const inactiveCode = 'DUPLICATE_INACTIVE';
+}
 
 /// Lưu / đăng tin lỗi giữa chừng. [draft] là bản đã lưu được tới lúc lỗi
 /// (đã có id, ảnh đã tải) để thử lại không tạo tin trùng, không tải lại ảnh.
@@ -285,6 +316,22 @@ class ListingSaveException implements Exception {
     final code = _conflictCode;
     return code == PostingLimitReachedException.code ||
         code == PostingLimitReachedException.notEnoughCredits;
+  }
+
+  /// Đã có tin giống vậy (API trả 409 `DUPLICATE_LISTING` khi tin cũ đang
+  /// hiển thị / chờ duyệt, `DUPLICATE_INACTIVE` khi đã ẩn / hết hạn)
+  DuplicateListing? get duplicate {
+    final code = _conflictCode;
+    if (code != DuplicateListing.activeCode &&
+        code != DuplicateListing.inactiveCode) {
+      return null;
+    }
+    final data = (cause as DioException).response?.data as Map;
+    final details = data['details'] is Map ? data['details'] as Map : const {};
+    return DuplicateListing(
+      listingId: '${details['listingId'] ?? ''}',
+      active: code == DuplicateListing.activeCode,
+    );
   }
 
   /// Đã giữ đủ số tin nháp của gói (API trả 409 `DRAFT_LIMIT_REACHED`)
@@ -365,6 +412,7 @@ class ApiListingsRepository implements ListingsRepository {
     ListingDraft draft,
     CategoryModel? category, {
     bool payWithCredits = false,
+    bool allowDuplicate = false,
   }) {
     if (draft.id != null && draft.status == ListingStatus.draft) {
       return _saveDraft(
@@ -372,21 +420,29 @@ class ApiListingsRepository implements ListingsRepository {
         category,
         publish: true,
         payWithCredits: payWithCredits,
+        allowDuplicate: allowDuplicate,
       );
     }
-    return _publishListing(draft, category, payWithCredits: payWithCredits);
+    return _publishListing(
+      draft,
+      category,
+      payWithCredits: payWithCredits,
+      allowDuplicate: allowDuplicate,
+    );
   }
 
   Future<ListingDraft> _publishListing(
     ListingDraft draft,
     CategoryModel? category, {
     bool payWithCredits = false,
+    bool allowDuplicate = false,
   }) async {
     var working = draft;
     try {
       final payload = {
         ...draft.toPayload(category: category),
         if (payWithCredits) 'payWithCredits': true,
+        if (allowDuplicate) 'allowDuplicate': true,
       };
       // Lần đầu: tạo tin mới. Thử lại sau khi tải ảnh lỗi giữa chừng: tin đã
       // tạo rồi nên chỉ cập nhật nội dung (không tạo trùng, không trừ thêm lượt)
@@ -408,6 +464,7 @@ class ApiListingsRepository implements ListingsRepository {
     CategoryModel? category, {
     required bool publish,
     bool payWithCredits = false,
+    bool allowDuplicate = false,
   }) async {
     var working = draft;
     try {
@@ -436,7 +493,10 @@ class ApiListingsRepository implements ListingsRepository {
       final result = _data(
         await _dio.post<Map<String, dynamic>>(
           '/listings/drafts/$id/publish',
-          data: {if (payWithCredits) 'payWithCredits': true},
+          data: {
+            if (payWithCredits) 'payWithCredits': true,
+            if (allowDuplicate) 'allowDuplicate': true,
+          },
         ),
       );
       return _merge(working, result);
@@ -558,11 +618,21 @@ class ApiListingsRepository implements ListingsRepository {
     ),
   );
   @override
-  Future<void> changeStatus(String id, ListingStatus status) =>
-      _dio.patch<void>(
-        '/listings/${Uri.encodeComponent(id)}/status',
-        data: {'status': status.apiValue},
-      );
+  Future<void> changeStatus(
+    String id,
+    ListingStatus status, {
+    bool payWithCredits = false,
+  }) => _dio.patch<void>(
+    '/listings/${Uri.encodeComponent(id)}/status',
+    data: {
+      'status': status.apiValue,
+      if (payWithCredits) 'payWithCredits': true,
+    },
+  );
+
+  @override
+  Future<void> extend(String id) =>
+      _dio.post<void>('/listings/${Uri.encodeComponent(id)}/extend');
   @override
   Future<void> deleteDraft(String id) async {
     try {

@@ -6409,6 +6409,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Out of slots? Post more with points, from {credits} points per listing.'**
   String postingQuotaPaidHint(int credits);
+
+  /// No description provided for @accExpiresIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String accExpiresIn(int days);
+
+  /// No description provided for @accExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get accExpired;
+
+  /// No description provided for @accReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get accReactivate;
+
+  /// No description provided for @accReactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing reactivated'**
+  String get accReactivated;
+
+  /// No description provided for @accExtend.
+  ///
+  /// In en, this message translates to:
+  /// **'Extend listing'**
+  String get accExtend;
+
+  /// No description provided for @accExtendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this listing for {days} more days for {credits} points. Points are spent right away, no new review needed.'**
+  String accExtendMessage(int days, int credits);
+
+  /// No description provided for @accExtendPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Extend · {credits} points'**
+  String accExtendPay(int credits);
+
+  /// No description provided for @accExtendTooEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'You can extend once {days} days or fewer are left.'**
+  String accExtendTooEarly(int days);
+
+  /// No description provided for @accExtended.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing extended'**
+  String get accExtended;
+
+  /// No description provided for @postingPayReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate · {credits} points'**
+  String postingPayReactivate(int credits);
+
+  /// No description provided for @postingLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get postingLater;
+
+  /// No description provided for @duplicateActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You already posted this'**
+  String get duplicateActiveTitle;
+
+  /// No description provided for @duplicateActiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A matching listing of yours is live or waiting for review, so there is no need to post it again.'**
+  String get duplicateActiveMessage;
+
+  /// No description provided for @duplicateInactiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reuse your old listing?'**
+  String get duplicateInactiveTitle;
+
+  /// No description provided for @duplicateInactiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a matching listing that is hidden or expired. Reactivate it to keep its views and saves.'**
+  String get duplicateInactiveMessage;
+
+  /// No description provided for @duplicateOpenOld.
+  ///
+  /// In en, this message translates to:
+  /// **'See old listing'**
+  String get duplicateOpenOld;
+
+  /// No description provided for @duplicatePostNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Post new anyway'**
+  String get duplicatePostNew;
+
+  /// No description provided for @postingPayReactivateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this listing again for {credits} points'**
+  String postingPayReactivateTitle(int credits);
+
+  /// No description provided for @postingPayNowNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points are spent as soon as the listing is shown again, no new review needed.'**
+  String get postingPayNowNote;
 }
 
 class _AppLocalizationsDelegate

@@ -1805,5 +1805,69 @@
         "type": "int"
       }
     }
-  }
+  },
+  "accExpiresIn": "Còn {days} ngày",
+  "@accExpiresIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpired": "Hết hạn",
+  "accReactivate": "Kích hoạt lại",
+  "accReactivated": "Đã kích hoạt lại tin",
+  "accExtend": "Gia hạn tin",
+  "accExtendMessage": "Tin hiển thị thêm {days} ngày với {credits} xu. Xu bị trừ ngay, không cần duyệt lại.",
+  "@accExtendMessage": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtendPay": "Gia hạn · {credits} xu",
+  "@accExtendPay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtendTooEarly": "Gia hạn được khi tin còn tối đa {days} ngày.",
+  "@accExtendTooEarly": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtended": "Đã gia hạn tin",
+  "postingPayReactivate": "Kích hoạt · {credits} xu",
+  "@postingPayReactivate": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLater": "Để sau",
+  "duplicateActiveTitle": "Bạn đã có tin này",
+  "duplicateActiveMessage": "Tin giống vậy của bạn đang hiển thị hoặc chờ duyệt, không cần đăng thêm.",
+  "duplicateInactiveTitle": "Dùng lại tin cũ?",
+  "duplicateInactiveMessage": "Bạn có tin giống vậy đã ẩn hoặc hết hạn. Kích hoạt lại tin cũ để giữ lượt xem và lượt lưu.",
+  "duplicateOpenOld": "Xem tin cũ",
+  "duplicatePostNew": "Vẫn đăng mới",
+  "postingPayReactivateTitle": "Hiện lại tin này với {credits} xu",
+  "@postingPayReactivateTitle": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayNowNote": "Xu bị trừ ngay khi tin hiện lại, không cần duyệt lại."
 }

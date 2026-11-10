@@ -32,6 +32,12 @@ class ListingModel extends Equatable {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  /// Hết hạn hiển thị (null = tin cũ / chưa duyệt); quá hạn thì tin tự ẩn
+  final DateTime? expiresAt;
+
+  /// Số xu đã trả cho tin (chỉ chủ tin thấy); > 0 thì tin không chiếm suất miễn phí
+  final int paidCredits;
+
   /// (đề xuất) Danh mục và thuộc tính theo danh mục (jsonb)
   final String? categoryId;
   final String categoryName;
@@ -64,6 +70,8 @@ class ListingModel extends Equatable {
     this.viewCount = 0,
     this.createdAt,
     this.updatedAt,
+    this.expiresAt,
+    this.paidCredits = 0,
     this.categoryId,
     this.categoryName = '',
     this.attributes = const {},
@@ -122,6 +130,8 @@ class ListingModel extends Equatable {
       viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
       createdAt: DateTime.tryParse('${json['createdAt']}'),
       updatedAt: DateTime.tryParse('${json['updatedAt']}'),
+      expiresAt: DateTime.tryParse('${json['expiresAt']}'),
+      paidCredits: (json['paidCredits'] as num?)?.toInt() ?? 0,
       categoryId: json['categoryId'] as String?,
       categoryName: (json['category'] as Map?)?['name'] as String? ?? '',
       attributes: Map<String, Object?>.from(json['attributes'] as Map? ?? {}),
@@ -172,6 +182,8 @@ class ListingModel extends Equatable {
     viewCount,
     createdAt,
     updatedAt,
+    expiresAt,
+    paidCredits,
     categoryId,
     categoryName,
     attributes,

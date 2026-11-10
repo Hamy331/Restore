@@ -25,3 +25,4 @@ export { onListingApproved } from './services/approval-hooks.js';
 export type { ListingApprovedHook } from './services/approval-hooks.js';
 export { default as listingsAdminRouter } from './routes/admin-listing.route.js';
 export { getAdminListing, moderate } from './services/moderation.service.js';
+export { expireDueListings } from './services/listing-lifecycle.service.js';

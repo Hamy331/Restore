@@ -13,6 +13,7 @@ import '../../models/create_listing_step.dart';
 import '../../utils/listing_validator.dart';
 import '../../widgets/create_listing_scaffold.dart';
 import '../../widgets/posting_limit_sheet.dart';
+import 'widgets/duplicate_listing_sheet.dart';
 import 'widgets/listing_attribute_field.dart';
 import 'widgets/listing_condition_section.dart';
 import 'widgets/listing_details_header.dart';
@@ -83,6 +84,37 @@ class ListingDetailsMobileView extends StatelessWidget {
     }
   }
 
+  /// Đã có tin giống vậy: tin cũ đang hiển thị thì mời xem tin cũ; đã ẩn /
+  /// hết hạn thì mời kích hoạt lại tin cũ (ở trang tài khoản) hoặc vẫn đăng mới
+  Future<void> _onDuplicate(
+    BuildContext context,
+    CreateListingState state,
+  ) async {
+    final duplicate = state.duplicate;
+    if (duplicate == null) return;
+    final bloc = context.read<CreateListingBloc>();
+    final action = await showDuplicateListingSheet(
+      context,
+      active: duplicate.active,
+    );
+    if (!context.mounted) return;
+    switch (action) {
+      case DuplicateListingAction.postNew:
+        bloc.add(
+          PublishRequested(
+            payWithCredits: state.duplicatePaid,
+            allowDuplicate: true,
+          ),
+        );
+      case DuplicateListingAction.openOld:
+        context.go(
+          duplicate.active ? '/listings/${duplicate.listingId}' : '/account',
+        );
+      case null:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -104,6 +136,11 @@ class ListingDetailsMobileView extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.postingLimitHits != current.postingLimitHits,
           listener: _onPostingLimitHit,
+        ),
+        BlocListener<CreateListingBloc, CreateListingState>(
+          listenWhen: (previous, current) =>
+              previous.duplicateHits != current.duplicateHits,
+          listener: _onDuplicate,
         ),
       ],
       child: BlocBuilder<CreateListingBloc, CreateListingState>(

@@ -100,7 +100,7 @@
           "name": "Cá nhân",
           "monthlyPrice": "0",
           "dailyListingLimit": 3,
-          "activeListingLimit": 10,
+          "activeListingLimit": 5,
           "draftLimit": 3,
           "monthlyPromotionQuota": 0,
           "priorityLevel": 0
@@ -244,7 +244,10 @@
                 "en": "Items that fit no other category",
                 "vi": "Các món đồ chưa có danh mục phù hợp"
               }
-            }
+            },
+            "freeListingLimit": 2,
+            "extraListingCredits": 5,
+            "displayDays": 60
           },
           {
             "active": true,
@@ -338,7 +341,10 @@
                 "en": "Furniture, lamps, kitchenware, decor...",
                 "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
               }
-            }
+            },
+            "freeListingLimit": 2,
+            "extraListingCredits": 10,
+            "displayDays": 60
           },
           {
             "active": true,
@@ -429,7 +435,10 @@
                 "en": "Textbooks, novels, course books...",
                 "vi": "Sách giáo khoa, truyện, giáo trình..."
               }
-            }
+            },
+            "freeListingLimit": 3,
+            "extraListingCredits": 5,
+            "displayDays": 60
           },
           {
             "active": true,
@@ -557,7 +566,10 @@
                 "en": "Dogs, cats, birds, pet accessories...",
                 "vi": "Chó, mèo, chim, phụ kiện thú cưng..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 10,
+            "displayDays": 60
           },
           {
             "active": true,
@@ -612,7 +624,10 @@
                 "en": "Gym gear, sport bikes, camping...",
                 "vi": "Dụng cụ tập, xe đạp thể thao, đồ cắm trại..."
               }
-            }
+            },
+            "freeListingLimit": 2,
+            "extraListingCredits": 5,
+            "displayDays": 60
           },
           {
             "active": true,
@@ -759,7 +774,10 @@
                 "en": "Clothes, shoes, bags...",
                 "vi": "Quần áo, giày dép, túi xách..."
               }
-            }
+            },
+            "freeListingLimit": 2,
+            "extraListingCredits": 5,
+            "displayDays": 60
           },
           {
             "active": true,
@@ -897,7 +915,10 @@
                 "en": "Motorbikes, bicycles, cars, parts...",
                 "vi": "Xe máy, xe đạp, ô tô, phụ tùng..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 15,
+            "displayDays": 30
           },
           {
             "active": true,
@@ -1165,7 +1186,10 @@
                 "en": "iPhone, Samsung, Xiaomi, OPPO...",
                 "vi": "iPhone, Samsung, Xiaomi, OPPO..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 15,
+            "displayDays": 30
           },
           {
             "active": true,
@@ -1310,7 +1334,10 @@
                 "en": "Fridges, washing machines, air conditioners...",
                 "vi": "Tủ lạnh, máy giặt, điều hoà..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 10,
+            "displayDays": 60
           },
           {
             "active": true,
@@ -1465,7 +1492,10 @@
                 "en": "Laptops, cameras, headphones, tablets...",
                 "vi": "Laptop, máy ảnh, tai nghe, máy tính bảng..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 15,
+            "displayDays": 60
           }
         ],
         "conditions": [
@@ -1523,7 +1553,10 @@
           "name": "Đồ cổ",
           "attributes": [],
           "description": "Đồ sưu tầm"
-        }
+        },
+        "freeListingLimit": 2,
+        "extraListingCredits": 5,
+        "displayDays": 60
       }
     }
   },
@@ -1547,7 +1580,10 @@
           "name": "Đồ cổ sưu tầm",
           "attributes": [],
           "description": "Đồ sưu tầm"
-        }
+        },
+        "freeListingLimit": 2,
+        "extraListingCredits": 5,
+        "displayDays": 60
       }
     }
   },
@@ -1683,7 +1719,10 @@
                 "name": "Đồ cổ",
                 "attributes": [],
                 "description": "Đồ sưu tầm"
-              }
+              },
+              "displayDays": 60,
+              "freeListingLimit": 2,
+              "extraListingCredits": 5
             },
             "after": {
               "id": "antiques",
@@ -1693,7 +1732,10 @@
                 "name": "Đồ cổ sưu tầm",
                 "attributes": [],
                 "description": "Đồ sưu tầm"
-              }
+              },
+              "displayDays": 60,
+              "freeListingLimit": 2,
+              "extraListingCredits": 5
             },
             "createdAt": "<date>"
           },

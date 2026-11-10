@@ -4,9 +4,9 @@ import { splitSpend } from '../credits/credit.hold.js';
 import { blockOf, personalQuota } from './posting-quota.js';
 
 const rules = [
-  { id: 'phones', freeListingLimit: 1, extraListingCredits: 15 },
-  { id: 'fashion', freeListingLimit: 2, extraListingCredits: 5 },
-  { id: 'books', freeListingLimit: 3, extraListingCredits: 5 },
+  { id: 'phones', freeListingLimit: 1, extraListingCredits: 15, displayDays: 30 },
+  { id: 'fashion', freeListingLimit: 2, extraListingCredits: 5, displayDays: 60 },
+  { id: 'books', freeListingLimit: 3, extraListingCredits: 5, displayDays: 60 },
 ];
 
 test('category limit is reached before the account total', () => {

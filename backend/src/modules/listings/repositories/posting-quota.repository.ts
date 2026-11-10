@@ -5,7 +5,7 @@ import type { Db } from './listing.repository.js';
 export const COUNTED_STATUSES: ListingStatus[] = [ListingStatus.PENDING, ListingStatus.AVAILABLE, ListingStatus.RESERVED];
 
 export const findCategoryRules = (tx: Db) =>
-  tx.category.findMany({ where: { active: true }, select: { id: true, freeListingLimit: true, extraListingCredits: true } });
+  tx.category.findMany({ where: { active: true }, select: { id: true, freeListingLimit: true, extraListingCredits: true, displayDays: true } });
 
 /**
  * Số tin miễn phí theo chuyên mục: [used] đang chiếm suất, [recent] đã đăng trong cửa sổ chống đăng lại.
