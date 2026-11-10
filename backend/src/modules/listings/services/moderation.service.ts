@@ -3,6 +3,7 @@ import { audit } from '../../../common/audit/admin-audit.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { ADMIN_PAGE_SIZE, changed, text } from '../../../common/validation/admin-input.js';
 import { withQuotaTransaction } from '../../commerce/index.js';
+import { captureListingHold, releaseListingHold } from '../../credits/index.js';
 import { AdminDecisionInput, AdminListingQuery, DecisionInput, toOwnerListingDto } from '../listing.dto.js';
 import type { ModerationAction } from '../listing.type.js';
 import * as listingRepository from '../repositories/listing.repository.js';
@@ -33,10 +34,18 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
     }
   }
   const status = action === 'APPROVE' ? ListingStatus.AVAILABLE : ListingStatus.REJECTED;
+  // Tin bị từ chối / gỡ không còn suất đã trả: sửa lại để đăng thì phải xin suất mới
   changed(await listingRepository.updateWhereVersion(tx, id, item.status, expected,
-    { status, reviewReason: action === 'APPROVE' ? null : reason }));
+    { status, reviewReason: action === 'APPROVE' ? null : reason, ...(action !== 'APPROVE' && { paidCredits: 0 }) }));
   await audit(tx, actorId, action, 'LISTING', id, reason, { status: item.status }, { status });
-  if (action === 'APPROVE') await runApprovalHooks(tx, id, new Date());
+  if (action === 'APPROVE') {
+    // Xu giữ khi gửi tin vượt hạn mức được trừ hẳn
+    await captureListingHold(tx, id);
+    await runApprovalHooks(tx, id, new Date());
+  } else {
+    // Từ chối khi đang chờ duyệt: hoàn xu đang giữ (đã duyệt rồi bị gỡ thì không hoàn)
+    await releaseListingHold(tx, id, `Hoàn xu · tin bị từ chối: ${item.title}`.slice(0, 200));
+  }
 }
 
 /* ---------- /listings/admin ---------- */

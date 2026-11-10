@@ -65,6 +65,7 @@ model User {
   wantedAlerts   WantedAlert[]
   creditTopups   CreditTopupOrder[]
   creditTransactions CreditTransaction[]
+  creditHolds    CreditHold[]
 
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
@@ -174,13 +175,17 @@ model Listing {
   viewCount     Int              @default(0)
   createdAt     DateTime         @default(now())
   publishedAt   DateTime?
+  /// Số xu đã giữ/trừ để đăng tin vượt hạn mức; 0 = tin dùng suất miễn phí
+  paidCredits   Int              @default(0)
   updatedAt     DateTime         @updatedAt
+  creditHolds   CreditHold[]
   promotions    Promotion[]
   favorites     ListingFavorite[]
   promotionOrders PromotionOrder[]
   wantedAlertMatches WantedAlertMatch[]
 
   @@index([ownerId, publishedAt])
+  @@index([ownerId, categoryId, status])
 }
 
 model ListingFavorite {
@@ -198,6 +203,10 @@ model Category {
   id             String              @id
   name           String
   metadata       Json                @default("{}")
+  /// Tài khoản Cá nhân: số tin miễn phí đang hiển thị/chờ duyệt trong chuyên mục
+  freeListingLimit    Int            @default(2)
+  /// Giá (xu) một tin vượt hạn mức, hiển thị 60 ngày
+  extraListingCredits Int            @default(5)
   listings       Listing[]
   subscriptions  StoreSubscription[]
   storeOrders    StoreOrder[]
@@ -609,8 +618,40 @@ model CreditTransaction {
   topupOrderId String?
   topupOrder   CreditTopupOrder? @relation(fields: [topupOrderId], references: [id], onDelete: SetNull)
   note         String?
+  /// Lần giữ xu khi đăng tin (trừ khi giữ, hoàn khi tin bị từ chối)
+  holdId       String?
+  hold         CreditHold?       @relation(fields: [holdId], references: [id], onDelete: SetNull)
   createdAt    DateTime          @default(now())
 
   @@unique([topupOrderId, type])
   @@index([userId, createdAt])
+}
+
+enum CreditHoldStatus {
+  /// Đã trừ khỏi ví, chờ admin duyệt tin
+  HELD
+  /// Tin đã duyệt, xu tiêu hẳn
+  CAPTURED
+  /// Tin bị từ chối hoặc huỷ, xu đã hoàn
+  RELEASED
+}
+
+/// Xu giữ khi gửi tin vượt hạn mức: trừ ngay khỏi số dư, duyệt thì tiêu hẳn, từ chối thì hoàn
+model CreditHold {
+  id           String              @id @default(uuid())
+  userId       String
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId    String?
+  listing      Listing?            @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  amount       Int
+  /// Phần lấy từ xu tặng / xu nạp, để hoàn đúng loại
+  bonusAmount  Int
+  paidAmount   Int
+  status       CreditHoldStatus    @default(HELD)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  transactions CreditTransaction[]
+
+  @@index([userId, status])
+  @@index([listingId, status])
 }

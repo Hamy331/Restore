@@ -3576,4 +3576,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get creditPackagesError => 'Couldn\'t load point packs';
+
+  @override
+  String get postingLimitTotalTitle => 'Free listings used up';
+
+  @override
+  String postingLimitTotalMessage(int limit) {
+    return 'A personal account can have at most $limit free listings at once across all categories.';
+  }
+
+  @override
+  String postingLimitRecentMessage(String category, int days) {
+    return 'You have posted for free in $category many times in the last $days days. Each category allows up to twice its free slots every $days days.';
+  }
+
+  @override
+  String postingPayTitle(int credits) {
+    return 'Post this listing for $credits points';
+  }
+
+  @override
+  String postingPayBalance(int available) {
+    return 'Your wallet: $available points';
+  }
+
+  @override
+  String get postingPayNote =>
+      'Points are held when you submit and only spent once the listing is approved. Rejected listings get their points back.';
+
+  @override
+  String postingPayMissing(int missing) {
+    return 'You need $missing more points.';
+  }
+
+  @override
+  String postingPayContinue(int credits) {
+    return 'Continue · $credits points';
+  }
+
+  @override
+  String postingPayPublish(int credits) {
+    return 'Post · $credits points';
+  }
+
+  @override
+  String get postingTopUp => 'Buy points';
+
+  @override
+  String get postingFreeWaysTitle => 'Or free up a free slot';
+
+  @override
+  String postingQuotaTotalUsage(int used, int limit) {
+    return '$used/$limit free listings used on your account';
+  }
+
+  @override
+  String postingQuotaPaidHint(int credits) {
+    return 'Out of slots? Post more with points, from $credits points per listing.';
+  }
 }

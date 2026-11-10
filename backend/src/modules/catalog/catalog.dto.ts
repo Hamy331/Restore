@@ -5,7 +5,7 @@ import type { ListingLocation } from './catalog.validator.js';
  * Danh mục cho app: metadata (tên vi/en, mô tả, icon, thuộc tính) cộng id, name, description, attributes
  * luôn có mặt (danh mục admin mới tạo chưa có đủ metadata).
  */
-export function toCategoryDto(category: Category) {
+export function toCategoryDto(category: Pick<Category, 'id' | 'name' | 'active' | 'metadata'>) {
   const metadata = category.metadata as Record<string, unknown>;
   return {
     ...metadata, id: category.id, name: metadata.name ?? category.name,

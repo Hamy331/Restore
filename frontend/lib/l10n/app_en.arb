@@ -1937,5 +1937,87 @@
   "creditBackToWallet": "Back to wallet",
   "creditErrorTooManyPending": "You have too many unpaid orders. Wait 15 minutes for them to expire or cancel one.",
   "creditErrorGeneric": "Something went wrong, please try again.",
-  "creditPackagesError": "Couldn't load point packs"
+  "creditPackagesError": "Couldn't load point packs",
+  "postingLimitTotalTitle": "Free listings used up",
+  "postingLimitTotalMessage": "A personal account can have at most {limit} free listings at once across all categories.",
+  "@postingLimitTotalMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLimitRecentMessage": "You have posted for free in {category} many times in the last {days} days. Each category allows up to twice its free slots every {days} days.",
+  "@postingLimitRecentMessage": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayTitle": "Post this listing for {credits} points",
+  "@postingPayTitle": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayBalance": "Your wallet: {available} points",
+  "@postingPayBalance": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayNote": "Points are held when you submit and only spent once the listing is approved. Rejected listings get their points back.",
+  "postingPayMissing": "You need {missing} more points.",
+  "@postingPayMissing": {
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayContinue": "Continue · {credits} points",
+  "@postingPayContinue": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayPublish": "Post · {credits} points",
+  "@postingPayPublish": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingTopUp": "Buy points",
+  "postingFreeWaysTitle": "Or free up a free slot",
+  "postingQuotaTotalUsage": "{used}/{limit} free listings used on your account",
+  "@postingQuotaTotalUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaPaidHint": "Out of slots? Post more with points, from {credits} points per listing.",
+  "@postingQuotaPaidHint": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  }
 }

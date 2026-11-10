@@ -18,7 +18,14 @@ import 'package:restore/data/models/listing_model.dart';
 /// Hợp đồng làm việc với dữ liệu tin đăng
 abstract class ListingsRepository {
   Future<ListingDraft> saveDraft(ListingDraft draft, CategoryModel? category);
-  Future<ListingDraft> publish(ListingDraft draft, CategoryModel? category);
+
+  /// Đăng tin. [payWithCredits]: người dùng đã đồng ý trả xu khi hết suất
+  /// miễn phí (backend giữ xu, duyệt thì trừ, từ chối thì hoàn).
+  Future<ListingDraft> publish(
+    ListingDraft draft,
+    CategoryModel? category, {
+    bool payWithCredits = false,
+  });
   Future<ListingDraft> getDraft(String id);
   Future<PagedResult<ListingModel>> mine({int page = 1, String? status});
   Future<ListingModel> detail(String id);
@@ -178,16 +185,24 @@ class MockListingsRepository implements ListingsRepository {
   @override
   Future<ListingDraft> publish(
     ListingDraft draft,
-    CategoryModel? category,
-  ) async {
+    CategoryModel? category, {
+    bool payWithCredits = false,
+  }) async {
     await Future<void>.delayed(latency);
     final categoryId = draft.categoryId;
-    final alreadyCounted = _store[draft.id]?.status == ListingStatus.pending;
-    // Backend cũng chặn khi chuyên mục đã đủ số tin của tài khoản cá nhân
+    var alreadyCounted = _store[draft.id]?.status == ListingStatus.pending;
+    // Backend cũng chặn khi chuyên mục đã đủ số tin của tài khoản cá nhân;
+    // đồng ý trả xu thì tin không chiếm suất miễn phí
     if (categoryId.isNotEmpty && !alreadyCounted) {
       final used = MockPostingQuotaStore.used[categoryId] ?? 0;
       if (used >= MockPostingQuotaStore.limitOf(categoryId)) {
-        throw ListingSaveException(draft, const PostingLimitReachedException());
+        if (!payWithCredits) {
+          throw ListingSaveException(
+            draft,
+            const PostingLimitReachedException(),
+          );
+        }
+        alreadyCounted = true;
       }
     }
     // Tin mới cần admin duyệt trước khi hiển thị (SRS 4.2)
@@ -263,10 +278,13 @@ class ListingSaveException implements Exception {
   String toString() => 'ListingSaveException(${draft.id}, $cause)';
 
   /// Chuyên mục đã đủ số tin cho phép (API trả 409 `POSTING_LIMIT_REACHED`)
+  /// hoặc đồng ý trả xu nhưng ví không đủ (`NOT_ENOUGH_CREDITS`)
   bool get isPostingLimitReached {
     final error = cause;
     if (error is PostingLimitReachedException) return true;
-    return _conflictCode == PostingLimitReachedException.code;
+    final code = _conflictCode;
+    return code == PostingLimitReachedException.code ||
+        code == PostingLimitReachedException.notEnoughCredits;
   }
 
   /// Đã giữ đủ số tin nháp của gói (API trả 409 `DRAFT_LIMIT_REACHED`)
@@ -343,20 +361,33 @@ class ApiListingsRepository implements ListingsRepository {
   /// Đăng tin thẳng (`POST /listings`, tin vào hàng chờ duyệt) rồi tải ảnh lên.
   /// Bản nháp đã lưu trên máy chủ thì đăng qua luồng nháp như cũ.
   @override
-  Future<ListingDraft> publish(ListingDraft draft, CategoryModel? category) {
+  Future<ListingDraft> publish(
+    ListingDraft draft,
+    CategoryModel? category, {
+    bool payWithCredits = false,
+  }) {
     if (draft.id != null && draft.status == ListingStatus.draft) {
-      return _saveDraft(draft, category, publish: true);
+      return _saveDraft(
+        draft,
+        category,
+        publish: true,
+        payWithCredits: payWithCredits,
+      );
     }
-    return _publishListing(draft, category);
+    return _publishListing(draft, category, payWithCredits: payWithCredits);
   }
 
   Future<ListingDraft> _publishListing(
     ListingDraft draft,
-    CategoryModel? category,
-  ) async {
+    CategoryModel? category, {
+    bool payWithCredits = false,
+  }) async {
     var working = draft;
     try {
-      final payload = draft.toPayload(category: category);
+      final payload = {
+        ...draft.toPayload(category: category),
+        if (payWithCredits) 'payWithCredits': true,
+      };
       // Lần đầu: tạo tin mới. Thử lại sau khi tải ảnh lỗi giữa chừng: tin đã
       // tạo rồi nên chỉ cập nhật nội dung (không tạo trùng, không trừ thêm lượt)
       final response = draft.id == null
@@ -376,6 +407,7 @@ class ApiListingsRepository implements ListingsRepository {
     ListingDraft draft,
     CategoryModel? category, {
     required bool publish,
+    bool payWithCredits = false,
   }) async {
     var working = draft;
     try {
@@ -402,7 +434,10 @@ class ApiListingsRepository implements ListingsRepository {
       if (!publish) return working;
       final id = Uri.encodeComponent(working.id!);
       final result = _data(
-        await _dio.post<Map<String, dynamic>>('/listings/drafts/$id/publish'),
+        await _dio.post<Map<String, dynamic>>(
+          '/listings/drafts/$id/publish',
+          data: {if (payWithCredits) 'payWithCredits': true},
+        ),
       );
       return _merge(working, result);
     } catch (error) {

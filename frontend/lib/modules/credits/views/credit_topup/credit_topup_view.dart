@@ -8,17 +8,32 @@ import '../../repositories/credit_repository.dart';
 import 'credit_topup_mobile_view.dart';
 
 /// Route `/credits/topup`: chọn gói → xác nhận → trả tiền → kết quả.
-/// `?package=p20` chọn sẵn gói (VD gói nhỏ nhất đủ dùng khi đăng tin thiếu xu).
+/// `?package=p20` chọn sẵn gói; `?need=10` chọn sẵn gói nhỏ nhất có từ 10 xu
+/// trở lên (khi đăng tin thiếu xu).
 class CreditTopupView extends StatelessWidget {
-  const CreditTopupView({super.key, this.preselectId, this.repository});
+  const CreditTopupView({
+    super.key,
+    this.preselectId,
+    this.need,
+    this.repository,
+  });
 
   static const String path = '/credits/topup';
 
-  static String location({String? packageId}) => packageId == null
-      ? path
-      : Uri(path: path, queryParameters: {'package': packageId}).toString();
+  static String location({String? packageId, int? need}) {
+    final query = {
+      if (packageId != null) 'package': packageId,
+      if (need != null && need > 0) 'need': '$need',
+    };
+    return query.isEmpty
+        ? path
+        : Uri(path: path, queryParameters: query).toString();
+  }
 
   final String? preselectId;
+
+  /// Số xu còn thiếu, để chọn sẵn gói nhỏ nhất đủ dùng
+  final int? need;
   final CreditRepository? repository;
 
   @override
@@ -31,7 +46,7 @@ class CreditTopupView extends StatelessWidget {
     return BlocProvider(
       create: (_) =>
           CreditTopupCubit(repository: repository)
-            ..load(preselectId: preselectId),
+            ..load(preselectId: preselectId, need: need),
       child: const TResponsiveLayout(mobile: CreditTopupMobileView()),
     );
   }

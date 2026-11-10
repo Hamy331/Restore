@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -56,14 +57,29 @@ class ListingDetailsMobileView extends StatelessWidget {
     final category = state.category;
     final quota = state.quota;
     if (category == null || quota == null) return;
+    final bloc = context.read<CreateListingBloc>();
     final action = await showPostingLimitSheet(
       context,
       category: category,
       quota: quota,
+      atPublish: true,
     );
-    // Giữ nguyên nội dung đã nhập, chỉ quay về bước 1 để đổi chuyên mục
-    if (action == PostingLimitAction.chooseAnotherCategory && context.mounted) {
-      context.go(CreateListingStep.category.path);
+    if (!context.mounted) return;
+    switch (action) {
+      case PostingLimitAction.payWithCredits:
+        bloc.add(const PublishRequested(payWithCredits: true));
+      case PostingLimitAction.topUp:
+        final price = quota.forCategory(category.id).extraCredits ?? 0;
+        await context.push(
+          CreditTopupView.location(need: price - quota.walletAvailable),
+        );
+        // Quay lại sau khi nạp: tải lại số dư để lần bấm Đăng sau dùng được
+        bloc.add(const PostingQuotaRequested());
+      // Giữ nguyên nội dung đã nhập, chỉ quay về bước 1 để đổi chuyên mục
+      case PostingLimitAction.chooseAnotherCategory:
+        context.go(CreateListingStep.category.path);
+      case null:
+        break;
     }
   }
 

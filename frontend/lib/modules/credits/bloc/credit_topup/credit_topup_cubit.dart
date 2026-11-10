@@ -25,21 +25,28 @@ class CreditTopupCubit extends Cubit<CreditTopupState> {
   final Duration pollInterval;
   Timer? _poll;
 
-  /// Tải gói; [preselectId] chọn sẵn một gói (VD gói nhỏ nhất đủ dùng),
-  /// không có thì chọn gói phổ biến
-  Future<void> load({String? preselectId}) async {
+  /// Tải gói; [preselectId] chọn sẵn một gói, [need] chọn gói nhỏ nhất có
+  /// đủ số xu còn thiếu, không có thì chọn gói phổ biến
+  Future<void> load({String? preselectId, int? need}) async {
     emit(state.copyWith(loadStatus: TopupLoadStatus.loading));
     try {
       final packages = await _repository.getPackages();
       if (isClosed) return;
       final ids = packages.map((p) => p.id).toSet();
       final popular = packages.where((p) => p.popular).map((p) => p.id);
+      final enough = need == null
+          ? const <String>[]
+          : (packages.where((p) => p.totalCredits >= need).toList()
+                  ..sort((a, b) => a.priceVnd.compareTo(b.priceVnd)))
+                .map((p) => p.id);
       emit(
         state.copyWith(
           loadStatus: TopupLoadStatus.ready,
           packages: packages,
           selectedId: ids.contains(preselectId)
               ? preselectId
+              : enough.isNotEmpty
+              ? enough.first
               : (popular.isNotEmpty
                     ? popular.first
                     : (packages.isEmpty ? null : packages.first.id)),

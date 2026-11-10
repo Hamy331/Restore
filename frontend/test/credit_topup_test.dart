@@ -67,6 +67,18 @@ void main() {
     await cubit.close();
   });
 
+  test(
+    'topup preselects the smallest pack that covers the missing points',
+    () async {
+      final cubit = CreditTopupCubit(repository: repo());
+      await cubit.load(need: 40);
+      expect(cubit.state.selectedId, 'p50');
+      await cubit.load(need: 5);
+      expect(cubit.state.selectedId, 'p20');
+      await cubit.close();
+    },
+  );
+
   test('history filters by type', () async {
     final cubit = CreditHistoryCubit(repository: repo());
     await cubit.load();
