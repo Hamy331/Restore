@@ -23,12 +23,15 @@ enum PostingLimitAction {
 /// Báo chuyên mục [category] đã hết suất miễn phí (do chuyên mục, tổng tài
 /// khoản hoặc đăng lại nhiều lần), mời đăng bằng xu hoặc nạp thêm, kèm cách
 /// giải phóng suất. [atPublish]: đang ở bước bấm Đăng tin, nút chính là
-/// "Đăng · X xu" thay vì "Tiếp tục". Trả về null khi người dùng đóng sheet.
+/// "Đăng · X xu" thay vì "Tiếp tục". [reactivate]: đang kích hoạt lại tin
+/// hết hạn, nút chính là "Kích hoạt · X xu" và nút phụ là "Để sau" (trả về
+/// [PostingLimitAction.chooseAnotherCategory]). Trả về null khi đóng sheet.
 Future<PostingLimitAction?> showPostingLimitSheet(
   BuildContext context, {
   required CategoryModel category,
   required PostingQuota quota,
   bool atPublish = false,
+  bool reactivate = false,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final categoryQuota = quota.forCategory(category.id);
@@ -79,14 +82,20 @@ Future<PostingLimitAction?> showPostingLimitSheet(
             ),
             if (canPay) ...[
               const SizedBox(height: 14),
-              _PayCard(price: price, available: quota.walletAvailable),
+              _PayCard(
+                price: price,
+                available: quota.walletAvailable,
+                reactivate: reactivate,
+              ),
             ],
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: AppSecondaryActionButton(
-                    label: l10n.chooseAnotherCategory,
+                    label: reactivate
+                        ? l10n.postingLater
+                        : l10n.chooseAnotherCategory,
                     onPressed: () =>
                         pop(PostingLimitAction.chooseAnotherCategory),
                   ),
@@ -96,7 +105,9 @@ Future<PostingLimitAction?> showPostingLimitSheet(
                   Expanded(
                     child: enough
                         ? AppPrimaryActionButton(
-                            label: atPublish
+                            label: reactivate
+                                ? l10n.postingPayReactivate(price)
+                                : atPublish
                                 ? l10n.postingPayPublish(price)
                                 : l10n.postingPayContinue(price),
                             icon: AppIcons.wallet,
@@ -132,7 +143,7 @@ Future<PostingLimitAction?> showPostingLimitSheet(
             ),
             PostingRuleTile(
               icon: AppIcons.clock,
-              text: l10n.postingLimitTipExpire(quota.displayDays),
+              text: l10n.postingLimitTipExpire(categoryQuota.displayDays),
             ),
           ],
         ),
@@ -179,7 +190,14 @@ class _PayCard extends StatelessWidget {
   final int price;
   final int available;
 
-  const _PayCard({required this.price, required this.available});
+  /// Hiện lại tin đã có: xu trừ ngay, không giữ chờ duyệt
+  final bool reactivate;
+
+  const _PayCard({
+    required this.price,
+    required this.available,
+    this.reactivate = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +222,9 @@ class _PayCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  l10n.postingPayTitle(price),
+                  reactivate
+                      ? l10n.postingPayReactivateTitle(price)
+                      : l10n.postingPayTitle(price),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -228,7 +248,7 @@ class _PayCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            l10n.postingPayNote,
+            reactivate ? l10n.postingPayNowNote : l10n.postingPayNote,
             style: const TextStyle(
               fontSize: 12,
               height: 1.45,

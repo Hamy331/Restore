@@ -14,11 +14,14 @@ const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
  *
  * Body: title (5-70), description (10-1500), price (chuỗi số VND), condition, categoryId,
  *       isNegotiable?, allowSale?, allowExchange?, exchangeWish?, sellerType?, location, attributes?,
- *       payWithCredits? (true = đồng ý trả xu khi hết suất miễn phí)
+ *       payWithCredits? (true = đồng ý trả xu khi hết suất miễn phí),
+ *       allowDuplicate? (true = vẫn đăng mới dù có tin giống vậy đã ẩn / hết hạn)
  *
  * Trả về: 201 Listing (đủ địa chỉ)
  * Lỗi: 409 POSTING_LIMIT_REACHED { details: { categoryId, blockedBy, extraCredits, available, ... } },
- *      409 NOT_ENOUGH_CREDITS { details: { required, available, missing } }, 409 DAILY_LISTING_LIMIT
+ *      409 NOT_ENOUGH_CREDITS { details: { required, available, missing } }, 409 DAILY_LISTING_LIMIT,
+ *      409 DUPLICATE_LISTING { details: { listingId } } (trùng tin đang hiển thị / chờ duyệt),
+ *      409 DUPLICATE_INACTIVE { details: { listingId, expired } } (trùng tin đã ẩn / hết hạn)
  */
 listingRouter.post('/', manageOwn, validate({ body: createListingBody }), listingController.create);
 
@@ -27,7 +30,7 @@ listingRouter.post('/', manageOwn, validate({ body: createListingBody }), listin
  *
  * Trả về: { accountType: personal | business, tier, displayDays, recentWindowDays, defaultLimit, businessLimit,
  *   total: { used, limit }, daily: { used, limit }, wallet: { available },
- *   categories: [{ categoryId, used, limit, recentUsed, recentLimit, extraCredits, freeAvailable, blockedBy }] }
+ *   categories: [{ categoryId, used, limit, recentUsed, recentLimit, extraCredits, extendCredits, displayDays, freeAvailable, blockedBy }] }
  */
 listingRouter.get('/posting-quota', manageOwn, listingController.postingQuota);
 
@@ -70,14 +73,28 @@ listingRouter.put('/:id', manageOwn, validate({ params: listingIdParams, body: c
 
 /**
  * Đổi trạng thái tin: AVAILABLE ↔ HIDDEN, hoặc SOLD / EXCHANGED (không mở lại được)
+ * Hiện lại tin đã hết hạn (expiresAt đã qua) = kích hoạt lại: tính như đăng mới, hiển thị thêm một kỳ.
  *
  * Path params:
  *  - id: string - mã tin
  *
  * Body:
  *  - status: 'AVAILABLE' | 'HIDDEN' | 'SOLD' | 'EXCHANGED'
+ *  - payWithCredits?: boolean - đồng ý trả xu khi hiện lại / kích hoạt lại mà hết suất miễn phí
+ *
+ * Lỗi 409: POSTING_LIMIT_REACHED (hết suất, kèm giá xu), NOT_ENOUGH_CREDITS
  */
 listingRouter.patch('/:id/status', manageOwn, validate({ params: listingIdParams, body: statusBody }), listingController.changeStatus);
+
+/**
+ * Gia hạn tin đang hiển thị thêm Category.displayDays ngày, trả Category.extraListingCredits xu
+ *
+ * Path params:
+ *  - id: string - mã tin
+ *
+ * Lỗi 409: EXTEND_TOO_EARLY (còn hơn một kỳ hiển thị), LISTING_NOT_EXTENDABLE, NOT_ENOUGH_CREDITS
+ */
+listingRouter.post('/:id/extend', manageOwn, validate({ params: listingIdParams }), listingController.extend);
 
 /**
  * Chi tiết tin công khai, tăng lượt xem (không tính chủ tin và người kiểm duyệt)

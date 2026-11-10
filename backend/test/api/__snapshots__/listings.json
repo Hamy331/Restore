@@ -51,6 +51,7 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -109,6 +110,7 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -188,6 +190,7 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -267,6 +270,7 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -346,6 +350,7 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -404,6 +409,7 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -462,6 +468,7 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -550,6 +557,7 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -629,6 +637,7 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -717,6 +726,7 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -775,6 +785,7 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -833,6 +844,7 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -912,6 +924,7 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1062,6 +1075,7 @@
         "createdAt": "2026-10-01T00:10:00.000Z",
         "viewCount": 1,
         "publishedAt": "2026-10-01T00:10:00.000Z",
+        "expiresAt": null,
         "owner": {
           "id": "user-seller",
           "fullName": "user-seller",
@@ -1196,6 +1210,7 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 1,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1273,6 +1288,7 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1331,6 +1347,7 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1389,6 +1406,7 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 1,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1498,12 +1516,14 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": "<date>",
+        "expiresAt": null,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -1562,12 +1582,14 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": "<date>",
+        "expiresAt": null,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -1680,12 +1702,14 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": "<date>",
+        "expiresAt": null,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -1756,12 +1780,14 @@
           "createdAt": "<date>",
           "viewCount": 0,
           "publishedAt": "<date>",
+          "expiresAt": null,
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "paidCredits": 0,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ]
@@ -1858,6 +1884,7 @@
         "createdAt": "<date>",
         "viewCount": 1,
         "publishedAt": "<date>",
+        "expiresAt": "<date>",
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -1946,12 +1973,14 @@
         "createdAt": "<date>",
         "viewCount": 1,
         "publishedAt": "<date>",
+        "expiresAt": "<date>",
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -2013,12 +2042,14 @@
         "createdAt": "<date>",
         "viewCount": 1,
         "publishedAt": "<date>",
+        "expiresAt": "<date>",
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -2080,12 +2111,14 @@
         "createdAt": "<date>",
         "viewCount": 1,
         "publishedAt": "<date>",
+        "expiresAt": "<date>",
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -2158,12 +2191,14 @@
           "createdAt": "<date>",
           "viewCount": 1,
           "publishedAt": "<date>",
+          "expiresAt": "<date>",
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "paidCredits": 0,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ],
@@ -2233,12 +2268,14 @@
           "createdAt": "<date>",
           "viewCount": 1,
           "publishedAt": "<date>",
+          "expiresAt": "<date>",
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "paidCredits": 0,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ],
@@ -2277,12 +2314,14 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": null,
+        "expiresAt": null,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": ""
       }
     }
@@ -2341,12 +2380,14 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": null,
+        "expiresAt": null,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -2416,12 +2457,14 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": "<date>",
+        "expiresAt": null,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }

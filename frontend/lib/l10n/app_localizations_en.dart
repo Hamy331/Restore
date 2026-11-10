@@ -3634,4 +3634,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String postingQuotaPaidHint(int credits) {
     return 'Out of slots? Post more with points, from $credits points per listing.';
   }
+
+  @override
+  String accExpiresIn(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String get accExpired => 'Expired';
+
+  @override
+  String get accReactivate => 'Reactivate';
+
+  @override
+  String get accReactivated => 'Listing reactivated';
+
+  @override
+  String get accExtend => 'Extend listing';
+
+  @override
+  String accExtendMessage(int days, int credits) {
+    return 'Show this listing for $days more days for $credits points. Points are spent right away, no new review needed.';
+  }
+
+  @override
+  String accExtendPay(int credits) {
+    return 'Extend · $credits points';
+  }
+
+  @override
+  String accExtendTooEarly(int days) {
+    return 'You can extend once $days days or fewer are left.';
+  }
+
+  @override
+  String get accExtended => 'Listing extended';
+
+  @override
+  String postingPayReactivate(int credits) {
+    return 'Reactivate · $credits points';
+  }
+
+  @override
+  String get postingLater => 'Later';
+
+  @override
+  String get duplicateActiveTitle => 'You already posted this';
+
+  @override
+  String get duplicateActiveMessage =>
+      'A matching listing of yours is live or waiting for review, so there is no need to post it again.';
+
+  @override
+  String get duplicateInactiveTitle => 'Reuse your old listing?';
+
+  @override
+  String get duplicateInactiveMessage =>
+      'You have a matching listing that is hidden or expired. Reactivate it to keep its views and saves.';
+
+  @override
+  String get duplicateOpenOld => 'See old listing';
+
+  @override
+  String get duplicatePostNew => 'Post new anyway';
+
+  @override
+  String postingPayReactivateTitle(int credits) {
+    return 'Show this listing again for $credits points';
+  }
+
+  @override
+  String get postingPayNowNote =>
+      'Points are spent as soon as the listing is shown again, no new review needed.';
 }

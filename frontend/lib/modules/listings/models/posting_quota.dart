@@ -34,12 +34,20 @@ class CategoryPostingQuota extends Equatable {
   /// Lý do hết suất miễn phí, null = còn suất
   final PostingQuotaBlock? blockedBy;
 
+  /// Số ngày tin hiển thị (cũng là số ngày mỗi lần gia hạn)
+  final int displayDays;
+
+  /// Giá (xu) gia hạn tin thêm một kỳ, mọi gói đều gia hạn được
+  final int? extendCredits;
+
   const CategoryPostingQuota({
     required this.categoryId,
     required this.used,
     required this.limit,
     this.extraCredits,
     this.blockedBy,
+    this.displayDays = 60,
+    this.extendCredits,
   });
 
   int get remaining => (limit - used).clamp(0, limit);
@@ -62,6 +70,10 @@ class CategoryPostingQuota extends Equatable {
       used: used,
       limit: limit,
       extraCredits: (json['extraCredits'] as num?)?.toInt(),
+      displayDays: (json['displayDays'] as num?)?.toInt() ?? 60,
+      extendCredits:
+          (json['extendCredits'] as num?)?.toInt() ??
+          (json['extraCredits'] as num?)?.toInt(),
       blockedBy:
           PostingQuotaBlock.fromApi(json['blockedBy']) ??
           (free == false || (free == null && used >= limit)
@@ -71,7 +83,15 @@ class CategoryPostingQuota extends Equatable {
   }
 
   @override
-  List<Object?> get props => [categoryId, used, limit, extraCredits, blockedBy];
+  List<Object?> get props => [
+    categoryId,
+    used,
+    limit,
+    extraCredits,
+    blockedBy,
+    displayDays,
+    extendCredits,
+  ];
 }
 
 /// Hạn mức đăng tin của tài khoản, nhận từ API `GET /listings/posting-quota`.
@@ -114,6 +134,7 @@ class PostingQuota extends Equatable {
         categoryId: categoryId,
         used: 0,
         limit: defaultLimit,
+        displayDays: displayDays,
       );
 
   /// Giới hạn thấp nhất và cao nhất giữa các chuyên mục, để giới thiệu

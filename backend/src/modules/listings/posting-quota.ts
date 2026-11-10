@@ -7,6 +7,7 @@
  * - Chỉ tính tin đang chờ duyệt / đang hiển thị / đang giữ chỗ; tin trả bằng xu không chiếm suất.
  * - Chống đăng rồi ẩn liên tục: trong 30 ngày, mỗi chuyên mục đăng miễn phí tối đa gấp đôi số suất.
  * - Hết suất thì đăng được bằng xu (Category.extraListingCredits).
+ * - Tin hiển thị Category.displayDays ngày rồi tự ẩn; kích hoạt lại tính như đăng mới, gia hạn luôn tốn xu.
  */
 
 export const DISPLAY_DAYS = 60;
@@ -15,7 +16,7 @@ export const RECENT_MULTIPLIER = 2;
 
 export type QuotaBlock = 'CATEGORY' | 'TOTAL' | 'RECENT';
 
-export type CategoryRule = { id: string; freeListingLimit: number; extraListingCredits: number };
+export type CategoryRule = { id: string; freeListingLimit: number; extraListingCredits: number; displayDays: number };
 export type CategoryUsage = { categoryId: string; used: number; recent: number };
 
 export type CategoryQuota = {
@@ -25,6 +26,10 @@ export type CategoryQuota = {
   recentUsed: number;
   recentLimit: number;
   extraCredits: number;
+  /** Giá (xu) gia hạn tin thêm một kỳ, mọi gói */
+  extendCredits: number;
+  /** Số ngày tin hiển thị, cũng là số ngày mỗi lần gia hạn */
+  displayDays: number;
   freeAvailable: boolean;
   blockedBy: QuotaBlock | null;
 };
@@ -52,6 +57,8 @@ export function personalQuota(rules: CategoryRule[], usage: CategoryUsage[], tot
       recentUsed: recent,
       recentLimit: rule.freeListingLimit * RECENT_MULTIPLIER,
       extraCredits: rule.extraListingCredits,
+      extendCredits: rule.extraListingCredits,
+      displayDays: rule.displayDays,
       freeAvailable: blockedBy === null,
       blockedBy,
     };

@@ -10,6 +10,8 @@ import { validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import type { Db } from '../repositories/listing.repository.js';
 import { COUNTED_STATUSES } from '../repositories/posting-quota.repository.js';
+import { addDays, canExtend, daysLeft, extendedExpiry, isExpired } from '../listing-lifecycle.js';
+import { assertNotDuplicate, spendForListing } from './listing-lifecycle.service.js';
 import { assertPostingSlot, chargeListing, postingQuota } from './posting-quota.service.js';
 
 type Viewer = AuthRequest['user'];
@@ -53,10 +55,11 @@ export async function assertPublishable(tx: Db, data: Pick<ListingInput, 'catego
  * Đăng tin mới, chờ duyệt (PENDING). Hết suất miễn phí thì cần [payWithCredits]:
  * xu được giữ ngay, duyệt thì trừ hẳn, từ chối thì hoàn.
  */
-export async function createListing(ownerId: string, data: ListingInput, payWithCredits = false) {
+export async function createListing(ownerId: string, data: ListingInput, payWithCredits = false, allowDuplicate = false) {
   const listing = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     await assertPublishable(tx, data);
+    await assertNotDuplicate(tx, ownerId, data, { allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits });
     const created = await listingRepository.createListing(
       { ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price }, tx);
@@ -96,8 +99,9 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
 }
 
 /** Ẩn, hiện lại, đánh dấu đã bán / đã trao đổi */
-export async function changeStatus(ownerId: string, id: string, target: ListingStatus) {
+export async function changeStatus(ownerId: string, id: string, target: ListingStatus, payWithCredits = false) {
   const listing = await withQuotaTransaction(async (tx) => {
+    const now = new Date();
     const current = await requireOwnedListing(tx, id, ownerId);
     if ((target === ListingStatus.SOLD && !current.allowSale) || (target === ListingStatus.EXCHANGED && !current.allowExchange)) {
       throw new AppError(400, 'INVALID_STATUS', 'Tin không hỗ trợ loại giao dịch này.');
@@ -105,11 +109,54 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
     if (!canChangeListingStatus(current.status, target)) {
       throw new AppError(409, 'INVALID_STATUS_CHANGE', 'Không thể đổi trạng thái tin theo cách này.');
     }
-    // Hiện lại tin miễn phí đã ẩn: cần còn suất (tin đã trả xu thì giữ suất của nó)
-    if (target === ListingStatus.AVAILABLE && current.paidCredits === 0 && current.categoryId) {
-      await assertPostingSlot(tx, ownerId, new Date(), { categoryId: current.categoryId, daily: false, payWithCredits: false, excludeId: id });
+    if (target === ListingStatus.AVAILABLE && current.categoryId) {
+      const category = await listingRepository.findActiveCategory(tx, current.categoryId);
+      if (!category) throw new AppError(409, 'INVALID_LISTING', 'Danh mục không còn được sử dụng.');
+      if (isExpired(current.expiresAt, now)) {
+        // Kích hoạt lại tin hết hạn: tính như đăng mới (còn suất thì miễn phí, hết suất thì trả xu), hiển thị thêm một kỳ
+        const price = await assertPostingSlot(tx, ownerId, now,
+          { categoryId: current.categoryId, daily: false, payWithCredits, excludeId: id });
+        await updateOwnedListing(tx, id, ownerId, current.status, {
+          status: target, publishedAt: now, paidCredits: price, expiresAt: addDays(now, category.displayDays),
+        });
+        await spendForListing(tx, ownerId, id, price, `Kích hoạt lại tin · ${current.title}`);
+        return listingRepository.findSelected(tx, id);
+      }
+      // Hiện lại tin còn hạn: tin miễn phí cần còn suất, hết suất thì trả xu (tin đã trả xu giữ suất của nó)
+      const price = current.paidCredits === 0
+        ? await assertPostingSlot(tx, ownerId, now, { categoryId: current.categoryId, daily: false, payWithCredits, excludeId: id })
+        : 0;
+      await updateOwnedListing(tx, id, ownerId, current.status, {
+        status: target, ...(price > 0 && { paidCredits: price }),
+        ...(current.expiresAt === null && { expiresAt: addDays(now, category.displayDays) }),
+      });
+      await spendForListing(tx, ownerId, id, price, `Hiện lại tin vượt hạn mức · ${current.title}`);
+      return listingRepository.findSelected(tx, id);
     }
     await updateOwnedListing(tx, id, ownerId, current.status, { status: target });
+    return listingRepository.findSelected(tx, id);
+  });
+  return toOwnerListingDto(listing);
+}
+
+/**
+ * Gia hạn tin đang hiển thị thêm Category.displayDays ngày, trả Category.extraListingCredits xu.
+ * Còn hơn một kỳ hiển thị thì 409 EXTEND_TOO_EARLY; thiếu xu thì 409 NOT_ENOUGH_CREDITS.
+ */
+export async function extendListing(ownerId: string, id: string) {
+  const listing = await withQuotaTransaction(async (tx) => {
+    const now = new Date();
+    const current = await requireOwnedListing(tx, id, ownerId);
+    if (current.status !== ListingStatus.AVAILABLE) {
+      throw new AppError(409, 'LISTING_NOT_EXTENDABLE', 'Chỉ gia hạn được tin đang hiển thị.');
+    }
+    const category = current.categoryId ? await listingRepository.findActiveCategory(tx, current.categoryId) : null;
+    if (!category) throw new AppError(409, 'INVALID_LISTING', 'Danh mục không còn được sử dụng.');
+    if (!canExtend(current.expiresAt, now, category.displayDays)) {
+      throw new AppError(409, 'EXTEND_TOO_EARLY', `Tin còn ${daysLeft(current.expiresAt!, now)} ngày, gia hạn được khi còn tối đa ${category.displayDays} ngày.`);
+    }
+    await updateOwnedListing(tx, id, ownerId, current.status, { expiresAt: extendedExpiry(current.expiresAt, now, category.displayDays) });
+    await spendForListing(tx, ownerId, id, category.extraListingCredits, `Gia hạn tin ${category.displayDays} ngày · ${current.title}`);
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);

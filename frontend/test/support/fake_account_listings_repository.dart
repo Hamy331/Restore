@@ -1,10 +1,13 @@
 import 'package:restore/modules/account/models/account_listing.dart';
 import 'package:restore/modules/account/repositories/account_listings_repository.dart';
+import 'package:restore/data/models/category_model.dart';
+import 'package:restore/modules/listings/models/listing_enums.dart';
+import 'package:restore/modules/listings/models/posting_quota.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
 /// Ba tin đăng trong bộ nhớ cho test tab tin đăng.
 class FakeAccountListingsRepository implements AccountListingsRepository {
-  FakeAccountListingsRepository() {
+  FakeAccountListingsRepository({List<AccountListing> extra = const []}) {
     final now = DateTime.now();
     _items = [
       AccountListing(
@@ -34,10 +37,14 @@ class FakeAccountListingsRepository implements AccountListingsRepository {
         views: 41,
         image: 'assets/images/marketplace/detail-bookshelf.jpg',
       ),
+      ...extra,
     ];
   }
 
   late List<AccountListing> _items;
+
+  /// Lần đổi trạng thái gần nhất có kèm trả xu không
+  bool lastPayWithCredits = false;
 
   @override
   Future<PagedResult<AccountListing>> mine(
@@ -54,9 +61,28 @@ class FakeAccountListingsRepository implements AccountListingsRepository {
   }
 
   @override
-  Future<void> changeStatus(String id, AccountListingStatus status) async {
+  Future<void> changeStatus(
+    String id,
+    AccountListingStatus status, {
+    bool payWithCredits = false,
+  }) async {
+    lastPayWithCredits = payWithCredits;
     _items = [
       for (final item in _items) item.id == id ? item.withStatus(status) : item,
     ];
   }
+
+  @override
+  Future<void> extend(String id) async {}
+
+  @override
+  Future<PostingQuota> postingQuota() async => const PostingQuota(
+    accountType: SellerType.personal,
+    defaultLimit: 2,
+    displayDays: 60,
+    businessLimit: 30,
+  );
+
+  @override
+  Future<CategoryModel?> category(String id) async => null;
 }

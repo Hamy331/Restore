@@ -7,6 +7,7 @@ import { createInput, validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
 import { assertPublishable, requireOwnedListing, updateOwnedListing } from './listing.service.js';
+import { assertNotDuplicate } from './listing-lifecycle.service.js';
 import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
 
 /** Số tin nháp đang giữ và giới hạn của gói */
@@ -44,7 +45,7 @@ export async function updateDraft(ownerId: string, id: string, data: DraftInput)
 }
 
 /** Đăng nháp: kiểm tra đủ nội dung như tin mới, cần ít nhất một ảnh, trừ lượt đăng */
-export async function publishDraft(ownerId: string, id: string, payWithCredits = false) {
+export async function publishDraft(ownerId: string, id: string, payWithCredits = false, allowDuplicate = false) {
   const listing = await withQuotaTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (current.status === ListingStatus.PENDING) return listingRepository.findSelected(tx, id);
@@ -63,6 +64,7 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     });
     await assertPublishable(tx, data);
     const now = new Date();
+    await assertNotDuplicate(tx, ownerId, data, { excludeId: id, allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
     await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price });
     await chargeListing(tx, ownerId, id, price, data.title);

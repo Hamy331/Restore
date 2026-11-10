@@ -3358,6 +3358,76 @@
       "code": "LOCATION_NOT_FOUND"
     }
   },
+  "area search": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "code": "26740",
+          "name": "Phường Sài Gòn",
+          "shortName": "Sài Gòn",
+          "level": "ward",
+          "parentName": "Thành phố Hồ Chí Minh",
+          "center": {
+            "latitude": 10.780926,
+            "longitude": 106.70418
+          }
+        }
+      ],
+      "coverage": "full"
+    }
+  },
+  "area search province": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "code": "01",
+          "name": "Thành phố Hà Nội",
+          "shortName": "Hà Nội",
+          "level": "province",
+          "center": {
+            "latitude": 21.03853,
+            "longitude": 105.838061
+          }
+        },
+        {
+          "code": "00004",
+          "name": "Phường Ba Đình",
+          "shortName": "Ba Đình",
+          "level": "ward",
+          "parentName": "Thành phố Hà Nội",
+          "center": {
+            "latitude": 21.03853,
+            "longitude": 105.838061
+          }
+        },
+        {
+          "code": "00008",
+          "name": "Phường Ngọc Hà",
+          "shortName": "Ngọc Hà",
+          "level": "ward",
+          "parentName": "Thành phố Hà Nội",
+          "center": {
+            "latitude": 21.038124,
+            "longitude": 105.816315
+          }
+        }
+      ],
+      "coverage": "full"
+    }
+  },
+  "area search missing q": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "q phải là chuỗi từ 1 đến 100 ký tự.",
+      "code": "INVALID_INPUT",
+      "field": "q"
+    }
+  },
   "store categories": {
     "status": 200,
     "body": {
@@ -3391,7 +3461,10 @@
               "en": "Items that fit no other category",
               "vi": "Các món đồ chưa có danh mục phù hợp"
             }
-          }
+          },
+          "freeListingLimit": 2,
+          "extraListingCredits": 5,
+          "displayDays": 60
         },
         {
           "active": true,
@@ -3485,7 +3558,10 @@
               "en": "Furniture, lamps, kitchenware, decor...",
               "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
             }
-          }
+          },
+          "freeListingLimit": 2,
+          "extraListingCredits": 10,
+          "displayDays": 60
         },
         {
           "active": true,
@@ -3576,7 +3652,10 @@
               "en": "Textbooks, novels, course books...",
               "vi": "Sách giáo khoa, truyện, giáo trình..."
             }
-          }
+          },
+          "freeListingLimit": 3,
+          "extraListingCredits": 5,
+          "displayDays": 60
         },
         {
           "active": true,
@@ -3704,7 +3783,10 @@
               "en": "Dogs, cats, birds, pet accessories...",
               "vi": "Chó, mèo, chim, phụ kiện thú cưng..."
             }
-          }
+          },
+          "freeListingLimit": 1,
+          "extraListingCredits": 10,
+          "displayDays": 60
         },
         {
           "active": true,
@@ -3759,7 +3841,10 @@
               "en": "Gym gear, sport bikes, camping...",
               "vi": "Dụng cụ tập, xe đạp thể thao, đồ cắm trại..."
             }
-          }
+          },
+          "freeListingLimit": 2,
+          "extraListingCredits": 5,
+          "displayDays": 60
         },
         {
           "active": true,
@@ -3906,7 +3991,10 @@
               "en": "Clothes, shoes, bags...",
               "vi": "Quần áo, giày dép, túi xách..."
             }
-          }
+          },
+          "freeListingLimit": 2,
+          "extraListingCredits": 5,
+          "displayDays": 60
         },
         {
           "active": true,
@@ -4044,7 +4132,10 @@
               "en": "Motorbikes, bicycles, cars, parts...",
               "vi": "Xe máy, xe đạp, ô tô, phụ tùng..."
             }
-          }
+          },
+          "freeListingLimit": 1,
+          "extraListingCredits": 15,
+          "displayDays": 30
         },
         {
           "active": true,
@@ -4312,7 +4403,10 @@
               "en": "iPhone, Samsung, Xiaomi, OPPO...",
               "vi": "iPhone, Samsung, Xiaomi, OPPO..."
             }
-          }
+          },
+          "freeListingLimit": 1,
+          "extraListingCredits": 15,
+          "displayDays": 30
         },
         {
           "active": true,
@@ -4457,7 +4551,10 @@
               "en": "Fridges, washing machines, air conditioners...",
               "vi": "Tủ lạnh, máy giặt, điều hoà..."
             }
-          }
+          },
+          "freeListingLimit": 1,
+          "extraListingCredits": 10,
+          "displayDays": 60
         },
         {
           "active": true,
@@ -4612,7 +4709,10 @@
               "en": "Laptops, cameras, headphones, tablets...",
               "vi": "Laptop, máy ảnh, tai nghe, máy tính bảng..."
             }
-          }
+          },
+          "freeListingLimit": 1,
+          "extraListingCredits": 15,
+          "displayDays": 60
         }
       ]
     }
@@ -4715,76 +4815,6 @@
       "success": false,
       "error": "Không tìm thấy API.",
       "code": "NOT_FOUND"
-    }
-  },
-  "area search": {
-    "status": 200,
-    "body": {
-      "success": true,
-      "data": [
-        {
-          "code": "26740",
-          "name": "Phường Sài Gòn",
-          "shortName": "Sài Gòn",
-          "level": "ward",
-          "parentName": "Thành phố Hồ Chí Minh",
-          "center": {
-            "latitude": 10.780926,
-            "longitude": 106.70418
-          }
-        }
-      ],
-      "coverage": "full"
-    }
-  },
-  "area search province": {
-    "status": 200,
-    "body": {
-      "success": true,
-      "data": [
-        {
-          "code": "01",
-          "name": "Thành phố Hà Nội",
-          "shortName": "Hà Nội",
-          "level": "province",
-          "center": {
-            "latitude": 21.03853,
-            "longitude": 105.838061
-          }
-        },
-        {
-          "code": "00004",
-          "name": "Phường Ba Đình",
-          "shortName": "Ba Đình",
-          "level": "ward",
-          "parentName": "Thành phố Hà Nội",
-          "center": {
-            "latitude": 21.03853,
-            "longitude": 105.838061
-          }
-        },
-        {
-          "code": "00008",
-          "name": "Phường Ngọc Hà",
-          "shortName": "Ngọc Hà",
-          "level": "ward",
-          "parentName": "Thành phố Hà Nội",
-          "center": {
-            "latitude": 21.038124,
-            "longitude": 105.816315
-          }
-        }
-      ],
-      "coverage": "full"
-    }
-  },
-  "area search missing q": {
-    "status": 400,
-    "body": {
-      "success": false,
-      "error": "q phải là chuỗi từ 1 đến 100 ký tự.",
-      "code": "INVALID_INPUT",
-      "field": "q"
     }
   }
 }

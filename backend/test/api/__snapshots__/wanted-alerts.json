@@ -119,6 +119,7 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -186,6 +187,7 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -245,6 +247,7 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -555,6 +558,7 @@
           "createdAt": "<date>",
           "viewCount": 0,
           "publishedAt": "<date>",
+          "expiresAt": "<date>",
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -654,6 +658,7 @@
           "createdAt": "<date>",
           "viewCount": 0,
           "publishedAt": "<date>",
+          "expiresAt": "<date>",
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",

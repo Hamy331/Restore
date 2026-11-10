@@ -39,7 +39,7 @@ draftRouter.put('/drafts/:id', manageOwn, validate({ params: listingIdParams, bo
  * Path params:
  *  - id: string - mã tin
  *
- * Body (tuỳ chọn): { payWithCredits?: true } khi hết suất miễn phí và đồng ý trả xu (như POST /listings)
+ * Body (tuỳ chọn): { payWithCredits?: true, allowDuplicate?: true } như POST /listings
  */
 draftRouter.post('/drafts/:id/publish', manageOwn, validate({ params: listingIdParams }), draftController.publish);
 

@@ -5,6 +5,7 @@ import 'package:restore/data/models/listing_model.dart';
 import '../../models/draft_quota.dart';
 import '../../models/listing_draft.dart';
 import '../../models/posting_quota.dart';
+import '../../repositories/listings_repository.dart' show DuplicateListing;
 import '../../utils/listing_validator.dart';
 
 enum RequestStatus { idle, loading, success, failure }
@@ -27,6 +28,14 @@ class CreateListingState extends Equatable {
 
   /// Tăng mỗi lần bị chặn vì chuyên mục đã đủ số tin để view mở thông báo
   final int postingLimitHits;
+
+  /// Tăng mỗi lần bị chặn vì đã có tin giống vậy ([duplicate]) để view hỏi
+  /// kích hoạt lại tin cũ hay vẫn đăng mới
+  final int duplicateHits;
+  final DuplicateListing? duplicate;
+
+  /// Lần đăng bị chặn vì trùng có kèm trả xu không, để "Vẫn đăng mới" giữ nguyên
+  final bool duplicatePaid;
 
   /// Bản đã lưu gần nhất (lưu nháp hoặc mở từ danh sách nháp), để biết còn
   /// thay đổi chưa lưu khi thoát. null khi chưa lưu lần nào.
@@ -69,6 +78,9 @@ class CreateListingState extends Equatable {
     this.publishStatus = RequestStatus.idle,
     this.invalidPublishAttempts = 0,
     this.postingLimitHits = 0,
+    this.duplicateHits = 0,
+    this.duplicate,
+    this.duplicatePaid = false,
     this.savedDraft,
     this.drafts = const [],
     this.draftsStatus = RequestStatus.idle,
@@ -130,6 +142,9 @@ class CreateListingState extends Equatable {
     RequestStatus? publishStatus,
     int? invalidPublishAttempts,
     int? postingLimitHits,
+    int? duplicateHits,
+    DuplicateListing? duplicate,
+    bool? duplicatePaid,
     ListingDraft? savedDraft,
     List<ListingModel>? drafts,
     RequestStatus? draftsStatus,
@@ -155,6 +170,9 @@ class CreateListingState extends Equatable {
       invalidPublishAttempts:
           invalidPublishAttempts ?? this.invalidPublishAttempts,
       postingLimitHits: postingLimitHits ?? this.postingLimitHits,
+      duplicateHits: duplicateHits ?? this.duplicateHits,
+      duplicate: duplicate ?? this.duplicate,
+      duplicatePaid: duplicatePaid ?? this.duplicatePaid,
       savedDraft: savedDraft ?? this.savedDraft,
       drafts: drafts ?? this.drafts,
       draftsStatus: draftsStatus ?? this.draftsStatus,
@@ -183,6 +201,8 @@ class CreateListingState extends Equatable {
     publishStatus,
     invalidPublishAttempts,
     postingLimitHits,
+    duplicateHits,
+    duplicatePaid,
     savedDraft,
     drafts,
     draftsStatus,

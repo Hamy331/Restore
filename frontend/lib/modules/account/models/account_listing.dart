@@ -21,6 +21,9 @@ class AccountListing extends Equatable {
     required this.image,
     this.createdAt,
     this.status = AccountListingStatus.visible,
+    this.categoryId,
+    this.expiresAt,
+    this.paidCredits = 0,
   });
 
   final String id;
@@ -31,6 +34,25 @@ class AccountListing extends Equatable {
   final int views;
   final String image;
   final AccountListingStatus status;
+  final String? categoryId;
+
+  /// Hết hạn hiển thị; tin quá hạn nằm ở tab Đã ẩn
+  final DateTime? expiresAt;
+
+  /// Số xu đã trả cho tin (0 = tin miễn phí)
+  final int paidCredits;
+
+  /// Tin đã quá hạn hiển thị: hiện lại phải kích hoạt lại
+  bool isExpiredAt(DateTime now) =>
+      expiresAt != null && !expiresAt!.isAfter(now);
+
+  /// Số ngày còn hiển thị (làm tròn lên), null khi chưa có hạn
+  int? daysLeftAt(DateTime now) {
+    final end = expiresAt;
+    if (end == null) return null;
+    final ms = end.difference(now).inMilliseconds;
+    return ms <= 0 ? 0 : (ms / Duration.millisecondsPerDay).ceil();
+  }
 
   AccountListing withStatus(AccountListingStatus value) => AccountListing(
     id: id,
@@ -41,6 +63,9 @@ class AccountListing extends Equatable {
     views: views,
     image: image,
     status: value,
+    categoryId: categoryId,
+    expiresAt: expiresAt,
+    paidCredits: paidCredits,
   );
 
   @override
@@ -53,5 +78,28 @@ class AccountListing extends Equatable {
     views,
     image,
     status,
+    categoryId,
+    expiresAt,
+    paidCredits,
   ];
+}
+
+/// Hiện lại / gia hạn tin bị backend từ chối (HTTP 409): [code] như
+/// `POSTING_LIMIT_REACHED`, `NOT_ENOUGH_CREDITS`, `EXTEND_TOO_EARLY`
+class AccountListingActionException implements Exception {
+  const AccountListingActionException(
+    this.code, {
+    this.message,
+    this.details = const {},
+  });
+  final String code;
+  final String? message;
+  final Map<String, dynamic> details;
+
+  static const postingLimitReached = 'POSTING_LIMIT_REACHED';
+  static const notEnoughCredits = 'NOT_ENOUGH_CREDITS';
+  static const extendTooEarly = 'EXTEND_TOO_EARLY';
+
+  @override
+  String toString() => 'AccountListingActionException($code)';
 }

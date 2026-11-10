@@ -299,6 +299,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         sent,
         state.category,
         payWithCredits: event.payWithCredits,
+        allowDuplicate: event.allowDuplicate,
       );
       emit(
         state.copyWith(draft: published, publishStatus: RequestStatus.success),
@@ -306,6 +307,19 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       add(const PostingQuotaRequested());
     } on ListingSaveException catch (error) {
       debugPrint('Đăng tin lỗi: $error');
+      final duplicate = error.duplicate;
+      if (duplicate != null) {
+        emit(
+          state.copyWith(
+            draft: _keepProgress(sent, error),
+            publishStatus: RequestStatus.idle,
+            duplicate: duplicate,
+            duplicatePaid: event.payWithCredits,
+            duplicateHits: state.duplicateHits + 1,
+          ),
+        );
+        return;
+      }
       if (!error.isPostingLimitReached) {
         // Tin đã tạo trên máy chủ: thử lại thì cập nhật đúng tin đó
         emit(
