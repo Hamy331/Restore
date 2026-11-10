@@ -17,11 +17,14 @@ export const HISTORY_FILTERS: Record<string, CreditTxnType[]> = {
 
 export type BucketSum = { bucket: CreditBucket; amount: number };
 
-/** Số dư ví từ tổng bút toán theo từng loại xu. Chưa có giữ xu nên held = 0. */
-export function summarizeWallet(sums: BucketSum[], nextBonusExpiry: Date | null) {
+/**
+ * Số dư ví từ tổng bút toán theo từng loại xu. Xu giữ cho tin chờ duyệt đã bị trừ khỏi số dư
+ * (bút toán SPEND), [held] chỉ để hiển thị "đang giữ".
+ */
+export function summarizeWallet(sums: BucketSum[], nextBonusExpiry: Date | null, held = 0) {
   const paid = Math.max(0, sums.find((s) => s.bucket === CreditBucket.PAID)?.amount ?? 0);
   const bonus = Math.max(0, sums.find((s) => s.bucket === CreditBucket.BONUS)?.amount ?? 0);
-  return { available: paid + bonus, paid, bonus, held: 0, nextBonusExpiry: bonus > 0 ? nextBonusExpiry : null };
+  return { available: paid + bonus, paid, bonus, held, nextBonusExpiry: bonus > 0 ? nextBonusExpiry : null };
 }
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

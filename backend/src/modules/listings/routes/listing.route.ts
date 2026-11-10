@@ -13,11 +13,23 @@ const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
  * Đăng tin mới, tin vào hàng chờ duyệt (PENDING). Trừ lượt đăng trong ngày theo gói cửa hàng
  *
  * Body: title (5-70), description (10-1500), price (chuỗi số VND), condition, categoryId,
- *       isNegotiable?, allowSale?, allowExchange?, exchangeWish?, sellerType?, location, attributes?
+ *       isNegotiable?, allowSale?, allowExchange?, exchangeWish?, sellerType?, location, attributes?,
+ *       payWithCredits? (true = đồng ý trả xu khi hết suất miễn phí)
  *
  * Trả về: 201 Listing (đủ địa chỉ)
+ * Lỗi: 409 POSTING_LIMIT_REACHED { details: { categoryId, blockedBy, extraCredits, available, ... } },
+ *      409 NOT_ENOUGH_CREDITS { details: { required, available, missing } }, 409 DAILY_LISTING_LIMIT
  */
 listingRouter.post('/', manageOwn, validate({ body: createListingBody }), listingController.create);
+
+/**
+ * Hạn mức đăng tin của tôi (tài khoản Cá nhân: từng chuyên mục + tổng 5 tin; hết suất thì trả xu)
+ *
+ * Trả về: { accountType: personal | business, tier, displayDays, recentWindowDays, defaultLimit, businessLimit,
+ *   total: { used, limit }, daily: { used, limit }, wallet: { available },
+ *   categories: [{ categoryId, used, limit, recentUsed, recentLimit, extraCredits, freeAvailable, blockedBy }] }
+ */
+listingRouter.get('/posting-quota', manageOwn, listingController.postingQuota);
 
 /**
  * Số tin đang bán và đã bán của tôi

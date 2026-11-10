@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:restore/modules/location/models/address_info.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
@@ -16,7 +18,10 @@ class CategoriesRequested extends CreateListingEvent {
 
 /// Tải hạn mức đăng tin của tài khoản (số tin đã dùng mỗi chuyên mục)
 class PostingQuotaRequested extends CreateListingEvent {
-  const PostingQuotaRequested();
+  /// Hoàn thành khi tải xong (kể cả lỗi), để màn chọn chuyên mục chờ hạn
+  /// mức mới nhất trước khi cho vào trang tạo tin
+  final Completer<void>? done;
+  const PostingQuotaRequested({this.done});
 }
 
 class CategorySelected extends CreateListingEvent {
@@ -122,7 +127,13 @@ class DraftSaveRequested extends CreateListingEvent {
 }
 
 class PublishRequested extends CreateListingEvent {
-  const PublishRequested();
+  /// Người dùng đã đồng ý trả xu cho tin vượt hạn mức
+  final bool payWithCredits;
+
+  const PublishRequested({this.payWithCredits = false});
+
+  @override
+  List<Object?> get props => [payWithCredits];
 }
 
 /// Tải danh sách tin nháp; [loadMore] lấy thêm trang sau

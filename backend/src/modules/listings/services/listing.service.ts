@@ -1,7 +1,7 @@
 import { ListingStatus, Prisma } from '@prisma/client';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
-import { storePackageForUser, storeUsage, withQuotaTransaction } from '../../commerce/index.js';
+import { withQuotaTransaction } from '../../commerce/index.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { toCategoryDto } from '../../catalog/catalog.dto.js';
 import { ListingInput, MineQuery, toListingDto, toOwnerListingDto } from '../listing.dto.js';
@@ -9,6 +9,8 @@ import { LISTING_EDITABLE } from '../listing.type.js';
 import { validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import type { Db } from '../repositories/listing.repository.js';
+import { COUNTED_STATUSES } from '../repositories/posting-quota.repository.js';
+import { assertPostingSlot, chargeListing, postingQuota } from './posting-quota.service.js';
 
 type Viewer = AuthRequest['user'];
 
@@ -45,40 +47,49 @@ export async function assertPublishable(tx: Db, data: Pick<ListingInput, 'catego
   validateAttributes(data.attributes, category.metadata, true);
 }
 
-/** Còn lượt đăng tin theo gói cửa hàng: lượt trong ngày (nếu [daily]) và số tin đang hoạt động */
-export async function assertQuota(tx: Db, ownerId: string, now: Date, { daily }: { daily: boolean }) {
-  const plan = await storePackageForUser(tx, ownerId, now);
-  const usage = await storeUsage(tx, ownerId, now);
-  if (daily && usage.today >= plan.package.dailyListingLimit) {
-    throw new AppError(409, 'DAILY_LISTING_LIMIT', 'Bạn đã dùng hết lượt đăng tin trong ngày.');
-  }
-  if (usage.active >= plan.package.activeListingLimit) {
-    throw new AppError(409, 'ACTIVE_LISTING_LIMIT', 'Bạn đã đạt giới hạn tin đang hoạt động.');
-  }
-}
-
 /* ---------- Tin đăng ---------- */
 
-/** Đăng tin mới, chờ duyệt (PENDING) */
-export async function createListing(ownerId: string, data: ListingInput) {
+/**
+ * Đăng tin mới, chờ duyệt (PENDING). Hết suất miễn phí thì cần [payWithCredits]:
+ * xu được giữ ngay, duyệt thì trừ hẳn, từ chối thì hoàn.
+ */
+export async function createListing(ownerId: string, data: ListingInput, payWithCredits = false) {
   const listing = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     await assertPublishable(tx, data);
-    await assertQuota(tx, ownerId, now, { daily: true });
-    return listingRepository.createListing({ ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING }, tx);
+    const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits });
+    const created = await listingRepository.createListing(
+      { ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price }, tx);
+    await chargeListing(tx, ownerId, created.id, price, data.title);
+    return created;
   });
   return toOwnerListingDto(listing);
 }
 
-/** Sửa tin đã đăng; tin quay lại chờ duyệt */
-export async function updateListing(ownerId: string, id: string, data: ListingInput) {
-  const listing = await listingRepository.transaction(async (tx) => {
+/**
+ * Sửa tin đã đăng; tin quay lại chờ duyệt.
+ * Tin miễn phí cần suất lại khi đang không chiếm suất (bị từ chối, đã ẩn) hoặc đổi chuyên mục.
+ * Tin đã trả xu giữ nguyên suất nhưng không được đổi chuyên mục (giá mỗi chuyên mục khác nhau).
+ */
+export async function updateListing(ownerId: string, id: string, data: ListingInput, payWithCredits = false) {
+  const listing = await withQuotaTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (!LISTING_EDITABLE.includes(current.status)) {
       throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị hoặc đã ẩn.');
     }
     await assertPublishable(tx, data);
-    await updateOwnedListing(tx, id, ownerId, current.status, { ...data, status: ListingStatus.PENDING, reviewReason: null });
+    const categoryChanged = current.categoryId !== data.categoryId;
+    if (current.paidCredits > 0 && categoryChanged) {
+      throw new AppError(409, 'CATEGORY_LOCKED', 'Tin đã trả xu không đổi được chuyên mục.', 'categoryId');
+    }
+    let price = 0;
+    if (current.paidCredits === 0 && (categoryChanged || !COUNTED_STATUSES.includes(current.status))) {
+      price = await assertPostingSlot(tx, ownerId, new Date(), { categoryId: data.categoryId, daily: false, payWithCredits, excludeId: id });
+    }
+    await updateOwnedListing(tx, id, ownerId, current.status, {
+      ...data, status: ListingStatus.PENDING, reviewReason: null, ...(price > 0 && { paidCredits: price }),
+    });
+    await chargeListing(tx, ownerId, id, price, data.title);
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);
@@ -94,12 +105,19 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
     if (!canChangeListingStatus(current.status, target)) {
       throw new AppError(409, 'INVALID_STATUS_CHANGE', 'Không thể đổi trạng thái tin theo cách này.');
     }
-    if (target === ListingStatus.AVAILABLE) await assertQuota(tx, ownerId, new Date(), { daily: false });
+    // Hiện lại tin miễn phí đã ẩn: cần còn suất (tin đã trả xu thì giữ suất của nó)
+    if (target === ListingStatus.AVAILABLE && current.paidCredits === 0 && current.categoryId) {
+      await assertPostingSlot(tx, ownerId, new Date(), { categoryId: current.categoryId, daily: false, payWithCredits: false, excludeId: id });
+    }
     await updateOwnedListing(tx, id, ownerId, current.status, { status: target });
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);
 }
+
+/** Hạn mức đăng tin cho màn đăng tin */
+export const getPostingQuota = (ownerId: string) =>
+  listingRepository.transaction((tx) => postingQuota(tx, ownerId, new Date()));
 
 /** Số tin đang bán và đã bán */
 export async function getSummary(ownerId: string) {

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
@@ -26,14 +29,55 @@ import 'widgets/posting_quota_banner.dart';
 class ChooseCategoryMobileView extends StatelessWidget {
   const ChooseCategoryMobileView({super.key});
 
-  void _onSelect(BuildContext context, CategoryModel category) {
-    final bloc = context.read<CreateListingBloc>();
-    final quota = bloc.state.quota;
-    // Chuyên mục đã đủ số tin: báo ngay, không để người bán điền tin vô ích
-    if (quota != null && quota.isFull(category.id)) {
-      showPostingLimitSheet(context, category: category, quota: quota);
-      return;
+  /// Chặn chạm liên tiếp khi đang kiểm tra hạn mức
+  static bool _selecting = false;
+
+  Future<void> _onSelect(BuildContext context, CategoryModel category) async {
+    if (_selecting) return;
+    _selecting = true;
+    try {
+      await _checkAndOpen(context, category);
+    } finally {
+      _selecting = false;
     }
+  }
+
+  Future<void> _checkAndOpen(
+    BuildContext context,
+    CategoryModel category,
+  ) async {
+    final bloc = context.read<CreateListingBloc>();
+    // Luôn lấy hạn mức mới nhất trước khi cho vào trang tạo tin: bấm nhanh
+    // lúc hạn mức chưa tải xong (hoặc vừa đăng tin khác) không lọt qua được
+    final done = Completer<void>();
+    bloc.add(PostingQuotaRequested(done: done));
+    await done.future.timeout(const Duration(seconds: 8), onTimeout: () {});
+    if (!context.mounted) return;
+    final quota = bloc.state.quota;
+    // Hết suất miễn phí: báo ngay, cho chọn trả xu hoặc nạp xu trước khi
+    // người bán mất công điền tin
+    if (quota != null && quota.isFull(category.id)) {
+      final action = await showPostingLimitSheet(
+        context,
+        category: category,
+        quota: quota,
+      );
+      if (!context.mounted) return;
+      switch (action) {
+        case PostingLimitAction.payWithCredits:
+          break;
+        case PostingLimitAction.topUp:
+          final price = quota.forCategory(category.id).extraCredits ?? 0;
+          await context.push(
+            CreditTopupView.location(need: price - quota.walletAvailable),
+          );
+          bloc.add(const PostingQuotaRequested());
+          return;
+        case PostingLimitAction.chooseAnotherCategory || null:
+          return;
+      }
+    }
+    if (!context.mounted) return;
     bloc.add(CategorySelected(category.id));
     // Điều hướng ngay khi chạm, không chờ state đổi: nếu chọn lại đúng
     // danh mục cũ thì state không đổi và trang sẽ "đứng" (lỗi cũ)

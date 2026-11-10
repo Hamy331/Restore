@@ -18,8 +18,10 @@ export const listPackages = () => repo.findActivePackages();
 
 export async function getWallet(userId: string) {
   const now = new Date();
-  const [sums, next] = await Promise.all([repo.sumByBucket(userId), repo.findNextBonusExpiry(userId, now)]);
-  return summarizeWallet(sums, next?.expiresAt ?? null);
+  const [sums, next, held] = await Promise.all([
+    repo.sumByBucket(userId), repo.findNextBonusExpiry(userId, now), repo.sumHeld(userId),
+  ]);
+  return summarizeWallet(sums, next?.expiresAt ?? null, held);
 }
 
 export async function listTransactions(userId: string, { page, limit, type }: HistoryQuery) {

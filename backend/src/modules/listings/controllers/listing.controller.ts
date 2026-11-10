@@ -5,19 +5,26 @@ import { getInput, ValidatedInput } from '../../../middlewares/validate.middlewa
 import type { ListingIdParams, ListingInput, MineQuery, StatusInput } from '../listing.dto.js';
 import * as listingService from '../services/listing.service.js';
 
+/** Body có payWithCredits: true khi người dùng đồng ý trả xu cho tin vượt hạn mức */
+export const wantsToPay = (req: AuthRequest) => (req.body as { payWithCredits?: unknown } | undefined)?.payWithCredits === true;
+
 export async function create(req: AuthRequest, res: Response) {
   const { body } = getInput<ValidatedInput<undefined, undefined, ListingInput>>(res);
-  created(res, await listingService.createListing(req.user!.userId, body));
+  created(res, await listingService.createListing(req.user!.userId, body, wantsToPay(req)));
 }
 
 export async function update(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, ListingInput>>(res);
-  ok(res, await listingService.updateListing(req.user!.userId, params.id, body));
+  ok(res, await listingService.updateListing(req.user!.userId, params.id, body, wantsToPay(req)));
 }
 
 export async function changeStatus(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, StatusInput>>(res);
   ok(res, await listingService.changeStatus(req.user!.userId, params.id, body.status));
+}
+
+export async function postingQuota(req: AuthRequest, res: Response) {
+  ok(res, await listingService.getPostingQuota(req.user!.userId));
 }
 
 export async function summary(req: AuthRequest, res: Response) {

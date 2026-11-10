@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { CATEGORY_ORDER } from '../src/modules/catalog/catalog.type.js';
 import { CATEGORIES } from './seed/categories.js';
-import { CONDITION_POLICIES, CREDIT_PACKAGES, PROMOTION_PACKAGES, STORE_PACKAGES } from './seed/reference.js';
+import { CONDITION_POLICIES, CREDIT_PACKAGES, POSTING_LIMITS, PROMOTION_PACKAGES, STORE_PACKAGES } from './seed/reference.js';
 
 /**
  * Seed dữ liệu tham chiếu: danh mục, tình trạng sản phẩm, gói cửa hàng, gói đẩy tin.
@@ -23,7 +23,7 @@ async function main() {
   const counts = { categories: 0, conditions: 0, storePackages: 0, promotionPackages: 0, creditPackages: 0 };
 
   for (const category of CATEGORIES) {
-    const data = { name: category.name.vi, metadata: category as Prisma.InputJsonObject };
+    const data = { name: category.name.vi, metadata: category as Prisma.InputJsonObject, ...POSTING_LIMITS[category.id] };
     const existing = await prisma.category.findUnique({ where: { id: category.id }, select: { id: true } });
     if (!existing) await prisma.category.create({ data: { id: category.id, ...data } });
     else if (sync) await prisma.category.update({ where: { id: category.id }, data });

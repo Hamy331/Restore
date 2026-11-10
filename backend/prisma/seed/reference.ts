@@ -12,7 +12,7 @@ export const CONDITION_POLICIES: { condition: ListingCondition; name: string }[]
 
 export const STORE_PACKAGES: { id: string; tier: StoreTier; name: string; monthlyPrice: number; dailyListingLimit: number;
   activeListingLimit: number; monthlyPromotionQuota: number; priorityLevel: number }[] = [
-  { id: 'personal', tier: 'PERSONAL', name: 'Cá nhân', monthlyPrice: 0, dailyListingLimit: 3, activeListingLimit: 10, draftLimit: 3, monthlyPromotionQuota: 0, priorityLevel: 0 },
+  { id: 'personal', tier: 'PERSONAL', name: 'Cá nhân', monthlyPrice: 0, dailyListingLimit: 3, activeListingLimit: 5, draftLimit: 3, monthlyPromotionQuota: 0, priorityLevel: 0 },
   { id: 'basic', tier: 'BASIC', name: 'Cửa hàng Basic', monthlyPrice: 99000, dailyListingLimit: 10, activeListingLimit: 30, draftLimit: 10, monthlyPromotionQuota: 2, priorityLevel: 1 },
   { id: 'pro', tier: 'PRO', name: 'Cửa hàng Pro', monthlyPrice: 299000, dailyListingLimit: 30, activeListingLimit: 100, draftLimit: 30, monthlyPromotionQuota: 10, priorityLevel: 2 },
 ];
@@ -34,3 +34,20 @@ export const CREDIT_PACKAGES: { id: string; priceVnd: number; credits: number; b
   { id: 'p200', priceVnd: 200000, credits: 200, bonusCredits: 30, popular: false, sortOrder: 4 },
   { id: 'p500', priceVnd: 500000, credits: 500, bonusCredits: 100, popular: false, sortOrder: 5 },
 ];
+
+/**
+ * Hạn mức tài khoản Cá nhân theo chuyên mục: số tin miễn phí đang hiển thị và giá (xu) mỗi tin vượt.
+ * Tổng toàn tài khoản là activeListingLimit của gói PERSONAL (5).
+ */
+export const POSTING_LIMITS: Record<string, { freeListingLimit: number; extraListingCredits: number }> = {
+  phones: { freeListingLimit: 1, extraListingCredits: 15 },
+  vehicles: { freeListingLimit: 1, extraListingCredits: 15 },
+  electronics: { freeListingLimit: 1, extraListingCredits: 15 },
+  appliances: { freeListingLimit: 1, extraListingCredits: 10 },
+  pets: { freeListingLimit: 1, extraListingCredits: 10 },
+  furniture: { freeListingLimit: 2, extraListingCredits: 10 },
+  fashion: { freeListingLimit: 2, extraListingCredits: 5 },
+  sports: { freeListingLimit: 2, extraListingCredits: 5 },
+  other: { freeListingLimit: 2, extraListingCredits: 5 },
+  books: { freeListingLimit: 3, extraListingCredits: 5 },
+};

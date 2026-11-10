@@ -3498,4 +3498,62 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get creditPackagesError => 'Không tải được gói nạp';
+
+  @override
+  String get postingLimitTotalTitle => 'Đã đủ số tin miễn phí';
+
+  @override
+  String postingLimitTotalMessage(int limit) {
+    return 'Tài khoản cá nhân được đăng tối đa $limit tin miễn phí cùng lúc trên tất cả chuyên mục.';
+  }
+
+  @override
+  String postingLimitRecentMessage(String category, int days) {
+    return 'Bạn đã đăng miễn phí nhiều lần ở mục $category trong $days ngày qua. Mỗi chuyên mục được đăng miễn phí tối đa gấp đôi số suất trong $days ngày.';
+  }
+
+  @override
+  String postingPayTitle(int credits) {
+    return 'Đăng tin này với $credits xu';
+  }
+
+  @override
+  String postingPayBalance(int available) {
+    return 'Ví của bạn: $available xu';
+  }
+
+  @override
+  String get postingPayNote =>
+      'Xu được giữ khi gửi tin và chỉ bị trừ khi tin được duyệt. Tin bị từ chối sẽ được hoàn xu.';
+
+  @override
+  String postingPayMissing(int missing) {
+    return 'Bạn cần nạp thêm $missing xu.';
+  }
+
+  @override
+  String postingPayContinue(int credits) {
+    return 'Tiếp tục · $credits xu';
+  }
+
+  @override
+  String postingPayPublish(int credits) {
+    return 'Đăng · $credits xu';
+  }
+
+  @override
+  String get postingTopUp => 'Nạp xu';
+
+  @override
+  String get postingFreeWaysTitle => 'Hoặc giải phóng suất miễn phí';
+
+  @override
+  String postingQuotaTotalUsage(int used, int limit) {
+    return 'Đã dùng $used/$limit tin miễn phí của tài khoản';
+  }
+
+  @override
+  String postingQuotaPaidHint(int credits) {
+    return 'Hết suất? Đăng thêm bằng xu, từ $credits xu một tin.';
+  }
 }

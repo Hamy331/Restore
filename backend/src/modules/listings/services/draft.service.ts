@@ -6,7 +6,8 @@ import { DRAFT_EDITABLE } from '../listing.type.js';
 import { createInput, validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
-import { assertPublishable, assertQuota, requireOwnedListing, updateOwnedListing } from './listing.service.js';
+import { assertPublishable, requireOwnedListing, updateOwnedListing } from './listing.service.js';
+import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
 
 /** Số tin nháp đang giữ và giới hạn của gói */
 export const getDraftQuota = (ownerId: string) =>
@@ -43,7 +44,7 @@ export async function updateDraft(ownerId: string, id: string, data: DraftInput)
 }
 
 /** Đăng nháp: kiểm tra đủ nội dung như tin mới, cần ít nhất một ảnh, trừ lượt đăng */
-export async function publishDraft(ownerId: string, id: string) {
+export async function publishDraft(ownerId: string, id: string, payWithCredits = false) {
   const listing = await withQuotaTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (current.status === ListingStatus.PENDING) return listingRepository.findSelected(tx, id);
@@ -62,8 +63,9 @@ export async function publishDraft(ownerId: string, id: string) {
     });
     await assertPublishable(tx, data);
     const now = new Date();
-    await assertQuota(tx, ownerId, now, { daily: true });
-    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now });
+    const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
+    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price });
+    await chargeListing(tx, ownerId, id, price, data.title);
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);

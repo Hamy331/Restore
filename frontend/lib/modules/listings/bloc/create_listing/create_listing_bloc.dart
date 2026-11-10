@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
 import '../../models/draft_quota.dart';
 import '../../models/listing_draft.dart';
+import '../../models/posting_quota.dart';
 import '../../repositories/category_repository.dart';
 import '../../repositories/listings_repository.dart';
 import '../../repositories/posting_quota_repository.dart';
@@ -126,6 +127,8 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       );
     } catch (_) {
       // Không tải được hạn mức thì vẫn cho đăng, backend sẽ kiểm tra
+    } finally {
+      if (!(event.done?.isCompleted ?? true)) event.done!.complete();
     }
   }
 
@@ -282,7 +285,9 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       return;
     }
 
-    if (state.quota?.isFull(state.draft.categoryId) ?? false) {
+    // Hết suất miễn phí: hỏi người dùng có trả xu không trước khi gửi
+    if (!event.payWithCredits &&
+        (state.quota?.isFull(state.draft.categoryId) ?? false)) {
       emit(state.copyWith(postingLimitHits: state.postingLimitHits + 1));
       return;
     }
@@ -290,7 +295,11 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     emit(state.copyWith(publishStatus: RequestStatus.loading));
     final sent = state.draft;
     try {
-      final published = await _repository.publish(sent, state.category);
+      final published = await _repository.publish(
+        sent,
+        state.category,
+        payWithCredits: event.payWithCredits,
+      );
       emit(
         state.copyWith(draft: published, publishStatus: RequestStatus.success),
       );
@@ -308,14 +317,21 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         );
         return;
       }
-      // Hạn mức trên máy đã cũ (VD đăng từ thiết bị khác): tải lại rồi báo
+      // Hạn mức trên máy đã cũ (VD đăng từ thiết bị khác) hoặc ví không đủ
+      // xu: tải lại hạn mức và số dư trước rồi mới báo, để sheet hiện đúng
+      PostingQuota? fresh;
+      try {
+        fresh = await _quotaRepository.getQuota();
+      } catch (_) {
+        fresh = null;
+      }
       emit(
         state.copyWith(
+          quota: fresh ?? state.quota,
           publishStatus: RequestStatus.idle,
           postingLimitHits: state.postingLimitHits + 1,
         ),
       );
-      add(const PostingQuotaRequested());
     } catch (error) {
       emit(
         state.copyWith(publishStatus: RequestStatus.failure, saveError: error),

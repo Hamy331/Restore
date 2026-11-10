@@ -6331,6 +6331,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load point packs'**
   String get creditPackagesError;
+
+  /// No description provided for @postingLimitTotalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Free listings used up'**
+  String get postingLimitTotalTitle;
+
+  /// No description provided for @postingLimitTotalMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A personal account can have at most {limit} free listings at once across all categories.'**
+  String postingLimitTotalMessage(int limit);
+
+  /// No description provided for @postingLimitRecentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have posted for free in {category} many times in the last {days} days. Each category allows up to twice its free slots every {days} days.'**
+  String postingLimitRecentMessage(String category, int days);
+
+  /// No description provided for @postingPayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post this listing for {credits} points'**
+  String postingPayTitle(int credits);
+
+  /// No description provided for @postingPayBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallet: {available} points'**
+  String postingPayBalance(int available);
+
+  /// No description provided for @postingPayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points are held when you submit and only spent once the listing is approved. Rejected listings get their points back.'**
+  String get postingPayNote;
+
+  /// No description provided for @postingPayMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'You need {missing} more points.'**
+  String postingPayMissing(int missing);
+
+  /// No description provided for @postingPayContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue · {credits} points'**
+  String postingPayContinue(int credits);
+
+  /// No description provided for @postingPayPublish.
+  ///
+  /// In en, this message translates to:
+  /// **'Post · {credits} points'**
+  String postingPayPublish(int credits);
+
+  /// No description provided for @postingTopUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy points'**
+  String get postingTopUp;
+
+  /// No description provided for @postingFreeWaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Or free up a free slot'**
+  String get postingFreeWaysTitle;
+
+  /// No description provided for @postingQuotaTotalUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'{used}/{limit} free listings used on your account'**
+  String postingQuotaTotalUsage(int used, int limit);
+
+  /// No description provided for @postingQuotaPaidHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of slots? Post more with points, from {credits} points per listing.'**
+  String postingQuotaPaidHint(int credits);
 }
 
 class _AppLocalizationsDelegate

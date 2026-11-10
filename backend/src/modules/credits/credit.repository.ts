@@ -14,6 +14,12 @@ export async function sumByBucket(userId: string) {
   return rows.map((row) => ({ bucket: row.bucket, amount: row._sum.amount ?? 0 }));
 }
 
+/** Tổng xu đang giữ cho tin chờ duyệt */
+export async function sumHeld(userId: string) {
+  const sum = await prisma.creditHold.aggregate({ where: { userId, status: 'HELD' }, _sum: { amount: true } });
+  return sum._sum.amount ?? 0;
+}
+
 /** Hạn gần nhất của các lần được tặng xu còn hiệu lực */
 export const findNextBonusExpiry = (userId: string, now: Date) =>
   prisma.creditTransaction.findFirst({

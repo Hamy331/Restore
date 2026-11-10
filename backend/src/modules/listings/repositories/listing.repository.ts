@@ -115,11 +115,11 @@ export const findPending = () =>
 
 /** Tin cần đọc khi admin ra quyết định */
 export const findForModeration = (tx: Db, id: string) =>
-  tx.listing.findUnique({ where: { id }, select: { id: true, status: true, images: true, updatedAt: true, categoryId: true, condition: true } });
+  tx.listing.findUnique({ where: { id }, select: { id: true, status: true, images: true, updatedAt: true, categoryId: true, condition: true, title: true } });
 
 /** Đổi trạng thái khi tin vẫn đúng trạng thái và updatedAt lúc admin mở; trả về số dòng đổi */
 export async function updateWhereVersion(tx: Db, id: string, status: ListingStatus, updatedAt: Date,
-  data: { status: ListingStatus; reviewReason: string | null }) {
+  data: { status: ListingStatus; reviewReason: string | null; paidCredits?: number }) {
   const changed = await tx.listing.updateMany({ where: { id, status, updatedAt }, data });
   return changed.count;
 }

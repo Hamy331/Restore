@@ -1723,5 +1723,87 @@
   "creditBackToWallet": "Về ví xu",
   "creditErrorTooManyPending": "Bạn đang có quá nhiều đơn nạp chưa thanh toán. Đợi 15 phút để đơn hết hạn hoặc huỷ bớt.",
   "creditErrorGeneric": "Không thực hiện được, vui lòng thử lại.",
-  "creditPackagesError": "Không tải được gói nạp"
+  "creditPackagesError": "Không tải được gói nạp",
+  "postingLimitTotalTitle": "Đã đủ số tin miễn phí",
+  "postingLimitTotalMessage": "Tài khoản cá nhân được đăng tối đa {limit} tin miễn phí cùng lúc trên tất cả chuyên mục.",
+  "@postingLimitTotalMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLimitRecentMessage": "Bạn đã đăng miễn phí nhiều lần ở mục {category} trong {days} ngày qua. Mỗi chuyên mục được đăng miễn phí tối đa gấp đôi số suất trong {days} ngày.",
+  "@postingLimitRecentMessage": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayTitle": "Đăng tin này với {credits} xu",
+  "@postingPayTitle": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayBalance": "Ví của bạn: {available} xu",
+  "@postingPayBalance": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayNote": "Xu được giữ khi gửi tin và chỉ bị trừ khi tin được duyệt. Tin bị từ chối sẽ được hoàn xu.",
+  "postingPayMissing": "Bạn cần nạp thêm {missing} xu.",
+  "@postingPayMissing": {
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayContinue": "Tiếp tục · {credits} xu",
+  "@postingPayContinue": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayPublish": "Đăng · {credits} xu",
+  "@postingPayPublish": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingTopUp": "Nạp xu",
+  "postingFreeWaysTitle": "Hoặc giải phóng suất miễn phí",
+  "postingQuotaTotalUsage": "Đã dùng {used}/{limit} tin miễn phí của tài khoản",
+  "@postingQuotaTotalUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaPaidHint": "Hết suất? Đăng thêm bằng xu, từ {credits} xu một tin.",
+  "@postingQuotaPaidHint": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  }
 }

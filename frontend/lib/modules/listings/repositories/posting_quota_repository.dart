@@ -23,6 +23,10 @@ class MockPostingQuotaRepository implements PostingQuotaRepository {
     await Future<void>.delayed(latency);
     // Loại tài khoản và giới hạn đi theo gói đang chọn ở nút test đổi gói
     final plan = DevPlanOverride.plan.value;
+    final totalUsed = MockPostingQuotaStore.used.values.fold(
+      0,
+      (a, b) => a + b,
+    );
     return PostingQuota.fromJson({
       ...PostingQuotaMockData.quota,
       if (plan != SubscriptionPlan.personal) ...{
@@ -31,19 +35,31 @@ class MockPostingQuotaRepository implements PostingQuotaRepository {
             ? PostingQuotaMockData.shopLimit
             : PostingQuotaMockData.proLimit,
       },
+      'total': {
+        'used': totalUsed,
+        if (plan == SubscriptionPlan.personal)
+          'limit': PostingQuotaMockData.personalTotal,
+      },
       'categories': [
         for (final entry in MockPostingQuotaStore.used.entries)
           {
             'categoryId': entry.key,
             'used': entry.value,
             'limit': MockPostingQuotaStore.limitOf(entry.key),
+            'extraCredits': MockPostingQuotaStore.extraCreditsOf(entry.key),
+            'blockedBy': entry.value >= MockPostingQuotaStore.limitOf(entry.key)
+                ? 'CATEGORY'
+                : (plan == SubscriptionPlan.personal &&
+                          totalUsed >= PostingQuotaMockData.personalTotal
+                      ? 'TOTAL'
+                      : null),
           },
       ],
     });
   }
 }
 
-/// Gọi `GET /me/posting-quota`. Không giữ cache vì số tin thay đổi mỗi lần
+/// Gọi `GET /listings/posting-quota`. Không giữ cache vì số tin thay đổi mỗi lần
 /// đăng, ẩn hoặc bán tin.
 class ApiPostingQuotaRepository implements PostingQuotaRepository {
   ApiPostingQuotaRepository({ApiClient? apiClient})
@@ -54,7 +70,7 @@ class ApiPostingQuotaRepository implements PostingQuotaRepository {
   @override
   Future<PostingQuota> getQuota() async {
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/me/posting-quota',
+      '/listings/posting-quota',
     );
     final data = response.data?['data'];
     if (data is! Map) throw const FormatException('Missing response data');

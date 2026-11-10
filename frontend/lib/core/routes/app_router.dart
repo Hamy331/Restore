@@ -454,6 +454,7 @@ GoRouter createAppRouter(
         state: state,
         child: CreditTopupView(
           preselectId: state.uri.queryParameters['package'],
+          need: int.tryParse(state.uri.queryParameters['need'] ?? ''),
         ),
       ),
     ),

@@ -17,6 +17,7 @@ export const errorHandler = (
       error: error.message,
       code: error.code,
       ...(error.field ? { field: error.field } : {}),
+      ...(error.details ? { details: error.details } : {}),
     });
   }
 

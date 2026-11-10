@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/shared/widgets/app_quota_indicator.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 import 'package:restore/shared/widgets/glass/app_glass_sheet.dart';
 import '../../../models/posting_quota.dart';
@@ -49,6 +50,36 @@ class PostingQuotaBanner extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
+                if (quota.totalLimit != null) ...[
+                  const SizedBox(height: 8),
+                  AppQuotaMeter(
+                    used: quota.totalUsed,
+                    limit: quota.totalLimit!,
+                    height: 6,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.postingQuotaTotalUsage(
+                      quota.totalUsed,
+                      quota.totalLimit!,
+                    ),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+                if (quota.minExtraCredits != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.postingQuotaPaidHint(quota.minExtraCredits!),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      height: 1.35,
+                      color: AppColors.primaryDark,
+                    ),
+                  ),
+                ],
                 TextButton.icon(
                   onPressed: () => showPostingRulesSheet(context, quota: quota),
                   iconAlignment: IconAlignment.end,
