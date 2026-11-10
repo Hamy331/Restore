@@ -40,6 +40,9 @@ class CategoryPostingQuota extends Equatable {
   /// Giá (xu) gia hạn tin thêm một kỳ, mọi gói đều gia hạn được
   final int? extendCredits;
 
+  /// Giá (xu) một lần đẩy tin, đã giảm theo gói
+  final int? boostCredits;
+
   const CategoryPostingQuota({
     required this.categoryId,
     required this.used,
@@ -48,6 +51,7 @@ class CategoryPostingQuota extends Equatable {
     this.blockedBy,
     this.displayDays = 60,
     this.extendCredits,
+    this.boostCredits,
   });
 
   int get remaining => (limit - used).clamp(0, limit);
@@ -74,6 +78,7 @@ class CategoryPostingQuota extends Equatable {
       extendCredits:
           (json['extendCredits'] as num?)?.toInt() ??
           (json['extraCredits'] as num?)?.toInt(),
+      boostCredits: (json['boostCredits'] as num?)?.toInt(),
       blockedBy:
           PostingQuotaBlock.fromApi(json['blockedBy']) ??
           (free == false || (free == null && used >= limit)
@@ -91,6 +96,7 @@ class CategoryPostingQuota extends Equatable {
     blockedBy,
     displayDays,
     extendCredits,
+    boostCredits,
   ];
 }
 
@@ -117,6 +123,13 @@ class PostingQuota extends Equatable {
   final int walletAvailable;
   final Map<String, CategoryPostingQuota> categories;
 
+  /// Lượt đẩy tin miễn phí còn lại trong tháng / lượt tặng mỗi tháng của gói
+  final int boostFreeLeft;
+  final int boostFreePerMonth;
+
+  /// Phần trăm giảm giá đẩy tin của gói (0 với Cá nhân)
+  final int boostDiscountPercent;
+
   const PostingQuota({
     required this.accountType,
     required this.defaultLimit,
@@ -126,6 +139,9 @@ class PostingQuota extends Equatable {
     this.totalLimit,
     this.walletAvailable = 0,
     this.categories = const {},
+    this.boostFreeLeft = 0,
+    this.boostFreePerMonth = 0,
+    this.boostDiscountPercent = 0,
   });
 
   CategoryPostingQuota forCategory(String categoryId) =>
@@ -167,6 +183,7 @@ class PostingQuota extends Equatable {
     ];
     final total = json['total'] is Map ? json['total'] as Map : const {};
     final wallet = json['wallet'] is Map ? json['wallet'] as Map : const {};
+    final boost = json['boost'] is Map ? json['boost'] as Map : const {};
     return PostingQuota(
       accountType: json['accountType'] == 'business'
           ? SellerType.business
@@ -178,6 +195,9 @@ class PostingQuota extends Equatable {
       totalLimit: (total['limit'] as num?)?.toInt(),
       walletAvailable: (wallet['available'] as num?)?.toInt() ?? 0,
       categories: {for (final item in categories) item.categoryId: item},
+      boostFreeLeft: (boost['freeLeft'] as num?)?.toInt() ?? 0,
+      boostFreePerMonth: (boost['freePerMonth'] as num?)?.toInt() ?? 0,
+      boostDiscountPercent: (boost['discountPercent'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -191,6 +211,9 @@ class PostingQuota extends Equatable {
     totalLimit,
     walletAvailable,
     categories,
+    boostFreeLeft,
+    boostFreePerMonth,
+    boostDiscountPercent,
   ];
 }
 

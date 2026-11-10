@@ -116,17 +116,25 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     PostingQuotaRequested event,
     Emitter<CreateListingState> emit,
   ) async {
+    // Lần đầu mới báo đang tải; tải lại thì giữ hạn mức cũ trên màn hình
+    if (state.quotaStatus == RequestStatus.idle) {
+      emit(state.copyWith(quotaStatus: RequestStatus.loading));
+    }
     try {
       final quota = await _quotaRepository.getQuota();
       // Loại người bán theo tài khoản, không để người dùng tự chọn
       emit(
         state.copyWith(
           quota: quota,
+          quotaStatus: RequestStatus.success,
           draft: state.draft.copyWith(sellerType: quota.accountType),
         ),
       );
     } catch (_) {
       // Không tải được hạn mức thì vẫn cho đăng, backend sẽ kiểm tra
+      if (state.quota == null) {
+        emit(state.copyWith(quotaStatus: RequestStatus.failure));
+      }
     } finally {
       if (!(event.done?.isCompleted ?? true)) event.done!.complete();
     }

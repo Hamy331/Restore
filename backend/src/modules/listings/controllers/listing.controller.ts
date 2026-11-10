@@ -31,6 +31,11 @@ export async function extend(req: AuthRequest, res: Response) {
   ok(res, await listingService.extendListing(req.user!.userId, params.id));
 }
 
+export async function boost(req: AuthRequest, res: Response) {
+  const { params } = getInput<ValidatedInput<undefined, ListingIdParams, undefined>>(res);
+  ok(res, await listingService.boostListing(req.user!.userId, params.id));
+}
+
 export async function postingQuota(req: AuthRequest, res: Response) {
   ok(res, await listingService.getPostingQuota(req.user!.userId));
 }

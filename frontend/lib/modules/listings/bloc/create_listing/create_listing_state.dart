@@ -17,6 +17,9 @@ class CreateListingState extends Equatable {
   /// Hạn mức đăng tin; null khi chưa tải xong hoặc tải lỗi (khi đó app
   /// không chặn, backend vẫn kiểm tra lúc đăng)
   final PostingQuota? quota;
+
+  /// Trạng thái tải hạn mức (lỗi vẫn cho chọn chuyên mục, backend kiểm tra)
+  final RequestStatus quotaStatus;
   final ListingDraft draft;
   final bool showBasicInfoErrors;
   final bool showDetailErrors;
@@ -71,6 +74,7 @@ class CreateListingState extends Equatable {
     this.categories = const [],
     this.categoriesStatus = RequestStatus.idle,
     this.quota,
+    this.quotaStatus = RequestStatus.idle,
     this.draft = const ListingDraft(),
     this.showBasicInfoErrors = false,
     this.showDetailErrors = false,
@@ -94,6 +98,15 @@ class CreateListingState extends Equatable {
     this.draftLimitHits = 0,
     this.saveError,
   });
+
+  /// Màn chọn chuyên mục đã tải xong danh mục, hạn mức và tin nháp (thành
+  /// công hay lỗi), để hiện tất cả cùng lúc: không cho chọn chuyên mục khi
+  /// chưa biết chuyên mục nào đã hết suất
+  bool get chooseCategoryReady {
+    bool done(RequestStatus status) =>
+        status == RequestStatus.success || status == RequestStatus.failure;
+    return done(categoriesStatus) && done(quotaStatus) && done(draftsStatus);
+  }
 
   /// Lưu nháp lần này sẽ tạo thêm một tin nháp (chưa phải nháp đã lưu)
   bool get savingAddsDraft =>
@@ -135,6 +148,7 @@ class CreateListingState extends Equatable {
     List<CategoryModel>? categories,
     RequestStatus? categoriesStatus,
     PostingQuota? quota,
+    RequestStatus? quotaStatus,
     ListingDraft? draft,
     bool? showBasicInfoErrors,
     bool? showDetailErrors,
@@ -162,6 +176,7 @@ class CreateListingState extends Equatable {
       categories: categories ?? this.categories,
       categoriesStatus: categoriesStatus ?? this.categoriesStatus,
       quota: quota ?? this.quota,
+      quotaStatus: quotaStatus ?? this.quotaStatus,
       draft: draft ?? this.draft,
       showBasicInfoErrors: showBasicInfoErrors ?? this.showBasicInfoErrors,
       showDetailErrors: showDetailErrors ?? this.showDetailErrors,
@@ -194,6 +209,7 @@ class CreateListingState extends Equatable {
     categories,
     categoriesStatus,
     quota,
+    quotaStatus,
     draft,
     showBasicInfoErrors,
     showDetailErrors,

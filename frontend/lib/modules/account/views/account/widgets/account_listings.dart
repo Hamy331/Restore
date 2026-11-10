@@ -271,7 +271,7 @@ class _ListingRow extends StatelessWidget {
               child: _RowAction(
                 l.accBoost,
                 filled: true,
-                onTap: () => context.push('/boost/${item.id}'),
+                onTap: () => boostAccountListing(context, item),
               ),
             ),
             SizedBox(

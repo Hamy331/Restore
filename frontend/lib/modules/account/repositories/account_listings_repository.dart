@@ -25,6 +25,10 @@ abstract class AccountListingsRepository {
   /// Gia hạn tin thêm một kỳ bằng xu ([AccountListingActionException] khi lỗi)
   Future<void> extend(String id);
 
+  /// Đẩy tin lên đầu: lượt tặng của gói hoặc trả xu. Lỗi 409 ném
+  /// [ListingBoostException].
+  Future<BoostResult> boost(String id);
+
   /// Hạn mức đăng tin (giá xu, số ngày hiển thị, số xu trong ví)
   Future<PostingQuota> postingQuota();
 
@@ -92,6 +96,9 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
 
   @override
   Future<void> extend(String id) => _conflicts(() => _repository.extend(id));
+
+  @override
+  Future<BoostResult> boost(String id) => _repository.boost(id);
 
   @override
   Future<PostingQuota> postingQuota() => _quotaRepository.getQuota();

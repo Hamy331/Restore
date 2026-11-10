@@ -3628,4 +3628,39 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get postingPayNowNote =>
       'Xu bị trừ ngay khi tin hiện lại, không cần duyệt lại.';
+
+  @override
+  String get boostSheetMessage =>
+      'Tin được đưa lên đầu danh sách trong 24 giờ.';
+
+  @override
+  String boostFreeNote(int left, int perMonth) {
+    return 'Dùng 1 lượt miễn phí của gói, còn $left/$perMonth lượt tháng này.';
+  }
+
+  @override
+  String boostPayNote(int credits) {
+    return 'Giá $credits xu, trừ ngay khi đẩy.';
+  }
+
+  @override
+  String boostDiscountNote(int percent) {
+    return 'Gói của bạn được giảm $percent%.';
+  }
+
+  @override
+  String get boostUseFree => 'Đẩy miễn phí';
+
+  @override
+  String boostPay(int credits) {
+    return 'Đẩy tin · $credits xu';
+  }
+
+  @override
+  String get boostDone => 'Đã đẩy tin lên đầu';
+
+  @override
+  String boostTooSoon(int hours) {
+    return 'Tin vừa được đẩy. Bạn đẩy lại được sau $hours giờ nữa.';
+  }
 }

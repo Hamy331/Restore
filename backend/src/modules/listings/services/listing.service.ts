@@ -1,7 +1,7 @@
 import { ListingStatus, Prisma } from '@prisma/client';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
-import { withQuotaTransaction } from '../../commerce/index.js';
+import { createPromotion, findRunningPromotion, storePackageForUser, storeUsage, withQuotaTransaction } from '../../commerce/index.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { toCategoryDto } from '../../catalog/catalog.dto.js';
 import { ListingInput, MineQuery, toListingDto, toOwnerListingDto } from '../listing.dto.js';
@@ -10,7 +10,7 @@ import { validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import type { Db } from '../repositories/listing.repository.js';
 import { COUNTED_STATUSES } from '../repositories/posting-quota.repository.js';
-import { addDays, canExtend, daysLeft, extendedExpiry, isExpired } from '../listing-lifecycle.js';
+import { addDays, boostPrice, canExtend, daysLeft, extendedExpiry, isExpired } from '../listing-lifecycle.js';
 import { assertNotDuplicate, spendForListing } from './listing-lifecycle.service.js';
 import { assertPostingSlot, chargeListing, postingQuota } from './posting-quota.service.js';
 
@@ -160,6 +160,41 @@ export async function extendListing(ownerId: string, id: string) {
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);
+}
+
+/** Gói đẩy tin 1 ngày dùng cho đẩy tin bằng xu (có sẵn từ migration store_promotions) */
+const BOOST_PACKAGE_ID = 'bump-1';
+
+/**
+ * Đẩy tin đang hiển thị lên đầu. Còn lượt tặng của gói trong tháng thì miễn phí,
+ * hết lượt thì trả Category.boostCredits xu (giảm theo gói). Mỗi tin đẩy tối đa 1 lần / ngày:
+ * đang trong lượt đẩy thì 409 BOOST_TOO_SOON (details.availableAt); thiếu xu thì 409 NOT_ENOUGH_CREDITS.
+ */
+export async function boostListing(ownerId: string, id: string) {
+  return withQuotaTransaction(async (tx) => {
+    const now = new Date();
+    const current = await requireOwnedListing(tx, id, ownerId);
+    if (current.status !== ListingStatus.AVAILABLE) {
+      throw new AppError(409, 'LISTING_NOT_BOOSTABLE', 'Chỉ đẩy được tin đang hiển thị.');
+    }
+    const category = current.categoryId ? await listingRepository.findActiveCategory(tx, current.categoryId) : null;
+    if (!category) throw new AppError(409, 'INVALID_LISTING', 'Danh mục không còn được sử dụng.');
+    const running = await findRunningPromotion(tx, id, 'BUMP', now);
+    if (running) {
+      throw new AppError(409, 'BOOST_TOO_SOON', 'Tin vừa được đẩy, mỗi tin đẩy tối đa 1 lần mỗi ngày.', undefined,
+        { availableAt: running.endsAt.toISOString() });
+    }
+    const [plan, usage] = await Promise.all([storePackageForUser(tx, ownerId, now), storeUsage(tx, ownerId, now)]);
+    const free = usage.promotionsThisMonth < plan.package.monthlyPromotionQuota;
+    const credits = free ? 0 : boostPrice(category.boostCredits, plan.package.boostDiscountPercent);
+    await spendForListing(tx, ownerId, id, credits, `Đẩy tin · ${current.title}`);
+    const promotion = await createPromotion(tx, {
+      userId: ownerId, listingId: id, packageId: BOOST_PACKAGE_ID, source: free ? 'INCLUDED' : 'PURCHASED',
+      startsAt: now, endsAt: addDays(now, 1),
+    });
+    return { listingId: id, free, credits, startsAt: promotion.startsAt, endsAt: promotion.endsAt,
+      freeLeft: Math.max(0, plan.package.monthlyPromotionQuota - usage.promotionsThisMonth - (free ? 1 : 0)) };
+  });
 }
 
 /** Hạn mức đăng tin cho màn đăng tin */

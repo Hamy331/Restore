@@ -5,6 +5,8 @@
  * - Tin hiển thị Category.displayDays ngày kể từ lúc duyệt, quá hạn thì tự ẩn (HIDDEN, expiresAt đã qua).
  * - Kích hoạt lại tin hết hạn tính như đăng mới: còn suất miễn phí thì miễn phí, hết suất thì trả xu.
  * - Gia hạn tin đang hiển thị luôn tốn xu, mỗi lần thêm displayDays ngày; chỉ gia hạn khi còn tối đa displayDays ngày.
+ * - Đẩy tin lên đầu: gói nào cũng mua được bằng xu (Category.boostCredits), gói cao giảm giá
+ *   (StorePackage.boostDiscountPercent) và có lượt tặng mỗi tháng (monthlyPromotionQuota). Mỗi tin đẩy tối đa 1 lần / ngày.
  * - Không cho đăng tin trùng tiêu đề với tin đang hiển thị của chính mình; trùng tin đã ẩn / hết hạn thì gợi ý kích hoạt lại.
  */
 
@@ -35,3 +37,7 @@ export function normalizeTitle(title: string) {
   return title.normalize('NFD').replace(/\p{M}/gu, '').replace(/đ/gi, 'd').toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 }
+
+/** Giá một lần đẩy tin sau khi giảm theo gói, làm tròn, tối thiểu 1 xu */
+export const boostPrice = (base: number, discountPercent: number) =>
+  Math.max(1, Math.round((base * (100 - Math.min(100, Math.max(0, discountPercent)))) / 100));

@@ -3706,4 +3706,39 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get postingPayNowNote =>
       'Points are spent as soon as the listing is shown again, no new review needed.';
+
+  @override
+  String get boostSheetMessage =>
+      'Your listing moves to the top of the list for 24 hours.';
+
+  @override
+  String boostFreeNote(int left, int perMonth) {
+    return 'Uses 1 free boost from your plan, $left/$perMonth left this month.';
+  }
+
+  @override
+  String boostPayNote(int credits) {
+    return 'Costs $credits points, spent right away.';
+  }
+
+  @override
+  String boostDiscountNote(int percent) {
+    return 'Your plan gets $percent% off.';
+  }
+
+  @override
+  String get boostUseFree => 'Boost for free';
+
+  @override
+  String boostPay(int credits) {
+    return 'Boost · $credits points';
+  }
+
+  @override
+  String get boostDone => 'Listing boosted to the top';
+
+  @override
+  String boostTooSoon(int hours) {
+    return 'This listing was just boosted. You can boost it again in $hours hours.';
+  }
 }

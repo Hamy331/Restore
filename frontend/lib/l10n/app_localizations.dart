@@ -6523,6 +6523,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Points are spent as soon as the listing is shown again, no new review needed.'**
   String get postingPayNowNote;
+
+  /// No description provided for @boostSheetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing moves to the top of the list for 24 hours.'**
+  String get boostSheetMessage;
+
+  /// No description provided for @boostFreeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses 1 free boost from your plan, {left}/{perMonth} left this month.'**
+  String boostFreeNote(int left, int perMonth);
+
+  /// No description provided for @boostPayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Costs {credits} points, spent right away.'**
+  String boostPayNote(int credits);
+
+  /// No description provided for @boostDiscountNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan gets {percent}% off.'**
+  String boostDiscountNote(int percent);
+
+  /// No description provided for @boostUseFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost for free'**
+  String get boostUseFree;
+
+  /// No description provided for @boostPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost · {credits} points'**
+  String boostPay(int credits);
+
+  /// No description provided for @boostDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing boosted to the top'**
+  String get boostDone;
+
+  /// No description provided for @boostTooSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing was just boosted. You can boost it again in {hours} hours.'**
+  String boostTooSoon(int hours);
 }
 
 class _AppLocalizationsDelegate
