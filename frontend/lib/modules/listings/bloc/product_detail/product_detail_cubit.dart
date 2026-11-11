@@ -27,6 +27,13 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
   Timer? _refreshTimer;
   bool _refreshing = false;
 
+  /// Bỏ qua kết quả về muộn sau khi trang đã đóng (VD bấm vào rồi thoát
+  /// ngay khi chi tiết tin chưa tải xong)
+  @override
+  void emit(ProductDetailState state) {
+    if (!isClosed) super.emit(state);
+  }
+
   Future<void> load() async {
     emit(state.copyWith(status: ProductDetailStatus.loading));
     try {

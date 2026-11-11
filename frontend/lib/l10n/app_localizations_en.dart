@@ -1742,7 +1742,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeSeeAll => 'See all';
 
   @override
-  String get homeFeaturedTag => 'Featured';
+  String get homeFeaturedTag => 'Hot';
 
   @override
   String get homeExchangeTag => 'Swappable';
@@ -3866,4 +3866,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get postingUpgradeHint => 'Need more listings? Upgrade your plan';
+
+  @override
+  String get hotSaleTitle => 'Hot sale';
+
+  @override
+  String get featureAction => 'Put on Hot sale';
+
+  @override
+  String get featureSheetMessage =>
+      'Your listing shows in Hot sale on the home page and at the top of its category, above other listings, for the time you choose.';
+
+  @override
+  String featureDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String featurePay(int credits) {
+    return 'Buy · $credits points';
+  }
+
+  @override
+  String get featureDone => 'Your listing is on Hot sale';
+
+  @override
+  String featureRunning(String date) {
+    return 'This listing is on Hot sale until $date.';
+  }
+
+  @override
+  String get featureUnavailable => 'Only visible listings can go on Hot sale.';
+
+  @override
+  String get featureNoOptions => 'No Hot sale packages are on sale right now.';
+
+  @override
+  String accExpiresOn(String date, int days) {
+    return 'Expires $date · $days days left';
+  }
+
+  @override
+  String accExpiredOn(String date) {
+    return 'Expired $date';
+  }
+
+  @override
+  String previewDisplayDays(int days) {
+    return 'Your listing shows for $days days after approval. You can extend it near the end, or reactivate it once it expires.';
+  }
 }

@@ -1,4 +1,5 @@
-import 'package:restore/modules/content/views/community_content_view.dart' show reportListing;
+import 'package:restore/modules/content/views/community_content_view.dart'
+    show reportListing;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +18,7 @@ import '../../models/product_detail.dart';
 import '../../repositories/listings_repository.dart';
 import '../../repositories/posting_quota_repository.dart';
 import '../../widgets/boost_listing_sheet.dart';
+import '../../widgets/feature_listing_sheet.dart';
 import 'widgets/product_detail_attributes.dart';
 import 'widgets/product_detail_bottom_bar.dart';
 import 'widgets/product_detail_description.dart';
@@ -101,6 +103,21 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
       categoryId: detail.listing.categoryId,
       loadQuota: ApiPostingQuotaRepository().getQuota,
       boost: () => ApiListingsRepository().boost(detail.listing.id),
+    );
+  }
+
+  /// Chủ tin mua tin ưu tiên (Hot sale) bằng xu
+  Future<void> _onFeature(ProductDetail detail) async {
+    if (!detail.isAvailable) {
+      TSnackBarHelper.showInfo(context, message: _l10n.featureUnavailable);
+      return;
+    }
+    final repository = ApiListingsRepository();
+    await featureListingWithCredits(
+      context,
+      title: detail.listing.title,
+      loadQuote: () => repository.featureQuote(detail.listing.id),
+      feature: (packageId) => repository.feature(detail.listing.id, packageId),
     );
   }
 
@@ -273,6 +290,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
                     onBuy: () => _onBuy(detail),
                     onEdit: _comingSoon,
                     onBoost: () => _onBoost(detail),
+                    onFeature: () => _onFeature(detail),
                   ),
           ),
         );
@@ -301,7 +319,9 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
           category: category,
           values: detail.listing.attributes,
         ),
-      ProductDetailSafetyTips(onReport: () => reportListing(context, detail.listing.id)),
+      ProductDetailSafetyTips(
+        onReport: () => reportListing(context, detail.listing.id),
+      ),
     ];
 
     return SliverPadding(

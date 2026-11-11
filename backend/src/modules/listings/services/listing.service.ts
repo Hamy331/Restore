@@ -1,7 +1,9 @@
 import { ListingStatus, Prisma } from '@prisma/client';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
-import { createPromotion, findRunningPromotion, storePackageForUser, storeUsage, withQuotaTransaction } from '../../commerce/index.js';
+import { createPromotion, findActivePackage, findActivePackagesOfKind, findRunningPromotion, storePackageForUser, storeUsage,
+  withQuotaTransaction } from '../../commerce/index.js';
+import { availableCredits } from '../../credits/index.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { toCategoryDto } from '../../catalog/catalog.dto.js';
 import { ListingInput, MineQuery, toListingDto, toOwnerListingDto } from '../listing.dto.js';
@@ -10,7 +12,7 @@ import { validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import type { Db } from '../repositories/listing.repository.js';
 import { COUNTED_STATUSES } from '../repositories/posting-quota.repository.js';
-import { addDays, boostPrice, canExtend, daysLeft, extendedExpiry, isExpired } from '../listing-lifecycle.js';
+import { addDays, boostPrice, canExtend, featurePrice, daysLeft, extendedExpiry, isExpired } from '../listing-lifecycle.js';
 import { assertNotDuplicate, spendForListing } from './listing-lifecycle.service.js';
 import { assertPostingSlot, chargeListing, postingQuota } from './posting-quota.service.js';
 
@@ -194,6 +196,65 @@ export async function boostListing(ownerId: string, id: string) {
     });
     return { listingId: id, free, credits, startsAt: promotion.startsAt, endsAt: promotion.endsAt,
       freeLeft: Math.max(0, plan.package.monthlyPromotionQuota - usage.promotionsThisMonth - (free ? 1 : 0)) };
+  });
+}
+
+/** Tin của chủ đang hiển thị, kèm chuyên mục còn dùng; dùng cho tin ưu tiên */
+async function requireFeaturable(tx: Db, id: string, ownerId: string) {
+  const current = await requireOwnedListing(tx, id, ownerId);
+  if (current.status !== ListingStatus.AVAILABLE) {
+    throw new AppError(409, 'LISTING_NOT_FEATURABLE', 'Chỉ đưa tin đang hiển thị lên Hot sale.');
+  }
+  const category = current.categoryId ? await listingRepository.findActiveCategory(tx, current.categoryId) : null;
+  if (!category) throw new AppError(409, 'INVALID_LISTING', 'Danh mục không còn được sử dụng.');
+  return { current, category };
+}
+
+/**
+ * Báo giá tin ưu tiên (Hot sale): các gói FEATURED đang bán với giá xu theo nhóm chuyên mục
+ * và giảm giá của gói tài khoản, số xu đang có, và hạn tin ưu tiên đang chạy (nếu có).
+ */
+export async function getFeatureQuote(ownerId: string, id: string) {
+  return listingRepository.transaction(async (tx) => {
+    const now = new Date();
+    const { category } = await requireFeaturable(tx, id, ownerId);
+    const [plan, packages, running, available] = await Promise.all([
+      storePackageForUser(tx, ownerId, now), findActivePackagesOfKind(tx, 'FEATURED'),
+      findRunningPromotion(tx, id, 'FEATURED', now), availableCredits(tx, ownerId)]);
+    const discountPercent = plan.package.boostDiscountPercent;
+    return {
+      listingId: id, discountPercent, available, runningUntil: running?.endsAt ?? null,
+      options: packages.map((p) => ({ packageId: p.id, durationDays: p.durationDays,
+        credits: featurePrice(Number(p.price), category.boostCredits, discountPercent) })),
+    };
+  });
+}
+
+/**
+ * Mua tin ưu tiên bằng xu: tin đứng đầu danh sách và hiện ở mục Hot sale trong [durationDays] ngày.
+ * Đang có tin ưu tiên chạy thì 409 FEATURE_ALREADY_ACTIVE (details.availableAt), thiếu xu thì 409 NOT_ENOUGH_CREDITS.
+ */
+export async function featureListing(ownerId: string, id: string, packageId: string) {
+  return withQuotaTransaction(async (tx) => {
+    const now = new Date();
+    const { current, category } = await requireFeaturable(tx, id, ownerId);
+    const promotionPackage = await findActivePackage(tx, packageId);
+    if (!promotionPackage || promotionPackage.kind !== 'FEATURED') {
+      throw new AppError(404, 'PROMOTION_PACKAGE_NOT_FOUND', 'Gói tin ưu tiên không còn bán.');
+    }
+    const running = await findRunningPromotion(tx, id, 'FEATURED', now);
+    if (running) {
+      throw new AppError(409, 'FEATURE_ALREADY_ACTIVE', 'Tin đang ở mục Hot sale.', undefined,
+        { availableAt: running.endsAt.toISOString() });
+    }
+    const plan = await storePackageForUser(tx, ownerId, now);
+    const credits = featurePrice(Number(promotionPackage.price), category.boostCredits, plan.package.boostDiscountPercent);
+    await spendForListing(tx, ownerId, id, credits, `Tin ưu tiên ${promotionPackage.durationDays} ngày · ${current.title}`);
+    const promotion = await createPromotion(tx, {
+      userId: ownerId, listingId: id, packageId, source: 'PURCHASED',
+      startsAt: now, endsAt: addDays(now, promotionPackage.durationDays),
+    });
+    return { listingId: id, packageId, credits, startsAt: promotion.startsAt, endsAt: promotion.endsAt };
   });
 }
 

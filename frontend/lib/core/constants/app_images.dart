@@ -23,6 +23,7 @@ class AppIcons {
 class CoreImages {
   const CoreImages();
   final String deviceNotSupported = 'assets/images/device-not-supported.jpg';
+  final String hotSale = 'assets/images/hot-sale.png';
 }
 
 /// Ảnh minh hoạ cho danh mục đăng tin.

@@ -24,6 +24,9 @@ abstract class CategoryListingsRepository {
     int page = 1,
   });
 
+  /// Tin Hot sale (đang có tin ưu tiên) của danh mục, tối đa [pageSize]
+  Future<List<ListingCardItem>> getHotSale(String categoryId);
+
   Future<void> setFavorite(String listingId, bool favorite);
 }
 
@@ -94,6 +97,25 @@ class MockCategoryListingsRepository implements CategoryListingsRepository {
   }
 
   @override
+  Future<List<ListingCardItem>> getHotSale(String categoryId) async {
+    await Future<void>.delayed(latency);
+    return [
+          for (final json in HomeMockData.listings(DateTime.now()))
+            ListingCardItem.fromJson(json),
+        ]
+        .where(
+          (item) => item.isFeatured && item.listing.categoryId == categoryId,
+        )
+        .map(
+          (item) => item.copyWith(
+            isFavorite: MockFavoriteStore.contains(item.listing.id),
+          ),
+        )
+        .take(CategoryListingsRepository.pageSize)
+        .toList();
+  }
+
+  @override
   Future<void> setFavorite(String listingId, bool favorite) async {
     MockFavoriteStore.set(listingId, favorite);
   }
@@ -101,6 +123,8 @@ class MockCategoryListingsRepository implements CategoryListingsRepository {
 
 /// Gọi backend:
 /// - `GET /catalog/categories/:id` → `{ data: Category }`
+/// - `GET /listings/recommended?categoryId=&limit=` → `{ data: [Listing] }`
+///   (Hot sale)
 /// - `GET /listings?categoryId=&deal=&sort=&minPrice=&maxPrice=&condition=
 ///   &page=&limit=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
@@ -139,6 +163,23 @@ class ApiCategoryListingsRepository implements CategoryListingsRepository {
       page: page,
       pageSize: CategoryListingsRepository.pageSize,
     );
+  }
+
+  @override
+  Future<List<ListingCardItem>> getHotSale(String categoryId) async {
+    final response = await _apiClient.dio.get<Map<String, dynamic>>(
+      '/listings/recommended',
+      queryParameters: {
+        'categoryId': categoryId,
+        'limit': CategoryListingsRepository.pageSize,
+      },
+    );
+    final data = response.data?['data'];
+    if (data is! List) return const [];
+    return [
+      for (final json in data.whereType<Map>())
+        ListingCardItem.fromJson(Map<String, dynamic>.from(json)),
+    ];
   }
 
   @override

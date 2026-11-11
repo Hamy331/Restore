@@ -29,6 +29,10 @@ abstract class AccountListingsRepository {
   /// [ListingBoostException].
   Future<BoostResult> boost(String id);
 
+  /// Báo giá và mua tin ưu tiên (Hot sale), xem [ListingsRepository.feature]
+  Future<FeatureQuote> featureQuote(String id);
+  Future<DateTime?> feature(String id, String packageId);
+
   /// Hạn mức đăng tin (giá xu, số ngày hiển thị, số xu trong ví)
   Future<PostingQuota> postingQuota();
 
@@ -99,6 +103,13 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
 
   @override
   Future<BoostResult> boost(String id) => _repository.boost(id);
+
+  @override
+  Future<FeatureQuote> featureQuote(String id) => _repository.featureQuote(id);
+
+  @override
+  Future<DateTime?> feature(String id, String packageId) =>
+      _repository.feature(id, packageId);
 
   @override
   Future<PostingQuota> postingQuota() => _quotaRepository.getQuota();

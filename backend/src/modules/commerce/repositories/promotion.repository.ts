@@ -10,6 +10,10 @@ export const findAllPackages = () =>
 
 export const findActivePackage = (tx: Db, id: string) => tx.promotionPackage.findFirst({ where: { id, active: true } });
 
+/** Gói đang bán của một loại, thời lượng ngắn trước */
+export const findActivePackagesOfKind = (tx: Db, kind: PromotionKind) =>
+  tx.promotionPackage.findMany({ where: { kind, active: true }, orderBy: [{ durationDays: 'asc' }, { id: 'asc' }] });
+
 export const createPackage = (tx: Db, data: Omit<Prisma.PromotionPackageCreateInput, 'id'>) =>
   tx.promotionPackage.create({ data: { id: randomUUID(), ...data } });
 

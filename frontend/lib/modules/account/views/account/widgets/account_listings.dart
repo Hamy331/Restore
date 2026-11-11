@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_icons.dart';
 import '../../../../../core/utils/formatters/currency_formatter.dart';
@@ -160,12 +161,21 @@ class _ListingRow extends StatelessWidget {
       if (item.createdAt != null) l.accPosted(feedTime(l, item.createdAt!)),
       l.accViews(item.views),
     ].join(' · ');
-    // Hạn hiển thị: tin đang hiện thì còn bao nhiêu ngày, tin ẩn vì quá hạn thì báo hết hạn
-    final expiry = expired
-        ? l.accExpired
-        : item.status == AccountListingStatus.visible && daysLeft != null
-        ? l.accExpiresIn(daysLeft)
+    // Hạn hiển thị: tin đang hiện thì ngày hết hạn và số ngày còn lại,
+    // tin ẩn vì quá hạn thì báo đã hết hạn từ ngày nào
+    final end = item.expiresAt;
+    final endText = end == null
+        ? null
+        : DateFormat('dd/MM/yyyy').format(end.toLocal());
+    final expiry = expired && endText != null
+        ? l.accExpiredOn(endText)
+        : item.status == AccountListingStatus.visible &&
+              daysLeft != null &&
+              endText != null
+        ? l.accExpiresOn(endText, daysLeft)
         : null;
+    final expiryUrgent = expired || (daysLeft ?? 99) <= 3;
+    final visible = item.status == AccountListingStatus.visible;
     return Column(
       children: [
         const Divider(height: 1, color: AppColors.border),
@@ -225,18 +235,8 @@ class _ListingRow extends StatelessWidget {
                       ),
                     ),
                     if (expiry != null) ...[
-                      const SizedBox(height: 3),
-                      Text(
-                        expiry,
-                        style: TextStyle(
-                          fontFamily: profileFontFamily,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: expired || (daysLeft ?? 99) <= 3
-                              ? AppColors.error
-                              : AppColors.textSecondary,
-                        ),
-                      ),
+                      const SizedBox(height: 6),
+                      _ExpiryChip(label: expiry, urgent: expiryUrgent),
                     ],
                   ],
                 ),
@@ -244,68 +244,67 @@ class _ListingRow extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 9),
-        Row(
-          children: [
-            const SizedBox(width: 90),
-            Expanded(
-              child: _RowAction(
-                l.accEdit,
-                onTap: () => showComingSoon(context),
+        const SizedBox(height: 10),
+        // Hàng nút trải hết chiều ngang để nhãn không bị co chữ
+        Padding(
+          padding: EdgeInsets.zero,
+          child: Row(
+            children: [
+              Expanded(
+                child: _RowAction(
+                  l.accEdit,
+                  icon: AppIcons.edit,
+                  onTap: () => showComingSoon(context),
+                ),
               ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: _RowAction(
-                isHidden ? (expired ? l.accReactivate : l.accShow) : l.accHide,
-                onTap: () => isHidden
-                    ? showAccountListing(context, item)
-                    : context.read<AccountListingsCubit>().setStatus(
-                        item.id,
-                        AccountListingStatus.hidden,
-                      ),
-              ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: _RowAction(
-                l.accBoost,
-                filled: true,
-                onTap: () => boostAccountListing(context, item),
-              ),
-            ),
-            SizedBox(
-              width: 30,
-              child: item.status == AccountListingStatus.visible
-                  ? PopupMenuButton<VoidCallback>(
-                      padding: EdgeInsets.zero,
-                      tooltip: l.accMoreOptions,
-                      onSelected: (action) => action(),
-                      itemBuilder: (_) => [
-                        PopupMenuItem(
-                          value: () => extendAccountListing(context, item),
-                          child: Text(l.accExtend),
+              const SizedBox(width: 6),
+              Expanded(
+                child: _RowAction(
+                  isHidden
+                      ? (expired ? l.accReactivate : l.accShow)
+                      : l.accHide,
+                  icon: isHidden
+                      ? (expired ? AppIcons.refresh : AppIcons.visible)
+                      : AppIcons.hidden,
+                  // Tin ẩn: hiện lại / kích hoạt lại là việc chính
+                  filled: isHidden,
+                  onTap: () => isHidden
+                      ? showAccountListing(context, item)
+                      : context.read<AccountListingsCubit>().setStatus(
+                          item.id,
+                          AccountListingStatus.hidden,
                         ),
-                      ],
-                      icon: const Icon(
-                        AppIcons.more,
-                        size: 19,
-                        color: AppColors.textPrimary,
-                      ),
-                    )
-                  : IconButton(
-                      padding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
-                      tooltip: l.accMoreOptions,
-                      onPressed: () => showComingSoon(context),
-                      icon: const Icon(
-                        AppIcons.more,
-                        size: 19,
-                        color: AppColors.textPrimary,
-                      ),
+                ),
+              ),
+              if (visible) ...[
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _RowAction(
+                    l.accBoost,
+                    icon: AppIcons.boost,
+                    filled: true,
+                    onTap: () => boostAccountListing(context, item),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                _MoreButton(
+                  tooltip: l.accMoreOptions,
+                  actions: [
+                    (
+                      AppIcons.hot,
+                      l.featureAction,
+                      () => featureAccountListing(context, item),
                     ),
-            ),
-          ],
+                    (
+                      AppIcons.calendar,
+                      l.accExtend,
+                      () => extendAccountListing(context, item),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
         ),
         const SizedBox(height: 12),
       ],
@@ -314,34 +313,153 @@ class _ListingRow extends StatelessWidget {
 }
 
 class _RowAction extends StatelessWidget {
-  const _RowAction(this.label, {required this.onTap, this.filled = false});
+  const _RowAction(
+    this.label, {
+    required this.icon,
+    required this.onTap,
+    this.filled = false,
+  });
   final String label;
+  final IconData icon;
   final VoidCallback onTap;
   final bool filled;
 
   @override
-  Widget build(BuildContext context) => Material(
-    color: filled ? AppColors.primary : AppColors.background,
-    borderRadius: BorderRadius.circular(5),
-    child: InkWell(
-      borderRadius: BorderRadius.circular(5),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 8),
-        child: Center(
-          child: FittedBox(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontFamily: profileFontFamily,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+  Widget build(BuildContext context) {
+    const color = AppColors.textPrimary;
+    return Material(
+      color: filled ? AppColors.primary : AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(9),
+        side: filled
+            ? BorderSide.none
+            : const BorderSide(color: AppColors.border),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(9),
+        onTap: onTap,
+        child: SizedBox(
+          height: 34,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Center(
+              child: FittedBox(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 15, color: color),
+                    const SizedBox(width: 5),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontFamily: profileFontFamily,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: color,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Nút ⋯ vuông cùng cỡ với hàng nút, mở menu thao tác thêm của tin
+class _MoreButton extends StatelessWidget {
+  const _MoreButton({required this.tooltip, required this.actions});
+  final String tooltip;
+  final List<(IconData, String, VoidCallback)> actions;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 34,
+    height: 34,
+    child: PopupMenuButton<VoidCallback>(
+      tooltip: tooltip,
+      padding: EdgeInsets.zero,
+      position: PopupMenuPosition.under,
+      color: AppColors.surface,
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      onSelected: (action) => action(),
+      itemBuilder: (_) => [
+        for (final (icon, label, action) in actions)
+          PopupMenuItem(
+            value: action,
+            height: 44,
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: AppColors.textPrimary),
+                const SizedBox(width: 10),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: profileFontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(9),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: const Icon(
+          AppIcons.moreHorizontal,
+          size: 18,
+          color: AppColors.textPrimary,
+        ),
+      ),
     ),
   );
+}
+
+/// Dòng hạn hiển thị của tin: đỏ khi đã hết hạn hoặc còn tối đa 3 ngày
+class _ExpiryChip extends StatelessWidget {
+  const _ExpiryChip({required this.label, required this.urgent});
+  final String label;
+  final bool urgent;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = urgent ? AppColors.error : AppColors.primaryDark;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: urgent ? AppColors.errorBg : AppColors.primarySoft,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(AppIcons.clock, size: 12, color: color),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: profileFontFamily,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

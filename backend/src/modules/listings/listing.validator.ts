@@ -149,6 +149,15 @@ export const statusBody = z.unknown().transform((body) => {
   return { status: target as ListingStatus, payWithCredits: input?.payWithCredits === true };
 });
 
+/** Body POST /:id/feature: { packageId } là gói FEATURED đang bán */
+export const featureBody = z.unknown().transform((body) => {
+  const packageId = (body as { packageId?: unknown } | undefined)?.packageId;
+  if (typeof packageId !== 'string' || !packageId.trim() || packageId.length > 100) {
+    throw new AppError(400, 'INVALID_PACKAGE', 'Gói tin ưu tiên không hợp lệ.');
+  }
+  return { packageId: packageId.trim() };
+});
+
 /**
  * Thứ tự ảnh mới cho PUT /:id/images: { images: string[] }, chỉ gồm ảnh tin đang có, không trùng.
  * Gọi trong service sau khi đã tìm thấy tin (tin không có thì 404 trước khi báo body sai).
@@ -224,7 +233,10 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
 });
 
 /** Query GET /listings/recommended */
-export const recommendedQuery = z.object({ limit: int('limit', { min: 1, max: 20, fallback: 10 }) });
+export const recommendedQuery = z.object({
+  limit: int('limit', { min: 1, max: 20, fallback: 10 }),
+  categoryId: z.string().max(100).optional().transform((value) => value?.trim() || undefined),
+});
 
 /** Query GET /listings/favorites: page, limit 1-100 (mặc định 20) */
 export const favoritesQuery = pageQuery({ defaultLimit: 20, maxLimit: 100 });

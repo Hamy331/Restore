@@ -68,11 +68,12 @@ export async function findRankedPage(filters: ListingFilters, now: Date, limit: 
 export const findVisibleByIds = (ids: string[]) =>
   ids.length ? prisma.listing.findMany({ where: { ...visible, id: { in: ids } }, select: listingSelect }) : Promise.resolve([]);
 
-/** Tin đang có gói đẩy FEATURED còn hiệu lực, mới nhất trước */
-export const findFeatured = (now: Date, limit: number) =>
+/** Tin đang có gói đẩy FEATURED còn hiệu lực (trong [categoryId] nếu có), mới nhất trước */
+export const findFeatured = (now: Date, limit: number, categoryId?: string) =>
   prisma.listing.findMany({
     where: {
       ...visible,
+      ...(categoryId ? { categoryId } : {}),
       promotions: { some: { startsAt: { lte: now }, endsAt: { gt: now }, package: { kind: 'FEATURED' } } },
     },
     select: listingSelect,

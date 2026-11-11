@@ -7,7 +7,7 @@ import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
 import '../../../models/product_detail.dart';
 
 /// Thanh hành động cố định cuối trang, đổi theo tin:
-/// - Tin của mình: Sửa tin + Đẩy tin
+/// - Tin của mình: nút vuông Hot sale + Sửa tin + Đẩy tin
 /// - Tin đã bán / đã có người đặt: chỉ còn nhắn tin
 /// - Tin bán: nút vuông nhắn tin + Trả giá (nếu cho thương lượng) + Mua ngay
 /// - Tin chỉ trao đổi: nút vuông nhắn tin + Đề nghị đổi
@@ -19,6 +19,7 @@ class ProductDetailBottomBar extends StatelessWidget {
   final VoidCallback onBuy;
   final VoidCallback onEdit;
   final VoidCallback onBoost;
+  final VoidCallback onFeature;
 
   const ProductDetailBottomBar({
     super.key,
@@ -29,6 +30,7 @@ class ProductDetailBottomBar extends StatelessWidget {
     required this.onBuy,
     required this.onEdit,
     required this.onBoost,
+    required this.onFeature,
   });
 
   @override
@@ -38,6 +40,11 @@ class ProductDetailBottomBar extends StatelessWidget {
 
     if (detail.isOwner) {
       return AppBottomActionBar(
+        leading: AppSecondaryActionButton(
+          icon: AppIcons.hot,
+          tooltip: l10n.featureAction,
+          onPressed: onFeature,
+        ),
         secondaryLabel: l10n.productEditListing,
         secondaryIcon: AppIcons.edit,
         onSecondary: onEdit,

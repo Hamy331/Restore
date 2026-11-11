@@ -23,10 +23,11 @@ const feedRouter = Router();
 feedRouter.get('/', optionalAuth, validate({ query: feedQuery }), feedController.listFeed);
 
 /**
- * Tin gợi ý (đang đẩy FEATURED) cho mục "Dành cho bạn"
+ * Tin Hot sale (đang có tin ưu tiên FEATURED) cho trang chủ và đầu trang chuyên mục
  *
  * Query params:
  *  - limit?: number (1-20, mặc định 10)
+ *  - categoryId?: string - chỉ lấy tin của chuyên mục này
  */
 feedRouter.get('/recommended', optionalAuth, validate({ query: recommendedQuery }), feedController.listRecommended);
 

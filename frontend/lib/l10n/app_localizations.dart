@@ -3239,7 +3239,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeFeaturedTag.
   ///
   /// In en, this message translates to:
-  /// **'Featured'**
+  /// **'Hot'**
   String get homeFeaturedTag;
 
   /// No description provided for @homeExchangeTag.
@@ -6775,6 +6775,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Need more listings? Upgrade your plan'**
   String get postingUpgradeHint;
+
+  /// No description provided for @hotSaleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot sale'**
+  String get hotSaleTitle;
+
+  /// No description provided for @featureAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Put on Hot sale'**
+  String get featureAction;
+
+  /// No description provided for @featureSheetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing shows in Hot sale on the home page and at the top of its category, above other listings, for the time you choose.'**
+  String get featureSheetMessage;
+
+  /// No description provided for @featureDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String featureDays(int days);
+
+  /// No description provided for @featurePay.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy · {credits} points'**
+  String featurePay(int credits);
+
+  /// No description provided for @featureDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing is on Hot sale'**
+  String get featureDone;
+
+  /// No description provided for @featureRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing is on Hot sale until {date}.'**
+  String featureRunning(String date);
+
+  /// No description provided for @featureUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Only visible listings can go on Hot sale.'**
+  String get featureUnavailable;
+
+  /// No description provided for @featureNoOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'No Hot sale packages are on sale right now.'**
+  String get featureNoOptions;
+
+  /// No description provided for @accExpiresOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date} · {days} days left'**
+  String accExpiresOn(String date, int days);
+
+  /// No description provided for @accExpiredOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired {date}'**
+  String accExpiredOn(String date);
+
+  /// No description provided for @previewDisplayDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing shows for {days} days after approval. You can extend it near the end, or reactivate it once it expires.'**
+  String previewDisplayDays(int days);
 }
 
 class _AppLocalizationsDelegate

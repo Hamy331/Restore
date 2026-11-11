@@ -1,7 +1,10 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:equatable/equatable.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
 import 'package:restore/shared/models/geo_point.dart';
+import 'package:restore/shared/models/localized_text.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/location/models/address_info.dart';
 
@@ -133,7 +136,10 @@ class ListingModel extends Equatable {
       expiresAt: DateTime.tryParse('${json['expiresAt']}'),
       paidCredits: (json['paidCredits'] as num?)?.toInt() ?? 0,
       categoryId: json['categoryId'] as String?,
-      categoryName: (json['category'] as Map?)?['name'] as String? ?? '',
+      // Tên danh mục từ API là chuỗi hoặc map theo ngôn ngữ {vi, en}
+      categoryName: LocalizedText.fromJson(
+        (json['category'] as Map?)?['name'],
+      ).resolve(PlatformDispatcher.instance.locale.languageCode),
       attributes: Map<String, Object?>.from(json['attributes'] as Map? ?? {}),
       provinceCode: location is Map
           ? location['provinceCode'] as String?

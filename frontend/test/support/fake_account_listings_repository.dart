@@ -82,7 +82,33 @@ class FakeAccountListingsRepository implements AccountListingsRepository {
   @override
   Future<BoostResult> boost(String id) async {
     boosted.add(id);
+    if (boostDelay > Duration.zero) await Future<void>.delayed(boostDelay);
     return const BoostResult(free: false, credits: 6, freeLeft: 0);
+  }
+
+  /// Độ trễ giả lập của API đẩy tin, để test bấm liên tục
+  Duration boostDelay = Duration.zero;
+
+  /// Tin đã mua tin ưu tiên: (id, packageId)
+  final featured = <(String, String)>[];
+
+  FeatureQuote featureQuoteResult = const FeatureQuote(
+    discountPercent: 0,
+    available: 30,
+    options: [
+      FeatureOption(packageId: 'featured-1', durationDays: 1, credits: 8),
+      FeatureOption(packageId: 'featured-3', durationDays: 3, credits: 23),
+      FeatureOption(packageId: 'featured-7', durationDays: 7, credits: 50),
+    ],
+  );
+
+  @override
+  Future<FeatureQuote> featureQuote(String id) async => featureQuoteResult;
+
+  @override
+  Future<DateTime?> feature(String id, String packageId) async {
+    featured.add((id, packageId));
+    return DateTime.now().add(const Duration(days: 3));
   }
 
   /// Hạn mức trả về cho màn quản lý tin (đẩy tin, gia hạn)

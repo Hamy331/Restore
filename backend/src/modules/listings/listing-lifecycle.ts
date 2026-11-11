@@ -41,3 +41,10 @@ export function normalizeTitle(title: string) {
 /** Giá một lần đẩy tin sau khi giảm theo gói, làm tròn, tối thiểu 1 xu */
 export const boostPrice = (base: number, discountPercent: number) =>
   Math.max(1, Math.round((base * (100 - Math.min(100, Math.max(0, discountPercent)))) / 100));
+
+/**
+ * Giá tin ưu tiên (Hot sale): nhóm A (boostCredits 10) trả giá gói VND / 1.000,
+ * nhóm khác theo tỉ lệ boostCredits / 10, rồi giảm theo gói như đẩy tin.
+ */
+export const featurePrice = (packagePriceVnd: number, boostCredits: number, discountPercent: number) =>
+  boostPrice((packagePriceVnd / 1000) * (boostCredits / 10), discountPercent);
