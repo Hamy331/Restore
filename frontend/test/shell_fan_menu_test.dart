@@ -57,7 +57,7 @@ void main() {
     await tester.tap(find.bySemanticsLabel('Mở menu nhanh'));
     await tester.pumpAndSettle();
     expect(find.text('Poster shop'), findsOneWidget);
-    expect(find.text('Trang shop'), findsOneWidget);
+    expect(find.text('Quản lý shop'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel('Poster shop'));
     await tester.pumpAndSettle();

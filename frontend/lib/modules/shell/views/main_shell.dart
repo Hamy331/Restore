@@ -1,3 +1,4 @@
+import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +49,7 @@ class MainShell extends StatelessWidget {
 
   /// Nút trong menu xoè của gói tier cao. Đăng tin mở trang đăng, Đẩy tin
   /// mở trang Boost (danh sách tin để quảng bá), Thống kê mở trang Thống kê,
-  /// Shop poster mở trang quản lý poster; trang shop báo sắp có.
+  /// Shop poster mở trang quản lý poster, Quản lý shop mở trang sửa shop.
   void _quickAction(BuildContext context, ShellQuickAction action) {
     if (action == ShellQuickAction.post) {
       _select(context, 2);
@@ -64,6 +65,10 @@ class MainShell extends StatelessWidget {
     }
     if (action == ShellQuickAction.poster) {
       context.push(ShopPostersView.path);
+      return;
+    }
+    if (action == ShellQuickAction.shopManage) {
+      context.push(MyShopView.path);
       return;
     }
     TSnackBarHelper.showInfo(

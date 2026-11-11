@@ -5270,11 +5270,11 @@ abstract class AppLocalizations {
   /// **'Insights'**
   String get quickActionStats;
 
-  /// No description provided for @quickActionShopPage.
+  /// No description provided for @quickActionShopManage.
   ///
   /// In en, this message translates to:
-  /// **'Shop page'**
-  String get quickActionShopPage;
+  /// **'Manage shop'**
+  String get quickActionShopManage;
 
   /// No description provided for @trustedShopsFamousEyebrow.
   ///
@@ -8113,6 +8113,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Plain borders removed'**
   String get cropTrimOn;
+
+  /// No description provided for @msTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage shop'**
+  String get msTitle;
+
+  /// No description provided for @msLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your shop'**
+  String get msLoadError;
+
+  /// No description provided for @msPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop pages come with the Store plan'**
+  String get msPlanTitle;
+
+  /// No description provided for @msPlanBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.'**
+  String get msPlanBody;
+
+  /// No description provided for @msCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your shop page'**
+  String get msCreateTitle;
+
+  /// No description provided for @msCreateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Name your shop first, then add a logo, cover and description.'**
+  String get msCreateBody;
+
+  /// No description provided for @msCreateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open shop'**
+  String get msCreateAction;
+
+  /// No description provided for @msCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop page is open'**
+  String get msCreated;
+
+  /// No description provided for @msName.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop name'**
+  String get msName;
+
+  /// No description provided for @msNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Cozy Home Decor'**
+  String get msNameHint;
+
+  /// No description provided for @msNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop name must be 2 to 60 characters.'**
+  String get msNameRequired;
+
+  /// No description provided for @msNameLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified shops can\'t change their name. Contact ReStore if you need to.'**
+  String get msNameLocked;
+
+  /// No description provided for @msTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Short tagline'**
+  String get msTagline;
+
+  /// No description provided for @msTaglineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Handmade decor, fast local delivery'**
+  String get msTaglineHint;
+
+  /// No description provided for @msDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'About the shop'**
+  String get msDescription;
+
+  /// No description provided for @msDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What you sell, quality promise, return policy...'**
+  String get msDescriptionHint;
+
+  /// No description provided for @msAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Display address'**
+  String get msAddress;
+
+  /// No description provided for @msAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. District 1, Ho Chi Minh City'**
+  String get msAddressHint;
+
+  /// No description provided for @msInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop details'**
+  String get msInfoSection;
+
+  /// No description provided for @msColorSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand colour'**
+  String get msColorSection;
+
+  /// No description provided for @msColorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for the letter logo, the default cover and accents on your shop page.'**
+  String get msColorHint;
+
+  /// No description provided for @msColorAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get msColorAuto;
+
+  /// No description provided for @msChangeCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Change cover'**
+  String get msChangeCover;
+
+  /// No description provided for @msChangeLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Change logo'**
+  String get msChangeLogo;
+
+  /// No description provided for @msImageNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new image'**
+  String get msImageNew;
+
+  /// No description provided for @msImageAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust again'**
+  String get msImageAdjust;
+
+  /// No description provided for @msImageRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove image'**
+  String get msImageRemove;
+
+  /// No description provided for @msCoverCropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust cover'**
+  String get msCoverCropTitle;
+
+  /// No description provided for @msLogoCropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust logo'**
+  String get msLogoCropTitle;
+
+  /// No description provided for @msStatFollowers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get msStatFollowers;
+
+  /// No description provided for @msStatListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get msStatListings;
+
+  /// No description provided for @msStatPostersRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters live'**
+  String get msStatPostersRunning;
+
+  /// No description provided for @msStatPostersPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters pending'**
+  String get msStatPostersPending;
+
+  /// No description provided for @msVerifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified shop'**
+  String get msVerifiedTitle;
+
+  /// No description provided for @msVerifiedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop appears in Trusted shops.'**
+  String get msVerifiedBody;
+
+  /// No description provided for @msCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate: {code}.'**
+  String msCertificate(String code);
+
+  /// No description provided for @msUnverifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not verified yet'**
+  String get msUnverifiedTitle;
+
+  /// No description provided for @msUnverifiedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.'**
+  String get msUnverifiedBody;
+
+  /// No description provided for @msPlanExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Store plan expired'**
+  String get msPlanExpiredTitle;
+
+  /// No description provided for @msPlanExpiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your posters are hidden for now. Renew the plan to run them again.'**
+  String get msPlanExpiredBody;
+
+  /// No description provided for @msViewPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'View shop page'**
+  String get msViewPublic;
+
+  /// No description provided for @msPosters.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop posters'**
+  String get msPosters;
+
+  /// No description provided for @msPostersBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote your shop with posters on your shop page and Trusted shops.'**
+  String get msPostersBody;
+
+  /// No description provided for @msSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get msSave;
+
+  /// No description provided for @msSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop details saved'**
+  String get msSaved;
+
+  /// No description provided for @msErrExists.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a shop page.'**
+  String get msErrExists;
+
+  /// No description provided for @msErrImage.
+  ///
+  /// In en, this message translates to:
+  /// **'That image is not valid. Try another one.'**
+  String get msErrImage;
+
+  /// No description provided for @msErrGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Please try again.'**
+  String get msErrGeneric;
 }
 
 class _AppLocalizationsDelegate
