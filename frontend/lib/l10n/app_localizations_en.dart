@@ -3932,4 +3932,139 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hotSaleEnd => 'You\'ve seen all Hot sale listings';
+
+  @override
+  String get displayDaysTitle => 'Display time';
+
+  @override
+  String displayDaysFree(int days) {
+    return 'Free · $days days';
+  }
+
+  @override
+  String displayDaysPlus(int days) {
+    return '+$days days';
+  }
+
+  @override
+  String displayDaysRange(String start, String end, int days) {
+    return '$start → $end · $days days';
+  }
+
+  @override
+  String get displayDaysStart => 'Starts';
+
+  @override
+  String get displayDaysEnd => 'Ends';
+
+  @override
+  String get displayDaysToday => 'Today, once approved';
+
+  @override
+  String get displayDaysCount => 'Days on display';
+
+  @override
+  String get displayDaysExtraCount => 'Extra days';
+
+  @override
+  String displayDaysIncluded(int free) {
+    return 'Includes $free free days for this category';
+  }
+
+  @override
+  String displayDaysExtraPrice(int days, int credits) {
+    return '$days extra days: $credits points';
+  }
+
+  @override
+  String get displayDaysNoCharge => 'Free';
+
+  @override
+  String displayDaysPackSave(int days, int credits) {
+    return '$days-day pack price, you save $credits points';
+  }
+
+  @override
+  String displayDaysSuggest(int days, int credits) {
+    return 'Get $days days for $credits points';
+  }
+
+  @override
+  String displayDaysMax(int days) {
+    return 'This category can be shown for up to $days days.';
+  }
+
+  @override
+  String get displayDaysPayNote =>
+      'Points are held when you post, charged on approval and refunded if rejected.';
+
+  @override
+  String get displayDaysDone => 'Done';
+
+  @override
+  String get displayDaysCardHint => 'Tap to change the start date or add days';
+
+  @override
+  String displayDaysScheduled(String date) {
+    return 'Scheduled from $date';
+  }
+
+  @override
+  String extendNewEnd(String date) {
+    return 'New end date: $date';
+  }
+
+  @override
+  String extendCurrentEnd(String date) {
+    return 'Showing until $date';
+  }
+
+  @override
+  String extendAddable(int days) {
+    return 'You can add up to $days more days';
+  }
+
+  @override
+  String extendLimitReached(int days) {
+    return 'This listing is already at the $days-day maximum.';
+  }
+
+  @override
+  String get extendChargeNote =>
+      'Points are charged now, no new review needed.';
+
+  @override
+  String get autoExtendTitle => 'Auto-extend 30 days';
+
+  @override
+  String autoExtendBody(int credits) {
+    return 'When less than a day is left, $credits points are charged if your wallet has enough.';
+  }
+
+  @override
+  String get autoExtendOn => 'Auto-extend is on';
+
+  @override
+  String get autoExtendOff => 'Auto-extend is off';
+
+  @override
+  String accExtendedDays(int days) {
+    return 'Extended by $days days';
+  }
+
+  @override
+  String get displayDaysTodayShort => 'Today';
+
+  @override
+  String get displayDaysShortTitle => 'Not enough points for extra days';
+
+  @override
+  String displayDaysShortBody(int missing) {
+    return 'You need $missing more points for the extra days. Top up, or post with the free days.';
+  }
+
+  @override
+  String displayDaysUseFree(int days) {
+    return 'Post with $days free days';
+  }
 }

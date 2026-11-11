@@ -6,7 +6,7 @@ import { DRAFT_EDITABLE } from '../listing.type.js';
 import { createInput, validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
-import { assertPublishable, requireOwnedListing, updateOwnedListing } from './listing.service.js';
+import { assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing } from './listing.service.js';
 import { assertNotDuplicate } from './listing-lifecycle.service.js';
 import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
 
@@ -58,16 +58,19 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
       categoryId: current.categoryId, isNegotiable: current.isNegotiable,
       allowSale: current.allowSale, allowExchange: current.allowExchange,
       exchangeWish: current.exchangeWish, sellerType: current.sellerType, attributes: current.attributes,
+      displayDays: current.displayDays, startsAt: current.startsAt?.toISOString() ?? null,
       location: location
         ? Object.fromEntries(['provinceCode', 'wardCode', 'streetAddress', 'latitude', 'longitude', 'geoSource'].map((key) => [key, location[key]]))
         : null,
     });
-    await assertPublishable(tx, data);
+    const category = await assertPublishable(tx, data);
     const now = new Date();
     await assertNotDuplicate(tx, ownerId, data, { excludeId: id, allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
-    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price, condition: data.condition });
-    await chargeListing(tx, ownerId, id, price, data.title);
+    const display = await resolveDisplay(tx, ownerId, now, category, data);
+    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price,
+      condition: data.condition, displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays });
+    await chargeListing(tx, ownerId, id, price, data.title, display);
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);

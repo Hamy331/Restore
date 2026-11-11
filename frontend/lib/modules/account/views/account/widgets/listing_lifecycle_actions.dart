@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_icons.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../../shared/widgets/app_action_buttons.dart';
-import '../../../../../shared/widgets/glass/app_glass_sheet.dart';
+import '../../../../../shared/widgets/app_switch_tile.dart';
 import '../../../../credits/views/credit_topup/credit_topup_view.dart';
 import '../../../../../data/models/category_model.dart';
+import '../../../../listings/models/display_pricing.dart';
 import '../../../../listings/models/posting_quota.dart';
 import '../../../../listings/widgets/boost_listing_sheet.dart';
+import '../../../../listings/widgets/display_days_sheet.dart';
 import '../../../../listings/widgets/feature_listing_sheet.dart';
 import '../../../../listings/widgets/posting_limit_sheet.dart';
 import '../../../bloc/account_listings/account_listings_cubit.dart';
@@ -84,7 +83,9 @@ Future<void> showAccountListing(
   }
 }
 
-/// Gia hạn tin đang hiển thị thêm một kỳ bằng xu, hỏi lại trước khi trừ xu.
+/// Gia hạn tin đang hiển thị thêm số ngày tuỳ chọn bằng xu: sheet chọn số
+/// ngày (hoặc ngày hết hạn mới) hiện giá ngay, thiếu xu thì sang nạp xu.
+/// Gói có tự gia hạn (Cửa hàng) thì sheet có thêm công tắc tự gia hạn.
 Future<void> extendAccountListing(
   BuildContext context,
   AccountListing item,
@@ -105,43 +106,107 @@ Future<void> extendAccountListing(
   }
   if (!context.mounted) return;
   final rule = quota.forCategory(categoryId);
-  final price = rule.extendCredits ?? rule.extraCredits ?? 0;
-  final days = rule.displayDays;
-  final left = item.daysLeftAt(DateTime.now());
-  if (left != null && left > days) {
-    _toast(messenger, l.accExtendTooEarly(days));
-    return;
-  }
+  final pricing = quota.display;
   final available = quota.walletAvailable;
-  final enough = available >= price;
-  final confirmed = await showAppGlassSheet<bool>(
+  final choice = await showDisplayDaysSheet(
     context,
-    title: l.accExtend,
+    mode: DisplayDaysMode.extend,
+    rule: rule,
+    pricing: pricing,
+    walletAvailable: available,
+    currentEnd: item.expiresAt,
     subtitle: item.title,
-    icon: AppIcons.clock,
-    builder: (sheetContext) => _ExtendSheet(
-      price: price,
-      days: days,
-      available: available,
-      enough: enough,
-    ),
+    footer: pricing.autoExtend
+        ? _AutoExtendSwitch(
+            item: item,
+            credits: pricing.extraDaysCredits(
+              DisplayPricing.autoExtendDays,
+              rule.dayPackCredits,
+            ),
+            cubit: cubit,
+            messenger: messenger,
+          )
+        : null,
   );
-  if (confirmed != true || !context.mounted) return;
-  if (!enough) {
+  if (choice == null || choice.days <= 0 || !context.mounted) return;
+  final price = pricing.extraDaysCredits(choice.days, rule.dayPackCredits);
+  if (price > available) {
     await context.push(CreditTopupView.location(need: price - available));
     return;
   }
   try {
-    await cubit.extend(item.id);
-    _toast(messenger, l.accExtended);
+    await cubit.extend(item.id, choice.days);
+    _toast(messenger, l.accExtendedDays(choice.days));
   } on AccountListingActionException catch (error) {
     if (!context.mounted) return;
-    if (error.code == AccountListingActionException.notEnoughCredits) {
-      final missing = (error.details['missing'] as num?)?.toInt() ?? price;
-      await context.push(CreditTopupView.location(need: missing));
-      return;
+    switch (error.code) {
+      case AccountListingActionException.notEnoughCredits:
+        final missing = (error.details['missing'] as num?)?.toInt() ?? price;
+        await context.push(CreditTopupView.location(need: missing));
+      case AccountListingActionException.extendTooLong:
+        final addable = (error.details['addableDays'] as num?)?.toInt() ?? 0;
+        _toast(
+          messenger,
+          addable > 0
+              ? l.extendAddable(addable)
+              : l.extendLimitReached(rule.maxDisplayDays),
+        );
+      default:
+        _toast(messenger, error.message);
     }
-    _toast(messenger, error.message);
+  }
+}
+
+/// Công tắc tự gia hạn trong sheet gia hạn: đổi ngay khi chạm, lỗi thì trả
+/// công tắc về như cũ.
+class _AutoExtendSwitch extends StatefulWidget {
+  const _AutoExtendSwitch({
+    required this.item,
+    required this.credits,
+    required this.cubit,
+    required this.messenger,
+  });
+  final AccountListing item;
+  final int credits;
+  final AccountListingsCubit cubit;
+  final ScaffoldMessengerState messenger;
+
+  @override
+  State<_AutoExtendSwitch> createState() => _AutoExtendSwitchState();
+}
+
+class _AutoExtendSwitchState extends State<_AutoExtendSwitch> {
+  late bool _value = widget.item.autoExtend;
+  bool _busy = false;
+
+  Future<void> _toggle(bool value) async {
+    if (_busy) return;
+    final l = AppLocalizations.of(context)!;
+    setState(() {
+      _busy = true;
+      _value = value;
+    });
+    try {
+      await widget.cubit.setAutoExtend(widget.item.id, value);
+      _toast(widget.messenger, value ? l.autoExtendOn : l.autoExtendOff);
+    } on AccountListingActionException catch (error) {
+      if (mounted) setState(() => _value = !value);
+      _toast(widget.messenger, error.message);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return AppSwitchTile(
+      key: const ValueKey('listing-auto-extend'),
+      label: l.autoExtendTitle,
+      subtitle: l.autoExtendBody(widget.credits),
+      value: _value,
+      onChanged: _toggle,
+    );
   }
 }
 
@@ -199,71 +264,4 @@ void _toast(ScaffoldMessengerState messenger, String? message) {
   messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(message)));
-}
-
-class _ExtendSheet extends StatelessWidget {
-  const _ExtendSheet({
-    required this.price,
-    required this.days,
-    required this.available,
-    required this.enough,
-  });
-  final int price;
-  final int days;
-  final int available;
-  final bool enough;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final missing = price - available;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l.accExtendMessage(days, price),
-            style: const TextStyle(
-              fontSize: 14,
-              height: 1.45,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            missing > 0
-                ? '${l.postingPayBalance(available)} · '
-                      '${l.postingPayMissing(missing)}'
-                : l.postingPayBalance(available),
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: missing > 0 ? AppColors.error : AppColors.primaryDark,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: AppSecondaryActionButton(
-                  label: l.postingLater,
-                  onPressed: () => Navigator.of(context).pop(false),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: AppPrimaryActionButton(
-                  label: enough ? l.accExtendPay(price) : l.postingTopUp,
-                  icon: AppIcons.wallet,
-                  onPressed: () => Navigator.of(context).pop(true),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }

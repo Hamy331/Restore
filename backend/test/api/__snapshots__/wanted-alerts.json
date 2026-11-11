@@ -120,6 +120,8 @@
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
           "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -188,6 +190,8 @@
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:10:00.000Z",
           "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -248,6 +252,8 @@
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
           "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -559,6 +565,8 @@
           "viewCount": 0,
           "publishedAt": "<date>",
           "expiresAt": "<date>",
+          "startsAt": null,
+          "displayDays": 45,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -659,6 +667,8 @@
           "viewCount": 0,
           "publishedAt": "<date>",
           "expiresAt": "<date>",
+          "startsAt": null,
+          "displayDays": 45,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",

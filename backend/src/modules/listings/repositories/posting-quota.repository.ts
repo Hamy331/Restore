@@ -7,8 +7,12 @@ export const COUNTED_STATUSES: ListingStatus[] = [ListingStatus.PENDING, Listing
 export const findCategoryRules = (tx: Db) =>
   tx.category.findMany({
     where: { active: true }, orderBy: { id: 'asc' },
-    select: { id: true, freeListingLimit: true, extraListingCredits: true, displayDays: true, boostCredits: true },
+    select: { id: true, freeListingLimit: true, extraListingCredits: true, displayDays: true, maxDisplayDays: true, dayPackCredits: true, boostCredits: true },
   });
+
+/** Mốc mua ngày hiển thị đang bán, ngắn trước */
+export const findDayPacks = (tx: Db) =>
+  tx.displayDayPack.findMany({ where: { active: true }, orderBy: { days: 'asc' }, select: { days: true, discountPercent: true } });
 
 /**
  * Số tin miễn phí theo chuyên mục: [used] đang chiếm suất, [recent] đã đăng trong cửa sổ chống đăng lại.

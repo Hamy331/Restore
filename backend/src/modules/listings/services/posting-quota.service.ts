@@ -2,6 +2,7 @@ import { StoreTier } from '@prisma/client';
 import { AppError } from '../../../common/errors/app-error.js';
 import { storePackageForUser, storeUsage } from '../../commerce/index.js';
 import { availableCredits, holdForListing } from '../../credits/index.js';
+import { extraDaysCredits, freeDaysFor, MAX_START_DELAY_DAYS } from '../display-pricing.js';
 import { boostPrice } from '../listing-lifecycle.js';
 import { DISPLAY_DAYS, personalQuota, RECENT_WINDOW_DAYS } from '../posting-quota.js';
 import type { Db } from '../repositories/listing.repository.js';
@@ -18,11 +19,12 @@ const BUSINESS_LIMIT = 30;
  * Gói cửa hàng: giữ giới hạn cũ của gói (tin trong ngày, tin đang hoạt động), không trả xu.
  */
 export async function postingQuota(tx: Db, ownerId: string, now: Date, excludeId?: string) {
-  const [plan, usage, rules, wallet] = await Promise.all([
+  const [plan, usage, rules, wallet, packs] = await Promise.all([
     storePackageForUser(tx, ownerId, now),
     storeUsage(tx, ownerId, now),
     quotaRepository.findCategoryRules(tx),
     availableCredits(tx, ownerId),
+    quotaRepository.findDayPacks(tx),
   ]);
   const daily = { used: usage.today, limit: plan.package.dailyListingLimit };
   const discount = plan.package.boostDiscountPercent;
@@ -32,8 +34,17 @@ export async function postingQuota(tx: Db, ownerId: string, now: Date, excludeId
     discountPercent: discount,
   };
   const boostCredits = new Map(rules.map((rule) => [rule.id, boostPrice(rule.boostCredits, discount)]));
+  // Ngày hiển thị theo gói: displayDays = số ngày miễn phí, extendCredits = giá mốc 30 ngày
+  const display = {
+    packs, freeDaysPercent: plan.package.freeDaysPercent, extendDiscountPercent: plan.package.extendDiscountPercent,
+    autoExtend: plan.package.autoExtend, maxStartDelayDays: MAX_START_DELAY_DAYS,
+  };
+  const days = new Map(rules.map((rule) => [rule.id, {
+    displayDays: freeDaysFor(rule, display), maxDisplayDays: rule.maxDisplayDays, dayPackCredits: rule.dayPackCredits,
+    extendCredits: extraDaysCredits(30, rule, packs, display),
+  }]));
   const common = { tier: plan.package.tier, displayDays: DISPLAY_DAYS, recentWindowDays: RECENT_WINDOW_DAYS,
-    businessLimit: BUSINESS_LIMIT, daily, wallet: { available: wallet }, boost };
+    businessLimit: BUSINESS_LIMIT, daily, wallet: { available: wallet }, boost, display };
 
   if (plan.package.tier !== StoreTier.PERSONAL) {
     const active = await quotaRepository.countActiveByCategory(tx, ownerId);
@@ -44,7 +55,7 @@ export async function postingQuota(tx: Db, ownerId: string, now: Date, excludeId
       total: { used: usage.active, limit },
       categories: rules.map((rule) => ({
         categoryId: rule.id, used: active.get(rule.id) ?? 0, limit, recentUsed: 0, recentLimit: 0,
-        extraCredits: null, extendCredits: rule.extraListingCredits, displayDays: rule.displayDays, boostCredits: boostCredits.get(rule.id)!,
+        extraCredits: null, boostCredits: boostCredits.get(rule.id)!, ...days.get(rule.id)!,
         freeAvailable: free, blockedBy: free ? null : 'TOTAL' as const,
       })),
     };
@@ -52,7 +63,7 @@ export async function postingQuota(tx: Db, ownerId: string, now: Date, excludeId
 
   const counts = await quotaRepository.countFreeByCategory(tx, ownerId, new Date(now.getTime() - RECENT_WINDOW_DAYS * DAY_MS), excludeId);
   const quota = personalQuota(rules, counts, plan.package.activeListingLimit);
-  const categories = quota.categories.map((item) => ({ ...item, boostCredits: boostCredits.get(item.categoryId)! }));
+  const categories = quota.categories.map((item) => ({ ...item, boostCredits: boostCredits.get(item.categoryId)!, ...days.get(item.categoryId)! }));
   return { ...common, accountType: 'personal' as const, defaultLimit: 2, ...quota, categories };
 }
 
@@ -98,8 +109,14 @@ function postingLimitMessage(blockedBy: string | null, limit: number, totalLimit
   return `Chuyên mục này chỉ được ${limit} tin miễn phí đang hiển thị.`;
 }
 
-/** Giữ xu cho tin [listingId] khi [price] > 0 */
-export async function chargeListing(tx: Db, ownerId: string, listingId: string, price: number, title: string) {
-  if (price <= 0) return;
-  await holdForListing(tx, { userId: ownerId, listingId, amount: price, note: `Đăng tin vượt hạn mức · ${title}`.slice(0, 200) });
+/**
+ * Giữ xu cho tin [listingId]: [price] xu đăng vượt hạn mức cộng [dayCredits] xu cho [paidDays] ngày hiển thị thêm.
+ * Gộp một lần giữ để báo thiếu xu đúng tổng; duyệt thì trừ hẳn, từ chối thì hoàn.
+ */
+export async function chargeListing(tx: Db, ownerId: string, listingId: string, price: number, title: string,
+  days: { paidDays: number; credits: number } = { paidDays: 0, credits: 0 }) {
+  const amount = price + days.credits;
+  if (amount <= 0) return;
+  const parts = [...(price > 0 ? ['Đăng tin vượt hạn mức'] : []), ...(days.credits > 0 ? [`Thêm ${days.paidDays} ngày hiển thị`] : [])];
+  await holdForListing(tx, { userId: ownerId, listingId, amount, note: `${parts.join(' + ')} · ${title}`.slice(0, 200) });
 }

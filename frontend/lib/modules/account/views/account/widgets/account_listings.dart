@@ -167,14 +167,19 @@ class _ListingRow extends StatelessWidget {
     final endText = end == null
         ? null
         : DateFormat('dd/MM/yyyy').format(end.toLocal());
-    final expiry = expired && endText != null
+    final scheduled = item.isScheduledAt(now);
+    final expiry = scheduled
+        ? l.displayDaysScheduled(
+            DateFormat('dd/MM/yyyy').format(item.startsAt!.toLocal()),
+          )
+        : expired && endText != null
         ? l.accExpiredOn(endText)
         : item.status == AccountListingStatus.visible &&
               daysLeft != null &&
               endText != null
         ? l.accExpiresOn(endText, daysLeft)
         : null;
-    final expiryUrgent = expired || (daysLeft ?? 99) <= 3;
+    final expiryUrgent = !scheduled && (expired || (daysLeft ?? 99) <= 3);
     final visible = item.status == AccountListingStatus.visible;
     return Column(
       children: [

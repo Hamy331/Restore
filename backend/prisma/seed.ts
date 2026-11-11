@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { CATEGORY_ORDER } from '../src/modules/catalog/catalog.type.js';
 import { CATEGORIES } from './seed/categories.js';
-import { CONDITION_POLICIES, CREDIT_PACKAGES, POSTING_LIMITS, PROMOTION_PACKAGES, STORE_PACKAGES } from './seed/reference.js';
+import { CONDITION_POLICIES, CREDIT_PACKAGES, DISPLAY_DAY_PACKS, POSTING_LIMITS, PROMOTION_PACKAGES, STORE_PACKAGES } from './seed/reference.js';
 
 /**
  * Seed dữ liệu tham chiếu: danh mục, tình trạng sản phẩm, gói cửa hàng, gói đẩy tin.
@@ -40,6 +40,7 @@ async function main() {
   for (const item of PROMOTION_PACKAGES) {
     counts.promotionPackages += (await prisma.promotionPackage.createMany({ data: [{ ...item, active: true }], skipDuplicates: true })).count;
   }
+  for (const item of DISPLAY_DAY_PACKS) await prisma.displayDayPack.createMany({ data: [item], skipDuplicates: true });
   for (const item of CREDIT_PACKAGES) {
     counts.creditPackages += (await prisma.creditPackage.createMany({ data: [item], skipDuplicates: true })).count;
   }

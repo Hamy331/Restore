@@ -22,8 +22,12 @@ abstract class AccountListingsRepository {
     bool payWithCredits = false,
   });
 
-  /// Gia hạn tin thêm một kỳ bằng xu ([AccountListingActionException] khi lỗi)
-  Future<void> extend(String id);
+  /// Gia hạn tin thêm [days] ngày bằng xu ([AccountListingActionException]
+  /// khi lỗi)
+  Future<void> extend(String id, int days);
+
+  /// Bật/tắt tự gia hạn ([AccountListingActionException] khi gói không có)
+  Future<void> setAutoExtend(String id, bool enabled);
 
   /// Đẩy tin lên đầu: lượt tặng của gói hoặc trả xu. Lỗi 409 ném
   /// [ListingBoostException].
@@ -80,6 +84,8 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
             categoryId: item.categoryId,
             expiresAt: item.expiresAt,
             paidCredits: item.paidCredits,
+            startsAt: item.startsAt,
+            autoExtend: item.autoExtend,
           ),
       ],
     );
@@ -99,7 +105,12 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
   );
 
   @override
-  Future<void> extend(String id) => _conflicts(() => _repository.extend(id));
+  Future<void> extend(String id, int days) =>
+      _conflicts(() => _repository.extend(id, days));
+
+  @override
+  Future<void> setAutoExtend(String id, bool enabled) =>
+      _conflicts(() => _repository.setAutoExtend(id, enabled));
 
   @override
   Future<BoostResult> boost(String id) => _repository.boost(id);
@@ -122,13 +133,19 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
     return null;
   }
 
-  /// Đổi lỗi 409 có mã của backend thành [AccountListingActionException]
+  /// Đổi lỗi 409 (và 403 có mã) của backend thành
+  /// [AccountListingActionException]
   Future<void> _conflicts(Future<void> Function() call) async {
     try {
       await call();
     } on DioException catch (error) {
       final data = error.response?.data;
-      if (error.response?.statusCode != 409 || data is! Map) rethrow;
+      final code = error.response?.statusCode;
+      if ((code != 409 && code != 403) ||
+          data is! Map ||
+          data['code'] == null) {
+        rethrow;
+      }
       final details = data['details'];
       throw AccountListingActionException(
         '${data['code']}',

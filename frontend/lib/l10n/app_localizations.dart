@@ -6877,6 +6877,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'ve seen all Hot sale listings'**
   String get hotSaleEnd;
+
+  /// No description provided for @displayDaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Display time'**
+  String get displayDaysTitle;
+
+  /// No description provided for @displayDaysFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free · {days} days'**
+  String displayDaysFree(int days);
+
+  /// No description provided for @displayDaysPlus.
+  ///
+  /// In en, this message translates to:
+  /// **'+{days} days'**
+  String displayDaysPlus(int days);
+
+  /// No description provided for @displayDaysRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} → {end} · {days} days'**
+  String displayDaysRange(String start, String end, int days);
+
+  /// No description provided for @displayDaysStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get displayDaysStart;
+
+  /// No description provided for @displayDaysEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get displayDaysEnd;
+
+  /// No description provided for @displayDaysToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today, once approved'**
+  String get displayDaysToday;
+
+  /// No description provided for @displayDaysCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Days on display'**
+  String get displayDaysCount;
+
+  /// No description provided for @displayDaysExtraCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra days'**
+  String get displayDaysExtraCount;
+
+  /// No description provided for @displayDaysIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes {free} free days for this category'**
+  String displayDaysIncluded(int free);
+
+  /// No description provided for @displayDaysExtraPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} extra days: {credits} points'**
+  String displayDaysExtraPrice(int days, int credits);
+
+  /// No description provided for @displayDaysNoCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get displayDaysNoCharge;
+
+  /// No description provided for @displayDaysPackSave.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}-day pack price, you save {credits} points'**
+  String displayDaysPackSave(int days, int credits);
+
+  /// No description provided for @displayDaysSuggest.
+  ///
+  /// In en, this message translates to:
+  /// **'Get {days} days for {credits} points'**
+  String displayDaysSuggest(int days, int credits);
+
+  /// No description provided for @displayDaysMax.
+  ///
+  /// In en, this message translates to:
+  /// **'This category can be shown for up to {days} days.'**
+  String displayDaysMax(int days);
+
+  /// No description provided for @displayDaysPayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points are held when you post, charged on approval and refunded if rejected.'**
+  String get displayDaysPayNote;
+
+  /// No description provided for @displayDaysDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get displayDaysDone;
+
+  /// No description provided for @displayDaysCardHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change the start date or add days'**
+  String get displayDaysCardHint;
+
+  /// No description provided for @displayDaysScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled from {date}'**
+  String displayDaysScheduled(String date);
+
+  /// No description provided for @extendNewEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'New end date: {date}'**
+  String extendNewEnd(String date);
+
+  /// No description provided for @extendCurrentEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing until {date}'**
+  String extendCurrentEnd(String date);
+
+  /// No description provided for @extendAddable.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add up to {days} more days'**
+  String extendAddable(int days);
+
+  /// No description provided for @extendLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing is already at the {days}-day maximum.'**
+  String extendLimitReached(int days);
+
+  /// No description provided for @extendChargeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points are charged now, no new review needed.'**
+  String get extendChargeNote;
+
+  /// No description provided for @autoExtendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-extend 30 days'**
+  String get autoExtendTitle;
+
+  /// No description provided for @autoExtendBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When less than a day is left, {credits} points are charged if your wallet has enough.'**
+  String autoExtendBody(int credits);
+
+  /// No description provided for @autoExtendOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-extend is on'**
+  String get autoExtendOn;
+
+  /// No description provided for @autoExtendOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-extend is off'**
+  String get autoExtendOff;
+
+  /// No description provided for @accExtendedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Extended by {days} days'**
+  String accExtendedDays(int days);
+
+  /// No description provided for @displayDaysTodayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get displayDaysTodayShort;
+
+  /// No description provided for @displayDaysShortTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough points for extra days'**
+  String get displayDaysShortTitle;
+
+  /// No description provided for @displayDaysShortBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You need {missing} more points for the extra days. Top up, or post with the free days.'**
+  String displayDaysShortBody(int missing);
+
+  /// No description provided for @displayDaysUseFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Post with {days} free days'**
+  String displayDaysUseFree(int days);
 }
 
 class _AppLocalizationsDelegate

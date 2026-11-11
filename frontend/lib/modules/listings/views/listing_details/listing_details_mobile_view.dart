@@ -6,6 +6,8 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
+import 'package:restore/shared/widgets/app_option_sheet.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import '../../bloc/create_listing/create_listing_bloc.dart';
 import '../../bloc/create_listing/create_listing_event.dart';
 import '../../bloc/create_listing/create_listing_state.dart';
@@ -16,6 +18,7 @@ import '../../widgets/posting_limit_sheet.dart';
 import 'widgets/duplicate_listing_sheet.dart';
 import 'widgets/listing_attribute_field.dart';
 import 'widgets/listing_condition_section.dart';
+import '../../widgets/listing_display_days_card.dart';
 import 'widgets/listing_details_header.dart';
 import 'widgets/listing_details_section.dart';
 import '../../utils/listing_save_error.dart';
@@ -88,6 +91,43 @@ class ListingDetailsMobileView extends StatelessWidget {
     }
   }
 
+  /// Ví không đủ xu cho ngày hiển thị thêm: nạp xu rồi đăng lại, hoặc đăng
+  /// luôn với số ngày miễn phí của chuyên mục
+  Future<void> _onCreditsShort(
+    BuildContext context,
+    CreateListingState state,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final bloc = context.read<CreateListingBloc>();
+    final free = state.categoryQuota?.displayDays ?? 0;
+    final choice = await showAppOptionSheet<String>(
+      context,
+      title: l10n.displayDaysShortTitle,
+      subtitle: l10n.displayDaysShortBody(state.creditsMissing),
+      icon: AppIcons.wallet,
+      options: [
+        AppSheetOption('topup', l10n.postingTopUp, icon: AppIcons.wallet),
+        AppSheetOption(
+          'free',
+          l10n.displayDaysUseFree(free),
+          icon: AppIcons.calendar,
+        ),
+      ],
+    );
+    if (!context.mounted) return;
+    switch (choice) {
+      case 'topup':
+        await context.push(
+          CreditTopupView.location(need: state.creditsMissing),
+        );
+        bloc.add(const PostingQuotaRequested());
+      case 'free':
+        bloc
+          ..add(DisplayDaysChanged(startsAt: state.draft.startsAt))
+          ..add(const PublishRequested());
+    }
+  }
+
   /// Đã có tin giống vậy: tin cũ đang hiển thị thì mời xem tin cũ; đã ẩn /
   /// hết hạn thì mời kích hoạt lại tin cũ (ở trang tài khoản) hoặc vẫn đăng mới
   Future<void> _onDuplicate(
@@ -146,6 +186,11 @@ class ListingDetailsMobileView extends StatelessWidget {
               previous.duplicateHits != current.duplicateHits,
           listener: _onDuplicate,
         ),
+        BlocListener<CreateListingBloc, CreateListingState>(
+          listenWhen: (previous, current) =>
+              previous.creditsShortHits != current.creditsShortHits,
+          listener: _onCreditsShort,
+        ),
       ],
       child: BlocBuilder<CreateListingBloc, CreateListingState>(
         builder: (context, state) {
@@ -200,6 +245,8 @@ class ListingDetailsMobileView extends StatelessWidget {
                   ],
                 ),
               ],
+              const SizedBox(height: 14),
+              const ListingDisplayDaysCard(),
               const SizedBox(height: 16),
               Text(
                 l10n.directArrangementNote,

@@ -74,7 +74,17 @@ class FakeAccountListingsRepository implements AccountListingsRepository {
   }
 
   @override
-  Future<void> extend(String id) async {}
+  Future<void> extend(String id, int days) async => extended.add((id, days));
+
+  /// Các lần gia hạn: (id, số ngày thêm)
+  final extended = <(String, int)>[];
+
+  @override
+  Future<void> setAutoExtend(String id, bool enabled) async =>
+      autoExtended.add((id, enabled));
+
+  /// Các lần bật/tắt tự gia hạn: (id, bật)
+  final autoExtended = <(String, bool)>[];
 
   /// Tin đã được đẩy, theo thứ tự
   final boosted = <String>[];

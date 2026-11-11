@@ -24,6 +24,8 @@ class AccountListing extends Equatable {
     this.categoryId,
     this.expiresAt,
     this.paidCredits = 0,
+    this.startsAt,
+    this.autoExtend = false,
   });
 
   final String id;
@@ -41,6 +43,19 @@ class AccountListing extends Equatable {
 
   /// Số xu đã trả cho tin (0 = tin miễn phí)
   final int paidCredits;
+
+  /// Ngày hẹn bắt đầu hiển thị: tin đã duyệt nhưng chưa tới ngày nằm ở tab
+  /// Đã ẩn cho tới ngày đó
+  final DateTime? startsAt;
+
+  /// Đang bật tự gia hạn (gói Cửa hàng)
+  final bool autoExtend;
+
+  /// Tin đã duyệt và đang chờ tới ngày hẹn để tự hiện
+  bool isScheduledAt(DateTime now) =>
+      status == AccountListingStatus.hidden &&
+      startsAt != null &&
+      startsAt!.isAfter(now);
 
   /// Tin đã quá hạn hiển thị: hiện lại phải kích hoạt lại
   bool isExpiredAt(DateTime now) =>
@@ -66,6 +81,8 @@ class AccountListing extends Equatable {
     categoryId: categoryId,
     expiresAt: expiresAt,
     paidCredits: paidCredits,
+    startsAt: startsAt,
+    autoExtend: autoExtend,
   );
 
   @override
@@ -81,11 +98,13 @@ class AccountListing extends Equatable {
     categoryId,
     expiresAt,
     paidCredits,
+    startsAt,
+    autoExtend,
   ];
 }
 
 /// Hiện lại / gia hạn tin bị backend từ chối (HTTP 409): [code] như
-/// `POSTING_LIMIT_REACHED`, `NOT_ENOUGH_CREDITS`, `EXTEND_TOO_EARLY`
+/// `POSTING_LIMIT_REACHED`, `NOT_ENOUGH_CREDITS`, `EXTEND_TOO_LONG`
 class AccountListingActionException implements Exception {
   const AccountListingActionException(
     this.code, {
@@ -99,6 +118,8 @@ class AccountListingActionException implements Exception {
   static const postingLimitReached = 'POSTING_LIMIT_REACHED';
   static const notEnoughCredits = 'NOT_ENOUGH_CREDITS';
   static const extendTooEarly = 'EXTEND_TOO_EARLY';
+  static const extendTooLong = 'EXTEND_TOO_LONG';
+  static const autoExtendNotAvailable = 'AUTO_EXTEND_NOT_AVAILABLE';
 
   @override
   String toString() => 'AccountListingActionException($code)';

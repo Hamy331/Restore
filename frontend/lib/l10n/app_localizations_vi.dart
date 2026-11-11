@@ -3855,4 +3855,138 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get hotSaleEnd => 'Đã xem hết tin Hot sale';
+
+  @override
+  String get displayDaysTitle => 'Thời gian hiển thị';
+
+  @override
+  String displayDaysFree(int days) {
+    return 'Miễn phí $days ngày';
+  }
+
+  @override
+  String displayDaysPlus(int days) {
+    return '+$days ngày';
+  }
+
+  @override
+  String displayDaysRange(String start, String end, int days) {
+    return '$start → $end · $days ngày';
+  }
+
+  @override
+  String get displayDaysStart => 'Bắt đầu';
+
+  @override
+  String get displayDaysEnd => 'Kết thúc';
+
+  @override
+  String get displayDaysToday => 'Hôm nay, khi tin được duyệt';
+
+  @override
+  String get displayDaysCount => 'Số ngày hiển thị';
+
+  @override
+  String get displayDaysExtraCount => 'Số ngày thêm';
+
+  @override
+  String displayDaysIncluded(int free) {
+    return 'Gồm $free ngày miễn phí của chuyên mục';
+  }
+
+  @override
+  String displayDaysExtraPrice(int days, int credits) {
+    return 'Thêm $days ngày: $credits xu';
+  }
+
+  @override
+  String get displayDaysNoCharge => 'Miễn phí';
+
+  @override
+  String displayDaysPackSave(int days, int credits) {
+    return 'Giá theo mốc $days ngày, tiết kiệm $credits xu';
+  }
+
+  @override
+  String displayDaysSuggest(int days, int credits) {
+    return 'Lấy $days ngày chỉ $credits xu';
+  }
+
+  @override
+  String displayDaysMax(int days) {
+    return 'Chuyên mục này hiển thị tối đa $days ngày.';
+  }
+
+  @override
+  String get displayDaysPayNote =>
+      'Xu được giữ khi gửi tin, trừ khi tin được duyệt, hoàn lại nếu bị từ chối.';
+
+  @override
+  String get displayDaysDone => 'Xong';
+
+  @override
+  String get displayDaysCardHint => 'Chạm để đổi ngày bắt đầu hoặc thêm ngày';
+
+  @override
+  String displayDaysScheduled(String date) {
+    return 'Hẹn hiện từ $date';
+  }
+
+  @override
+  String extendNewEnd(String date) {
+    return 'Hết hạn mới: $date';
+  }
+
+  @override
+  String extendCurrentEnd(String date) {
+    return 'Đang hiển thị đến $date';
+  }
+
+  @override
+  String extendAddable(int days) {
+    return 'Thêm được tối đa $days ngày nữa';
+  }
+
+  @override
+  String extendLimitReached(int days) {
+    return 'Tin đã hiển thị tối đa $days ngày, chưa gia hạn thêm được.';
+  }
+
+  @override
+  String get extendChargeNote => 'Xu bị trừ ngay, không cần duyệt lại.';
+
+  @override
+  String get autoExtendTitle => 'Tự gia hạn 30 ngày';
+
+  @override
+  String autoExtendBody(int credits) {
+    return 'Khi tin còn dưới 1 ngày, tự trừ $credits xu nếu ví đủ.';
+  }
+
+  @override
+  String get autoExtendOn => 'Đã bật tự gia hạn';
+
+  @override
+  String get autoExtendOff => 'Đã tắt tự gia hạn';
+
+  @override
+  String accExtendedDays(int days) {
+    return 'Đã gia hạn thêm $days ngày';
+  }
+
+  @override
+  String get displayDaysTodayShort => 'Hôm nay';
+
+  @override
+  String get displayDaysShortTitle => 'Không đủ xu cho ngày thêm';
+
+  @override
+  String displayDaysShortBody(int missing) {
+    return 'Ví còn thiếu $missing xu để hiển thị thêm ngày. Bạn có thể nạp xu, hoặc đăng với số ngày miễn phí.';
+  }
+
+  @override
+  String displayDaysUseFree(int days) {
+    return 'Đăng với $days ngày miễn phí';
+  }
 }

@@ -14,6 +14,9 @@
           "draftLimit": 10,
           "monthlyPromotionQuota": 5,
           "boostDiscountPercent": 20,
+          "freeDaysPercent": 150,
+          "extendDiscountPercent": 20,
+          "autoExtend": false,
           "priorityLevel": 1,
           "priceCredits": 99
         },
@@ -27,6 +30,9 @@
           "draftLimit": 30,
           "monthlyPromotionQuota": 20,
           "boostDiscountPercent": 30,
+          "freeDaysPercent": 200,
+          "extendDiscountPercent": 30,
+          "autoExtend": true,
           "priorityLevel": 2,
           "priceCredits": 299
         }
@@ -100,6 +106,9 @@
             "draftLimit": 10,
             "monthlyPromotionQuota": 5,
             "boostDiscountPercent": 20,
+            "freeDaysPercent": 150,
+            "extendDiscountPercent": 20,
+            "autoExtend": false,
             "priorityLevel": 1
           },
           "category": {
@@ -372,6 +381,8 @@
             "freeListingLimit": 1,
             "extraListingCredits": 15,
             "displayDays": 30,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 15,
             "boostCredits": 10
           }
         }
@@ -393,6 +404,9 @@
           "draftLimit": 10,
           "monthlyPromotionQuota": 5,
           "boostDiscountPercent": 20,
+          "freeDaysPercent": 150,
+          "extendDiscountPercent": 20,
+          "autoExtend": false,
           "priorityLevel": 1,
           "priceCredits": 99
         },
@@ -666,6 +680,8 @@
           "freeListingLimit": 1,
           "extraListingCredits": 15,
           "displayDays": 30,
+          "maxDisplayDays": 120,
+          "dayPackCredits": 15,
           "boostCredits": 10
         },
         "endsAt": "<date>",
@@ -730,6 +746,9 @@
             "draftLimit": 30,
             "monthlyPromotionQuota": 20,
             "boostDiscountPercent": 30,
+            "freeDaysPercent": 200,
+            "extendDiscountPercent": 30,
+            "autoExtend": true,
             "priorityLevel": 2
           },
           "category": {
@@ -1002,6 +1021,8 @@
             "freeListingLimit": 1,
             "extraListingCredits": 15,
             "displayDays": 30,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 15,
             "boostCredits": 10
           }
         }
@@ -1023,6 +1044,9 @@
           "draftLimit": 30,
           "monthlyPromotionQuota": 20,
           "boostDiscountPercent": 30,
+          "freeDaysPercent": 200,
+          "extendDiscountPercent": 30,
+          "autoExtend": true,
           "priorityLevel": 2,
           "priceCredits": 299
         },
@@ -1296,6 +1320,8 @@
           "freeListingLimit": 1,
           "extraListingCredits": 15,
           "displayDays": 30,
+          "maxDisplayDays": 120,
+          "dayPackCredits": 15,
           "boostCredits": 10
         },
         "endsAt": "<date>",
@@ -1360,6 +1386,26 @@
           "freeLeft": 20,
           "discountPercent": 30
         },
+        "display": {
+          "packs": [
+            {
+              "days": 30,
+              "discountPercent": 10
+            },
+            {
+              "days": 60,
+              "discountPercent": 20
+            },
+            {
+              "days": 90,
+              "discountPercent": 30
+            }
+          ],
+          "freeDaysPercent": 200,
+          "extendDiscountPercent": 30,
+          "autoExtend": true,
+          "maxStartDelayDays": 14
+        },
         "accountType": "business",
         "defaultLimit": 100,
         "total": {
@@ -1374,9 +1420,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 10,
-            "displayDays": 60,
             "boostCredits": 4,
+            "displayDays": 90,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 8,
+            "extendCredits": 6,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1387,9 +1435,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 5,
-            "displayDays": 60,
             "boostCredits": 3,
+            "displayDays": 120,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 3,
+            "extendCredits": 2,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1400,9 +1450,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 15,
-            "displayDays": 60,
             "boostCredits": 7,
+            "displayDays": 90,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 12,
+            "extendCredits": 8,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1413,9 +1465,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 5,
-            "displayDays": 60,
             "boostCredits": 3,
+            "displayDays": 60,
+            "maxDisplayDays": 90,
+            "dayPackCredits": 4,
+            "extendCredits": 3,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1426,9 +1480,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 10,
-            "displayDays": 60,
             "boostCredits": 4,
+            "displayDays": 120,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 6,
+            "extendCredits": 4,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1439,9 +1495,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 5,
-            "displayDays": 60,
             "boostCredits": 3,
+            "displayDays": 90,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4,
+            "extendCredits": 3,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1452,9 +1510,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 10,
-            "displayDays": 60,
             "boostCredits": 4,
+            "displayDays": 42,
+            "maxDisplayDays": 60,
+            "dayPackCredits": 8,
+            "extendCredits": 6,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1465,9 +1525,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 15,
-            "displayDays": 30,
             "boostCredits": 7,
+            "displayDays": 60,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 15,
+            "extendCredits": 10,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1478,9 +1540,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 5,
-            "displayDays": 60,
             "boostCredits": 3,
+            "displayDays": 90,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4,
+            "extendCredits": 3,
             "freeAvailable": true,
             "blockedBy": null
           },
@@ -1491,9 +1555,11 @@
             "recentUsed": 0,
             "recentLimit": 0,
             "extraCredits": null,
-            "extendCredits": 15,
-            "displayDays": 30,
             "boostCredits": 7,
+            "displayDays": 60,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 15,
+            "extendCredits": 10,
             "freeAvailable": true,
             "blockedBy": null
           }

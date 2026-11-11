@@ -20,6 +20,26 @@
           "freeLeft": 0,
           "discountPercent": 0
         },
+        "display": {
+          "packs": [
+            {
+              "days": 30,
+              "discountPercent": 10
+            },
+            {
+              "days": 60,
+              "discountPercent": 20
+            },
+            {
+              "days": 90,
+              "discountPercent": 30
+            }
+          ],
+          "freeDaysPercent": 100,
+          "extendDiscountPercent": 0,
+          "autoExtend": false,
+          "maxStartDelayDays": 14
+        },
         "accountType": "personal",
         "defaultLimit": 2,
         "total": {
@@ -34,11 +54,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 10,
-            "extendCredits": 10,
-            "displayDays": 60,
+            "extendCredits": 8,
+            "displayDays": 45,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 6
+            "boostCredits": 6,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 8
           },
           {
             "categoryId": "books",
@@ -47,11 +69,13 @@
             "recentUsed": 0,
             "recentLimit": 6,
             "extraCredits": 5,
-            "extendCredits": 5,
+            "extendCredits": 3,
             "displayDays": 60,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 4
+            "boostCredits": 4,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 3
           },
           {
             "categoryId": "electronics",
@@ -60,11 +84,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 15,
-            "extendCredits": 15,
-            "displayDays": 60,
+            "extendCredits": 11,
+            "displayDays": 45,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 10
+            "boostCredits": 10,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 12
           },
           {
             "categoryId": "fashion",
@@ -73,11 +99,13 @@
             "recentUsed": 0,
             "recentLimit": 4,
             "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
+            "extendCredits": 4,
+            "displayDays": 30,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 4
+            "boostCredits": 4,
+            "maxDisplayDays": 90,
+            "dayPackCredits": 4
           },
           {
             "categoryId": "furniture",
@@ -86,11 +114,13 @@
             "recentUsed": 0,
             "recentLimit": 4,
             "extraCredits": 10,
-            "extendCredits": 10,
+            "extendCredits": 6,
             "displayDays": 60,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 6
+            "boostCredits": 6,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 6
           },
           {
             "categoryId": "other",
@@ -99,11 +129,13 @@
             "recentUsed": 0,
             "recentLimit": 4,
             "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
+            "extendCredits": 4,
+            "displayDays": 45,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 4
+            "boostCredits": 4,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4
           },
           {
             "categoryId": "pets",
@@ -112,11 +144,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 10,
-            "extendCredits": 10,
-            "displayDays": 60,
+            "extendCredits": 8,
+            "displayDays": 21,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 6
+            "boostCredits": 6,
+            "maxDisplayDays": 60,
+            "dayPackCredits": 8
           },
           {
             "categoryId": "phones",
@@ -125,11 +159,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 15,
-            "extendCredits": 15,
+            "extendCredits": 14,
             "displayDays": 30,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 10
+            "boostCredits": 10,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 15
           },
           {
             "categoryId": "sports",
@@ -138,11 +174,13 @@
             "recentUsed": 0,
             "recentLimit": 4,
             "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
+            "extendCredits": 4,
+            "displayDays": 45,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 4
+            "boostCredits": 4,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4
           },
           {
             "categoryId": "vehicles",
@@ -151,11 +189,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 15,
-            "extendCredits": 15,
+            "extendCredits": 14,
             "displayDays": 30,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 10
+            "boostCredits": 10,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 15
           }
         ]
       }
@@ -216,6 +256,8 @@
         "viewCount": 0,
         "publishedAt": "<date>",
         "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -223,6 +265,8 @@
           "ratingCount": 0
         },
         "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -282,6 +326,8 @@
         "viewCount": 0,
         "publishedAt": "<date>",
         "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -289,6 +335,8 @@
           "ratingCount": 0
         },
         "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -379,6 +427,8 @@
         "viewCount": 0,
         "publishedAt": "<date>",
         "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -386,6 +436,8 @@
           "ratingCount": 0
         },
         "paidCredits": 5,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -459,6 +511,8 @@
         "viewCount": 0,
         "publishedAt": "<date>",
         "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -466,6 +520,8 @@
           "ratingCount": 0
         },
         "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -540,6 +596,8 @@
         "viewCount": 0,
         "publishedAt": "<date>",
         "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -547,6 +605,8 @@
           "ratingCount": 0
         },
         "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -626,6 +686,8 @@
         "viewCount": 0,
         "publishedAt": "<date>",
         "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -633,6 +695,8 @@
           "ratingCount": 0
         },
         "paidCredits": 5,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -694,6 +758,8 @@
         "viewCount": 0,
         "publishedAt": "<date>",
         "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -701,16 +767,32 @@
           "ratingCount": 0
         },
         "paidCredits": 5,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
-  "extend too early": {
+  "extend too long": {
     "status": 409,
     "body": {
       "success": false,
-      "error": "Tin còn 120 ngày, gia hạn được khi còn tối đa 60 ngày.",
-      "code": "EXTEND_TOO_EARLY"
+      "error": "Tin chỉ gia hạn thêm được tối đa 45 ngày (hiển thị tối đa 120 ngày).",
+      "code": "EXTEND_TOO_LONG",
+      "field": "days",
+      "details": {
+        "addableDays": 45,
+        "maxDisplayDays": 120
+      }
+    }
+  },
+  "extend bad body": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Số ngày gia hạn không hợp lệ.",
+      "code": "INVALID_INPUT",
+      "field": "days"
     }
   },
   "extend hidden": {
@@ -719,6 +801,78 @@
       "success": false,
       "error": "Không tìm thấy tin đăng của bạn.",
       "code": "LISTING_NOT_FOUND"
+    }
+  },
+  "extend 7 days": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Đồng hồ treo tường cũ",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "AVAILABLE",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [
+          "/api/v1/listings/media/<uuid>.png"
+        ],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 5,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
     }
   },
   "boost with points": {
@@ -885,6 +1039,26 @@
           "freeLeft": 0,
           "discountPercent": 0
         },
+        "display": {
+          "packs": [
+            {
+              "days": 30,
+              "discountPercent": 10
+            },
+            {
+              "days": 60,
+              "discountPercent": 20
+            },
+            {
+              "days": 90,
+              "discountPercent": 30
+            }
+          ],
+          "freeDaysPercent": 100,
+          "extendDiscountPercent": 0,
+          "autoExtend": false,
+          "maxStartDelayDays": 14
+        },
         "accountType": "personal",
         "defaultLimit": 2,
         "total": {
@@ -899,11 +1073,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 10,
-            "extendCredits": 10,
-            "displayDays": 60,
+            "extendCredits": 8,
+            "displayDays": 45,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 6
+            "boostCredits": 6,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 8
           },
           {
             "categoryId": "books",
@@ -912,11 +1088,13 @@
             "recentUsed": 0,
             "recentLimit": 6,
             "extraCredits": 5,
-            "extendCredits": 5,
+            "extendCredits": 3,
             "displayDays": 60,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 4
+            "boostCredits": 4,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 3
           },
           {
             "categoryId": "electronics",
@@ -925,11 +1103,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 15,
-            "extendCredits": 15,
-            "displayDays": 60,
+            "extendCredits": 11,
+            "displayDays": 45,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 10
+            "boostCredits": 10,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 12
           },
           {
             "categoryId": "fashion",
@@ -938,11 +1118,13 @@
             "recentUsed": 0,
             "recentLimit": 4,
             "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
+            "extendCredits": 4,
+            "displayDays": 30,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 4
+            "boostCredits": 4,
+            "maxDisplayDays": 90,
+            "dayPackCredits": 4
           },
           {
             "categoryId": "furniture",
@@ -951,11 +1133,13 @@
             "recentUsed": 0,
             "recentLimit": 4,
             "extraCredits": 10,
-            "extendCredits": 10,
+            "extendCredits": 6,
             "displayDays": 60,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 6
+            "boostCredits": 6,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 6
           },
           {
             "categoryId": "other",
@@ -964,11 +1148,13 @@
             "recentUsed": 1,
             "recentLimit": 4,
             "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
+            "extendCredits": 4,
+            "displayDays": 45,
             "freeAvailable": false,
             "blockedBy": "CATEGORY",
-            "boostCredits": 4
+            "boostCredits": 4,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4
           },
           {
             "categoryId": "pets",
@@ -977,11 +1163,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 10,
-            "extendCredits": 10,
-            "displayDays": 60,
+            "extendCredits": 8,
+            "displayDays": 21,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 6
+            "boostCredits": 6,
+            "maxDisplayDays": 60,
+            "dayPackCredits": 8
           },
           {
             "categoryId": "phones",
@@ -990,11 +1178,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 15,
-            "extendCredits": 15,
+            "extendCredits": 14,
             "displayDays": 30,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 10
+            "boostCredits": 10,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 15
           },
           {
             "categoryId": "sports",
@@ -1003,11 +1193,13 @@
             "recentUsed": 0,
             "recentLimit": 4,
             "extraCredits": 5,
-            "extendCredits": 5,
-            "displayDays": 60,
+            "extendCredits": 4,
+            "displayDays": 45,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 4
+            "boostCredits": 4,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4
           },
           {
             "categoryId": "vehicles",
@@ -1016,11 +1208,13 @@
             "recentUsed": 0,
             "recentLimit": 2,
             "extraCredits": 15,
-            "extendCredits": 15,
+            "extendCredits": 14,
             "displayDays": 30,
             "freeAvailable": true,
             "blockedBy": null,
-            "boostCredits": 10
+            "boostCredits": 10,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 15
           }
         ]
       }

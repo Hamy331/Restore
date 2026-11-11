@@ -179,6 +179,14 @@ model Listing {
   paidCredits   Int              @default(0)
   /// Hết hạn hiển thị (duyệt / kích hoạt lại / gia hạn mới đặt); quá hạn thì tự ẩn
   expiresAt     DateTime?
+  /// Ngày hẹn bắt đầu hiển thị (null = hiện ngay khi duyệt). Tin đã duyệt mà chưa tới ngày: HIDDEN + startsAt
+  startsAt      DateTime?
+  /// Số ngày hiển thị người bán chọn lúc đăng, tính khi duyệt (null = số ngày miễn phí)
+  displayDays   Int?
+  /// Số ngày hiển thị đã trả xu lúc đăng
+  paidDays      Int              @default(0)
+  /// Tự gia hạn 30 ngày khi sắp hết hạn (gói có StorePackage.autoExtend)
+  autoExtend    Boolean          @default(false)
   updatedAt     DateTime         @updatedAt
   creditHolds   CreditHold[]
   promotions    Promotion[]
@@ -189,6 +197,7 @@ model Listing {
   @@index([ownerId, publishedAt])
   @@index([ownerId, categoryId, status])
   @@index([status, expiresAt])
+  @@index([status, startsAt])
 }
 
 model ListingFavorite {
@@ -210,8 +219,12 @@ model Category {
   freeListingLimit    Int            @default(2)
   /// Giá (xu) một tin vượt hạn mức, hiển thị 60 ngày
   extraListingCredits Int            @default(5)
-  /// Số ngày một tin được hiển thị (cũng là số ngày mỗi lần gia hạn)
+  /// Số ngày hiển thị miễn phí của gói Cá nhân (gói cao nhân theo StorePackage.freeDaysPercent)
   displayDays         Int            @default(60)
+  /// Thời gian hiển thị tối đa (ngày, tính từ hôm nay) khi chọn ngày đăng hoặc gia hạn
+  maxDisplayDays      Int            @default(120)
+  /// Giá (xu) cho 30 ngày hiển thị thêm; giá một ngày = giá này / 30, làm tròn lên
+  dayPackCredits      Int            @default(4)
   /// Giá (xu) một lần đẩy tin lên đầu, trước khi giảm theo gói
   boostCredits        Int            @default(5)
   listings       Listing[]
@@ -238,6 +251,12 @@ model StorePackage {
   monthlyPromotionQuota Int
   /// Phần trăm giảm giá đẩy tin bằng xu của gói
   boostDiscountPercent  Int                 @default(0)
+  /// Số ngày hiển thị miễn phí theo % của Category.displayDays (Cá nhân 100, Bán chuyên 150, Cửa hàng 200)
+  freeDaysPercent       Int                 @default(100)
+  /// Giảm giá (%) khi mua thêm ngày hiển thị
+  extendDiscountPercent Int                 @default(0)
+  /// Được bật tự gia hạn tin 30 ngày khi sắp hết hạn
+  autoExtend            Boolean             @default(false)
   priorityLevel         Int
   subscriptions         StoreSubscription[]
   orders                StoreOrder[]
@@ -663,4 +682,11 @@ model CreditHold {
 
   @@index([userId, status])
   @@index([listingId, status])
+}
+
+/// Mốc mua ngày hiển thị rẻ hơn (30 / 60 / 90 ngày), admin sửa được
+model DisplayDayPack {
+  days            Int     @id
+  discountPercent Int
+  active          Boolean @default(true)
 }

@@ -5,7 +5,7 @@ import { listingBody, PNG } from './support/fixtures.js';
 
 const { ctx, expect } = useApi('posting-quota');
 
-/** Hạn mức tài khoản Cá nhân, trả xu khi vượt, hết hạn / kích hoạt lại / gia hạn, chặn tin trùng (chuyên mục "other": 2 tin miễn phí, 5 xu, 60 ngày) */
+/** Hạn mức tài khoản Cá nhân, trả xu khi vượt, hết hạn / kích hoạt lại / gia hạn, chặn tin trùng (chuyên mục "other": 2 tin miễn phí, 5 xu, hiển thị miễn phí 45 ngày) */
 test('posting quota: pay with points, expiry, reactivate, extend, duplicates', async () => {
   const { api, tokens } = ctx;
   const { prisma } = await import('../../src/lib/prisma.js');
@@ -21,7 +21,7 @@ test('posting quota: pay with points, expiry, reactivate, extend, duplicates', a
 
   const quota = expect('quota', await api.get('/listings/posting-quota', { token }));
   const other = quota.body.data.categories.find((item: { categoryId: string }) => item.categoryId === 'other');
-  assert.deepEqual([other.limit, other.extraCredits, other.displayDays, quota.body.data.total.limit], [2, 5, 60, 5]);
+  assert.deepEqual([other.limit, other.extraCredits, other.displayDays, quota.body.data.total.limit], [2, 5, 45, 5]);
 
   const a = expect('create free 1', await api.post('/listings', { token, body: listingBody('Đồng hồ treo tường cũ') })).body.data.id;
   expect('create free 2', await api.post('/listings', { token, body: listingBody('Quạt bàn mini') }));
@@ -69,12 +69,19 @@ test('posting quota: pay with points, expiry, reactivate, extend, duplicates', a
   assert.deepEqual([bought.body.data.status, bought.body.data.paidCredits], ['AVAILABLE', 5]);
   assert.deepEqual([(await wallet()).available, (await wallet()).held], [45, 0]);
 
+  // "Khác": miễn phí 45 ngày, tối đa 120 ngày, 4 xu / 30 ngày; mốc 30 ngày giảm 10% => 4 xu
   const before = new Date(bought.body.data.expiresAt).getTime();
-  const extended = expect('extend', await api.post(`/listings/${a}/extend`, { token }));
-  assert.equal(new Date(extended.body.data.expiresAt).getTime() - before, 60 * 86_400_000);
-  assert.equal((await wallet()).available, 40);
-  assert.equal(expect('extend too early', await api.post(`/listings/${a}/extend`, { token })).body.code, 'EXTEND_TOO_EARLY');
-  expect('extend hidden', await api.post('/listings/listing-1/extend', { token }));
+  assert.equal(Math.round((before - Date.now()) / 86_400_000), 45);
+  const extended = expect('extend', await api.post(`/listings/${a}/extend`, { token, body: { days: 30 } }));
+  assert.equal(new Date(extended.body.data.expiresAt).getTime() - before, 30 * 86_400_000);
+  assert.equal((await wallet()).available, 41);
+  const tooLong = expect('extend too long', await api.post(`/listings/${a}/extend`, { token, body: { days: 50 } }));
+  assert.deepEqual([tooLong.body.code, tooLong.body.details.addableDays], ['EXTEND_TOO_LONG', 45]);
+  expect('extend bad body', await api.post(`/listings/${a}/extend`, { token, body: {} }));
+  expect('extend hidden', await api.post('/listings/listing-1/extend', { token, body: { days: 7 } }));
+  const odd = expect('extend 7 days', await api.post(`/listings/${a}/extend`, { token, body: { days: 7 } }));
+  assert.equal(new Date(odd.body.data.expiresAt).getTime() - before, 37 * 86_400_000);
+  assert.equal((await wallet()).available, 40, '7 ngày x 4/30 xu làm tròn lên 1 xu');
 
   const boosted = expect('boost with points', await api.post(`/listings/${a}/boost`, { token }));
   assert.deepEqual([boosted.body.data.free, boosted.body.data.credits], [false, 4]);

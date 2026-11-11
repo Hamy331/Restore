@@ -14,6 +14,9 @@
           "draftLimit": 3,
           "monthlyPromotionQuota": 0,
           "boostDiscountPercent": 0,
+          "freeDaysPercent": 100,
+          "extendDiscountPercent": 0,
+          "autoExtend": false,
           "priorityLevel": 0,
           "priceCredits": 0
         },
@@ -74,6 +77,9 @@
           "draftLimit": 10,
           "monthlyPromotionQuota": 5,
           "boostDiscountPercent": 20,
+          "freeDaysPercent": 150,
+          "extendDiscountPercent": 20,
+          "autoExtend": false,
           "priorityLevel": 1
         },
         "category": {
@@ -172,6 +178,8 @@
           "freeListingLimit": 2,
           "extraListingCredits": 10,
           "displayDays": 60,
+          "maxDisplayDays": 180,
+          "dayPackCredits": 6,
           "boostCredits": 6
         }
       }
@@ -222,6 +230,9 @@
             "draftLimit": 10,
             "monthlyPromotionQuota": 5,
             "boostDiscountPercent": 20,
+            "freeDaysPercent": 150,
+            "extendDiscountPercent": 20,
+            "autoExtend": false,
             "priorityLevel": 1
           },
           "category": {
@@ -320,6 +331,8 @@
             "freeListingLimit": 2,
             "extraListingCredits": 10,
             "displayDays": 60,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 6,
             "boostCredits": 6
           }
         }
@@ -350,6 +363,9 @@
             "draftLimit": 10,
             "monthlyPromotionQuota": 5,
             "boostDiscountPercent": 20,
+            "freeDaysPercent": 150,
+            "extendDiscountPercent": 20,
+            "autoExtend": false,
             "priorityLevel": 1
           },
           "category": {
@@ -448,6 +464,8 @@
             "freeListingLimit": 2,
             "extraListingCredits": 10,
             "displayDays": 60,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 6,
             "boostCredits": 6
           }
         }
@@ -477,6 +495,9 @@
           "draftLimit": 10,
           "monthlyPromotionQuota": 5,
           "boostDiscountPercent": 20,
+          "freeDaysPercent": 150,
+          "extendDiscountPercent": 20,
+          "autoExtend": false,
           "priorityLevel": 1,
           "priceCredits": 99
         },
@@ -576,6 +597,8 @@
           "freeListingLimit": 2,
           "extraListingCredits": 10,
           "displayDays": 60,
+          "maxDisplayDays": 180,
+          "dayPackCredits": 6,
           "boostCredits": 6
         },
         "endsAt": "<date>",
@@ -868,6 +891,8 @@
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
           "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -927,6 +952,8 @@
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
           "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",

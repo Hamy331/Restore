@@ -2081,5 +2081,172 @@
   "hotSaleLoadError": "Không tải được tin Hot sale",
   "hotSaleEmptyTitle": "Chưa có tin Hot sale",
   "hotSaleEmptyBody": "Các tin được người bán đưa lên Hot sale sẽ hiện ở đây.",
-  "hotSaleEnd": "Đã xem hết tin Hot sale"
+  "hotSaleEnd": "Đã xem hết tin Hot sale",
+  "displayDaysTitle": "Thời gian hiển thị",
+  "displayDaysFree": "Miễn phí {days} ngày",
+  "@displayDaysFree": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysPlus": "+{days} ngày",
+  "@displayDaysPlus": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysRange": "{start} → {end} · {days} ngày",
+  "@displayDaysRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysStart": "Bắt đầu",
+  "displayDaysEnd": "Kết thúc",
+  "displayDaysToday": "Hôm nay, khi tin được duyệt",
+  "displayDaysCount": "Số ngày hiển thị",
+  "displayDaysExtraCount": "Số ngày thêm",
+  "displayDaysIncluded": "Gồm {free} ngày miễn phí của chuyên mục",
+  "@displayDaysIncluded": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysExtraPrice": "Thêm {days} ngày: {credits} xu",
+  "@displayDaysExtraPrice": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysNoCharge": "Miễn phí",
+  "displayDaysPackSave": "Giá theo mốc {days} ngày, tiết kiệm {credits} xu",
+  "@displayDaysPackSave": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysSuggest": "Lấy {days} ngày chỉ {credits} xu",
+  "@displayDaysSuggest": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysMax": "Chuyên mục này hiển thị tối đa {days} ngày.",
+  "@displayDaysMax": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysPayNote": "Xu được giữ khi gửi tin, trừ khi tin được duyệt, hoàn lại nếu bị từ chối.",
+  "displayDaysDone": "Xong",
+  "displayDaysCardHint": "Chạm để đổi ngày bắt đầu hoặc thêm ngày",
+  "displayDaysScheduled": "Hẹn hiện từ {date}",
+  "@displayDaysScheduled": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendNewEnd": "Hết hạn mới: {date}",
+  "@extendNewEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendCurrentEnd": "Đang hiển thị đến {date}",
+  "@extendCurrentEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendAddable": "Thêm được tối đa {days} ngày nữa",
+  "@extendAddable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "extendLimitReached": "Tin đã hiển thị tối đa {days} ngày, chưa gia hạn thêm được.",
+  "@extendLimitReached": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "extendChargeNote": "Xu bị trừ ngay, không cần duyệt lại.",
+  "autoExtendTitle": "Tự gia hạn 30 ngày",
+  "autoExtendBody": "Khi tin còn dưới 1 ngày, tự trừ {credits} xu nếu ví đủ.",
+  "@autoExtendBody": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "autoExtendOn": "Đã bật tự gia hạn",
+  "autoExtendOff": "Đã tắt tự gia hạn",
+  "accExtendedDays": "Đã gia hạn thêm {days} ngày",
+  "@accExtendedDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysTodayShort": "Hôm nay",
+  "displayDaysShortTitle": "Không đủ xu cho ngày thêm",
+  "displayDaysShortBody": "Ví còn thiếu {missing} xu để hiển thị thêm ngày. Bạn có thể nạp xu, hoặc đăng với số ngày miễn phí.",
+  "@displayDaysShortBody": {
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysUseFree": "Đăng với {days} ngày miễn phí",
+  "@displayDaysUseFree": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  }
 }

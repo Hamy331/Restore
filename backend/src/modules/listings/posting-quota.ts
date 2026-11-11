@@ -7,7 +7,7 @@
  * - Chỉ tính tin đang chờ duyệt / đang hiển thị / đang giữ chỗ; tin trả bằng xu không chiếm suất.
  * - Chống đăng rồi ẩn liên tục: trong 30 ngày, mỗi chuyên mục đăng miễn phí tối đa gấp đôi số suất.
  * - Hết suất thì đăng được bằng xu (Category.extraListingCredits).
- * - Tin hiển thị Category.displayDays ngày rồi tự ẩn; kích hoạt lại tính như đăng mới, gia hạn luôn tốn xu.
+ * - Tin hiển thị số ngày người bán chọn (miễn phí tới Category.displayDays theo gói) rồi tự ẩn; xem display-pricing.ts.
  */
 
 export const DISPLAY_DAYS = 60;
@@ -26,9 +26,9 @@ export type CategoryQuota = {
   recentUsed: number;
   recentLimit: number;
   extraCredits: number;
-  /** Giá (xu) gia hạn tin thêm một kỳ, mọi gói */
+  /** Giá (xu) mốc 30 ngày hiển thị thêm; service ghi đè theo gói */
   extendCredits: number;
-  /** Số ngày tin hiển thị, cũng là số ngày mỗi lần gia hạn */
+  /** Số ngày hiển thị miễn phí; service ghi đè theo gói */
   displayDays: number;
   freeAvailable: boolean;
   blockedBy: QuotaBlock | null;

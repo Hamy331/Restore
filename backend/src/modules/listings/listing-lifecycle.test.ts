@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { addDays, approvedExpiry, boostPrice, canExtend, featurePrice, daysLeft, extendedExpiry, isExpired, normalizeTitle } from './listing-lifecycle.js';
+import { addableDays, addDays, approvalWindow, approvedExpiry, boostPrice, featurePrice, daysLeft, extendedExpiry, isExpired, normalizeTitle } from './listing-lifecycle.js';
 
 const now = new Date('2026-11-11T00:00:00Z');
 
@@ -17,9 +17,17 @@ test('approval keeps a running expiry, otherwise starts a new period', () => {
   assert.deepEqual(approvedExpiry(null, now, 60), addDays(now, 60));
 });
 
-test('extend only within one period and adds to the remaining time', () => {
-  assert.equal(canExtend(addDays(now, 31), now, 30), false);
-  assert.equal(canExtend(addDays(now, 30), now, 30), true);
+test('approval starts on the scheduled day, or now when approved late', () => {
+  assert.deepEqual(approvalWindow(null, addDays(now, 3), now, 30), { expiresAt: addDays(now, 33), startsAt: addDays(now, 3), scheduled: true });
+  assert.deepEqual(approvalWindow(null, addDays(now, -1), now, 30), { expiresAt: addDays(now, 30), startsAt: null, scheduled: false });
+  const running = addDays(now, 10);
+  assert.deepEqual(approvalWindow(running, addDays(now, 3), now, 30), { expiresAt: running, startsAt: null, scheduled: false });
+});
+
+test('extend any number of days up to the category maximum', () => {
+  assert.equal(addableDays(addDays(now, 30), now, 120), 90);
+  assert.equal(addableDays(null, now, 60), 60);
+  assert.equal(addableDays(addDays(now, 130), now, 120), 0);
   assert.deepEqual(extendedExpiry(addDays(now, 5), now, 30), addDays(now, 35));
   assert.deepEqual(extendedExpiry(addDays(now, -5), now, 30), addDays(now, 30));
   assert.equal(daysLeft(addDays(now, 4.2), now), 5);
