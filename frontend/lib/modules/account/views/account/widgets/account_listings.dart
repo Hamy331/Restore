@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +25,7 @@ List<Widget> accountListingSlivers(AccountListingsState state) => [
     const SliverToBoxAdapter(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 40),
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: AppLoadingIndicator()),
       ),
     )
   else if (state.displayed.isEmpty)
@@ -38,7 +39,7 @@ List<Widget> accountListingSlivers(AccountListingsState state) => [
     const SliverToBoxAdapter(
       child: Padding(
         padding: EdgeInsets.all(16),
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: AppLoadingIndicator()),
       ),
     ),
 ];
@@ -288,7 +289,7 @@ class _ListingRow extends StatelessWidget {
                     l.accBoost,
                     icon: AppIcons.boost,
                     filled: true,
-                    onTap: () => boostAccountListing(context, item),
+                    onTap: () => promoteAccountListing(context, item),
                   ),
                 ),
                 const SizedBox(width: 6),
@@ -298,7 +299,7 @@ class _ListingRow extends StatelessWidget {
                     (
                       AppIcons.hot,
                       l.featureAction,
-                      () => featureAccountListing(context, item),
+                      () => promoteAccountListing(context, item),
                     ),
                     (
                       AppIcons.calendar,

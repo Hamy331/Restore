@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -141,7 +142,7 @@ class PlansMobileView extends StatelessWidget {
                         child: Text(l10n.retry),
                       ),
                     ),
-                    PlansStatus.ready => RefreshIndicator(
+                    PlansStatus.ready => AppPullToRefresh(
                       onRefresh: () =>
                           context.read<PlansCubit>().load(showLoading: false),
                       child: _PlanList(

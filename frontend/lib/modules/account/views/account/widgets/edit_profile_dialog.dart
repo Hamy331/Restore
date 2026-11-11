@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_icons.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -210,11 +211,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         TextButton(
           onPressed: saving ? null : save,
           child: saving
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
+              ? const AppLoadingIndicator(dotSize: 5)
               : Text(l.accSave),
         ),
       ],

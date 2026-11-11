@@ -4086,4 +4086,142 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get originalPriceError =>
       'Original price must be higher than the sale price';
+
+  @override
+  String get promoTitle => 'Promote listing';
+
+  @override
+  String get promoNotPromotable =>
+      'This listing isn\'t visible, so it can\'t be promoted. Show it again in Manage listings, then come back.';
+
+  @override
+  String promoBoostRunning(String date) {
+    return 'At the top of the list until $date';
+  }
+
+  @override
+  String promoBoostAgainAt(String date) {
+    return 'Boost again after $date';
+  }
+
+  @override
+  String get promoRunning => 'Running';
+
+  @override
+  String get promoHistoryTitle => 'Recent promotions';
+
+  @override
+  String get promoHistoryEmpty => 'This listing hasn\'t been promoted yet.';
+
+  @override
+  String promoHistoryFeature(int days) {
+    return 'Hot sale $days days';
+  }
+
+  @override
+  String get promoFree => 'Free';
+
+  @override
+  String get promoEnded => 'Ended';
+
+  @override
+  String get promoLoadError => 'Couldn\'t load promotion info';
+
+  @override
+  String promoBalanceAfter(int left) {
+    return '$left points left in your wallet after paying.';
+  }
+
+  @override
+  String get promoPickTitle => 'Pick a listing to promote';
+
+  @override
+  String get promoPickSubtitle =>
+      'Only visible listings can be boosted or put on Hot sale';
+
+  @override
+  String get promoPickEmpty => 'You have no visible listings yet.';
+
+  @override
+  String get hubTitle => 'Promotions';
+
+  @override
+  String hubFreeBoosts(int left, int perMonth) {
+    return '$left/$perMonth free boosts left';
+  }
+
+  @override
+  String hubThisMonth(int boosts, int features) {
+    return 'This month: $boosts boosts · $features Hot sale';
+  }
+
+  @override
+  String get hubFilterAll => 'All';
+
+  @override
+  String get hubFilterRunning => 'Promoted';
+
+  @override
+  String get hubFilterExpiring => 'Expiring soon';
+
+  @override
+  String get hubFilterIdle => 'Not promoted';
+
+  @override
+  String hubBoostedFor(String time) {
+    return 'Boosted · $time left';
+  }
+
+  @override
+  String hubFeaturedFor(String time) {
+    return 'Hot sale · $time left';
+  }
+
+  @override
+  String hubExpiresIn(String time) {
+    return 'Expires in $time';
+  }
+
+  @override
+  String hubHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hubDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hubAutoExtend => 'Auto-extend';
+
+  @override
+  String get hubDetails => 'Details';
+
+  @override
+  String get hubEmptyRunning =>
+      'No listing is boosted or on Hot sale right now.';
+
+  @override
+  String get hubEmptyExpiring => 'No listing expires in the next 7 days.';
+
+  @override
+  String get hubEmptyIdle => 'All your listings are being promoted.';
+
+  @override
+  String hubExpiringTip(int count) {
+    return '$count listings expiring soon: extend them so they stay visible.';
+  }
 }

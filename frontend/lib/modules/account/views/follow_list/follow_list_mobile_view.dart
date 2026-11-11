@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -66,7 +68,7 @@ class _FollowList extends StatelessWidget {
       listener: (context, _) => feedNotice(context, l.feedActionError),
       builder: (context, state) {
         if (state.loading && state.users.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: AppLoadingIndicator());
         }
         if (state.failed) {
           return Center(
@@ -81,7 +83,7 @@ class _FollowList extends StatelessWidget {
             ),
           );
         }
-        return RefreshIndicator(
+        return AppPullToRefresh(
           onRefresh: cubit.load,
           child: NotificationListener<ScrollNotification>(
             onNotification: (n) {
@@ -94,7 +96,7 @@ class _FollowList extends StatelessWidget {
                 if (index == state.users.length) {
                   return const Padding(
                     padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(child: AppLoadingIndicator()),
                   );
                 }
                 final user = state.users[index];

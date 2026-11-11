@@ -1,7 +1,8 @@
 import { ListingStatus, Prisma } from '@prisma/client';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
-import { createPromotion, findActivePackage, findActivePackagesOfKind, findRunningPromotion, storePackageForUser, storeUsage,
+import { createPromotion, findActivePackage, findActivePackagesOfKind, findListingPromotions, findPromotionKindsSince, findRunningPromotion,
+  findRunningPromotionsOf, utcMonthStart, storePackageForUser, storeUsage,
   withQuotaTransaction } from '../../commerce/index.js';
 import { availableCredits } from '../../credits/index.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
@@ -316,6 +317,83 @@ export async function getFeatureQuote(ownerId: string, id: string) {
       listingId: id, discountPercent, available, runningUntil: running?.endsAt ?? null,
       options: packages.map((p) => ({ packageId: p.id, durationDays: p.durationDays,
         credits: featurePrice(Number(p.price), category.boostCredits, discountPercent) })),
+    };
+  });
+}
+
+/** Số tin tối đa trang Boost trả về (tin đang hiển thị, sắp hết hạn trước) */
+const PROMOTION_HUB_LIMIT = 100;
+
+/**
+ * Trang Boost của tôi: tất cả tin đang hiển thị (sắp hết hạn trước) kèm hạn đẩy tin / Hot sale
+ * đang chạy và giá đẩy tin theo chuyên mục; lượt đẩy tặng còn lại, số xu, số lượt đã dùng tháng này.
+ */
+export async function getPromotionHub(ownerId: string) {
+  return listingRepository.transaction(async (tx) => {
+    const now = new Date();
+    const listings = await tx.listing.findMany({
+      where: { ownerId, status: ListingStatus.AVAILABLE },
+      select: { id: true, title: true, price: true, images: true, categoryId: true, viewCount: true,
+        expiresAt: true, autoExtend: true, createdAt: true },
+      orderBy: [{ expiresAt: { sort: 'asc', nulls: 'last' } }, { createdAt: 'desc' }],
+      take: PROMOTION_HUB_LIMIT,
+    });
+    const categoryIds = [...new Set(listings.map((l) => l.categoryId).filter((id): id is string => !!id))];
+    const [plan, usage, available, running, categories, usedKinds] = await Promise.all([
+      storePackageForUser(tx, ownerId, now), storeUsage(tx, ownerId, now), availableCredits(tx, ownerId),
+      findRunningPromotionsOf(tx, listings.map((l) => l.id), now),
+      tx.category.findMany({ where: { id: { in: categoryIds } }, select: { id: true, boostCredits: true } }),
+      findPromotionKindsSince(tx, ownerId, utcMonthStart(now))]);
+    const discountPercent = plan.package.boostDiscountPercent;
+    const freePerMonth = plan.package.monthlyPromotionQuota;
+    const price = new Map(categories.map((c) => [c.id, boostPrice(c.boostCredits, discountPercent)]));
+    const until = (listingId: string, kind: 'BUMP' | 'FEATURED') => running
+      .filter((p) => p.listingId === listingId && p.package.kind === kind)
+      .reduce<Date | null>((max, p) => (!max || p.endsAt > max ? p.endsAt : max), null);
+    return {
+      available, discountPercent,
+      boost: { freeLeft: Math.max(0, freePerMonth - usage.promotionsThisMonth), freePerMonth },
+      thisMonth: { boosts: usedKinds.filter((p) => p.package.kind === 'BUMP').length,
+        features: usedKinds.filter((p) => p.package.kind === 'FEATURED').length },
+      items: listings.map((l) => ({
+        id: l.id, title: l.title, price: l.price.toString(), image: l.images[0] ?? null, categoryId: l.categoryId,
+        viewCount: l.viewCount, expiresAt: l.expiresAt, autoExtend: l.autoExtend,
+        boostCredits: l.categoryId ? price.get(l.categoryId) ?? null : null,
+        bumpUntil: until(l.id, 'BUMP'), featuredUntil: until(l.id, 'FEATURED'),
+      })),
+    };
+  });
+}
+
+/**
+ * Trang quảng bá một tin: giá đẩy tin / Hot sale theo chuyên mục và gói tài khoản, lượt đẩy tặng
+ * còn lại, số xu đang có, hạn quảng bá đang chạy và 10 lượt gần nhất. Tin không hiển thị vẫn
+ * trả về (promotable = false) để trang báo lý do thay vì lỗi.
+ */
+export async function getPromotionOverview(ownerId: string, id: string) {
+  return listingRepository.transaction(async (tx) => {
+    const now = new Date();
+    const current = await requireOwnedListing(tx, id, ownerId);
+    const category = current.categoryId ? await listingRepository.findActiveCategory(tx, current.categoryId) : null;
+    const [plan, usage, packages, bump, featured, available, history] = await Promise.all([
+      storePackageForUser(tx, ownerId, now), storeUsage(tx, ownerId, now), findActivePackagesOfKind(tx, 'FEATURED'),
+      findRunningPromotion(tx, id, 'BUMP', now), findRunningPromotion(tx, id, 'FEATURED', now),
+      availableCredits(tx, ownerId), findListingPromotions(tx, id)]);
+    const discountPercent = plan.package.boostDiscountPercent;
+    const freePerMonth = plan.package.monthlyPromotionQuota;
+    const freeLeft = Math.max(0, freePerMonth - usage.promotionsThisMonth);
+    const base = category?.boostCredits ?? 0;
+    return {
+      listingId: id, title: current.title, price: current.price.toString(), image: current.images[0] ?? null,
+      status: current.status, promotable: current.status === ListingStatus.AVAILABLE && !!category,
+      available, discountPercent,
+      boost: { credits: boostPrice(base, discountPercent), free: freeLeft > 0, freeLeft, freePerMonth,
+        runningUntil: bump?.endsAt ?? null },
+      feature: { runningUntil: featured?.endsAt ?? null,
+        options: packages.map((p) => ({ packageId: p.id, durationDays: p.durationDays,
+          credits: featurePrice(Number(p.price), base, discountPercent) })) },
+      history: history.map((p) => ({ id: p.id, kind: p.package.kind, packageId: p.packageId,
+        durationDays: p.package.durationDays, source: p.source, startsAt: p.startsAt, endsAt: p.endsAt })),
     };
   });
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/shared/utils/app_image_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -31,7 +33,7 @@ class LiveMessagesMobileView extends StatelessWidget {
             child: BlocBuilder<ConversationsCubit, ConversationsState>(
               builder: (context, state) {
                 if (state.loading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: AppLoadingIndicator());
                 }
                 if (state.failed && state.conversations.isEmpty) {
                   return Center(
@@ -46,7 +48,7 @@ class LiveMessagesMobileView extends StatelessWidget {
                     child: Text('Chưa có cuộc trò chuyện nào'),
                   );
                 }
-                return RefreshIndicator(
+                return AppPullToRefresh(
                   onRefresh: cubit.load,
                   child: ListView.separated(
                     padding: const EdgeInsets.only(bottom: 120),

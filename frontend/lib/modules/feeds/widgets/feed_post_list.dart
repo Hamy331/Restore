@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import '../../../l10n/app_localizations.dart';
 import '../bloc/feeds/feeds_cubit.dart';
 import '../bloc/feeds/feeds_state.dart';
@@ -19,7 +20,7 @@ List<Widget> feedPostSlivers(FeedsCubit cubit, FeedsState state) => [
     const SliverToBoxAdapter(
       child: Padding(
         padding: EdgeInsets.all(16),
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: AppLoadingIndicator()),
       ),
     )
   else if (state.loadMoreFailed)

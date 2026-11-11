@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/account/models/account_listing.dart';
 import 'package:restore/modules/account/views/account/account_view.dart';
@@ -13,77 +14,39 @@ import 'support/fake_account_listings_repository.dart';
 import 'support/fake_profile_repository.dart';
 
 void main() {
-  testWidgets('boosting a visible listing asks before spending points', (
+  testWidgets('Đẩy tin in Manage listings opens the promote page', (
     tester,
   ) async {
-    final (repository, rowAction) = await _pumpAccount(tester);
+    final (_, rowAction, opened) = await _pumpAccount(tester);
     final boost = rowAction('Đẩy tin');
     await tester.scrollUntilVisible(boost, 100);
     await tester.tap(boost);
     await tester.pumpAndSettle();
-    expect(find.text('Đẩy tin · 6 xu'), findsOneWidget);
-    expect(repository.boosted, isEmpty);
-
-    await tester.tap(find.text('Đẩy tin · 6 xu'));
-    await tester.pumpAndSettle();
-    expect(repository.boosted, ['301']);
-    expect(find.text('Đã đẩy tin lên đầu'), findsOneWidget);
+    expect(opened, ['301']);
+    expect(find.text('promote 301'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('tapping boost quickly opens one sheet and sends one request', (
+  testWidgets('Lên Hot sale in the more menu opens the same page', (
     tester,
   ) async {
-    final (repository, rowAction) = await _pumpAccount(tester);
-    repository.boostDelay = const Duration(milliseconds: 500);
-    final boost = rowAction('Đẩy tin');
-    await tester.scrollUntilVisible(boost, 100);
-    await tester.tap(boost);
-    await tester.tap(boost, warnIfMissed: false);
-    await tester.pumpAndSettle();
-    expect(find.text('Đẩy tin · 6 xu'), findsOneWidget);
-
-    final pay = find.text('Đẩy tin · 6 xu');
-    await tester.tap(pay);
-    await tester.tap(pay, warnIfMissed: false);
-    await tester.pump(const Duration(milliseconds: 100));
-    // Đang gửi yêu cầu: bấm Đẩy tin lần nữa không mở sheet mới
-    await tester.tap(boost, warnIfMissed: false);
-    await tester.pumpAndSettle();
-    expect(repository.boosted, ['301']);
-    expect(find.text('Đẩy tin · 6 xu'), findsNothing);
-    expect(find.text('Tủ gỗ hai cánh'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('putting a listing on Hot sale lets the seller pick the days', (
-    tester,
-  ) async {
-    final (repository, rowAction) = await _pumpAccount(tester);
+    final (_, rowAction, opened) = await _pumpAccount(tester);
     final more = rowAction(null);
     await tester.scrollUntilVisible(more, 100);
     await tester.tap(more);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Lên Hot sale'));
     await tester.pumpAndSettle();
-    expect(find.text('1 ngày'), findsOneWidget);
-    expect(find.text('Mua · 8 xu'), findsOneWidget);
-
-    await tester.tap(find.text('3 ngày'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Mua · 23 xu'));
-    await tester.pumpAndSettle();
-    expect(repository.featured, [('301', 'featured-3')]);
-    expect(find.text('Tin đã lên Hot sale'), findsOneWidget);
+    expect(opened, ['301']);
     expect(tester.takeException(), isNull);
   });
 }
 
 /// Mở trang Tài khoản với tin '301' đang hiển thị. Trả về repository và hàm
-/// tìm nút trong dòng tin đó theo chữ (null = nút ⋯).
-Future<(FakeAccountListingsRepository, Finder Function(String?))> _pumpAccount(
-  WidgetTester tester,
-) async {
+/// tìm nút trong dòng tin đó theo chữ (null = nút ⋯), và các mã tin đã mở
+/// trang quảng bá.
+Future<(FakeAccountListingsRepository, Finder Function(String?), List<String>)>
+_pumpAccount(WidgetTester tester) async {
   tester.view.physicalSize = const Size(360, 1000);
   tester.view.devicePixelRatio = 1;
   addTearDown(() {
@@ -123,10 +86,33 @@ Future<(FakeAccountListingsRepository, Finder Function(String?))> _pumpAccount(
           },
         );
 
+  final opened = <String>[];
+  final router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (_, _) => Scaffold(
+          body: AccountView(
+            profileRepository: FakeProfileRepository(),
+            listingsRepository: repository,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/boost/:id',
+        builder: (_, state) {
+          final id = state.pathParameters['id']!;
+          opened.add(id);
+          return Scaffold(body: Text('promote $id'));
+        },
+      ),
+    ],
+  );
+  addTearDown(router.dispose);
   await tester.pumpWidget(
     BlocProvider(
       create: (_) => AuthBloc(MockAuthRepository(latency: Duration.zero)),
-      child: MaterialApp(
+      child: MaterialApp.router(
         locale: const Locale('vi'),
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: const [
@@ -135,12 +121,7 @@ Future<(FakeAccountListingsRepository, Finder Function(String?))> _pumpAccount(
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: Scaffold(
-          body: AccountView(
-            profileRepository: FakeProfileRepository(),
-            listingsRepository: repository,
-          ),
-        ),
+        routerConfig: router,
       ),
     ),
   );
@@ -163,5 +144,5 @@ Future<(FakeAccountListingsRepository, Finder Function(String?))> _pumpAccount(
         ? find.byType(PopupMenuButton<VoidCallback>)
         : find.text(label),
   );
-  return (repository, rowAction);
+  return (repository, rowAction, opened);
 }

@@ -2474,5 +2474,128 @@
       }
     }
   },
-  "originalPriceError": "Original price must be higher than the sale price"
+  "originalPriceError": "Original price must be higher than the sale price",
+  "promoTitle": "Promote listing",
+  "promoNotPromotable": "This listing isn't visible, so it can't be promoted. Show it again in Manage listings, then come back.",
+  "promoBoostRunning": "At the top of the list until {date}",
+  "@promoBoostRunning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "promoBoostAgainAt": "Boost again after {date}",
+  "@promoBoostAgainAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "promoRunning": "Running",
+  "promoHistoryTitle": "Recent promotions",
+  "promoHistoryEmpty": "This listing hasn't been promoted yet.",
+  "promoHistoryFeature": "Hot sale {days} days",
+  "@promoHistoryFeature": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "promoFree": "Free",
+  "promoEnded": "Ended",
+  "promoLoadError": "Couldn't load promotion info",
+  "promoBalanceAfter": "{left} points left in your wallet after paying.",
+  "@promoBalanceAfter": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "promoPickTitle": "Pick a listing to promote",
+  "promoPickSubtitle": "Only visible listings can be boosted or put on Hot sale",
+  "promoPickEmpty": "You have no visible listings yet.",
+  "hubTitle": "Promotions",
+  "hubFreeBoosts": "{left}/{perMonth} free boosts left",
+  "@hubFreeBoosts": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      },
+      "perMonth": {
+        "type": "int"
+      }
+    }
+  },
+  "hubThisMonth": "This month: {boosts} boosts · {features} Hot sale",
+  "@hubThisMonth": {
+    "placeholders": {
+      "boosts": {
+        "type": "int"
+      },
+      "features": {
+        "type": "int"
+      }
+    }
+  },
+  "hubFilterAll": "All",
+  "hubFilterRunning": "Promoted",
+  "hubFilterExpiring": "Expiring soon",
+  "hubFilterIdle": "Not promoted",
+  "hubBoostedFor": "Boosted · {time} left",
+  "@hubBoostedFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubFeaturedFor": "Hot sale · {time} left",
+  "@hubFeaturedFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubExpiresIn": "Expires in {time}",
+  "@hubExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubHours": "{count, plural, =1{1 hour} other{{count} hours}}",
+  "@hubHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hubDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@hubDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hubAutoExtend": "Auto-extend",
+  "hubDetails": "Details",
+  "hubEmptyRunning": "No listing is boosted or on Hot sale right now.",
+  "hubEmptyExpiring": "No listing expires in the next 7 days.",
+  "hubEmptyIdle": "All your listings are being promoted.",
+  "hubExpiringTip": "{count} listings expiring soon: extend them so they stay visible.",
+  "@hubExpiringTip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -88,7 +89,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
-            child: RefreshIndicator(
+            child: AppPullToRefresh(
               onRefresh: refresh,
               child: NotificationListener<ScrollNotification>(
                 onNotification: onScroll,
