@@ -13,6 +13,7 @@ import '../../../../listings/widgets/boost_listing_sheet.dart';
 import '../../../../listings/widgets/posting_limit_sheet.dart';
 import '../../../bloc/account_listings/account_listings_cubit.dart';
 import '../../../models/account_listing.dart';
+import '../../../../plans/views/plans/plans_view.dart';
 
 /// Hiện lại tin đã ẩn. Tin đã hết hạn thì đây là kích hoạt lại: tính như đăng
 /// mới, hết suất miễn phí thì hỏi trả xu (hoặc nạp xu) qua sheet hết suất.
@@ -74,6 +75,8 @@ Future<void> showAccountListing(
         await context.push(
           CreditTopupView.location(need: price - quota.walletAvailable),
         );
+      case PostingLimitAction.upgradePlan:
+        await context.push(PlansView.path);
       case PostingLimitAction.chooseAnotherCategory || null:
         return;
     }

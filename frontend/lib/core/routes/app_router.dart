@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:restore/modules/content/views/community_content_view.dart';
 import 'package:restore/modules/credits/views/credit_history/credit_history_view.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
@@ -76,6 +78,8 @@ import '../../modules/boost/views/boost_listing_view.dart';
 import '../../modules/auth/bloc/auth/auth_bloc.dart';
 import '../../modules/auth/utils/auth_route_guard.dart';
 import '../../modules/auth/views/splash/splash_view.dart';
+import '../../modules/plans/utils/plan_session.dart';
+import '../../modules/plans/views/plans/plans_view.dart';
 import 'router_refresh_stream.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -261,11 +265,15 @@ GoRouter createAppRouter(
     ),
     StatefulShellRoute.indexedStack(
       builder: (_, _, navigationShell) => BlocProvider(
-        create: (_) => ShellBadgesCubit(
-          chatRepository: AppEnvironment.useMockData
-              ? MockChatRepository()
-              : ApiChatRepository(),
-        )..refresh(),
+        create: (_) {
+          // Gói thật của tài khoản cho menu nút giữa và lời chào trang chủ
+          unawaited(PlanSession.refresh());
+          return ShellBadgesCubit(
+            chatRepository: AppEnvironment.useMockData
+                ? MockChatRepository()
+                : ApiChatRepository(),
+          )..refresh();
+        },
         child: MainShell(navigationShell: navigationShell),
       ),
       branches: [
@@ -438,6 +446,12 @@ GoRouter createAppRouter(
         state: state,
         child: const WantedAlertsView(),
       ),
+    ),
+    GoRoute(
+      path: PlansView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) =>
+          AppPageTransitions.fadeSlide(state: state, child: const PlansView()),
     ),
     GoRoute(
       path: CreditWalletView.path,

@@ -24,6 +24,7 @@ import 'widgets/category_quota_label.dart';
 import 'widgets/drafts_banner.dart';
 import '../listing_drafts/listing_drafts_view.dart';
 import 'widgets/posting_quota_banner.dart';
+import '../../../plans/views/plans/plans_view.dart';
 
 /// Bước 1: Chọn danh mục (danh sách lấy từ API / dữ liệu mẫu)
 class ChooseCategoryMobileView extends StatelessWidget {
@@ -71,6 +72,10 @@ class ChooseCategoryMobileView extends StatelessWidget {
           await context.push(
             CreditTopupView.location(need: price - quota.walletAvailable),
           );
+          bloc.add(const PostingQuotaRequested());
+          return;
+        case PostingLimitAction.upgradePlan:
+          await context.push(PlansView.path);
           bloc.add(const PostingQuotaRequested());
           return;
         case PostingLimitAction.chooseAnotherCategory || null:

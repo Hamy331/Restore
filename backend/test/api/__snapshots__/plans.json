@@ -1,0 +1,1504 @@
+{
+  "packages": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "basic",
+          "tier": "BASIC",
+          "name": "Cửa hàng Basic",
+          "monthlyPrice": "99000",
+          "dailyListingLimit": 10,
+          "activeListingLimit": 30,
+          "draftLimit": 10,
+          "monthlyPromotionQuota": 5,
+          "boostDiscountPercent": 20,
+          "priorityLevel": 1,
+          "priceCredits": 99
+        },
+        {
+          "id": "pro",
+          "tier": "PRO",
+          "name": "Cửa hàng Pro",
+          "monthlyPrice": "299000",
+          "dailyListingLimit": 30,
+          "activeListingLimit": 100,
+          "draftLimit": 30,
+          "monthlyPromotionQuota": 20,
+          "boostDiscountPercent": 30,
+          "priorityLevel": 2,
+          "priceCredits": 299
+        }
+      ]
+    }
+  },
+  "quote new": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "packageId": "basic",
+        "mode": "NEW",
+        "price": 99,
+        "credit": 0,
+        "amount": 99,
+        "endsAt": "<date>",
+        "available": 0
+      }
+    }
+  },
+  "buy without points": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Cần 99 xu, ví của bạn còn 0 xu.",
+      "code": "NOT_ENOUGH_CREDITS",
+      "details": {
+        "required": 99,
+        "available": 0,
+        "missing": 99
+      }
+    }
+  },
+  "buy without category": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Chọn chuyên mục chính của bạn.",
+      "code": "STORE_CATEGORY_REQUIRED",
+      "field": "categoryId"
+    }
+  },
+  "buy basic": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "mode": "NEW",
+        "price": 99,
+        "credit": 0,
+        "amount": 99,
+        "endsAt": "<date>",
+        "packageId": "basic",
+        "categoryId": "phones",
+        "subscription": {
+          "id": "<uuid>",
+          "userId": "user-buyer",
+          "packageId": "basic",
+          "categoryId": "phones",
+          "startsAt": "<date>",
+          "endsAt": "<date>",
+          "updatedAt": "<date>",
+          "package": {
+            "id": "basic",
+            "tier": "BASIC",
+            "name": "Cửa hàng Basic",
+            "monthlyPrice": "99000",
+            "dailyListingLimit": 10,
+            "activeListingLimit": 30,
+            "draftLimit": 10,
+            "monthlyPromotionQuota": 5,
+            "boostDiscountPercent": 20,
+            "priorityLevel": 1
+          },
+          "category": {
+            "active": true,
+            "id": "phones",
+            "name": "Điện thoại",
+            "metadata": {
+              "id": "phones",
+              "icon": "phone",
+              "name": {
+                "en": "Phones",
+                "vi": "Điện thoại"
+              },
+              "imageUrl": null,
+              "attributes": [
+                {
+                  "key": "brand",
+                  "type": "select",
+                  "label": {
+                    "en": "Brand",
+                    "vi": "Hãng"
+                  },
+                  "options": [
+                    {
+                      "value": "Apple"
+                    },
+                    {
+                      "value": "Samsung"
+                    },
+                    {
+                      "value": "Xiaomi"
+                    },
+                    {
+                      "value": "OPPO"
+                    },
+                    {
+                      "value": "vivo"
+                    },
+                    {
+                      "value": "realme"
+                    },
+                    {
+                      "value": "Nokia"
+                    },
+                    {
+                      "value": "Google"
+                    },
+                    {
+                      "value": "Sony"
+                    },
+                    {
+                      "value": "ASUS"
+                    },
+                    {
+                      "label": {
+                        "en": "Other",
+                        "vi": "Hãng khác"
+                      },
+                      "value": "other"
+                    }
+                  ],
+                  "required": true
+                },
+                {
+                  "key": "model",
+                  "hint": {
+                    "en": "e.g. iPhone 14 Pro Max",
+                    "vi": "VD: iPhone 14 Pro Max"
+                  },
+                  "type": "text",
+                  "label": {
+                    "en": "Model",
+                    "vi": "Dòng máy"
+                  },
+                  "required": true,
+                  "maxLength": 60
+                },
+                {
+                  "key": "storage",
+                  "type": "select",
+                  "label": {
+                    "en": "Storage",
+                    "vi": "Dung lượng"
+                  },
+                  "options": [
+                    {
+                      "value": "32 GB"
+                    },
+                    {
+                      "value": "64 GB"
+                    },
+                    {
+                      "value": "128 GB"
+                    },
+                    {
+                      "value": "256 GB"
+                    },
+                    {
+                      "value": "512 GB"
+                    },
+                    {
+                      "value": "1 TB"
+                    }
+                  ],
+                  "required": false
+                },
+                {
+                  "key": "color",
+                  "type": "select",
+                  "label": {
+                    "en": "Color",
+                    "vi": "Màu sắc"
+                  },
+                  "options": [
+                    {
+                      "label": {
+                        "en": "Black",
+                        "vi": "Đen"
+                      },
+                      "value": "black"
+                    },
+                    {
+                      "label": {
+                        "en": "White",
+                        "vi": "Trắng"
+                      },
+                      "value": "white"
+                    },
+                    {
+                      "label": {
+                        "en": "Silver",
+                        "vi": "Bạc"
+                      },
+                      "value": "silver"
+                    },
+                    {
+                      "label": {
+                        "en": "Gold",
+                        "vi": "Vàng"
+                      },
+                      "value": "gold"
+                    },
+                    {
+                      "label": {
+                        "en": "Gray",
+                        "vi": "Xám"
+                      },
+                      "value": "gray"
+                    },
+                    {
+                      "label": {
+                        "en": "Blue",
+                        "vi": "Xanh dương"
+                      },
+                      "value": "blue"
+                    },
+                    {
+                      "label": {
+                        "en": "Green",
+                        "vi": "Xanh lá"
+                      },
+                      "value": "green"
+                    },
+                    {
+                      "label": {
+                        "en": "Red",
+                        "vi": "Đỏ"
+                      },
+                      "value": "red"
+                    },
+                    {
+                      "label": {
+                        "en": "Purple",
+                        "vi": "Tím"
+                      },
+                      "value": "purple"
+                    },
+                    {
+                      "label": {
+                        "en": "Pink",
+                        "vi": "Hồng"
+                      },
+                      "value": "pink"
+                    }
+                  ],
+                  "required": false
+                },
+                {
+                  "key": "origin",
+                  "type": "select",
+                  "label": {
+                    "en": "Origin",
+                    "vi": "Xuất xứ"
+                  },
+                  "options": [
+                    {
+                      "label": {
+                        "en": "Official VN/A",
+                        "vi": "Chính hãng VN/A"
+                      },
+                      "value": "vn_a"
+                    },
+                    {
+                      "label": {
+                        "en": "International",
+                        "vi": "Quốc tế"
+                      },
+                      "value": "international"
+                    },
+                    {
+                      "label": {
+                        "en": "Carrier locked",
+                        "vi": "Bản lock"
+                      },
+                      "value": "lock"
+                    }
+                  ],
+                  "required": false
+                },
+                {
+                  "key": "battery_health",
+                  "max": 100,
+                  "min": 1,
+                  "type": "number",
+                  "unit": "%",
+                  "label": {
+                    "en": "Battery health",
+                    "vi": "Tình trạng pin"
+                  },
+                  "required": false
+                },
+                {
+                  "key": "warranty",
+                  "type": "select",
+                  "label": {
+                    "en": "Warranty",
+                    "vi": "Bảo hành"
+                  },
+                  "options": [
+                    {
+                      "label": {
+                        "en": "No warranty",
+                        "vi": "Hết bảo hành"
+                      },
+                      "value": "none"
+                    },
+                    {
+                      "label": {
+                        "en": "Manufacturer warranty",
+                        "vi": "Còn bảo hành hãng"
+                      },
+                      "value": "manufacturer"
+                    },
+                    {
+                      "label": {
+                        "en": "Store warranty",
+                        "vi": "Bảo hành cửa hàng"
+                      },
+                      "value": "store"
+                    }
+                  ],
+                  "required": false
+                }
+              ],
+              "description": {
+                "en": "iPhone, Samsung, Xiaomi, OPPO...",
+                "vi": "iPhone, Samsung, Xiaomi, OPPO..."
+              }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 15,
+            "displayDays": 30,
+            "boostCredits": 10
+          }
+        }
+      }
+    }
+  },
+  "me basic": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "package": {
+          "id": "basic",
+          "tier": "BASIC",
+          "name": "Cửa hàng Basic",
+          "monthlyPrice": "99000",
+          "dailyListingLimit": 10,
+          "activeListingLimit": 30,
+          "draftLimit": 10,
+          "monthlyPromotionQuota": 5,
+          "boostDiscountPercent": 20,
+          "priorityLevel": 1,
+          "priceCredits": 99
+        },
+        "category": {
+          "active": true,
+          "id": "phones",
+          "name": "Điện thoại",
+          "metadata": {
+            "id": "phones",
+            "icon": "phone",
+            "name": {
+              "en": "Phones",
+              "vi": "Điện thoại"
+            },
+            "imageUrl": null,
+            "attributes": [
+              {
+                "key": "brand",
+                "type": "select",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Hãng"
+                },
+                "options": [
+                  {
+                    "value": "Apple"
+                  },
+                  {
+                    "value": "Samsung"
+                  },
+                  {
+                    "value": "Xiaomi"
+                  },
+                  {
+                    "value": "OPPO"
+                  },
+                  {
+                    "value": "vivo"
+                  },
+                  {
+                    "value": "realme"
+                  },
+                  {
+                    "value": "Nokia"
+                  },
+                  {
+                    "value": "Google"
+                  },
+                  {
+                    "value": "Sony"
+                  },
+                  {
+                    "value": "ASUS"
+                  },
+                  {
+                    "label": {
+                      "en": "Other",
+                      "vi": "Hãng khác"
+                    },
+                    "value": "other"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "model",
+                "hint": {
+                  "en": "e.g. iPhone 14 Pro Max",
+                  "vi": "VD: iPhone 14 Pro Max"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Model",
+                  "vi": "Dòng máy"
+                },
+                "required": true,
+                "maxLength": 60
+              },
+              {
+                "key": "storage",
+                "type": "select",
+                "label": {
+                  "en": "Storage",
+                  "vi": "Dung lượng"
+                },
+                "options": [
+                  {
+                    "value": "32 GB"
+                  },
+                  {
+                    "value": "64 GB"
+                  },
+                  {
+                    "value": "128 GB"
+                  },
+                  {
+                    "value": "256 GB"
+                  },
+                  {
+                    "value": "512 GB"
+                  },
+                  {
+                    "value": "1 TB"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "color",
+                "type": "select",
+                "label": {
+                  "en": "Color",
+                  "vi": "Màu sắc"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Black",
+                      "vi": "Đen"
+                    },
+                    "value": "black"
+                  },
+                  {
+                    "label": {
+                      "en": "White",
+                      "vi": "Trắng"
+                    },
+                    "value": "white"
+                  },
+                  {
+                    "label": {
+                      "en": "Silver",
+                      "vi": "Bạc"
+                    },
+                    "value": "silver"
+                  },
+                  {
+                    "label": {
+                      "en": "Gold",
+                      "vi": "Vàng"
+                    },
+                    "value": "gold"
+                  },
+                  {
+                    "label": {
+                      "en": "Gray",
+                      "vi": "Xám"
+                    },
+                    "value": "gray"
+                  },
+                  {
+                    "label": {
+                      "en": "Blue",
+                      "vi": "Xanh dương"
+                    },
+                    "value": "blue"
+                  },
+                  {
+                    "label": {
+                      "en": "Green",
+                      "vi": "Xanh lá"
+                    },
+                    "value": "green"
+                  },
+                  {
+                    "label": {
+                      "en": "Red",
+                      "vi": "Đỏ"
+                    },
+                    "value": "red"
+                  },
+                  {
+                    "label": {
+                      "en": "Purple",
+                      "vi": "Tím"
+                    },
+                    "value": "purple"
+                  },
+                  {
+                    "label": {
+                      "en": "Pink",
+                      "vi": "Hồng"
+                    },
+                    "value": "pink"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "origin",
+                "type": "select",
+                "label": {
+                  "en": "Origin",
+                  "vi": "Xuất xứ"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Official VN/A",
+                      "vi": "Chính hãng VN/A"
+                    },
+                    "value": "vn_a"
+                  },
+                  {
+                    "label": {
+                      "en": "International",
+                      "vi": "Quốc tế"
+                    },
+                    "value": "international"
+                  },
+                  {
+                    "label": {
+                      "en": "Carrier locked",
+                      "vi": "Bản lock"
+                    },
+                    "value": "lock"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "battery_health",
+                "max": 100,
+                "min": 1,
+                "type": "number",
+                "unit": "%",
+                "label": {
+                  "en": "Battery health",
+                  "vi": "Tình trạng pin"
+                },
+                "required": false
+              },
+              {
+                "key": "warranty",
+                "type": "select",
+                "label": {
+                  "en": "Warranty",
+                  "vi": "Bảo hành"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "No warranty",
+                      "vi": "Hết bảo hành"
+                    },
+                    "value": "none"
+                  },
+                  {
+                    "label": {
+                      "en": "Manufacturer warranty",
+                      "vi": "Còn bảo hành hãng"
+                    },
+                    "value": "manufacturer"
+                  },
+                  {
+                    "label": {
+                      "en": "Store warranty",
+                      "vi": "Bảo hành cửa hàng"
+                    },
+                    "value": "store"
+                  }
+                ],
+                "required": false
+              }
+            ],
+            "description": {
+              "en": "iPhone, Samsung, Xiaomi, OPPO...",
+              "vi": "iPhone, Samsung, Xiaomi, OPPO..."
+            }
+          },
+          "freeListingLimit": 1,
+          "extraListingCredits": 15,
+          "displayDays": 30,
+          "boostCredits": 10
+        },
+        "endsAt": "<date>",
+        "pendingOrder": null,
+        "usage": {
+          "today": 0,
+          "active": 0,
+          "drafts": 0,
+          "promotionsThisMonth": 0
+        },
+        "remaining": {
+          "listingsToday": 10,
+          "activeListings": 30,
+          "drafts": 10,
+          "promotionsThisMonth": 5
+        }
+      }
+    }
+  },
+  "quote upgrade": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "packageId": "pro",
+        "mode": "UPGRADE",
+        "price": 299,
+        "credit": 98,
+        "amount": 201,
+        "endsAt": "<date>",
+        "available": 401
+      }
+    }
+  },
+  "upgrade pro": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "mode": "UPGRADE",
+        "price": 299,
+        "credit": 98,
+        "amount": 201,
+        "endsAt": "<date>",
+        "packageId": "pro",
+        "categoryId": "phones",
+        "subscription": {
+          "id": "<uuid>",
+          "userId": "user-buyer",
+          "packageId": "pro",
+          "categoryId": "phones",
+          "startsAt": "<date>",
+          "endsAt": "<date>",
+          "updatedAt": "<date>",
+          "package": {
+            "id": "pro",
+            "tier": "PRO",
+            "name": "Cửa hàng Pro",
+            "monthlyPrice": "299000",
+            "dailyListingLimit": 30,
+            "activeListingLimit": 100,
+            "draftLimit": 30,
+            "monthlyPromotionQuota": 20,
+            "boostDiscountPercent": 30,
+            "priorityLevel": 2
+          },
+          "category": {
+            "active": true,
+            "id": "phones",
+            "name": "Điện thoại",
+            "metadata": {
+              "id": "phones",
+              "icon": "phone",
+              "name": {
+                "en": "Phones",
+                "vi": "Điện thoại"
+              },
+              "imageUrl": null,
+              "attributes": [
+                {
+                  "key": "brand",
+                  "type": "select",
+                  "label": {
+                    "en": "Brand",
+                    "vi": "Hãng"
+                  },
+                  "options": [
+                    {
+                      "value": "Apple"
+                    },
+                    {
+                      "value": "Samsung"
+                    },
+                    {
+                      "value": "Xiaomi"
+                    },
+                    {
+                      "value": "OPPO"
+                    },
+                    {
+                      "value": "vivo"
+                    },
+                    {
+                      "value": "realme"
+                    },
+                    {
+                      "value": "Nokia"
+                    },
+                    {
+                      "value": "Google"
+                    },
+                    {
+                      "value": "Sony"
+                    },
+                    {
+                      "value": "ASUS"
+                    },
+                    {
+                      "label": {
+                        "en": "Other",
+                        "vi": "Hãng khác"
+                      },
+                      "value": "other"
+                    }
+                  ],
+                  "required": true
+                },
+                {
+                  "key": "model",
+                  "hint": {
+                    "en": "e.g. iPhone 14 Pro Max",
+                    "vi": "VD: iPhone 14 Pro Max"
+                  },
+                  "type": "text",
+                  "label": {
+                    "en": "Model",
+                    "vi": "Dòng máy"
+                  },
+                  "required": true,
+                  "maxLength": 60
+                },
+                {
+                  "key": "storage",
+                  "type": "select",
+                  "label": {
+                    "en": "Storage",
+                    "vi": "Dung lượng"
+                  },
+                  "options": [
+                    {
+                      "value": "32 GB"
+                    },
+                    {
+                      "value": "64 GB"
+                    },
+                    {
+                      "value": "128 GB"
+                    },
+                    {
+                      "value": "256 GB"
+                    },
+                    {
+                      "value": "512 GB"
+                    },
+                    {
+                      "value": "1 TB"
+                    }
+                  ],
+                  "required": false
+                },
+                {
+                  "key": "color",
+                  "type": "select",
+                  "label": {
+                    "en": "Color",
+                    "vi": "Màu sắc"
+                  },
+                  "options": [
+                    {
+                      "label": {
+                        "en": "Black",
+                        "vi": "Đen"
+                      },
+                      "value": "black"
+                    },
+                    {
+                      "label": {
+                        "en": "White",
+                        "vi": "Trắng"
+                      },
+                      "value": "white"
+                    },
+                    {
+                      "label": {
+                        "en": "Silver",
+                        "vi": "Bạc"
+                      },
+                      "value": "silver"
+                    },
+                    {
+                      "label": {
+                        "en": "Gold",
+                        "vi": "Vàng"
+                      },
+                      "value": "gold"
+                    },
+                    {
+                      "label": {
+                        "en": "Gray",
+                        "vi": "Xám"
+                      },
+                      "value": "gray"
+                    },
+                    {
+                      "label": {
+                        "en": "Blue",
+                        "vi": "Xanh dương"
+                      },
+                      "value": "blue"
+                    },
+                    {
+                      "label": {
+                        "en": "Green",
+                        "vi": "Xanh lá"
+                      },
+                      "value": "green"
+                    },
+                    {
+                      "label": {
+                        "en": "Red",
+                        "vi": "Đỏ"
+                      },
+                      "value": "red"
+                    },
+                    {
+                      "label": {
+                        "en": "Purple",
+                        "vi": "Tím"
+                      },
+                      "value": "purple"
+                    },
+                    {
+                      "label": {
+                        "en": "Pink",
+                        "vi": "Hồng"
+                      },
+                      "value": "pink"
+                    }
+                  ],
+                  "required": false
+                },
+                {
+                  "key": "origin",
+                  "type": "select",
+                  "label": {
+                    "en": "Origin",
+                    "vi": "Xuất xứ"
+                  },
+                  "options": [
+                    {
+                      "label": {
+                        "en": "Official VN/A",
+                        "vi": "Chính hãng VN/A"
+                      },
+                      "value": "vn_a"
+                    },
+                    {
+                      "label": {
+                        "en": "International",
+                        "vi": "Quốc tế"
+                      },
+                      "value": "international"
+                    },
+                    {
+                      "label": {
+                        "en": "Carrier locked",
+                        "vi": "Bản lock"
+                      },
+                      "value": "lock"
+                    }
+                  ],
+                  "required": false
+                },
+                {
+                  "key": "battery_health",
+                  "max": 100,
+                  "min": 1,
+                  "type": "number",
+                  "unit": "%",
+                  "label": {
+                    "en": "Battery health",
+                    "vi": "Tình trạng pin"
+                  },
+                  "required": false
+                },
+                {
+                  "key": "warranty",
+                  "type": "select",
+                  "label": {
+                    "en": "Warranty",
+                    "vi": "Bảo hành"
+                  },
+                  "options": [
+                    {
+                      "label": {
+                        "en": "No warranty",
+                        "vi": "Hết bảo hành"
+                      },
+                      "value": "none"
+                    },
+                    {
+                      "label": {
+                        "en": "Manufacturer warranty",
+                        "vi": "Còn bảo hành hãng"
+                      },
+                      "value": "manufacturer"
+                    },
+                    {
+                      "label": {
+                        "en": "Store warranty",
+                        "vi": "Bảo hành cửa hàng"
+                      },
+                      "value": "store"
+                    }
+                  ],
+                  "required": false
+                }
+              ],
+              "description": {
+                "en": "iPhone, Samsung, Xiaomi, OPPO...",
+                "vi": "iPhone, Samsung, Xiaomi, OPPO..."
+              }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 15,
+            "displayDays": 30,
+            "boostCredits": 10
+          }
+        }
+      }
+    }
+  },
+  "me pro": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "package": {
+          "id": "pro",
+          "tier": "PRO",
+          "name": "Cửa hàng Pro",
+          "monthlyPrice": "299000",
+          "dailyListingLimit": 30,
+          "activeListingLimit": 100,
+          "draftLimit": 30,
+          "monthlyPromotionQuota": 20,
+          "boostDiscountPercent": 30,
+          "priorityLevel": 2,
+          "priceCredits": 299
+        },
+        "category": {
+          "active": true,
+          "id": "phones",
+          "name": "Điện thoại",
+          "metadata": {
+            "id": "phones",
+            "icon": "phone",
+            "name": {
+              "en": "Phones",
+              "vi": "Điện thoại"
+            },
+            "imageUrl": null,
+            "attributes": [
+              {
+                "key": "brand",
+                "type": "select",
+                "label": {
+                  "en": "Brand",
+                  "vi": "Hãng"
+                },
+                "options": [
+                  {
+                    "value": "Apple"
+                  },
+                  {
+                    "value": "Samsung"
+                  },
+                  {
+                    "value": "Xiaomi"
+                  },
+                  {
+                    "value": "OPPO"
+                  },
+                  {
+                    "value": "vivo"
+                  },
+                  {
+                    "value": "realme"
+                  },
+                  {
+                    "value": "Nokia"
+                  },
+                  {
+                    "value": "Google"
+                  },
+                  {
+                    "value": "Sony"
+                  },
+                  {
+                    "value": "ASUS"
+                  },
+                  {
+                    "label": {
+                      "en": "Other",
+                      "vi": "Hãng khác"
+                    },
+                    "value": "other"
+                  }
+                ],
+                "required": true
+              },
+              {
+                "key": "model",
+                "hint": {
+                  "en": "e.g. iPhone 14 Pro Max",
+                  "vi": "VD: iPhone 14 Pro Max"
+                },
+                "type": "text",
+                "label": {
+                  "en": "Model",
+                  "vi": "Dòng máy"
+                },
+                "required": true,
+                "maxLength": 60
+              },
+              {
+                "key": "storage",
+                "type": "select",
+                "label": {
+                  "en": "Storage",
+                  "vi": "Dung lượng"
+                },
+                "options": [
+                  {
+                    "value": "32 GB"
+                  },
+                  {
+                    "value": "64 GB"
+                  },
+                  {
+                    "value": "128 GB"
+                  },
+                  {
+                    "value": "256 GB"
+                  },
+                  {
+                    "value": "512 GB"
+                  },
+                  {
+                    "value": "1 TB"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "color",
+                "type": "select",
+                "label": {
+                  "en": "Color",
+                  "vi": "Màu sắc"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Black",
+                      "vi": "Đen"
+                    },
+                    "value": "black"
+                  },
+                  {
+                    "label": {
+                      "en": "White",
+                      "vi": "Trắng"
+                    },
+                    "value": "white"
+                  },
+                  {
+                    "label": {
+                      "en": "Silver",
+                      "vi": "Bạc"
+                    },
+                    "value": "silver"
+                  },
+                  {
+                    "label": {
+                      "en": "Gold",
+                      "vi": "Vàng"
+                    },
+                    "value": "gold"
+                  },
+                  {
+                    "label": {
+                      "en": "Gray",
+                      "vi": "Xám"
+                    },
+                    "value": "gray"
+                  },
+                  {
+                    "label": {
+                      "en": "Blue",
+                      "vi": "Xanh dương"
+                    },
+                    "value": "blue"
+                  },
+                  {
+                    "label": {
+                      "en": "Green",
+                      "vi": "Xanh lá"
+                    },
+                    "value": "green"
+                  },
+                  {
+                    "label": {
+                      "en": "Red",
+                      "vi": "Đỏ"
+                    },
+                    "value": "red"
+                  },
+                  {
+                    "label": {
+                      "en": "Purple",
+                      "vi": "Tím"
+                    },
+                    "value": "purple"
+                  },
+                  {
+                    "label": {
+                      "en": "Pink",
+                      "vi": "Hồng"
+                    },
+                    "value": "pink"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "origin",
+                "type": "select",
+                "label": {
+                  "en": "Origin",
+                  "vi": "Xuất xứ"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "Official VN/A",
+                      "vi": "Chính hãng VN/A"
+                    },
+                    "value": "vn_a"
+                  },
+                  {
+                    "label": {
+                      "en": "International",
+                      "vi": "Quốc tế"
+                    },
+                    "value": "international"
+                  },
+                  {
+                    "label": {
+                      "en": "Carrier locked",
+                      "vi": "Bản lock"
+                    },
+                    "value": "lock"
+                  }
+                ],
+                "required": false
+              },
+              {
+                "key": "battery_health",
+                "max": 100,
+                "min": 1,
+                "type": "number",
+                "unit": "%",
+                "label": {
+                  "en": "Battery health",
+                  "vi": "Tình trạng pin"
+                },
+                "required": false
+              },
+              {
+                "key": "warranty",
+                "type": "select",
+                "label": {
+                  "en": "Warranty",
+                  "vi": "Bảo hành"
+                },
+                "options": [
+                  {
+                    "label": {
+                      "en": "No warranty",
+                      "vi": "Hết bảo hành"
+                    },
+                    "value": "none"
+                  },
+                  {
+                    "label": {
+                      "en": "Manufacturer warranty",
+                      "vi": "Còn bảo hành hãng"
+                    },
+                    "value": "manufacturer"
+                  },
+                  {
+                    "label": {
+                      "en": "Store warranty",
+                      "vi": "Bảo hành cửa hàng"
+                    },
+                    "value": "store"
+                  }
+                ],
+                "required": false
+              }
+            ],
+            "description": {
+              "en": "iPhone, Samsung, Xiaomi, OPPO...",
+              "vi": "iPhone, Samsung, Xiaomi, OPPO..."
+            }
+          },
+          "freeListingLimit": 1,
+          "extraListingCredits": 15,
+          "displayDays": 30,
+          "boostCredits": 10
+        },
+        "endsAt": "<date>",
+        "pendingOrder": null,
+        "usage": {
+          "today": 0,
+          "active": 0,
+          "drafts": 0,
+          "promotionsThisMonth": 0
+        },
+        "remaining": {
+          "listingsToday": 30,
+          "activeListings": 100,
+          "drafts": 30,
+          "promotionsThisMonth": 20
+        }
+      }
+    }
+  },
+  "downgrade blocked": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Gói hiện tại còn hạn. Bạn chuyển sang gói thấp hơn được khi gói này hết hạn.",
+      "code": "STORE_DOWNGRADE_NOT_ALLOWED",
+      "details": {
+        "endsAt": "<date>"
+      }
+    }
+  },
+  "renew pro without points": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Cần 299 xu, ví của bạn còn 200 xu.",
+      "code": "NOT_ENOUGH_CREDITS",
+      "details": {
+        "required": 299,
+        "available": 200,
+        "missing": 99
+      }
+    }
+  },
+  "quota as shop": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "tier": "PRO",
+        "displayDays": 60,
+        "recentWindowDays": 30,
+        "businessLimit": 30,
+        "daily": {
+          "used": 0,
+          "limit": 30
+        },
+        "wallet": {
+          "available": 200
+        },
+        "boost": {
+          "freePerMonth": 20,
+          "freeLeft": 20,
+          "discountPercent": 30
+        },
+        "accountType": "business",
+        "defaultLimit": 100,
+        "total": {
+          "used": 0,
+          "limit": 100
+        },
+        "categories": [
+          {
+            "categoryId": "appliances",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 10,
+            "displayDays": 60,
+            "boostCredits": 4,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "books",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "boostCredits": 3,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "electronics",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 15,
+            "displayDays": 60,
+            "boostCredits": 7,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "fashion",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "boostCredits": 3,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "furniture",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 10,
+            "displayDays": 60,
+            "boostCredits": 4,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "other",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "boostCredits": 3,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "pets",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 10,
+            "displayDays": 60,
+            "boostCredits": 4,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "phones",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 15,
+            "displayDays": 30,
+            "boostCredits": 7,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "sports",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 5,
+            "displayDays": 60,
+            "boostCredits": 3,
+            "freeAvailable": true,
+            "blockedBy": null
+          },
+          {
+            "categoryId": "vehicles",
+            "used": 0,
+            "limit": 100,
+            "recentUsed": 0,
+            "recentLimit": 0,
+            "extraCredits": null,
+            "extendCredits": 15,
+            "displayDays": 30,
+            "boostCredits": 7,
+            "freeAvailable": true,
+            "blockedBy": null
+          }
+        ]
+      }
+    }
+  }
+}

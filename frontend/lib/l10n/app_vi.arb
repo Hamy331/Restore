@@ -185,7 +185,7 @@
   "accFollowListEmpty": "Chưa có ai",
   "accComingSoon": "Tính năng này đang được phát triển",
   "accActivity": "Hoạt động",
-  "accProPlan": "Gói Pro",
+  "accProPlan": "Gói tài khoản",
   "accCreateStore": "Tạo cửa hàng",
   "accCoins": "Xu ReStore",
   "accSaved": "Đã lưu",
@@ -1915,5 +1915,109 @@
         "type": "int"
       }
     }
-  }
+  },
+  "plansTitle": "Gói tài khoản",
+  "plansSubtitle": "Trả bằng Xu, mỗi lần dùng 30 ngày",
+  "plansCurrent": "Gói hiện tại",
+  "plansCurrentUntil": "Dùng đến {date}",
+  "@plansCurrentUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plansFree": "Miễn phí",
+  "plansPersonalBenefitFree": "1 đến 3 tin miễn phí mỗi chuyên mục, tối đa 5 tin",
+  "plansPersonalBenefitPay": "Hết suất thì đăng thêm bằng Xu",
+  "plansPrice": "{price} xu / 30 ngày",
+  "@plansPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitActive": "{count} tin đang hiển thị cùng lúc",
+  "@plansBenefitActive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitDaily": "{count} tin mới mỗi ngày",
+  "@plansBenefitDaily": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitDrafts": "Giữ {count} tin nháp",
+  "@plansBenefitDrafts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitBoosts": "{count} lượt đẩy tin miễn phí mỗi tháng",
+  "@plansBenefitBoosts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitBoostDiscount": "Giảm {percent}% giá đẩy tin",
+  "@plansBenefitBoostDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitPriority": "Ưu tiên hiển thị trong chuyên mục chính",
+  "plansBenefitShopPage": "Trang cửa hàng riêng (sắp có)",
+  "plansBuy": "Mua gói",
+  "plansRenew": "Gia hạn",
+  "plansUpgrade": "Nâng cấp",
+  "plansInUse": "Đang dùng",
+  "plansLowerLocked": "Chọn được khi gói hiện tại hết hạn",
+  "plansNote": "Nâng gói giữa kỳ được trừ phần còn lại của gói cũ. Gia hạn thì cộng thêm 30 ngày. Xu bị trừ ngay, gói có hiệu lực luôn.",
+  "plansCheckoutPrice": "Giá gói",
+  "plansCheckoutCredit": "Trừ phần còn lại của gói cũ",
+  "plansCheckoutTotal": "Cần trả",
+  "plansCheckoutUntil": "Dùng đến",
+  "plansCheckoutCategory": "Chuyên mục chính",
+  "plansCheckoutCategoryHint": "Tin ở chuyên mục này được ưu tiên hiển thị.",
+  "plansCredits": "{count} xu",
+  "@plansCredits": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansPay": "Thanh toán {amount} xu",
+  "@plansPay": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "plansActivated": "Đã kích hoạt gói {name}",
+  "@plansActivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plansLoadError": "Không tải được danh sách gói.",
+  "plansActionError": "Không thực hiện được. Vui lòng thử lại.",
+  "plansUpgradeAction": "Nâng cấp gói",
+  "postingUpgradeHint": "Cần đăng nhiều hơn? Nâng cấp gói"
 }

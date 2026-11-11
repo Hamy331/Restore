@@ -19,6 +19,7 @@ import 'widgets/listing_condition_section.dart';
 import 'widgets/listing_details_header.dart';
 import 'widgets/listing_details_section.dart';
 import '../../utils/listing_save_error.dart';
+import '../../../plans/views/plans/plans_view.dart';
 
 /// Bước 3: Tình trạng + thuộc tính theo danh mục (schema động), xem trước, đăng tin
 class ListingDetailsMobileView extends StatelessWidget {
@@ -75,6 +76,9 @@ class ListingDetailsMobileView extends StatelessWidget {
           CreditTopupView.location(need: price - quota.walletAvailable),
         );
         // Quay lại sau khi nạp: tải lại số dư để lần bấm Đăng sau dùng được
+        bloc.add(const PostingQuotaRequested());
+      case PostingLimitAction.upgradePlan:
+        await context.push(PlansView.path);
         bloc.add(const PostingQuotaRequested());
       // Giữ nguyên nội dung đã nhập, chỉ quay về bước 1 để đổi chuyên mục
       case PostingLimitAction.chooseAnotherCategory:

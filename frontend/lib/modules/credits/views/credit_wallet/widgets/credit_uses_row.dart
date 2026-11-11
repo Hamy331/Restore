@@ -4,6 +4,8 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
+import 'package:go_router/go_router.dart';
+import 'package:restore/modules/plans/views/plans/plans_view.dart';
 
 /// "Dùng xu để": đăng thêm tin, đẩy tin, nâng gói.
 /// Trừ xu cho các việc này làm ở bước định mức sau, nên tạm báo sắp có.
@@ -37,7 +39,11 @@ class CreditUsesRow extends StatelessWidget {
             const SizedBox(width: 8),
             _Use(icon: AppIcons.boost, label: l10n.creditUseBoost, onTap: soon),
             const SizedBox(width: 8),
-            _Use(icon: AppIcons.pro, label: l10n.creditUseUpgrade, onTap: soon),
+            _Use(
+              icon: AppIcons.pro,
+              label: l10n.creditUseUpgrade,
+              onTap: () => context.push(PlansView.path),
+            ),
           ],
         ),
       ],

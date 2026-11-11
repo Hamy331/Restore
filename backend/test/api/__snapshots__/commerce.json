@@ -14,7 +14,8 @@
           "draftLimit": 3,
           "monthlyPromotionQuota": 0,
           "boostDiscountPercent": 0,
-          "priorityLevel": 0
+          "priorityLevel": 0,
+          "priceCredits": 0
         },
         "category": null,
         "endsAt": null,
@@ -476,7 +477,8 @@
           "draftLimit": 10,
           "monthlyPromotionQuota": 5,
           "boostDiscountPercent": 20,
-          "priorityLevel": 1
+          "priorityLevel": 1,
+          "priceCredits": 99
         },
         "category": {
           "active": true,

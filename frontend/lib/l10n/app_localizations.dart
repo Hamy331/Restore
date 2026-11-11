@@ -695,7 +695,7 @@ abstract class AppLocalizations {
   /// No description provided for @accProPlan.
   ///
   /// In en, this message translates to:
-  /// **'Pro plan'**
+  /// **'Account plan'**
   String get accProPlan;
 
   /// No description provided for @accCreateStore.
@@ -6571,6 +6571,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This listing was just boosted. You can boost it again in {hours} hours.'**
   String boostTooSoon(int hours);
+
+  /// No description provided for @plansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account plans'**
+  String get plansTitle;
+
+  /// No description provided for @plansSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid with points, 30 days each time'**
+  String get plansSubtitle;
+
+  /// No description provided for @plansCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current plan'**
+  String get plansCurrent;
+
+  /// No description provided for @plansCurrentUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until {date}'**
+  String plansCurrentUntil(String date);
+
+  /// No description provided for @plansFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get plansFree;
+
+  /// No description provided for @plansPersonalBenefitFree.
+  ///
+  /// In en, this message translates to:
+  /// **'1 to 3 free listings per category, up to 5 in total'**
+  String get plansPersonalBenefitFree;
+
+  /// No description provided for @plansPersonalBenefitPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of slots? Post more with points'**
+  String get plansPersonalBenefitPay;
+
+  /// No description provided for @plansPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} points / 30 days'**
+  String plansPrice(int price);
+
+  /// No description provided for @plansBenefitActive.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active listings at a time'**
+  String plansBenefitActive(int count);
+
+  /// No description provided for @plansBenefitDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new listings per day'**
+  String plansBenefitDaily(int count);
+
+  /// No description provided for @plansBenefitDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep {count} drafts'**
+  String plansBenefitDrafts(int count);
+
+  /// No description provided for @plansBenefitBoosts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} free boosts every month'**
+  String plansBenefitBoosts(int count);
+
+  /// No description provided for @plansBenefitBoostDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off boosts'**
+  String plansBenefitBoostDiscount(int percent);
+
+  /// No description provided for @plansBenefitPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown first in your main category'**
+  String get plansBenefitPriority;
+
+  /// No description provided for @plansBenefitShopPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own shop page (coming soon)'**
+  String get plansBenefitShopPage;
+
+  /// No description provided for @plansBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Get this plan'**
+  String get plansBuy;
+
+  /// No description provided for @plansRenew.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew'**
+  String get plansRenew;
+
+  /// No description provided for @plansUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade'**
+  String get plansUpgrade;
+
+  /// No description provided for @plansInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get plansInUse;
+
+  /// No description provided for @plansLowerLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Available when your current plan ends'**
+  String get plansLowerLocked;
+
+  /// No description provided for @plansNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrading mid-period credits the unused part of your old plan. Renewing adds 30 days. Points are spent right away and the plan starts immediately.'**
+  String get plansNote;
+
+  /// No description provided for @plansCheckoutPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan price'**
+  String get plansCheckoutPrice;
+
+  /// No description provided for @plansCheckoutCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit for unused days'**
+  String get plansCheckoutCredit;
+
+  /// No description provided for @plansCheckoutTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'To pay'**
+  String get plansCheckoutTotal;
+
+  /// No description provided for @plansCheckoutUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until'**
+  String get plansCheckoutUntil;
+
+  /// No description provided for @plansCheckoutCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Main category'**
+  String get plansCheckoutCategory;
+
+  /// No description provided for @plansCheckoutCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings in this category are shown first.'**
+  String get plansCheckoutCategoryHint;
+
+  /// No description provided for @plansCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} points'**
+  String plansCredits(int count);
+
+  /// No description provided for @plansPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount} points'**
+  String plansPay(int amount);
+
+  /// No description provided for @plansActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} plan activated'**
+  String plansActivated(String name);
+
+  /// No description provided for @plansLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load plans.'**
+  String get plansLoadError;
+
+  /// No description provided for @plansActionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get plansActionError;
+
+  /// No description provided for @plansUpgradeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade plan'**
+  String get plansUpgradeAction;
+
+  /// No description provided for @postingUpgradeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Need more listings? Upgrade your plan'**
+  String get postingUpgradeHint;
 }
 
 class _AppLocalizationsDelegate

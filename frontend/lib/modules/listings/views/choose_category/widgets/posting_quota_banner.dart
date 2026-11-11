@@ -5,6 +5,9 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_quota_indicator.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 import 'package:restore/shared/widgets/glass/app_glass_sheet.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../plans/views/plans/plans_view.dart';
+import '../../../models/listing_enums.dart';
 import '../../../models/posting_quota.dart';
 import '../../../widgets/posting_rules_sheet.dart';
 
@@ -80,21 +83,44 @@ class PostingQuotaBanner extends StatelessWidget {
                     ),
                   ),
                 ],
-                TextButton.icon(
-                  onPressed: () => showPostingRulesSheet(context, quota: quota),
-                  iconAlignment: IconAlignment.end,
-                  icon: const Icon(AppIcons.chevronRight, size: 16),
-                  label: Text(l10n.postingRulesAction),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.primaryDark,
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(0, 32),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textStyle: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
+                Wrap(
+                  spacing: 16,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () =>
+                          showPostingRulesSheet(context, quota: quota),
+                      iconAlignment: IconAlignment.end,
+                      icon: const Icon(AppIcons.chevronRight, size: 16),
+                      label: Text(l10n.postingRulesAction),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.primaryDark,
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 32),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        textStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
-                  ),
+                    if (quota.accountType == SellerType.personal)
+                      TextButton.icon(
+                        onPressed: () => context.push(PlansView.path),
+                        iconAlignment: IconAlignment.end,
+                        icon: const Icon(AppIcons.chevronRight, size: 16),
+                        label: Text(l10n.plansUpgradeAction),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.primaryDark,
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 32),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          textStyle: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),

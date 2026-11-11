@@ -185,7 +185,7 @@
   "accFollowListEmpty": "No one here yet",
   "accComingSoon": "This feature is under development",
   "accActivity": "Activity",
-  "accProPlan": "Pro plan",
+  "accProPlan": "Account plan",
   "accCreateStore": "Create a store",
   "accCoins": "ReStore Points",
   "accSaved": "Saved",
@@ -2129,5 +2129,109 @@
         "type": "int"
       }
     }
-  }
+  },
+  "plansTitle": "Account plans",
+  "plansSubtitle": "Paid with points, 30 days each time",
+  "plansCurrent": "Current plan",
+  "plansCurrentUntil": "Active until {date}",
+  "@plansCurrentUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plansFree": "Free",
+  "plansPersonalBenefitFree": "1 to 3 free listings per category, up to 5 in total",
+  "plansPersonalBenefitPay": "Out of slots? Post more with points",
+  "plansPrice": "{price} points / 30 days",
+  "@plansPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitActive": "{count} active listings at a time",
+  "@plansBenefitActive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitDaily": "{count} new listings per day",
+  "@plansBenefitDaily": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitDrafts": "Keep {count} drafts",
+  "@plansBenefitDrafts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitBoosts": "{count} free boosts every month",
+  "@plansBenefitBoosts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitBoostDiscount": "{percent}% off boosts",
+  "@plansBenefitBoostDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitPriority": "Shown first in your main category",
+  "plansBenefitShopPage": "Your own shop page (coming soon)",
+  "plansBuy": "Get this plan",
+  "plansRenew": "Renew",
+  "plansUpgrade": "Upgrade",
+  "plansInUse": "Current",
+  "plansLowerLocked": "Available when your current plan ends",
+  "plansNote": "Upgrading mid-period credits the unused part of your old plan. Renewing adds 30 days. Points are spent right away and the plan starts immediately.",
+  "plansCheckoutPrice": "Plan price",
+  "plansCheckoutCredit": "Credit for unused days",
+  "plansCheckoutTotal": "To pay",
+  "plansCheckoutUntil": "Active until",
+  "plansCheckoutCategory": "Main category",
+  "plansCheckoutCategoryHint": "Listings in this category are shown first.",
+  "plansCredits": "{count} points",
+  "@plansCredits": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansPay": "Pay {amount} points",
+  "@plansPay": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "plansActivated": "{name} plan activated",
+  "@plansActivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plansLoadError": "Couldn't load plans.",
+  "plansActionError": "Something went wrong. Please try again.",
+  "plansUpgradeAction": "Upgrade plan",
+  "postingUpgradeHint": "Need more listings? Upgrade your plan"
 }
