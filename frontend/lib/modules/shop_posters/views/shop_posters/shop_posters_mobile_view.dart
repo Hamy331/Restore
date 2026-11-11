@@ -1,3 +1,4 @@
+import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -125,6 +126,10 @@ class ShopPostersMobileView extends StatelessWidget {
         icon: AppIcons.store,
         title: l.spNoShopTitle,
         message: l.spNoShopBody,
+        action: FilledButton(
+          onPressed: () => context.push(MyShopView.path),
+          child: Text(l.msTitle),
+        ),
       );
     }
     if (!overview.limits.allowed) {

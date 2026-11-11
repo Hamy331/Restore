@@ -2949,7 +2949,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickActionStats => 'Insights';
 
   @override
-  String get quickActionShopPage => 'Shop page';
+  String get quickActionShopManage => 'Manage shop';
 
   @override
   String get trustedShopsFamousEyebrow => 'Official';
@@ -4677,4 +4677,158 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cropTrimOn => 'Plain borders removed';
+
+  @override
+  String get msTitle => 'Manage shop';
+
+  @override
+  String get msLoadError => 'Couldn\'t load your shop';
+
+  @override
+  String get msPlanTitle => 'Shop pages come with the Store plan';
+
+  @override
+  String get msPlanBody =>
+      'Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.';
+
+  @override
+  String get msCreateTitle => 'Open your shop page';
+
+  @override
+  String get msCreateBody =>
+      'Name your shop first, then add a logo, cover and description.';
+
+  @override
+  String get msCreateAction => 'Open shop';
+
+  @override
+  String get msCreated => 'Your shop page is open';
+
+  @override
+  String get msName => 'Shop name';
+
+  @override
+  String get msNameHint => 'e.g. Cozy Home Decor';
+
+  @override
+  String get msNameRequired => 'Shop name must be 2 to 60 characters.';
+
+  @override
+  String get msNameLocked =>
+      'Verified shops can\'t change their name. Contact ReStore if you need to.';
+
+  @override
+  String get msTagline => 'Short tagline';
+
+  @override
+  String get msTaglineHint => 'e.g. Handmade decor, fast local delivery';
+
+  @override
+  String get msDescription => 'About the shop';
+
+  @override
+  String get msDescriptionHint =>
+      'What you sell, quality promise, return policy...';
+
+  @override
+  String get msAddress => 'Display address';
+
+  @override
+  String get msAddressHint => 'e.g. District 1, Ho Chi Minh City';
+
+  @override
+  String get msInfoSection => 'Shop details';
+
+  @override
+  String get msColorSection => 'Brand colour';
+
+  @override
+  String get msColorHint =>
+      'Used for the letter logo, the default cover and accents on your shop page.';
+
+  @override
+  String get msColorAuto => 'Default';
+
+  @override
+  String get msChangeCover => 'Change cover';
+
+  @override
+  String get msChangeLogo => 'Change logo';
+
+  @override
+  String get msImageNew => 'Choose a new image';
+
+  @override
+  String get msImageAdjust => 'Adjust again';
+
+  @override
+  String get msImageRemove => 'Remove image';
+
+  @override
+  String get msCoverCropTitle => 'Adjust cover';
+
+  @override
+  String get msLogoCropTitle => 'Adjust logo';
+
+  @override
+  String get msStatFollowers => 'Followers';
+
+  @override
+  String get msStatListings => 'Listings';
+
+  @override
+  String get msStatPostersRunning => 'Posters live';
+
+  @override
+  String get msStatPostersPending => 'Posters pending';
+
+  @override
+  String get msVerifiedTitle => 'Verified shop';
+
+  @override
+  String get msVerifiedBody => 'Your shop appears in Trusted shops.';
+
+  @override
+  String msCertificate(String code) {
+    return 'Certificate: $code.';
+  }
+
+  @override
+  String get msUnverifiedTitle => 'Not verified yet';
+
+  @override
+  String get msUnverifiedBody =>
+      'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.';
+
+  @override
+  String get msPlanExpiredTitle => 'Store plan expired';
+
+  @override
+  String get msPlanExpiredBody =>
+      'Your posters are hidden for now. Renew the plan to run them again.';
+
+  @override
+  String get msViewPublic => 'View shop page';
+
+  @override
+  String get msPosters => 'Shop posters';
+
+  @override
+  String get msPostersBody =>
+      'Promote your shop with posters on your shop page and Trusted shops.';
+
+  @override
+  String get msSave => 'Save changes';
+
+  @override
+  String get msSaved => 'Shop details saved';
+
+  @override
+  String get msErrExists => 'You already have a shop page.';
+
+  @override
+  String get msErrImage => 'That image is not valid. Try another one.';
+
+  @override
+  String get msErrGeneric => 'Couldn\'t save. Please try again.';
 }

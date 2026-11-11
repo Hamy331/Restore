@@ -21,6 +21,7 @@ import 'package:restore/modules/account/views/public_profile/public_profile_view
 import 'package:restore/modules/account/views/account/account_view.dart';
 import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dart';
 import 'package:restore/modules/account/views/edit_profile/edit_profile_view.dart';
+import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 import 'package:restore/modules/chat/views/messages/messages_view.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
 import 'package:restore/modules/chat/views/conversation/live_chat_conversation_view.dart';
@@ -578,6 +579,13 @@ GoRouter createAppRouter(
         state: state,
         child: PosterEditorView(args: state.extra! as PosterEditorArgs),
       ),
+    ),
+    // Quản lý shop (nút Quản lý shop ở menu xoè của gói Cửa hàng)
+    GoRoute(
+      path: MyShopView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) =>
+          AppPageTransitions.fadeSlide(state: state, child: const MyShopView()),
     ),
     // Thống kê của người bán (nút Thống kê ở menu xoè)
     GoRoute(

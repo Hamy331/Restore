@@ -25,6 +25,9 @@ class AppLabeledTextField extends StatelessWidget {
   /// Chữ cố định trước nội dung (VD `@` của tên người dùng)
   final String? prefixText;
 
+  /// `false` = chỉ xem (VD tên shop đã xác minh không tự đổi được)
+  final bool enabled;
+
   const AppLabeledTextField({
     super.key,
     required this.label,
@@ -42,6 +45,7 @@ class AppLabeledTextField extends StatelessWidget {
     this.inputFormatters,
     this.suffix,
     this.prefixText,
+    this.enabled = true,
   });
 
   static const double borderRadius = AppGlass.fieldRadius;
@@ -73,6 +77,7 @@ class AppLabeledTextField extends StatelessWidget {
               ),
               TextField(
                 controller: controller,
+                enabled: enabled,
                 onChanged: onChanged,
                 minLines: minLines,
                 maxLines: maxLines,
@@ -83,9 +88,11 @@ class AppLabeledTextField extends StatelessWidget {
                     LengthLimitingTextInputFormatter(maxLength),
                   ...?inputFormatters,
                 ],
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
-                  color: AppColors.textPrimary,
+                  color: enabled
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
                   height: 1.4,
                 ),
                 decoration: InputDecoration(
@@ -99,6 +106,7 @@ class AppLabeledTextField extends StatelessWidget {
                   contentPadding: const EdgeInsets.symmetric(vertical: 6),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   prefixText: prefixText,
                   prefixStyle: const TextStyle(

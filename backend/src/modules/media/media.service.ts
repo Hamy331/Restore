@@ -3,7 +3,7 @@ import { AppError } from '../../common/errors/app-error.js';
 import { contentTypeOf, getObject, putObject, type StorageArea } from '../../services/storage.service.js';
 
 /** Ảnh người dùng tải lên ngoài tin đăng: ảnh bài viết bảng tin, ảnh đại diện, poster shop. */
-export const MEDIA_AREAS = { feed: 'feeds', avatar: 'avatars', poster: 'posters' } as const satisfies Record<string, StorageArea>;
+export const MEDIA_AREAS = { feed: 'feeds', avatar: 'avatars', poster: 'posters', shop: 'shops' } as const satisfies Record<string, StorageArea>;
 export type MediaPurpose = keyof typeof MEDIA_AREAS;
 type MediaArea = (typeof MEDIA_AREAS)[MediaPurpose];
 

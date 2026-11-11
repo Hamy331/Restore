@@ -2888,7 +2888,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get quickActionStats => 'Thống kê';
 
   @override
-  String get quickActionShopPage => 'Trang shop';
+  String get quickActionShopManage => 'Quản lý shop';
 
   @override
   String get trustedShopsFamousEyebrow => 'Chính hãng';
@@ -4584,4 +4584,158 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get cropTrimOn => 'Đã bỏ viền thừa';
+
+  @override
+  String get msTitle => 'Quản lý shop';
+
+  @override
+  String get msLoadError => 'Chưa tải được thông tin shop';
+
+  @override
+  String get msPlanTitle => 'Trang shop dành cho gói Cửa hàng';
+
+  @override
+  String get msPlanBody =>
+      'Nâng cấp gói Cửa hàng để mở trang shop riêng với logo, ảnh bìa và poster, và có thể được xác minh để lên mục Shop uy tín.';
+
+  @override
+  String get msCreateTitle => 'Mở trang shop của bạn';
+
+  @override
+  String get msCreateBody =>
+      'Đặt tên shop trước, sau đó bạn thêm logo, ảnh bìa và giới thiệu.';
+
+  @override
+  String get msCreateAction => 'Mở shop';
+
+  @override
+  String get msCreated => 'Đã mở trang shop';
+
+  @override
+  String get msName => 'Tên shop';
+
+  @override
+  String get msNameHint => 'VD: Góc Nhà Decor';
+
+  @override
+  String get msNameRequired => 'Tên shop từ 2 đến 60 ký tự.';
+
+  @override
+  String get msNameLocked =>
+      'Shop đã xác minh nên không tự đổi tên được. Liên hệ ReStore nếu cần đổi.';
+
+  @override
+  String get msTagline => 'Câu giới thiệu ngắn';
+
+  @override
+  String get msTaglineHint => 'VD: Đồ decor handmade, giao nhanh nội thành';
+
+  @override
+  String get msDescription => 'Giới thiệu shop';
+
+  @override
+  String get msDescriptionHint =>
+      'Shop bán gì, cam kết chất lượng, chính sách đổi trả...';
+
+  @override
+  String get msAddress => 'Địa chỉ hiển thị';
+
+  @override
+  String get msAddressHint => 'VD: Quận 1, TP. Hồ Chí Minh';
+
+  @override
+  String get msInfoSection => 'Thông tin shop';
+
+  @override
+  String get msColorSection => 'Màu nhận diện';
+
+  @override
+  String get msColorHint =>
+      'Dùng cho logo chữ, ảnh bìa mặc định và điểm nhấn trên trang shop.';
+
+  @override
+  String get msColorAuto => 'Mặc định';
+
+  @override
+  String get msChangeCover => 'Đổi ảnh bìa';
+
+  @override
+  String get msChangeLogo => 'Đổi logo';
+
+  @override
+  String get msImageNew => 'Chọn ảnh mới';
+
+  @override
+  String get msImageAdjust => 'Căn chỉnh lại';
+
+  @override
+  String get msImageRemove => 'Xóa ảnh';
+
+  @override
+  String get msCoverCropTitle => 'Căn chỉnh ảnh bìa';
+
+  @override
+  String get msLogoCropTitle => 'Căn chỉnh logo';
+
+  @override
+  String get msStatFollowers => 'Người theo dõi';
+
+  @override
+  String get msStatListings => 'Tin đang bán';
+
+  @override
+  String get msStatPostersRunning => 'Poster đang chạy';
+
+  @override
+  String get msStatPostersPending => 'Poster chờ duyệt';
+
+  @override
+  String get msVerifiedTitle => 'Shop đã xác minh';
+
+  @override
+  String get msVerifiedBody => 'Shop đang hiện ở mục Shop uy tín.';
+
+  @override
+  String msCertificate(String code) {
+    return 'Mã chứng nhận: $code.';
+  }
+
+  @override
+  String get msUnverifiedTitle => 'Shop chưa xác minh';
+
+  @override
+  String get msUnverifiedBody =>
+      'Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Liên hệ ReStore để được xác minh.';
+
+  @override
+  String get msPlanExpiredTitle => 'Gói Cửa hàng đã hết hạn';
+
+  @override
+  String get msPlanExpiredBody =>
+      'Poster của shop đang tạm ẩn. Gia hạn gói để poster chạy lại.';
+
+  @override
+  String get msViewPublic => 'Xem trang shop';
+
+  @override
+  String get msPosters => 'Poster shop';
+
+  @override
+  String get msPostersBody =>
+      'Quảng bá shop bằng poster trên trang shop và Shop uy tín.';
+
+  @override
+  String get msSave => 'Lưu thay đổi';
+
+  @override
+  String get msSaved => 'Đã lưu thông tin shop';
+
+  @override
+  String get msErrExists => 'Bạn đã có trang shop.';
+
+  @override
+  String get msErrImage => 'Ảnh tải lên không hợp lệ, hãy thử ảnh khác.';
+
+  @override
+  String get msErrGeneric => 'Không lưu được, vui lòng thử lại.';
 }

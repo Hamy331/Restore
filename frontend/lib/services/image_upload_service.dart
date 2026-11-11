@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import '../core/network/api_client.dart';
 
 /// Mục đích ảnh; backend lưu mỗi loại vào một khu riêng (feeds, avatars, posters).
-enum ImagePurpose { feed, avatar, poster }
+enum ImagePurpose { feed, avatar, poster, shop }
 
 /// Tải ảnh cục bộ lên `POST /media/images`, trả về đường dẫn `/api/v1/media/...`.
 /// Lưu nguyên đường dẫn này lên server; khi hiển thị thì `resolveMediaUrl`

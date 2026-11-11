@@ -24,6 +24,12 @@ class CropFrame {
   /// Poster shop 2:1, giống banner trang chủ
   static const poster = CropFrame(aspect: 0.5, output: Size(1200, 600));
 
+  /// Logo shop: vuông, hiển thị bo góc
+  static const shopLogo = CropFrame(aspect: 1, output: Size(512, 512));
+
+  /// Ảnh bìa shop 3:1 (đầu trang shop)
+  static const shopCover = CropFrame(aspect: 1 / 3, output: Size(1200, 400));
+
   /// Ảnh đại diện / logo: vuông, hiển thị trong khung tròn
   static const avatar = CropFrame(
     aspect: 1,
