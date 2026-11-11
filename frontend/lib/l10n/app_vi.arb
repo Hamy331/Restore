@@ -2260,5 +2260,128 @@
       }
     }
   },
-  "originalPriceError": "Giá gốc phải cao hơn giá bán"
+  "originalPriceError": "Giá gốc phải cao hơn giá bán",
+  "promoTitle": "Quảng bá tin",
+  "promoNotPromotable": "Tin chưa hiển thị nên chưa quảng bá được. Hiện lại tin trong Quản lý tin rồi quay lại đây.",
+  "promoBoostRunning": "Đang ở đầu danh sách đến {date}",
+  "@promoBoostRunning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "promoBoostAgainAt": "Đẩy lại sau {date}",
+  "@promoBoostAgainAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "promoRunning": "Đang chạy",
+  "promoHistoryTitle": "Lượt quảng bá gần đây",
+  "promoHistoryEmpty": "Tin này chưa được quảng bá lần nào.",
+  "promoHistoryFeature": "Hot sale {days} ngày",
+  "@promoHistoryFeature": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "promoFree": "Lượt tặng",
+  "promoEnded": "Đã kết thúc",
+  "promoLoadError": "Không tải được thông tin quảng bá",
+  "promoBalanceAfter": "Ví còn {left} xu sau khi trả.",
+  "@promoBalanceAfter": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "promoPickTitle": "Chọn tin để quảng bá",
+  "promoPickSubtitle": "Chỉ tin đang hiển thị mới đẩy hoặc lên Hot sale được",
+  "promoPickEmpty": "Bạn chưa có tin nào đang hiển thị.",
+  "hubTitle": "Quảng bá",
+  "hubFreeBoosts": "Đẩy miễn phí còn {left}/{perMonth} lượt",
+  "@hubFreeBoosts": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      },
+      "perMonth": {
+        "type": "int"
+      }
+    }
+  },
+  "hubThisMonth": "Tháng này: {boosts} lượt đẩy · {features} lượt Hot sale",
+  "@hubThisMonth": {
+    "placeholders": {
+      "boosts": {
+        "type": "int"
+      },
+      "features": {
+        "type": "int"
+      }
+    }
+  },
+  "hubFilterAll": "Tất cả",
+  "hubFilterRunning": "Đang quảng bá",
+  "hubFilterExpiring": "Sắp hết hạn",
+  "hubFilterIdle": "Chưa quảng bá",
+  "hubBoostedFor": "Đang đẩy · còn {time}",
+  "@hubBoostedFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubFeaturedFor": "Hot sale · còn {time}",
+  "@hubFeaturedFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubExpiresIn": "Hết hạn sau {time}",
+  "@hubExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubHours": "{count} giờ",
+  "@hubHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hubDays": "{count} ngày",
+  "@hubDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hubAutoExtend": "Tự gia hạn",
+  "hubDetails": "Chi tiết",
+  "hubEmptyRunning": "Chưa có tin nào đang được đẩy hoặc ở Hot sale.",
+  "hubEmptyExpiring": "Không có tin nào hết hạn trong 7 ngày tới.",
+  "hubEmptyIdle": "Tin nào của bạn cũng đang được quảng bá.",
+  "hubExpiringTip": "{count} tin sắp hết hạn: gia hạn để tin không bị ẩn.",
+  "@hubExpiringTip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

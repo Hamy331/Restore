@@ -15,10 +15,7 @@ import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import '../../bloc/product_detail/product_detail_cubit.dart';
 import '../../bloc/product_detail/product_detail_state.dart';
 import '../../models/product_detail.dart';
-import '../../repositories/listings_repository.dart';
-import '../../repositories/posting_quota_repository.dart';
-import '../../widgets/boost_listing_sheet.dart';
-import '../../widgets/feature_listing_sheet.dart';
+import '../../../boost/views/boost_listing/boost_listing_view.dart';
 import 'widgets/product_detail_attributes.dart';
 import 'widgets/product_detail_bottom_bar.dart';
 import 'widgets/product_detail_description.dart';
@@ -88,8 +85,8 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
     context.pop(state.favoriteChanged ? state.detail!.isFavorite : null);
   }
 
-  /// Chủ tin đẩy tin lên đầu bằng lượt tặng của gói hoặc bằng xu
-  Future<void> _onBoost(ProductDetail detail) async {
+  /// Chủ tin mở trang quảng bá (đẩy tin 24 giờ, Hot sale bằng xu)
+  Future<void> _onPromote(ProductDetail detail) async {
     if (!detail.isAvailable) {
       TSnackBarHelper.showInfo(
         context,
@@ -97,28 +94,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
       );
       return;
     }
-    await boostListingWithCredits(
-      context,
-      title: detail.listing.title,
-      categoryId: detail.listing.categoryId,
-      loadQuota: ApiPostingQuotaRepository().getQuota,
-      boost: () => ApiListingsRepository().boost(detail.listing.id),
-    );
-  }
-
-  /// Chủ tin mua tin ưu tiên (Hot sale) bằng xu
-  Future<void> _onFeature(ProductDetail detail) async {
-    if (!detail.isAvailable) {
-      TSnackBarHelper.showInfo(context, message: _l10n.featureUnavailable);
-      return;
-    }
-    final repository = ApiListingsRepository();
-    await featureListingWithCredits(
-      context,
-      title: detail.listing.title,
-      loadQuote: () => repository.featureQuote(detail.listing.id),
-      feature: (packageId) => repository.feature(detail.listing.id, packageId),
-    );
+    await context.push<bool>(BoostListingView.location(detail.listing.id));
   }
 
   void _comingSoon() =>
@@ -289,8 +265,8 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
                     onOffer: () => _onOffer(detail),
                     onBuy: () => _onBuy(detail),
                     onEdit: _comingSoon,
-                    onBoost: () => _onBoost(detail),
-                    onFeature: () => _onFeature(detail),
+                    onBoost: () => _onPromote(detail),
+                    onFeature: () => _onPromote(detail),
                   ),
           ),
         );

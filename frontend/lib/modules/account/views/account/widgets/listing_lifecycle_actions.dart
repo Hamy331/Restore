@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../boost/views/boost_listing/boost_listing_view.dart';
 import '../../../../../shared/widgets/app_switch_tile.dart';
 import '../../../../credits/views/credit_topup/credit_topup_view.dart';
 import '../../../../../data/models/category_model.dart';
 import '../../../../listings/models/display_pricing.dart';
 import '../../../../listings/models/posting_quota.dart';
-import '../../../../listings/widgets/boost_listing_sheet.dart';
 import '../../../../listings/widgets/display_days_sheet.dart';
-import '../../../../listings/widgets/feature_listing_sheet.dart';
 import '../../../../listings/widgets/posting_limit_sheet.dart';
 import '../../../bloc/account_listings/account_listings_cubit.dart';
 import '../../../models/account_listing.dart';
@@ -210,9 +209,9 @@ class _AutoExtendSwitchState extends State<_AutoExtendSwitch> {
   }
 }
 
-/// Đẩy tin đang hiển thị lên đầu (lượt tặng của gói hoặc trả xu), xong thì
-/// tải lại danh sách để thấy số xu mới.
-Future<void> boostAccountListing(
+/// Mở trang quảng bá tin (đẩy tin 24 giờ, Hot sale bằng xu); đã đẩy / mua
+/// thì tải lại danh sách để thấy trạng thái và số xu mới.
+Future<void> promoteAccountListing(
   BuildContext context,
   AccountListing item,
 ) async {
@@ -224,39 +223,8 @@ Future<void> boostAccountListing(
     );
     return;
   }
-  final repository = cubit.repository;
-  final boosted = await boostListingWithCredits(
-    context,
-    title: item.title,
-    categoryId: item.categoryId,
-    loadQuota: repository.postingQuota,
-    boost: () => repository.boost(item.id),
-  );
-  if (boosted) await cubit.load();
-}
-
-/// Mua tin ưu tiên (Hot sale) bằng xu cho tin đang hiển thị, xong thì tải
-/// lại danh sách để thấy số xu mới.
-Future<void> featureAccountListing(
-  BuildContext context,
-  AccountListing item,
-) async {
-  final cubit = context.read<AccountListingsCubit>();
-  if (item.status != AccountListingStatus.visible) {
-    _toast(
-      ScaffoldMessenger.of(context),
-      AppLocalizations.of(context)!.featureUnavailable,
-    );
-    return;
-  }
-  final repository = cubit.repository;
-  final featured = await featureListingWithCredits(
-    context,
-    title: item.title,
-    loadQuote: () => repository.featureQuote(item.id),
-    feature: (packageId) => repository.feature(item.id, packageId),
-  );
-  if (featured) await cubit.load();
+  final changed = await context.push<bool>(BoostListingView.location(item.id));
+  if (changed == true) await cubit.load();
 }
 
 void _toast(ScaffoldMessengerState messenger, String? message) {

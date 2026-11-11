@@ -74,8 +74,8 @@ import '../../modules/auth/views/auth_success/auth_success_view.dart';
 import '../../modules/auth/views/email_verification/email_verification_view.dart';
 import '../../modules/auth/views/welcome/welcome_view.dart';
 import '../../modules/chat/views/conversation/chat_conversation_view.dart';
-import '../../modules/boost/bloc/boost_listing_cubit.dart';
-import '../../modules/boost/views/boost_listing_view.dart';
+import '../../modules/boost/views/boost_listing/boost_listing_view.dart';
+import '../../modules/boost/views/promotion_hub/promotion_hub_view.dart';
 import '../../modules/auth/bloc/auth/auth_bloc.dart';
 import '../../modules/auth/utils/auth_route_guard.dart';
 import '../../modules/auth/views/splash/splash_view.dart';
@@ -542,12 +542,23 @@ GoRouter createAppRouter(
         ),
       ),
     ),
+    // Trang Boost của tôi: tin đang quảng bá, sắp hết hạn, chưa quảng bá
     GoRoute(
-      path: '/boost/:id',
+      path: PromotionHubView.path,
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
-        create: (_) => BoostListingCubit(),
-        child: const BoostListingView(),
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const PromotionHubView(),
+      ),
+    ),
+    // Quảng bá một tin của tôi: đẩy tin 24 giờ, Hot sale 1/3/7 ngày bằng xu.
+    // Đóng trang trả về true khi đã đẩy / mua.
+    GoRoute(
+      path: BoostListingView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
+        state: state,
+        child: BoostListingView(listingId: state.pathParameters['id']!),
       ),
     ),
   ],

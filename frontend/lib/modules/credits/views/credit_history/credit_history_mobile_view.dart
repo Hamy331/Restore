@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -62,7 +63,7 @@ class CreditHistoryMobileView extends StatelessWidget {
                     title: l10n.creditEmptyHistory,
                     message: '',
                   ),
-                CreditHistoryStatus.ready => RefreshIndicator(
+                CreditHistoryStatus.ready => AppPullToRefresh(
                   onRefresh: cubit.load,
                   child: NotificationListener<ScrollNotification>(
                     onNotification: (n) => _onScroll(context, n),

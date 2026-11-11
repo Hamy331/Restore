@@ -47,6 +47,15 @@ listingRouter.get('/posting-quota', manageOwn, listingController.postingQuota);
 listingRouter.get('/summary', manageOwn, listingController.summary);
 
 /**
+ * Trang Boost của tôi: tin đang hiển thị (sắp hết hạn trước, tối đa 100) kèm quảng bá đang chạy
+ *
+ * Trả về: { available, discountPercent, boost: { freeLeft, freePerMonth }, thisMonth: { boosts, features },
+ *   items: [{ id, title, price, image, categoryId, viewCount, expiresAt, autoExtend, boostCredits,
+ *     bumpUntil, featuredUntil }] }
+ */
+listingRouter.get('/promotions', manageOwn, listingController.promotionHub);
+
+/**
  * Tin của tôi, mới tạo trước (status=DRAFT: vừa sửa trước)
  *
  * Query params:
@@ -126,6 +135,17 @@ listingRouter.patch('/:id/auto-extend', manageOwn, validate({ params: listingIdP
  * Lỗi 409: BOOST_TOO_SOON { details: { availableAt } }, LISTING_NOT_BOOSTABLE, NOT_ENOUGH_CREDITS
  */
 listingRouter.post('/:id/boost', manageOwn, validate({ params: listingIdParams }), listingController.boost);
+
+/**
+ * Trang quảng bá một tin của tôi: giá đẩy tin và các gói Hot sale, lượt đẩy tặng, số xu, hạn đang chạy, lịch sử
+ *
+ * Trả về: { listingId, title, price, image, status, promotable, available, discountPercent,
+ *   boost: { credits, free, freeLeft, freePerMonth, runningUntil },
+ *   feature: { runningUntil, options: [{ packageId, durationDays, credits }] },
+ *   history: [{ id, kind: BUMP|FEATURED, packageId, durationDays, source, startsAt, endsAt }] }
+ * Lỗi 404: LISTING_NOT_FOUND
+ */
+listingRouter.get('/:id/promotion', manageOwn, validate({ params: listingIdParams }), listingController.promotion);
 
 /**
  * Báo giá tin ưu tiên (Hot sale) cho tin đang hiển thị

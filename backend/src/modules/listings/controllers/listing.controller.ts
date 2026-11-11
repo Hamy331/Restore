@@ -41,6 +41,15 @@ export async function boost(req: AuthRequest, res: Response) {
   ok(res, await listingService.boostListing(req.user!.userId, params.id));
 }
 
+export async function promotionHub(req: AuthRequest, res: Response) {
+  ok(res, await listingService.getPromotionHub(req.user!.userId));
+}
+
+export async function promotion(req: AuthRequest, res: Response) {
+  const { params } = getInput<ValidatedInput<undefined, ListingIdParams, undefined>>(res);
+  ok(res, await listingService.getPromotionOverview(req.user!.userId, params.id));
+}
+
 export async function featureQuote(req: AuthRequest, res: Response) {
   const { params } = getInput<ValidatedInput<undefined, ListingIdParams, undefined>>(res);
   ok(res, await listingService.getFeatureQuote(req.user!.userId, params.id));

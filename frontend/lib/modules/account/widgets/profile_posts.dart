@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
@@ -25,7 +26,7 @@ class ProfilePostsSliver extends StatelessWidget {
             return const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 40),
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(child: AppLoadingIndicator()),
               ),
             );
           }

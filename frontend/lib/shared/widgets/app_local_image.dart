@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:dio/dio.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/core/config/app_environment.dart';
@@ -95,9 +96,7 @@ class _AppLocalImageState extends State<AppLocalImage> {
             : SizedBox(
                 width: width,
                 height: height,
-                child: const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                child: const Center(child: AppLoadingIndicator()),
               ),
       );
     }

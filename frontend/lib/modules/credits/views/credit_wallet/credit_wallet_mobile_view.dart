@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_icons.dart';
@@ -56,7 +57,7 @@ class CreditWalletMobileView extends StatelessWidget {
               child: Text(l10n.retry),
             ),
           ),
-          CreditWalletStatus.ready => RefreshIndicator(
+          CreditWalletStatus.ready => AppPullToRefresh(
             onRefresh: context.read<CreditWalletCubit>().load,
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),

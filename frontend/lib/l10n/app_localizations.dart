@@ -7105,6 +7105,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Original price must be higher than the sale price'**
   String get originalPriceError;
+
+  /// No description provided for @promoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote listing'**
+  String get promoTitle;
+
+  /// No description provided for @promoNotPromotable.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing isn\'t visible, so it can\'t be promoted. Show it again in Manage listings, then come back.'**
+  String get promoNotPromotable;
+
+  /// No description provided for @promoBoostRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'At the top of the list until {date}'**
+  String promoBoostRunning(String date);
+
+  /// No description provided for @promoBoostAgainAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost again after {date}'**
+  String promoBoostAgainAt(String date);
+
+  /// No description provided for @promoRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get promoRunning;
+
+  /// No description provided for @promoHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent promotions'**
+  String get promoHistoryTitle;
+
+  /// No description provided for @promoHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing hasn\'t been promoted yet.'**
+  String get promoHistoryEmpty;
+
+  /// No description provided for @promoHistoryFeature.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot sale {days} days'**
+  String promoHistoryFeature(int days);
+
+  /// No description provided for @promoFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get promoFree;
+
+  /// No description provided for @promoEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get promoEnded;
+
+  /// No description provided for @promoLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load promotion info'**
+  String get promoLoadError;
+
+  /// No description provided for @promoBalanceAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'{left} points left in your wallet after paying.'**
+  String promoBalanceAfter(int left);
+
+  /// No description provided for @promoPickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a listing to promote'**
+  String get promoPickTitle;
+
+  /// No description provided for @promoPickSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Only visible listings can be boosted or put on Hot sale'**
+  String get promoPickSubtitle;
+
+  /// No description provided for @promoPickEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no visible listings yet.'**
+  String get promoPickEmpty;
+
+  /// No description provided for @hubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotions'**
+  String get hubTitle;
+
+  /// No description provided for @hubFreeBoosts.
+  ///
+  /// In en, this message translates to:
+  /// **'{left}/{perMonth} free boosts left'**
+  String hubFreeBoosts(int left, int perMonth);
+
+  /// No description provided for @hubThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month: {boosts} boosts · {features} Hot sale'**
+  String hubThisMonth(int boosts, int features);
+
+  /// No description provided for @hubFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hubFilterAll;
+
+  /// No description provided for @hubFilterRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Promoted'**
+  String get hubFilterRunning;
+
+  /// No description provided for @hubFilterExpiring.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring soon'**
+  String get hubFilterExpiring;
+
+  /// No description provided for @hubFilterIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not promoted'**
+  String get hubFilterIdle;
+
+  /// No description provided for @hubBoostedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Boosted · {time} left'**
+  String hubBoostedFor(String time);
+
+  /// No description provided for @hubFeaturedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot sale · {time} left'**
+  String hubFeaturedFor(String time);
+
+  /// No description provided for @hubExpiresIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires in {time}'**
+  String hubExpiresIn(String time);
+
+  /// No description provided for @hubHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour} other{{count} hours}}'**
+  String hubHours(int count);
+
+  /// No description provided for @hubDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String hubDays(int count);
+
+  /// No description provided for @hubAutoExtend.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-extend'**
+  String get hubAutoExtend;
+
+  /// No description provided for @hubDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get hubDetails;
+
+  /// No description provided for @hubEmptyRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'No listing is boosted or on Hot sale right now.'**
+  String get hubEmptyRunning;
+
+  /// No description provided for @hubEmptyExpiring.
+  ///
+  /// In en, this message translates to:
+  /// **'No listing expires in the next 7 days.'**
+  String get hubEmptyExpiring;
+
+  /// No description provided for @hubEmptyIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'All your listings are being promoted.'**
+  String get hubEmptyIdle;
+
+  /// No description provided for @hubExpiringTip.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} listings expiring soon: extend them so they stay visible.'**
+  String hubExpiringTip(int count);
 }
 
 class _AppLocalizationsDelegate

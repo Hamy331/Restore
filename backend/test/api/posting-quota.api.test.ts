@@ -114,6 +114,20 @@ test('posting quota: pay with points, expiry, reactivate, extend, duplicates', a
   assert.equal((await wallet()).available, 11);
   assert.equal(expect('feature again', await api.post(`/listings/${a}/feature`, { token, body: { packageId: 'featured-1' } })).body.code,
     'FEATURE_ALREADY_ACTIVE');
+  const overview = (await api.get(`/listings/${a}/promotion`, { token })).body.data;
+  assert.deepEqual([overview.promotable, overview.available, overview.boost.credits, overview.boost.free],
+    [true, 11, 4, false]);
+  assert.ok(overview.boost.runningUntil && overview.feature.runningUntil);
+  assert.deepEqual(overview.feature.options.map((o: { credits: number }) => o.credits), [8, 23, 50]);
+  assert.deepEqual(overview.history.map((h: { kind: string }) => h.kind), ['FEATURED', 'BUMP', 'BUMP', 'BUMP']);
+  assert.equal((await api.get('/listings/listing-1/promotion', { token })).status, 404, 'tin của người khác');
+  assert.equal((await api.get(`/listings/${a}/promotion`)).status, 401);
+  const hub = (await api.get('/listings/promotions', { token })).body.data;
+  const row = hub.items.find((item: { id: string }) => item.id === a);
+  assert.ok(row?.bumpUntil && row.featuredUntil, 'tin đang đẩy và đang Hot sale');
+  assert.equal(row.boostCredits, 4);
+  assert.deepEqual([hub.available, hub.thisMonth.boosts, hub.thisMonth.features], [11, 3, 1]);
+  assert.ok(hub.items.every((item: { id: string }) => item.id !== 'listing-1'), 'chỉ tin của mình');
   const hot = await api.get('/listings/recommended?categoryId=other');
   assert.ok(hot.body.data.some((item: { id: string }) => item.id === a));
   const nextPage = await api.get('/listings/recommended?categoryId=other&limit=20&page=2');

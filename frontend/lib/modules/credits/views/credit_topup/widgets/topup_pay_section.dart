@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -142,13 +143,9 @@ class _GatewayPanel extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(top: 2),
-                  child: SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primary,
-                    ),
+                  child: AppLoadingIndicator(
+                    dotSize: 5,
+                    color: AppColors.primary,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -340,14 +337,7 @@ class _VietQrPanel extends StatelessWidget {
           children: [
             const Padding(
               padding: EdgeInsets.only(top: 2),
-              child: SizedBox(
-                width: 14,
-                height: 14,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppColors.primary,
-                ),
-              ),
+              child: AppLoadingIndicator(dotSize: 5, color: AppColors.primary),
             ),
             const SizedBox(width: 10),
             Expanded(

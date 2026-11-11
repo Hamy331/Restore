@@ -4007,4 +4007,130 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get originalPriceError => 'Giá gốc phải cao hơn giá bán';
+
+  @override
+  String get promoTitle => 'Quảng bá tin';
+
+  @override
+  String get promoNotPromotable =>
+      'Tin chưa hiển thị nên chưa quảng bá được. Hiện lại tin trong Quản lý tin rồi quay lại đây.';
+
+  @override
+  String promoBoostRunning(String date) {
+    return 'Đang ở đầu danh sách đến $date';
+  }
+
+  @override
+  String promoBoostAgainAt(String date) {
+    return 'Đẩy lại sau $date';
+  }
+
+  @override
+  String get promoRunning => 'Đang chạy';
+
+  @override
+  String get promoHistoryTitle => 'Lượt quảng bá gần đây';
+
+  @override
+  String get promoHistoryEmpty => 'Tin này chưa được quảng bá lần nào.';
+
+  @override
+  String promoHistoryFeature(int days) {
+    return 'Hot sale $days ngày';
+  }
+
+  @override
+  String get promoFree => 'Lượt tặng';
+
+  @override
+  String get promoEnded => 'Đã kết thúc';
+
+  @override
+  String get promoLoadError => 'Không tải được thông tin quảng bá';
+
+  @override
+  String promoBalanceAfter(int left) {
+    return 'Ví còn $left xu sau khi trả.';
+  }
+
+  @override
+  String get promoPickTitle => 'Chọn tin để quảng bá';
+
+  @override
+  String get promoPickSubtitle =>
+      'Chỉ tin đang hiển thị mới đẩy hoặc lên Hot sale được';
+
+  @override
+  String get promoPickEmpty => 'Bạn chưa có tin nào đang hiển thị.';
+
+  @override
+  String get hubTitle => 'Quảng bá';
+
+  @override
+  String hubFreeBoosts(int left, int perMonth) {
+    return 'Đẩy miễn phí còn $left/$perMonth lượt';
+  }
+
+  @override
+  String hubThisMonth(int boosts, int features) {
+    return 'Tháng này: $boosts lượt đẩy · $features lượt Hot sale';
+  }
+
+  @override
+  String get hubFilterAll => 'Tất cả';
+
+  @override
+  String get hubFilterRunning => 'Đang quảng bá';
+
+  @override
+  String get hubFilterExpiring => 'Sắp hết hạn';
+
+  @override
+  String get hubFilterIdle => 'Chưa quảng bá';
+
+  @override
+  String hubBoostedFor(String time) {
+    return 'Đang đẩy · còn $time';
+  }
+
+  @override
+  String hubFeaturedFor(String time) {
+    return 'Hot sale · còn $time';
+  }
+
+  @override
+  String hubExpiresIn(String time) {
+    return 'Hết hạn sau $time';
+  }
+
+  @override
+  String hubHours(int count) {
+    return '$count giờ';
+  }
+
+  @override
+  String hubDays(int count) {
+    return '$count ngày';
+  }
+
+  @override
+  String get hubAutoExtend => 'Tự gia hạn';
+
+  @override
+  String get hubDetails => 'Chi tiết';
+
+  @override
+  String get hubEmptyRunning =>
+      'Chưa có tin nào đang được đẩy hoặc ở Hot sale.';
+
+  @override
+  String get hubEmptyExpiring => 'Không có tin nào hết hạn trong 7 ngày tới.';
+
+  @override
+  String get hubEmptyIdle => 'Tin nào của bạn cũng đang được quảng bá.';
+
+  @override
+  String hubExpiringTip(int count) {
+    return '$count tin sắp hết hạn: gia hạn để tin không bị ẩn.';
+  }
 }
