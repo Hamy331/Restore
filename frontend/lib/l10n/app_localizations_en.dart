@@ -374,7 +374,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accCoins => 'ReStore Points';
 
   @override
-  String get accSaved => 'Saved';
+  String get accSaved => 'Profile saved';
 
   @override
   String get accSavedSearches => 'Saved searches';
@@ -4606,25 +4606,75 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spCropTitle => 'Adjust poster';
 
   @override
-  String get spCropHint =>
-      'Drag to move; pinch or use the slider to zoom. Empty space is filled with a blurred copy of the image.';
+  String get spAdjust => 'Adjust again';
 
   @override
-  String get spCropFill => 'Fill frame';
+  String get cropDone => 'Use this image';
 
   @override
-  String get spCropFit => 'Show whole image';
+  String get cropFill => 'Fill frame';
 
   @override
-  String get spCropDone => 'Use this image';
+  String get cropFit => 'Show whole image';
 
   @override
-  String get spCropZoom => 'Zoom';
+  String get cropZoom => 'Zoom';
 
   @override
-  String get spCropLowRes =>
+  String get cropHint =>
+      'Drag to move; pinch or use the slider to zoom. Empty space is filled with the background you pick.';
+
+  @override
+  String get cropLowRes =>
       'The image is small for this frame and may look blurry. Zoom out or pick a larger image.';
 
   @override
-  String get spAdjust => 'Adjust again';
+  String get cropLoadError => 'Couldn\'t open this image. Try another one.';
+
+  @override
+  String get accAvatarSection => 'Profile photo';
+
+  @override
+  String get accAvatarHint =>
+      'Shown in a circle on your profile, listings and messages. Tap Adjust to choose which part shows.';
+
+  @override
+  String get accAdjustAvatar => 'Adjust';
+
+  @override
+  String get accAvatarCropTitle => 'Adjust profile photo';
+
+  @override
+  String get accInfoSection => 'Profile details';
+
+  @override
+  String get accDisplayNameHint => 'e.g. Jane Doe or your shop name';
+
+  @override
+  String get accUsernameHelper =>
+      '3–30 characters: lowercase letters, numbers, dots or underscores.';
+
+  @override
+  String get accBioHint => 'A few lines about you or your shop';
+
+  @override
+  String get cropBackground => 'Background';
+
+  @override
+  String get cropBgBlur => 'Blur';
+
+  @override
+  String get cropBgAuto => 'Match';
+
+  @override
+  String get cropBgWhite => 'White';
+
+  @override
+  String get cropBgBlack => 'Black';
+
+  @override
+  String get cropTrim => 'Remove plain borders';
+
+  @override
+  String get cropTrimOn => 'Plain borders removed';
 }

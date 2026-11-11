@@ -22,6 +22,9 @@ class AppLabeledTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final Widget? suffix;
 
+  /// Chữ cố định trước nội dung (VD `@` của tên người dùng)
+  final String? prefixText;
+
   const AppLabeledTextField({
     super.key,
     required this.label,
@@ -38,6 +41,7 @@ class AppLabeledTextField extends StatelessWidget {
     this.textInputAction,
     this.inputFormatters,
     this.suffix,
+    this.prefixText,
   });
 
   static const double borderRadius = AppGlass.fieldRadius;
@@ -96,6 +100,12 @@ class AppLabeledTextField extends StatelessWidget {
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
+                  prefixText: prefixText,
+                  prefixStyle: const TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textSecondary,
+                    height: 1.4,
+                  ),
                   suffixIcon: suffix,
                   suffixIconConstraints: const BoxConstraints(),
                 ),

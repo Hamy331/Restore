@@ -1,39 +1,46 @@
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../../utils/poster_crop.dart';
+import 'image_crop.dart';
 
-/// Vùng cắt: ảnh có thể kéo / thu phóng dưới một khung 2:1 cố định. Phần ảnh
-/// ngoài khung bị làm tối; trong khung, chỗ ảnh không phủ tới là nền mờ của
-/// chính ảnh (giống ảnh sẽ xuất ra).
-class PosterCropArea extends StatefulWidget {
-  const PosterCropArea({
+/// Vùng cắt: ảnh có thể kéo / thu phóng dưới một khung cố định ([CropFrame]).
+/// Phần ảnh ngoài khung bị làm tối; trong khung, chỗ ảnh không phủ tới là nền
+/// mờ của chính ảnh (giống ảnh sẽ xuất ra).
+class ImageCropArea extends StatefulWidget {
+  const ImageCropArea({
     super.key,
     required this.image,
+    required this.frame,
     required this.transform,
     required this.onChanged,
+    this.background,
   });
 
+  /// Màu nền phần trống; `null` = nền mờ của chính ảnh
+  final Color? background;
+
   final ui.Image image;
-  final PosterCropTransform transform;
-  final ValueChanged<PosterCropTransform> onChanged;
+  final CropFrame frame;
+  final ImageCropTransform transform;
+  final ValueChanged<ImageCropTransform> onChanged;
 
   @override
-  State<PosterCropArea> createState() => _PosterCropAreaState();
+  State<ImageCropArea> createState() => _ImageCropAreaState();
 }
 
-class _PosterCropAreaState extends State<PosterCropArea> {
-  PosterCropTransform? _start;
+class _ImageCropAreaState extends State<ImageCropArea> {
+  ImageCropTransform? _start;
   Offset _startFocal = Offset.zero;
 
   Size get _imageSize =>
       Size(widget.image.width.toDouble(), widget.image.height.toDouble());
 
   /// Phóng to / thu nhỏ quanh [focal] (toạ độ trong khung, px)
-  PosterCropTransform _zoom(
-    PosterCropTransform from,
+  ImageCropTransform _zoom(
+    ImageCropTransform from,
     double factor,
     Offset focal,
     Offset moved,
@@ -42,15 +49,15 @@ class _PosterCropAreaState extends State<PosterCropArea> {
   ) {
     final newScale = (from.scale * factor)
         .clamp(
-          PosterCropTransform.minScale(_imageSize),
-          PosterCropTransform.maxScale(_imageSize),
+          ImageCropTransform.minScale(_imageSize, widget.frame),
+          ImageCropTransform.maxScale(_imageSize, widget.frame),
         )
         .toDouble();
     final ratio = newScale / from.scale;
     final frameCenter = Offset(frame.width / 2, frame.height / 2);
     final centerPx = frameCenter + from.center * unit;
     final next = focal + moved + (centerPx - focal) * ratio;
-    return PosterCropTransform(
+    return ImageCropTransform(
       scale: newScale,
       center: (next - frameCenter) / unit,
     );
@@ -59,8 +66,13 @@ class _PosterCropAreaState extends State<PosterCropArea> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final width = constraints.maxWidth - 32;
-      final frame = Size(width, width / 2);
+      // khung rộng hết chiều ngang (trừ lề), khung vuông thì không cao quá vùng
+      final aspect = widget.frame.aspect;
+      final width = math.min(
+        constraints.maxWidth - 32,
+        (constraints.maxHeight - 32) / aspect,
+      );
+      final frame = Size(width, width * aspect);
       final frameRect = Rect.fromCenter(
         center: Offset(constraints.maxWidth / 2, constraints.maxHeight / 2),
         width: frame.width,
@@ -70,8 +82,9 @@ class _PosterCropAreaState extends State<PosterCropArea> {
       final imageRect = transform
           .imageRect(_imageSize, frame)
           .shift(frameRect.topLeft);
-      final coverRect = PosterCropTransform.cover(
+      final coverRect = ImageCropTransform.cover(
         _imageSize,
+        widget.frame,
       ).imageRect(_imageSize, frame).shift(frameRect.topLeft);
 
       return Listener(
@@ -91,7 +104,7 @@ class _PosterCropAreaState extends State<PosterCropArea> {
           );
         },
         child: GestureDetector(
-          key: const ValueKey('poster-crop-area'),
+          key: const ValueKey('image-crop-area'),
           behavior: HitTestBehavior.opaque,
           onScaleStart: (details) {
             _start = transform;
@@ -114,24 +127,45 @@ class _PosterCropAreaState extends State<PosterCropArea> {
           },
           child: Stack(
             children: [
-              // nền mờ trong khung (thấy khi ảnh không phủ kín)
-              Positioned.fromRect(
-                rect: frameRect,
-                child: ClipRect(
-                  child: ImageFiltered(
-                    imageFilter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                    child: OverflowBox(
-                      maxWidth: double.infinity,
-                      maxHeight: double.infinity,
-                      child: SizedBox(
-                        width: coverRect.width,
-                        height: coverRect.height,
-                        child: RawImage(image: widget.image, fit: BoxFit.fill),
+              // nền trong khung (thấy khi ảnh không phủ kín)
+              if (widget.background != null)
+                Positioned.fromRect(
+                  rect: frameRect,
+                  child: widget.frame.shape == CropShape.circle
+                      ? DecoratedBox(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: widget.background,
+                          ),
+                        )
+                      : ColoredBox(color: widget.background!),
+                )
+              else
+                Positioned.fromRect(
+                  rect: frameRect,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                      widget.frame.shape == CropShape.circle
+                          ? frame.width / 2
+                          : 0,
+                    ),
+                    child: ImageFiltered(
+                      imageFilter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                      child: OverflowBox(
+                        maxWidth: double.infinity,
+                        maxHeight: double.infinity,
+                        child: SizedBox(
+                          width: coverRect.width,
+                          height: coverRect.height,
+                          child: RawImage(
+                            image: widget.image,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
               Positioned.fromRect(
                 rect: imageRect,
                 child: RawImage(
@@ -142,7 +176,12 @@ class _PosterCropAreaState extends State<PosterCropArea> {
               ),
               Positioned.fill(
                 child: IgnorePointer(
-                  child: CustomPaint(painter: _FramePainter(frameRect)),
+                  child: CustomPaint(
+                    painter: _FramePainter(
+                      frameRect,
+                      circle: widget.frame.shape == CropShape.circle,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -155,17 +194,27 @@ class _PosterCropAreaState extends State<PosterCropArea> {
 
 /// Làm tối phần ngoài khung, viền khung và lưới chia ba
 class _FramePainter extends CustomPainter {
-  _FramePainter(this.frame);
+  _FramePainter(this.frame, {required this.circle});
 
   final Rect frame;
+  final bool circle;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final shape = Path();
+    if (circle) {
+      shape.addOval(frame);
+    } else {
+      shape.addRRect(RRect.fromRectAndRadius(frame, const Radius.circular(12)));
+    }
     final outside = Path()
       ..fillType = PathFillType.evenOdd
       ..addRect(Offset.zero & size)
-      ..addRRect(RRect.fromRectAndRadius(frame, const Radius.circular(12)));
+      ..addPath(shape, Offset.zero);
     canvas.drawPath(outside, Paint()..color = const Color(0xB3000000));
+
+    canvas.save();
+    canvas.clipPath(shape);
 
     final grid = Paint()
       ..color = const Color(0x55FFFFFF)
@@ -176,8 +225,9 @@ class _FramePainter extends CustomPainter {
       canvas.drawLine(Offset(x, frame.top), Offset(x, frame.bottom), grid);
       canvas.drawLine(Offset(frame.left, y), Offset(frame.right, y), grid);
     }
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(frame, const Radius.circular(12)),
+    canvas.restore();
+    canvas.drawPath(
+      shape,
       Paint()
         ..color = Colors.white
         ..style = PaintingStyle.stroke
@@ -186,5 +236,6 @@ class _FramePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_FramePainter old) => old.frame != frame;
+  bool shouldRepaint(_FramePainter old) =>
+      old.frame != frame || old.circle != circle;
 }

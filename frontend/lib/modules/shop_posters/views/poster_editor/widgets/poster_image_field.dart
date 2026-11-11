@@ -6,10 +6,11 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/services/media_picker_service.dart';
+import 'package:restore/shared/widgets/image_crop/image_crop.dart';
+import 'package:restore/shared/widgets/image_crop/image_crop_view.dart';
 
 import '../../../bloc/poster_editor_cubit.dart';
 import '../../../widgets/poster_image.dart';
-import '../../poster_crop/poster_crop_view.dart';
 
 /// Khung ảnh 2:1: bấm để chọn ảnh từ thư viện, sau đó căn chỉnh / cắt vừa khung
 class PosterImageField extends StatelessWidget {
@@ -39,7 +40,12 @@ class PosterImageField extends StatelessWidget {
     PosterEditorCubit cubit,
     Uint8List source,
   ) async {
-    final cropped = await PosterCropView.open(context, source);
+    final cropped = await ImageCropView.open(
+      context,
+      source,
+      frame: CropFrame.poster,
+      title: AppLocalizations.of(context)!.spCropTitle,
+    );
     if (cropped != null) cubit.setImage(cropped, source: source);
   }
 
