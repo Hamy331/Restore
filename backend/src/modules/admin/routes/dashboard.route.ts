@@ -14,4 +14,6 @@ const dashboardRouter = Router();
  */
 dashboardRouter.get('/dashboard', authorizePermission(PERMISSION.ADMIN_ACCESS), dashboardController.getOverview);
 
+dashboardRouter.get('/dashboard/insights', authorizePermission(PERMISSION.ADMIN_ACCESS), dashboardController.insights);
+
 export default dashboardRouter;

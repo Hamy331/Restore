@@ -1,15 +1,19 @@
 import { ADMIN_PAGE_SIZE } from '../../../common/validation/admin-input.js';
+import { ROLE_PERMISSIONS } from '../../../common/auth/permissions.js';
 import { withQuotaTransaction } from '../../commerce/index.js';
 import { sanctionUser } from '../../users/index.js';
 import type { UserActionInput, UserListQuery } from '../admin.dto.js';
 import * as userRepository from '../repositories/user.repository.js';
 
 /** Hồ sơ của admin đang đăng nhập */
-export const getSelf = (id: string) => userRepository.findSelf(id);
+export async function getSelf(id: string) {
+  const user = await userRepository.findSelf(id);
+  return { ...user, permissions: ROLE_PERMISSIONS[user.role] };
+}
 
 /** Thành viên, 25 mỗi trang */
-export async function listMembers({ q, page }: UserListQuery) {
-  const [items, total] = await userRepository.findMemberPage(q, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+export async function listMembers({ q, page, details }: UserListQuery) {
+  const [items, total] = await userRepository.findMemberPage(q, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE, details);
   return { items, total, page };
 }
 
