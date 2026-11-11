@@ -69,7 +69,7 @@ export const findVisibleByIds = (ids: string[]) =>
   ids.length ? prisma.listing.findMany({ where: { ...visible, id: { in: ids } }, select: listingSelect }) : Promise.resolve([]);
 
 /** Tin đang có gói đẩy FEATURED còn hiệu lực (trong [categoryId] nếu có), mới nhất trước */
-export const findFeatured = (now: Date, limit: number, categoryId?: string) =>
+export const findFeatured = (now: Date, limit: number, categoryId?: string, skip = 0) =>
   prisma.listing.findMany({
     where: {
       ...visible,
@@ -78,6 +78,7 @@ export const findFeatured = (now: Date, limit: number, categoryId?: string) =>
     },
     select: listingSelect,
     take: limit,
+    skip,
     orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
   });
 

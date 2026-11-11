@@ -150,7 +150,10 @@ class ListingDraft extends Equatable {
       'price': tradeType.requiresPrice ? '${price ?? 0}' : '0',
       'isNegotiable': tradeType.requiresPrice && isNegotiable,
       'exchangeWish': tradeType.allowsExchange ? exchangeWish.trim() : '',
-      'condition': condition?.apiValue,
+      // Danh mục không hỏi tình trạng (thú cưng) thì không gửi
+      'condition': (category?.hasCondition ?? true)
+          ? condition?.apiValue
+          : null,
       'sellerType': sellerType.name.toUpperCase(),
       'location': address?.toPayload(),
       'attributes': attributeValues,

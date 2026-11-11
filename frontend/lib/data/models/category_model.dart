@@ -16,6 +16,9 @@ class CategoryModel extends Equatable {
   final String? imageUrl;
   final List<CategoryAttributeModel> attributes;
 
+  /// Danh mục có hỏi tình trạng hàng không (Mới, Như mới...). Thú cưng thì không.
+  final bool hasCondition;
+
   const CategoryModel({
     required this.id,
     required this.name,
@@ -23,6 +26,7 @@ class CategoryModel extends Equatable {
     this.iconKey,
     this.imageUrl,
     this.attributes = const [],
+    this.hasCondition = true,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
@@ -37,6 +41,7 @@ class CategoryModel extends Equatable {
           Map<String, dynamic>.from(attribute as Map),
         ),
     ],
+    hasCondition: json['hasCondition'] as bool? ?? true,
   );
 
   Map<String, dynamic> toJson() => {
@@ -46,6 +51,7 @@ class CategoryModel extends Equatable {
     'icon': iconKey,
     'imageUrl': imageUrl,
     'attributes': [for (final attribute in attributes) attribute.toJson()],
+    'hasCondition': hasCondition,
   };
 
   @override
@@ -56,5 +62,6 @@ class CategoryModel extends Equatable {
     iconKey,
     imageUrl,
     attributes,
+    hasCondition,
   ];
 }

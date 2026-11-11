@@ -66,7 +66,7 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     const now = new Date();
     await assertNotDuplicate(tx, ownerId, data, { excludeId: id, allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
-    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price });
+    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price, condition: data.condition });
     await chargeListing(tx, ownerId, id, price, data.title);
     return listingRepository.findSelected(tx, id);
   });

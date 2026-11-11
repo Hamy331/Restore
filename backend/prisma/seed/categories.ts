@@ -847,6 +847,7 @@ export const CATEGORIES: CategorySeed[] = [
     },
     "icon": "pet",
     "imageUrl": null,
+    "hasCondition": false,
     "attributes": [
       {
         "key": "pet_type",
@@ -921,7 +922,25 @@ export const CATEGORIES: CategorySeed[] = [
           "en": "months"
         },
         "min": 0,
-        "max": 360
+        "max": 360,
+        "unitOptions": [
+          {
+            "value": "month",
+            "label": {
+              "vi": "tháng",
+              "en": "months"
+            },
+            "factor": 1
+          },
+          {
+            "value": "year",
+            "label": {
+              "vi": "năm",
+              "en": "years"
+            },
+            "factor": 12
+          }
+        ]
       },
       {
         "key": "pet_gender",

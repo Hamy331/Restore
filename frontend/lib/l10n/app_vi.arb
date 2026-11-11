@@ -2076,5 +2076,10 @@
         "type": "int"
       }
     }
-  }
+  },
+  "hotSaleSubtitle": "Tin đang được người bán ưu tiên hiển thị, cập nhật liên tục.",
+  "hotSaleLoadError": "Không tải được tin Hot sale",
+  "hotSaleEmptyTitle": "Chưa có tin Hot sale",
+  "hotSaleEmptyBody": "Các tin được người bán đưa lên Hot sale sẽ hiện ở đây.",
+  "hotSaleEnd": "Đã xem hết tin Hot sale"
 }

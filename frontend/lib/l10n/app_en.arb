@@ -2290,5 +2290,10 @@
         "type": "int"
       }
     }
-  }
+  },
+  "hotSaleSubtitle": "Listings sellers are promoting right now, updated all the time.",
+  "hotSaleLoadError": "Couldn't load Hot sale listings",
+  "hotSaleEmptyTitle": "No Hot sale listings yet",
+  "hotSaleEmptyBody": "Listings that sellers put on Hot sale will show up here.",
+  "hotSaleEnd": "You've seen all Hot sale listings"
 }

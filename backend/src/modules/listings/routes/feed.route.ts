@@ -27,6 +27,7 @@ feedRouter.get('/', optionalAuth, validate({ query: feedQuery }), feedController
  *
  * Query params:
  *  - limit?: number (1-20, mặc định 10)
+ *  - page?: number (từ 1, mặc định 1) - trang Hot sale tải thêm
  *  - categoryId?: string - chỉ lấy tin của chuyên mục này
  */
 feedRouter.get('/recommended', optionalAuth, validate({ query: recommendedQuery }), feedController.listRecommended);
