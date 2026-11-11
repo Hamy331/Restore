@@ -3,6 +3,7 @@ import { Alert, Button, Form, Input, InputNumber, Modal, Select, Space, Table, T
 import { Session, ApiError, errorText } from '../../shared/api/session';
 import { useResource, type Page } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
+import { useWorkspace } from '../../app/workspace';
 type Member = {
   phone: string | null;
   _count: { listings: number };
@@ -131,12 +132,14 @@ function MemberAction({
   );
 }
 export function Members({ session }: { session: Session }) {
+  const { filter } = useWorkspace();
   const [page, setPage] = useState(1),
     [query, setQuery] = useState(''),
+    [status, setStatus] = useState(filter),
     [member, setMember] = useState<Member>();
   const { data, error, reload } = useResource<Page<Member>>(
     session,
-    '/admin/users?' + new URLSearchParams({ page: String(page), q: query, details: '1' }),
+    '/admin/users?' + new URLSearchParams({ page: String(page), q: query, status, details: '1' }),
   );
   return (
     <>
@@ -152,6 +155,19 @@ export function Members({ session }: { session: Session }) {
               setPage(1);
               setQuery(value.trim());
             }}
+          />
+          <Select
+            aria-label="Trạng thái thành viên"
+            value={status}
+            style={{ minWidth: 165 }}
+            onChange={(value) => {
+              setStatus(value);
+              setPage(1);
+            }}
+            options={[
+              { value: '', label: 'Tất cả trạng thái' },
+              ...Object.entries(statuses).map(([value, label]) => ({ value, label })),
+            ]}
           />
           <span className="toolbar-end">{data && data.total + ' thành viên'}</span>
         </div>
