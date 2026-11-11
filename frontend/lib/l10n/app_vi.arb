@@ -2248,5 +2248,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "originalPriceLabel": "Giá gốc (trước giảm)",
+  "originalPricePlaceholder": "Để trống nếu không giảm giá",
+  "originalPriceHint": "Dành cho shop: người mua thấy giá gốc gạch ngang và % giảm. Sau khi đăng không sửa tăng được.",
+  "originalPriceDiscount": "Giảm {percent}% so với giá gốc",
+  "@originalPriceDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "originalPriceError": "Giá gốc phải cao hơn giá bán"
 }

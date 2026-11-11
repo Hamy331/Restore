@@ -7075,6 +7075,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Post with {days} free days'**
   String displayDaysUseFree(int days);
+
+  /// No description provided for @originalPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Original price (before discount)'**
+  String get originalPriceLabel;
+
+  /// No description provided for @originalPricePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty if not on sale'**
+  String get originalPricePlaceholder;
+
+  /// No description provided for @originalPriceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.'**
+  String get originalPriceHint;
+
+  /// No description provided for @originalPriceDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off the original price'**
+  String originalPriceDiscount(int percent);
+
+  /// No description provided for @originalPriceError.
+  ///
+  /// In en, this message translates to:
+  /// **'Original price must be higher than the sale price'**
+  String get originalPriceError;
 }
 
 class _AppLocalizationsDelegate

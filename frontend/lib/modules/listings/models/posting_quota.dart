@@ -151,6 +151,12 @@ class PostingQuota extends Equatable {
   /// Cách tính giá ngày hiển thị (mốc 30/60/90, ưu đãi gói, tự gia hạn)
   final DisplayPricing display;
 
+  /// Gói tài khoản ở backend: PERSONAL, BASIC (Bán chuyên), PRO (Cửa hàng)
+  final String tier;
+
+  /// Chỉ gói Cửa hàng được nhập giá gốc để bán giảm giá
+  bool get canSetOriginalPrice => tier == 'PRO';
+
   const PostingQuota({
     required this.accountType,
     required this.defaultLimit,
@@ -164,6 +170,7 @@ class PostingQuota extends Equatable {
     this.boostFreePerMonth = 0,
     this.boostDiscountPercent = 0,
     this.display = const DisplayPricing(),
+    this.tier = 'PERSONAL',
   });
 
   CategoryPostingQuota forCategory(String categoryId) =>
@@ -225,6 +232,7 @@ class PostingQuota extends Equatable {
             ? Map<String, dynamic>.from(json['display'] as Map)
             : null,
       ),
+      tier: json['tier'] as String? ?? 'PERSONAL',
     );
   }
 
@@ -242,6 +250,7 @@ class PostingQuota extends Equatable {
     boostFreePerMonth,
     boostDiscountPercent,
     display,
+    tier,
   ];
 }
 

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { useApi } from './support/context.js';
+import { listingBody } from './support/fixtures.js';
 
 const { ctx } = useApi('shops');
 
@@ -61,4 +62,36 @@ test('trusted shops: overview, shop page, listings, follow, verified-shop feed',
   assert.deepEqual(verified.body.data.map((listing: { id: string }) => listing.id), ['listing-1']);
   await prisma.shop.update({ where: { id: 'shop-seller' }, data: { verificationType: null } });
   assert.deepEqual((await api.get('/listings?verifiedShop=true')).body.data, [], 'bỏ xác minh thì không còn tin');
+});
+
+/** Giá gốc (bán giảm giá): chỉ gói Cửa hàng, cao hơn giá bán, sửa tin không được nâng giá gốc */
+test('original price: only store plan, above price, cannot be raised on edit', async () => {
+  const { api, tokens } = ctx;
+  const { prisma } = await import('../../src/lib/prisma.js');
+  const token = tokens.buyer;
+  const body = { ...listingBody('Máy pha cà phê Delonghi'), price: '2000000', originalPrice: '3000000' };
+
+  const personal = await api.post('/listings', { token, body });
+  assert.deepEqual([personal.status, personal.body.code, personal.body.field], [403, 'ORIGINAL_PRICE_NOT_ALLOWED', 'originalPrice']);
+
+  await prisma.storeSubscription.create({ data: {
+    userId: 'user-buyer', packageId: 'pro', categoryId: 'other', endsAt: new Date(Date.now() + 10 * 86_400_000),
+  } });
+  const lower = await api.post('/listings', { token, body: { ...body, originalPrice: '2000000' } });
+  assert.deepEqual([lower.status, lower.body.field], [400, 'originalPrice']);
+
+  const created = await api.post('/listings', { token, body });
+  assert.equal(created.status, 201, JSON.stringify(created.body));
+  assert.equal(created.body.data.originalPrice, '3000000');
+  const id = created.body.data.id;
+
+  const raised = await api.put(`/listings/${id}`, { token, body: { ...body, originalPrice: '3500000' } });
+  assert.deepEqual([raised.status, raised.body.code, raised.body.details?.maxOriginalPrice], [400, 'ORIGINAL_PRICE_RAISED', '3000000']);
+
+  const deeper = await api.put(`/listings/${id}`, { token, body: { ...body, price: '1500000' } });
+  assert.equal(deeper.status, 200, JSON.stringify(deeper.body));
+  assert.deepEqual([deeper.body.data.price, deeper.body.data.originalPrice], ['1500000', '3000000']);
+
+  const cleared = await api.put(`/listings/${id}`, { token, body: { ...body, price: '1500000', originalPrice: null } });
+  assert.equal(cleared.body.data.originalPrice, null);
 });

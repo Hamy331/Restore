@@ -29,6 +29,11 @@ class MockPostingQuotaRepository implements PostingQuotaRepository {
     );
     return PostingQuota.fromJson({
       ...PostingQuotaMockData.quota,
+      'tier': switch (plan) {
+        SubscriptionPlan.personal => 'PERSONAL',
+        SubscriptionPlan.pro => 'BASIC',
+        SubscriptionPlan.shop => 'PRO',
+      },
       if (plan != SubscriptionPlan.personal) ...{
         'accountType': 'business',
         'defaultLimit': plan == SubscriptionPlan.shop
