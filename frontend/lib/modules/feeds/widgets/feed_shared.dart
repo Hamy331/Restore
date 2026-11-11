@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/utils/app_image_provider.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
@@ -42,7 +43,7 @@ class FeedAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CircleAvatar(
     radius: size / 2,
-    foregroundImage: avatarUrl == null ? null : NetworkImage(avatarUrl!),
+    foregroundImage: avatarUrl == null ? null : appImageProvider(avatarUrl!),
     backgroundColor: AppColors.primarySoft,
     child: Text(
       name.isEmpty ? '?' : name.characters.first,
