@@ -165,18 +165,23 @@ class ListingDetailsMobileView extends StatelessWidget {
             ),
             children: [
               ListingDetailsHeader(category: category),
-              const SizedBox(height: 14),
-              ListingDetailsSection(
-                title: l10n.conditionSectionTitle,
-                isRequired: true,
-                children: [
-                  ListingConditionSection(
-                    selected: state.draft.condition,
-                    hasError: errors.containsKey(ListingValidator.conditionKey),
-                    onSelected: (value) => bloc.add(ConditionChanged(value)),
-                  ),
-                ],
-              ),
+              // Thú cưng... không có tình trạng hàng
+              if (category?.hasCondition ?? true) ...[
+                const SizedBox(height: 14),
+                ListingDetailsSection(
+                  title: l10n.conditionSectionTitle,
+                  isRequired: true,
+                  children: [
+                    ListingConditionSection(
+                      selected: state.draft.condition,
+                      hasError: errors.containsKey(
+                        ListingValidator.conditionKey,
+                      ),
+                      onSelected: (value) => bloc.add(ConditionChanged(value)),
+                    ),
+                  ],
+                ),
+              ],
               if (attributes.isNotEmpty) ...[
                 const SizedBox(height: 14),
                 ListingDetailsSection(

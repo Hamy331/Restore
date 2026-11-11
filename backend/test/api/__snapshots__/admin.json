@@ -532,7 +532,25 @@
                     "en": "Age",
                     "vi": "Tuổi"
                   },
-                  "required": false
+                  "required": false,
+                  "unitOptions": [
+                    {
+                      "label": {
+                        "en": "months",
+                        "vi": "tháng"
+                      },
+                      "value": "month",
+                      "factor": 1
+                    },
+                    {
+                      "label": {
+                        "en": "years",
+                        "vi": "năm"
+                      },
+                      "value": "year",
+                      "factor": 12
+                    }
+                  ]
                 },
                 {
                   "key": "pet_gender",
@@ -571,7 +589,8 @@
               "description": {
                 "en": "Dogs, cats, birds, pet accessories...",
                 "vi": "Chó, mèo, chim, phụ kiện thú cưng..."
-              }
+              },
+              "hasCondition": false
             },
             "freeListingLimit": 1,
             "extraListingCredits": 10,

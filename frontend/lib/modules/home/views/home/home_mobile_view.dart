@@ -20,6 +20,7 @@ import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_v
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
+import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
@@ -83,6 +84,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   void _openMessages() => context.go(_messagesPath);
 
   void _openSearch() => context.push(_searchPath);
+
+  void _openHotSale() => context.push(HotSaleView.path);
 
   void _openCategory(CategoryModel category) =>
       context.push(CategoryDetailView.location(category.id), extra: category);
@@ -286,6 +289,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
         child: HomeCategoryStrip(
           categories: state.categories,
           onTap: _openCategory,
+          onHotSaleTap: _openHotSale,
         ),
       ),
       const SliverToBoxAdapter(child: SizedBox(height: 14)),
@@ -307,7 +311,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
             items: state.recommended,
             onTap: _openDetail,
             onFavoriteTap: _toggleFavorite,
-            onSeeAll: _comingSoon,
+            onSeeAll: _openHotSale,
             cardWidth: _featuredCardWidth,
             sidePadding: _sidePadding,
             spacing: _gridSpacing,

@@ -24,6 +24,7 @@ class CoreImages {
   const CoreImages();
   final String deviceNotSupported = 'assets/images/device-not-supported.jpg';
   final String hotSale = 'assets/images/hot-sale.png';
+  final String hotFlame = 'assets/images/hot-flame.png';
 }
 
 /// Ảnh minh hoạ cho danh mục đăng tin.

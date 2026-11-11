@@ -3915,4 +3915,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String previewDisplayDays(int days) {
     return 'Your listing shows for $days days after approval. You can extend it near the end, or reactivate it once it expires.';
   }
+
+  @override
+  String get hotSaleSubtitle =>
+      'Listings sellers are promoting right now, updated all the time.';
+
+  @override
+  String get hotSaleLoadError => 'Couldn\'t load Hot sale listings';
+
+  @override
+  String get hotSaleEmptyTitle => 'No Hot sale listings yet';
+
+  @override
+  String get hotSaleEmptyBody =>
+      'Listings that sellers put on Hot sale will show up here.';
+
+  @override
+  String get hotSaleEnd => 'You\'ve seen all Hot sale listings';
 }

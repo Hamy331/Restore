@@ -39,6 +39,38 @@ class AttributeOption extends Equatable {
   List<Object?> get props => [value, label];
 }
 
+/// Một đơn vị nhập cho ô số, VD tuổi theo "tháng" hoặc "năm". Giá trị luôn
+/// lưu theo đơn vị gốc (factor 1); nhập 2 năm thì lưu 24 tháng.
+class AttributeUnitOption extends Equatable {
+  final String value;
+  final LocalizedText label;
+
+  /// Số đơn vị gốc trong một đơn vị này (năm = 12 tháng)
+  final int factor;
+
+  const AttributeUnitOption({
+    required this.value,
+    required this.label,
+    this.factor = 1,
+  });
+
+  factory AttributeUnitOption.fromJson(Map<String, dynamic> json) =>
+      AttributeUnitOption(
+        value: '${json['value']}',
+        label: LocalizedText.fromJson(json['label'] ?? json['value']),
+        factor: (json['factor'] as num?)?.toInt() ?? 1,
+      );
+
+  Map<String, dynamic> toJson() => {
+    'value': value,
+    'label': label.toJson(),
+    'factor': factor,
+  };
+
+  @override
+  List<Object?> get props => [value, label, factor];
+}
+
 /// Một thuộc tính trong "Thông tin chi tiết", định nghĩa bởi backend cho từng
 /// danh mục. Thêm loại hàng mới chỉ cần thêm dữ liệu, không phải sửa app.
 class CategoryAttributeModel extends Equatable {
@@ -51,6 +83,9 @@ class CategoryAttributeModel extends Equatable {
 
   /// Đơn vị hiển thị sau ô số (km, cc, W, tháng...)
   final LocalizedText? unit;
+
+  /// Các đơn vị người bán chọn khi nhập số (tháng / năm). Rỗng thì dùng [unit]
+  final List<AttributeUnitOption> unitOptions;
   final num? min;
   final num? max;
   final int? maxLength;
@@ -63,6 +98,7 @@ class CategoryAttributeModel extends Equatable {
     this.isRequired = false,
     this.options = const [],
     this.unit,
+    this.unitOptions = const [],
     this.min,
     this.max,
     this.maxLength,
@@ -82,6 +118,12 @@ class CategoryAttributeModel extends Equatable {
           AttributeOption.fromJson(Map<String, dynamic>.from(option as Map)),
       ],
       unit: unit == null ? null : LocalizedText.fromJson(unit),
+      unitOptions: [
+        for (final option in json['unitOptions'] as List? ?? const [])
+          AttributeUnitOption.fromJson(
+            Map<String, dynamic>.from(option as Map),
+          ),
+      ],
       min: json['min'] as num?,
       max: json['max'] as num?,
       maxLength: json['maxLength'] as int?,
@@ -96,6 +138,8 @@ class CategoryAttributeModel extends Equatable {
     'required': isRequired,
     'options': [for (final option in options) option.toJson()],
     'unit': unit?.toJson(),
+    if (unitOptions.isNotEmpty)
+      'unitOptions': [for (final option in unitOptions) option.toJson()],
     'min': min,
     'max': max,
     'maxLength': maxLength,
@@ -106,6 +150,20 @@ class CategoryAttributeModel extends Equatable {
       if (option.value == value) return option;
     }
     return null;
+  }
+
+  /// Đơn vị lớn nhất chia hết giá trị gốc, để hiển thị gọn (24 tháng → 2 năm).
+  /// Null khi thuộc tính không có [unitOptions].
+  AttributeUnitOption? bestUnitFor(num? value) {
+    if (unitOptions.isEmpty) return null;
+    var best = unitOptions.first;
+    if (value == null || value == 0) return best;
+    for (final option in unitOptions) {
+      if (option.factor > best.factor && value % option.factor == 0) {
+        best = option;
+      }
+    }
+    return best;
   }
 
   /// Đổi giá trị dạng chuỗi trên form sang đúng kiểu để gửi API
@@ -136,6 +194,7 @@ class CategoryAttributeModel extends Equatable {
     isRequired,
     options,
     unit,
+    unitOptions,
     min,
     max,
     maxLength,

@@ -6847,6 +6847,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your listing shows for {days} days after approval. You can extend it near the end, or reactivate it once it expires.'**
   String previewDisplayDays(int days);
+
+  /// No description provided for @hotSaleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings sellers are promoting right now, updated all the time.'**
+  String get hotSaleSubtitle;
+
+  /// No description provided for @hotSaleLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load Hot sale listings'**
+  String get hotSaleLoadError;
+
+  /// No description provided for @hotSaleEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Hot sale listings yet'**
+  String get hotSaleEmptyTitle;
+
+  /// No description provided for @hotSaleEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings that sellers put on Hot sale will show up here.'**
+  String get hotSaleEmptyBody;
+
+  /// No description provided for @hotSaleEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen all Hot sale listings'**
+  String get hotSaleEnd;
 }
 
 class _AppLocalizationsDelegate

@@ -109,6 +109,8 @@ test('posting quota: pay with points, expiry, reactivate, extend, duplicates', a
     'FEATURE_ALREADY_ACTIVE');
   const hot = await api.get('/listings/recommended?categoryId=other');
   assert.ok(hot.body.data.some((item: { id: string }) => item.id === a));
+  const nextPage = await api.get('/listings/recommended?categoryId=other&limit=20&page=2');
+  assert.deepEqual(nextPage.body.data, []);
   const otherHot = await api.get('/listings/recommended?categoryId=phones');
   assert.ok(!otherHot.body.data.some((item: { id: string }) => item.id === a));
 

@@ -29,7 +29,8 @@ export function listingInput(value: unknown, draft = false) {
   const categoryId = body.categoryId == null || body.categoryId === '' ? null : body.categoryId;
   if ((categoryId !== null && (typeof categoryId !== 'string' || categoryId.length > 100)) || (!draft && !categoryId)) fail('Chọn danh mục hợp lệ.', 'categoryId');
   const condition = body.condition ?? null;
-  if (!(draft && condition === null) && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) fail('Tình trạng không hợp lệ.', 'condition');
+  // Tình trạng có thể trống (danh mục không hỏi tình trạng, VD thú cưng); bắt buộc hay không do assertPublishable xét theo danh mục
+  if (condition !== null && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) fail('Tình trạng không hợp lệ.', 'condition');
   const allowSale = body.allowSale ?? true, allowExchange = body.allowExchange ?? false;
   if (typeof allowSale !== 'boolean' || typeof allowExchange !== 'boolean' || (!allowSale && !allowExchange)) fail('Chọn bán hoặc trao đổi.');
   const rawPrice = body.price == null || body.price === '' ? '0' : String(body.price);
@@ -53,10 +54,10 @@ export function listingInput(value: unknown, draft = false) {
     location: location ? JSON.parse(JSON.stringify(location)) as Prisma.InputJsonObject : Prisma.DbNull };
 }
 
-/** Tin đầy đủ để đăng: bắt buộc danh mục và tình trạng */
+/** Tin đầy đủ để đăng: bắt buộc danh mục (tình trạng xét theo danh mục trong assertPublishable) */
 export function createInput(value: unknown) {
   const data = listingInput(value);
-  return { ...data, categoryId: data.categoryId!, condition: data.condition! };
+  return { ...data, categoryId: data.categoryId! };
 }
 
 /** Bản nháp: mọi trường đều có thể trống */
@@ -235,6 +236,7 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
 /** Query GET /listings/recommended */
 export const recommendedQuery = z.object({
   limit: int('limit', { min: 1, max: 20, fallback: 10 }),
+  page: int('page', { min: 1, max: 1000, fallback: 1 }),
   categoryId: z.string().max(100).optional().transform((value) => value?.trim() || undefined),
 });
 

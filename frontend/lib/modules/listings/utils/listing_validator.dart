@@ -32,14 +32,19 @@ class ListingValidator {
     ListingDraft draft,
     CategoryModel? category,
   ) => {
-    if (draft.condition == null) conditionKey: AttributeError.required,
-    for (final attribute in category?.attributes ?? const <CategoryAttributeModel>[])
+    if ((category?.hasCondition ?? true) && draft.condition == null)
+      conditionKey: AttributeError.required,
+    for (final attribute
+        in category?.attributes ?? const <CategoryAttributeModel>[])
       if (_errorOf(attribute, draft.attributes[attribute.key])
           case final error?)
         attribute.key: error,
   };
 
-  static AttributeError? _errorOf(CategoryAttributeModel attribute, String? raw) {
+  static AttributeError? _errorOf(
+    CategoryAttributeModel attribute,
+    String? raw,
+  ) {
     if (attribute.parse(raw) == null) {
       // Công tắc có/không luôn có giá trị nên không tính là thiếu
       if (attribute.isRequired && attribute.type != AttributeType.boolean) {

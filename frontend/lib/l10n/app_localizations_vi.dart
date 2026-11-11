@@ -3838,4 +3838,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String previewDisplayDays(int days) {
     return 'Tin hiển thị $days ngày kể từ khi được duyệt. Gần hết hạn bạn có thể gia hạn, hết hạn thì kích hoạt lại.';
   }
+
+  @override
+  String get hotSaleSubtitle =>
+      'Tin đang được người bán ưu tiên hiển thị, cập nhật liên tục.';
+
+  @override
+  String get hotSaleLoadError => 'Không tải được tin Hot sale';
+
+  @override
+  String get hotSaleEmptyTitle => 'Chưa có tin Hot sale';
+
+  @override
+  String get hotSaleEmptyBody =>
+      'Các tin được người bán đưa lên Hot sale sẽ hiện ở đây.';
+
+  @override
+  String get hotSaleEnd => 'Đã xem hết tin Hot sale';
 }

@@ -42,6 +42,7 @@ import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
+import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/modules/nearby/views/nearby/nearby_view.dart';
 import 'package:restore/modules/search/views/search/search_view.dart';
@@ -391,6 +392,15 @@ GoRouter createAppRouter(
       parentNavigatorKey: _rootNavigatorKey,
       pageBuilder: (_, state) =>
           AppPageTransitions.fadeSlide(state: state, child: const NearbyView()),
+    ),
+    // Tất cả tin Hot sale (tin ưu tiên), mở từ dải danh mục và mục Hot sale
+    GoRoute(
+      path: HotSaleView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const HotSaleView(),
+      ),
     ),
     // Tin của một danh mục; extra là CategoryModel vừa bấm (tuỳ chọn)
     GoRoute(

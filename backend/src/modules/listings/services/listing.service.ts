@@ -41,10 +41,19 @@ export function canChangeListingStatus(current: ListingStatus, target: ListingSt
     (current === ListingStatus.HIDDEN && (target === ListingStatus.AVAILABLE || target === ListingStatus.SOLD || target === ListingStatus.EXCHANGED));
 }
 
-/** Danh mục còn dùng, tình trạng chưa ngừng, thuộc tính đúng metadata danh mục */
+/** Danh mục có hỏi tình trạng hàng không: metadata.hasCondition, mặc định có (thú cưng thì không) */
+export const categoryHasCondition = (metadata: unknown) =>
+  (metadata as { hasCondition?: unknown } | null)?.hasCondition !== false;
+
+/**
+ * Danh mục còn dùng, tình trạng chưa ngừng, thuộc tính đúng metadata danh mục.
+ * Danh mục không hỏi tình trạng thì bỏ tình trạng ([data.condition] thành null), còn lại bắt buộc.
+ */
 export async function assertPublishable(tx: Db, data: Pick<ListingInput, 'categoryId' | 'condition' | 'attributes'>) {
   const category = await listingRepository.findActiveCategory(tx, data.categoryId);
   if (!category) throw new AppError(400, 'INVALID_LISTING', 'Danh mục không tồn tại.', 'categoryId');
+  if (!categoryHasCondition(category.metadata)) data.condition = null;
+  else if (!data.condition) throw new AppError(400, 'INVALID_LISTING', 'Tình trạng không hợp lệ.', 'condition');
   if (data.condition && (await listingRepository.findConditionPolicy(tx, data.condition))?.active === false) {
     throw new AppError(400, 'INVALID_CONDITION', 'Tình trạng đã ngừng sử dụng.');
   }

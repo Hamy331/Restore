@@ -19,11 +19,27 @@ class AttributeValueFormatter {
       AttributeType.select =>
         attribute.optionOf(value)?.label.of(context) ?? value,
       AttributeType.boolean => value == 'true' ? l10n.yes : l10n.no,
-      AttributeType.number => switch (attribute.unit?.of(context)) {
-        final unit? => '$value $unit',
-        null => value,
-      },
+      AttributeType.number => _number(context, attribute, value),
       AttributeType.text => value,
+    };
+  }
+
+  /// Số kèm đơn vị; có nhiều đơn vị thì chọn đơn vị gọn nhất (24 tháng → 2 năm)
+  static String _number(
+    BuildContext context,
+    CategoryAttributeModel attribute,
+    String value,
+  ) {
+    final number = num.tryParse(value);
+    if (attribute.bestUnitFor(number) case final unit? when number != null) {
+      final shown = number % unit.factor == 0
+          ? '${number ~/ unit.factor}'
+          : '${number / unit.factor}';
+      return '$shown ${unit.label.of(context)}';
+    }
+    return switch (attribute.unit?.of(context)) {
+      final unit? => '$value $unit',
+      null => value,
     };
   }
 }
