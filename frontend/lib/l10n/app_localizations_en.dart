@@ -4224,4 +4224,407 @@ class AppLocalizationsEn extends AppLocalizations {
   String hubExpiringTip(int count) {
     return '$count listings expiring soon: extend them so they stay visible.';
   }
+
+  @override
+  String get insTitle => 'Insights';
+
+  @override
+  String insRangeDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get insViews => 'Views';
+
+  @override
+  String get insSaves => 'Saves';
+
+  @override
+  String get insChats => 'People who messaged';
+
+  @override
+  String insUp(int percent) {
+    return 'Up $percent% vs previous period';
+  }
+
+  @override
+  String insDown(int percent) {
+    return 'Down $percent% vs previous period';
+  }
+
+  @override
+  String get insSame => 'Same as previous period';
+
+  @override
+  String get insNew => 'None in previous period';
+
+  @override
+  String get insChartTitle => 'Views per day';
+
+  @override
+  String get insChartEmpty => 'No views in this period yet.';
+
+  @override
+  String insChartDay(String date, int views, int saves) {
+    return '$date: $views views · $saves saves';
+  }
+
+  @override
+  String get insChartHint => 'Tap a bar to see that day';
+
+  @override
+  String get insListingsTitle => 'Listings';
+
+  @override
+  String get insActive => 'Active';
+
+  @override
+  String get insPending => 'Pending';
+
+  @override
+  String get insHidden => 'Hidden';
+
+  @override
+  String get insSold => 'Sold';
+
+  @override
+  String get insTopTitle => 'Most viewed listings';
+
+  @override
+  String insTopStats(int views, int saves) {
+    return '$views views · $saves saves';
+  }
+
+  @override
+  String get insTopEmpty => 'No visible listings yet.';
+
+  @override
+  String get insTipsTitle => 'Tips';
+
+  @override
+  String insTipBoost(String title) {
+    return '\"$title\" is your most viewed listing. Boost it to stay on top.';
+  }
+
+  @override
+  String insTipExpiring(int count) {
+    return '$count listings expire within 7 days. Extend them so they stay visible.';
+  }
+
+  @override
+  String get insTipNoViews =>
+      'No views yet: clear photos, a specific title and a fair price help people notice your listings.';
+
+  @override
+  String insPromotions(int boosts, int features) {
+    return 'This period: $boosts boosts · $features Hot sale';
+  }
+
+  @override
+  String get insLoadError => 'Couldn\'t load insights';
+
+  @override
+  String get insViewsNote => 'Daily views are recorded from 11/11/2026.';
+
+  @override
+  String get spTitle => 'Shop posters';
+
+  @override
+  String get spCreate => 'New poster';
+
+  @override
+  String get spLoadError => 'Couldn\'t load posters';
+
+  @override
+  String get spNoShopTitle => 'You don\'t have a shop page yet';
+
+  @override
+  String get spNoShopBody =>
+      'Posters appear on your shop page and on Trusted shops, so you need a shop page first.';
+
+  @override
+  String get spPlanTitle => 'Posters are part of the Store plan';
+
+  @override
+  String get spPlanBody =>
+      'Upgrade to the Store plan to run posters on your shop page and on Trusted shops.';
+
+  @override
+  String get spSeePlans => 'See plans';
+
+  @override
+  String get spSlots => 'Posters at once';
+
+  @override
+  String get spMonthly => 'Sent this month';
+
+  @override
+  String get spUnverified =>
+      'Your shop isn\'t verified yet, so approved posters aren\'t shown publicly.';
+
+  @override
+  String spCooldown(String date) {
+    return 'You can\'t send posters until $date because several were rejected.';
+  }
+
+  @override
+  String spRules(int min, int max) {
+    return '1200×600 image (2:1), runs $min to $max days. Reviewed within about 24 hours.';
+  }
+
+  @override
+  String spMonthlyFull(int limit) {
+    return 'You\'ve sent all $limit posters for this month.';
+  }
+
+  @override
+  String get spFilterAll => 'All';
+
+  @override
+  String get spFilterRunning => 'Running';
+
+  @override
+  String get spFilterPending => 'In review';
+
+  @override
+  String get spFilterScheduled => 'Scheduled';
+
+  @override
+  String get spFilterRejected => 'Rejected';
+
+  @override
+  String get spFilterEnded => 'Ended';
+
+  @override
+  String get spStateStopped => 'Stopped';
+
+  @override
+  String get spEmpty => 'No posters yet';
+
+  @override
+  String get spEmptyBody =>
+      'Create your first poster to promote a shop campaign.';
+
+  @override
+  String get spEmptyFilter => 'No posters here.';
+
+  @override
+  String spDates(String start, String end, int days) {
+    return '$start – $end · $days days';
+  }
+
+  @override
+  String get spOpensShop => 'Opens your shop page';
+
+  @override
+  String spOpensListing(String title) {
+    return 'Opens listing: $title';
+  }
+
+  @override
+  String spRejectedReason(String reason) {
+    return 'Rejected: $reason';
+  }
+
+  @override
+  String get spReasonWrongSize => 'Wrong image size';
+
+  @override
+  String get spReasonMisleadingPrice => 'Misleading price or offer';
+
+  @override
+  String get spReasonBrandMisuse => 'Uses a brand or logo that isn\'t yours';
+
+  @override
+  String get spReasonProhibited => 'Prohibited content';
+
+  @override
+  String get spReasonTooMuchText => 'Too much text on the image';
+
+  @override
+  String get spReasonOther => 'Other reason';
+
+  @override
+  String get spEdit => 'Edit';
+
+  @override
+  String get spResubmit => 'Edit and resend';
+
+  @override
+  String get spStop => 'Stop';
+
+  @override
+  String get spCancel => 'Withdraw';
+
+  @override
+  String get spStopTitle => 'Stop this poster?';
+
+  @override
+  String get spStopBody =>
+      'The poster stops showing right away and can\'t be restarted.';
+
+  @override
+  String get spCancelTitle => 'Withdraw this poster?';
+
+  @override
+  String get spCancelBody => 'It still counts toward this month\'s posters.';
+
+  @override
+  String get spConfirmStop => 'Stop poster';
+
+  @override
+  String get spConfirmCancel => 'Withdraw';
+
+  @override
+  String get spKeep => 'Keep';
+
+  @override
+  String get spStopped => 'Poster stopped';
+
+  @override
+  String get spNewTitle => 'New poster';
+
+  @override
+  String get spEditTitle => 'Edit poster';
+
+  @override
+  String get spImage => 'Poster image';
+
+  @override
+  String get spPickImage => 'Choose a 1200×600 image';
+
+  @override
+  String get spChangeImage => 'Change image';
+
+  @override
+  String get spImageHint =>
+      'Pick any image, then drag and zoom it into the 2:1 frame. Put the text in the image itself.';
+
+  @override
+  String get spImageRequired => 'Choose a poster image.';
+
+  @override
+  String get spName => 'Campaign name';
+
+  @override
+  String get spNameHint => 'e.g. Galaxy Week up to 20% off';
+
+  @override
+  String get spNameHelper =>
+      'Not drawn on the image; used by screen readers and to keep track.';
+
+  @override
+  String get spNameRequired => 'Enter a campaign name.';
+
+  @override
+  String get spOpens => 'When people tap the poster';
+
+  @override
+  String get spOpenShop => 'Open shop page';
+
+  @override
+  String get spOpenListing => 'Open a listing';
+
+  @override
+  String get spChooseListing => 'Choose listing';
+
+  @override
+  String get spNoListings => 'Your shop has no active listings.';
+
+  @override
+  String get spListingRequired => 'Choose a listing.';
+
+  @override
+  String get spStart => 'Start date';
+
+  @override
+  String get spStartNow => 'As soon as approved';
+
+  @override
+  String get spStartOn => 'Pick a date';
+
+  @override
+  String get spDuration => 'Duration';
+
+  @override
+  String spDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String spEndsOn(String date) {
+    return 'Ends around $date';
+  }
+
+  @override
+  String get spEditRunningNote =>
+      'A running poster is hidden until it\'s approved again.';
+
+  @override
+  String get spSubmit => 'Send for review';
+
+  @override
+  String get spSubmitted =>
+      'Poster sent. It\'s usually reviewed within 24 hours.';
+
+  @override
+  String get spErrSlotFull =>
+      'That time already has the most posters you can run at once. Pick another date or stop a poster.';
+
+  @override
+  String get spErrMonthly => 'You\'ve sent all your posters for this month.';
+
+  @override
+  String get spErrCooldown => 'Sending posters is paused for your shop.';
+
+  @override
+  String get spErrPlan => 'Only the Store plan can run posters.';
+
+  @override
+  String get spErrShop => 'You need a shop page to run posters.';
+
+  @override
+  String get spErrListing =>
+      'That listing isn\'t for sale anymore. Choose another.';
+
+  @override
+  String get spErrStartLate => 'The start date can be at most 14 days ahead.';
+
+  @override
+  String get spErrImage => 'Couldn\'t upload the image. Try another one.';
+
+  @override
+  String get spErrNotEditable => 'This poster has ended. Create a new one.';
+
+  @override
+  String get spErrGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get spSchedule => 'Schedule';
+
+  @override
+  String get spCropTitle => 'Adjust poster';
+
+  @override
+  String get spCropHint =>
+      'Drag to move; pinch or use the slider to zoom. Empty space is filled with a blurred copy of the image.';
+
+  @override
+  String get spCropFill => 'Fill frame';
+
+  @override
+  String get spCropFit => 'Show whole image';
+
+  @override
+  String get spCropDone => 'Use this image';
+
+  @override
+  String get spCropZoom => 'Zoom';
+
+  @override
+  String get spCropLowRes =>
+      'The image is small for this frame and may look blurry. Zoom out or pick a larger image.';
+
+  @override
+  String get spAdjust => 'Adjust again';
 }

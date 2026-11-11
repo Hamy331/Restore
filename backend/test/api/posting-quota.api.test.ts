@@ -128,6 +128,17 @@ test('posting quota: pay with points, expiry, reactivate, extend, duplicates', a
   assert.equal(row.boostCredits, 4);
   assert.deepEqual([hub.available, hub.thisMonth.boosts, hub.thisMonth.features], [11, 3, 1]);
   assert.ok(hub.items.every((item: { id: string }) => item.id !== 'listing-1'), 'chỉ tin của mình');
+  await api.get(`/listings/${a}`);
+  await api.get(`/listings/${a}`);
+  await api.get(`/listings/${a}`, { token });
+  const insights = (await api.get('/listings/insights?days=30', { token })).body.data;
+  assert.equal(insights.daily.length, 30);
+  assert.equal(insights.daily.at(-1).views, 2, 'chủ tin xem không tính');
+  assert.equal(insights.totals.views, 2);
+  assert.deepEqual([insights.top[0].id, insights.top[0].views], [a, 2]);
+  assert.deepEqual(insights.promotions, { boosts: 3, features: 1 });
+  assert.equal((await api.get('/listings/insights?days=9', { token })).status, 400);
+  assert.equal((await api.get('/listings/insights')).status, 401);
   const hot = await api.get('/listings/recommended?categoryId=other');
   assert.ok(hot.body.data.some((item: { id: string }) => item.id === a));
   const nextPage = await api.get('/listings/recommended?categoryId=other&limit=20&page=2');

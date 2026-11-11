@@ -5,6 +5,8 @@ import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/boost/views/promotion_hub/promotion_hub_view.dart';
+import 'package:restore/modules/insights/views/insights/insights_view.dart';
+import 'package:restore/modules/shop_posters/views/shop_posters/shop_posters_view.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import '../bloc/shell_badges_cubit.dart';
 import '../models/shell_quick_action.dart';
@@ -45,8 +47,8 @@ class MainShell extends StatelessWidget {
   }
 
   /// Nút trong menu xoè của gói tier cao. Đăng tin mở trang đăng, Đẩy tin
-  /// mở trang Boost (danh sách tin để quảng bá); các nút còn lại
-  /// (poster shop, thống kê, trang shop) báo sắp có.
+  /// mở trang Boost (danh sách tin để quảng bá), Thống kê mở trang Thống kê,
+  /// Shop poster mở trang quản lý poster; trang shop báo sắp có.
   void _quickAction(BuildContext context, ShellQuickAction action) {
     if (action == ShellQuickAction.post) {
       _select(context, 2);
@@ -54,6 +56,14 @@ class MainShell extends StatelessWidget {
     }
     if (action == ShellQuickAction.boost) {
       context.push(PromotionHubView.path);
+      return;
+    }
+    if (action == ShellQuickAction.stats) {
+      context.push(InsightsView.path);
+      return;
+    }
+    if (action == ShellQuickAction.poster) {
+      context.push(ShopPostersView.path);
       return;
     }
     TSnackBarHelper.showInfo(

@@ -76,6 +76,9 @@ import '../../modules/auth/views/welcome/welcome_view.dart';
 import '../../modules/chat/views/conversation/chat_conversation_view.dart';
 import '../../modules/boost/views/boost_listing/boost_listing_view.dart';
 import '../../modules/boost/views/promotion_hub/promotion_hub_view.dart';
+import '../../modules/insights/views/insights/insights_view.dart';
+import '../../modules/shop_posters/views/poster_editor/poster_editor_view.dart';
+import '../../modules/shop_posters/views/shop_posters/shop_posters_view.dart';
 import '../../modules/auth/bloc/auth/auth_bloc.dart';
 import '../../modules/auth/utils/auth_route_guard.dart';
 import '../../modules/auth/views/splash/splash_view.dart';
@@ -540,6 +543,35 @@ GoRouter createAppRouter(
               ? state.extra! as TrustedShopItem
               : null,
         ),
+      ),
+    ),
+    // Quản lý poster shop (nút Shop poster ở menu xoè, gói Cửa hàng)
+    GoRoute(
+      path: ShopPostersView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const ShopPostersView(),
+      ),
+    ),
+    // Tạo / sửa poster; thiếu extra (VD mở lại từ link) thì về trang quản lý
+    GoRoute(
+      path: PosterEditorView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      redirect: (_, state) =>
+          state.extra is PosterEditorArgs ? null : ShopPostersView.path,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
+        state: state,
+        child: PosterEditorView(args: state.extra! as PosterEditorArgs),
+      ),
+    ),
+    // Thống kê của người bán (nút Thống kê ở menu xoè)
+    GoRoute(
+      path: InsightsView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const InsightsView(),
       ),
     ),
     // Trang Boost của tôi: tin đang quảng bá, sắp hết hạn, chưa quảng bá

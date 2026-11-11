@@ -197,11 +197,24 @@ model Listing {
   favorites     ListingFavorite[]
   promotionOrders PromotionOrder[]
   wantedAlertMatches WantedAlertMatch[]
+  viewDays      ListingViewDaily[]
+  posters       ShopBanner[]
 
   @@index([ownerId, publishedAt])
   @@index([ownerId, categoryId, status])
   @@index([status, expiresAt])
   @@index([status, startsAt])
+}
+
+/// Lượt xem tin theo ngày (giờ Việt Nam), cộng cùng lúc với Listing.viewCount; dùng cho trang Thống kê
+model ListingViewDaily {
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  day       DateTime @db.Date
+  views     Int      @default(0)
+
+  @@id([listingId, day])
+  @@index([day])
 }
 
 model ListingFavorite {
@@ -261,6 +274,10 @@ model StorePackage {
   extendDiscountPercent Int                 @default(0)
   /// Được bật tự gia hạn tin 30 ngày khi sắp hết hạn
   autoExtend            Boolean             @default(false)
+  /// Poster shop chạy (hoặc chờ duyệt) cùng lúc; 0 = gói không được đăng poster
+  posterActiveLimit     Int                 @default(0)
+  /// Poster gửi duyệt mỗi tháng (tính theo ngày tạo)
+  posterMonthlyLimit    Int                 @default(0)
   priorityLevel         Int
   subscriptions         StoreSubscription[]
   orders                StoreOrder[]
@@ -705,6 +722,18 @@ enum ShopBannerStatus {
   PENDING
   APPROVED
   REJECTED
+  /// Shop tự dừng (poster đang chạy) hoặc hủy (poster chờ duyệt)
+  STOPPED
+}
+
+/// Lý do admin từ chối poster shop
+enum ShopBannerRejectReason {
+  WRONG_SIZE
+  MISLEADING_PRICE
+  BRAND_MISUSE
+  PROHIBITED
+  TOO_MUCH_TEXT
+  OTHER
 }
 
 /// Gian hàng của một tài khoản bán (thường là gói Cửa hàng). Chỉ hiện ở "Shop uy tín" khi đã xác minh
@@ -756,7 +785,17 @@ model ShopBanner {
   startsAt  DateTime?
   endsAt    DateTime?
   status    ShopBannerStatus @default(PENDING)
+  /// Bấm poster mở tin này của shop; null = mở trang shop
+  listingId String?
+  listing   Listing?         @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  rejectReason ShopBannerRejectReason?
+  /// Ghi chú thêm của admin khi từ chối
+  rejectNote   String?
+  reviewedAt   DateTime?
+  reviewedById String?
   createdAt DateTime         @default(now())
+  updatedAt DateTime         @default(now()) @updatedAt
 
   @@index([shopId, status])
+  @@index([status, createdAt])
 }

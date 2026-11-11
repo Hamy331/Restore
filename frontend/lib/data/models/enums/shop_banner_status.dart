@@ -5,7 +5,10 @@ enum ShopBannerStatus {
   /// Shop vừa gửi, chờ admin duyệt
   pending('PENDING'),
   approved('APPROVED'),
-  rejected('REJECTED');
+  rejected('REJECTED'),
+
+  /// Shop tự dừng hoặc hủy
+  stopped('STOPPED');
 
   const ShopBannerStatus(this.apiValue);
 

@@ -103,10 +103,19 @@ export const findDetailExtras = (ownerId: string, categoryId: string | null, lis
 export const findVisible = (id: string) => prisma.listing.findFirst({ where: { ...visible, id }, select: listingSelect });
 
 /** Tăng lượt xem (trừ khi [skipCount]) và trả về lượt xem mới; rỗng nếu tin không còn hiển thị */
+/** Cộng 1 lượt xem (trừ chủ tin, người kiểm duyệt) vào tổng và vào ngày hôm nay (giờ Việt Nam) */
 export const incrementViewCount = (id: string, skipCount: boolean, viewerId: string) =>
-  prisma.$queryRaw<{ viewCount: number }[]>`UPDATE "Listing" SET "viewCount"="viewCount"+
-      CASE WHEN ${skipCount} OR "ownerId"=${viewerId} THEN 0 ELSE 1 END
-      WHERE id=${id} AND status='AVAILABLE' AND EXISTS(SELECT 1 FROM "User" WHERE id="Listing"."ownerId" AND status='ACTIVE') RETURNING "viewCount"`;
+  prisma.$queryRaw<{ viewCount: number }[]>`WITH up AS (
+      UPDATE "Listing" SET "viewCount"="viewCount"+
+        CASE WHEN ${skipCount} OR "ownerId"=${viewerId} THEN 0 ELSE 1 END
+      WHERE id=${id} AND status='AVAILABLE' AND EXISTS(SELECT 1 FROM "User" WHERE id="Listing"."ownerId" AND status='ACTIVE')
+      RETURNING id, "viewCount", NOT (${skipCount} OR "ownerId"=${viewerId}) AS counted
+    ), daily AS (
+      INSERT INTO "ListingViewDaily" ("listingId", "day", "views")
+      SELECT id, (now() AT TIME ZONE 'Asia/Ho_Chi_Minh')::date, 1 FROM up WHERE counted
+      ON CONFLICT ("listingId", "day") DO UPDATE SET "views" = "ListingViewDaily"."views" + 1
+    )
+    SELECT "viewCount" FROM up`;
 
 /* ---------- Duyệt tin ---------- */
 

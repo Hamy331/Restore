@@ -4133,4 +4133,405 @@ class AppLocalizationsVi extends AppLocalizations {
   String hubExpiringTip(int count) {
     return '$count tin sắp hết hạn: gia hạn để tin không bị ẩn.';
   }
+
+  @override
+  String get insTitle => 'Thống kê';
+
+  @override
+  String insRangeDays(int days) {
+    return '$days ngày';
+  }
+
+  @override
+  String get insViews => 'Lượt xem';
+
+  @override
+  String get insSaves => 'Lượt lưu tin';
+
+  @override
+  String get insChats => 'Người nhắn tin';
+
+  @override
+  String insUp(int percent) {
+    return 'Tăng $percent% so với kỳ trước';
+  }
+
+  @override
+  String insDown(int percent) {
+    return 'Giảm $percent% so với kỳ trước';
+  }
+
+  @override
+  String get insSame => 'Bằng kỳ trước';
+
+  @override
+  String get insNew => 'Kỳ trước chưa có';
+
+  @override
+  String get insChartTitle => 'Lượt xem theo ngày';
+
+  @override
+  String get insChartEmpty => 'Chưa có lượt xem nào trong khoảng này.';
+
+  @override
+  String insChartDay(String date, int views, int saves) {
+    return '$date: $views lượt xem · $saves lượt lưu';
+  }
+
+  @override
+  String get insChartHint => 'Chạm vào cột để xem từng ngày';
+
+  @override
+  String get insListingsTitle => 'Tin đăng';
+
+  @override
+  String get insActive => 'Đang bán';
+
+  @override
+  String get insPending => 'Chờ duyệt';
+
+  @override
+  String get insHidden => 'Đã ẩn';
+
+  @override
+  String get insSold => 'Đã bán';
+
+  @override
+  String get insTopTitle => 'Tin được xem nhiều';
+
+  @override
+  String insTopStats(int views, int saves) {
+    return '$views lượt xem · $saves lượt lưu';
+  }
+
+  @override
+  String get insTopEmpty => 'Chưa có tin nào đang hiển thị.';
+
+  @override
+  String get insTipsTitle => 'Gợi ý';
+
+  @override
+  String insTipBoost(String title) {
+    return '\"$title\" đang được xem nhiều nhất. Đẩy tin để giữ ở đầu danh sách.';
+  }
+
+  @override
+  String insTipExpiring(int count) {
+    return '$count tin sắp hết hạn trong 7 ngày. Gia hạn để tin không bị ẩn.';
+  }
+
+  @override
+  String get insTipNoViews =>
+      'Tin chưa có lượt xem: thêm ảnh rõ, tiêu đề cụ thể và giá hợp lý để dễ được chú ý hơn.';
+
+  @override
+  String insPromotions(int boosts, int features) {
+    return 'Trong kỳ: $boosts lượt đẩy · $features lượt Hot sale';
+  }
+
+  @override
+  String get insLoadError => 'Không tải được thống kê';
+
+  @override
+  String get insViewsNote => 'Lượt xem theo ngày được ghi từ 11/11/2026.';
+
+  @override
+  String get spTitle => 'Poster shop';
+
+  @override
+  String get spCreate => 'Tạo poster';
+
+  @override
+  String get spLoadError => 'Không tải được poster';
+
+  @override
+  String get spNoShopTitle => 'Bạn chưa có trang shop';
+
+  @override
+  String get spNoShopBody =>
+      'Poster hiện ở trang shop và trang Shop uy tín, nên cần có trang shop trước.';
+
+  @override
+  String get spPlanTitle => 'Poster dành cho gói Cửa hàng';
+
+  @override
+  String get spPlanBody =>
+      'Nâng lên gói Cửa hàng để chạy poster ở trang shop và trang Shop uy tín.';
+
+  @override
+  String get spSeePlans => 'Xem gói';
+
+  @override
+  String get spSlots => 'Poster cùng lúc';
+
+  @override
+  String get spMonthly => 'Đã gửi tháng này';
+
+  @override
+  String get spUnverified =>
+      'Shop chưa được xác minh nên poster đã duyệt chưa hiện công khai.';
+
+  @override
+  String spCooldown(String date) {
+    return 'Bạn bị tạm khóa gửi poster đến $date vì poster bị từ chối nhiều lần.';
+  }
+
+  @override
+  String spRules(int min, int max) {
+    return 'Ảnh 1200×600 (tỉ lệ 2:1), chạy $min đến $max ngày. Admin duyệt trong khoảng 24 giờ.';
+  }
+
+  @override
+  String spMonthlyFull(int limit) {
+    return 'Bạn đã gửi đủ $limit poster của tháng này.';
+  }
+
+  @override
+  String get spFilterAll => 'Tất cả';
+
+  @override
+  String get spFilterRunning => 'Đang chạy';
+
+  @override
+  String get spFilterPending => 'Chờ duyệt';
+
+  @override
+  String get spFilterScheduled => 'Đã lên lịch';
+
+  @override
+  String get spFilterRejected => 'Bị từ chối';
+
+  @override
+  String get spFilterEnded => 'Đã kết thúc';
+
+  @override
+  String get spStateStopped => 'Đã dừng';
+
+  @override
+  String get spEmpty => 'Chưa có poster nào';
+
+  @override
+  String get spEmptyBody =>
+      'Tạo poster đầu tiên để quảng bá chương trình của shop.';
+
+  @override
+  String get spEmptyFilter => 'Không có poster nào ở mục này.';
+
+  @override
+  String spDates(String start, String end, int days) {
+    return '$start – $end · $days ngày';
+  }
+
+  @override
+  String get spOpensShop => 'Bấm vào mở trang shop';
+
+  @override
+  String spOpensListing(String title) {
+    return 'Bấm vào mở tin: $title';
+  }
+
+  @override
+  String spRejectedReason(String reason) {
+    return 'Lý do từ chối: $reason';
+  }
+
+  @override
+  String get spReasonWrongSize => 'Sai kích thước ảnh';
+
+  @override
+  String get spReasonMisleadingPrice => 'Giá hoặc ưu đãi gây hiểu lầm';
+
+  @override
+  String get spReasonBrandMisuse => 'Dùng logo, thương hiệu không thuộc shop';
+
+  @override
+  String get spReasonProhibited => 'Nội dung bị cấm';
+
+  @override
+  String get spReasonTooMuchText => 'Quá nhiều chữ trên ảnh';
+
+  @override
+  String get spReasonOther => 'Lý do khác';
+
+  @override
+  String get spEdit => 'Sửa';
+
+  @override
+  String get spResubmit => 'Sửa và gửi lại';
+
+  @override
+  String get spStop => 'Dừng';
+
+  @override
+  String get spCancel => 'Hủy gửi';
+
+  @override
+  String get spStopTitle => 'Dừng poster này?';
+
+  @override
+  String get spStopBody => 'Poster ngừng hiện ngay và không chạy lại được.';
+
+  @override
+  String get spCancelTitle => 'Hủy poster đang chờ duyệt?';
+
+  @override
+  String get spCancelBody => 'Lượt gửi trong tháng không được hoàn lại.';
+
+  @override
+  String get spConfirmStop => 'Dừng poster';
+
+  @override
+  String get spConfirmCancel => 'Hủy poster';
+
+  @override
+  String get spKeep => 'Giữ lại';
+
+  @override
+  String get spStopped => 'Đã dừng poster';
+
+  @override
+  String get spNewTitle => 'Tạo poster';
+
+  @override
+  String get spEditTitle => 'Sửa poster';
+
+  @override
+  String get spImage => 'Ảnh poster';
+
+  @override
+  String get spPickImage => 'Chọn ảnh 1200×600';
+
+  @override
+  String get spChangeImage => 'Đổi ảnh';
+
+  @override
+  String get spImageHint =>
+      'Chọn ảnh bất kỳ rồi kéo, thu phóng cho vừa khung 2:1. Chữ nên nằm sẵn trong ảnh.';
+
+  @override
+  String get spImageRequired => 'Hãy chọn ảnh poster.';
+
+  @override
+  String get spName => 'Tên chương trình';
+
+  @override
+  String get spNameHint => 'VD: Galaxy Week giảm tới 20%';
+
+  @override
+  String get spNameHelper =>
+      'Không hiện trên ảnh, dùng cho trình đọc màn hình và để bạn dễ quản lý.';
+
+  @override
+  String get spNameRequired => 'Hãy nhập tên chương trình.';
+
+  @override
+  String get spOpens => 'Khi bấm vào poster';
+
+  @override
+  String get spOpenShop => 'Mở trang shop';
+
+  @override
+  String get spOpenListing => 'Mở một tin';
+
+  @override
+  String get spChooseListing => 'Chọn tin';
+
+  @override
+  String get spNoListings => 'Shop chưa có tin nào đang bán.';
+
+  @override
+  String get spListingRequired => 'Hãy chọn tin.';
+
+  @override
+  String get spStart => 'Ngày bắt đầu';
+
+  @override
+  String get spStartNow => 'Ngay khi được duyệt';
+
+  @override
+  String get spStartOn => 'Chọn ngày';
+
+  @override
+  String get spDuration => 'Thời gian chạy';
+
+  @override
+  String spDays(int days) {
+    return '$days ngày';
+  }
+
+  @override
+  String spEndsOn(String date) {
+    return 'Kết thúc khoảng $date';
+  }
+
+  @override
+  String get spEditRunningNote =>
+      'Poster đang chạy sẽ tạm ẩn cho tới khi admin duyệt lại.';
+
+  @override
+  String get spSubmit => 'Gửi duyệt';
+
+  @override
+  String get spSubmitted =>
+      'Đã gửi poster, admin sẽ duyệt trong khoảng 24 giờ.';
+
+  @override
+  String get spErrSlotFull =>
+      'Khung giờ này đã đủ số poster chạy cùng lúc. Hãy chọn ngày khác hoặc dừng một poster.';
+
+  @override
+  String get spErrMonthly => 'Bạn đã gửi đủ số poster của tháng này.';
+
+  @override
+  String get spErrCooldown => 'Bạn đang bị tạm khóa gửi poster.';
+
+  @override
+  String get spErrPlan => 'Chỉ gói Cửa hàng mới đăng được poster.';
+
+  @override
+  String get spErrShop => 'Bạn cần có trang shop để đăng poster.';
+
+  @override
+  String get spErrListing => 'Tin này không còn bán, hãy chọn tin khác.';
+
+  @override
+  String get spErrStartLate => 'Chỉ hẹn ngày bắt đầu trước tối đa 14 ngày.';
+
+  @override
+  String get spErrImage => 'Tải ảnh thất bại, hãy thử ảnh khác.';
+
+  @override
+  String get spErrNotEditable => 'Poster đã kết thúc, hãy tạo poster mới.';
+
+  @override
+  String get spErrGeneric => 'Không gửi được, vui lòng thử lại.';
+
+  @override
+  String get spSchedule => 'Lịch chạy';
+
+  @override
+  String get spCropTitle => 'Căn chỉnh poster';
+
+  @override
+  String get spCropHint =>
+      'Kéo để di chuyển, chụm hai ngón hoặc kéo thanh trượt để phóng to, thu nhỏ. Phần trống được lấp bằng nền mờ của chính ảnh.';
+
+  @override
+  String get spCropFill => 'Lấp đầy khung';
+
+  @override
+  String get spCropFit => 'Vừa toàn ảnh';
+
+  @override
+  String get spCropDone => 'Dùng ảnh này';
+
+  @override
+  String get spCropZoom => 'Thu phóng';
+
+  @override
+  String get spCropLowRes =>
+      'Ảnh gốc khá nhỏ so với khung, poster có thể bị mờ. Thử thu nhỏ hoặc chọn ảnh lớn hơn.';
+
+  @override
+  String get spAdjust => 'Căn chỉnh lại';
 }

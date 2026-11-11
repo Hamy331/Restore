@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import '../core/network/api_client.dart';
 
-/// Mục đích ảnh; backend lưu mỗi loại vào một khu riêng (feeds, avatars).
-enum ImagePurpose { feed, avatar }
+/// Mục đích ảnh; backend lưu mỗi loại vào một khu riêng (feeds, avatars, posters).
+enum ImagePurpose { feed, avatar, poster }
 
 /// Tải ảnh cục bộ lên `POST /media/images`, trả về đường dẫn `/api/v1/media/...`.
 /// Lưu nguyên đường dẫn này lên server; khi hiển thị thì `resolveMediaUrl`
@@ -19,6 +19,14 @@ class ImageUploadService {
     ImagePurpose purpose = ImagePurpose.feed,
   }) async {
     final bytes = await XFile(path).readAsBytes();
+    return uploadBytes(bytes, purpose: purpose);
+  }
+
+  /// Tải ảnh đã có sẵn trong bộ nhớ (VD poster vừa cắt)
+  Future<String> uploadBytes(
+    List<int> bytes, {
+    ImagePurpose purpose = ImagePurpose.feed,
+  }) async {
     if (bytes.length > maxBytes) throw const ImageTooLargeException();
     final response = await _dio.post(
       '/media/images',

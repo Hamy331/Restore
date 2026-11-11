@@ -8,6 +8,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/app_local_image.dart';
 import '../data/admin_repository.dart';
 import 'admin_commerce.dart';
+import 'admin_shop_posters.dart';
 import 'admin_widgets.dart';
 
 const _sections = [
@@ -21,6 +22,7 @@ const _sections = [
   'Hỗ trợ người dùng',
   'Tri thức',
   'Nhật ký quản trị',
+  'Poster shop',
 ];
 const _resources = [
   'dashboard',
@@ -33,6 +35,7 @@ const _resources = [
   'tickets',
   'knowledge',
   'audit',
+  'shop-posters',
 ];
 String _label(dynamic value) => value is Map
     ? '${value['vi'] ?? value.values.firstOrNull ?? ''}'
@@ -498,6 +501,9 @@ class _AdminLiveWorkspaceState extends State<AdminLiveWorkspace> {
   Widget _body() {
     if (_section == 5) {
       return AdminCommerceView(repository: widget.commerceRepository);
+    }
+    if (_section == 10) {
+      return AdminShopPostersView(repository: _repository);
     }
     if (_loading && _data == null) {
       return const Center(child: CircularProgressIndicator());

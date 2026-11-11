@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { optionalAuth, verifyToken } from '../../middlewares/auth.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
+import { posterRouter } from './poster.route.js';
 import * as shopController from './shop.controller.js';
 import { shopIdParams, shopListingsQuery } from './shop.validator.js';
 
@@ -16,6 +17,9 @@ const shopRouter = Router();
  *   deals: [Listing], newReleases: [Listing + shop], showcases: [{ shop, listings }] }
  */
 shopRouter.get('/trusted/overview', optionalAuth, shopController.overview);
+
+/** Poster của shop mình (gói Cửa hàng), xem poster.route.ts */
+shopRouter.use('/me/posters', posterRouter);
 
 /** Trả về: Shop + isFollowing. Lỗi 404 SHOP_NOT_FOUND */
 shopRouter.get('/:id', optionalAuth, validate({ params: shopIdParams }), shopController.getShop);

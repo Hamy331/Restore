@@ -2597,5 +2597,257 @@
         "type": "int"
       }
     }
-  }
+  },
+  "insTitle": "Insights",
+  "insRangeDays": "{days} days",
+  "@insRangeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "insViews": "Views",
+  "insSaves": "Saves",
+  "insChats": "People who messaged",
+  "insUp": "Up {percent}% vs previous period",
+  "@insUp": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "insDown": "Down {percent}% vs previous period",
+  "@insDown": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "insSame": "Same as previous period",
+  "insNew": "None in previous period",
+  "insChartTitle": "Views per day",
+  "insChartEmpty": "No views in this period yet.",
+  "insChartDay": "{date}: {views} views · {saves} saves",
+  "@insChartDay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "views": {
+        "type": "int"
+      },
+      "saves": {
+        "type": "int"
+      }
+    }
+  },
+  "insChartHint": "Tap a bar to see that day",
+  "insListingsTitle": "Listings",
+  "insActive": "Active",
+  "insPending": "Pending",
+  "insHidden": "Hidden",
+  "insSold": "Sold",
+  "insTopTitle": "Most viewed listings",
+  "insTopStats": "{views} views · {saves} saves",
+  "@insTopStats": {
+    "placeholders": {
+      "views": {
+        "type": "int"
+      },
+      "saves": {
+        "type": "int"
+      }
+    }
+  },
+  "insTopEmpty": "No visible listings yet.",
+  "insTipsTitle": "Tips",
+  "insTipBoost": "\"{title}\" is your most viewed listing. Boost it to stay on top.",
+  "@insTipBoost": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "insTipExpiring": "{count} listings expire within 7 days. Extend them so they stay visible.",
+  "@insTipExpiring": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insTipNoViews": "No views yet: clear photos, a specific title and a fair price help people notice your listings.",
+  "insPromotions": "This period: {boosts} boosts · {features} Hot sale",
+  "@insPromotions": {
+    "placeholders": {
+      "boosts": {
+        "type": "int"
+      },
+      "features": {
+        "type": "int"
+      }
+    }
+  },
+  "insLoadError": "Couldn't load insights",
+  "insViewsNote": "Daily views are recorded from 11/11/2026.",
+  "spTitle": "Shop posters",
+  "spCreate": "New poster",
+  "spLoadError": "Couldn't load posters",
+  "spNoShopTitle": "You don't have a shop page yet",
+  "spNoShopBody": "Posters appear on your shop page and on Trusted shops, so you need a shop page first.",
+  "spPlanTitle": "Posters are part of the Store plan",
+  "spPlanBody": "Upgrade to the Store plan to run posters on your shop page and on Trusted shops.",
+  "spSeePlans": "See plans",
+  "spSlots": "Posters at once",
+  "spMonthly": "Sent this month",
+  "spUnverified": "Your shop isn't verified yet, so approved posters aren't shown publicly.",
+  "spCooldown": "You can't send posters until {date} because several were rejected.",
+  "@spCooldown": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "spRules": "1200×600 image (2:1), runs {min} to {max} days. Reviewed within about 24 hours.",
+  "@spRules": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "spMonthlyFull": "You've sent all {limit} posters for this month.",
+  "@spMonthlyFull": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "spFilterAll": "All",
+  "spFilterRunning": "Running",
+  "spFilterPending": "In review",
+  "spFilterScheduled": "Scheduled",
+  "spFilterRejected": "Rejected",
+  "spFilterEnded": "Ended",
+  "spStateStopped": "Stopped",
+  "spEmpty": "No posters yet",
+  "spEmptyBody": "Create your first poster to promote a shop campaign.",
+  "spEmptyFilter": "No posters here.",
+  "spDates": "{start} – {end} · {days} days",
+  "@spDates": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "spOpensShop": "Opens your shop page",
+  "spOpensListing": "Opens listing: {title}",
+  "@spOpensListing": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "spRejectedReason": "Rejected: {reason}",
+  "@spRejectedReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "spReasonWrongSize": "Wrong image size",
+  "spReasonMisleadingPrice": "Misleading price or offer",
+  "spReasonBrandMisuse": "Uses a brand or logo that isn't yours",
+  "spReasonProhibited": "Prohibited content",
+  "spReasonTooMuchText": "Too much text on the image",
+  "spReasonOther": "Other reason",
+  "spEdit": "Edit",
+  "spResubmit": "Edit and resend",
+  "spStop": "Stop",
+  "spCancel": "Withdraw",
+  "spStopTitle": "Stop this poster?",
+  "spStopBody": "The poster stops showing right away and can't be restarted.",
+  "spCancelTitle": "Withdraw this poster?",
+  "spCancelBody": "It still counts toward this month's posters.",
+  "spConfirmStop": "Stop poster",
+  "spConfirmCancel": "Withdraw",
+  "spKeep": "Keep",
+  "spStopped": "Poster stopped",
+  "spNewTitle": "New poster",
+  "spEditTitle": "Edit poster",
+  "spImage": "Poster image",
+  "spPickImage": "Choose a 1200×600 image",
+  "spChangeImage": "Change image",
+  "spImageHint": "Pick any image, then drag and zoom it into the 2:1 frame. Put the text in the image itself.",
+  "spImageRequired": "Choose a poster image.",
+  "spName": "Campaign name",
+  "spNameHint": "e.g. Galaxy Week up to 20% off",
+  "spNameHelper": "Not drawn on the image; used by screen readers and to keep track.",
+  "spNameRequired": "Enter a campaign name.",
+  "spOpens": "When people tap the poster",
+  "spOpenShop": "Open shop page",
+  "spOpenListing": "Open a listing",
+  "spChooseListing": "Choose listing",
+  "spNoListings": "Your shop has no active listings.",
+  "spListingRequired": "Choose a listing.",
+  "spStart": "Start date",
+  "spStartNow": "As soon as approved",
+  "spStartOn": "Pick a date",
+  "spDuration": "Duration",
+  "spDays": "{days} days",
+  "@spDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "spEndsOn": "Ends around {date}",
+  "@spEndsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "spEditRunningNote": "A running poster is hidden until it's approved again.",
+  "spSubmit": "Send for review",
+  "spSubmitted": "Poster sent. It's usually reviewed within 24 hours.",
+  "spErrSlotFull": "That time already has the most posters you can run at once. Pick another date or stop a poster.",
+  "spErrMonthly": "You've sent all your posters for this month.",
+  "spErrCooldown": "Sending posters is paused for your shop.",
+  "spErrPlan": "Only the Store plan can run posters.",
+  "spErrShop": "You need a shop page to run posters.",
+  "spErrListing": "That listing isn't for sale anymore. Choose another.",
+  "spErrStartLate": "The start date can be at most 14 days ahead.",
+  "spErrImage": "Couldn't upload the image. Try another one.",
+  "spErrNotEditable": "This poster has ended. Create a new one.",
+  "spErrGeneric": "Something went wrong. Please try again.",
+  "spSchedule": "Schedule",
+  "spCropTitle": "Adjust poster",
+  "spCropHint": "Drag to move; pinch or use the slider to zoom. Empty space is filled with a blurred copy of the image.",
+  "spCropFill": "Fill frame",
+  "spCropFit": "Show whole image",
+  "spCropDone": "Use this image",
+  "spCropZoom": "Zoom",
+  "spCropLowRes": "The image is small for this frame and may look blurry. Zoom out or pick a larger image.",
+  "spAdjust": "Adjust again"
 }

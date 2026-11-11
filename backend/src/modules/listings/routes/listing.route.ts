@@ -3,7 +3,7 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { optionalAuth, requirePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as listingController from '../controllers/listing.controller.js';
-import { autoExtendBody, createListingBody, extendBody, featureBody, listingIdParams, mineQuery, statusBody } from '../listing.validator.js';
+import { autoExtendBody, createListingBody, extendBody, featureBody, insightsQuery, listingIdParams, mineQuery, statusBody } from '../listing.validator.js';
 
 /** Tin đăng của chủ tin và chi tiết tin công khai, gắn tại /api/v1/listings (mount sau cùng vì có GET /:id) */
 const listingRouter = Router();
@@ -54,6 +54,20 @@ listingRouter.get('/summary', manageOwn, listingController.summary);
  *     bumpUntil, featuredUntil }] }
  */
 listingRouter.get('/promotions', manageOwn, listingController.promotionHub);
+
+/**
+ * Thống kê của người bán trong 7 hoặc 30 ngày gần nhất (giờ Việt Nam, gồm hôm nay)
+ *
+ * Query: days = 7 | 30 (mặc định 7)
+ * Trả về: { days, from, to,
+ *   totals: { views, viewsPrev, saves, savesPrev, chats, chatsPrev },
+ *   listings: { active, pending, hidden, sold, expiringSoon },
+ *   promotions: { boosts, features },
+ *   daily: [{ date, views, saves }],
+ *   top: [{ id, title, price, image, views, saves, totalViews, expiresAt, bumpUntil, featuredUntil }] }
+ * Lỗi 400: INVALID_QUERY
+ */
+listingRouter.get('/insights', manageOwn, validate({ query: insightsQuery }), listingController.insights);
 
 /**
  * Tin của tôi, mới tạo trước (status=DRAFT: vừa sửa trước)
