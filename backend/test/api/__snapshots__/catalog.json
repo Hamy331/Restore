@@ -4742,7 +4742,8 @@
           "draftLimit": 10,
           "monthlyPromotionQuota": 5,
           "boostDiscountPercent": 20,
-          "priorityLevel": 1
+          "priorityLevel": 1,
+          "priceCredits": 99
         },
         {
           "id": "pro",
@@ -4754,7 +4755,8 @@
           "draftLimit": 30,
           "monthlyPromotionQuota": 20,
           "boostDiscountPercent": 30,
-          "priorityLevel": 2
+          "priorityLevel": 2,
+          "priceCredits": 299
         }
       ]
     }

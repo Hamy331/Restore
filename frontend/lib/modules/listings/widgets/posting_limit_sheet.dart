@@ -6,6 +6,7 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_action_buttons.dart';
 import 'package:restore/shared/widgets/app_quota_indicator.dart';
 import 'package:restore/shared/widgets/glass/app_glass_sheet.dart';
+import '../models/listing_enums.dart';
 import '../models/posting_quota.dart';
 import 'posting_rules_sheet.dart';
 
@@ -18,6 +19,9 @@ enum PostingLimitAction {
 
   /// Ví không đủ xu: mở trang nạp xu
   topUp,
+
+  /// Mở trang Gói tài khoản để nâng lên Bán chuyên / Cửa hàng
+  upgradePlan,
 }
 
 /// Báo chuyên mục [category] đã hết suất miễn phí (do chuyên mục, tổng tài
@@ -123,6 +127,21 @@ Future<PostingLimitAction?> showPostingLimitSheet(
                 ],
               ],
             ),
+            if (quota.accountType == SellerType.personal)
+              Center(
+                child: TextButton.icon(
+                  onPressed: () => pop(PostingLimitAction.upgradePlan),
+                  icon: const Icon(AppIcons.pro, size: 16),
+                  label: Text(l10n.postingUpgradeHint),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primaryDark,
+                    textStyle: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
             const SizedBox(height: 18),
             Text(
               canPay ? l10n.postingFreeWaysTitle : l10n.postingLimitWaysTitle,

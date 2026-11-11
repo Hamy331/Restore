@@ -62,7 +62,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Huy Nguyễn'), findsOneWidget);
 
-    await tester.tap(find.text('Gói Pro'));
+    await tester.tap(find.text('Tạo cửa hàng'));
     await tester.pump();
     expect(find.text('Tính năng này đang được phát triển'), findsOneWidget);
     ScaffoldMessenger.of(

@@ -43,6 +43,31 @@ export async function holdForListing(tx: Db, { userId, listingId, amount, note }
   return hold;
 }
 
+/**
+ * Trừ hẳn [amount] xu cho dịch vụ không gắn với tin (mua / nâng cấp gói). Không đủ xu thì 409 NOT_ENOUGH_CREDITS.
+ * Ghi một CreditHold đã CAPTURED để sổ cái giữ được phần xu tặng / xu nạp đã trừ.
+ */
+export async function spendCredits(tx: Db, { userId, amount, note }: { userId: string; amount: number; note: string }) {
+  if (amount <= 0) return null;
+  const wallet = await balance(tx, userId);
+  if (wallet.available < amount) {
+    throw new AppError(409, 'NOT_ENOUGH_CREDITS', `Cần ${amount} xu, ví của bạn còn ${wallet.available} xu.`,
+      undefined, { required: amount, available: wallet.available, missing: amount - wallet.available });
+  }
+  const { bonusAmount, paidAmount } = splitSpend(amount, wallet.bonus);
+  const hold = await tx.creditHold.create({
+    data: { userId, amount, bonusAmount, paidAmount, status: CreditHoldStatus.CAPTURED },
+  });
+  const base = { userId, holdId: hold.id, type: CreditTxnType.SPEND, note: note.slice(0, 200) };
+  await tx.creditTransaction.createMany({
+    data: [
+      ...(bonusAmount > 0 ? [{ ...base, bucket: CreditBucket.BONUS, amount: -bonusAmount }] : []),
+      ...(paidAmount > 0 ? [{ ...base, bucket: CreditBucket.PAID, amount: -paidAmount }] : []),
+    ],
+  });
+  return hold;
+}
+
 /** Tin được duyệt: xu đang giữ tiêu hẳn */
 export const captureListingHold = (tx: Db, listingId: string) =>
   tx.creditHold.updateMany({ where: { listingId, status: CreditHoldStatus.HELD }, data: { status: CreditHoldStatus.CAPTURED } });

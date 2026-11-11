@@ -335,7 +335,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accActivity => 'Hoạt động';
 
   @override
-  String get accProPlan => 'Gói Pro';
+  String get accProPlan => 'Gói tài khoản';
 
   @override
   String get accCreateStore => 'Tạo cửa hàng';
@@ -3663,4 +3663,129 @@ class AppLocalizationsVi extends AppLocalizations {
   String boostTooSoon(int hours) {
     return 'Tin vừa được đẩy. Bạn đẩy lại được sau $hours giờ nữa.';
   }
+
+  @override
+  String get plansTitle => 'Gói tài khoản';
+
+  @override
+  String get plansSubtitle => 'Trả bằng Xu, mỗi lần dùng 30 ngày';
+
+  @override
+  String get plansCurrent => 'Gói hiện tại';
+
+  @override
+  String plansCurrentUntil(String date) {
+    return 'Dùng đến $date';
+  }
+
+  @override
+  String get plansFree => 'Miễn phí';
+
+  @override
+  String get plansPersonalBenefitFree =>
+      '1 đến 3 tin miễn phí mỗi chuyên mục, tối đa 5 tin';
+
+  @override
+  String get plansPersonalBenefitPay => 'Hết suất thì đăng thêm bằng Xu';
+
+  @override
+  String plansPrice(int price) {
+    return '$price xu / 30 ngày';
+  }
+
+  @override
+  String plansBenefitActive(int count) {
+    return '$count tin đang hiển thị cùng lúc';
+  }
+
+  @override
+  String plansBenefitDaily(int count) {
+    return '$count tin mới mỗi ngày';
+  }
+
+  @override
+  String plansBenefitDrafts(int count) {
+    return 'Giữ $count tin nháp';
+  }
+
+  @override
+  String plansBenefitBoosts(int count) {
+    return '$count lượt đẩy tin miễn phí mỗi tháng';
+  }
+
+  @override
+  String plansBenefitBoostDiscount(int percent) {
+    return 'Giảm $percent% giá đẩy tin';
+  }
+
+  @override
+  String get plansBenefitPriority => 'Ưu tiên hiển thị trong chuyên mục chính';
+
+  @override
+  String get plansBenefitShopPage => 'Trang cửa hàng riêng (sắp có)';
+
+  @override
+  String get plansBuy => 'Mua gói';
+
+  @override
+  String get plansRenew => 'Gia hạn';
+
+  @override
+  String get plansUpgrade => 'Nâng cấp';
+
+  @override
+  String get plansInUse => 'Đang dùng';
+
+  @override
+  String get plansLowerLocked => 'Chọn được khi gói hiện tại hết hạn';
+
+  @override
+  String get plansNote =>
+      'Nâng gói giữa kỳ được trừ phần còn lại của gói cũ. Gia hạn thì cộng thêm 30 ngày. Xu bị trừ ngay, gói có hiệu lực luôn.';
+
+  @override
+  String get plansCheckoutPrice => 'Giá gói';
+
+  @override
+  String get plansCheckoutCredit => 'Trừ phần còn lại của gói cũ';
+
+  @override
+  String get plansCheckoutTotal => 'Cần trả';
+
+  @override
+  String get plansCheckoutUntil => 'Dùng đến';
+
+  @override
+  String get plansCheckoutCategory => 'Chuyên mục chính';
+
+  @override
+  String get plansCheckoutCategoryHint =>
+      'Tin ở chuyên mục này được ưu tiên hiển thị.';
+
+  @override
+  String plansCredits(int count) {
+    return '$count xu';
+  }
+
+  @override
+  String plansPay(int amount) {
+    return 'Thanh toán $amount xu';
+  }
+
+  @override
+  String plansActivated(String name) {
+    return 'Đã kích hoạt gói $name';
+  }
+
+  @override
+  String get plansLoadError => 'Không tải được danh sách gói.';
+
+  @override
+  String get plansActionError => 'Không thực hiện được. Vui lòng thử lại.';
+
+  @override
+  String get plansUpgradeAction => 'Nâng cấp gói';
+
+  @override
+  String get postingUpgradeHint => 'Cần đăng nhiều hơn? Nâng cấp gói';
 }

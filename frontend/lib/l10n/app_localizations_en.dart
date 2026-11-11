@@ -365,7 +365,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accActivity => 'Activity';
 
   @override
-  String get accProPlan => 'Pro plan';
+  String get accProPlan => 'Account plan';
 
   @override
   String get accCreateStore => 'Create a store';
@@ -3741,4 +3741,129 @@ class AppLocalizationsEn extends AppLocalizations {
   String boostTooSoon(int hours) {
     return 'This listing was just boosted. You can boost it again in $hours hours.';
   }
+
+  @override
+  String get plansTitle => 'Account plans';
+
+  @override
+  String get plansSubtitle => 'Paid with points, 30 days each time';
+
+  @override
+  String get plansCurrent => 'Current plan';
+
+  @override
+  String plansCurrentUntil(String date) {
+    return 'Active until $date';
+  }
+
+  @override
+  String get plansFree => 'Free';
+
+  @override
+  String get plansPersonalBenefitFree =>
+      '1 to 3 free listings per category, up to 5 in total';
+
+  @override
+  String get plansPersonalBenefitPay => 'Out of slots? Post more with points';
+
+  @override
+  String plansPrice(int price) {
+    return '$price points / 30 days';
+  }
+
+  @override
+  String plansBenefitActive(int count) {
+    return '$count active listings at a time';
+  }
+
+  @override
+  String plansBenefitDaily(int count) {
+    return '$count new listings per day';
+  }
+
+  @override
+  String plansBenefitDrafts(int count) {
+    return 'Keep $count drafts';
+  }
+
+  @override
+  String plansBenefitBoosts(int count) {
+    return '$count free boosts every month';
+  }
+
+  @override
+  String plansBenefitBoostDiscount(int percent) {
+    return '$percent% off boosts';
+  }
+
+  @override
+  String get plansBenefitPriority => 'Shown first in your main category';
+
+  @override
+  String get plansBenefitShopPage => 'Your own shop page (coming soon)';
+
+  @override
+  String get plansBuy => 'Get this plan';
+
+  @override
+  String get plansRenew => 'Renew';
+
+  @override
+  String get plansUpgrade => 'Upgrade';
+
+  @override
+  String get plansInUse => 'Current';
+
+  @override
+  String get plansLowerLocked => 'Available when your current plan ends';
+
+  @override
+  String get plansNote =>
+      'Upgrading mid-period credits the unused part of your old plan. Renewing adds 30 days. Points are spent right away and the plan starts immediately.';
+
+  @override
+  String get plansCheckoutPrice => 'Plan price';
+
+  @override
+  String get plansCheckoutCredit => 'Credit for unused days';
+
+  @override
+  String get plansCheckoutTotal => 'To pay';
+
+  @override
+  String get plansCheckoutUntil => 'Active until';
+
+  @override
+  String get plansCheckoutCategory => 'Main category';
+
+  @override
+  String get plansCheckoutCategoryHint =>
+      'Listings in this category are shown first.';
+
+  @override
+  String plansCredits(int count) {
+    return '$count points';
+  }
+
+  @override
+  String plansPay(int amount) {
+    return 'Pay $amount points';
+  }
+
+  @override
+  String plansActivated(String name) {
+    return '$name plan activated';
+  }
+
+  @override
+  String get plansLoadError => 'Couldn\'t load plans.';
+
+  @override
+  String get plansActionError => 'Something went wrong. Please try again.';
+
+  @override
+  String get plansUpgradeAction => 'Upgrade plan';
+
+  @override
+  String get postingUpgradeHint => 'Need more listings? Upgrade your plan';
 }

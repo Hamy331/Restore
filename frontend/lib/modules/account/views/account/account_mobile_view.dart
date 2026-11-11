@@ -17,6 +17,7 @@ import './widgets/account_menu.dart';
 import './widgets/edit_profile_dialog.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/profile_posts.dart';
+import '../../../plans/views/plans/plans_view.dart';
 
 enum _Section { listings, posts }
 
@@ -169,7 +170,8 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                       child: _TopAction(
                                         icon: AppIcons.pro,
                                         label: l.accProPlan,
-                                        onTap: () => showComingSoon(context),
+                                        onTap: () =>
+                                            context.push(PlansView.path),
                                       ),
                                     ),
                                     const SizedBox(width: 12),
