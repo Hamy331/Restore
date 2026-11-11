@@ -12,8 +12,8 @@ export async function getSelf(id: string) {
 }
 
 /** Thành viên, 25 mỗi trang */
-export async function listMembers({ q, page, details }: UserListQuery) {
-  const [items, total] = await userRepository.findMemberPage(q, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE, details);
+export async function listMembers({ q, status, page, details }: UserListQuery) {
+  const [items, total] = await userRepository.findMemberPage(q, status, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE, details);
   return { items, total, page };
 }
 
