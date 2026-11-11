@@ -270,7 +270,7 @@ class _Tag extends StatelessWidget {
   }
 }
 
-/// Nhãn tin Hot sale: ngọn lửa trên nền trắng mờ
+/// Nhãn tin Hot sale: nguyên cụm icon (ngọn lửa + chữ HOT SALE)
 class _HotBadge extends StatelessWidget {
   const _HotBadge({required this.label});
   final String label;
@@ -278,19 +278,12 @@ class _HotBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     label: label,
-    child: Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(9),
-        color: Colors.white.withValues(alpha: 0.92),
-      ),
-      child: Image.asset(
-        AppImages.coreImages.hotFlame,
-        width: 18,
-        height: 18,
-        errorBuilder: (_, _, _) =>
-            const Icon(AppIcons.hot, size: 16, color: AppColors.error),
-      ),
+    child: Image.asset(
+      AppImages.coreImages.hotSale,
+      height: 26,
+      fit: BoxFit.contain,
+      errorBuilder: (_, _, _) =>
+          const Icon(AppIcons.hot, size: 16, color: AppColors.error),
     ),
   );
 }

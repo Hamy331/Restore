@@ -36,8 +36,8 @@ class HomeCategoryStrip extends StatelessWidget {
               label: AppLocalizations.of(context)!.hotSaleTitle,
               onTap: hot,
               icon: Image.asset(
-                AppImages.coreImages.hotFlame,
-                width: 30,
+                AppImages.coreImages.hotSale,
+                width: 44,
                 height: 30,
                 errorBuilder: (_, _, _) =>
                     const Icon(AppIcons.hot, size: 24, color: AppColors.error),

@@ -49,6 +49,12 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         (draft) => draft.copyWith(price: () => event.price),
       ),
     );
+    on<OriginalPriceChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(originalPrice: () => event.originalPrice),
+      ),
+    );
     on<NegotiableChanged>(
       (event, emit) => _updateDraft(
         emit,

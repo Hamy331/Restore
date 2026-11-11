@@ -60,6 +60,29 @@ export async function assertPublishable(tx: Db, data: Pick<ListingInput, 'catego
   return category;
 }
 
+/**
+ * Giá gốc (bán giảm giá): chỉ gói Cửa hàng (PRO), phải cao hơn giá bán. Sửa tin đã đăng thì giá gốc không được
+ * cao hơn giá gốc cũ (hoặc giá bán cũ nếu trước đó chưa giảm), để không khai khống mức giảm.
+ */
+export async function assertOriginalPrice(tx: Db, ownerId: string, now: Date,
+  data: { price: string; originalPrice: string | null }, current?: { price: Prisma.Decimal; originalPrice: Prisma.Decimal | null }) {
+  if (data.originalPrice === null) return;
+  const plan = await storePackageForUser(tx, ownerId, now);
+  if (plan.package.tier !== 'PRO') {
+    throw new AppError(403, 'ORIGINAL_PRICE_NOT_ALLOWED', 'Chỉ gói Cửa hàng được đăng giá gốc để bán giảm giá.', 'originalPrice');
+  }
+  if (BigInt(data.originalPrice) <= BigInt(data.price)) {
+    throw new AppError(400, 'INVALID_LISTING', 'Giá gốc phải cao hơn giá bán.', 'originalPrice');
+  }
+  if (!current) return;
+  const cap = BigInt((current.originalPrice ?? current.price).toFixed(0));
+  const max = cap > BigInt(current.price.toFixed(0)) ? cap : BigInt(current.price.toFixed(0));
+  if (BigInt(data.originalPrice) > max) {
+    throw new AppError(400, 'ORIGINAL_PRICE_RAISED', `Giá gốc không được cao hơn ${max.toString()} đ (giá trước khi sửa).`,
+      'originalPrice', { maxOriginalPrice: max.toString() });
+  }
+}
+
 type DisplayCategory = { displayDays: number; maxDisplayDays: number; dayPackCredits: number };
 
 /** Gói tài khoản và mốc ngày dùng để tính giá ngày hiển thị */
@@ -98,6 +121,7 @@ export async function createListing(ownerId: string, data: ListingInput, payWith
     const category = await assertPublishable(tx, data);
     await assertNotDuplicate(tx, ownerId, data, { allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits });
+    await assertOriginalPrice(tx, ownerId, now, data);
     const display = await resolveDisplay(tx, ownerId, now, category, data);
     const created = await listingRepository.createListing(
       { ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price,
@@ -120,6 +144,7 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
       throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị hoặc đã ẩn.');
     }
     await assertPublishable(tx, data);
+    await assertOriginalPrice(tx, ownerId, new Date(), data, current);
     // Sửa tin không đổi thời gian hiển thị đã chọn / đã trả; muốn thêm ngày thì gia hạn
     data.displayDays = current.displayDays;
     data.startsAt = current.startsAt;

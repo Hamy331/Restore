@@ -18,7 +18,7 @@ export function listingInput(value: unknown, draft = false) {
   const fail = (message: string, field?: string): never => { throw new AppError(400, draft ? 'INVALID_DRAFT' : 'INVALID_LISTING', message, field); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('Dữ liệu tin không hợp lệ.');
   const body = value as Record<string, unknown>;
-  const allowed = ['title','description','price','condition','categoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt'];
+  const allowed = ['title','description','price','condition','categoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','originalPrice'];
   // Cờ của thao tác đăng (trả xu, vẫn đăng dù trùng): controller đọc riêng, không thuộc nội dung tin
   const flags = draft ? [] : ['payWithCredits', 'allowDuplicate'];
   if (Object.keys(body).some((key) => !allowed.includes(key) && !flags.includes(key))) fail('Tin có trường không được hỗ trợ.');
@@ -36,6 +36,14 @@ export function listingInput(value: unknown, draft = false) {
   const rawPrice = body.price == null || body.price === '' ? '0' : String(body.price);
   if ((typeof body.price !== 'number' && typeof body.price !== 'string' && body.price != null) ||
       !/^(0|[1-9]\d{0,11})$/.test(rawPrice) || (!draft && allowSale && rawPrice === '0')) fail('Giá VND không hợp lệ.', 'price');
+  // Giá gốc trước giảm (chỉ gói Cửa hàng, xét ở service): null = không giảm; khi đăng phải cao hơn giá bán
+  const rawOriginal = body.originalPrice == null || body.originalPrice === '' ? null : String(body.originalPrice);
+  if ((body.originalPrice != null && typeof body.originalPrice !== 'number' && typeof body.originalPrice !== 'string') ||
+      (rawOriginal !== null && !/^[1-9]\d{0,11}$/.test(rawOriginal))) fail('Giá gốc không hợp lệ.', 'originalPrice');
+  const originalPrice = allowSale ? rawOriginal : null;
+  if (!draft && originalPrice !== null && BigInt(originalPrice) <= BigInt(rawPrice)) {
+    fail('Giá gốc phải cao hơn giá bán.', 'originalPrice');
+  }
   const exchangeWish = body.exchangeWish ?? '', sellerType = body.sellerType ?? 'PERSONAL';
   if (typeof exchangeWish !== 'string' || exchangeWish.trim().length > 200) fail('Mong muốn trao đổi tối đa 200 ký tự.', 'exchangeWish');
   if (sellerType !== 'PERSONAL' && sellerType !== 'BUSINESS') fail('Loại người bán không hợp lệ.', 'sellerType');
@@ -55,7 +63,7 @@ export function listingInput(value: unknown, draft = false) {
   const startsAt = typeof rawStart === 'string' && rawStart.length <= 40 ? new Date(rawStart) : null;
   if (rawStart !== null && (!startsAt || Number.isNaN(startsAt.getTime()))) fail('Ngày bắt đầu không hợp lệ.', 'startsAt');
   return { title: (title as string).trim(), description: (description as string).trim(), categoryId: categoryId as string | null,
-    condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0', isNegotiable: (allowSale && isNegotiable) as boolean,
+    condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0', originalPrice, isNegotiable: (allowSale && isNegotiable) as boolean,
     allowSale: allowSale as boolean, allowExchange: allowExchange as boolean,
     exchangeWish: allowExchange ? (exchangeWish as string).trim() : '', sellerType: sellerType as string,
     attributes: attributes as Prisma.InputJsonObject,

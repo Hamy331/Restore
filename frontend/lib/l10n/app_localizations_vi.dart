@@ -3989,4 +3989,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String displayDaysUseFree(int days) {
     return 'Đăng với $days ngày miễn phí';
   }
+
+  @override
+  String get originalPriceLabel => 'Giá gốc (trước giảm)';
+
+  @override
+  String get originalPricePlaceholder => 'Để trống nếu không giảm giá';
+
+  @override
+  String get originalPriceHint =>
+      'Dành cho shop: người mua thấy giá gốc gạch ngang và % giảm. Sau khi đăng không sửa tăng được.';
+
+  @override
+  String originalPriceDiscount(int percent) {
+    return 'Giảm $percent% so với giá gốc';
+  }
+
+  @override
+  String get originalPriceError => 'Giá gốc phải cao hơn giá bán';
 }

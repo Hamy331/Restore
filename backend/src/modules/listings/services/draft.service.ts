@@ -6,7 +6,7 @@ import { DRAFT_EDITABLE } from '../listing.type.js';
 import { createInput, validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
-import { assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing } from './listing.service.js';
+import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing } from './listing.service.js';
 import { assertNotDuplicate } from './listing-lifecycle.service.js';
 import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
 
@@ -54,7 +54,7 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     const location = current.location as Record<string, unknown> | null;
     const data = createInput({
       title: current.title, description: current.description,
-      price: current.price.toString(), condition: current.condition,
+      price: current.price.toString(), originalPrice: current.originalPrice?.toString() ?? null, condition: current.condition,
       categoryId: current.categoryId, isNegotiable: current.isNegotiable,
       allowSale: current.allowSale, allowExchange: current.allowExchange,
       exchangeWish: current.exchangeWish, sellerType: current.sellerType, attributes: current.attributes,
@@ -67,6 +67,7 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     const now = new Date();
     await assertNotDuplicate(tx, ownerId, data, { excludeId: id, allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
+    await assertOriginalPrice(tx, ownerId, now, data);
     const display = await resolveDisplay(tx, ownerId, now, category, data);
     await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price,
       condition: data.condition, displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays });

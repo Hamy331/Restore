@@ -3,7 +3,7 @@ import 'package:restore/data/models/category_model.dart';
 import '../models/listing_draft.dart';
 
 /// Các trường có thể báo lỗi ở bước 2
-enum ListingField { photos, description, title, price, location }
+enum ListingField { photos, description, title, price, originalPrice, location }
 
 /// Lỗi của một thuộc tính ở bước 3
 enum AttributeError { required, outOfRange }
@@ -24,6 +24,11 @@ class ListingValidator {
       ListingField.title,
     if (draft.tradeType.requiresPrice && (draft.price ?? 0) <= 0)
       ListingField.price,
+    // Giá gốc (bán giảm giá) có thì phải cao hơn giá bán
+    if (draft.tradeType.requiresPrice &&
+        draft.originalPrice != null &&
+        draft.originalPrice! <= (draft.price ?? 0))
+      ListingField.originalPrice,
     if (draft.address == null) ListingField.location,
   };
 

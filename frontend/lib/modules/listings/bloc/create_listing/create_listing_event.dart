@@ -80,6 +80,14 @@ class PriceChanged extends CreateListingEvent {
   List<Object?> get props => [price];
 }
 
+/// Giá gốc trước giảm (chỉ gói Cửa hàng), null = không giảm giá
+class OriginalPriceChanged extends CreateListingEvent {
+  final int? originalPrice;
+  const OriginalPriceChanged(this.originalPrice);
+  @override
+  List<Object?> get props => [originalPrice];
+}
+
 class NegotiableChanged extends CreateListingEvent {
   final bool isNegotiable;
   const NegotiableChanged(this.isNegotiable);

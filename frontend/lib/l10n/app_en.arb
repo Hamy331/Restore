@@ -2462,5 +2462,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "originalPriceLabel": "Original price (before discount)",
+  "originalPricePlaceholder": "Leave empty if not on sale",
+  "originalPriceHint": "For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.",
+  "originalPriceDiscount": "{percent}% off the original price",
+  "@originalPriceDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "originalPriceError": "Original price must be higher than the sale price"
 }

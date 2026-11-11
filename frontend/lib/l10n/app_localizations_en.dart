@@ -4067,4 +4067,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String displayDaysUseFree(int days) {
     return 'Post with $days free days';
   }
+
+  @override
+  String get originalPriceLabel => 'Original price (before discount)';
+
+  @override
+  String get originalPricePlaceholder => 'Leave empty if not on sale';
+
+  @override
+  String get originalPriceHint =>
+      'For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.';
+
+  @override
+  String originalPriceDiscount(int percent) {
+    return '$percent% off the original price';
+  }
+
+  @override
+  String get originalPriceError =>
+      'Original price must be higher than the sale price';
 }
