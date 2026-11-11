@@ -306,6 +306,9 @@ h1 {
 .filter-search {
   width: min(320px, 100%);
 }
+.full-width {
+  width: 100%;
+}
 .toolbar .ant-select {
   min-width: 145px;
 }
