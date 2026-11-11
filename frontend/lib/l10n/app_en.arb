@@ -824,7 +824,7 @@
   "homeForYouTitle": "Picked for you",
   "homeLatestTitle": "Fresh listings",
   "homeSeeAll": "See all",
-  "homeFeaturedTag": "Featured",
+  "homeFeaturedTag": "Hot",
   "homeExchangeTag": "Swappable",
   "homeExchangeOnly": "Swap only",
   "homeSaveListing": "Save listing",
@@ -2233,5 +2233,62 @@
   "plansLoadError": "Couldn't load plans.",
   "plansActionError": "Something went wrong. Please try again.",
   "plansUpgradeAction": "Upgrade plan",
-  "postingUpgradeHint": "Need more listings? Upgrade your plan"
+  "postingUpgradeHint": "Need more listings? Upgrade your plan",
+  "hotSaleTitle": "Hot sale",
+  "featureAction": "Put on Hot sale",
+  "featureSheetMessage": "Your listing shows in Hot sale on the home page and at the top of its category, above other listings, for the time you choose.",
+  "featureDays": "{days} days",
+  "@featureDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "featurePay": "Buy · {credits} points",
+  "@featurePay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "featureDone": "Your listing is on Hot sale",
+  "featureRunning": "This listing is on Hot sale until {date}.",
+  "@featureRunning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "featureUnavailable": "Only visible listings can go on Hot sale.",
+  "featureNoOptions": "No Hot sale packages are on sale right now.",
+  "accExpiresOn": "Expires {date} · {days} days left",
+  "@accExpiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpiredOn": "Expired {date}",
+  "@accExpiredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "previewDisplayDays": "Your listing shows for {days} days after approval. You can extend it near the end, or reactivate it once it expires.",
+  "@previewDisplayDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -782,6 +782,88 @@
       }
     }
   },
+  "feature quote": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "discountPercent": 0,
+        "available": 34,
+        "runningUntil": null,
+        "options": [
+          {
+            "packageId": "featured-1",
+            "durationDays": 1,
+            "credits": 8
+          },
+          {
+            "packageId": "featured-3",
+            "durationDays": 3,
+            "credits": 23
+          },
+          {
+            "packageId": "featured-7",
+            "durationDays": 7,
+            "credits": 50
+          }
+        ]
+      }
+    }
+  },
+  "feature not enough": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Cần 50 xu để đăng tin này, ví của bạn còn 34 xu.",
+      "code": "NOT_ENOUGH_CREDITS",
+      "details": {
+        "required": 50,
+        "available": 34,
+        "missing": 16
+      }
+    }
+  },
+  "feature bump package": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Gói tin ưu tiên không còn bán.",
+      "code": "PROMOTION_PACKAGE_NOT_FOUND"
+    }
+  },
+  "feature bad body": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Gói tin ưu tiên không hợp lệ.",
+      "code": "INVALID_PACKAGE"
+    }
+  },
+  "feature 3 days": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "packageId": "featured-3",
+        "credits": 23,
+        "startsAt": "<date>",
+        "endsAt": "<date>"
+      }
+    }
+  },
+  "feature again": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Tin đang ở mục Hot sale.",
+      "code": "FEATURE_ALREADY_ACTIVE",
+      "details": {
+        "availableAt": "<date>"
+      }
+    }
+  },
   "quota after": {
     "status": 200,
     "body": {
@@ -796,7 +878,7 @@
           "limit": 3
         },
         "wallet": {
-          "available": 34
+          "available": 7
         },
         "boost": {
           "freePerMonth": 0,

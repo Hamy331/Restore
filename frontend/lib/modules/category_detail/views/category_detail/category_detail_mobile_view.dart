@@ -11,6 +11,7 @@ import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
+import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
@@ -237,6 +238,17 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
     }
 
     return [
+      if (!state.hasActiveFilters && state.hotItems.isNotEmpty) ...[
+        SliverToBoxAdapter(
+          child: AppHotSaleSection(
+            items: state.hotItems,
+            onTap: _openDetail,
+            onFavoriteTap: cubit.toggleFavorite,
+            sidePadding: _sidePadding,
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 18)),
+      ],
       SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
         sliver: AppListingSliverGrid(

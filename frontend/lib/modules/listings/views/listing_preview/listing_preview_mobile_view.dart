@@ -57,7 +57,9 @@ class ListingPreviewMobileView extends StatelessWidget {
         body: BlocBuilder<CreateListingBloc, CreateListingState>(
           builder: (context, state) {
             final sections = <Widget>[
-              const ListingPreviewNotice(),
+              ListingPreviewNotice(
+                displayDays: state.categoryQuota?.displayDays,
+              ),
               ListingPreviewGallery(images: state.draft.images),
               ListingPreviewSummaryCard(state: state),
               ListingPreviewDescriptionCard(draft: state.draft),

@@ -14,7 +14,47 @@ import '../repositories/listings_repository.dart';
 /// thiếu xu thì mở trang nạp. Trả về true khi đã đẩy.
 ///
 /// [loadQuota] và [boost] lấy từ repository của màn gọi, để test thay được.
+/// Bấm liên tục khi đang xử lý thì bỏ qua (xem [runPromotionAction]).
 Future<bool> boostListingWithCredits(
+  BuildContext context, {
+  required String title,
+  required String? categoryId,
+  required Future<PostingQuota> Function() loadQuota,
+  required Future<BoostResult> Function() boost,
+}) => runPromotionAction(
+  () => _boost(
+    context,
+    title: title,
+    categoryId: categoryId,
+    loadQuota: loadQuota,
+    boost: boost,
+  ),
+);
+
+/// Đang có một lượt đẩy tin / mua Hot sale chạy (từ lúc tải giá tới lúc
+/// có kết quả). Chặn bấm nhanh nhiều lần mở nhiều sheet hoặc gửi nhiều yêu cầu.
+bool _promotionBusy = false;
+
+/// Chạy [action] nếu chưa có lượt đẩy tin / Hot sale nào đang chạy, không
+/// thì bỏ qua và trả false.
+Future<bool> runPromotionAction(Future<bool> Function() action) async {
+  if (_promotionBusy) return false;
+  _promotionBusy = true;
+  try {
+    return await action();
+  } finally {
+    _promotionBusy = false;
+  }
+}
+
+/// Đóng sheet một lần: bấm hai lần liên tiếp không được đóng luôn trang bên dưới
+void popSheetOnce<T>(BuildContext context, T result) {
+  if (ModalRoute.of(context)?.isCurrent ?? false) {
+    Navigator.of(context).pop(result);
+  }
+}
+
+Future<bool> _boost(
   BuildContext context, {
   required String title,
   required String? categoryId,
@@ -140,7 +180,7 @@ class _BoostSheet extends StatelessWidget {
               Expanded(
                 child: AppSecondaryActionButton(
                   label: l.postingLater,
-                  onPressed: () => Navigator.of(context).pop(false),
+                  onPressed: () => popSheetOnce(context, false),
                 ),
               ),
               const SizedBox(width: 10),
@@ -152,7 +192,7 @@ class _BoostSheet extends StatelessWidget {
                       ? l.boostPay(price)
                       : l.postingTopUp,
                   icon: free || enough ? AppIcons.boost : AppIcons.wallet,
-                  onPressed: () => Navigator.of(context).pop(true),
+                  onPressed: () => popSheetOnce(context, true),
                 ),
               ),
             ],

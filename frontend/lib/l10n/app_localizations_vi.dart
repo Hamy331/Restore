@@ -1705,7 +1705,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeSeeAll => 'Xem tất cả';
 
   @override
-  String get homeFeaturedTag => 'Nổi bật';
+  String get homeFeaturedTag => 'Hot';
 
   @override
   String get homeExchangeTag => 'Đổi được';
@@ -3788,4 +3788,54 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get postingUpgradeHint => 'Cần đăng nhiều hơn? Nâng cấp gói';
+
+  @override
+  String get hotSaleTitle => 'Hot sale';
+
+  @override
+  String get featureAction => 'Lên Hot sale';
+
+  @override
+  String get featureSheetMessage =>
+      'Tin hiện ở mục Hot sale trên trang chủ và đầu trang chuyên mục, xếp trên các tin khác trong suốt thời gian đã chọn.';
+
+  @override
+  String featureDays(int days) {
+    return '$days ngày';
+  }
+
+  @override
+  String featurePay(int credits) {
+    return 'Mua · $credits xu';
+  }
+
+  @override
+  String get featureDone => 'Tin đã lên Hot sale';
+
+  @override
+  String featureRunning(String date) {
+    return 'Tin đang ở Hot sale đến $date.';
+  }
+
+  @override
+  String get featureUnavailable =>
+      'Chỉ tin đang hiển thị mới lên được Hot sale.';
+
+  @override
+  String get featureNoOptions => 'Hiện chưa có gói Hot sale nào đang bán.';
+
+  @override
+  String accExpiresOn(String date, int days) {
+    return 'Hết hạn $date · còn $days ngày';
+  }
+
+  @override
+  String accExpiredOn(String date) {
+    return 'Đã hết hạn $date';
+  }
+
+  @override
+  String previewDisplayDays(int days) {
+    return 'Tin hiển thị $days ngày kể từ khi được duyệt. Gần hết hạn bạn có thể gia hạn, hết hạn thì kích hoạt lại.';
+  }
 }

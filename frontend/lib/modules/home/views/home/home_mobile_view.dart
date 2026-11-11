@@ -19,6 +19,7 @@ import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_v
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
+import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
@@ -302,26 +303,14 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       if (state.recommended.isNotEmpty) ...[
         const SliverToBoxAdapter(child: SizedBox(height: 18)),
         SliverToBoxAdapter(
-          child: HomeSectionHeader(
-            title: l10n.homeForYouTitle,
-            actionLabel: l10n.homeSeeAll,
-            onAction: _comingSoon,
-          ),
-        ),
-        const SliverToBoxAdapter(child: SizedBox(height: 8)),
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: AppListingCard.heightFor(_featuredCardWidth),
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
-              itemCount: state.recommended.length,
-              separatorBuilder: (_, _) => const SizedBox(width: _gridSpacing),
-              itemBuilder: (_, index) => SizedBox(
-                width: _featuredCardWidth,
-                child: card(state.recommended[index]),
-              ),
-            ),
+          child: AppHotSaleSection(
+            items: state.recommended,
+            onTap: _openDetail,
+            onFavoriteTap: _toggleFavorite,
+            onSeeAll: _comingSoon,
+            cardWidth: _featuredCardWidth,
+            sidePadding: _sidePadding,
+            spacing: _gridSpacing,
           ),
         ),
       ],

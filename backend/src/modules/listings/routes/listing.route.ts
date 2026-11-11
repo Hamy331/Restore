@@ -3,7 +3,7 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { optionalAuth, requirePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as listingController from '../controllers/listing.controller.js';
-import { createListingBody, listingIdParams, mineQuery, statusBody } from '../listing.validator.js';
+import { createListingBody, featureBody, listingIdParams, mineQuery, statusBody } from '../listing.validator.js';
 
 /** Tin đăng của chủ tin và chi tiết tin công khai, gắn tại /api/v1/listings (mount sau cùng vì có GET /:id) */
 const listingRouter = Router();
@@ -109,6 +109,25 @@ listingRouter.post('/:id/extend', manageOwn, validate({ params: listingIdParams 
  * Lỗi 409: BOOST_TOO_SOON { details: { availableAt } }, LISTING_NOT_BOOSTABLE, NOT_ENOUGH_CREDITS
  */
 listingRouter.post('/:id/boost', manageOwn, validate({ params: listingIdParams }), listingController.boost);
+
+/**
+ * Báo giá tin ưu tiên (Hot sale) cho tin đang hiển thị
+ *
+ * Trả về: { listingId, discountPercent, available, runningUntil, options: [{ packageId, durationDays, credits }] }
+ * Lỗi 409: LISTING_NOT_FEATURABLE
+ */
+listingRouter.get('/:id/feature', manageOwn, validate({ params: listingIdParams }), listingController.featureQuote);
+
+/**
+ * Mua tin ưu tiên bằng xu: đứng đầu danh sách và hiện ở mục Hot sale trong số ngày của gói
+ * (giá gói / 1.000 cho nhóm A, nhóm khác theo tỉ lệ Category.boostCredits / 10, giảm theo gói tài khoản)
+ *
+ * Body: { packageId: string } - gói FEATURED đang bán
+ * Trả về: { listingId, packageId, credits, startsAt, endsAt }
+ * Lỗi 409: FEATURE_ALREADY_ACTIVE { details: { availableAt } }, LISTING_NOT_FEATURABLE, NOT_ENOUGH_CREDITS
+ */
+listingRouter.post('/:id/feature', manageOwn, validate({ params: listingIdParams, body: featureBody }),
+  listingController.feature);
 
 /**
  * Chi tiết tin công khai, tăng lượt xem (không tính chủ tin và người kiểm duyệt)

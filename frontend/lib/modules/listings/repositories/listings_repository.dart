@@ -46,6 +46,13 @@ abstract class ListingsRepository {
   /// Đẩy tin đang hiển thị lên đầu 1 ngày: dùng lượt tặng của gói, hết lượt
   /// thì trả xu. Lỗi 409 ném [ListingBoostException].
   Future<BoostResult> boost(String id);
+
+  /// Báo giá tin ưu tiên (Hot sale) của tin đang hiển thị
+  Future<FeatureQuote> featureQuote(String id);
+
+  /// Mua tin ưu tiên gói [packageId] bằng xu. Lỗi 409 ném
+  /// [ListingBoostException] (FEATURE_ALREADY_ACTIVE, NOT_ENOUGH_CREDITS).
+  Future<DateTime?> feature(String id, String packageId);
   Future<void> deleteDraft(String id);
 
   /// Số tin nháp đang giữ và giới hạn của gói
@@ -132,6 +139,21 @@ class MockListingsRepository implements ListingsRepository {
   @override
   Future<BoostResult> boost(String id) async =>
       const BoostResult(free: false, credits: 4, freeLeft: 0);
+
+  @override
+  Future<FeatureQuote> featureQuote(String id) async => const FeatureQuote(
+    discountPercent: 0,
+    available: 50,
+    options: [
+      FeatureOption(packageId: 'featured-1', durationDays: 1, credits: 8),
+      FeatureOption(packageId: 'featured-3', durationDays: 3, credits: 23),
+      FeatureOption(packageId: 'featured-7', durationDays: 7, credits: 50),
+    ],
+  );
+
+  @override
+  Future<DateTime?> feature(String id, String packageId) async =>
+      DateTime.now().add(const Duration(days: 1));
 
   @override
   Future<void> deleteDraft(String id) async {
@@ -284,8 +306,53 @@ class BoostResult {
   );
 }
 
-/// Backend từ chối đẩy tin (HTTP 409): [code] như `BOOST_TOO_SOON`,
-/// `NOT_ENOUGH_CREDITS`, `LISTING_NOT_BOOSTABLE`
+/// Một gói tin ưu tiên: [credits] xu cho [durationDays] ngày ở mục Hot sale
+class FeatureOption {
+  const FeatureOption({
+    required this.packageId,
+    required this.durationDays,
+    required this.credits,
+  });
+  final String packageId;
+  final int durationDays;
+  final int credits;
+
+  factory FeatureOption.fromJson(Map<String, dynamic> json) => FeatureOption(
+    packageId: '${json['packageId']}',
+    durationDays: (json['durationDays'] as num?)?.toInt() ?? 1,
+    credits: (json['credits'] as num?)?.toInt() ?? 0,
+  );
+}
+
+/// Báo giá tin ưu tiên: giá đã giảm theo gói ([discountPercent]), số xu
+/// đang có, [runningUntil] khác null khi tin đang ở Hot sale
+class FeatureQuote {
+  const FeatureQuote({
+    required this.discountPercent,
+    required this.available,
+    required this.options,
+    this.runningUntil,
+  });
+  final int discountPercent;
+  final int available;
+  final List<FeatureOption> options;
+  final DateTime? runningUntil;
+
+  factory FeatureQuote.fromJson(Map<String, dynamic> json) => FeatureQuote(
+    discountPercent: (json['discountPercent'] as num?)?.toInt() ?? 0,
+    available: (json['available'] as num?)?.toInt() ?? 0,
+    runningUntil: DateTime.tryParse('${json['runningUntil']}')?.toLocal(),
+    options: [
+      for (final option in (json['options'] as List? ?? const []))
+        if (option is Map)
+          FeatureOption.fromJson(Map<String, dynamic>.from(option)),
+    ],
+  );
+}
+
+/// Backend từ chối đẩy tin / tin ưu tiên (HTTP 409): [code] như
+/// `BOOST_TOO_SOON`, `FEATURE_ALREADY_ACTIVE`, `NOT_ENOUGH_CREDITS`,
+/// `LISTING_NOT_BOOSTABLE`
 class ListingBoostException implements Exception {
   const ListingBoostException(
     this.code, {
@@ -297,6 +364,7 @@ class ListingBoostException implements Exception {
   final Map<String, dynamic> details;
 
   static const tooSoon = 'BOOST_TOO_SOON';
+  static const featureActive = 'FEATURE_ALREADY_ACTIVE';
   static const notEnoughCredits = 'NOT_ENOUGH_CREDITS';
 
   @override
@@ -682,15 +750,36 @@ class ApiListingsRepository implements ListingsRepository {
       _dio.post<void>('/listings/${Uri.encodeComponent(id)}/extend');
 
   @override
-  Future<BoostResult> boost(String id) async {
-    try {
-      return BoostResult.fromJson(
-        _data(
-          await _dio.post<Map<String, dynamic>>(
-            '/listings/${Uri.encodeComponent(id)}/boost',
-          ),
+  Future<BoostResult> boost(String id) => _promotion(
+    () async => BoostResult.fromJson(
+      _data(
+        await _dio.post<Map<String, dynamic>>(
+          '/listings/${Uri.encodeComponent(id)}/boost',
         ),
-      );
+      ),
+    ),
+  );
+
+  @override
+  Future<FeatureQuote> featureQuote(String id) async => FeatureQuote.fromJson(
+    _data(
+      await _dio.get<Map<String, dynamic>>(
+        '/listings/${Uri.encodeComponent(id)}/feature',
+      ),
+    ),
+  );
+
+  @override
+  Future<DateTime?> feature(String id, String packageId) => _promotion(
+    () async => DateTime.tryParse(
+      '${_data(await _dio.post<Map<String, dynamic>>('/listings/${Uri.encodeComponent(id)}/feature', data: {'packageId': packageId}))['endsAt']}',
+    )?.toLocal(),
+  );
+
+  /// Đổi lỗi 409 của đẩy tin / tin ưu tiên thành [ListingBoostException]
+  Future<T> _promotion<T>(Future<T> Function() request) async {
+    try {
+      return await request();
     } on DioException catch (error) {
       final data = error.response?.data;
       if (error.response?.statusCode != 409 || data is! Map) rethrow;

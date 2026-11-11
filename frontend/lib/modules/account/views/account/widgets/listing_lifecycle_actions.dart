@@ -10,6 +10,7 @@ import '../../../../credits/views/credit_topup/credit_topup_view.dart';
 import '../../../../../data/models/category_model.dart';
 import '../../../../listings/models/posting_quota.dart';
 import '../../../../listings/widgets/boost_listing_sheet.dart';
+import '../../../../listings/widgets/feature_listing_sheet.dart';
 import '../../../../listings/widgets/posting_limit_sheet.dart';
 import '../../../bloc/account_listings/account_listings_cubit.dart';
 import '../../../models/account_listing.dart';
@@ -167,6 +168,30 @@ Future<void> boostAccountListing(
     boost: () => repository.boost(item.id),
   );
   if (boosted) await cubit.load();
+}
+
+/// Mua tin ưu tiên (Hot sale) bằng xu cho tin đang hiển thị, xong thì tải
+/// lại danh sách để thấy số xu mới.
+Future<void> featureAccountListing(
+  BuildContext context,
+  AccountListing item,
+) async {
+  final cubit = context.read<AccountListingsCubit>();
+  if (item.status != AccountListingStatus.visible) {
+    _toast(
+      ScaffoldMessenger.of(context),
+      AppLocalizations.of(context)!.featureUnavailable,
+    );
+    return;
+  }
+  final repository = cubit.repository;
+  final featured = await featureListingWithCredits(
+    context,
+    title: item.title,
+    loadQuote: () => repository.featureQuote(item.id),
+    feature: (packageId) => repository.feature(item.id, packageId),
+  );
+  if (featured) await cubit.load();
 }
 
 void _toast(ScaffoldMessengerState messenger, String? message) {

@@ -783,7 +783,7 @@
   "homeForYouTitle": "Dành cho bạn",
   "homeLatestTitle": "Tin đăng mới",
   "homeSeeAll": "Xem tất cả",
-  "homeFeaturedTag": "Nổi bật",
+  "homeFeaturedTag": "Hot",
   "homeExchangeTag": "Đổi được",
   "homeExchangeOnly": "Chỉ trao đổi",
   "homeSaveListing": "Lưu tin",
@@ -2019,5 +2019,62 @@
   "plansLoadError": "Không tải được danh sách gói.",
   "plansActionError": "Không thực hiện được. Vui lòng thử lại.",
   "plansUpgradeAction": "Nâng cấp gói",
-  "postingUpgradeHint": "Cần đăng nhiều hơn? Nâng cấp gói"
+  "postingUpgradeHint": "Cần đăng nhiều hơn? Nâng cấp gói",
+  "hotSaleTitle": "Hot sale",
+  "featureAction": "Lên Hot sale",
+  "featureSheetMessage": "Tin hiện ở mục Hot sale trên trang chủ và đầu trang chuyên mục, xếp trên các tin khác trong suốt thời gian đã chọn.",
+  "featureDays": "{days} ngày",
+  "@featureDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "featurePay": "Mua · {credits} xu",
+  "@featurePay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "featureDone": "Tin đã lên Hot sale",
+  "featureRunning": "Tin đang ở Hot sale đến {date}.",
+  "@featureRunning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "featureUnavailable": "Chỉ tin đang hiển thị mới lên được Hot sale.",
+  "featureNoOptions": "Hiện chưa có gói Hot sale nào đang bán.",
+  "accExpiresOn": "Hết hạn {date} · còn {days} ngày",
+  "@accExpiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpiredOn": "Đã hết hạn {date}",
+  "@accExpiredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "previewDisplayDays": "Tin hiển thị {days} ngày kể từ khi được duyệt. Gần hết hạn bạn có thể gia hạn, hết hạn thì kích hoạt lại.",
+  "@previewDisplayDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  }
 }

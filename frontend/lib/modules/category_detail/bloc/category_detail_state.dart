@@ -27,6 +27,9 @@ class CategoryDetailState extends Equatable {
   final ListingFilter filter;
   final List<ListingCardItem> items;
 
+  /// Tin Hot sale (tin ưu tiên) của chuyên mục, hiện đầu trang
+  final List<ListingCardItem> hotItems;
+
   /// Trang cuối đã tải của [items]
   final int page;
   final bool hasMore;
@@ -38,6 +41,7 @@ class CategoryDetailState extends Equatable {
     this.status = CategoryDetailStatus.loading,
     ListingFilter? filter,
     this.items = const [],
+    this.hotItems = const [],
     this.page = 0,
     this.hasMore = false,
     this.isLoadingMore = false,
@@ -57,6 +61,7 @@ class CategoryDetailState extends Equatable {
     CategoryDetailStatus? status,
     ListingFilter? filter,
     List<ListingCardItem>? items,
+    List<ListingCardItem>? hotItems,
     int? page,
     bool? hasMore,
     bool? isLoadingMore,
@@ -66,6 +71,7 @@ class CategoryDetailState extends Equatable {
     status: status ?? this.status,
     filter: filter ?? this.filter,
     items: items ?? this.items,
+    hotItems: hotItems ?? this.hotItems,
     page: page ?? this.page,
     hasMore: hasMore ?? this.hasMore,
     isLoadingMore: isLoadingMore ?? this.isLoadingMore,
@@ -78,6 +84,7 @@ class CategoryDetailState extends Equatable {
     status,
     filter,
     items,
+    hotItems,
     page,
     hasMore,
     isLoadingMore,

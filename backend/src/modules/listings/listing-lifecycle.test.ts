@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { addDays, approvedExpiry, boostPrice, canExtend, daysLeft, extendedExpiry, isExpired, normalizeTitle } from './listing-lifecycle.js';
+import { addDays, approvedExpiry, boostPrice, canExtend, featurePrice, daysLeft, extendedExpiry, isExpired, normalizeTitle } from './listing-lifecycle.js';
 
 const now = new Date('2026-11-11T00:00:00Z');
 
@@ -36,4 +36,12 @@ test('boost price: tier discount, rounded, never below 1 xu', () => {
   assert.equal(boostPrice(6, 30), 4);
   assert.equal(boostPrice(4, 30), 3);
   assert.equal(boostPrice(1, 90), 1);
+});
+
+test('feature price scales by category group and plan discount', () => {
+  assert.deepEqual([20000, 57000, 126000].map((p) => featurePrice(p, 10, 0)), [20, 57, 126]);
+  assert.deepEqual([20000, 57000, 126000].map((p) => featurePrice(p, 6, 0)), [12, 34, 76]);
+  assert.deepEqual([20000, 57000, 126000].map((p) => featurePrice(p, 4, 0)), [8, 23, 50]);
+  assert.equal(featurePrice(20000, 10, 20), 16);
+  assert.equal(featurePrice(126000, 4, 30), 35);
 });

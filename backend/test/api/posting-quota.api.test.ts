@@ -94,5 +94,27 @@ test('posting quota: pay with points, expiry, reactivate, extend, duplicates', a
   } finally {
     await prisma.storePackage.update({ where: { id: 'personal' }, data: { monthlyPromotionQuota: 0, boostDiscountPercent: 0 } });
   }
+
+  const quote = expect('feature quote', await api.get(`/listings/${a}/feature`, { token })).body.data;
+  assert.deepEqual(quote.options.map((o: { credits: number }) => o.credits), [8, 23, 50]);
+  assert.deepEqual([quote.available, quote.runningUntil], [34, null]);
+  assert.equal(expect('feature not enough', await api.post(`/listings/${a}/feature`, { token, body: { packageId: 'featured-7' } })).body.code,
+    'NOT_ENOUGH_CREDITS');
+  expect('feature bump package', await api.post(`/listings/${a}/feature`, { token, body: { packageId: 'bump-1' } }));
+  expect('feature bad body', await api.post(`/listings/${a}/feature`, { token, body: {} }));
+  const featured = expect('feature 3 days', await api.post(`/listings/${a}/feature`, { token, body: { packageId: 'featured-3' } }));
+  assert.equal(featured.body.data.credits, 23);
+  assert.equal((await wallet()).available, 11);
+  assert.equal(expect('feature again', await api.post(`/listings/${a}/feature`, { token, body: { packageId: 'featured-1' } })).body.code,
+    'FEATURE_ALREADY_ACTIVE');
+  const hot = await api.get('/listings/recommended?categoryId=other');
+  assert.ok(hot.body.data.some((item: { id: string }) => item.id === a));
+  const otherHot = await api.get('/listings/recommended?categoryId=phones');
+  assert.ok(!otherHot.body.data.some((item: { id: string }) => item.id === a));
+
+  await prisma.promotion.updateMany({ where: { listingId: a, package: { kind: 'BUMP' } }, data: { endsAt: past } });
+  const racing = await Promise.all([api.post(`/listings/${a}/boost`, { token }), api.post(`/listings/${a}/boost`, { token })]);
+  assert.deepEqual(racing.map((res) => res.status).sort(), [200, 409]);
+  assert.equal((await wallet()).available, 7);
   expect('quota after', await api.get('/listings/posting-quota', { token }));
 });
