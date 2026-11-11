@@ -14,6 +14,7 @@ import 'widgets/listing_preview_description_card.dart';
 import 'widgets/listing_preview_details_card.dart';
 import 'widgets/listing_preview_gallery.dart';
 import 'widgets/listing_preview_notice.dart';
+import '../../widgets/listing_display_days_card.dart';
 import 'widgets/listing_preview_summary_card.dart';
 
 /// Xem trước tin đăng như người mua sẽ thấy
@@ -57,9 +58,8 @@ class ListingPreviewMobileView extends StatelessWidget {
         body: BlocBuilder<CreateListingBloc, CreateListingState>(
           builder: (context, state) {
             final sections = <Widget>[
-              ListingPreviewNotice(
-                displayDays: state.categoryQuota?.displayDays,
-              ),
+              const ListingPreviewNotice(),
+              const ListingDisplayDaysCard(),
               ListingPreviewGallery(images: state.draft.images),
               ListingPreviewSummaryCard(state: state),
               ListingPreviewDescriptionCard(draft: state.draft),

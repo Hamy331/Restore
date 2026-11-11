@@ -2295,5 +2295,172 @@
   "hotSaleLoadError": "Couldn't load Hot sale listings",
   "hotSaleEmptyTitle": "No Hot sale listings yet",
   "hotSaleEmptyBody": "Listings that sellers put on Hot sale will show up here.",
-  "hotSaleEnd": "You've seen all Hot sale listings"
+  "hotSaleEnd": "You've seen all Hot sale listings",
+  "displayDaysTitle": "Display time",
+  "displayDaysFree": "Free · {days} days",
+  "@displayDaysFree": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysPlus": "+{days} days",
+  "@displayDaysPlus": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysRange": "{start} → {end} · {days} days",
+  "@displayDaysRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysStart": "Starts",
+  "displayDaysEnd": "Ends",
+  "displayDaysToday": "Today, once approved",
+  "displayDaysCount": "Days on display",
+  "displayDaysExtraCount": "Extra days",
+  "displayDaysIncluded": "Includes {free} free days for this category",
+  "@displayDaysIncluded": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysExtraPrice": "{days} extra days: {credits} points",
+  "@displayDaysExtraPrice": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysNoCharge": "Free",
+  "displayDaysPackSave": "{days}-day pack price, you save {credits} points",
+  "@displayDaysPackSave": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysSuggest": "Get {days} days for {credits} points",
+  "@displayDaysSuggest": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysMax": "This category can be shown for up to {days} days.",
+  "@displayDaysMax": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysPayNote": "Points are held when you post, charged on approval and refunded if rejected.",
+  "displayDaysDone": "Done",
+  "displayDaysCardHint": "Tap to change the start date or add days",
+  "displayDaysScheduled": "Scheduled from {date}",
+  "@displayDaysScheduled": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendNewEnd": "New end date: {date}",
+  "@extendNewEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendCurrentEnd": "Showing until {date}",
+  "@extendCurrentEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendAddable": "You can add up to {days} more days",
+  "@extendAddable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "extendLimitReached": "This listing is already at the {days}-day maximum.",
+  "@extendLimitReached": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "extendChargeNote": "Points are charged now, no new review needed.",
+  "autoExtendTitle": "Auto-extend 30 days",
+  "autoExtendBody": "When less than a day is left, {credits} points are charged if your wallet has enough.",
+  "@autoExtendBody": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "autoExtendOn": "Auto-extend is on",
+  "autoExtendOff": "Auto-extend is off",
+  "accExtendedDays": "Extended by {days} days",
+  "@accExtendedDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysTodayShort": "Today",
+  "displayDaysShortTitle": "Not enough points for extra days",
+  "displayDaysShortBody": "You need {missing} more points for the extra days. Top up, or post with the free days.",
+  "@displayDaysShortBody": {
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysUseFree": "Post with {days} free days",
+  "@displayDaysUseFree": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  }
 }

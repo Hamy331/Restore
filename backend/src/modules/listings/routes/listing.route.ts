@@ -3,7 +3,7 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { optionalAuth, requirePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as listingController from '../controllers/listing.controller.js';
-import { createListingBody, featureBody, listingIdParams, mineQuery, statusBody } from '../listing.validator.js';
+import { autoExtendBody, createListingBody, extendBody, featureBody, listingIdParams, mineQuery, statusBody } from '../listing.validator.js';
 
 /** Tin đăng của chủ tin và chi tiết tin công khai, gắn tại /api/v1/listings (mount sau cùng vì có GET /:id) */
 const listingRouter = Router();
@@ -89,14 +89,28 @@ listingRouter.put('/:id', manageOwn, validate({ params: listingIdParams, body: c
 listingRouter.patch('/:id/status', manageOwn, validate({ params: listingIdParams, body: statusBody }), listingController.changeStatus);
 
 /**
- * Gia hạn tin đang hiển thị thêm Category.displayDays ngày, trả Category.extraListingCredits xu
+ * Gia hạn tin đang hiển thị (hoặc đang chờ ngày hẹn) thêm số ngày tuỳ chọn, trả xu theo giá ngày của chuyên mục
+ * (mua đúng mốc 30 / 60 / 90 ngày rẻ hơn, gói cao được giảm; xem posting-quota.display)
  *
  * Path params:
  *  - id: string - mã tin
  *
- * Lỗi 409: EXTEND_TOO_EARLY (còn hơn một kỳ hiển thị), LISTING_NOT_EXTENDABLE, NOT_ENOUGH_CREDITS
+ * Body:
+ *  - days: number - số ngày thêm, hạn mới không quá Category.maxDisplayDays ngày tính từ hôm nay
+ *
+ * Lỗi 409: EXTEND_TOO_LONG (details.addableDays), LISTING_NOT_EXTENDABLE, NOT_ENOUGH_CREDITS
  */
-listingRouter.post('/:id/extend', manageOwn, validate({ params: listingIdParams }), listingController.extend);
+listingRouter.post('/:id/extend', manageOwn, validate({ params: listingIdParams, body: extendBody }), listingController.extend);
+
+/**
+ * Bật / tắt tự gia hạn 30 ngày khi tin sắp hết hạn (đủ xu thì trừ, thiếu xu thì để tin hết hạn)
+ *
+ * Body:
+ *  - enabled: boolean
+ *
+ * Lỗi 403: AUTO_EXTEND_NOT_AVAILABLE (gói không có tự gia hạn)
+ */
+listingRouter.patch('/:id/auto-extend', manageOwn, validate({ params: listingIdParams, body: autoExtendBody }), listingController.autoExtend);
 
 /**
  * Đẩy tin đang hiển thị lên đầu 1 ngày: dùng lượt tặng của gói trong tháng, hết lượt thì trả xu

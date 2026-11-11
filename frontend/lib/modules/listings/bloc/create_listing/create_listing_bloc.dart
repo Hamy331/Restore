@@ -72,6 +72,15 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       ),
     );
     on<AttributeChanged>(_onAttributeChanged);
+    on<DisplayDaysChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(
+          displayDays: () => event.days,
+          startsAt: () => event.startsAt,
+        ),
+      ),
+    );
     on<BasicInfoSubmitted>(
       (event, emit) => emit(state.copyWith(showBasicInfoErrors: true)),
     );
@@ -151,6 +160,9 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         draft: state.draft.copyWith(
           categoryId: event.categoryId,
           attributes: const {},
+          // Mỗi danh mục có số ngày miễn phí / tối đa riêng: chọn lại từ đầu
+          displayDays: () => null,
+          startsAt: () => null,
         ),
         showDetailErrors: false,
       ),
@@ -346,6 +358,24 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         fresh = await _quotaRepository.getQuota();
       } catch (_) {
         fresh = null;
+      }
+      // Thiếu xu mà không phải do hết suất (hoặc đã đồng ý trả phí vượt hạn
+      // mức): là do ngày hiển thị thêm, hỏi nạp xu hay dùng ngày miễn phí
+      final missing = error.missingCredits;
+      final quota = fresh ?? state.quota;
+      if (missing != null &&
+          sent.displayDays != null &&
+          (event.payWithCredits ||
+              !(quota?.isFull(sent.categoryId) ?? false))) {
+        emit(
+          state.copyWith(
+            quota: quota,
+            publishStatus: RequestStatus.idle,
+            creditsMissing: missing,
+            creditsShortHits: state.creditsShortHits + 1,
+          ),
+        );
+        return;
       }
       emit(
         state.copyWith(

@@ -32,6 +32,11 @@ class CreateListingState extends Equatable {
   /// Tăng mỗi lần bị chặn vì chuyên mục đã đủ số tin để view mở thông báo
   final int postingLimitHits;
 
+  /// Tăng mỗi lần ví không đủ xu cho ngày hiển thị thêm (chuyên mục còn suất
+  /// hoặc đã đồng ý trả phí vượt hạn mức); [creditsMissing] là số xu thiếu
+  final int creditsShortHits;
+  final int creditsMissing;
+
   /// Tăng mỗi lần bị chặn vì đã có tin giống vậy ([duplicate]) để view hỏi
   /// kích hoạt lại tin cũ hay vẫn đăng mới
   final int duplicateHits;
@@ -82,6 +87,8 @@ class CreateListingState extends Equatable {
     this.publishStatus = RequestStatus.idle,
     this.invalidPublishAttempts = 0,
     this.postingLimitHits = 0,
+    this.creditsShortHits = 0,
+    this.creditsMissing = 0,
     this.duplicateHits = 0,
     this.duplicate,
     this.duplicatePaid = false,
@@ -156,6 +163,8 @@ class CreateListingState extends Equatable {
     RequestStatus? publishStatus,
     int? invalidPublishAttempts,
     int? postingLimitHits,
+    int? creditsShortHits,
+    int? creditsMissing,
     int? duplicateHits,
     DuplicateListing? duplicate,
     bool? duplicatePaid,
@@ -185,6 +194,8 @@ class CreateListingState extends Equatable {
       invalidPublishAttempts:
           invalidPublishAttempts ?? this.invalidPublishAttempts,
       postingLimitHits: postingLimitHits ?? this.postingLimitHits,
+      creditsShortHits: creditsShortHits ?? this.creditsShortHits,
+      creditsMissing: creditsMissing ?? this.creditsMissing,
       duplicateHits: duplicateHits ?? this.duplicateHits,
       duplicate: duplicate ?? this.duplicate,
       duplicatePaid: duplicatePaid ?? this.duplicatePaid,
@@ -217,6 +228,8 @@ class CreateListingState extends Equatable {
     publishStatus,
     invalidPublishAttempts,
     postingLimitHits,
+    creditsShortHits,
+    creditsMissing,
     duplicateHits,
     duplicatePaid,
     savedDraft,

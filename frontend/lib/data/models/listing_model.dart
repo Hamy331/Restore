@@ -41,6 +41,15 @@ class ListingModel extends Equatable {
   /// Số xu đã trả cho tin (chỉ chủ tin thấy); > 0 thì tin không chiếm suất miễn phí
   final int paidCredits;
 
+  /// Ngày hẹn bắt đầu hiển thị (null = hiện ngay khi duyệt)
+  final DateTime? startsAt;
+
+  /// Số ngày hiển thị người bán chọn lúc đăng (null = số ngày miễn phí)
+  final int? displayDays;
+
+  /// Tự gia hạn khi sắp hết hạn (chỉ chủ tin thấy, gói Cửa hàng)
+  final bool autoExtend;
+
   /// (đề xuất) Danh mục và thuộc tính theo danh mục (jsonb)
   final String? categoryId;
   final String categoryName;
@@ -75,6 +84,9 @@ class ListingModel extends Equatable {
     this.updatedAt,
     this.expiresAt,
     this.paidCredits = 0,
+    this.startsAt,
+    this.displayDays,
+    this.autoExtend = false,
     this.categoryId,
     this.categoryName = '',
     this.attributes = const {},
@@ -135,6 +147,9 @@ class ListingModel extends Equatable {
       updatedAt: DateTime.tryParse('${json['updatedAt']}'),
       expiresAt: DateTime.tryParse('${json['expiresAt']}'),
       paidCredits: (json['paidCredits'] as num?)?.toInt() ?? 0,
+      startsAt: DateTime.tryParse('${json['startsAt']}'),
+      displayDays: (json['displayDays'] as num?)?.toInt(),
+      autoExtend: json['autoExtend'] == true,
       categoryId: json['categoryId'] as String?,
       // Tên danh mục từ API là chuỗi hoặc map theo ngôn ngữ {vi, en}
       categoryName: LocalizedText.fromJson(
@@ -190,6 +205,9 @@ class ListingModel extends Equatable {
     updatedAt,
     expiresAt,
     paidCredits,
+    startsAt,
+    displayDays,
+    autoExtend,
     categoryId,
     categoryName,
     attributes,

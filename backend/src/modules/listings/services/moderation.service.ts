@@ -2,10 +2,11 @@ import { ListingStatus, Prisma } from '@prisma/client';
 import { audit } from '../../../common/audit/admin-audit.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { ADMIN_PAGE_SIZE, changed, text } from '../../../common/validation/admin-input.js';
-import { withQuotaTransaction } from '../../commerce/index.js';
+import { storePackageForUser, withQuotaTransaction } from '../../commerce/index.js';
 import { captureListingHold, releaseListingHold } from '../../credits/index.js';
 import { AdminDecisionInput, AdminListingQuery, DecisionInput, toOwnerListingDto } from '../listing.dto.js';
-import { approvedExpiry } from '../listing-lifecycle.js';
+import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
+import { freeDaysFor } from '../display-pricing.js';
 import type { ModerationAction } from '../listing.type.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { runApprovalHooks } from './approval-hooks.js';
@@ -25,22 +26,28 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
   const allowed = item.status === 'PENDING' ? ['APPROVE', 'REJECT', 'REQUEST_CHANGES'] : item.status === 'AVAILABLE' ? ['REMOVE'] : [];
   if (!allowed.includes(action)) throw new AppError(409, 'INVALID_DECISION', 'Tin không ở trạng thái cho phép.');
   let expiresAt: Date | undefined;
+  let scheduled = false;
+  let startsAt: Date | null = null;
+  const now = new Date();
   if (action === 'APPROVE') {
     if (!item.images.length) throw new AppError(400, 'INVALID_LISTING', 'Tin cần ít nhất một ảnh.');
     const [category, condition] = await Promise.all([
       listingRepository.findActiveCategory(tx, item.categoryId ?? ''),
       item.condition ? listingRepository.findConditionPolicy(tx, item.condition) : null,
     ]);
-    if (!category || !item.condition || condition?.active === false) {
+    if (!category || (categoryHasCondition(category.metadata) && !item.condition) || condition?.active === false) {
       throw new AppError(409, 'INVALID_LISTING', 'Danh mục hoặc tình trạng không còn được sử dụng.');
     }
-    // Bắt đầu tính thời gian hiển thị; tin sửa lại lúc còn hạn giữ hạn cũ
-    expiresAt = approvedExpiry(item.expiresAt, new Date(), category.displayDays);
+    // Bắt đầu tính thời gian hiển thị từ ngày hẹn (hoặc lúc duyệt nếu muộn hơn), đủ số ngày người bán chọn;
+    // tin sửa lại lúc còn hạn giữ hạn cũ. Chưa tới ngày hẹn thì tin chờ (HIDDEN + startsAt), job tự hiện.
+    const days = item.displayDays ?? freeDaysFor(category, (await storePackageForUser(tx, item.ownerId, now)).package);
+    ({ expiresAt, startsAt, scheduled } = approvalWindow(item.expiresAt, item.startsAt, now, days));
   }
-  const status = action === 'APPROVE' ? ListingStatus.AVAILABLE : ListingStatus.REJECTED;
+  const status = action === 'APPROVE' ? (scheduled ? ListingStatus.HIDDEN : ListingStatus.AVAILABLE) : ListingStatus.REJECTED;
   // Tin bị từ chối / gỡ không còn suất đã trả: sửa lại để đăng thì phải xin suất mới
   changed(await listingRepository.updateWhereVersion(tx, id, item.status, expected,
-    { status, reviewReason: action === 'APPROVE' ? null : reason, ...(expiresAt ? { expiresAt } : { paidCredits: 0 }) }));
+    { status, reviewReason: action === 'APPROVE' ? null : reason,
+      ...(expiresAt ? { expiresAt, startsAt, ...(!scheduled && { publishedAt: now }) } : { paidCredits: 0 }) }));
   await audit(tx, actorId, action, 'LISTING', id, reason, { status: item.status }, { status });
   if (action === 'APPROVE') {
     // Xu giữ khi gửi tin vượt hạn mức được trừ hẳn

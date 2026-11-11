@@ -143,11 +143,25 @@ class AccountListingsCubit extends Cubit<AccountListingsState> {
     );
   }
 
-  /// Gia hạn tin bằng xu rồi tải lại để thấy hạn mới. Lỗi có mã (thiếu xu,
-  /// gia hạn quá sớm) ném [AccountListingActionException].
-  Future<void> extend(String id) async {
+  /// Gia hạn tin thêm [days] ngày bằng xu rồi tải lại để thấy hạn mới. Lỗi
+  /// có mã (thiếu xu, vượt số ngày tối đa) ném [AccountListingActionException].
+  Future<void> extend(String id, int days) async {
     try {
-      await _repository.extend(id);
+      await _repository.extend(id, days);
+    } on AccountListingActionException {
+      rethrow;
+    } catch (_) {
+      if (!isClosed) emit(state.copyWith(error: AccountListingsError.update));
+      return;
+    }
+    if (!isClosed) await load();
+  }
+
+  /// Bật/tắt tự gia hạn rồi tải lại. Lỗi có mã ném
+  /// [AccountListingActionException].
+  Future<void> setAutoExtend(String id, bool enabled) async {
+    try {
+      await _repository.setAutoExtend(id, enabled);
     } on AccountListingActionException {
       rethrow;
     } catch (_) {

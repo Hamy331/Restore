@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'display_pricing.dart';
 import 'listing_enums.dart';
 
 /// Lý do hết suất miễn phí ở một chuyên mục
@@ -34,10 +35,16 @@ class CategoryPostingQuota extends Equatable {
   /// Lý do hết suất miễn phí, null = còn suất
   final PostingQuotaBlock? blockedBy;
 
-  /// Số ngày tin hiển thị (cũng là số ngày mỗi lần gia hạn)
+  /// Số ngày hiển thị miễn phí của chuyên mục theo gói
   final int displayDays;
 
-  /// Giá (xu) gia hạn tin thêm một kỳ, mọi gói đều gia hạn được
+  /// Thời gian hiển thị tối đa (ngày, tính từ hôm nay)
+  final int maxDisplayDays;
+
+  /// Giá (xu) cho 30 ngày hiển thị thêm, trước khi giảm theo mốc và gói
+  final int dayPackCredits;
+
+  /// Giá (xu) mốc 30 ngày thêm, đã giảm theo gói
   final int? extendCredits;
 
   /// Giá (xu) một lần đẩy tin, đã giảm theo gói
@@ -50,9 +57,11 @@ class CategoryPostingQuota extends Equatable {
     this.extraCredits,
     this.blockedBy,
     this.displayDays = 60,
+    int? maxDisplayDays,
+    this.dayPackCredits = 4,
     this.extendCredits,
     this.boostCredits,
-  });
+  }) : maxDisplayDays = maxDisplayDays ?? displayDays;
 
   int get remaining => (limit - used).clamp(0, limit);
 
@@ -69,12 +78,19 @@ class CategoryPostingQuota extends Equatable {
     final used = (json['used'] as num?)?.toInt() ?? 0;
     final limit = (json['limit'] as num).toInt();
     final free = json['freeAvailable'];
+    final displayDays = (json['displayDays'] as num?)?.toInt() ?? 60;
     return CategoryPostingQuota(
       categoryId: '${json['categoryId']}',
       used: used,
       limit: limit,
       extraCredits: (json['extraCredits'] as num?)?.toInt(),
-      displayDays: (json['displayDays'] as num?)?.toInt() ?? 60,
+      displayDays: displayDays,
+      maxDisplayDays:
+          (json['maxDisplayDays'] as num?)?.toInt() ?? displayDays * 2,
+      dayPackCredits:
+          (json['dayPackCredits'] as num?)?.toInt() ??
+          (json['extraCredits'] as num?)?.toInt() ??
+          4,
       extendCredits:
           (json['extendCredits'] as num?)?.toInt() ??
           (json['extraCredits'] as num?)?.toInt(),
@@ -95,6 +111,8 @@ class CategoryPostingQuota extends Equatable {
     extraCredits,
     blockedBy,
     displayDays,
+    maxDisplayDays,
+    dayPackCredits,
     extendCredits,
     boostCredits,
   ];
@@ -130,6 +148,9 @@ class PostingQuota extends Equatable {
   /// Phần trăm giảm giá đẩy tin của gói (0 với Cá nhân)
   final int boostDiscountPercent;
 
+  /// Cách tính giá ngày hiển thị (mốc 30/60/90, ưu đãi gói, tự gia hạn)
+  final DisplayPricing display;
+
   const PostingQuota({
     required this.accountType,
     required this.defaultLimit,
@@ -142,6 +163,7 @@ class PostingQuota extends Equatable {
     this.boostFreeLeft = 0,
     this.boostFreePerMonth = 0,
     this.boostDiscountPercent = 0,
+    this.display = const DisplayPricing(),
   });
 
   CategoryPostingQuota forCategory(String categoryId) =>
@@ -198,6 +220,11 @@ class PostingQuota extends Equatable {
       boostFreeLeft: (boost['freeLeft'] as num?)?.toInt() ?? 0,
       boostFreePerMonth: (boost['freePerMonth'] as num?)?.toInt() ?? 0,
       boostDiscountPercent: (boost['discountPercent'] as num?)?.toInt() ?? 0,
+      display: DisplayPricing.fromJson(
+        json['display'] is Map
+            ? Map<String, dynamic>.from(json['display'] as Map)
+            : null,
+      ),
     );
   }
 
@@ -214,6 +241,7 @@ class PostingQuota extends Equatable {
     boostFreeLeft,
     boostFreePerMonth,
     boostDiscountPercent,
+    display,
   ];
 }
 

@@ -108,6 +108,16 @@ class ConditionChanged extends CreateListingEvent {
   List<Object?> get props => [condition];
 }
 
+/// Chọn thời gian hiển thị: [days] tổng số ngày (null = miễn phí),
+/// [startsAt] ngày hẹn bắt đầu (null = ngay khi duyệt)
+class DisplayDaysChanged extends CreateListingEvent {
+  final int? days;
+  final DateTime? startsAt;
+  const DisplayDaysChanged({this.days, this.startsAt});
+  @override
+  List<Object?> get props => [days, startsAt];
+}
+
 /// Đổi giá trị một thuộc tính theo danh mục (bước 3)
 class AttributeChanged extends CreateListingEvent {
   final String key;

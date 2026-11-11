@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import type { z } from 'zod';
 import { publicLocation } from '../catalog/index.js';
 import type {
-  adminDecisionBody, adminListingQuery, createListingBody, decisionBody, draftBody, favoritesQuery, featureBody, feedQuery, mineQuery, recommendedQuery, statusBody,
+  adminDecisionBody, autoExtendBody, extendBody, adminListingQuery, createListingBody, decisionBody, draftBody, favoritesQuery, featureBody, feedQuery, mineQuery, recommendedQuery, statusBody,
 } from './listing.validator.js';
 
 /* ---------- Vào (suy ra từ schema) ---------- */
@@ -11,6 +11,8 @@ export type ListingInput = z.output<typeof createListingBody>;
 export type DraftInput = z.output<typeof draftBody>;
 export type StatusInput = z.output<typeof statusBody>;
 export type FeatureInput = z.output<typeof featureBody>;
+export type ExtendInput = z.output<typeof extendBody>;
+export type AutoExtendInput = z.output<typeof autoExtendBody>;
 export type MineQuery = z.output<typeof mineQuery>;
 export type DecisionInput = z.output<typeof decisionBody>;
 export type FeedQuery = z.output<typeof feedQuery>;
@@ -38,7 +40,11 @@ export const listingSelect = {
   viewCount: true,
   publishedAt: true,
   expiresAt: true,
+  startsAt: true,
+  displayDays: true,
   paidCredits: true,
+  paidDays: true,
+  autoExtend: true,
   owner: { select: { id: true, fullName: true, ratingAverage: true, ratingCount: true } },
 } as const;
 
@@ -48,16 +54,17 @@ export type ListingRecord = Prisma.ListingGetPayload<{ select: typeof listingSel
  * Listing cho app: { id, ownerId, title, description, price (chuỗi số), isNegotiable, condition, status,
  *   allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
  *   categoryId, category { id, name }, owner { id, fullName, ratingAverage, ratingCount },
- *   viewCount, createdAt, updatedAt, publishedAt, expiresAt, areaLabel } (+ paidCredits cho chủ tin)
+ *   viewCount, createdAt, updatedAt, publishedAt, expiresAt, startsAt, displayDays, areaLabel }
+ *   (+ paidCredits, paidDays, autoExtend cho chủ tin)
  *
  * Người xem không phải chủ tin chỉ thấy vị trí tới mức phường (không lộ số nhà).
  * areaLabel: "Phường, Tỉnh" để hiện trên thẻ tin.
  */
 export function toListingDto(listing: ListingRecord, owner = false) {
-  const { paidCredits, ...rest } = listing;
+  const { paidCredits, paidDays, autoExtend, ...rest } = listing;
   const location = owner ? listing.location : publicLocation(listing.location);
   const address = listing.location as { province?: { name?: string }; ward?: { name?: string } } | null;
-  return { ...rest, ...(owner && { paidCredits }), price: listing.price.toString(), location,
+  return { ...rest, ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(), location,
     areaLabel: address ? [address.ward?.name, address.province?.name].filter(Boolean).join(', ') : '' };
 }
 

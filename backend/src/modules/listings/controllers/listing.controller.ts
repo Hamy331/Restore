@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { created, ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
-import type { FeatureInput, ListingIdParams, ListingInput, MineQuery, StatusInput } from '../listing.dto.js';
+import type { AutoExtendInput, ExtendInput, FeatureInput, ListingIdParams, ListingInput, MineQuery, StatusInput } from '../listing.dto.js';
 import * as listingService from '../services/listing.service.js';
 
 /** Body có payWithCredits: true khi người dùng đồng ý trả xu cho tin vượt hạn mức */
@@ -27,8 +27,13 @@ export async function changeStatus(req: AuthRequest, res: Response) {
 }
 
 export async function extend(req: AuthRequest, res: Response) {
-  const { params } = getInput<ValidatedInput<undefined, ListingIdParams, undefined>>(res);
-  ok(res, await listingService.extendListing(req.user!.userId, params.id));
+  const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, ExtendInput>>(res);
+  ok(res, await listingService.extendListing(req.user!.userId, params.id, body.days));
+}
+
+export async function autoExtend(req: AuthRequest, res: Response) {
+  const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, AutoExtendInput>>(res);
+  ok(res, await listingService.setAutoExtend(req.user!.userId, params.id, body.enabled));
 }
 
 export async function boost(req: AuthRequest, res: Response) {

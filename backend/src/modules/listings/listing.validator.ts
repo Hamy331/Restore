@@ -18,7 +18,7 @@ export function listingInput(value: unknown, draft = false) {
   const fail = (message: string, field?: string): never => { throw new AppError(400, draft ? 'INVALID_DRAFT' : 'INVALID_LISTING', message, field); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('Dữ liệu tin không hợp lệ.');
   const body = value as Record<string, unknown>;
-  const allowed = ['title','description','price','condition','categoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes'];
+  const allowed = ['title','description','price','condition','categoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt'];
   // Cờ của thao tác đăng (trả xu, vẫn đăng dù trùng): controller đọc riêng, không thuộc nội dung tin
   const flags = draft ? [] : ['payWithCredits', 'allowDuplicate'];
   if (Object.keys(body).some((key) => !allowed.includes(key) && !flags.includes(key))) fail('Tin có trường không được hỗ trợ.');
@@ -46,12 +46,21 @@ export function listingInput(value: unknown, draft = false) {
     Object.keys(attributes).length > 40 || JSON.stringify(attributes).length > 10000) fail('Thuộc tính không hợp lệ.', 'attributes');
   const location = listingLocation(body.location);
   if (!draft && !location) fail('Chọn địa chỉ giao dịch.', 'location');
+  // Thời gian hiển thị: số ngày (null = số ngày miễn phí) và ngày hẹn bắt đầu (null = ngay khi duyệt); khoảng hợp lệ xét theo chuyên mục
+  const displayDays = body.displayDays ?? null;
+  if (displayDays !== null && (typeof displayDays !== 'number' || !Number.isInteger(displayDays) || displayDays < 1 || displayDays > 365)) {
+    fail('Số ngày hiển thị không hợp lệ.', 'displayDays');
+  }
+  const rawStart = body.startsAt ?? null;
+  const startsAt = typeof rawStart === 'string' && rawStart.length <= 40 ? new Date(rawStart) : null;
+  if (rawStart !== null && (!startsAt || Number.isNaN(startsAt.getTime()))) fail('Ngày bắt đầu không hợp lệ.', 'startsAt');
   return { title: (title as string).trim(), description: (description as string).trim(), categoryId: categoryId as string | null,
     condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0', isNegotiable: (allowSale && isNegotiable) as boolean,
     allowSale: allowSale as boolean, allowExchange: allowExchange as boolean,
     exchangeWish: allowExchange ? (exchangeWish as string).trim() : '', sellerType: sellerType as string,
     attributes: attributes as Prisma.InputJsonObject,
-    location: location ? JSON.parse(JSON.stringify(location)) as Prisma.InputJsonObject : Prisma.DbNull };
+    location: location ? JSON.parse(JSON.stringify(location)) as Prisma.InputJsonObject : Prisma.DbNull,
+    displayDays: displayDays as number | null, startsAt };
 }
 
 /** Tin đầy đủ để đăng: bắt buộc danh mục (tình trạng xét theo danh mục trong assertPublishable) */
@@ -148,6 +157,22 @@ export const statusBody = z.unknown().transform((body) => {
     throw new AppError(400, 'INVALID_STATUS', 'Trạng thái tin không hợp lệ.');
   }
   return { status: target as ListingStatus, payWithCredits: input?.payWithCredits === true };
+});
+
+/** Body POST /:id/extend: { days } số ngày hiển thị thêm (1-365); tối đa theo chuyên mục do service xét */
+export const extendBody = z.unknown().transform((body) => {
+  const days = (body as { days?: unknown } | undefined)?.days;
+  if (typeof days !== 'number' || !Number.isInteger(days) || days < 1 || days > 365) {
+    throw new AppError(400, 'INVALID_INPUT', 'Số ngày gia hạn không hợp lệ.', 'days');
+  }
+  return { days };
+});
+
+/** Body PATCH /:id/auto-extend: { enabled } */
+export const autoExtendBody = z.unknown().transform((body) => {
+  const enabled = (body as { enabled?: unknown } | undefined)?.enabled;
+  if (typeof enabled !== 'boolean') throw new AppError(400, 'INVALID_INPUT', 'Thiếu enabled.', 'enabled');
+  return { enabled };
 });
 
 /** Body POST /:id/feature: { packageId } là gói FEATURED đang bán */

@@ -11,8 +11,9 @@ import { LISTING_EDITABLE } from '../listing.type.js';
 import { validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import type { Db } from '../repositories/listing.repository.js';
-import { COUNTED_STATUSES } from '../repositories/posting-quota.repository.js';
-import { addDays, boostPrice, canExtend, featurePrice, daysLeft, extendedExpiry, isExpired } from '../listing-lifecycle.js';
+import { addableDays, addDays, boostPrice, categoryHasCondition, featurePrice, isExpired } from '../listing-lifecycle.js';
+import { extraDaysCredits, freeDaysFor, MAX_START_DELAY_DAYS, postingDisplayQuote } from '../display-pricing.js';
+import { COUNTED_STATUSES, findDayPacks } from '../repositories/posting-quota.repository.js';
 import { assertNotDuplicate, spendForListing } from './listing-lifecycle.service.js';
 import { assertPostingSlot, chargeListing, postingQuota } from './posting-quota.service.js';
 
@@ -41,9 +42,7 @@ export function canChangeListingStatus(current: ListingStatus, target: ListingSt
     (current === ListingStatus.HIDDEN && (target === ListingStatus.AVAILABLE || target === ListingStatus.SOLD || target === ListingStatus.EXCHANGED));
 }
 
-/** Danh mục có hỏi tình trạng hàng không: metadata.hasCondition, mặc định có (thú cưng thì không) */
-export const categoryHasCondition = (metadata: unknown) =>
-  (metadata as { hasCondition?: unknown } | null)?.hasCondition !== false;
+export { categoryHasCondition };
 
 /**
  * Danh mục còn dùng, tình trạng chưa ngừng, thuộc tính đúng metadata danh mục.
@@ -58,6 +57,33 @@ export async function assertPublishable(tx: Db, data: Pick<ListingInput, 'catego
     throw new AppError(400, 'INVALID_CONDITION', 'Tình trạng đã ngừng sử dụng.');
   }
   validateAttributes(data.attributes, category.metadata, true);
+  return category;
+}
+
+type DisplayCategory = { displayDays: number; maxDisplayDays: number; dayPackCredits: number };
+
+/** Gói tài khoản và mốc ngày dùng để tính giá ngày hiển thị */
+async function displayPricing(tx: Db, ownerId: string, now: Date) {
+  const [plan, packs] = await Promise.all([storePackageForUser(tx, ownerId, now), findDayPacks(tx)]);
+  return { plan: plan.package, packs };
+}
+
+/**
+ * Thời gian hiển thị lúc đăng: số ngày chọn (null = miễn phí) không quá tối đa của chuyên mục,
+ * ngày hẹn bắt đầu trong MAX_START_DELAY_DAYS ngày tới (đã qua thì hiện ngay khi duyệt). Trả về ngày phải trả và giá.
+ */
+export async function resolveDisplay(tx: Db, ownerId: string, now: Date, category: DisplayCategory,
+  data: { displayDays: number | null; startsAt: Date | null }) {
+  if (data.displayDays !== null && data.displayDays > category.maxDisplayDays) {
+    throw new AppError(400, 'INVALID_LISTING', `Chuyên mục này hiển thị tối đa ${category.maxDisplayDays} ngày.`, 'displayDays',
+      { maxDisplayDays: category.maxDisplayDays });
+  }
+  const startsAt = data.startsAt && data.startsAt.getTime() > now.getTime() ? data.startsAt : null;
+  if (startsAt && startsAt.getTime() > addDays(now, MAX_START_DELAY_DAYS).getTime()) {
+    throw new AppError(400, 'INVALID_LISTING', `Chỉ hẹn ngày bắt đầu trong ${MAX_START_DELAY_DAYS} ngày tới.`, 'startsAt');
+  }
+  const { plan, packs } = await displayPricing(tx, ownerId, now);
+  return { ...postingDisplayQuote(data.displayDays, category, packs, plan), startsAt };
 }
 
 /* ---------- Tin đăng ---------- */
@@ -69,12 +95,14 @@ export async function assertPublishable(tx: Db, data: Pick<ListingInput, 'catego
 export async function createListing(ownerId: string, data: ListingInput, payWithCredits = false, allowDuplicate = false) {
   const listing = await withQuotaTransaction(async (tx) => {
     const now = new Date();
-    await assertPublishable(tx, data);
+    const category = await assertPublishable(tx, data);
     await assertNotDuplicate(tx, ownerId, data, { allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits });
+    const display = await resolveDisplay(tx, ownerId, now, category, data);
     const created = await listingRepository.createListing(
-      { ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price }, tx);
-    await chargeListing(tx, ownerId, created.id, price, data.title);
+      { ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price,
+        displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays }, tx);
+    await chargeListing(tx, ownerId, created.id, price, data.title, display);
     return created;
   });
   return toOwnerListingDto(listing);
@@ -92,6 +120,9 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
       throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị hoặc đã ẩn.');
     }
     await assertPublishable(tx, data);
+    // Sửa tin không đổi thời gian hiển thị đã chọn / đã trả; muốn thêm ngày thì gia hạn
+    data.displayDays = current.displayDays;
+    data.startsAt = current.startsAt;
     const categoryChanged = current.categoryId !== data.categoryId;
     if (current.paidCredits > 0 && categoryChanged) {
       throw new AppError(409, 'CATEGORY_LOCKED', 'Tin đã trả xu không đổi được chuyên mục.', 'categoryId');
@@ -127,8 +158,9 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
         // Kích hoạt lại tin hết hạn: tính như đăng mới (còn suất thì miễn phí, hết suất thì trả xu), hiển thị thêm một kỳ
         const price = await assertPostingSlot(tx, ownerId, now,
           { categoryId: current.categoryId, daily: false, payWithCredits, excludeId: id });
+        const { plan } = await displayPricing(tx, ownerId, now);
         await updateOwnedListing(tx, id, ownerId, current.status, {
-          status: target, publishedAt: now, paidCredits: price, expiresAt: addDays(now, category.displayDays),
+          status: target, publishedAt: now, paidCredits: price, startsAt: null, expiresAt: addDays(now, freeDaysFor(category, plan)),
         });
         await spendForListing(tx, ownerId, id, price, `Kích hoạt lại tin · ${current.title}`);
         return listingRepository.findSelected(tx, id);
@@ -139,6 +171,8 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
         : 0;
       await updateOwnedListing(tx, id, ownerId, current.status, {
         status: target, ...(price > 0 && { paidCredits: price }),
+        // Tin đang chờ ngày hẹn mà người bán cho hiện sớm: bắt đầu hiển thị luôn, giữ ngày hết hạn
+        ...(current.startsAt && { startsAt: null, publishedAt: now }),
         ...(current.expiresAt === null && { expiresAt: addDays(now, category.displayDays) }),
       });
       await spendForListing(tx, ownerId, id, price, `Hiện lại tin vượt hạn mức · ${current.title}`);
@@ -151,23 +185,45 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
 }
 
 /**
- * Gia hạn tin đang hiển thị thêm Category.displayDays ngày, trả Category.extraListingCredits xu.
- * Còn hơn một kỳ hiển thị thì 409 EXTEND_TOO_EARLY; thiếu xu thì 409 NOT_ENOUGH_CREDITS.
+ * Gia hạn tin đang hiển thị (hoặc đang chờ ngày hẹn) thêm [days] ngày, trả xu theo giá ngày của chuyên mục
+ * (mua đúng mốc 30 / 60 / 90 ngày rẻ hơn, gói cao được giảm). Hạn mới không quá Category.maxDisplayDays ngày tính từ hôm nay:
+ * vượt thì 409 EXTEND_TOO_LONG (details.addableDays); thiếu xu thì 409 NOT_ENOUGH_CREDITS.
  */
-export async function extendListing(ownerId: string, id: string) {
+export async function extendListing(ownerId: string, id: string, days: number) {
   const listing = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const current = await requireOwnedListing(tx, id, ownerId);
-    if (current.status !== ListingStatus.AVAILABLE) {
+    const waiting = current.status === ListingStatus.HIDDEN && current.startsAt !== null;
+    if (current.status !== ListingStatus.AVAILABLE && !waiting) {
       throw new AppError(409, 'LISTING_NOT_EXTENDABLE', 'Chỉ gia hạn được tin đang hiển thị.');
     }
     const category = current.categoryId ? await listingRepository.findActiveCategory(tx, current.categoryId) : null;
     if (!category) throw new AppError(409, 'INVALID_LISTING', 'Danh mục không còn được sử dụng.');
-    if (!canExtend(current.expiresAt, now, category.displayDays)) {
-      throw new AppError(409, 'EXTEND_TOO_EARLY', `Tin còn ${daysLeft(current.expiresAt!, now)} ngày, gia hạn được khi còn tối đa ${category.displayDays} ngày.`);
+    const base = current.expiresAt && !isExpired(current.expiresAt, now) ? current.expiresAt : null;
+    const addable = addableDays(base, now, category.maxDisplayDays);
+    if (days > addable) {
+      throw new AppError(409, 'EXTEND_TOO_LONG', addable > 0
+        ? `Tin chỉ gia hạn thêm được tối đa ${addable} ngày (hiển thị tối đa ${category.maxDisplayDays} ngày).`
+        : `Tin đã hiển thị tối đa ${category.maxDisplayDays} ngày, chưa gia hạn thêm được.`,
+      'days', { addableDays: addable, maxDisplayDays: category.maxDisplayDays });
     }
-    await updateOwnedListing(tx, id, ownerId, current.status, { expiresAt: extendedExpiry(current.expiresAt, now, category.displayDays) });
-    await spendForListing(tx, ownerId, id, category.extraListingCredits, `Gia hạn tin ${category.displayDays} ngày · ${current.title}`);
+    const { plan, packs } = await displayPricing(tx, ownerId, now);
+    const credits = extraDaysCredits(days, category, packs, plan);
+    await updateOwnedListing(tx, id, ownerId, current.status, { expiresAt: addDays(base ?? now, days) });
+    await spendForListing(tx, ownerId, id, credits, `Gia hạn tin ${days} ngày · ${current.title}`);
+    return listingRepository.findSelected(tx, id);
+  });
+  return toOwnerListingDto(listing);
+}
+
+/** Bật / tắt tự gia hạn 30 ngày khi tin sắp hết hạn; chỉ gói có StorePackage.autoExtend (Cửa hàng) mới bật được */
+export async function setAutoExtend(ownerId: string, id: string, enabled: boolean) {
+  const listing = await withQuotaTransaction(async (tx) => {
+    const current = await requireOwnedListing(tx, id, ownerId);
+    if (enabled && !(await storePackageForUser(tx, ownerId, new Date())).package.autoExtend) {
+      throw new AppError(403, 'AUTO_EXTEND_NOT_AVAILABLE', 'Tự gia hạn chỉ có ở gói Cửa hàng.');
+    }
+    await updateOwnedListing(tx, id, ownerId, current.status, { autoExtend: enabled });
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);

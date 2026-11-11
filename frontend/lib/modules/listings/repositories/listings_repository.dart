@@ -40,8 +40,12 @@ abstract class ListingsRepository {
     bool payWithCredits = false,
   });
 
-  /// Gia hạn tin đang hiển thị thêm một kỳ, trả xu theo chuyên mục
-  Future<void> extend(String id);
+  /// Gia hạn tin đang hiển thị thêm [days] ngày, trả xu theo chuyên mục
+  /// (giá theo ngày, tròn gói 30/60/90 thì rẻ hơn)
+  Future<void> extend(String id, int days);
+
+  /// Bật/tắt tự gia hạn (chỉ gói có hỗ trợ, ví dụ Cửa hàng)
+  Future<void> setAutoExtend(String id, bool enabled);
 
   /// Đẩy tin đang hiển thị lên đầu 1 ngày: dùng lượt tặng của gói, hết lượt
   /// thì trả xu. Lỗi 409 ném [ListingBoostException].
@@ -134,7 +138,10 @@ class MockListingsRepository implements ListingsRepository {
   }
 
   @override
-  Future<void> extend(String id) async {}
+  Future<void> extend(String id, int days) async {}
+
+  @override
+  Future<void> setAutoExtend(String id, bool enabled) async {}
 
   @override
   Future<BoostResult> boost(String id) async =>
@@ -431,6 +438,16 @@ class ListingSaveException implements Exception {
     final code = _conflictCode;
     return code == PostingLimitReachedException.code ||
         code == PostingLimitReachedException.notEnoughCredits;
+  }
+
+  /// Ví không đủ xu (`NOT_ENOUGH_CREDITS`): số xu còn thiếu, null nếu không phải lỗi này
+  int? get missingCredits {
+    if (_conflictCode != PostingLimitReachedException.notEnoughCredits) {
+      return null;
+    }
+    final data = (cause as DioException).response?.data as Map;
+    final details = data['details'] is Map ? data['details'] as Map : const {};
+    return (details['missing'] as num?)?.toInt() ?? 0;
   }
 
   /// Đã có tin giống vậy (API trả 409 `DUPLICATE_LISTING` khi tin cũ đang
@@ -746,8 +763,16 @@ class ApiListingsRepository implements ListingsRepository {
   );
 
   @override
-  Future<void> extend(String id) =>
-      _dio.post<void>('/listings/${Uri.encodeComponent(id)}/extend');
+  Future<void> extend(String id, int days) => _dio.post<void>(
+    '/listings/${Uri.encodeComponent(id)}/extend',
+    data: {'days': days},
+  );
+
+  @override
+  Future<void> setAutoExtend(String id, bool enabled) => _dio.patch<void>(
+    '/listings/${Uri.encodeComponent(id)}/auto-extend',
+    data: {'enabled': enabled},
+  );
 
   @override
   Future<BoostResult> boost(String id) => _promotion(
