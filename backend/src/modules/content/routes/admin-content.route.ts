@@ -3,7 +3,7 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { authorizePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import {
-  adminReportQuery, adminTicketReplyBody, idParams, knowledgeBody, pageOnlyQuery, postBody, resolveReportBody, ticketStatusBody, versionBody,
+  adminPostListQuery, adminReportQuery, adminTicketReplyBody, idParams, knowledgeBody, pageOnlyQuery, postBody, resolveReportBody, ticketStatusBody, versionBody,
 } from '../content.validator.js';
 import * as knowledgeController from '../controllers/knowledge.controller.js';
 import * as postController from '../controllers/post.controller.js';
@@ -27,7 +27,7 @@ const manageUsers = authorizePermission(PERMISSION.USER_MANAGE);
  * Query params:
  *  - page?: number (mặc định 1)
  */
-adminContentRouter.get('/posts', manageContent, validate({ query: pageOnlyQuery }), postController.listForAdmin);
+adminContentRouter.get('/posts', manageContent, validate({ query: adminPostListQuery }), postController.listForAdmin);
 
 /**
  * Tạo bài viết (POST) hoặc sửa bài (PUT /posts/:id)

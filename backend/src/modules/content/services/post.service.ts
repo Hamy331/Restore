@@ -2,7 +2,7 @@ import { AppError } from '../../../common/errors/app-error.js';
 import { audit } from '../../../common/audit/admin-audit.js';
 import { ADMIN_PAGE_SIZE, changed, version } from '../../../common/validation/admin-input.js';
 import { withQuotaTransaction } from '../../commerce/index.js';
-import type { PageQuery, PostInput } from '../content.dto.js';
+import type { AdminPostListQuery, PageQuery, PostInput } from '../content.dto.js';
 import { PAGE_SIZE } from '../content.type.js';
 import * as postRepository from '../repositories/post.repository.js';
 
@@ -22,9 +22,11 @@ export async function getPublished(slug: string) {
 /* ---------- Quản trị (/admin/posts) ---------- */
 
 /** Mọi bài viết, 25 bài mỗi trang */
-export async function listForAdmin({ page }: PageQuery) {
+export async function listForAdmin({ page, withAuthor }: AdminPostListQuery) {
   const [items, total] = await postRepository.findPage((page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
-  return { items, total, page };
+  if (!withAuthor || !items.length) return { items, total, page };
+  const authors = await postRepository.findCreators(items.map(item => item.id));
+  return { items:items.map(item => ({...item, author:authors.get(item.id) ?? null})), total, page };
 }
 
 /**
