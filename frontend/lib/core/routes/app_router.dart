@@ -19,6 +19,8 @@ import 'package:restore/modules/account/views/follow_list/follow_list_view.dart'
 import 'package:restore/modules/account/views/language_settings/language_settings_view.dart';
 import 'package:restore/modules/account/views/public_profile/public_profile_view.dart';
 import 'package:restore/modules/account/views/account/account_view.dart';
+import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dart';
+import 'package:restore/modules/account/views/edit_profile/edit_profile_view.dart';
 import 'package:restore/modules/chat/views/messages/messages_view.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
 import 'package:restore/modules/chat/views/conversation/live_chat_conversation_view.dart';
@@ -351,6 +353,18 @@ GoRouter createAppRouter(
       path: '/settings',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (_, _) => const LanguageSettingsView(),
+    ),
+    // Chỉnh sửa hồ sơ, mở từ tab Tài khoản (extra = UserProfileCubit);
+    // thiếu extra (VD mở lại từ link) thì về tab Tài khoản
+    GoRoute(
+      path: EditProfileView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      redirect: (_, state) =>
+          state.extra is UserProfileCubit ? null : '/account',
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: EditProfileView(cubit: state.extra! as UserProfileCubit),
+      ),
     ),
     // Hồ sơ công khai và danh sách theo dõi (?tab=followers|following)
     GoRoute(

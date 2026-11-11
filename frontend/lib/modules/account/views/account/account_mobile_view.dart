@@ -15,7 +15,7 @@ import '../../bloc/user_profile/user_profile_state.dart';
 import '../../models/profile_models.dart';
 import './widgets/account_listings.dart';
 import './widgets/account_menu.dart';
-import './widgets/edit_profile_dialog.dart';
+import '../edit_profile/edit_profile_view.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/profile_posts.dart';
 import '../../../plans/views/plans/plans_view.dart';
@@ -66,6 +66,13 @@ class _AccountMobileViewState extends State<AccountMobileView> {
     if (mounted) context.read<UserProfileCubit>().load();
   }
 
+  /// Trang chỉnh sửa hồ sơ dùng chung cubit nên lưu xong hồ sơ cập nhật ngay
+  void openEditProfile() {
+    final cubit = context.read<UserProfileCubit>();
+    if (cubit.state.profile == null) return;
+    context.push(EditProfileView.path, extra: cubit);
+  }
+
   bool onScroll(ScrollNotification n) {
     if (n.metrics.axis != Axis.vertical || n.metrics.extentAfter > 300) {
       return false;
@@ -107,8 +114,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                               children: [
                                 const SizedBox(height: 16),
                                 _TopBar(
-                                  onEdit: () =>
-                                      showEditProfileDialog(context, userCubit),
+                                  onEdit: openEditProfile,
                                   onFollowing: profile == null
                                       ? null
                                       : () => openFollows(
@@ -130,14 +136,8 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                 else
                                   ProfileHeader(
                                     profile: profile,
-                                    onAvatarTap: () => showEditProfileDialog(
-                                      context,
-                                      userCubit,
-                                    ),
-                                    onBioTap: () => showEditProfileDialog(
-                                      context,
-                                      userCubit,
-                                    ),
+                                    onAvatarTap: openEditProfile,
+                                    onBioTap: openEditProfile,
                                     onFollowingTap: profile == null
                                         ? null
                                         : () => openFollows(

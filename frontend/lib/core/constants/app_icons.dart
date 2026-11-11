@@ -106,6 +106,7 @@ class AppIcons {
   static const IconData image = LucideIcons.image300;
   static const IconData imageBroken = LucideIcons.imageOff300;
   static const IconData zoomIn = LucideIcons.zoomIn300;
+  static const IconData scissors = LucideIcons.scissors300;
   static const IconData expand = LucideIcons.maximize300;
 
   // Viết bài (Bảng tin)

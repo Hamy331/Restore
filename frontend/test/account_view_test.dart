@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:restore/modules/account/views/edit_profile/edit_profile_view.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/repositories/auth_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,19 +19,43 @@ import 'support/fake_account_listings_repository.dart';
 import 'support/fake_profile_repository.dart';
 import 'package:restore/modules/account/views/account/account_view.dart';
 
-Widget host(Widget child) => BlocProvider(
-  create: (_) => AuthBloc(MockAuthRepository(latency: Duration.zero)),
-  child: MaterialApp(
-    locale: const Locale('vi'),
-    supportedLocales: AppLocalizations.supportedLocales,
-    localizationsDelegates: const [
-      AppLocalizations.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
+Widget host(Widget child) {
+  final router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (_, _) => Scaffold(body: child),
+      ),
+      GoRoute(
+        path: EditProfileView.path,
+        builder: (_, state) =>
+            EditProfileView(cubit: state.extra! as UserProfileCubit),
+      ),
     ],
-    home: Scaffold(body: child),
-  ),
+  );
+  return BlocProvider(
+    create: (_) => AuthBloc(MockAuthRepository(latency: Duration.zero)),
+    child: ScreenUtilInit(
+      designSize: const Size(375, 812),
+      builder: (_, _) => MaterialApp.router(
+        locale: const Locale('vi'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        routerConfig: router,
+      ),
+    ),
+  );
+}
+
+/// Ô nhập trong trang chỉnh sửa hồ sơ theo key của AppLabeledTextField
+Finder field(String key) => find.descendant(
+  of: find.byKey(ValueKey(key)),
+  matching: find.byType(TextField),
 );
 
 void main() {
@@ -54,13 +81,14 @@ void main() {
     await tester.tap(find.byTooltip('Chỉnh sửa trang'));
     await tester.pumpAndSettle();
     expect(find.text('Chỉnh sửa hồ sơ'), findsOneWidget);
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Tên hiển thị'),
-      'Huy Nguyễn',
-    );
+    await tester.enterText(field('edit-profile-name'), 'Huy Nguyễn');
     await tester.tap(find.text('Lưu'));
     await tester.pumpAndSettle();
     expect(find.text('Huy Nguyễn'), findsOneWidget);
+    // đợi thông báo "Đã lưu hồ sơ" tự ẩn để không che các nút phía trên
+    expect(find.text('Đã lưu hồ sơ'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 8));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Tạo cửa hàng'));
     await tester.pump();
@@ -95,14 +123,14 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('edit dialog validates and reports a taken username', (
+  testWidgets('edit profile page validates and reports a taken username', (
     tester,
   ) async {
     await tester.pumpWidget(host(account()));
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Chỉnh sửa trang'));
     await tester.pumpAndSettle();
-    final username = find.widgetWithText(TextFormField, 'Tên người dùng');
+    final username = field('edit-profile-username');
     await tester.enterText(username, 'Bad Name');
     await tester.tap(find.text('Lưu'));
     await tester.pumpAndSettle();

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,8 +9,6 @@ import 'package:restore/modules/shop_posters/bloc/poster_editor_cubit.dart';
 import 'package:restore/modules/shop_posters/models/shop_poster.dart';
 import 'package:restore/modules/shop_posters/models/shop_poster_overview.dart';
 import 'package:restore/modules/shop_posters/repositories/shop_poster_repository.dart';
-import 'package:restore/modules/shop_posters/utils/poster_crop.dart';
-import 'package:restore/modules/shop_posters/views/poster_crop/poster_crop_view.dart';
 import 'package:restore/modules/shop_posters/views/poster_editor/poster_editor_view.dart';
 import 'package:restore/modules/shop_posters/views/shop_posters/shop_posters_view.dart';
 
@@ -171,87 +168,4 @@ void main() {
     third.setStartsAt(DateTime.now().add(const Duration(days: 15)));
     expect(await third.submit(), isA<PosterSubmitted>());
   });
-
-  test(
-    'crop transform: cover fills the frame, contain leaves a gap, clamps',
-    () {
-      const image = Size(1600, 1200);
-      final cover = PosterCropTransform.cover(image);
-      final rect = cover.imageRect(image, const Size(1200, 600));
-      expect(rect.width, closeTo(1200, 0.01));
-      expect(rect.height, closeTo(900, 0.01));
-      expect(cover.leavesGap(image), isFalse);
-      expect(PosterCropTransform.contain(image).leavesGap(image), isTrue);
-
-      // kéo quá mép thì bị giữ lại để ảnh vẫn phủ kín khung
-      final moved = cover
-          .copyWith(center: const Offset(0.4, 0.4))
-          .clamped(image);
-      expect(moved.center.dx, 0);
-      expect(moved.center.dy, closeTo(0.125, 0.0001));
-      expect(
-        cover.copyWith(scale: 1).clamped(image).scale,
-        PosterCropTransform.maxScale(image),
-      );
-    },
-  );
-
-  testWidgets('crop page renders a 1200×600 poster', (tester) async {
-    final source = (await tester.runAsync(() => _png(800, 800)))!;
-    Uint8List? result;
-    await _pump(
-      tester,
-      Builder(
-        builder: (context) => Scaffold(
-          body: TextButton(
-            onPressed: () async =>
-                result = await PosterCropView.open(context, source),
-            child: const Text('open'),
-          ),
-        ),
-      ),
-    );
-    await tester.tap(find.text('open'));
-    for (var i = 0; i < 10; i++) {
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-    // giải mã ảnh chạy thật (bất đồng bộ)
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 300)),
-    );
-    await tester.pump();
-    expect(find.text('Căn chỉnh poster'), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('poster-crop-fit')));
-    await tester.pump();
-    await tester.drag(
-      find.byKey(const ValueKey('poster-crop-area')),
-      const Offset(40, 0),
-    );
-    await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('poster-crop-fill')));
-    await tester.pump();
-    await tester.runAsync(() async {
-      await tester.tap(find.text('Dùng ảnh này'));
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-    });
-    for (var i = 0; i < 10; i++) {
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-    expect(result, isNotNull);
-    final decoded = (await tester.runAsync(
-      () => decodeImageFromList(result!),
-    ))!;
-    expect([decoded.width, decoded.height], [1200, 600]);
-  });
-}
-
-Future<Uint8List> _png(int width, int height) async {
-  final recorder = ui.PictureRecorder();
-  Canvas(recorder).drawRect(
-    Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
-    Paint()..color = const Color(0xFF3366CC),
-  );
-  final image = await recorder.endRecording().toImage(width, height);
-  final data = await image.toByteData(format: ui.ImageByteFormat.png);
-  return data!.buffer.asUint8List();
 }

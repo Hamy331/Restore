@@ -300,7 +300,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accSave => 'Lưu';
 
   @override
-  String get accChangeAvatar => 'Đổi ảnh đại diện';
+  String get accChangeAvatar => 'Đổi ảnh';
 
   @override
   String get accRemoveAvatar => 'Xóa ảnh';
@@ -344,7 +344,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accCoins => 'Xu ReStore';
 
   @override
-  String get accSaved => 'Đã lưu';
+  String get accSaved => 'Đã lưu hồ sơ';
 
   @override
   String get accSavedSearches => 'Tìm kiếm đã lưu';
@@ -4513,25 +4513,75 @@ class AppLocalizationsVi extends AppLocalizations {
   String get spCropTitle => 'Căn chỉnh poster';
 
   @override
-  String get spCropHint =>
-      'Kéo để di chuyển, chụm hai ngón hoặc kéo thanh trượt để phóng to, thu nhỏ. Phần trống được lấp bằng nền mờ của chính ảnh.';
-
-  @override
-  String get spCropFill => 'Lấp đầy khung';
-
-  @override
-  String get spCropFit => 'Vừa toàn ảnh';
-
-  @override
-  String get spCropDone => 'Dùng ảnh này';
-
-  @override
-  String get spCropZoom => 'Thu phóng';
-
-  @override
-  String get spCropLowRes =>
-      'Ảnh gốc khá nhỏ so với khung, poster có thể bị mờ. Thử thu nhỏ hoặc chọn ảnh lớn hơn.';
-
-  @override
   String get spAdjust => 'Căn chỉnh lại';
+
+  @override
+  String get cropDone => 'Dùng ảnh này';
+
+  @override
+  String get cropFill => 'Lấp đầy khung';
+
+  @override
+  String get cropFit => 'Vừa toàn ảnh';
+
+  @override
+  String get cropZoom => 'Thu phóng';
+
+  @override
+  String get cropHint =>
+      'Kéo để di chuyển, chụm hai ngón hoặc kéo thanh trượt để phóng to, thu nhỏ. Phần trống được tô bằng nền bạn chọn.';
+
+  @override
+  String get cropLowRes =>
+      'Ảnh gốc khá nhỏ so với khung, ảnh có thể bị mờ. Thử thu nhỏ hoặc chọn ảnh lớn hơn.';
+
+  @override
+  String get cropLoadError => 'Không mở được ảnh này, hãy thử ảnh khác.';
+
+  @override
+  String get accAvatarSection => 'Ảnh đại diện';
+
+  @override
+  String get accAvatarHint =>
+      'Ảnh hiển thị trong khung tròn ở hồ sơ, tin đăng và tin nhắn. Bấm Căn chỉnh để chọn phần ảnh muốn hiện.';
+
+  @override
+  String get accAdjustAvatar => 'Căn chỉnh';
+
+  @override
+  String get accAvatarCropTitle => 'Căn chỉnh ảnh đại diện';
+
+  @override
+  String get accInfoSection => 'Thông tin hồ sơ';
+
+  @override
+  String get accDisplayNameHint => 'VD: Nguyễn Văn A hoặc tên cửa hàng';
+
+  @override
+  String get accUsernameHelper =>
+      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.';
+
+  @override
+  String get accBioHint => 'Vài dòng giới thiệu về bạn hoặc cửa hàng';
+
+  @override
+  String get cropBackground => 'Nền';
+
+  @override
+  String get cropBgBlur => 'Mờ';
+
+  @override
+  String get cropBgAuto => 'Theo ảnh';
+
+  @override
+  String get cropBgWhite => 'Trắng';
+
+  @override
+  String get cropBgBlack => 'Đen';
+
+  @override
+  String get cropTrim => 'Bỏ viền thừa';
+
+  @override
+  String get cropTrimOn => 'Đã bỏ viền thừa';
 }

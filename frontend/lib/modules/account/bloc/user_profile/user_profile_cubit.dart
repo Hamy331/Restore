@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../services/image_upload_service.dart';
 import '../../repositories/profile_repository.dart';
@@ -56,10 +58,10 @@ class UserProfileCubit extends Cubit<UserProfileState> {
     }
   }
 
-  /// Tải ảnh lên và trả về URL để form lưu cùng các trường khác.
-  Future<String> uploadAvatar(String path) =>
-      (_uploader ?? ImageUploadService()).upload(
-        path,
+  /// Tải ảnh đại diện đã cắt lên và trả về URL để lưu cùng các trường khác.
+  Future<String> uploadAvatar(Uint8List bytes) =>
+      (_uploader ?? ImageUploadService()).uploadBytes(
+        bytes,
         purpose: ImagePurpose.avatar,
       );
 }

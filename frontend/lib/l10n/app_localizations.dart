@@ -713,7 +713,7 @@ abstract class AppLocalizations {
   /// No description provided for @accSaved.
   ///
   /// In en, this message translates to:
-  /// **'Saved'**
+  /// **'Profile saved'**
   String get accSaved;
 
   /// No description provided for @accSavedSearches.
@@ -7976,47 +7976,143 @@ abstract class AppLocalizations {
   /// **'Adjust poster'**
   String get spCropTitle;
 
-  /// No description provided for @spCropHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Drag to move; pinch or use the slider to zoom. Empty space is filled with a blurred copy of the image.'**
-  String get spCropHint;
-
-  /// No description provided for @spCropFill.
-  ///
-  /// In en, this message translates to:
-  /// **'Fill frame'**
-  String get spCropFill;
-
-  /// No description provided for @spCropFit.
-  ///
-  /// In en, this message translates to:
-  /// **'Show whole image'**
-  String get spCropFit;
-
-  /// No description provided for @spCropDone.
-  ///
-  /// In en, this message translates to:
-  /// **'Use this image'**
-  String get spCropDone;
-
-  /// No description provided for @spCropZoom.
-  ///
-  /// In en, this message translates to:
-  /// **'Zoom'**
-  String get spCropZoom;
-
-  /// No description provided for @spCropLowRes.
-  ///
-  /// In en, this message translates to:
-  /// **'The image is small for this frame and may look blurry. Zoom out or pick a larger image.'**
-  String get spCropLowRes;
-
   /// No description provided for @spAdjust.
   ///
   /// In en, this message translates to:
   /// **'Adjust again'**
   String get spAdjust;
+
+  /// No description provided for @cropDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this image'**
+  String get cropDone;
+
+  /// No description provided for @cropFill.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill frame'**
+  String get cropFill;
+
+  /// No description provided for @cropFit.
+  ///
+  /// In en, this message translates to:
+  /// **'Show whole image'**
+  String get cropFit;
+
+  /// No description provided for @cropZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom'**
+  String get cropZoom;
+
+  /// No description provided for @cropHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move; pinch or use the slider to zoom. Empty space is filled with the background you pick.'**
+  String get cropHint;
+
+  /// No description provided for @cropLowRes.
+  ///
+  /// In en, this message translates to:
+  /// **'The image is small for this frame and may look blurry. Zoom out or pick a larger image.'**
+  String get cropLowRes;
+
+  /// No description provided for @cropLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this image. Try another one.'**
+  String get cropLoadError;
+
+  /// No description provided for @accAvatarSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get accAvatarSection;
+
+  /// No description provided for @accAvatarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown in a circle on your profile, listings and messages. Tap Adjust to choose which part shows.'**
+  String get accAvatarHint;
+
+  /// No description provided for @accAdjustAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust'**
+  String get accAdjustAvatar;
+
+  /// No description provided for @accAvatarCropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust profile photo'**
+  String get accAvatarCropTitle;
+
+  /// No description provided for @accInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile details'**
+  String get accInfoSection;
+
+  /// No description provided for @accDisplayNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Jane Doe or your shop name'**
+  String get accDisplayNameHint;
+
+  /// No description provided for @accUsernameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'3–30 characters: lowercase letters, numbers, dots or underscores.'**
+  String get accUsernameHelper;
+
+  /// No description provided for @accBioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A few lines about you or your shop'**
+  String get accBioHint;
+
+  /// No description provided for @cropBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Background'**
+  String get cropBackground;
+
+  /// No description provided for @cropBgBlur.
+  ///
+  /// In en, this message translates to:
+  /// **'Blur'**
+  String get cropBgBlur;
+
+  /// No description provided for @cropBgAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Match'**
+  String get cropBgAuto;
+
+  /// No description provided for @cropBgWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get cropBgWhite;
+
+  /// No description provided for @cropBgBlack.
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get cropBgBlack;
+
+  /// No description provided for @cropTrim.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove plain borders'**
+  String get cropTrim;
+
+  /// No description provided for @cropTrimOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain borders removed'**
+  String get cropTrimOn;
 }
 
 class _AppLocalizationsDelegate
