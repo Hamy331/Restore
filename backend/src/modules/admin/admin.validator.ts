@@ -14,6 +14,7 @@ export const pageOnlyQuery = z.record(z.string(), z.unknown()).transform((query)
 export const userListQuery = z.record(z.string(), z.unknown()).transform((query) => ({
   details: query.details === '1',
   q: query.q ? { name: text(query.q, 'q', 1, 100), email: String(query.q) } : undefined,
+  status: query.status ? choice(query.status, ['UNVERIFIED', 'ACTIVE', 'SUSPENDED', 'BANNED'] as const) : undefined,
   page: page(query.page),
 }));
 

@@ -49,7 +49,13 @@ export function Dashboard({ session }: { session: Session }) {
   if (!data) return <Skeleton active />;
   const pending = queue.reduce((n, q) => n + data[q.key], 0);
   const platform = [
-    { key: 'members', label: 'Thành viên hoạt động', count: data.activeUsers, icon: TeamOutlined },
+    {
+      key: 'members',
+      label: 'Thành viên hoạt động',
+      count: data.activeUsers,
+      icon: TeamOutlined,
+      filter: 'ACTIVE',
+    },
     {
       key: 'listings',
       label: 'Tin đang hiển thị',

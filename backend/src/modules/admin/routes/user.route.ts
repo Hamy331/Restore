@@ -21,6 +21,7 @@ userRouter.get('/me', authorizePermission(PERMISSION.ADMIN_ACCESS), userControll
  *
  * Query params:
  *  - q?: string (1-100) - tìm trong họ tên hoặc email
+ *  - status?: 'UNVERIFIED' | 'ACTIVE' | 'SUSPENDED' | 'BANNED'
  *  - page?: number (mặc định 1)
  *
  * Trả về: { items, total, page }
