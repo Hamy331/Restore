@@ -107,6 +107,7 @@ flutter:
     - assets/images/auth/
     - assets/images/marketplace/
     - assets/images/banners/
+    - assets/images/shops/
     - assets/logos/
     - assets/data/
 

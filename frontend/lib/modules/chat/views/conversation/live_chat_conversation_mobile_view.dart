@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/utils/app_image_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_icons.dart';
@@ -146,7 +147,7 @@ class _Header extends StatelessWidget {
         CircleAvatar(
           radius: 19,
           backgroundImage: person.avatarUrl != null
-              ? NetworkImage(person.avatarUrl!)
+              ? appImageProvider(person.avatarUrl!)
               : null,
           child: person.avatarUrl == null
               ? Text(person.fullName.isEmpty ? '?' : person.fullName[0])

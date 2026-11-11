@@ -30,6 +30,7 @@ export const listingSelect = {
   title: true,
   description: true,
   price: true,
+  originalPrice: true,
   isNegotiable: true,
   ownerId: true, categoryId: true, status: true, updatedAt: true,
   allowSale: true, allowExchange: true, exchangeWish: true, sellerType: true, attributes: true, location: true, reviewReason: true,
@@ -52,7 +53,7 @@ export type ListingRecord = Prisma.ListingGetPayload<{ select: typeof listingSel
 
 /**
  * Listing cho app: { id, ownerId, title, description, price (chuỗi số), isNegotiable, condition, status,
- *   allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
+ *   originalPrice (giá trước giảm, null = không giảm), allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
  *   categoryId, category { id, name }, owner { id, fullName, ratingAverage, ratingCount },
  *   viewCount, createdAt, updatedAt, publishedAt, expiresAt, startsAt, displayDays, areaLabel }
  *   (+ paidCredits, paidDays, autoExtend cho chủ tin)
@@ -64,7 +65,8 @@ export function toListingDto(listing: ListingRecord, owner = false) {
   const { paidCredits, paidDays, autoExtend, ...rest } = listing;
   const location = owner ? listing.location : publicLocation(listing.location);
   const address = listing.location as { province?: { name?: string }; ward?: { name?: string } } | null;
-  return { ...rest, ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(), location,
+  return { ...rest, ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
+    originalPrice: listing.originalPrice?.toString() ?? null, location,
     areaLabel: address ? [address.ward?.name, address.province?.name].filter(Boolean).join(', ') : '' };
 }
 

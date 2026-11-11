@@ -69,6 +69,8 @@ model User {
 
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
+  shop           Shop?
+  shopFollows    ShopFollow[]
 
   @@index([status, suspendedUntil])
 }
@@ -161,6 +163,8 @@ model Listing {
   title         String
   description   String
   price         Decimal
+  /// Giá gốc trước khi giảm (null = không giảm); > price thì tin hiện ở "Trải nghiệm hàng hiệu"
+  originalPrice Decimal?
   isNegotiable  Boolean          @default(true)
   condition     ListingCondition?
   status        ListingStatus    @default(AVAILABLE)
@@ -689,4 +693,70 @@ model DisplayDayPack {
   days            Int     @id
   discountPercent Int
   active          Boolean @default(true)
+}
+
+/// Cách shop được xác minh: shop gốc của thương hiệu, hoặc ReStore kiểm tra giấy tờ và cấp chứng nhận
+enum ShopVerificationType {
+  OFFICIAL_BRAND
+  CERTIFIED
+}
+
+enum ShopBannerStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Gian hàng của một tài khoản bán (thường là gói Cửa hàng). Chỉ hiện ở "Shop uy tín" khi đã xác minh
+model Shop {
+  id               String                @id @default(uuid())
+  ownerId          String                @unique
+  owner            User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name             String
+  tagline          String                @default("")
+  description      String                @default("")
+  logoUrl          String?
+  coverUrl         String?
+  /// Màu nhận diện hex, VD "#1428A0"
+  accentColor      String?
+  /// null = chưa xác minh
+  verificationType ShopVerificationType?
+  verifiedAt       DateTime?
+  /// Mã chứng nhận ReStore cấp, VD "RS-2026-00128"
+  certificateCode  String?
+  categoryIds      String[]
+  /// Địa chỉ hiển thị, VD "Quận 1, TP. Hồ Chí Minh"
+  address          String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  followers        ShopFollow[]
+  banners          ShopBanner[]
+
+  @@index([verificationType, verifiedAt])
+}
+
+model ShopFollow {
+  userId    String
+  shopId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, shopId])
+  @@index([shopId])
+}
+
+/// Banner sự kiện shop gửi lên (ảnh 1200 x 600), admin duyệt rồi mới hiện
+model ShopBanner {
+  id        String           @id @default(uuid())
+  shopId    String
+  shop      Shop             @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  title     String
+  imageUrl  String
+  startsAt  DateTime?
+  endsAt    DateTime?
+  status    ShopBannerStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+
+  @@index([shopId, status])
 }

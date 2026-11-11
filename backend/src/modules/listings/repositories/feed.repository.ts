@@ -4,13 +4,16 @@ import { listingSelect } from '../listing.dto.js';
 import type { ListingFilters } from '../listing.type.js';
 import { visible } from './listing.repository.js';
 
+/** Bộ lọc thêm của trang Shop uy tín */
+type ShopFilters = { verifiedShop?: boolean; onSale?: boolean };
+
 export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boolean };
 
 // ponytail: distance uses the public ward center; add PostGIS/indexes when the catalog needs it.
 /**
  * SQL xếp hạng tin: gần nhất (nearby), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian.
  */
-function rankedQuery(filters: ListingFilters, now: Date) {
+function rankedQuery(filters: ListingFilters & ShopFilters, now: Date) {
  const distance = !filters.nearby ? Prisma.sql`NULL::double precision` : Prisma.sql`
  CASE WHEN l.location #>> '{ward,center,latitude}' IS NULL OR l.location #>> '{ward,center,longitude}' IS NULL THEN NULL
  ELSE 6371*acos(GREATEST(-1,LEAST(1,
@@ -39,6 +42,9 @@ function rankedQuery(filters: ListingFilters, now: Date) {
         ) boosted ON TRUE
         WHERE l.status = 'AVAILABLE'
           AND (${filters.allowExchange ?? false} = false OR l."allowExchange"=true)
+          AND (${filters.verifiedShop ?? false} = false OR EXISTS (
+            SELECT 1 FROM "Shop" s WHERE s."ownerId" = l."ownerId" AND s."verificationType" IS NOT NULL))
+          AND (${filters.onSale ?? false} = false OR l."originalPrice" > l.price)
           AND (${filters.nearby?.radius ?? null}::double precision IS NULL OR ${distance} <= ${filters.nearby?.radius ?? null})
           AND (${filters.q} = '' OR POSITION(LOWER(${filters.q}) IN LOWER(l.title)) > 0)
           AND (${filters.categoryId} = '' OR l."categoryId" = ${filters.categoryId})
@@ -56,7 +62,7 @@ function rankedQuery(filters: ListingFilters, now: Date) {
  * Lấy một trang id tin đã xếp hạng (đẩy tin, gói cửa hàng, khoảng cách, thời gian)
  * cùng tổng số tin khớp bộ lọc.
  */
-export async function findRankedPage(filters: ListingFilters, now: Date, limit: number, skip: number) {
+export async function findRankedPage(filters: ListingFilters & ShopFilters, now: Date, limit: number, skip: number) {
   const query = rankedQuery(filters, now);
   const [rows, totals] = await prisma.$transaction([
     prisma.$queryRaw<RankedRow[]>`${query} LIMIT ${limit} OFFSET ${skip}`,

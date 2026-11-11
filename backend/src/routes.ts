@@ -12,6 +12,7 @@ import { wantedAlertRouter } from './modules/wanted-alerts/index.js';
 import { chatRouter } from './modules/chat/index.js';
 import { feedRouter } from './modules/feeds/index.js';
 import { mediaRouter } from './modules/media/media.route.js';
+import { shopRouter } from './modules/shops/index.js';
 
 /** Toàn bộ API, gắn dưới tiền tố /api/v1 trong app.ts. */
 export const apiRouter = Router();
@@ -24,6 +25,7 @@ apiRouter.use('/listings', listingsRouter);
 apiRouter.use('/wanted-alerts', wantedAlertRouter);
 
 apiRouter.use('/stores', storeRouter);
+apiRouter.use('/shops', shopRouter);
 apiRouter.use('/promotions', promotionRouter);
 apiRouter.use('/credits', creditRouter);
 apiRouter.use('/payments', paymentRouter);

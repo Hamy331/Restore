@@ -254,6 +254,9 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
     ...search,
     ...(filter === 'nearby' || (filter !== 'newest' && nearby) ? { nearby } : {}),
     ...(filter === 'exchange' || allowExchange ? { allowExchange: true } : {}),
+    // Trang Shop uy tín: chỉ tin của shop đã xác minh, onSale = đang giảm giá
+    ...(raw.verifiedShop === 'true' ? { verifiedShop: true } : {}),
+    ...(raw.onSale === 'true' ? { onSale: true } : {}),
   };
   return { filter, pagination, filters };
 });
