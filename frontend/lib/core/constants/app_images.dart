@@ -32,11 +32,15 @@ class CoreImages {
 /// danh mục nào chưa có ảnh sẽ hiển thị icon dự phòng).
 class CategoryImages {
   const CategoryImages();
-  final String? phone = null;
-  final String electronics = 'assets/images/marketplace/listing-camera.png';
-  final String? vehicles = null;
-  final String? fashion = null;
-  final String? appliances = null;
-  final String? pets = null;
-  final String home = 'assets/images/marketplace/listing-lamp.png';
+  static const _dir = 'assets/images/categories';
+  final String phone = '$_dir/phones.png';
+  final String electronics = '$_dir/electronics.png';
+  final String vehicles = '$_dir/vehicles.png';
+  final String fashion = '$_dir/fashion.png';
+  final String appliances = '$_dir/appliances.png';
+  final String pets = '$_dir/pets.png';
+  final String home = '$_dir/furniture.png';
+  final String books = '$_dir/books.png';
+  final String sports = '$_dir/sports.png';
+  final String other = '$_dir/other.png';
 }

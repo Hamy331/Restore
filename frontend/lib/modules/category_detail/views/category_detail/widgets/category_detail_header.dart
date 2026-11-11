@@ -4,6 +4,7 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/models/listing_filter.dart';
+import 'package:restore/shared/widgets/app_category_icon.dart';
 import 'package:restore/shared/widgets/app_circle_icon_button.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_bar.dart';
@@ -104,10 +105,13 @@ class _CategoryTitle extends StatelessWidget {
           ),
           child: category == null
               ? null
-              : Icon(
-                  AppIcons.forCategory(category.iconKey),
-                  size: 18,
-                  color: AppColors.primaryDark,
+              : Center(
+                  child: AppCategoryIcon(
+                    imageUrl: category.imageUrl,
+                    iconKey: category.iconKey,
+                    size: 24,
+                    fallbackSize: 18,
+                  ),
                 ),
         ),
         const SizedBox(width: 10),

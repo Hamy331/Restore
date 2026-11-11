@@ -97,7 +97,7 @@
               "en": "Furniture & decor",
               "vi": "Nội thất, trang trí"
             },
-            "imageUrl": "assets/images/marketplace/listing-lamp.png",
+            "imageUrl": "assets/images/categories/furniture.png",
             "attributes": [
               {
                 "key": "home_type",
@@ -252,7 +252,7 @@
                 "en": "Furniture & decor",
                 "vi": "Nội thất, trang trí"
               },
-              "imageUrl": "assets/images/marketplace/listing-lamp.png",
+              "imageUrl": "assets/images/categories/furniture.png",
               "attributes": [
                 {
                   "key": "home_type",
@@ -387,7 +387,7 @@
                 "en": "Furniture & decor",
                 "vi": "Nội thất, trang trí"
               },
-              "imageUrl": "assets/images/marketplace/listing-lamp.png",
+              "imageUrl": "assets/images/categories/furniture.png",
               "attributes": [
                 {
                   "key": "home_type",
@@ -522,7 +522,7 @@
               "en": "Furniture & decor",
               "vi": "Nội thất, trang trí"
             },
-            "imageUrl": "assets/images/marketplace/listing-lamp.png",
+            "imageUrl": "assets/images/categories/furniture.png",
             "attributes": [
               {
                 "key": "home_type",

@@ -340,6 +340,7 @@ class ListingMockData {
         'Textbooks, novels, course books...',
       ),
       'icon': 'book',
+      'imageUrl': AppImages.categoryImages.books,
       'attributes': [
         _select(
           'genre',
@@ -371,6 +372,7 @@ class ListingMockData {
         'Gym gear, sport bikes, camping...',
       ),
       'icon': 'sport',
+      'imageUrl': AppImages.categoryImages.sports,
       'attributes': [
         _text(
           'sport_type',
@@ -390,6 +392,7 @@ class ListingMockData {
         'Items that fit no other category',
       ),
       'icon': 'other',
+      'imageUrl': AppImages.categoryImages.other,
       'attributes': [_text('brand', _t('Thương hiệu', 'Brand'))],
     },
   ];
