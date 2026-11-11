@@ -1029,7 +1029,7 @@
             "en": "Furniture & decor",
             "vi": "Nội thất, trang trí"
           },
-          "imageUrl": "assets/images/marketplace/listing-lamp.png",
+          "imageUrl": "assets/images/categories/furniture.png",
           "attributes": [
             {
               "key": "home_type",
@@ -1950,7 +1950,8 @@
           "description": {
             "en": "Items that fit no other category",
             "vi": "Các món đồ chưa có danh mục phù hợp"
-          }
+          },
+          "imageUrl": "assets/images/categories/other.png"
         },
         "images": [
           "/api/v1/listings/media/<uuid>.png",

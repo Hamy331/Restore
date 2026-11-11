@@ -254,7 +254,7 @@ class _CategoryList extends StatelessWidget {
           title: categories[i].name.of(context),
           description: categories[i].description.of(context),
           imagePath: categories[i].imageUrl,
-          fallbackIcon: AppIcons.forCategory(categories[i].iconKey),
+          iconKey: categories[i].iconKey,
           showBottomBorder: i < categories.length - 1,
           isLocked: categoryQuota?.isFull ?? false,
           footer: categoryQuota == null || categoryQuota.used == 0

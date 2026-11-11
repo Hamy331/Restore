@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
-import 'package:restore/shared/widgets/app_local_image.dart';
+import 'package:restore/shared/widgets/app_category_icon.dart';
 import 'package:restore/core/constants/app_icons.dart';
 
-/// Một dòng danh mục: ảnh bo góc, tên, mô tả ngắn và mũi tên.
+/// Một dòng danh mục: ảnh danh mục, tên, mô tả ngắn và mũi tên.
 /// [footer] hiện dưới mô tả (VD số tin đã đăng); [isLocked] làm mờ ảnh và
 /// đổi mũi tên thành ổ khoá khi chuyên mục đã đủ số tin.
 class CategoryCard extends StatelessWidget {
   final String title;
   final String description;
   final String? imagePath;
-  final IconData fallbackIcon;
+
+  /// Khoá icon Lucide dự phòng khi danh mục chưa có ảnh
+  final String? iconKey;
   final VoidCallback onTap;
   final bool showBottomBorder;
   final Widget? footer;
@@ -20,7 +22,7 @@ class CategoryCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.description,
-    required this.fallbackIcon,
+    this.iconKey,
     required this.onTap,
     this.imagePath,
     this.showBottomBorder = true,
@@ -58,22 +60,12 @@ class CategoryCard extends StatelessWidget {
                   color: AppColors.primarySoft.withValues(alpha: 0.8),
                   border: Border.all(color: Colors.white, width: 2),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: imagePath == null
-                      ? Icon(
-                          fallbackIcon,
-                          color: AppColors.primaryDark,
-                          size: 34,
-                        )
-                      : AppLocalImage(
-                          path: imagePath!,
-                          fallbackIcon: fallbackIcon,
-                          cacheWidth:
-                              (imageSize *
-                                      MediaQuery.devicePixelRatioOf(context))
-                                  .round(),
-                        ),
+                alignment: Alignment.center,
+                child: AppCategoryIcon(
+                  imageUrl: imagePath,
+                  iconKey: iconKey,
+                  size: imageSize - 18,
+                  fallbackSize: 34,
                 ),
               ),
             ),

@@ -18,7 +18,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "iPhone, Samsung, Xiaomi, OPPO..."
     },
     "icon": "phone",
-    "imageUrl": null,
+    "imageUrl": "assets/images/categories/phones.png",
     "attributes": [
       {
         "key": "brand",
@@ -281,7 +281,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Laptops, cameras, headphones, tablets..."
     },
     "icon": "electronics",
-    "imageUrl": "assets/images/marketplace/listing-camera.png",
+    "imageUrl": "assets/images/categories/electronics.png",
     "attributes": [
       {
         "key": "device_type",
@@ -431,7 +431,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Motorbikes, bicycles, cars, parts..."
     },
     "icon": "vehicle",
-    "imageUrl": null,
+    "imageUrl": "assets/images/categories/vehicles.png",
     "attributes": [
       {
         "key": "vehicle_type",
@@ -564,7 +564,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Clothes, shoes, bags..."
     },
     "icon": "fashion",
-    "imageUrl": null,
+    "imageUrl": "assets/images/categories/fashion.png",
     "attributes": [
       {
         "key": "product_type",
@@ -706,7 +706,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Fridges, washing machines, air conditioners..."
     },
     "icon": "appliance",
-    "imageUrl": null,
+    "imageUrl": "assets/images/categories/appliances.png",
     "attributes": [
       {
         "key": "appliance_type",
@@ -846,7 +846,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Dogs, cats, birds, pet accessories..."
     },
     "icon": "pet",
-    "imageUrl": null,
+    "imageUrl": "assets/images/categories/pets.png",
     "hasCondition": false,
     "attributes": [
       {
@@ -988,7 +988,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Furniture, lamps, kitchenware, decor..."
     },
     "icon": "home",
-    "imageUrl": "assets/images/marketplace/listing-lamp.png",
+    "imageUrl": "assets/images/categories/furniture.png",
     "attributes": [
       {
         "key": "home_type",
@@ -1077,6 +1077,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Textbooks, novels, course books..."
     },
     "icon": "book",
+    "imageUrl": "assets/images/categories/books.png",
     "attributes": [
       {
         "key": "genre",
@@ -1163,6 +1164,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Gym gear, sport bikes, camping..."
     },
     "icon": "sport",
+    "imageUrl": "assets/images/categories/sports.png",
     "attributes": [
       {
         "key": "sport_type",
@@ -1213,6 +1215,7 @@ export const CATEGORIES: CategorySeed[] = [
       "en": "Items that fit no other category"
     },
     "icon": "other",
+    "imageUrl": "assets/images/categories/other.png",
     "attributes": [
       {
         "key": "brand",
