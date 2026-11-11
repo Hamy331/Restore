@@ -25,6 +25,7 @@
         "fullName": "user-admin",
         "username": "user_admin",
         "role": "ADMIN",
+        "permissions": ["profile:read", "admin:access", "user:manage", "catalog:manage", "banner:manage", "listing:moderate", "store:order-manage", "promotion:manage", "content:manage"],
         "status": "ACTIVE",
         "suspendedUntil": null,
         "updatedAt": "<date>",

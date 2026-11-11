@@ -12,6 +12,7 @@ export const pageOnlyQuery = z.record(z.string(), z.unknown()).transform((query)
  * Email dùng chuỗi chưa trim như API cũ.
  */
 export const userListQuery = z.record(z.string(), z.unknown()).transform((query) => ({
+  details: query.details === '1',
   q: query.q ? { name: text(query.q, 'q', 1, 100), email: String(query.q) } : undefined,
   page: page(query.page),
 }));
@@ -28,3 +29,11 @@ export const userActionBody = z.unknown().transform((value) => {
 });
 
 export const userIdParams = z.object({ id: z.string() });
+
+export const auditQuery = z.object({
+  page: z.string().optional().transform(page),
+  before: z.iso.datetime().optional(),
+  q: z.string().trim().max(100).optional(),
+  targetType: z.string().max(60).optional().transform(value => value || undefined),
+  action: z.string().max(60).optional().transform(value => value || undefined),
+});

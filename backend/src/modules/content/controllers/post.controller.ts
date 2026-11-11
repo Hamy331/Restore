@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
-import type { PageQuery, PostInput } from '../content.dto.js';
+import type { AdminPostListQuery, PageQuery, PostInput } from '../content.dto.js';
 import * as postService from '../services/post.service.js';
 
 export async function list(_req: AuthRequest, res: Response) {
@@ -16,7 +16,7 @@ export async function getBySlug(_req: AuthRequest, res: Response) {
 /* ---------- /admin/posts ---------- */
 
 export async function listForAdmin(_req: AuthRequest, res: Response) {
-  ok(res, await postService.listForAdmin(getInput<ValidatedInput<PageQuery>>(res).query));
+  ok(res, await postService.listForAdmin(getInput<ValidatedInput<AdminPostListQuery>>(res).query));
 }
 
 export async function create(req: AuthRequest, res: Response) {
