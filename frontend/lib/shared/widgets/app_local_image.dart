@@ -3,6 +3,7 @@ import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:dio/dio.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/core/config/app_environment.dart';
+import 'package:restore/core/network/media_url.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,11 @@ class AppLocalImage extends StatefulWidget {
 
 class _AppLocalImageState extends State<AppLocalImage> {
   Future<Uint8List>? _bytes;
+
+  /// Ảnh do server lưu có thể là đường dẫn tương đối `/api/v1/...`
+  /// (VD poster shop); ghép origin của API để tải được.
+  String get _path => resolveMediaUrl(widget.path) ?? widget.path;
+
   @override
   void initState() {
     super.initState();
@@ -53,7 +59,7 @@ class _AppLocalImageState extends State<AppLocalImage> {
 
   void _load() {
     _bytes = null;
-    final uri = Uri.tryParse(widget.path);
+    final uri = Uri.tryParse(_path);
     if (uri != null &&
         (uri.scheme == 'http' || uri.scheme == 'https') &&
         uri.origin == Uri.parse(AppEnvironment.apiBaseUrl).origin &&
@@ -61,7 +67,7 @@ class _AppLocalImageState extends State<AppLocalImage> {
             uri.path.startsWith('/api/v1/content/media/'))) {
       _bytes = ApiClient().dio
           .get<List<int>>(
-            widget.path,
+            _path,
             options: Options(responseType: ResponseType.bytes),
           )
           .then((response) => Uint8List.fromList(response.data!));
@@ -70,7 +76,7 @@ class _AppLocalImageState extends State<AppLocalImage> {
 
   @override
   Widget build(BuildContext context) {
-    final path = widget.path,
+    final path = _path,
         fit = widget.fit,
         width = widget.width,
         height = widget.height;

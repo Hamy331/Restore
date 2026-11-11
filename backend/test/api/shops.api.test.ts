@@ -17,6 +17,10 @@ test('trusted shops: overview, shop page, listings, follow, verified-shop feed',
     verificationType: 'CERTIFIED', verifiedAt: new Date(Date.now() - 86_400_000), categoryIds: ['furniture'],
   } });
   await prisma.shop.create({ data: { id: 'shop-hidden', ownerId: 'user-admin', name: 'Chưa xác minh', categoryIds: [] } });
+  // poster chỉ hiện khi chủ shop còn gói Cửa hàng
+  await prisma.storeSubscription.create({ data: {
+    userId: 'user-seller', packageId: 'pro', categoryId: 'furniture', endsAt: new Date(Date.now() + 10 * 86_400_000),
+  } });
   await prisma.shopBanner.create({ data: { id: 'banner-1', shopId: 'shop-seller', title: 'Sale', imageUrl: 'assets/images/banners/x.jpg', status: 'APPROVED' } });
   await prisma.shopBanner.create({ data: { id: 'banner-2', shopId: 'shop-seller', title: 'Chờ duyệt', imageUrl: 'assets/images/banners/y.jpg' } });
   await prisma.listing.update({ where: { id: 'listing-1' }, data: { originalPrice: new Prisma.Decimal(9_000_000), price: new Prisma.Decimal(6_000_000) } });

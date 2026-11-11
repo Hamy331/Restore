@@ -182,7 +182,15 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
   void _openShopItem(TrustedShopItem item) =>
       _openShop(item.shop.id, item: item);
 
-  void _openBanner(ShopBannerItem banner) => _openShop(banner.shop.id);
+  /// Banner gắn tin thì mở tin đó, không thì mở trang shop
+  void _openBanner(ShopBannerItem banner) {
+    final listingId = banner.banner.listingId;
+    if (listingId != null) {
+      context.push('/listings/$listingId');
+      return;
+    }
+    _openShop(banner.shop.id);
+  }
 
   /// Bật lọc "Đang giảm giá" rồi cuộn tới lưới sản phẩm
   void _showAllDeals() {

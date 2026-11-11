@@ -232,6 +232,13 @@ export const mineQuery = z.record(z.string(), z.unknown()).transform((query) => 
   return { page, pageSize, status: status as ListingStatus | undefined };
 });
 
+/** Query GET /listings/insights: days = 7 (mặc định) hoặc 30 */
+export const insightsQuery = z.record(z.string(), z.unknown()).transform((query) => {
+  const days = query.days === undefined ? 7 : Number(query.days);
+  if (days !== 7 && days !== 30) throw new AppError(400, 'INVALID_QUERY', 'Chỉ xem được 7 hoặc 30 ngày.');
+  return { days: days as 7 | 30 };
+});
+
 /** Body duyệt tin: { decision: APPROVED | REJECTED, reason?, updatedAt } */
 export const decisionBody = z.unknown().transform((body) => {
   const { decision, reason, updatedAt } = (body ?? {}) as Record<string, unknown>;

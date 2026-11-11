@@ -16,5 +16,8 @@ export function toShopDto(shop: ShopRecord, extra: { listingCount: number; isFol
 
 export type ShopDto = ReturnType<typeof toShopDto>;
 
-/** Banner shop kèm khóa `shop` (ShopBannerItem của app) */
-export const toBannerDto = (banner: ShopBanner, shop: ShopDto) => ({ ...banner, shop });
+/** Banner shop kèm khóa `shop` (ShopBannerItem của app); listingId = bấm vào mở tin đó, null = mở trang shop */
+export const toBannerDto = (banner: ShopBanner, shop: ShopDto) => ({
+  id: banner.id, shopId: banner.shopId, title: banner.title, imageUrl: banner.imageUrl, status: banner.status,
+  startsAt: banner.startsAt, endsAt: banner.endsAt, listingId: banner.listingId, createdAt: banner.createdAt, shop,
+});

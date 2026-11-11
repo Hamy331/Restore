@@ -12,10 +12,10 @@ export const CONDITION_POLICIES: { condition: ListingCondition; name: string }[]
 
 export const STORE_PACKAGES: { id: string; tier: StoreTier; name: string; monthlyPrice: number; dailyListingLimit: number;
   activeListingLimit: number; draftLimit: number; monthlyPromotionQuota: number; boostDiscountPercent: number; priorityLevel: number;
-  freeDaysPercent: number; extendDiscountPercent: number; autoExtend: boolean }[] = [
+  freeDaysPercent: number; extendDiscountPercent: number; autoExtend: boolean; posterActiveLimit?: number; posterMonthlyLimit?: number }[] = [
   { id: 'personal', tier: 'PERSONAL', name: 'Cá nhân', monthlyPrice: 0, dailyListingLimit: 3, activeListingLimit: 5, draftLimit: 3, monthlyPromotionQuota: 0, boostDiscountPercent: 0, priorityLevel: 0, freeDaysPercent: 100, extendDiscountPercent: 0, autoExtend: false },
   { id: 'basic', tier: 'BASIC', name: 'Cửa hàng Basic', monthlyPrice: 99000, dailyListingLimit: 10, activeListingLimit: 30, draftLimit: 10, monthlyPromotionQuota: 5, boostDiscountPercent: 20, priorityLevel: 1, freeDaysPercent: 150, extendDiscountPercent: 20, autoExtend: false },
-  { id: 'pro', tier: 'PRO', name: 'Cửa hàng Pro', monthlyPrice: 299000, dailyListingLimit: 30, activeListingLimit: 100, draftLimit: 30, monthlyPromotionQuota: 20, boostDiscountPercent: 30, priorityLevel: 2, freeDaysPercent: 200, extendDiscountPercent: 30, autoExtend: true },
+  { id: 'pro', tier: 'PRO', name: 'Cửa hàng Pro', monthlyPrice: 299000, dailyListingLimit: 30, activeListingLimit: 100, draftLimit: 30, monthlyPromotionQuota: 20, boostDiscountPercent: 30, priorityLevel: 2, freeDaysPercent: 200, extendDiscountPercent: 30, autoExtend: true, posterActiveLimit: 2, posterMonthlyLimit: 4 },
 ];
 
 export const PROMOTION_PACKAGES: { id: string; name: string; kind: PromotionKind; durationDays: number; price: number; priority: number }[] = [

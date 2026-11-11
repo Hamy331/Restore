@@ -7303,6 +7303,720 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} listings expiring soon: extend them so they stay visible.'**
   String hubExpiringTip(int count);
+
+  /// No description provided for @insTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insTitle;
+
+  /// No description provided for @insRangeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String insRangeDays(int days);
+
+  /// No description provided for @insViews.
+  ///
+  /// In en, this message translates to:
+  /// **'Views'**
+  String get insViews;
+
+  /// No description provided for @insSaves.
+  ///
+  /// In en, this message translates to:
+  /// **'Saves'**
+  String get insSaves;
+
+  /// No description provided for @insChats.
+  ///
+  /// In en, this message translates to:
+  /// **'People who messaged'**
+  String get insChats;
+
+  /// No description provided for @insUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Up {percent}% vs previous period'**
+  String insUp(int percent);
+
+  /// No description provided for @insDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Down {percent}% vs previous period'**
+  String insDown(int percent);
+
+  /// No description provided for @insSame.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as previous period'**
+  String get insSame;
+
+  /// No description provided for @insNew.
+  ///
+  /// In en, this message translates to:
+  /// **'None in previous period'**
+  String get insNew;
+
+  /// No description provided for @insChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Views per day'**
+  String get insChartTitle;
+
+  /// No description provided for @insChartEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No views in this period yet.'**
+  String get insChartEmpty;
+
+  /// No description provided for @insChartDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}: {views} views · {saves} saves'**
+  String insChartDay(String date, int views, int saves);
+
+  /// No description provided for @insChartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a bar to see that day'**
+  String get insChartHint;
+
+  /// No description provided for @insListingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get insListingsTitle;
+
+  /// No description provided for @insActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get insActive;
+
+  /// No description provided for @insPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get insPending;
+
+  /// No description provided for @insHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get insHidden;
+
+  /// No description provided for @insSold.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold'**
+  String get insSold;
+
+  /// No description provided for @insTopTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Most viewed listings'**
+  String get insTopTitle;
+
+  /// No description provided for @insTopStats.
+  ///
+  /// In en, this message translates to:
+  /// **'{views} views · {saves} saves'**
+  String insTopStats(int views, int saves);
+
+  /// No description provided for @insTopEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No visible listings yet.'**
+  String get insTopEmpty;
+
+  /// No description provided for @insTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips'**
+  String get insTipsTitle;
+
+  /// No description provided for @insTipBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is your most viewed listing. Boost it to stay on top.'**
+  String insTipBoost(String title);
+
+  /// No description provided for @insTipExpiring.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} listings expire within 7 days. Extend them so they stay visible.'**
+  String insTipExpiring(int count);
+
+  /// No description provided for @insTipNoViews.
+  ///
+  /// In en, this message translates to:
+  /// **'No views yet: clear photos, a specific title and a fair price help people notice your listings.'**
+  String get insTipNoViews;
+
+  /// No description provided for @insPromotions.
+  ///
+  /// In en, this message translates to:
+  /// **'This period: {boosts} boosts · {features} Hot sale'**
+  String insPromotions(int boosts, int features);
+
+  /// No description provided for @insLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load insights'**
+  String get insLoadError;
+
+  /// No description provided for @insViewsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily views are recorded from 11/11/2026.'**
+  String get insViewsNote;
+
+  /// No description provided for @spTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop posters'**
+  String get spTitle;
+
+  /// No description provided for @spCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'New poster'**
+  String get spCreate;
+
+  /// No description provided for @spLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load posters'**
+  String get spLoadError;
+
+  /// No description provided for @spNoShopTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have a shop page yet'**
+  String get spNoShopTitle;
+
+  /// No description provided for @spNoShopBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters appear on your shop page and on Trusted shops, so you need a shop page first.'**
+  String get spNoShopBody;
+
+  /// No description provided for @spPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters are part of the Store plan'**
+  String get spPlanTitle;
+
+  /// No description provided for @spPlanBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to the Store plan to run posters on your shop page and on Trusted shops.'**
+  String get spPlanBody;
+
+  /// No description provided for @spSeePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'See plans'**
+  String get spSeePlans;
+
+  /// No description provided for @spSlots.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters at once'**
+  String get spSlots;
+
+  /// No description provided for @spMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent this month'**
+  String get spMonthly;
+
+  /// No description provided for @spUnverified.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop isn\'t verified yet, so approved posters aren\'t shown publicly.'**
+  String get spUnverified;
+
+  /// No description provided for @spCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t send posters until {date} because several were rejected.'**
+  String spCooldown(String date);
+
+  /// No description provided for @spRules.
+  ///
+  /// In en, this message translates to:
+  /// **'1200×600 image (2:1), runs {min} to {max} days. Reviewed within about 24 hours.'**
+  String spRules(int min, int max);
+
+  /// No description provided for @spMonthlyFull.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve sent all {limit} posters for this month.'**
+  String spMonthlyFull(int limit);
+
+  /// No description provided for @spFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get spFilterAll;
+
+  /// No description provided for @spFilterRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get spFilterRunning;
+
+  /// No description provided for @spFilterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get spFilterPending;
+
+  /// No description provided for @spFilterScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get spFilterScheduled;
+
+  /// No description provided for @spFilterRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get spFilterRejected;
+
+  /// No description provided for @spFilterEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get spFilterEnded;
+
+  /// No description provided for @spStateStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get spStateStopped;
+
+  /// No description provided for @spEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No posters yet'**
+  String get spEmpty;
+
+  /// No description provided for @spEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first poster to promote a shop campaign.'**
+  String get spEmptyBody;
+
+  /// No description provided for @spEmptyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No posters here.'**
+  String get spEmptyFilter;
+
+  /// No description provided for @spDates.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end} · {days} days'**
+  String spDates(String start, String end, int days);
+
+  /// No description provided for @spOpensShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens your shop page'**
+  String get spOpensShop;
+
+  /// No description provided for @spOpensListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens listing: {title}'**
+  String spOpensListing(String title);
+
+  /// No description provided for @spRejectedReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected: {reason}'**
+  String spRejectedReason(String reason);
+
+  /// No description provided for @spReasonWrongSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong image size'**
+  String get spReasonWrongSize;
+
+  /// No description provided for @spReasonMisleadingPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Misleading price or offer'**
+  String get spReasonMisleadingPrice;
+
+  /// No description provided for @spReasonBrandMisuse.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a brand or logo that isn\'t yours'**
+  String get spReasonBrandMisuse;
+
+  /// No description provided for @spReasonProhibited.
+  ///
+  /// In en, this message translates to:
+  /// **'Prohibited content'**
+  String get spReasonProhibited;
+
+  /// No description provided for @spReasonTooMuchText.
+  ///
+  /// In en, this message translates to:
+  /// **'Too much text on the image'**
+  String get spReasonTooMuchText;
+
+  /// No description provided for @spReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other reason'**
+  String get spReasonOther;
+
+  /// No description provided for @spEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get spEdit;
+
+  /// No description provided for @spResubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit and resend'**
+  String get spResubmit;
+
+  /// No description provided for @spStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get spStop;
+
+  /// No description provided for @spCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get spCancel;
+
+  /// No description provided for @spStopTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop this poster?'**
+  String get spStopTitle;
+
+  /// No description provided for @spStopBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The poster stops showing right away and can\'t be restarted.'**
+  String get spStopBody;
+
+  /// No description provided for @spCancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw this poster?'**
+  String get spCancelTitle;
+
+  /// No description provided for @spCancelBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It still counts toward this month\'s posters.'**
+  String get spCancelBody;
+
+  /// No description provided for @spConfirmStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop poster'**
+  String get spConfirmStop;
+
+  /// No description provided for @spConfirmCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get spConfirmCancel;
+
+  /// No description provided for @spKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get spKeep;
+
+  /// No description provided for @spStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster stopped'**
+  String get spStopped;
+
+  /// No description provided for @spNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New poster'**
+  String get spNewTitle;
+
+  /// No description provided for @spEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit poster'**
+  String get spEditTitle;
+
+  /// No description provided for @spImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster image'**
+  String get spImage;
+
+  /// No description provided for @spPickImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a 1200×600 image'**
+  String get spPickImage;
+
+  /// No description provided for @spChangeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change image'**
+  String get spChangeImage;
+
+  /// No description provided for @spImageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick any image, then drag and zoom it into the 2:1 frame. Put the text in the image itself.'**
+  String get spImageHint;
+
+  /// No description provided for @spImageRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a poster image.'**
+  String get spImageRequired;
+
+  /// No description provided for @spName.
+  ///
+  /// In en, this message translates to:
+  /// **'Campaign name'**
+  String get spName;
+
+  /// No description provided for @spNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Galaxy Week up to 20% off'**
+  String get spNameHint;
+
+  /// No description provided for @spNameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Not drawn on the image; used by screen readers and to keep track.'**
+  String get spNameHelper;
+
+  /// No description provided for @spNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a campaign name.'**
+  String get spNameRequired;
+
+  /// No description provided for @spOpens.
+  ///
+  /// In en, this message translates to:
+  /// **'When people tap the poster'**
+  String get spOpens;
+
+  /// No description provided for @spOpenShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Open shop page'**
+  String get spOpenShop;
+
+  /// No description provided for @spOpenListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a listing'**
+  String get spOpenListing;
+
+  /// No description provided for @spChooseListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose listing'**
+  String get spChooseListing;
+
+  /// No description provided for @spNoListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop has no active listings.'**
+  String get spNoListings;
+
+  /// No description provided for @spListingRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a listing.'**
+  String get spListingRequired;
+
+  /// No description provided for @spStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get spStart;
+
+  /// No description provided for @spStartNow.
+  ///
+  /// In en, this message translates to:
+  /// **'As soon as approved'**
+  String get spStartNow;
+
+  /// No description provided for @spStartOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get spStartOn;
+
+  /// No description provided for @spDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get spDuration;
+
+  /// No description provided for @spDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String spDays(int days);
+
+  /// No description provided for @spEndsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends around {date}'**
+  String spEndsOn(String date);
+
+  /// No description provided for @spEditRunningNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A running poster is hidden until it\'s approved again.'**
+  String get spEditRunningNote;
+
+  /// No description provided for @spSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send for review'**
+  String get spSubmit;
+
+  /// No description provided for @spSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster sent. It\'s usually reviewed within 24 hours.'**
+  String get spSubmitted;
+
+  /// No description provided for @spErrSlotFull.
+  ///
+  /// In en, this message translates to:
+  /// **'That time already has the most posters you can run at once. Pick another date or stop a poster.'**
+  String get spErrSlotFull;
+
+  /// No description provided for @spErrMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve sent all your posters for this month.'**
+  String get spErrMonthly;
+
+  /// No description provided for @spErrCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending posters is paused for your shop.'**
+  String get spErrCooldown;
+
+  /// No description provided for @spErrPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the Store plan can run posters.'**
+  String get spErrPlan;
+
+  /// No description provided for @spErrShop.
+  ///
+  /// In en, this message translates to:
+  /// **'You need a shop page to run posters.'**
+  String get spErrShop;
+
+  /// No description provided for @spErrListing.
+  ///
+  /// In en, this message translates to:
+  /// **'That listing isn\'t for sale anymore. Choose another.'**
+  String get spErrListing;
+
+  /// No description provided for @spErrStartLate.
+  ///
+  /// In en, this message translates to:
+  /// **'The start date can be at most 14 days ahead.'**
+  String get spErrStartLate;
+
+  /// No description provided for @spErrImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t upload the image. Try another one.'**
+  String get spErrImage;
+
+  /// No description provided for @spErrNotEditable.
+  ///
+  /// In en, this message translates to:
+  /// **'This poster has ended. Create a new one.'**
+  String get spErrNotEditable;
+
+  /// No description provided for @spErrGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get spErrGeneric;
+
+  /// No description provided for @spSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get spSchedule;
+
+  /// No description provided for @spCropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust poster'**
+  String get spCropTitle;
+
+  /// No description provided for @spCropHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move; pinch or use the slider to zoom. Empty space is filled with a blurred copy of the image.'**
+  String get spCropHint;
+
+  /// No description provided for @spCropFill.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill frame'**
+  String get spCropFill;
+
+  /// No description provided for @spCropFit.
+  ///
+  /// In en, this message translates to:
+  /// **'Show whole image'**
+  String get spCropFit;
+
+  /// No description provided for @spCropDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this image'**
+  String get spCropDone;
+
+  /// No description provided for @spCropZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom'**
+  String get spCropZoom;
+
+  /// No description provided for @spCropLowRes.
+  ///
+  /// In en, this message translates to:
+  /// **'The image is small for this frame and may look blurry. Zoom out or pick a larger image.'**
+  String get spCropLowRes;
+
+  /// No description provided for @spAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust again'**
+  String get spAdjust;
 }
 
 class _AppLocalizationsDelegate

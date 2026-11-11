@@ -17,6 +17,8 @@
           "freeDaysPercent": 100,
           "extendDiscountPercent": 0,
           "autoExtend": false,
+          "posterActiveLimit": 0,
+          "posterMonthlyLimit": 0,
           "priorityLevel": 0,
           "priceCredits": 0
         },
@@ -80,6 +82,8 @@
           "freeDaysPercent": 150,
           "extendDiscountPercent": 20,
           "autoExtend": false,
+          "posterActiveLimit": 0,
+          "posterMonthlyLimit": 0,
           "priorityLevel": 1
         },
         "category": {
@@ -233,6 +237,8 @@
             "freeDaysPercent": 150,
             "extendDiscountPercent": 20,
             "autoExtend": false,
+            "posterActiveLimit": 0,
+            "posterMonthlyLimit": 0,
             "priorityLevel": 1
           },
           "category": {
@@ -366,6 +372,8 @@
             "freeDaysPercent": 150,
             "extendDiscountPercent": 20,
             "autoExtend": false,
+            "posterActiveLimit": 0,
+            "posterMonthlyLimit": 0,
             "priorityLevel": 1
           },
           "category": {
@@ -498,6 +506,8 @@
           "freeDaysPercent": 150,
           "extendDiscountPercent": 20,
           "autoExtend": false,
+          "posterActiveLimit": 0,
+          "posterMonthlyLimit": 0,
           "priorityLevel": 1,
           "priceCredits": 99
         },

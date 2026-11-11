@@ -2383,5 +2383,257 @@
         "type": "int"
       }
     }
-  }
+  },
+  "insTitle": "Thống kê",
+  "insRangeDays": "{days} ngày",
+  "@insRangeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "insViews": "Lượt xem",
+  "insSaves": "Lượt lưu tin",
+  "insChats": "Người nhắn tin",
+  "insUp": "Tăng {percent}% so với kỳ trước",
+  "@insUp": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "insDown": "Giảm {percent}% so với kỳ trước",
+  "@insDown": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "insSame": "Bằng kỳ trước",
+  "insNew": "Kỳ trước chưa có",
+  "insChartTitle": "Lượt xem theo ngày",
+  "insChartEmpty": "Chưa có lượt xem nào trong khoảng này.",
+  "insChartDay": "{date}: {views} lượt xem · {saves} lượt lưu",
+  "@insChartDay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "views": {
+        "type": "int"
+      },
+      "saves": {
+        "type": "int"
+      }
+    }
+  },
+  "insChartHint": "Chạm vào cột để xem từng ngày",
+  "insListingsTitle": "Tin đăng",
+  "insActive": "Đang bán",
+  "insPending": "Chờ duyệt",
+  "insHidden": "Đã ẩn",
+  "insSold": "Đã bán",
+  "insTopTitle": "Tin được xem nhiều",
+  "insTopStats": "{views} lượt xem · {saves} lượt lưu",
+  "@insTopStats": {
+    "placeholders": {
+      "views": {
+        "type": "int"
+      },
+      "saves": {
+        "type": "int"
+      }
+    }
+  },
+  "insTopEmpty": "Chưa có tin nào đang hiển thị.",
+  "insTipsTitle": "Gợi ý",
+  "insTipBoost": "\"{title}\" đang được xem nhiều nhất. Đẩy tin để giữ ở đầu danh sách.",
+  "@insTipBoost": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "insTipExpiring": "{count} tin sắp hết hạn trong 7 ngày. Gia hạn để tin không bị ẩn.",
+  "@insTipExpiring": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insTipNoViews": "Tin chưa có lượt xem: thêm ảnh rõ, tiêu đề cụ thể và giá hợp lý để dễ được chú ý hơn.",
+  "insPromotions": "Trong kỳ: {boosts} lượt đẩy · {features} lượt Hot sale",
+  "@insPromotions": {
+    "placeholders": {
+      "boosts": {
+        "type": "int"
+      },
+      "features": {
+        "type": "int"
+      }
+    }
+  },
+  "insLoadError": "Không tải được thống kê",
+  "insViewsNote": "Lượt xem theo ngày được ghi từ 11/11/2026.",
+  "spTitle": "Poster shop",
+  "spCreate": "Tạo poster",
+  "spLoadError": "Không tải được poster",
+  "spNoShopTitle": "Bạn chưa có trang shop",
+  "spNoShopBody": "Poster hiện ở trang shop và trang Shop uy tín, nên cần có trang shop trước.",
+  "spPlanTitle": "Poster dành cho gói Cửa hàng",
+  "spPlanBody": "Nâng lên gói Cửa hàng để chạy poster ở trang shop và trang Shop uy tín.",
+  "spSeePlans": "Xem gói",
+  "spSlots": "Poster cùng lúc",
+  "spMonthly": "Đã gửi tháng này",
+  "spUnverified": "Shop chưa được xác minh nên poster đã duyệt chưa hiện công khai.",
+  "spCooldown": "Bạn bị tạm khóa gửi poster đến {date} vì poster bị từ chối nhiều lần.",
+  "@spCooldown": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "spRules": "Ảnh 1200×600 (tỉ lệ 2:1), chạy {min} đến {max} ngày. Admin duyệt trong khoảng 24 giờ.",
+  "@spRules": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "spMonthlyFull": "Bạn đã gửi đủ {limit} poster của tháng này.",
+  "@spMonthlyFull": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "spFilterAll": "Tất cả",
+  "spFilterRunning": "Đang chạy",
+  "spFilterPending": "Chờ duyệt",
+  "spFilterScheduled": "Đã lên lịch",
+  "spFilterRejected": "Bị từ chối",
+  "spFilterEnded": "Đã kết thúc",
+  "spStateStopped": "Đã dừng",
+  "spEmpty": "Chưa có poster nào",
+  "spEmptyBody": "Tạo poster đầu tiên để quảng bá chương trình của shop.",
+  "spEmptyFilter": "Không có poster nào ở mục này.",
+  "spDates": "{start} – {end} · {days} ngày",
+  "@spDates": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "spOpensShop": "Bấm vào mở trang shop",
+  "spOpensListing": "Bấm vào mở tin: {title}",
+  "@spOpensListing": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "spRejectedReason": "Lý do từ chối: {reason}",
+  "@spRejectedReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "spReasonWrongSize": "Sai kích thước ảnh",
+  "spReasonMisleadingPrice": "Giá hoặc ưu đãi gây hiểu lầm",
+  "spReasonBrandMisuse": "Dùng logo, thương hiệu không thuộc shop",
+  "spReasonProhibited": "Nội dung bị cấm",
+  "spReasonTooMuchText": "Quá nhiều chữ trên ảnh",
+  "spReasonOther": "Lý do khác",
+  "spEdit": "Sửa",
+  "spResubmit": "Sửa và gửi lại",
+  "spStop": "Dừng",
+  "spCancel": "Hủy gửi",
+  "spStopTitle": "Dừng poster này?",
+  "spStopBody": "Poster ngừng hiện ngay và không chạy lại được.",
+  "spCancelTitle": "Hủy poster đang chờ duyệt?",
+  "spCancelBody": "Lượt gửi trong tháng không được hoàn lại.",
+  "spConfirmStop": "Dừng poster",
+  "spConfirmCancel": "Hủy poster",
+  "spKeep": "Giữ lại",
+  "spStopped": "Đã dừng poster",
+  "spNewTitle": "Tạo poster",
+  "spEditTitle": "Sửa poster",
+  "spImage": "Ảnh poster",
+  "spPickImage": "Chọn ảnh 1200×600",
+  "spChangeImage": "Đổi ảnh",
+  "spImageHint": "Chọn ảnh bất kỳ rồi kéo, thu phóng cho vừa khung 2:1. Chữ nên nằm sẵn trong ảnh.",
+  "spImageRequired": "Hãy chọn ảnh poster.",
+  "spName": "Tên chương trình",
+  "spNameHint": "VD: Galaxy Week giảm tới 20%",
+  "spNameHelper": "Không hiện trên ảnh, dùng cho trình đọc màn hình và để bạn dễ quản lý.",
+  "spNameRequired": "Hãy nhập tên chương trình.",
+  "spOpens": "Khi bấm vào poster",
+  "spOpenShop": "Mở trang shop",
+  "spOpenListing": "Mở một tin",
+  "spChooseListing": "Chọn tin",
+  "spNoListings": "Shop chưa có tin nào đang bán.",
+  "spListingRequired": "Hãy chọn tin.",
+  "spStart": "Ngày bắt đầu",
+  "spStartNow": "Ngay khi được duyệt",
+  "spStartOn": "Chọn ngày",
+  "spDuration": "Thời gian chạy",
+  "spDays": "{days} ngày",
+  "@spDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "spEndsOn": "Kết thúc khoảng {date}",
+  "@spEndsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "spEditRunningNote": "Poster đang chạy sẽ tạm ẩn cho tới khi admin duyệt lại.",
+  "spSubmit": "Gửi duyệt",
+  "spSubmitted": "Đã gửi poster, admin sẽ duyệt trong khoảng 24 giờ.",
+  "spErrSlotFull": "Khung giờ này đã đủ số poster chạy cùng lúc. Hãy chọn ngày khác hoặc dừng một poster.",
+  "spErrMonthly": "Bạn đã gửi đủ số poster của tháng này.",
+  "spErrCooldown": "Bạn đang bị tạm khóa gửi poster.",
+  "spErrPlan": "Chỉ gói Cửa hàng mới đăng được poster.",
+  "spErrShop": "Bạn cần có trang shop để đăng poster.",
+  "spErrListing": "Tin này không còn bán, hãy chọn tin khác.",
+  "spErrStartLate": "Chỉ hẹn ngày bắt đầu trước tối đa 14 ngày.",
+  "spErrImage": "Tải ảnh thất bại, hãy thử ảnh khác.",
+  "spErrNotEditable": "Poster đã kết thúc, hãy tạo poster mới.",
+  "spErrGeneric": "Không gửi được, vui lòng thử lại.",
+  "spSchedule": "Lịch chạy",
+  "spCropTitle": "Căn chỉnh poster",
+  "spCropHint": "Kéo để di chuyển, chụm hai ngón hoặc kéo thanh trượt để phóng to, thu nhỏ. Phần trống được lấp bằng nền mờ của chính ảnh.",
+  "spCropFill": "Lấp đầy khung",
+  "spCropFit": "Vừa toàn ảnh",
+  "spCropDone": "Dùng ảnh này",
+  "spCropZoom": "Thu phóng",
+  "spCropLowRes": "Ảnh gốc khá nhỏ so với khung, poster có thể bị mờ. Thử thu nhỏ hoặc chọn ảnh lớn hơn.",
+  "spAdjust": "Căn chỉnh lại"
 }

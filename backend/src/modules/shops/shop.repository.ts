@@ -40,11 +40,16 @@ export async function findFollowedShopIds(userId: string | undefined, shopIds: s
   return new Set(rows.map((row) => row.shopId));
 }
 
-/** Banner đã duyệt đang trong thời gian chạy, của shop [shopId] nếu có */
+/** Banner (poster) đã duyệt đang trong thời gian chạy của shop uy tín còn gói Cửa hàng, của shop [shopId] nếu có */
 export const findActiveBanners = (now: Date, shopId?: string) =>
   prisma.shopBanner.findMany({
     where: {
-      status: 'APPROVED', shop: { ...trusted, ...(shopId ? { id: shopId } : {}) },
+      status: 'APPROVED',
+      shop: {
+        verificationType: { not: null }, ...(shopId ? { id: shopId } : {}),
+        // gói hết hạn hoặc không còn quyền đăng poster thì poster tạm ẩn
+        owner: { status: 'ACTIVE', storeSubscription: { is: { startsAt: { lte: now }, endsAt: { gt: now }, package: { posterActiveLimit: { gt: 0 } } } } },
+      },
       AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }],
     },
     orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
