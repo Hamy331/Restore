@@ -8,6 +8,7 @@ import { Tickets } from '../features/support/Tickets';
 import { Knowledge } from '../features/knowledge/Knowledge';
 import { Catalog } from '../features/catalog/Catalog';
 import { Stores, Promotions } from '../features/commerce/Commerce';
+import { HomeBanners } from '../features/banners/HomeBanners';
 
 import {
   AppstoreOutlined,
@@ -21,6 +22,7 @@ import {
   CustomerServiceOutlined,
   ReadOutlined,
   HistoryOutlined,
+  PictureOutlined,
 } from '@ant-design/icons';
 
 export const sections = [
@@ -86,6 +88,15 @@ export const sections = [
     detail: 'Quản lý danh mục và tình trạng sản phẩm khi đăng tin.',
     permission: 'catalog:manage',
     View: Catalog,
+  },
+  {
+    key: 'banners',
+    label: 'Banner trang chủ',
+    group: 'Nội dung & hỗ trợ',
+    icon: PictureOutlined,
+    detail: 'Quản lý banner hiển thị trên trang chủ ứng dụng.',
+    permission: 'banner:manage',
+    View: HomeBanners,
   },
   {
     key: 'posts',

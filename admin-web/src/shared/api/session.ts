@@ -24,6 +24,7 @@ async function request<T>(
     body: mediaType ? (body as Blob) : body === undefined ? undefined : JSON.stringify(body),
     cache: 'no-store',
   });
+  if (response.status === 204) return undefined as T;
   const result = await response.json().catch(() => null);
   if (!response.ok || !result?.success) {
     throw new ApiError(response.status, result?.error || 'Không thể lấy dữ liệu từ máy chủ.');
@@ -73,6 +74,9 @@ export class Session {
   }
   async remove(path: string, updatedAt: string) {
     return this.authorized((token) => request(path, token, { updatedAt }, 'DELETE'));
+  }
+  async delete(path: string) {
+    return this.authorized((token) => request<void>(path, token, undefined, 'DELETE'));
   }
   private async mediaImage(prefix: string, filename: string): Promise<Blob> {
     return this.authorized(async (token) => {
