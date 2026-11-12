@@ -4912,4 +4912,81 @@ class AppLocalizationsEn extends AppLocalizations {
   String msFollowedSince(String date) {
     return 'Since $date';
   }
+
+  @override
+  String get followingHubTitle => 'Following';
+
+  @override
+  String get followingHubSubtitle => 'New from shops and people you follow';
+
+  @override
+  String get followingHubOnboardSubtitle => 'Pick a few shops to get started';
+
+  @override
+  String get followingHubManage => 'Manage who you follow';
+
+  @override
+  String get followingHubPeopleTitle => 'People you follow';
+
+  @override
+  String get followingHubSeeAll => 'See all';
+
+  @override
+  String get followingHubFeedTitle => 'New from shops you follow';
+
+  @override
+  String get followingHubFeedHint => 'Pick a shop to see only its listings';
+
+  @override
+  String get followingHubAll => 'All';
+
+  @override
+  String get followingHubOpenShop => 'Visit shop';
+
+  @override
+  String get followingHubSuggestHint =>
+      'Shops in categories you save and follow, ReStore partners first';
+
+  @override
+  String get followingHubOnboardTitle =>
+      'Follow shops so you never miss new listings';
+
+  @override
+  String get followingHubOnboardBody =>
+      'Tap Follow on the shops below and their new listings will show up here.';
+
+  @override
+  String get followingHubBenefitFeed =>
+      'New listings from every shop in one place';
+
+  @override
+  String get followingHubBenefitFilter => 'Filter by shop in one tap';
+
+  @override
+  String get followingHubBenefitVerified => 'Only shops verified by ReStore';
+
+  @override
+  String get followingHubNoSuggestions => 'No shops to suggest yet';
+
+  @override
+  String followingHubSeeFeed(int count) {
+    return 'See new listings from $count shops';
+  }
+
+  @override
+  String followShopsFollowerCountText(String count) {
+    return '$count followers';
+  }
+
+  @override
+  String get followingHubPostsTitle => 'Recent posts';
+
+  @override
+  String get followingHubPostsHint => 'New posts from people you follow';
+
+  @override
+  String get followingHubForYouTitle => 'Shops for you';
+
+  @override
+  String get followingHubPartner => 'Partner';
 }

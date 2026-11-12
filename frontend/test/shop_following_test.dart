@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/feeds/models/feed_models.dart';
+import 'package:restore/modules/feeds/repositories/feeds_repository.dart';
 import 'package:restore/modules/account/models/profile_models.dart';
 import 'package:restore/modules/account/views/follow_list/follow_list_mobile_view.dart';
 import 'package:restore/modules/my_shop/views/shop_followers/shop_followers_view.dart';
@@ -12,10 +14,25 @@ import 'package:restore/modules/trusted_shop/data/trusted_shop_mock_data.dart';
 import 'package:restore/modules/trusted_shop/models/followed_shop.dart';
 import 'package:restore/modules/trusted_shop/repositories/shop_following_repository.dart';
 import 'package:restore/modules/trusted_shop/views/following_shops/following_shops_view.dart';
+import 'package:restore/modules/following/views/following_hub/following_hub_view.dart';
+import 'package:restore/modules/trusted_shop/widgets/shop_follow_button.dart';
 
 import 'support/fake_profile_repository.dart';
 
 final _repo = MockShopFollowingRepository(latency: Duration.zero);
+
+/// Bảng tin rỗng: trang Đang theo dõi không gọi API thật trong test
+class _NoFeeds implements FeedsRepository {
+  @override
+  Future<FeedPage<FeedPost>> posts({
+    bool following = false,
+    String? authorId,
+    String? cursor,
+  }) async => const FeedPage([], null);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
 
 Future<void> _pump(WidgetTester tester, Widget home) async {
   tester.view.physicalSize = const Size(420, 1600);
@@ -148,5 +165,34 @@ void main() {
     await _pump(tester, ShopFollowersView(repository: _repo));
     expect(find.text('Người theo dõi (4)'), findsOneWidget);
     expect(find.text('Nguyễn Thị Mai'), findsOneWidget);
+  });
+
+  testWidgets('trang Đang theo dõi: chưa theo dõi thì gợi ý, theo dõi xong '
+      'xem tin và lọc theo shop', (tester) async {
+    TrustedShopMockData.followingShopIds.clear();
+    await _pump(
+      tester,
+      FollowingHubView(
+        shopRepository: _repo,
+        profileRepository: FakeProfileRepository(),
+        feedsRepository: _NoFeeds(),
+      ),
+    );
+    expect(find.text('Theo dõi shop để không bỏ lỡ tin mới'), findsOneWidget);
+    expect(find.byKey(const ValueKey('following-hub-see-feed')), findsNothing);
+
+    final kodo = find.byKey(const ValueKey('suggestion-shop_kodo'));
+    await tester.tap(
+      find.descendant(of: kodo, matching: find.byType(ShopFollowButton)),
+    );
+    await _settle(tester);
+    expect(TrustedShopMockData.followingShopIds, contains('shop_kodo'));
+    await tester.tap(find.text('Xem tin mới từ 1 shop'));
+    await _settle(tester);
+
+    expect(find.text('Mới từ shop bạn theo dõi'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('following-filter-shop_kodo')));
+    await _settle(tester);
+    expect(find.byKey(const ValueKey('following-open-shop')), findsOneWidget);
   });
 }

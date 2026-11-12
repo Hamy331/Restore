@@ -2757,5 +2757,38 @@
     "placeholders": {
       "date": {"type": "String"}
     }
-  }
+  },
+  "followingHubTitle": "Đang theo dõi",
+  "followingHubSubtitle": "Tin mới từ shop và người bạn theo dõi",
+  "followingHubOnboardSubtitle": "Chọn vài shop để bắt đầu",
+  "followingHubManage": "Quản lý danh sách theo dõi",
+  "followingHubPeopleTitle": "Người bạn theo dõi",
+  "followingHubSeeAll": "Xem tất cả",
+  "followingHubFeedTitle": "Mới từ shop bạn theo dõi",
+  "followingHubFeedHint": "Chọn một shop để xem riêng tin của shop đó",
+  "followingHubAll": "Tất cả",
+  "followingHubOpenShop": "Xem shop",
+  "followingHubSuggestHint": "Ưu tiên shop hợp danh mục bạn hay xem, lưu và đối tác của ReStore",
+  "followingHubOnboardTitle": "Theo dõi shop để không bỏ lỡ tin mới",
+  "followingHubOnboardBody": "Bấm Theo dõi ở các shop bên dưới, tin mới của họ sẽ gom về trang này.",
+  "followingHubBenefitFeed": "Tin mới của mọi shop gom về một chỗ",
+  "followingHubBenefitFilter": "Lọc nhanh theo từng shop",
+  "followingHubBenefitVerified": "Chỉ shop đã được ReStore xác minh",
+  "followingHubNoSuggestions": "Chưa có shop nào để gợi ý",
+  "followingHubSeeFeed": "Xem tin mới từ {count} shop",
+  "@followingHubSeeFeed": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFollowerCountText": "{count} người theo dõi",
+  "@followShopsFollowerCountText": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "followingHubPostsTitle": "Bạn bè vừa đăng",
+  "followingHubPostsHint": "Bài mới trên Bảng tin của người bạn theo dõi",
+  "followingHubForYouTitle": "Shop dành cho bạn",
+  "followingHubPartner": "Đối tác"
 }

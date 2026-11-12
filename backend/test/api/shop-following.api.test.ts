@@ -49,3 +49,41 @@ test('shop following: followed shops, their listings, my shop followers, profile
   assert.deepEqual((await api.get('/shops/following', { token: tokens.buyer })).body.data, []);
   assert.deepEqual((await api.get('/shops/me/followers', { token: tokens.seller })).body.data, []);
 });
+
+/** Gợi ý shop: shop chưa theo dõi, hợp danh mục tin đã lưu xếp trước, kèm tin xem trước */
+test('shop following: suggestions rank by saved categories and skip followed shops', async () => {
+  const { api, tokens } = ctx;
+  const { prisma } = await import('../../src/lib/prisma.js');
+  const listing = await prisma.listing.findFirstOrThrow({ where: { ownerId: 'user-seller', status: 'AVAILABLE', categoryId: { not: null } } });
+  await prisma.shop.upsert({
+    where: { id: 'shop-seller' }, update: { categoryIds: [listing.categoryId!] },
+    create: { id: 'shop-seller', ownerId: 'user-seller', name: 'Nội Thất Test', verificationType: 'CERTIFIED', verifiedAt: new Date(), categoryIds: [listing.categoryId!] },
+  });
+  await prisma.shop.upsert({
+    where: { id: 'shop-hidden' }, update: { verificationType: 'OFFICIAL_BRAND', verifiedAt: new Date(), categoryIds: ['khac'] },
+    create: { id: 'shop-hidden', ownerId: 'user-admin', name: 'Admin Brand', verificationType: 'OFFICIAL_BRAND', verifiedAt: new Date(), categoryIds: ['khac'] },
+  });
+
+  assert.equal((await api.get('/shops/following/suggestions')).status, 401);
+  await api.post(`/listings/${listing.id}/favorite`, { token: tokens.buyer });
+  const res = await api.get('/shops/following/suggestions', { token: tokens.buyer });
+  assert.equal(res.status, 200, JSON.stringify(res.body));
+  const ids = res.body.data.map((shop: { id: string }) => shop.id);
+  assert.equal(ids[0], 'shop-seller');
+  assert.equal(res.body.data[0].reason, 'MATCHES_INTEREST');
+  assert.equal(res.body.data[0].isFollowing, false);
+  assert.ok(res.body.data[0].previews.length >= 1 && res.body.data[0].previews.length <= 3);
+  const brand = res.body.data.find((shop: { id: string }) => shop.id === 'shop-hidden');
+  assert.deepEqual([brand.isPartner, brand.reason], [true, 'PARTNER'], 'chính hãng là đối tác, xếp sau shop hợp sở thích');
+  assert.equal(res.body.data[0].isPartner, false);
+
+  // chủ shop không thấy shop của mình
+  const own = await api.get('/shops/following/suggestions', { token: tokens.seller });
+  assert.ok(!own.body.data.some((shop: { id: string }) => shop.id === 'shop-seller'));
+
+  await api.post('/shops/shop-seller/follow', { token: tokens.buyer });
+  const after = await api.get('/shops/following/suggestions', { token: tokens.buyer });
+  assert.ok(!after.body.data.some((shop: { id: string }) => shop.id === 'shop-seller'), 'đã theo dõi thì không gợi ý');
+  await api.delete('/shops/shop-seller/follow', { token: tokens.buyer });
+  await api.delete(`/listings/${listing.id}/favorite`, { token: tokens.buyer });
+});

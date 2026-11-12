@@ -15,6 +15,7 @@ import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
 import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/modules/following/views/following_hub/following_hub_view.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
@@ -140,7 +141,6 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   }
 
   void _onQuickAction(HomeQuickAction action) {
-    // TODO: mở trang riêng khi có (đang theo dõi)
     switch (action) {
       case HomeQuickAction.nearby:
         context.push(_nearbyPath);
@@ -149,7 +149,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       case HomeQuickAction.trustedShops:
         context.push(TrustedShopsView.path);
       case HomeQuickAction.following:
-        _comingSoon();
+        context.push(FollowingHubView.path);
     }
   }
 
