@@ -19,6 +19,8 @@ const formatProfile = (user: ProfileRow) => ({
   createdAt: user.createdAt,
   followerCount: user._count.followers,
   followingCount: user._count.following,
+  /** Số shop uy tín đang theo dõi (tab Shop của trang Đang theo dõi) */
+  followingShopCount: user._count.shopFollows,
   presence: {
     isOnline: !!user.lastActiveAt && Date.now() - new Date(user.lastActiveAt).getTime() < onlineThresholdMs,
     lastActiveAt: user.lastActiveAt,

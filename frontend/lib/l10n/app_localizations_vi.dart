@@ -4738,4 +4738,85 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get msErrGeneric => 'Không lưu được, vui lòng thử lại.';
+
+  @override
+  String get followShopsTab => 'Shop';
+
+  @override
+  String get followShopsEmpty => 'Bạn chưa theo dõi shop nào';
+
+  @override
+  String get followShopsEmptyHint =>
+      'Theo dõi shop uy tín để xem tin mới của họ ở cùng một chỗ.';
+
+  @override
+  String get followShopsBrowse => 'Khám phá Shop uy tín';
+
+  @override
+  String followShopsNewCount(int count) {
+    return '$count tin mới';
+  }
+
+  @override
+  String followShopsFollowerCount(int count) {
+    return '$count người theo dõi';
+  }
+
+  @override
+  String get followShopsFeedTitle => 'Shop bạn theo dõi';
+
+  @override
+  String get followShopsFeedCta => 'Xem tin mới';
+
+  @override
+  String followShopsFeedNew(int count) {
+    return '$count tin mới trong 7 ngày qua';
+  }
+
+  @override
+  String followShopsCount(int count) {
+    return 'Đang theo dõi $count shop';
+  }
+
+  @override
+  String get followShopsStripHint => 'Bấm vào shop để mở trang của shop';
+
+  @override
+  String get followShopsLatest => 'Tin mới nhất';
+
+  @override
+  String get followShopsLatestHint => 'Tin vừa đăng của các shop bạn theo dõi';
+
+  @override
+  String get followShopsListingsEmpty => 'Chưa có tin nào';
+
+  @override
+  String get followShopsListingsEmptyHint =>
+      'Các shop bạn theo dõi chưa có tin đang bán.';
+
+  @override
+  String get followShopsEnd => 'Bạn đã xem hết tin mới';
+
+  @override
+  String get followShopsLoadError => 'Chưa tải được shop bạn theo dõi';
+
+  @override
+  String get msFollowersTitle => 'Người theo dõi shop';
+
+  @override
+  String msFollowersTitleCount(int count) {
+    return 'Người theo dõi ($count)';
+  }
+
+  @override
+  String get msFollowersEmpty => 'Chưa có ai theo dõi shop';
+
+  @override
+  String get msFollowersEmptyHint =>
+      'Người mua theo dõi shop của bạn sẽ hiện ở đây.';
+
+  @override
+  String msFollowedSince(String date) {
+    return 'Từ $date';
+  }
 }

@@ -3,6 +3,7 @@ import { PERMISSION } from '../../common/auth/permissions.js';
 import { optionalAuth, requirePermission, verifyToken } from '../../middlewares/auth.middleware.js';
 import { requireJson } from '../../middlewares/require-json.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
+import * as followingController from './following.controller.js';
 import * as myShopController from './my-shop.controller.js';
 import { shopCreateBody, shopUpdateBody } from './my-shop.validator.js';
 import { posterRouter } from './poster.route.js';
@@ -39,6 +40,18 @@ shopRouter.post('/me', manageOwn, requireJson, validate({ body: shopCreateBody }
  * Lỗi 404 SHOP_REQUIRED, 409 SHOP_NAME_LOCKED (shop đã xác minh), 400 INVALID_IMAGE_URL
  */
 shopRouter.patch('/me', manageOwn, requireJson, validate({ body: shopUpdateBody }), myShopController.update);
+
+/** Người đang theo dõi shop của mình, mới nhất trước. Query page, limit (≤ 50, mặc định 20) */
+shopRouter.get('/me/followers', manageOwn, followingController.myFollowers);
+
+/**
+ * Shop uy tín mình đang theo dõi, theo dõi gần nhất trước: [Shop + isFollowing + followedAt + newListingCount
+ * (tin đăng 7 ngày qua)]. Query page, limit (≤ 50, mặc định 20)
+ */
+shopRouter.get('/following', verifyToken, followingController.shops);
+
+/** Tin mới nhất của các shop mình đang theo dõi (thẻ tin như trang chủ). Query page, limit */
+shopRouter.get('/following/listings', verifyToken, followingController.listings);
 
 /** Poster của shop mình (gói Cửa hàng), xem poster.route.ts */
 shopRouter.use('/me/posters', posterRouter);

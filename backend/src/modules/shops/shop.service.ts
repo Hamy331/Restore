@@ -15,7 +15,7 @@ const DAY = 86_400_000;
 const SHOWCASE_SIZE = 6;
 
 /** Gắn số tin đang bán và trạng thái theo dõi của người xem cho các shop */
-async function shopDtos(viewerId: string | undefined, shops: ShopRecord[]) {
+export async function shopDtos(viewerId: string | undefined, shops: ShopRecord[]) {
   const [counts, followed] = await Promise.all([
     shopRepository.countListingsByOwner(shops.map((shop) => shop.ownerId)),
     shopRepository.findFollowedShopIds(viewerId, shops.map((shop) => shop.id)),
@@ -24,7 +24,7 @@ async function shopDtos(viewerId: string | undefined, shops: ShopRecord[]) {
 }
 
 /** Thẻ tin (như trang chủ) cho danh sách tin, tính isFavorite theo người xem */
-async function cards(viewerId: string | undefined, listings: ListingRecord[]) {
+export async function cards(viewerId: string | undefined, listings: ListingRecord[]) {
   const favorites = await findFavoriteIds(viewerId, listings.map((listing) => listing.id));
   return listings.map((listing) => toFeedItemDto(listing, { distanceKm: null, isFeatured: false, isFavorite: favorites.has(listing.id) }));
 }

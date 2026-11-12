@@ -8401,6 +8401,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save. Please try again.'**
   String get msErrGeneric;
+
+  /// No description provided for @followShopsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops'**
+  String get followShopsTab;
+
+  /// No description provided for @followShopsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not following any shops yet'**
+  String get followShopsEmpty;
+
+  /// No description provided for @followShopsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow trusted shops to see their new listings in one place.'**
+  String get followShopsEmptyHint;
+
+  /// No description provided for @followShopsBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore trusted shops'**
+  String get followShopsBrowse;
+
+  /// No description provided for @followShopsNewCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new'**
+  String followShopsNewCount(int count);
+
+  /// No description provided for @followShopsFollowerCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} followers'**
+  String followShopsFollowerCount(int count);
+
+  /// No description provided for @followShopsFeedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops you follow'**
+  String get followShopsFeedTitle;
+
+  /// No description provided for @followShopsFeedCta.
+  ///
+  /// In en, this message translates to:
+  /// **'See new listings'**
+  String get followShopsFeedCta;
+
+  /// No description provided for @followShopsFeedNew.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new listings in the last 7 days'**
+  String followShopsFeedNew(int count);
+
+  /// No description provided for @followShopsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Following {count} shops'**
+  String followShopsCount(int count);
+
+  /// No description provided for @followShopsStripHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a shop to open its page'**
+  String get followShopsStripHint;
+
+  /// No description provided for @followShopsLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest listings'**
+  String get followShopsLatest;
+
+  /// No description provided for @followShopsLatestHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Newly posted by the shops you follow'**
+  String get followShopsLatestHint;
+
+  /// No description provided for @followShopsListingsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings yet'**
+  String get followShopsListingsEmpty;
+
+  /// No description provided for @followShopsListingsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The shops you follow have no active listings.'**
+  String get followShopsListingsEmptyHint;
+
+  /// No description provided for @followShopsEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get followShopsEnd;
+
+  /// No description provided for @followShopsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the shops you follow'**
+  String get followShopsLoadError;
+
+  /// No description provided for @msFollowersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop followers'**
+  String get msFollowersTitle;
+
+  /// No description provided for @msFollowersTitleCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers ({count})'**
+  String msFollowersTitleCount(int count);
+
+  /// No description provided for @msFollowersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No one follows your shop yet'**
+  String get msFollowersEmpty;
+
+  /// No description provided for @msFollowersEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyers who follow your shop will show up here.'**
+  String get msFollowersEmptyHint;
+
+  /// No description provided for @msFollowedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {date}'**
+  String msFollowedSince(String date);
 }
 
 class _AppLocalizationsDelegate

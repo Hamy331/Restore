@@ -2705,5 +2705,57 @@
   "msSaved": "Đã lưu thông tin shop",
   "msErrExists": "Bạn đã có trang shop.",
   "msErrImage": "Ảnh tải lên không hợp lệ, hãy thử ảnh khác.",
-  "msErrGeneric": "Không lưu được, vui lòng thử lại."
+  "msErrGeneric": "Không lưu được, vui lòng thử lại.",
+  "followShopsTab": "Shop",
+  "followShopsEmpty": "Bạn chưa theo dõi shop nào",
+  "followShopsEmptyHint": "Theo dõi shop uy tín để xem tin mới của họ ở cùng một chỗ.",
+  "followShopsBrowse": "Khám phá Shop uy tín",
+  "followShopsNewCount": "{count} tin mới",
+  "@followShopsNewCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFollowerCount": "{count} người theo dõi",
+  "@followShopsFollowerCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFeedTitle": "Shop bạn theo dõi",
+  "followShopsFeedCta": "Xem tin mới",
+  "followShopsFeedNew": "{count} tin mới trong 7 ngày qua",
+  "@followShopsFeedNew": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsCount": "Đang theo dõi {count} shop",
+  "@followShopsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsStripHint": "Bấm vào shop để mở trang của shop",
+  "followShopsLatest": "Tin mới nhất",
+  "followShopsLatestHint": "Tin vừa đăng của các shop bạn theo dõi",
+  "followShopsListingsEmpty": "Chưa có tin nào",
+  "followShopsListingsEmptyHint": "Các shop bạn theo dõi chưa có tin đang bán.",
+  "followShopsEnd": "Bạn đã xem hết tin mới",
+  "followShopsLoadError": "Chưa tải được shop bạn theo dõi",
+  "msFollowersTitle": "Người theo dõi shop",
+  "msFollowersTitleCount": "Người theo dõi ({count})",
+  "@msFollowersTitleCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "msFollowersEmpty": "Chưa có ai theo dõi shop",
+  "msFollowersEmptyHint": "Người mua theo dõi shop của bạn sẽ hiện ở đây.",
+  "msFollowedSince": "Từ {date}",
+  "@msFollowedSince": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  }
 }

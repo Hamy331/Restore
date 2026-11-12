@@ -4831,4 +4831,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msErrGeneric => 'Couldn\'t save. Please try again.';
+
+  @override
+  String get followShopsTab => 'Shops';
+
+  @override
+  String get followShopsEmpty => 'You\'re not following any shops yet';
+
+  @override
+  String get followShopsEmptyHint =>
+      'Follow trusted shops to see their new listings in one place.';
+
+  @override
+  String get followShopsBrowse => 'Explore trusted shops';
+
+  @override
+  String followShopsNewCount(int count) {
+    return '$count new';
+  }
+
+  @override
+  String followShopsFollowerCount(int count) {
+    return '$count followers';
+  }
+
+  @override
+  String get followShopsFeedTitle => 'Shops you follow';
+
+  @override
+  String get followShopsFeedCta => 'See new listings';
+
+  @override
+  String followShopsFeedNew(int count) {
+    return '$count new listings in the last 7 days';
+  }
+
+  @override
+  String followShopsCount(int count) {
+    return 'Following $count shops';
+  }
+
+  @override
+  String get followShopsStripHint => 'Tap a shop to open its page';
+
+  @override
+  String get followShopsLatest => 'Latest listings';
+
+  @override
+  String get followShopsLatestHint => 'Newly posted by the shops you follow';
+
+  @override
+  String get followShopsListingsEmpty => 'No listings yet';
+
+  @override
+  String get followShopsListingsEmptyHint =>
+      'The shops you follow have no active listings.';
+
+  @override
+  String get followShopsEnd => 'You\'re all caught up';
+
+  @override
+  String get followShopsLoadError => 'Couldn\'t load the shops you follow';
+
+  @override
+  String get msFollowersTitle => 'Shop followers';
+
+  @override
+  String msFollowersTitleCount(int count) {
+    return 'Followers ($count)';
+  }
+
+  @override
+  String get msFollowersEmpty => 'No one follows your shop yet';
+
+  @override
+  String get msFollowersEmptyHint =>
+      'Buyers who follow your shop will show up here.';
+
+  @override
+  String msFollowedSince(String date) {
+    return 'Since $date';
+  }
 }
