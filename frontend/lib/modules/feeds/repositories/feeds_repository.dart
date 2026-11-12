@@ -136,16 +136,15 @@ class ApiFeedsRepository implements FeedsRepository {
     );
   }
 
-  /// Báo cáo bài viết qua luồng kiểm duyệt hiện có: đối tượng là tác giả,
-  /// bằng chứng ghi rõ bài viết bị báo cáo.
+  /// Báo cáo đúng bài viết để admin có thể xem xét và gỡ nội dung vi phạm.
   @override
   Future<void> report(FeedPost post, String reason) async {
     final content = post.text.isNotEmpty ? post.text : post.image ?? '';
     await _dio.post(
       '/content/reports',
       data: {
-        'targetType': 'USER',
-        'targetId': post.authorId,
+        'targetType': 'FEED_POST',
+        'targetId': post.id,
         'reason': reason,
         'evidence': 'Bài viết bảng tin ${post.id}: $content',
       },

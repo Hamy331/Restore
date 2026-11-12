@@ -2,8 +2,8 @@ import { Tabs } from 'antd';
 import { FlagOutlined } from '@ant-design/icons';
 import { EmptyState } from '../../shared/ui/Panel';
 import { History } from '../audit/History';
-import { useState } from 'react';
-import { Alert, Button, Modal, Spin, Table } from 'antd';
+import { Alert, Button, Image, Modal, Spin, Table } from 'antd';
+import { useEffect, useState } from 'react';
 import { Session } from '../../shared/api/session';
 import { useResource, type Page } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
@@ -14,7 +14,7 @@ type Report = {
   id: string;
   reporterId: string;
   targetId: string;
-  targetType: 'USER' | 'LISTING';
+  targetType: 'USER' | 'LISTING' | 'FEED_POST';
   reason: string;
   evidence: string;
   status: string;
@@ -22,12 +22,41 @@ type Report = {
   updatedAt: string;
 };
 type ReportedUser = { fullName: string; email: string; status: string; updatedAt: string };
-type Target = Listing | ReportedUser;
+type ReportedFeedPost = {
+  id: string;
+  text: string;
+  imageUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  author: { id: string; fullName: string; status: string };
+};
+type Target = Listing | ReportedUser | ReportedFeedPost;
 const statuses: Record<string, string> = {
   OPEN: 'Chờ xử lý',
   RESOLVED: 'Đã xử lý',
   DISMISSED: 'Đã bác',
 };
+
+function FeedPostImage({ session, url }: { session: Session; url: string }) {
+  const [src, setSrc] = useState('');
+  useEffect(() => {
+    let live = true;
+    let objectUrl = '';
+    session
+      .feedImage(url.split('/').pop()!)
+      .then((blob) => {
+        if (!live) return;
+        objectUrl = URL.createObjectURL(blob);
+        setSrc(objectUrl);
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [session, url]);
+  return src ? <Image src={src} alt="Ảnh trong bài viết bị báo cáo" width={240} /> : null;
+}
 
 function Review({
   report,
@@ -45,9 +74,13 @@ function Review({
   const target = useResource<Target | null>(session, path + '/target');
   const actions: Action[] = ['DISMISS'];
   if (report.targetType === 'LISTING') {
-    if (target.data) actions.push('KEEP');
-    if (target.data?.status === 'AVAILABLE') actions.push('REMOVE');
-  } else if (target.data && target.data.status !== 'UNVERIFIED') {
+    if (target.data && 'images' in target.data) {
+      actions.push('KEEP');
+      if (target.data.status === 'AVAILABLE') actions.push('REMOVE');
+    }
+  } else if (report.targetType === 'FEED_POST') {
+    if (target.data) actions.push('REMOVE');
+  } else if (target.data && 'email' in target.data && target.data.status !== 'UNVERIFIED') {
     actions.push('WARN');
     if (target.data.status !== 'BANNED') actions.push('SUSPEND', 'BAN');
   }
@@ -81,6 +114,17 @@ function Review({
             <Alert title="Đối tượng đã bị xóa." type="warning" />
           ) : 'images' in target.data ? (
             <ListingDetails session={session} item={target.data} />
+          ) : 'text' in target.data ? (
+            <>
+              <p>
+                <strong>Tác giả</strong> · {target.data.author.fullName} · {target.data.author.status}
+              </p>
+              <p>
+                <strong>Đăng lúc</strong> · {new Date(target.data.createdAt).toLocaleString('vi-VN')}
+              </p>
+              <p className="post-preview">{target.data.text || 'Bài viết chỉ có hình ảnh.'}</p>
+              {target.data.imageUrl && <FeedPostImage session={session} url={target.data.imageUrl} />}
+            </>
           ) : (
             <p>
               {target.data.fullName} · {target.data.email}
@@ -163,7 +207,12 @@ export function Reports({ session }: { session: Session }) {
               { title: 'Lý do', dataIndex: 'reason' },
               {
                 title: 'Đối tượng',
-                render: (_, r) => (r.targetType === 'USER' ? 'Thành viên' : 'Tin đăng'),
+                render: (_, r) =>
+                  r.targetType === 'USER'
+                    ? 'Thành viên'
+                    : r.targetType === 'FEED_POST'
+                      ? 'Bài viết bảng tin'
+                      : 'Tin đăng',
               },
               { title: 'Trạng thái', dataIndex: 'status', render: (s: string) => statuses[s] ?? s },
               {

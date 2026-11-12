@@ -5,8 +5,8 @@ export const MEDIA_NAME = /^[0-9a-f-]{36}\.(jpg|png|webp)$/;
 /** Số bản ghi mỗi trang ở các danh sách nội dung phía người dùng (trang quản trị dùng ADMIN_PAGE_SIZE = 25) */
 export const PAGE_SIZE = 20;
 
-/** Đối tượng có thể bị báo cáo */
-export const REPORT_TARGETS = ['LISTING', 'USER'] as const;
+/** Đối tượng có thể bị báo cáo từ ứng dụng người dùng */
+export const REPORT_TARGETS = ['LISTING', 'USER', 'FEED_POST'] as const;
 export type ReportTarget = (typeof REPORT_TARGETS)[number];
 
 export const POST_STATUSES = ['DRAFT', 'PUBLISHED', 'HIDDEN', 'ARCHIVED'] as const;
@@ -18,3 +18,4 @@ export const REPORT_ACTIONS = ['DISMISS', 'KEEP', 'REMOVE', 'WARN', 'SUSPEND', '
 export type ReportAction = (typeof REPORT_ACTIONS)[number];
 export const LISTING_REPORT_ACTIONS: readonly ReportAction[] = ['DISMISS', 'KEEP', 'REMOVE'];
 export const USER_REPORT_ACTIONS: readonly ReportAction[] = ['DISMISS', 'WARN', 'SUSPEND', 'BAN'];
+export const FEED_POST_REPORT_ACTIONS: readonly ReportAction[] = ['DISMISS', 'REMOVE'];
