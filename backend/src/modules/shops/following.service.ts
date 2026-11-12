@@ -70,3 +70,71 @@ export async function listMyShopFollowers(ownerId: string, { page, limit, skip }
     page: { page, limit, totalItems },
   };
 }
+
+/** Số tin xem trước trên mỗi thẻ gợi ý shop */
+const PREVIEW_SIZE = 3;
+
+/** Trọng số sở thích theo từng kiểu tương tác với một danh mục */
+const INTEREST_WEIGHT = { favorite: 2, wantedAlert: 3, followedShop: 1 } as const;
+
+/**
+ * Mức quan tâm của [userId] với từng danh mục: tin đã lưu, thẻ "Báo khi có hàng" và danh mục của các shop
+ * đang theo dõi. Danh mục tương tác nhiều thì điểm cao.
+ */
+async function interestByCategory(userId: string) {
+  const [favorites, alerts, followed] = await Promise.all([
+    prisma.listingFavorite.findMany({
+      where: { userId }, orderBy: { createdAt: 'desc' }, take: 100, select: { listing: { select: { categoryId: true } } },
+    }),
+    prisma.wantedAlert.findMany({ where: { userId, categoryId: { not: null } }, take: 50, select: { categoryId: true } }),
+    prisma.shopFollow.findMany({ where: { userId }, select: { shop: { select: { categoryIds: true } } } }),
+  ]);
+  const interest = new Map<string, number>();
+  const add = (id: string | null, weight: number) => {
+    if (id) interest.set(id, (interest.get(id) ?? 0) + weight);
+  };
+  favorites.forEach((row) => add(row.listing.categoryId, INTEREST_WEIGHT.favorite));
+  alerts.forEach((row) => add(row.categoryId, INTEREST_WEIGHT.wantedAlert));
+  followed.forEach((row) => row.shop.categoryIds.forEach((id) => add(id, INTEREST_WEIGHT.followedShop)));
+  return interest;
+}
+
+/**
+ * Gợi ý shop uy tín để theo dõi (trang Đang theo dõi): shop chưa theo dõi, không phải shop của mình.
+ * Xếp theo: hợp danh mục mình tương tác nhiều (tin đã lưu, Báo khi có hàng, shop đang theo dõi) → đối tác
+ * (shop đang có gói Cửa hàng còn hạn, hoặc thương hiệu chính hãng) → số người theo dõi.
+ * items [Shop + isFollowing + isPartner + reason (MATCHES_INTEREST | PARTNER | POPULAR) + previews (≤ 3 thẻ tin)]
+ */
+export async function listSuggestedShops(userId: string, limit: number, now = new Date()) {
+  const [shops, interest] = await Promise.all([
+    prisma.shop.findMany({
+      where: { ...trusted, ownerId: { not: userId }, followers: { none: { userId } } },
+      select: {
+        ...shopSelect,
+        owner: { select: { ...shopSelect.owner.select, storeSubscription: { select: { endsAt: true, startsAt: true, package: { select: { tier: true } } } } } },
+      },
+    }),
+    interestByCategory(userId),
+  ]);
+  const ranked = shops
+    .map((shop) => {
+      const sub = shop.owner.storeSubscription;
+      const storePlan = !!sub && sub.package.tier === 'PRO' && sub.startsAt <= now && sub.endsAt > now;
+      const partner = storePlan || shop.verificationType === 'OFFICIAL_BRAND';
+      const score = shop.categoryIds.reduce((sum, id) => sum + (interest.get(id) ?? 0), 0);
+      return { shop, partner, score };
+    })
+    .sort((a, b) => b.score - a.score || Number(b.partner) - Number(a.partner)
+      || b.shop._count.followers - a.shop._count.followers || a.shop.name.localeCompare(b.shop.name))
+    .slice(0, limit);
+  const dtos = await shopDtos(userId, ranked.map((row) => row.shop));
+  return Promise.all(dtos.map(async (dto, index) => {
+    const { score, partner } = ranked[index];
+    return {
+      ...dto,
+      isPartner: partner,
+      reason: score > 0 ? 'MATCHES_INTEREST' : partner ? 'PARTNER' : 'POPULAR',
+      previews: await cards(userId, await shopRepository.findListings({ ...visible, ownerId: dto.ownerId }, PREVIEW_SIZE)),
+    };
+  }));
+}

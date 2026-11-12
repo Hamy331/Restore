@@ -50,6 +50,14 @@ shopRouter.get('/me/followers', manageOwn, followingController.myFollowers);
  */
 shopRouter.get('/following', verifyToken, followingController.shops);
 
+/**
+ * Gợi ý shop uy tín để theo dõi: chưa theo dõi, không phải shop mình. Hợp danh mục mình tương tác nhiều xếp
+ * trước, rồi tới đối tác (gói Cửa hàng còn hạn hoặc chính hãng), rồi số người theo dõi.
+ * [Shop + isFollowing + isPartner + reason (MATCHES_INTEREST | PARTNER | POPULAR) + previews (≤ 3 thẻ tin)].
+ * Query limit (≤ 20, mặc định 10)
+ */
+shopRouter.get('/following/suggestions', verifyToken, followingController.suggestions);
+
 /** Tin mới nhất của các shop mình đang theo dõi (thẻ tin như trang chủ). Query page, limit */
 shopRouter.get('/following/listings', verifyToken, followingController.listings);
 

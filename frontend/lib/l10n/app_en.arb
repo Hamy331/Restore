@@ -2971,5 +2971,38 @@
     "placeholders": {
       "date": {"type": "String"}
     }
-  }
+  },
+  "followingHubTitle": "Following",
+  "followingHubSubtitle": "New from shops and people you follow",
+  "followingHubOnboardSubtitle": "Pick a few shops to get started",
+  "followingHubManage": "Manage who you follow",
+  "followingHubPeopleTitle": "People you follow",
+  "followingHubSeeAll": "See all",
+  "followingHubFeedTitle": "New from shops you follow",
+  "followingHubFeedHint": "Pick a shop to see only its listings",
+  "followingHubAll": "All",
+  "followingHubOpenShop": "Visit shop",
+  "followingHubSuggestHint": "Shops in categories you save and follow, ReStore partners first",
+  "followingHubOnboardTitle": "Follow shops so you never miss new listings",
+  "followingHubOnboardBody": "Tap Follow on the shops below and their new listings will show up here.",
+  "followingHubBenefitFeed": "New listings from every shop in one place",
+  "followingHubBenefitFilter": "Filter by shop in one tap",
+  "followingHubBenefitVerified": "Only shops verified by ReStore",
+  "followingHubNoSuggestions": "No shops to suggest yet",
+  "followingHubSeeFeed": "See new listings from {count} shops",
+  "@followingHubSeeFeed": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFollowerCountText": "{count} followers",
+  "@followShopsFollowerCountText": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "followingHubPostsTitle": "Recent posts",
+  "followingHubPostsHint": "New posts from people you follow",
+  "followingHubForYouTitle": "Shops for you",
+  "followingHubPartner": "Partner"
 }

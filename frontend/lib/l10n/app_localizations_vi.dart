@@ -4819,4 +4819,81 @@ class AppLocalizationsVi extends AppLocalizations {
   String msFollowedSince(String date) {
     return 'Từ $date';
   }
+
+  @override
+  String get followingHubTitle => 'Đang theo dõi';
+
+  @override
+  String get followingHubSubtitle => 'Tin mới từ shop và người bạn theo dõi';
+
+  @override
+  String get followingHubOnboardSubtitle => 'Chọn vài shop để bắt đầu';
+
+  @override
+  String get followingHubManage => 'Quản lý danh sách theo dõi';
+
+  @override
+  String get followingHubPeopleTitle => 'Người bạn theo dõi';
+
+  @override
+  String get followingHubSeeAll => 'Xem tất cả';
+
+  @override
+  String get followingHubFeedTitle => 'Mới từ shop bạn theo dõi';
+
+  @override
+  String get followingHubFeedHint =>
+      'Chọn một shop để xem riêng tin của shop đó';
+
+  @override
+  String get followingHubAll => 'Tất cả';
+
+  @override
+  String get followingHubOpenShop => 'Xem shop';
+
+  @override
+  String get followingHubSuggestHint =>
+      'Ưu tiên shop hợp danh mục bạn hay xem, lưu và đối tác của ReStore';
+
+  @override
+  String get followingHubOnboardTitle => 'Theo dõi shop để không bỏ lỡ tin mới';
+
+  @override
+  String get followingHubOnboardBody =>
+      'Bấm Theo dõi ở các shop bên dưới, tin mới của họ sẽ gom về trang này.';
+
+  @override
+  String get followingHubBenefitFeed => 'Tin mới của mọi shop gom về một chỗ';
+
+  @override
+  String get followingHubBenefitFilter => 'Lọc nhanh theo từng shop';
+
+  @override
+  String get followingHubBenefitVerified => 'Chỉ shop đã được ReStore xác minh';
+
+  @override
+  String get followingHubNoSuggestions => 'Chưa có shop nào để gợi ý';
+
+  @override
+  String followingHubSeeFeed(int count) {
+    return 'Xem tin mới từ $count shop';
+  }
+
+  @override
+  String followShopsFollowerCountText(String count) {
+    return '$count người theo dõi';
+  }
+
+  @override
+  String get followingHubPostsTitle => 'Bạn bè vừa đăng';
+
+  @override
+  String get followingHubPostsHint =>
+      'Bài mới trên Bảng tin của người bạn theo dõi';
+
+  @override
+  String get followingHubForYouTitle => 'Shop dành cho bạn';
+
+  @override
+  String get followingHubPartner => 'Đối tác';
 }

@@ -8533,6 +8533,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Since {date}'**
   String msFollowedSince(String date);
+
+  /// No description provided for @followingHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get followingHubTitle;
+
+  /// No description provided for @followingHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New from shops and people you follow'**
+  String get followingHubSubtitle;
+
+  /// No description provided for @followingHubOnboardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a few shops to get started'**
+  String get followingHubOnboardSubtitle;
+
+  /// No description provided for @followingHubManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage who you follow'**
+  String get followingHubManage;
+
+  /// No description provided for @followingHubPeopleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'People you follow'**
+  String get followingHubPeopleTitle;
+
+  /// No description provided for @followingHubSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get followingHubSeeAll;
+
+  /// No description provided for @followingHubFeedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New from shops you follow'**
+  String get followingHubFeedTitle;
+
+  /// No description provided for @followingHubFeedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a shop to see only its listings'**
+  String get followingHubFeedHint;
+
+  /// No description provided for @followingHubAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get followingHubAll;
+
+  /// No description provided for @followingHubOpenShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit shop'**
+  String get followingHubOpenShop;
+
+  /// No description provided for @followingHubSuggestHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops in categories you save and follow, ReStore partners first'**
+  String get followingHubSuggestHint;
+
+  /// No description provided for @followingHubOnboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow shops so you never miss new listings'**
+  String get followingHubOnboardTitle;
+
+  /// No description provided for @followingHubOnboardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Follow on the shops below and their new listings will show up here.'**
+  String get followingHubOnboardBody;
+
+  /// No description provided for @followingHubBenefitFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'New listings from every shop in one place'**
+  String get followingHubBenefitFeed;
+
+  /// No description provided for @followingHubBenefitFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by shop in one tap'**
+  String get followingHubBenefitFilter;
+
+  /// No description provided for @followingHubBenefitVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Only shops verified by ReStore'**
+  String get followingHubBenefitVerified;
+
+  /// No description provided for @followingHubNoSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'No shops to suggest yet'**
+  String get followingHubNoSuggestions;
+
+  /// No description provided for @followingHubSeeFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'See new listings from {count} shops'**
+  String followingHubSeeFeed(int count);
+
+  /// No description provided for @followShopsFollowerCountText.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} followers'**
+  String followShopsFollowerCountText(String count);
+
+  /// No description provided for @followingHubPostsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent posts'**
+  String get followingHubPostsTitle;
+
+  /// No description provided for @followingHubPostsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New posts from people you follow'**
+  String get followingHubPostsHint;
+
+  /// No description provided for @followingHubForYouTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops for you'**
+  String get followingHubForYouTitle;
+
+  /// No description provided for @followingHubPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get followingHubPartner;
 }
 
 class _AppLocalizationsDelegate

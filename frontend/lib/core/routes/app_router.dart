@@ -23,6 +23,7 @@ import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dar
 import 'package:restore/modules/account/views/edit_profile/edit_profile_view.dart';
 import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 import 'package:restore/modules/my_shop/views/shop_followers/shop_followers_view.dart';
+import 'package:restore/modules/following/views/following_hub/following_hub_view.dart';
 import 'package:restore/modules/trusted_shop/views/following_shops/following_shops_view.dart';
 import 'package:restore/modules/chat/views/messages/messages_view.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
@@ -601,6 +602,15 @@ GoRouter createAppRouter(
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const ShopFollowersView(),
+      ),
+    ),
+    // Trang Đang theo dõi (lối tắt ở trang chủ)
+    GoRoute(
+      path: FollowingHubView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const FollowingHubView(),
       ),
     ),
     // Shop uy tín đang theo dõi và tin mới của họ

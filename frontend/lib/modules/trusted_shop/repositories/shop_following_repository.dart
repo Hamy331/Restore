@@ -6,6 +6,7 @@ import 'package:restore/shared/models/paged_result.dart';
 
 import '../data/trusted_shop_mock_data.dart';
 import '../models/followed_shop.dart';
+import '../models/trusted_shop_item.dart';
 
 /// Shop mình đang theo dõi, tin mới của các shop đó và người theo dõi shop
 /// của mình.
@@ -25,6 +26,15 @@ abstract class ShopFollowingRepository {
 
   /// Người đang theo dõi shop của mình (trang Quản lý shop)
   Future<PagedResult<ShopFollower>> myFollowers({int page = 1});
+
+  /// Shop gợi ý theo dõi, hợp sở thích trước
+  Future<List<ShopSuggestion>> suggestions({int limit = 10});
+
+  /// Tin mới nhất của một shop (lọc theo shop ở trang Đang theo dõi)
+  Future<PagedResult<ListingCardItem>> shopListings(
+    String shopId, {
+    int page = 1,
+  });
 
   Future<void> setFollowing(String shopId, bool following);
 
@@ -91,19 +101,66 @@ class MockShopFollowingRepository implements ShopFollowingRepository {
   @override
   Future<PagedResult<ListingCardItem>> followedListings({int page = 1}) async {
     await Future<void>.delayed(latency);
+    return _page(_cards(_followedListings(DateTime.now())), page);
+  }
+
+  List<ListingCardItem> _cards(Iterable<Map<String, dynamic>> listings) {
     final items = [
-      for (final json in _followedListings(DateTime.now()))
+      for (final json in listings)
         ListingCardItem.fromJson(
           json,
         ).copyWith(isFavorite: MockFavoriteStore.contains('${json['id']}')),
     ];
     final epoch = DateTime.fromMillisecondsSinceEpoch(0);
-    items.sort(
+    return items..sort(
       (a, b) => (b.listing.createdAt ?? epoch).compareTo(
         a.listing.createdAt ?? epoch,
       ),
     );
-    return _page(items, page);
+  }
+
+  @override
+  Future<List<ShopSuggestion>> suggestions({int limit = 10}) async {
+    await Future<void>.delayed(latency);
+    final now = DateTime.now();
+    final shops = [
+      for (final json in TrustedShopMockData.shops)
+        if (!TrustedShopMockData.followingShopIds.contains(json['id'])) json,
+    ];
+    return [
+      for (var i = 0; i < shops.length && i < limit; i++)
+        ShopSuggestion(
+          item: TrustedShopItem.fromJson(
+            TrustedShopMockData.shopJson(shops[i]),
+          ),
+          // Mẫu: hai shop đầu hợp sở thích, shop chính hãng là đối tác
+          reason: i < 2
+              ? ShopSuggestionReason.matchesInterest
+              : shops[i]['verificationType'] == 'OFFICIAL_BRAND'
+              ? ShopSuggestionReason.partner
+              : ShopSuggestionReason.popular,
+          isPartner: shops[i]['verificationType'] == 'OFFICIAL_BRAND',
+          previews: _cards([
+            for (final json in TrustedShopMockData.listings(now))
+              if (json['shopId'] == shops[i]['id']) json,
+          ]).take(3).toList(),
+        ),
+    ];
+  }
+
+  @override
+  Future<PagedResult<ListingCardItem>> shopListings(
+    String shopId, {
+    int page = 1,
+  }) async {
+    await Future<void>.delayed(latency);
+    return _page(
+      _cards([
+        for (final json in TrustedShopMockData.listings(DateTime.now()))
+          if (json['shopId'] == shopId) json,
+      ]),
+      page,
+    );
   }
 
   @override
@@ -137,6 +194,9 @@ class MockShopFollowingRepository implements ShopFollowingRepository {
 /// - `GET /shops/following?page=&limit=` → `{ data: [Shop + isFollowing +
 ///   followedAt + newListingCount], pagination }`
 /// - `GET /shops/following/listings?page=&limit=` → thẻ tin như trang chủ
+/// - `GET /shops/following/suggestions?limit=` → `{ data: [Shop +
+///   isFollowing + isPartner + reason + previews] }`
+/// - `GET /shops/:id/listings?page=&limit=` → tin mới nhất của một shop
 /// - `GET /shops/me/followers?page=&limit=` → `{ data: [{ id, fullName,
 ///   username, avatarUrl, followedAt }], pagination }`
 /// - `POST|DELETE /shops/:id/follow`, `POST|DELETE /listings/:id/favorite`
@@ -175,6 +235,24 @@ class ApiShopFollowingRepository implements ShopFollowingRepository {
   @override
   Future<PagedResult<ShopFollower>> myFollowers({int page = 1}) =>
       _get('/shops/me/followers', page, ShopFollower.fromJson);
+
+  @override
+  Future<List<ShopSuggestion>> suggestions({int limit = 10}) async {
+    final response = await _apiClient.dio.get<Map<String, dynamic>>(
+      '/shops/following/suggestions',
+      queryParameters: {'limit': limit},
+    );
+    return [
+      for (final json in response.data?['data'] as List? ?? const [])
+        ShopSuggestion.fromJson(Map<String, dynamic>.from(json as Map)),
+    ];
+  }
+
+  @override
+  Future<PagedResult<ListingCardItem>> shopListings(
+    String shopId, {
+    int page = 1,
+  }) => _get('/shops/$shopId/listings', page, ListingCardItem.fromJson);
 
   @override
   Future<void> setFollowing(String shopId, bool following) async {
