@@ -26,6 +26,9 @@ abstract class AccountListingsRepository {
   /// khi lỗi)
   Future<void> extend(String id, int days);
 
+  /// Bỏ bản sửa đang chờ duyệt / bị từ chối, tin giữ bản đang hiển thị
+  Future<void> discardEdit(String id);
+
   /// Bật/tắt tự gia hạn ([AccountListingActionException] khi gói không có)
   Future<void> setAutoExtend(String id, bool enabled);
 
@@ -86,6 +89,8 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
             paidCredits: item.paidCredits,
             startsAt: item.startsAt,
             autoExtend: item.autoExtend,
+            editStatus: item.pendingEdit?.status,
+            editReason: item.pendingEdit?.reviewReason,
           ),
       ],
     );
@@ -107,6 +112,9 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
   @override
   Future<void> extend(String id, int days) =>
       _conflicts(() => _repository.extend(id, days));
+
+  @override
+  Future<void> discardEdit(String id) => _repository.discardEdit(id);
 
   @override
   Future<void> setAutoExtend(String id, bool enabled) =>

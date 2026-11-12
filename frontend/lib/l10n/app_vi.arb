@@ -2790,5 +2790,33 @@
   "followingHubPostsTitle": "Bạn bè vừa đăng",
   "followingHubPostsHint": "Bài mới trên Bảng tin của người bạn theo dõi",
   "followingHubForYouTitle": "Shop dành cho bạn",
-  "followingHubPartner": "Đối tác"
+  "followingHubPartner": "Đối tác",
+  "editListingTitle": "Sửa tin đăng",
+  "editSubmit": "Gửi duyệt lại",
+  "editSubmittedLive": "Đã gửi bản sửa. Tin vẫn hiển thị bản cũ cho tới khi được duyệt",
+  "editSubmitted": "Đã lưu thay đổi, tin đang chờ duyệt lại",
+  "editNoticeLive": "Người mua vẫn thấy bản hiện tại cho tới khi bản sửa được duyệt. Đẩy tin, Hot sale và ưu đãi đã áp dụng giữ nguyên.",
+  "editNoticeCategoryLocked": "Tin đã duyệt không đổi được chuyên mục.",
+  "editNoticeReview": "Sửa xong, tin sẽ được duyệt lại trước khi hiển thị.",
+  "editRejectedReason": "Lần trước bị từ chối: {reason}",
+  "@editRejectedReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "editLoadFailed": "Không mở được tin để sửa. Vui lòng thử lại.",
+  "leaveEditTitle": "Bỏ các thay đổi?",
+  "leaveEditMessage": "Những gì bạn vừa sửa sẽ không được lưu. Tin giữ nguyên như trước.",
+  "leaveEditDiscard": "Bỏ thay đổi",
+  "leaveEditKeep": "Sửa tiếp",
+  "accEditPending": "Bản sửa đang chờ duyệt",
+  "accEditRejected": "Bản sửa bị từ chối: {reason}",
+  "@accEditRejected": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "accDiscardEdit": "Bỏ bản sửa",
+  "accEditDiscarded": "Đã bỏ bản sửa, tin giữ nguyên bản đang hiển thị",
+  "accDiscardEditFailed": "Chưa bỏ được bản sửa. Vui lòng thử lại."
 }

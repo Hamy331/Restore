@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/core/constants/app_colors.dart';
 
 /// Nút tròn kính mờ có vòng viền cam gradient, icon ở giữa.
@@ -8,6 +9,9 @@ import 'package:restore/core/constants/app_colors.dart';
 /// để hai nút cùng một kiểu.
 class ShellGlassRingButton extends StatefulWidget {
   final IconData icon;
+
+  /// Icon 3D (AppImages.uiIcons) thay cho [icon] khi có
+  final String? image;
   final String label;
   final double size;
   final VoidCallback? onTap;
@@ -15,6 +19,7 @@ class ShellGlassRingButton extends StatefulWidget {
   const ShellGlassRingButton({
     super.key,
     required this.icon,
+    this.image,
     required this.label,
     required this.onTap,
     this.size = 58,
@@ -116,12 +121,19 @@ class _ShellGlassRingButtonState extends State<ShellGlassRingButton> {
                                     child: child,
                                   ),
                                 ),
-                            child: Icon(
-                              widget.icon,
-                              key: ValueKey(widget.icon),
-                              size: size * 0.44,
-                              color: AppColors.primaryDark,
-                            ),
+                            child: widget.image == null
+                                ? Icon(
+                                    widget.icon,
+                                    key: ValueKey(widget.icon),
+                                    size: size * 0.44,
+                                    color: AppColors.primaryDark,
+                                  )
+                                : AppImageIcon(
+                                    widget.image!,
+                                    key: ValueKey(widget.image),
+                                    size: size * 0.52,
+                                    fallback: widget.icon,
+                                  ),
                           ),
                         ),
                       ),

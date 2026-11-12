@@ -14,6 +14,7 @@ import '../models/listing_draft.dart';
 import '../models/posting_quota.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
 import 'package:restore/data/models/listing_model.dart';
+import 'package:restore/data/models/listing_revision_model.dart';
 
 /// Hợp đồng làm việc với dữ liệu tin đăng
 abstract class ListingsRepository {
@@ -29,6 +30,13 @@ abstract class ListingsRepository {
     bool allowDuplicate = false,
   });
   Future<ListingDraft> getDraft(String id);
+
+  /// Một tin của tôi, mọi trạng thái, kèm bản sửa đang chờ duyệt (nếu có)
+  Future<ListingModel> getOwned(String id);
+
+  /// Bỏ bản sửa đang chờ duyệt / bị từ chối của tin đã duyệt; tin giữ
+  /// nguyên bản đang hiển thị
+  Future<void> discardEdit(String id);
   Future<PagedResult<ListingModel>> mine({int page = 1, String? status});
   Future<ListingModel> detail(String id);
 
@@ -79,27 +87,41 @@ class MockListingsRepository implements ListingsRepository {
 
   final Duration latency;
   static final Map<String, ListingDraft> _store = {};
+
+  /// Bản sửa chờ duyệt của tin đã duyệt (giống ListingRevision ở backend)
+  static final Map<String, ListingDraft> _edits = {};
   static final Set<String> _favorites = {};
   static int _nextId = 0;
-  ListingModel _model(ListingDraft draft) => ListingModel(
-    id: draft.id!,
-    ownerId: 'mock-user',
-    title: draft.title,
-    description: draft.description,
-    price: draft.price,
-    images: draft.images,
-    categoryId: draft.categoryId,
-    condition: draft.condition,
-    status: draft.status,
-    allowSale: draft.tradeType.allowsSale,
-    allowExchange: draft.tradeType.allowsExchange,
-    address: draft.address,
-    attributes: draft.attributes,
-    sellerName: 'Bạn',
-    exchangeWish: draft.exchangeWish,
-    sellerType: draft.sellerType.name.toUpperCase(),
-    updatedAt: draft.updatedAt,
-  );
+  ListingModel _model(ListingDraft draft, {bool withEdit = true}) =>
+      ListingModel(
+        id: draft.id!,
+        ownerId: 'mock-user',
+        title: draft.title,
+        description: draft.description,
+        price: draft.price,
+        images: draft.images,
+        categoryId: draft.categoryId,
+        condition: draft.condition,
+        status: draft.status,
+        allowSale: draft.tradeType.allowsSale,
+        allowExchange: draft.tradeType.allowsExchange,
+        address: draft.address,
+        attributes: draft.attributes,
+        sellerName: 'Bạn',
+        exchangeWish: draft.exchangeWish,
+        sellerType: draft.sellerType.name.toUpperCase(),
+        updatedAt: draft.updatedAt,
+        pendingEdit: !withEdit || _edits[draft.id] == null
+            ? null
+            : ListingRevisionModel(
+                status: ListingRevisionStatus.pending,
+                submittedAt: _edits[draft.id]!.updatedAt,
+                content: _model(
+                  _edits[draft.id]!.copyWith(status: draft.status),
+                  withEdit: false,
+                ),
+              ),
+      );
   @override
   Future<PagedResult<ListingModel>> mine({int page = 1, String? status}) async {
     final rows =
@@ -208,6 +230,23 @@ class MockListingsRepository implements ListingsRepository {
       _store[id] ?? (throw StateError('Không tìm thấy nháp.'));
 
   @override
+  Future<ListingModel> getOwned(String id) async {
+    await Future<void>.delayed(latency);
+    final stored = _store[id];
+    if (stored != null) return _model(stored);
+    // Tin mẫu trên trang chủ: coi như tin của tôi để thử luồng sửa tin
+    final sample = await detail(id);
+    _store[id] = ListingDraft.fromListing(sample);
+    return _model(_store[id]!);
+  }
+
+  @override
+  Future<void> discardEdit(String id) async {
+    await Future<void>.delayed(latency);
+    _edits.remove(id);
+  }
+
+  @override
   Future<DraftQuota> draftQuota() async => DraftQuota(
     used: _store.values
         .where((draft) => draft.status == ListingStatus.draft)
@@ -246,6 +285,12 @@ class MockListingsRepository implements ListingsRepository {
     bool allowDuplicate = false,
   }) async {
     await Future<void>.delayed(latency);
+    // Sửa tin đã duyệt: lưu bản sửa chờ duyệt, tin vẫn giữ bản cũ
+    final current = _store[draft.id];
+    if (current != null && current.status.isApproved) {
+      _edits[draft.id!] = draft.copyWith(updatedAt: DateTime.now());
+      return draft.copyWith(status: current.status);
+    }
     final categoryId = draft.categoryId;
     var alreadyCounted = _store[draft.id]?.status == ListingStatus.pending;
     // Backend cũng chặn khi chuyên mục đã đủ số tin của tài khoản cá nhân;
@@ -712,14 +757,21 @@ class ApiListingsRepository implements ListingsRepository {
       : throw const ListingImageException(ListingImageProblem.unsupported);
 
   @override
-  Future<ListingDraft> getDraft(String id) async {
-    final data = _data(
+  Future<ListingDraft> getDraft(String id) async =>
+      ListingDraft.fromListing(await getOwned(id));
+
+  @override
+  Future<ListingModel> getOwned(String id) async => _listing(
+    _data(
       await _dio.get<Map<String, dynamic>>(
         '/listings/mine/${Uri.encodeComponent(id)}',
       ),
-    );
-    return ListingDraft.fromListing(_listing(data));
-  }
+    ),
+  );
+
+  @override
+  Future<void> discardEdit(String id) =>
+      _dio.delete<void>('/listings/${Uri.encodeComponent(id)}/edit');
 
   ListingModel _listing(Map<String, dynamic> data) =>
       ListingModel.fromJson(data, apiBaseUrl: _dio.options.baseUrl);

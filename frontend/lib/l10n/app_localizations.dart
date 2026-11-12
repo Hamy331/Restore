@@ -8671,6 +8671,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Partner'**
   String get followingHubPartner;
+
+  /// No description provided for @editListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit listing'**
+  String get editListingTitle;
+
+  /// No description provided for @editSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for review'**
+  String get editSubmit;
+
+  /// No description provided for @editSubmittedLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit submitted. Buyers keep seeing the current version until it is approved'**
+  String get editSubmittedLive;
+
+  /// No description provided for @editSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved, your listing is waiting for review again'**
+  String get editSubmitted;
+
+  /// No description provided for @editNoticeLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyers keep seeing the current version until your edit is approved. Boosts, Hot sale and applied discounts stay as they are.'**
+  String get editNoticeLive;
+
+  /// No description provided for @editNoticeCategoryLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The category of an approved listing can\'t be changed.'**
+  String get editNoticeCategoryLocked;
+
+  /// No description provided for @editNoticeReview.
+  ///
+  /// In en, this message translates to:
+  /// **'After editing, your listing is reviewed again before it shows.'**
+  String get editNoticeReview;
+
+  /// No description provided for @editRejectedReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Last time it was rejected: {reason}'**
+  String editRejectedReason(String reason);
+
+  /// No description provided for @editLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this listing for editing. Please try again.'**
+  String get editLoadFailed;
+
+  /// No description provided for @leaveEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard your changes?'**
+  String get leaveEditTitle;
+
+  /// No description provided for @leaveEditMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'What you just edited won\'t be saved. The listing stays as it was.'**
+  String get leaveEditMessage;
+
+  /// No description provided for @leaveEditDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes'**
+  String get leaveEditDiscard;
+
+  /// No description provided for @leaveEditKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get leaveEditKeep;
+
+  /// No description provided for @accEditPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit waiting for review'**
+  String get accEditPending;
+
+  /// No description provided for @accEditRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit rejected: {reason}'**
+  String accEditRejected(String reason);
+
+  /// No description provided for @accDiscardEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard edit'**
+  String get accDiscardEdit;
+
+  /// No description provided for @accEditDiscarded.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit discarded, the listing keeps its current version'**
+  String get accEditDiscarded;
+
+  /// No description provided for @accDiscardEditFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t discard the edit. Please try again.'**
+  String get accDiscardEditFailed;
 }
 
 class _AppLocalizationsDelegate

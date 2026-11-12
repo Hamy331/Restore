@@ -39,6 +39,8 @@ export async function updateDraft(ownerId: string, id: string, data: DraftInput)
     const category = data.categoryId ? await listingRepository.findCategory(data.categoryId, tx) : null;
     if (category) validateAttributes(data.attributes, category.metadata, false);
     await updateOwnedListing(tx, id, ownerId, current.status, { ...data, status: ListingStatus.DRAFT, reviewReason: null });
+    // Tin đã duyệt đưa về nháp: bản sửa chờ duyệt không còn dùng (nháp đã chứa nội dung mới)
+    if (current.revision) await listingRepository.deleteRevision(tx, id);
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);

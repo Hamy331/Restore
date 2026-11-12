@@ -90,14 +90,29 @@ listingRouter.get('/mine', manageOwn, validate({ query: mineQuery }), listingCon
 listingRouter.get('/mine/:id', manageOwn, validate({ params: listingIdParams }), listingController.getMine);
 
 /**
- * Sửa tin đang hiển thị, đã ẩn, chờ duyệt hoặc bị từ chối; tin quay lại chờ duyệt
+ * Sửa tin đang hiển thị, đã ẩn, chờ duyệt hoặc bị từ chối
+ *
+ * - Tin đã duyệt (AVAILABLE / HIDDEN): lưu thành bản sửa chờ duyệt, tin vẫn hiện bản cũ tới khi được duyệt
+ *   (từ chối thì giữ bản cũ). Trả về tin kèm pendingEdit { status: PENDING, ... }. Không đổi được chuyên mục
+ *   (409 CATEGORY_LOCKED); thời gian hiển thị, xu đã trả, đẩy tin, Hot sale, ưu đãi giữ nguyên.
+ *   Đổi ảnh sau đó qua /:id/images cũng áp vào bản sửa. Sửa tiếp khi đang chờ thì thay bản sửa cũ.
+ * - Tin chưa duyệt (PENDING / REJECTED): sửa thẳng, tin quay lại chờ duyệt.
  *
  * Path params:
  *  - id: string - mã tin
  *
- * Body: như khi đăng tin
+ * Body: như khi đăng tin (displayDays / startsAt bỏ qua)
+ * Lỗi 409: LISTING_NOT_EDITABLE, CATEGORY_LOCKED
  */
 listingRouter.put('/:id', manageOwn, validate({ params: listingIdParams, body: createListingBody }), listingController.update);
+
+/**
+ * Bỏ bản sửa đang chờ duyệt hoặc bị từ chối của tin đã duyệt; tin giữ nguyên bản đang hiển thị
+ *
+ * Trả về: Listing (không còn pendingEdit)
+ * Lỗi 404: EDIT_NOT_FOUND
+ */
+listingRouter.delete('/:id/edit', manageOwn, validate({ params: listingIdParams }), listingController.discardEdit);
 
 /**
  * Đổi trạng thái tin: AVAILABLE ↔ HIDDEN, hoặc SOLD / EXCHANGED (không mở lại được)

@@ -142,6 +142,38 @@ enum ListingCondition {
   FOR_PARTS
 }
 
+/// Trạng thái bản sửa của tin đã duyệt
+enum ListingRevisionStatus {
+  PENDING
+  REJECTED
+}
+
+/// Bản sửa của tin đã duyệt, chờ duyệt lại. Trong lúc chờ, tin vẫn hiện bản cũ;
+/// duyệt thì nội dung bản sửa thay vào tin, từ chối thì tin giữ nguyên bản cũ.
+/// Chuyên mục, thời gian hiển thị, xu đã trả, đẩy tin, Hot sale không nằm ở đây nên sửa tin không đổi được.
+model ListingRevision {
+  listingId     String                @id
+  listing       Listing               @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  status        ListingRevisionStatus @default(PENDING)
+  title         String
+  description   String
+  price         Decimal
+  originalPrice Decimal?
+  isNegotiable  Boolean
+  condition     ListingCondition?
+  allowSale     Boolean
+  allowExchange Boolean
+  exchangeWish  String
+  attributes    Json                  @default("{}")
+  location      Json?
+  images        String[]
+  reviewReason  String?
+  submittedAt   DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  @@index([status, submittedAt])
+}
+
 enum ListingStatus {
   DRAFT
   PENDING
@@ -199,6 +231,8 @@ model Listing {
   wantedAlertMatches WantedAlertMatch[]
   viewDays      ListingViewDaily[]
   posters       ShopBanner[]
+  /// Bản sửa đang chờ duyệt lại (chỉ tin đã duyệt: đang hiển thị / đã ẩn)
+  revision      ListingRevision?
 
   @@index([ownerId, publishedAt])
   @@index([ownerId, categoryId, status])

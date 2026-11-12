@@ -75,6 +75,13 @@ class CreateListingState extends Equatable {
   /// Lỗi của lần lưu nháp / đăng tin gần nhất để view báo đúng nguyên nhân
   final Object? saveError;
 
+  /// Tin đã đăng đang được sửa (bản đang lưu trên máy chủ, kèm bản sửa chờ
+  /// duyệt nếu có); null khi đang đăng tin mới hoặc soạn nháp
+  final ListingModel? editingListing;
+
+  /// Trạng thái tải tin để sửa
+  final RequestStatus openEditStatus;
+
   const CreateListingState({
     this.categories = const [],
     this.categoriesStatus = RequestStatus.idle,
@@ -104,7 +111,16 @@ class CreateListingState extends Equatable {
     this.draftQuota,
     this.draftLimitHits = 0,
     this.saveError,
+    this.editingListing,
+    this.openEditStatus = RequestStatus.idle,
   });
+
+  /// Đang sửa tin đã đăng: không lưu nháp, không đổi thời gian hiển thị
+  bool get isEditing => editingListing != null;
+
+  /// Đang sửa tin đã duyệt: bản sửa chờ duyệt, tin vẫn hiện bản cũ, không
+  /// đổi được chuyên mục; đẩy tin, Hot sale, ưu đãi giữ nguyên
+  bool get isEditingApproved => editingListing?.status.isApproved ?? false;
 
   /// Màn chọn chuyên mục đã tải xong danh mục, hạn mức và tin nháp (thành
   /// công hay lỗi), để hiện tất cả cùng lúc: không cho chọn chuyên mục khi
@@ -122,6 +138,7 @@ class CreateListingState extends Equatable {
   /// Đã nhập gì đó mà chưa lưu nháp (hỏi lại trước khi thoát luồng đăng tin)
   bool get hasUnsavedChanges {
     if (publishStatus == RequestStatus.success) return false;
+    if (openEditStatus == RequestStatus.loading) return false;
     final saved = savedDraft;
     if (saved == null) return draft.hasContent;
     return !draft.sameContentAs(saved);
@@ -180,6 +197,8 @@ class CreateListingState extends Equatable {
     DraftQuota? draftQuota,
     int? draftLimitHits,
     Object? saveError,
+    ListingModel? editingListing,
+    RequestStatus? openEditStatus,
   }) {
     return CreateListingState(
       categories: categories ?? this.categories,
@@ -212,6 +231,8 @@ class CreateListingState extends Equatable {
       draftQuota: draftQuota ?? this.draftQuota,
       draftLimitHits: draftLimitHits ?? this.draftLimitHits,
       saveError: saveError ?? this.saveError,
+      editingListing: editingListing ?? this.editingListing,
+      openEditStatus: openEditStatus ?? this.openEditStatus,
     );
   }
 
@@ -244,5 +265,7 @@ class CreateListingState extends Equatable {
     draftQuota,
     draftLimitHits,
     saveError,
+    editingListing,
+    openEditStatus,
   ];
 }

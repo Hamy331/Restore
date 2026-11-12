@@ -43,6 +43,7 @@ import 'package:restore/modules/listings/views/choose_category/choose_category_v
 import 'package:restore/modules/listings/views/listing_details/listing_details_view.dart';
 import 'package:restore/modules/listings/views/listing_preview/listing_preview_view.dart';
 import 'package:restore/modules/listings/views/listing_drafts/listing_drafts_view.dart';
+import 'package:restore/modules/listings/views/edit_listing/edit_listing_view.dart';
 import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 import 'package:restore/data/models/listing_model.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
@@ -262,6 +263,14 @@ GoRouter createAppRouter(
           pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
             state: state,
             child: const ListingDraftsView(),
+          ),
+        ),
+        // Sửa tin đã đăng: tải tin rồi vào bước 2 (giữ chuyên mục)
+        GoRoute(
+          path: EditListingView.path,
+          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+            state: state,
+            child: EditListingView(listingId: state.pathParameters['id']!),
           ),
         ),
         GoRoute(

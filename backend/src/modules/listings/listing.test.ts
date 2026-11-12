@@ -44,7 +44,7 @@ test('owner lookup and update always include the authenticated owner ID', async 
   await assert.rejects(updateOwnedListing(tx, 'listing-1', 'user-1', ListingStatus.AVAILABLE,
     { status: ListingStatus.HIDDEN }), { code: 'LISTING_CHANGED' });
   assert.deepEqual(calls, [
-    { where: { id: 'listing-1', ownerId: 'user-1' } },
+    { where: { id: 'listing-1', ownerId: 'user-1' }, include: { revision: true } },
     { where: { id: 'listing-1', ownerId: 'user-1', status: ListingStatus.AVAILABLE },
       data: { status: ListingStatus.HIDDEN } },
   ]);

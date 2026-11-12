@@ -76,6 +76,12 @@ class FakeAccountListingsRepository implements AccountListingsRepository {
   @override
   Future<void> extend(String id, int days) async => extended.add((id, days));
 
+  /// Tin đã gọi bỏ bản sửa
+  final List<String> discardedEdits = [];
+
+  @override
+  Future<void> discardEdit(String id) async => discardedEdits.add(id);
+
   /// Các lần gia hạn: (id, số ngày thêm)
   final extended = <(String, int)>[];
 

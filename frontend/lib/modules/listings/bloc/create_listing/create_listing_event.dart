@@ -183,3 +183,12 @@ class DraftDeleted extends CreateListingEvent {
   @override
   List<Object?> get props => [id];
 }
+
+/// Mở một tin đã đăng để sửa (đang hiển thị, đã ẩn, chờ duyệt, bị từ chối).
+/// Tin đã duyệt đang có bản sửa chờ duyệt thì mở bản sửa đó để sửa tiếp.
+class ListingEditOpened extends CreateListingEvent {
+  final String id;
+  const ListingEditOpened(this.id);
+  @override
+  List<Object?> get props => [id];
+}

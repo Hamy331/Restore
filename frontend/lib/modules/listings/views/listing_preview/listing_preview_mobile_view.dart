@@ -14,6 +14,7 @@ import 'widgets/listing_preview_description_card.dart';
 import 'widgets/listing_preview_details_card.dart';
 import 'widgets/listing_preview_gallery.dart';
 import 'widgets/listing_preview_notice.dart';
+import '../../widgets/edit_listing_notice.dart';
 import '../../widgets/listing_display_days_card.dart';
 import 'widgets/listing_preview_summary_card.dart';
 
@@ -59,7 +60,10 @@ class ListingPreviewMobileView extends StatelessWidget {
           builder: (context, state) {
             final sections = <Widget>[
               const ListingPreviewNotice(),
-              const ListingDisplayDaysCard(),
+              if (state.isEditing)
+                const EditListingNotice()
+              else
+                const ListingDisplayDaysCard(),
               ListingPreviewGallery(images: state.draft.images),
               ListingPreviewSummaryCard(state: state),
               ListingPreviewDescriptionCard(draft: state.draft),
@@ -90,7 +94,10 @@ class ListingPreviewMobileView extends StatelessWidget {
         bottomNavigationBar: AppBottomActionBar(
           secondaryLabel: l10n.editAction,
           onSecondary: () => context.pop(),
-          primaryLabel: l10n.publishListing,
+          primaryLabel:
+              context.select((CreateListingBloc bloc) => bloc.state.isEditing)
+              ? l10n.editSubmit
+              : l10n.publishListing,
           onPrimary: () => _onPublish(context),
         ),
       ),

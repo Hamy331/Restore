@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
@@ -61,6 +62,7 @@ class WantedAlertSuggestions extends StatelessWidget {
       return _below(
         FeedbackView(
           icon: AppIcons.wantedAlert,
+          image: AppImages.uiIcons.wantedAlert,
           title: l10n.wantedAlertSuggestionsEmptyTitle,
           message: l10n.wantedAlertSuggestionsEmptyBody,
         ),

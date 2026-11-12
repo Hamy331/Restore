@@ -142,7 +142,14 @@ class _AdminLiveWorkspaceState extends State<AdminLiveWorkspace> {
     );
   }
 
+  /// Bản sửa chờ duyệt của tin đã duyệt (tin vẫn hiện bản cũ trong lúc chờ)
+  Map? _pendingEdit(Map<String, dynamic> row) =>
+      row['pendingEdit'] is Map && row['pendingEdit']['status'] == 'PENDING'
+      ? row['pendingEdit'] as Map
+      : null;
+
   Future<void> _decision(Map<String, dynamic> row, {bool user = false}) async {
+    final edit = user ? null : _pendingEdit(row);
     final actions = user
         ? (row['status'] == 'BANNED'
               ? ['RESTORE']
@@ -154,14 +161,26 @@ class _AdminLiveWorkspaceState extends State<AdminLiveWorkspace> {
                 ])
         : row['status'] == 'PENDING'
         ? ['APPROVE', 'REJECT', 'REQUEST_CHANGES']
+        : edit != null
+        ? ['APPROVE', 'REJECT', 'REQUEST_CHANGES', 'REMOVE']
         : ['REMOVE'];
     await _edit(
-      user ? 'Xử lý tài khoản' : 'Quyết định kiểm duyệt',
+      user
+          ? 'Xử lý tài khoản'
+          : edit != null
+          ? 'Duyệt bản sửa (gỡ tin: REMOVE)'
+          : 'Quyết định kiểm duyệt',
       {'action': actions.first, 'reason': '', if (user) 'days': 7},
       {'action': actions},
       (data) => _repository.save(
         '${user ? 'users' : 'listings'}/${Uri.encodeComponent(row['id'])}/${user ? 'action' : 'decision'}',
-        {...data, 'updatedAt': row['updatedAt']},
+        {
+          ...data,
+          // Duyệt / từ chối bản sửa: gửi updatedAt của bản sửa
+          'updatedAt': edit != null && data['action'] != 'REMOVE'
+              ? edit['updatedAt']
+              : row['updatedAt'],
+        },
       ),
     );
   }
@@ -367,7 +386,8 @@ class _AdminLiveWorkspaceState extends State<AdminLiveWorkspace> {
     final actions = <Widget>[];
     switch (_section) {
       case 1:
-        if (['PENDING', 'AVAILABLE'].contains(row['status'])) {
+        if (['PENDING', 'AVAILABLE'].contains(row['status']) ||
+            _pendingEdit(row) != null) {
           actions.add(
             TextButton(
               onPressed: () => _decision(row),
@@ -440,6 +460,7 @@ class _AdminLiveWorkspaceState extends State<AdminLiveWorkspace> {
           ),
         ]);
     }
+    final edit = _section == 1 ? _pendingEdit(row) : null;
     final title = _label(
       row['title'] ??
           row['subject'] ??
@@ -458,6 +479,23 @@ class _AdminLiveWorkspaceState extends State<AdminLiveWorkspace> {
             const SizedBox(height: 8),
             if (row['status'] != null)
               Text('Trạng thái: ${_valueLabel(row['status'])}'),
+            if (edit != null) ...[
+              Text(
+                'Bản sửa chờ duyệt (tin vẫn hiện bản cũ)',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              if (edit['title'] != row['title'])
+                Text('Tiêu đề mới: ${edit['title']}'),
+              if ('${edit['price']}' != '${row['price']}')
+                Text('Giá mới: ${edit['price']}'),
+              if (edit['description'] != row['description'])
+                Text('Mô tả mới: ${edit['description']}'),
+              if ('${edit['images']}' != '${row['images']}')
+                Text('Ảnh: ${(edit['images'] as List?)?.length ?? 0} ảnh mới'),
+            ],
             if (row['email'] != null) Text(row['email']),
             if (row['owner'] is Map)
               Text('Người bán: ${row['owner']['fullName']}'),

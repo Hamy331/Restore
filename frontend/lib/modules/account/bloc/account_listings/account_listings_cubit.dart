@@ -79,6 +79,17 @@ class AccountListingsCubit extends Cubit<AccountListingsState> {
     }
   }
 
+  /// Bỏ bản sửa chờ duyệt / bị từ chối rồi tải lại; true khi thành công
+  Future<bool> discardEdit(String id) async {
+    try {
+      await _repository.discardEdit(id);
+    } catch (_) {
+      return false;
+    }
+    if (!isClosed) await load();
+    return true;
+  }
+
   /// Báo lỗi cập nhật tin (VD không tải được hạn mức trước khi gia hạn)
   void reportUpdateError() {
     if (!isClosed) emit(state.copyWith(error: AccountListingsError.update));

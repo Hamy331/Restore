@@ -3,6 +3,7 @@ import 'dart:ui' show PlatformDispatcher;
 import 'package:equatable/equatable.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
+import 'package:restore/data/models/listing_revision_model.dart';
 import 'package:restore/shared/models/geo_point.dart';
 import 'package:restore/shared/models/localized_text.dart';
 import 'package:restore/core/config/app_environment.dart';
@@ -66,6 +67,9 @@ class ListingModel extends Equatable {
   final String sellerType;
   final bool isFavorite;
 
+  /// Bản sửa đang chờ duyệt / bị từ chối của tin đã duyệt (chỉ chủ tin thấy)
+  final ListingRevisionModel? pendingEdit;
+
   const ListingModel({
     required this.id,
     required this.ownerId,
@@ -99,6 +103,7 @@ class ListingModel extends Equatable {
     this.reviewReason,
     this.sellerType = 'PERSONAL',
     this.isFavorite = false,
+    this.pendingEdit,
   });
 
   String? get coverImage => images.isEmpty ? null : images.first;
@@ -183,6 +188,11 @@ class ListingModel extends Equatable {
       reviewReason: json['reviewReason'] as String?,
       sellerType: json['sellerType'] as String? ?? 'PERSONAL',
       isFavorite: json['isFavorite'] == true,
+      pendingEdit: ListingRevisionModel.fromListingJson(
+        json,
+        json['pendingEdit'],
+        apiBaseUrl: apiBaseUrl,
+      ),
     );
   }
 
@@ -220,5 +230,6 @@ class ListingModel extends Equatable {
     reviewReason,
     sellerType,
     isFavorite,
+    pendingEdit,
   ];
 }

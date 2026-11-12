@@ -51,6 +51,25 @@ export const listingSelect = {
 
 export type ListingRecord = Prisma.ListingGetPayload<{ select: typeof listingSelect }>;
 
+/** Nội dung bản sửa của tin đã duyệt (ListingRevision), chỉ chủ tin và người duyệt thấy */
+export const revisionSelect = {
+  status: true, title: true, description: true, price: true, originalPrice: true, isNegotiable: true, condition: true,
+  allowSale: true, allowExchange: true, exchangeWish: true, attributes: true, location: true, images: true,
+  reviewReason: true, submittedAt: true, updatedAt: true,
+} as const satisfies Prisma.ListingRevisionSelect;
+
+export type RevisionRecord = Prisma.ListingRevisionGetPayload<{ select: typeof revisionSelect }>;
+
+/** Cột tin cho chủ tin: thêm bản sửa đang chờ / bị từ chối */
+export const ownerListingSelect = { ...listingSelect, revision: { select: revisionSelect } } as const;
+
+export type OwnerListingRecord = Prisma.ListingGetPayload<{ select: typeof ownerListingSelect }>;
+
+/** Bản sửa cho app: giá dạng chuỗi số như tin */
+export const toRevisionDto = (revision: RevisionRecord) => ({
+  ...revision, price: revision.price.toString(), originalPrice: revision.originalPrice?.toString() ?? null,
+});
+
 /**
  * Listing cho app: { id, ownerId, title, description, price (chuỗi số), isNegotiable, condition, status,
  *   originalPrice (giá trước giảm, null = không giảm), allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
@@ -70,8 +89,16 @@ export function toListingDto(listing: ListingRecord, owner = false) {
     areaLabel: address ? [address.ward?.name, address.province?.name].filter(Boolean).join(', ') : '' };
 }
 
-/** Listing cho chủ tin: đủ địa chỉ */
-export const toOwnerListingDto = (listing: ListingRecord) => toListingDto(listing, true);
+/**
+ * Listing cho chủ tin: đủ địa chỉ. Tin đã duyệt có bản sửa thì thêm pendingEdit
+ * { status: PENDING | REJECTED, reviewReason, submittedAt, updatedAt, title, description, price, originalPrice,
+ *   isNegotiable, condition, allowSale, allowExchange, exchangeWish, attributes, location, images[] }
+ * (không có bản sửa thì không có trường này).
+ */
+export const toOwnerListingDto = (listing: ListingRecord & { revision?: RevisionRecord | null }) => {
+  const { revision, ...rest } = listing;
+  return { ...toListingDto(rest, true), ...(revision && { pendingEdit: toRevisionDto(revision) }) };
+};
 
 /** Listing trong danh sách trang chủ: thêm khoảng cách, đẩy tin, đã lưu */
 export const toFeedItemDto = (listing: ListingRecord, extra: { distanceKm: number | null; isFeatured: boolean; isFavorite: boolean }) =>

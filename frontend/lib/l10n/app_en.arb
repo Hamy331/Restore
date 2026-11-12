@@ -3004,5 +3004,33 @@
   "followingHubPostsTitle": "Recent posts",
   "followingHubPostsHint": "New posts from people you follow",
   "followingHubForYouTitle": "Shops for you",
-  "followingHubPartner": "Partner"
+  "followingHubPartner": "Partner",
+  "editListingTitle": "Edit listing",
+  "editSubmit": "Submit for review",
+  "editSubmittedLive": "Edit submitted. Buyers keep seeing the current version until it is approved",
+  "editSubmitted": "Changes saved, your listing is waiting for review again",
+  "editNoticeLive": "Buyers keep seeing the current version until your edit is approved. Boosts, Hot sale and applied discounts stay as they are.",
+  "editNoticeCategoryLocked": "The category of an approved listing can't be changed.",
+  "editNoticeReview": "After editing, your listing is reviewed again before it shows.",
+  "editRejectedReason": "Last time it was rejected: {reason}",
+  "@editRejectedReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "editLoadFailed": "Couldn't open this listing for editing. Please try again.",
+  "leaveEditTitle": "Discard your changes?",
+  "leaveEditMessage": "What you just edited won't be saved. The listing stays as it was.",
+  "leaveEditDiscard": "Discard changes",
+  "leaveEditKeep": "Keep editing",
+  "accEditPending": "Edit waiting for review",
+  "accEditRejected": "Edit rejected: {reason}",
+  "@accEditRejected": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "accDiscardEdit": "Discard edit",
+  "accEditDiscarded": "Edit discarded, the listing keeps its current version",
+  "accDiscardEditFailed": "Couldn't discard the edit. Please try again."
 }

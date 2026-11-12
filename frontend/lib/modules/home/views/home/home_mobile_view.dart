@@ -24,6 +24,7 @@ import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
 import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/home_cubit.dart';
@@ -319,7 +320,12 @@ class _HomeMobileViewState extends State<HomeMobileView> {
         ),
       ],
       const SliverToBoxAdapter(child: SizedBox(height: 18)),
-      SliverToBoxAdapter(child: HomeSectionHeader(title: l10n.homeLatestTitle)),
+      SliverToBoxAdapter(
+        child: HomeSectionHeader(
+          title: l10n.homeLatestTitle,
+          image: AppImages.coreImages.newArrivals,
+        ),
+      ),
       const SliverToBoxAdapter(child: SizedBox(height: 10)),
       if (state.latest.isEmpty)
         SliverToBoxAdapter(

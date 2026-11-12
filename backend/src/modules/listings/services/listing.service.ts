@@ -16,6 +16,7 @@ import { addableDays, addDays, boostPrice, categoryHasCondition, featurePrice, i
 import { extraDaysCredits, freeDaysFor, MAX_START_DELAY_DAYS, postingDisplayQuote } from '../display-pricing.js';
 import { COUNTED_STATUSES, findDayPacks } from '../repositories/posting-quota.repository.js';
 import { assertNotDuplicate, spendForListing } from './listing-lifecycle.service.js';
+import { removeStoredImages, revisionOnlyImages } from './image.service.js';
 import { assertPostingSlot, chargeListing, postingQuota } from './posting-quota.service.js';
 
 type Viewer = AuthRequest['user'];
@@ -133,23 +134,47 @@ export async function createListing(ownerId: string, data: ListingInput, payWith
   return toOwnerListingDto(listing);
 }
 
+/** Tin đã duyệt (đang hiển thị / đã ẩn): sửa thì tạo bản sửa chờ duyệt, tin vẫn hiện bản cũ */
+export const REVISABLE: readonly ListingStatus[] = [ListingStatus.AVAILABLE, ListingStatus.HIDDEN];
+
 /**
- * Sửa tin đã đăng; tin quay lại chờ duyệt.
- * Tin miễn phí cần suất lại khi đang không chiếm suất (bị từ chối, đã ẩn) hoặc đổi chuyên mục.
- * Tin đã trả xu giữ nguyên suất nhưng không được đổi chuyên mục (giá mỗi chuyên mục khác nhau).
+ * Sửa tin đã đăng.
+ * - Tin đã duyệt (đang hiển thị / đã ẩn): lưu thành bản sửa chờ duyệt (ListingRevision), tin vẫn hiện bản cũ
+ *   tới khi duyệt; từ chối thì giữ bản cũ. Không đổi được chuyên mục; thời gian hiển thị, xu đã trả,
+ *   đẩy tin, Hot sale, giảm giá theo gói giữ nguyên. Ảnh sửa qua /:id/images sau đó cũng vào bản sửa.
+ * - Tin chưa duyệt (chờ duyệt / bị từ chối): sửa thẳng, tin quay lại chờ duyệt.
+ *   Tin miễn phí cần suất lại khi đang không chiếm suất (bị từ chối) hoặc đổi chuyên mục.
+ *   Tin đã trả xu giữ nguyên suất nhưng không được đổi chuyên mục (giá mỗi chuyên mục khác nhau).
  */
 export async function updateListing(ownerId: string, id: string, data: ListingInput, payWithCredits = false) {
   const listing = await withQuotaTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (!LISTING_EDITABLE.includes(current.status)) {
-      throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị hoặc đã ẩn.');
+      throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị, đã ẩn, chờ duyệt hoặc bị từ chối.');
+    }
+    const categoryChanged = current.categoryId !== data.categoryId;
+    if (REVISABLE.includes(current.status)) {
+      if (categoryChanged) {
+        throw new AppError(409, 'CATEGORY_LOCKED', 'Tin đã duyệt không đổi được chuyên mục.', 'categoryId');
+      }
+      await assertPublishable(tx, data);
+      await assertOriginalPrice(tx, ownerId, new Date(), data, current);
+      await listingRepository.upsertRevision(tx, id, {
+        status: 'PENDING', reviewReason: null, submittedAt: new Date(),
+        title: data.title, description: data.description, price: data.price, originalPrice: data.originalPrice,
+        isNegotiable: data.isNegotiable, condition: data.condition, allowSale: data.allowSale,
+        allowExchange: data.allowExchange, exchangeWish: data.exchangeWish,
+        attributes: data.attributes as Prisma.InputJsonValue, location: (data.location ?? Prisma.JsonNull) as Prisma.InputJsonValue,
+        // Sửa lần đầu: lấy ảnh của tin; đang có bản sửa thì giữ ảnh của bản sửa
+        images: current.revision?.images ?? current.images,
+      });
+      return listingRepository.findSelected(tx, id);
     }
     await assertPublishable(tx, data);
     await assertOriginalPrice(tx, ownerId, new Date(), data, current);
     // Sửa tin không đổi thời gian hiển thị đã chọn / đã trả; muốn thêm ngày thì gia hạn
     data.displayDays = current.displayDays;
     data.startsAt = current.startsAt;
-    const categoryChanged = current.categoryId !== data.categoryId;
     if (current.paidCredits > 0 && categoryChanged) {
       throw new AppError(409, 'CATEGORY_LOCKED', 'Tin đã trả xu không đổi được chuyên mục.', 'categoryId');
     }
@@ -166,8 +191,22 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
   return toOwnerListingDto(listing);
 }
 
+/** Bỏ bản sửa của tin (chờ duyệt hoặc bị từ chối): tin giữ nguyên bản đang hiển thị */
+export async function discardRevision(ownerId: string, id: string) {
+  const { listing, removed } = await listingRepository.transaction(async (tx) => {
+    const current = await requireOwnedListing(tx, id, ownerId);
+    if (!current.revision) throw new AppError(404, 'EDIT_NOT_FOUND', 'Tin không có bản sửa nào.');
+    const revision = await listingRepository.deleteRevision(tx, id);
+    return { listing: await listingRepository.findSelected(tx, id),
+      removed: revisionOnlyImages(revision?.images ?? [], current.images) };
+  });
+  await removeStoredImages(removed);
+  return toOwnerListingDto(listing);
+}
+
 /** Ẩn, hiện lại, đánh dấu đã bán / đã trao đổi */
 export async function changeStatus(ownerId: string, id: string, target: ListingStatus, payWithCredits = false) {
+  let dropped: string[] = [];
   const listing = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const current = await requireOwnedListing(tx, id, ownerId);
@@ -205,8 +244,14 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
       return listingRepository.findSelected(tx, id);
     }
     await updateOwnedListing(tx, id, ownerId, current.status, { status: target });
+    // Đã bán / đã trao đổi: bản sửa chưa duyệt không còn dùng
+    if (target === ListingStatus.SOLD || target === ListingStatus.EXCHANGED) {
+      const revision = await listingRepository.deleteRevision(tx, id);
+      dropped = revisionOnlyImages(revision?.images ?? [], current.images);
+    }
     return listingRepository.findSelected(tx, id);
   });
+  await removeStoredImages(dropped);
   return toOwnerListingDto(listing);
 }
 
