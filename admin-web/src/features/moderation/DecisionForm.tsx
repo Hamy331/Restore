@@ -6,7 +6,7 @@ const labels = {
   APPROVE: 'Duyệt đăng',
   REJECT: 'Từ chối',
   REQUEST_CHANGES: 'Yêu cầu chỉnh sửa',
-  REMOVE: 'Gỡ tin',
+  REMOVE: 'Gỡ nội dung',
   DISMISS: 'Bác báo cáo',
   KEEP: 'Giữ tin',
   WARN: 'Cảnh cáo',
