@@ -136,7 +136,7 @@ adminContentRouter.get('/reports', manageUsers, validate({ query: adminReportQue
  * Xử lý báo cáo đang mở
  *
  * Body:
- *  - action: báo cáo tin 'DISMISS' | 'KEEP' | 'REMOVE'; bài viết bảng tin 'DISMISS' | 'REMOVE'; báo cáo thành viên 'DISMISS' | 'WARN' | 'SUSPEND' | 'BAN'
+ *  - action: báo cáo tin 'DISMISS' | 'KEEP' | 'REMOVE'; báo cáo thành viên 'DISMISS' | 'WARN' | 'SUSPEND' | 'BAN'
  *  - reason: string (5-300)
  *  - updatedAt: ISO 8601 - của báo cáo
  *  - targetUpdatedAt?: ISO 8601 - của tin / thành viên, bắt buộc với REMOVE, WARN, SUSPEND, BAN
@@ -147,7 +147,7 @@ adminContentRouter.get('/reports', manageUsers, validate({ query: adminReportQue
 adminContentRouter.post('/reports/:id/resolve', manageUsers, validate({ params: idParams, body: resolveReportBody }), reportController.resolve);
 
 /**
- * Đối tượng bị báo cáo: hồ sơ thành viên, tin (kèm owner, category) hoặc bài viết bảng tin; null nếu đã mất
+ * Đối tượng bị báo cáo: hồ sơ thành viên hoặc tin (kèm owner, category); null nếu đã mất
  */
 adminContentRouter.get('/reports/:id/target', manageUsers, validate({ params: idParams }), reportController.getTarget);
 

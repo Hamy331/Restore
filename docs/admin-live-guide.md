@@ -32,16 +32,14 @@ flutter run -d chrome --dart-define=USE_MOCK_DATA=false
 - Gói quảng cáo 1–30 ngày. Đẩy Tin có priority 0, Tin Ưu Tiên có priority 1–10. Gói đã có đơn hoặc lượt sử dụng không được thay loại, thời hạn, ưu tiên.
 - Bài viết lưu dạng văn bản thuần, có slug, trạng thái, ảnh bìa tải riêng và tối đa 10 ID tin quảng cáo. Blog công khai chỉ trả bài xuất bản và tin liên quan còn hiển thị; bản nháp/ảnh nháp chỉ admin xem được.
 - Ticket hỗ trợ, phản hồi và trạng thái được lưu thật. Người dùng chỉ xem/phản hồi ticket của mình; ticket đã đóng không nhận phản hồi mới.
-- Banner trang chủ có tên nội bộ, ảnh, đường dẫn, thứ tự, trạng thái bật/tắt và thời gian chạy; mọi thay đổi được ghi vào AdminAudit. Ảnh tải từ admin web được lưu trong kho media hiện có.
-- Bài viết bảng tin của người dùng có thể bị báo cáo đúng theo ID bài viết. Admin xem nội dung/ảnh và gỡ bài hoặc bác báo cáo; gỡ bài và ghi audit nằm trong cùng transaction. Bài bị gỡ sẽ xóa bình luận và lượt thích liên quan theo khóa ngoại.
 - Tri thức nhận nội dung dán hoặc file UTF-8 TXT/Markdown tối đa 100 KB. Lập chỉ mục là tìm kiếm từ khóa có chuẩn hóa tiếng Việt; chỉnh tài liệu làm chỉ mục hết hiệu lực cho tới lần lập chỉ mục tiếp theo. Đồng bộ catalog lấy dữ liệu thật từ bảng Category. Đây không phải tích hợp LLM/embedding hoặc xử lý PDF; không dùng trạng thái mô phỏng “đã đồng bộ AI”.
 - Audit chỉ đọc qua API; ghi actor, thời điểm, đối tượng, hành động và lý do. Các bảng mới bật RLS, thu hồi truy cập trực tiếp từ PUBLIC/anon/authenticated. Kết nối Prisma phía server phải dùng role sở hữu/bypass RLS, không dùng role client Supabase.
 
 ## API
 
-Admin: `/api/v1/admin/{me,dashboard,listings,users,reports,catalog,posts,tickets,knowledge,audit,store-packages,store-orders,promotion-orders}`; banner trang chủ được quản lý tại `/api/v1/home/admin/banners`. Mutation được bảo vệ theo quyền admin.
+Admin: `/api/v1/admin/{me,dashboard,listings,users,reports,catalog,posts,tickets,knowledge,audit,store-packages,store-orders,promotion-orders}`; mutation được bảo vệ `verifyToken` và `ADMIN`.
 
-Người dùng/public: `/api/v1/content/{posts,media,knowledge/search,reports,reports/mine,tickets}`. Báo cáo hỗ trợ tin đăng, thành viên và bài viết bảng tin; đọc blog và gửi hỗ trợ từ trang Tài khoản.
+Người dùng/public: `/api/v1/content/{posts,media,knowledge/search,reports,reports/mine,tickets}`. Gửi báo cáo ở trang chi tiết sản phẩm; đọc blog và gửi hỗ trợ từ trang Tài khoản.
 
 ## Kiểm chứng local
 
