@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_action_buttons.dart';
 
@@ -40,6 +42,11 @@ class BoostCard extends StatelessWidget {
     return PromotionSection(
       key: const ValueKey('promo-boost-card'),
       icon: AppIcons.boost,
+      leading: AppImageIcon(
+        AppImages.uiIcons.boost,
+        size: 36,
+        fallback: AppIcons.boost,
+      ),
       title: l.boost24Hours,
       trailing: promotion.boostFree
           ? PromotionChip(label: l.promoFree)

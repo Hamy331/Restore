@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/data/models/credit_transaction_model.dart';
 import 'package:restore/data/models/enums/credit_enums.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -12,6 +14,11 @@ class CreditTransactionTile extends StatelessWidget {
   final CreditTransactionModel item;
 
   const CreditTransactionTile({super.key, required this.item});
+
+  /// Nạp xu dùng icon ví 3D, các giao dịch khác dùng đồng xu 3D
+  String get _image => item.type == CreditTxnType.topup
+      ? AppImages.uiIcons.wallet
+      : AppImages.uiIcons.coin;
 
   IconData get _icon => switch (item.type) {
     CreditTxnType.topup => AppIcons.wallet,
@@ -30,15 +37,7 @@ class CreditTransactionTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: AppColors.primarySoft,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(_icon, size: 19, color: AppColors.primaryDark),
-          ),
+          AppImageIcon(_image, size: 38, fallback: _icon),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

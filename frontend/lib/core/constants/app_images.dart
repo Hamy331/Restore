@@ -6,6 +6,7 @@ class AppImages {
   static const appIcons = AppIcons();
   static const coreImages = CoreImages();
   static const categoryImages = CategoryImages();
+  static const uiIcons = UiIcons();
 }
 
 class AppLogos {
@@ -18,6 +19,22 @@ class AppLogos {
 class AppIcons {
   const AppIcons();
   final String gmailLogo = 'assets/icons/gmail-logo.png';
+}
+
+/// Icon 3D cùng style Hot sale, hiển thị qua AppImageIcon
+class UiIcons {
+  const UiIcons();
+  static const _dir = 'assets/icons/ui';
+  final String nearby = '$_dir/nearby.png';
+  final String wantedAlert = '$_dir/wanted-alert.png';
+  final String trustedShop = '$_dir/trusted-shop.png';
+  final String following = '$_dir/following.png';
+  final String location = '$_dir/location.png';
+  final String wallet = '$_dir/wallet.png';
+  final String boost = '$_dir/boost.png';
+  final String post = '$_dir/post.png';
+  final String crown = '$_dir/crown.png';
+  final String coin = '$_dir/coin.png';
 }
 
 class CoreImages {

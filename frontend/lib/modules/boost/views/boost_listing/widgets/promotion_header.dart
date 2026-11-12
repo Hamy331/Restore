@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 
@@ -92,7 +94,11 @@ class PromotionHeader extends StatelessWidget {
           const Divider(height: 24),
           Row(
             children: [
-              const Icon(AppIcons.wallet, size: 18, color: AppColors.primary),
+              AppImageIcon(
+                AppImages.uiIcons.wallet,
+                size: 22,
+                fallback: AppIcons.wallet,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(

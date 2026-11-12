@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/l10n/app_localizations.dart';
 
 import '../../../models/home_quick_action.dart';
 
 /// 4 lối tắt dạng lưới 2 × 2 ngay dưới hàng danh mục.
-/// Mỗi ô có màu và kiểu khung icon riêng để dễ phân biệt.
+/// Mỗi ô có màu riêng và icon 3D (AppImages.uiIcons) để dễ phân biệt.
 class HomeQuickActions extends StatelessWidget {
   final ValueChanged<HomeQuickAction> onTap;
 
@@ -18,6 +20,7 @@ class HomeQuickActions extends StatelessWidget {
   ) => switch (action) {
     HomeQuickAction.nearby => _QuickActionStyle(
       icon: AppIcons.nearby,
+      image: AppImages.uiIcons.nearby,
       title: l10n.homeQuickNearby,
       description: l10n.homeQuickNearbyDesc,
       accent: const Color(0xFF0E7C70),
@@ -25,6 +28,7 @@ class HomeQuickActions extends StatelessWidget {
     ),
     HomeQuickAction.wantedAlert => _QuickActionStyle(
       icon: AppIcons.wantedAlert,
+      image: AppImages.uiIcons.wantedAlert,
       title: l10n.homeQuickWanted,
       description: l10n.homeQuickWantedDesc,
       accent: AppColors.primaryDark,
@@ -32,6 +36,7 @@ class HomeQuickActions extends StatelessWidget {
     ),
     HomeQuickAction.trustedShops => _QuickActionStyle(
       icon: AppIcons.verified,
+      image: AppImages.uiIcons.trustedShop,
       title: l10n.homeQuickTrustedShops,
       description: l10n.homeQuickTrustedShopsDesc,
       accent: const Color(0xFF2B63C6),
@@ -39,6 +44,7 @@ class HomeQuickActions extends StatelessWidget {
     ),
     HomeQuickAction.following => _QuickActionStyle(
       icon: AppIcons.following,
+      image: AppImages.uiIcons.following,
       title: l10n.homeQuickFollowing,
       description: l10n.homeQuickFollowingDesc,
       accent: const Color(0xFFC23A62),
@@ -82,6 +88,7 @@ class HomeQuickActions extends StatelessWidget {
 
 class _QuickActionStyle {
   final IconData icon;
+  final String image;
   final String title;
   final String description;
   final Color accent;
@@ -89,6 +96,7 @@ class _QuickActionStyle {
 
   const _QuickActionStyle({
     required this.icon,
+    required this.image,
     required this.title,
     required this.description,
     required this.accent,
@@ -166,10 +174,11 @@ class _QuickActionTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      Icon(
-                        style.icon,
-                        size: 16,
-                        color: style.accent.withValues(alpha: 0.7),
+                      AppImageIcon(
+                        style.image,
+                        size: 30,
+                        fallback: style.icon,
+                        fallbackColor: style.accent.withValues(alpha: 0.7),
                       ),
                     ],
                   ),
