@@ -28,6 +28,7 @@ import 'widgets/my_shop_header.dart';
 import 'widgets/my_shop_section.dart';
 import 'widgets/my_shop_stats.dart';
 import 'widgets/my_shop_status_card.dart';
+import '../shop_followers/shop_followers_view.dart';
 
 /// Lời báo lỗi theo mã backend khi mở shop / lưu
 String myShopError(AppLocalizations l, String code) => switch (code) {
@@ -485,7 +486,10 @@ class _MyShopEditorState extends State<_MyShopEditor> {
           ],
           const SizedBox(height: 16),
           if (stats != null) ...[
-            MyShopStatsRow(stats: stats),
+            MyShopStatsRow(
+              stats: stats,
+              onFollowersTap: () => context.push(ShopFollowersView.path),
+            ),
             const SizedBox(height: 16),
           ],
           if (!overview.storePlan)

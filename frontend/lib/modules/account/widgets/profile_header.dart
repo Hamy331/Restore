@@ -18,6 +18,7 @@ class ProfileHeader extends StatelessWidget {
     this.onFollowersTap,
     this.extraStat,
     this.action,
+    this.countFollowedShops = false,
   });
 
   /// `null` khi đang tải lần đầu.
@@ -29,6 +30,9 @@ class ProfileHeader extends StatelessWidget {
 
   /// Nút hành động dưới phần giới thiệu (ví dụ Theo dõi).
   final Widget? action;
+
+  /// Hồ sơ của mình: "Đang theo dõi" tính cả shop đang theo dõi
+  final bool countFollowedShops;
 
   static String initials(String name) => name
       .trim()
@@ -94,7 +98,8 @@ class ProfileHeader extends StatelessWidget {
           children: [
             Expanded(
               child: ProfileStat(
-                value: '${profile?.followingCount ?? 0}',
+                value:
+                    '${(profile?.followingCount ?? 0) + (countFollowedShops ? profile?.followingShopCount ?? 0 : 0)}',
                 label: l.accFollowing,
                 onTap: onFollowingTap,
               ),

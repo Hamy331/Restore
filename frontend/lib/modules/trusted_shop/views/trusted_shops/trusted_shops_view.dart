@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 
+import '../../bloc/followed_shops/followed_shops_cubit.dart';
 import '../../bloc/trusted_shops/trusted_shops_cubit.dart';
+import '../../repositories/shop_following_repository.dart';
 import '../../repositories/trusted_shop_repository.dart';
 import 'trusted_shops_mobile_view.dart';
 
@@ -14,8 +16,16 @@ import 'trusted_shops_mobile_view.dart';
 class TrustedShopsView extends StatelessWidget {
   final String? openShopId;
 
-  const TrustedShopsView({super.key, this.openShopId, this.repository});
+  const TrustedShopsView({
+    super.key,
+    this.openShopId,
+    this.repository,
+    this.followingRepository,
+  });
   final TrustedShopRepository? repository;
+
+  /// Dải "Shop bạn theo dõi"; mặc định theo [repository] (mock hay API)
+  final ShopFollowingRepository? followingRepository;
 
   static const String path = '/trusted-shops';
 
@@ -25,14 +35,25 @@ class TrustedShopsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => TrustedShopsCubit(
-        repository:
-            repository ??
-            (AppEnvironment.useMockData
-                ? MockTrustedShopRepository()
-                : ApiTrustedShopRepository()),
-      )..start(),
+    final repository =
+        this.repository ??
+        (AppEnvironment.useMockData
+            ? MockTrustedShopRepository()
+            : ApiTrustedShopRepository());
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => TrustedShopsCubit(repository: repository)..start(),
+        ),
+        BlocProvider(
+          create: (_) => FollowedShopsCubit(
+            followingRepository ??
+                (repository is MockTrustedShopRepository
+                    ? MockShopFollowingRepository()
+                    : ShopFollowingRepository()),
+          )..load(),
+        ),
+      ],
       child: TResponsiveLayout(
         mobile: TrustedShopsMobileView(openShopId: openShopId),
       ),

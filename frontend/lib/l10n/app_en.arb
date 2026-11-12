@@ -2919,5 +2919,57 @@
   "msSaved": "Shop details saved",
   "msErrExists": "You already have a shop page.",
   "msErrImage": "That image is not valid. Try another one.",
-  "msErrGeneric": "Couldn't save. Please try again."
+  "msErrGeneric": "Couldn't save. Please try again.",
+  "followShopsTab": "Shops",
+  "followShopsEmpty": "You're not following any shops yet",
+  "followShopsEmptyHint": "Follow trusted shops to see their new listings in one place.",
+  "followShopsBrowse": "Explore trusted shops",
+  "followShopsNewCount": "{count} new",
+  "@followShopsNewCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFollowerCount": "{count} followers",
+  "@followShopsFollowerCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFeedTitle": "Shops you follow",
+  "followShopsFeedCta": "See new listings",
+  "followShopsFeedNew": "{count} new listings in the last 7 days",
+  "@followShopsFeedNew": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsCount": "Following {count} shops",
+  "@followShopsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsStripHint": "Tap a shop to open its page",
+  "followShopsLatest": "Latest listings",
+  "followShopsLatestHint": "Newly posted by the shops you follow",
+  "followShopsListingsEmpty": "No listings yet",
+  "followShopsListingsEmptyHint": "The shops you follow have no active listings.",
+  "followShopsEnd": "You're all caught up",
+  "followShopsLoadError": "Couldn't load the shops you follow",
+  "msFollowersTitle": "Shop followers",
+  "msFollowersTitleCount": "Followers ({count})",
+  "@msFollowersTitleCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "msFollowersEmpty": "No one follows your shop yet",
+  "msFollowersEmptyHint": "Buyers who follow your shop will show up here.",
+  "msFollowedSince": "Since {date}",
+  "@msFollowedSince": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  }
 }

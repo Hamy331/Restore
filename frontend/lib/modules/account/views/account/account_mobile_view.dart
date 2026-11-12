@@ -62,7 +62,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
   ]);
 
   Future<void> openFollows(String userId, FollowListKind kind) async {
-    await context.push('/users/$userId/follows?tab=${kind.name}');
+    await context.push('/users/$userId/follows?tab=${kind.name}&me=1');
     if (mounted) context.read<UserProfileCubit>().load();
   }
 
@@ -136,6 +136,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                 else
                                   ProfileHeader(
                                     profile: profile,
+                                    countFollowedShops: true,
                                     onAvatarTap: openEditProfile,
                                     onBioTap: openEditProfile,
                                     onFollowingTap: profile == null

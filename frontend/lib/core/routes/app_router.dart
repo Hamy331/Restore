@@ -22,6 +22,8 @@ import 'package:restore/modules/account/views/account/account_view.dart';
 import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dart';
 import 'package:restore/modules/account/views/edit_profile/edit_profile_view.dart';
 import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
+import 'package:restore/modules/my_shop/views/shop_followers/shop_followers_view.dart';
+import 'package:restore/modules/trusted_shop/views/following_shops/following_shops_view.dart';
 import 'package:restore/modules/chat/views/messages/messages_view.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
 import 'package:restore/modules/chat/views/conversation/live_chat_conversation_view.dart';
@@ -367,7 +369,7 @@ GoRouter createAppRouter(
         child: EditProfileView(cubit: state.extra! as UserProfileCubit),
       ),
     ),
-    // Hồ sơ công khai và danh sách theo dõi (?tab=followers|following)
+    // Hồ sơ công khai và danh sách theo dõi (?tab=followers|following|shops)
     GoRoute(
       path: '/users/:id',
       parentNavigatorKey: _rootNavigatorKey,
@@ -386,6 +388,11 @@ GoRouter createAppRouter(
               initial: state.uri.queryParameters['tab'] == 'following'
                   ? FollowListKind.following
                   : FollowListKind.followers,
+              // me=1: hồ sơ của mình, có thêm tab Shop (tab=shops mở sẵn)
+              showShops:
+                  state.uri.queryParameters['me'] == '1' ||
+                  state.uri.queryParameters['tab'] == 'shops',
+              openShops: state.uri.queryParameters['tab'] == 'shops',
             ),
           ),
         ),
@@ -586,6 +593,24 @@ GoRouter createAppRouter(
       parentNavigatorKey: _rootNavigatorKey,
       pageBuilder: (_, state) =>
           AppPageTransitions.fadeSlide(state: state, child: const MyShopView()),
+    ),
+    // Người theo dõi shop của mình (ô Người theo dõi ở Quản lý shop)
+    GoRoute(
+      path: ShopFollowersView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const ShopFollowersView(),
+      ),
+    ),
+    // Shop uy tín đang theo dõi và tin mới của họ
+    GoRoute(
+      path: FollowingShopsView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const FollowingShopsView(),
+      ),
     ),
     // Thống kê của người bán (nút Thống kê ở menu xoè)
     GoRoute(
