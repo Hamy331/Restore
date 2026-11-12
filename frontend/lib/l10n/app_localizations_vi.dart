@@ -4896,4 +4896,68 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get followingHubPartner => 'Đối tác';
+
+  @override
+  String get editListingTitle => 'Sửa tin đăng';
+
+  @override
+  String get editSubmit => 'Gửi duyệt lại';
+
+  @override
+  String get editSubmittedLive =>
+      'Đã gửi bản sửa. Tin vẫn hiển thị bản cũ cho tới khi được duyệt';
+
+  @override
+  String get editSubmitted => 'Đã lưu thay đổi, tin đang chờ duyệt lại';
+
+  @override
+  String get editNoticeLive =>
+      'Người mua vẫn thấy bản hiện tại cho tới khi bản sửa được duyệt. Đẩy tin, Hot sale và ưu đãi đã áp dụng giữ nguyên.';
+
+  @override
+  String get editNoticeCategoryLocked =>
+      'Tin đã duyệt không đổi được chuyên mục.';
+
+  @override
+  String get editNoticeReview =>
+      'Sửa xong, tin sẽ được duyệt lại trước khi hiển thị.';
+
+  @override
+  String editRejectedReason(String reason) {
+    return 'Lần trước bị từ chối: $reason';
+  }
+
+  @override
+  String get editLoadFailed => 'Không mở được tin để sửa. Vui lòng thử lại.';
+
+  @override
+  String get leaveEditTitle => 'Bỏ các thay đổi?';
+
+  @override
+  String get leaveEditMessage =>
+      'Những gì bạn vừa sửa sẽ không được lưu. Tin giữ nguyên như trước.';
+
+  @override
+  String get leaveEditDiscard => 'Bỏ thay đổi';
+
+  @override
+  String get leaveEditKeep => 'Sửa tiếp';
+
+  @override
+  String get accEditPending => 'Bản sửa đang chờ duyệt';
+
+  @override
+  String accEditRejected(String reason) {
+    return 'Bản sửa bị từ chối: $reason';
+  }
+
+  @override
+  String get accDiscardEdit => 'Bỏ bản sửa';
+
+  @override
+  String get accEditDiscarded =>
+      'Đã bỏ bản sửa, tin giữ nguyên bản đang hiển thị';
+
+  @override
+  String get accDiscardEditFailed => 'Chưa bỏ được bản sửa. Vui lòng thử lại.';
 }

@@ -95,6 +95,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     on<DraftsRequested>(_onDraftsRequested);
     on<DraftOpened>(_onDraftOpened);
     on<DraftDeleted>(_onDraftDeleted);
+    on<ListingEditOpened>(_onListingEditOpened);
   }
 
   final ListingsRepository _repository;
@@ -311,8 +312,10 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       return;
     }
 
-    // Hết suất miễn phí: hỏi người dùng có trả xu không trước khi gửi
+    // Hết suất miễn phí: hỏi người dùng có trả xu không trước khi gửi.
+    // Sửa tin đã đăng thì tin đã có suất (backend báo nếu cần suất mới)
     if (!event.payWithCredits &&
+        !state.isEditing &&
         (state.quota?.isFull(state.draft.categoryId) ?? false)) {
       emit(state.copyWith(postingLimitHits: state.postingLimitHits + 1));
       return;
@@ -490,6 +493,49 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       add(const DraftsRequested());
     }
   }
+
+  Future<void> _onListingEditOpened(
+    ListingEditOpened event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    if (state.openEditStatus == RequestStatus.loading) return;
+    emit(state.copyWith(openEditStatus: RequestStatus.loading));
+    try {
+      final listing = await _repository.getOwned(event.id);
+      if (!_editable.contains(listing.status)) {
+        throw StateError('Listing ${event.id} is ${listing.status}');
+      }
+      // Đang có bản sửa (chờ duyệt / bị từ chối) thì sửa tiếp bản đó
+      final loaded = ListingDraft.fromListing(
+        listing.pendingEdit?.content ?? listing,
+      );
+      final draft = state.quota == null
+          ? loaded
+          : loaded.copyWith(sellerType: state.quota!.accountType);
+      emit(
+        state.copyWith(
+          draft: draft,
+          savedDraft: draft,
+          editingListing: listing,
+          showBasicInfoErrors: false,
+          showDetailErrors: false,
+          publishStatus: RequestStatus.idle,
+          openEditStatus: RequestStatus.success,
+        ),
+      );
+    } catch (error) {
+      debugPrint('Mở tin ${event.id} để sửa lỗi: $error');
+      emit(state.copyWith(openEditStatus: RequestStatus.failure));
+    }
+  }
+
+  /// Trạng thái tin còn sửa được (giống LISTING_EDITABLE ở backend)
+  static const Set<ListingStatus> _editable = {
+    ListingStatus.available,
+    ListingStatus.hidden,
+    ListingStatus.pending,
+    ListingStatus.rejected,
+  };
 
   Future<void> _onDraftDeleted(
     DraftDeleted event,

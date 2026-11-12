@@ -35,6 +35,7 @@ class UiIcons {
   final String post = '$_dir/post.png';
   final String crown = '$_dir/crown.png';
   final String coin = '$_dir/coin.png';
+  final String ai = '$_dir/ai.png';
 }
 
 class CoreImages {
@@ -42,6 +43,7 @@ class CoreImages {
   final String deviceNotSupported = 'assets/images/device-not-supported.jpg';
   final String hotSale = 'assets/images/hot-sale.png';
   final String hotFlame = 'assets/images/hot-flame.png';
+  final String newArrivals = 'assets/images/new-arrivals.png';
 }
 
 /// Ảnh minh hoạ cho danh mục đăng tin.

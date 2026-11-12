@@ -13,7 +13,7 @@ import '../../../../listings/models/create_listing_step.dart';
 import '../../../bloc/account_listings/account_listings_cubit.dart';
 import '../../../bloc/account_listings/account_listings_state.dart';
 import '../../../models/account_listing.dart';
-import 'account_menu.dart';
+import '../../../../../data/models/listing_revision_model.dart';
 import 'listing_lifecycle_actions.dart';
 import '../../../widgets/profile_header.dart';
 
@@ -244,6 +244,19 @@ class _ListingRow extends StatelessWidget {
                       const SizedBox(height: 6),
                       _ExpiryChip(label: expiry, urgent: expiryUrgent),
                     ],
+                    if (item.editStatus case final edit?) ...[
+                      const SizedBox(height: 6),
+                      _ExpiryChip(
+                        icon: edit == ListingRevisionStatus.pending
+                            ? AppIcons.edit
+                            : AppIcons.warning,
+                        label: edit == ListingRevisionStatus.pending
+                            ? l.accEditPending
+                            : l.accEditRejected(item.editReason ?? ''),
+                        urgent: edit == ListingRevisionStatus.rejected,
+                        maxLines: 2,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -260,7 +273,7 @@ class _ListingRow extends StatelessWidget {
                 child: _RowAction(
                   l.accEdit,
                   icon: AppIcons.edit,
-                  onTap: () => showComingSoon(context),
+                  onTap: () => editAccountListing(context, item),
                 ),
               ),
               const SizedBox(width: 6),
@@ -292,20 +305,30 @@ class _ListingRow extends StatelessWidget {
                     onTap: () => promoteAccountListing(context, item),
                   ),
                 ),
+              ],
+              if (visible || item.editStatus != null) ...[
                 const SizedBox(width: 6),
                 _MoreButton(
                   tooltip: l.accMoreOptions,
                   actions: [
-                    (
-                      AppIcons.hot,
-                      l.featureAction,
-                      () => promoteAccountListing(context, item),
-                    ),
-                    (
-                      AppIcons.calendar,
-                      l.accExtend,
-                      () => extendAccountListing(context, item),
-                    ),
+                    if (visible) ...[
+                      (
+                        AppIcons.hot,
+                        l.featureAction,
+                        () => promoteAccountListing(context, item),
+                      ),
+                      (
+                        AppIcons.calendar,
+                        l.accExtend,
+                        () => extendAccountListing(context, item),
+                      ),
+                    ],
+                    if (item.editStatus != null)
+                      (
+                        AppIcons.close,
+                        l.accDiscardEdit,
+                        () => discardAccountListingEdit(context, item),
+                      ),
                   ],
                 ),
               ],
@@ -433,9 +456,16 @@ class _MoreButton extends StatelessWidget {
 
 /// Dòng hạn hiển thị của tin: đỏ khi đã hết hạn hoặc còn tối đa 3 ngày
 class _ExpiryChip extends StatelessWidget {
-  const _ExpiryChip({required this.label, required this.urgent});
+  const _ExpiryChip({
+    required this.label,
+    required this.urgent,
+    this.icon = AppIcons.clock,
+    this.maxLines = 1,
+  });
   final String label;
   final bool urgent;
+  final IconData icon;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -449,12 +479,12 @@ class _ExpiryChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(AppIcons.clock, size: 12, color: color),
+          Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
               label,
-              maxLines: 1,
+              maxLines: maxLines,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontFamily: profileFontFamily,

@@ -23,6 +23,10 @@ enum ListingStatus {
     return null;
   }
 
+  /// Tin đã được duyệt (đang hiển thị hoặc đã ẩn): sửa thì tạo bản sửa chờ
+  /// duyệt, người mua vẫn thấy bản cũ tới khi duyệt xong
+  bool get isApproved => this == available || this == hidden;
+
   String label(AppLocalizations l10n) => switch (this) {
     draft => l10n.listingStatusDraft,
     pending => l10n.listingStatusPending,

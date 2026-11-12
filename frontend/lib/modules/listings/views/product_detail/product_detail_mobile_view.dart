@@ -16,6 +16,7 @@ import '../../bloc/product_detail/product_detail_cubit.dart';
 import '../../bloc/product_detail/product_detail_state.dart';
 import '../../models/product_detail.dart';
 import '../../../boost/views/boost_listing/boost_listing_view.dart';
+import '../edit_listing/edit_listing_view.dart';
 import 'widgets/product_detail_attributes.dart';
 import 'widgets/product_detail_bottom_bar.dart';
 import 'widgets/product_detail_description.dart';
@@ -95,6 +96,13 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
       return;
     }
     await context.push<bool>(BoostListingView.location(detail.listing.id));
+  }
+
+  /// Sửa tin của mình; quay lại thì tải lại (tin đã duyệt vẫn hiện bản cũ
+  /// tới khi bản sửa được duyệt)
+  Future<void> _onEdit(ProductDetail detail) async {
+    await context.push<bool>(EditListingView.location(detail.listing.id));
+    if (mounted) await _cubit.refresh();
   }
 
   void _comingSoon() =>
@@ -264,7 +272,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
                     onChat: _onChat,
                     onOffer: () => _onOffer(detail),
                     onBuy: () => _onBuy(detail),
-                    onEdit: _comingSoon,
+                    onEdit: () => _onEdit(detail),
                     onBoost: () => _onPromote(detail),
                     onFeature: () => _onPromote(detail),
                   ),

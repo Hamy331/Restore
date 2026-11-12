@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../data/models/enums/listing_status.dart';
+import '../../../data/models/listing_revision_model.dart';
 
 /// Các tab tin đăng trên trang tài khoản và trạng thái tương ứng ở backend.
 enum AccountListingStatus {
@@ -26,6 +27,8 @@ class AccountListing extends Equatable {
     this.paidCredits = 0,
     this.startsAt,
     this.autoExtend = false,
+    this.editStatus,
+    this.editReason,
   });
 
   final String id;
@@ -50,6 +53,13 @@ class AccountListing extends Equatable {
 
   /// Đang bật tự gia hạn (gói Cửa hàng)
   final bool autoExtend;
+
+  /// Bản sửa của tin đã duyệt: đang chờ duyệt / bị từ chối; null khi không
+  /// có bản sửa. Trong lúc chờ, người mua vẫn thấy bản cũ.
+  final ListingRevisionStatus? editStatus;
+
+  /// Lý do bản sửa bị từ chối
+  final String? editReason;
 
   /// Tin đã duyệt và đang chờ tới ngày hẹn để tự hiện
   bool isScheduledAt(DateTime now) =>
@@ -83,6 +93,8 @@ class AccountListing extends Equatable {
     paidCredits: paidCredits,
     startsAt: startsAt,
     autoExtend: autoExtend,
+    editStatus: editStatus,
+    editReason: editReason,
   );
 
   @override
@@ -100,6 +112,8 @@ class AccountListing extends Equatable {
     paidCredits,
     startsAt,
     autoExtend,
+    editStatus,
+    editReason,
   ];
 }
 

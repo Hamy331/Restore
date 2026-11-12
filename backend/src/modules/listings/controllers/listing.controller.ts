@@ -22,6 +22,12 @@ export async function update(req: AuthRequest, res: Response) {
   ok(res, await listingService.updateListing(req.user!.userId, params.id, body, wantsToPay(req)));
 }
 
+/** Bỏ bản sửa đang chờ duyệt / bị từ chối của tin đã duyệt */
+export async function discardEdit(req: AuthRequest, res: Response) {
+  const { params } = getInput<ValidatedInput<undefined, ListingIdParams>>(res);
+  ok(res, await listingService.discardRevision(req.user!.userId, params.id));
+}
+
 export async function changeStatus(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, StatusInput>>(res);
   ok(res, await listingService.changeStatus(req.user!.userId, params.id, body.status, body.payWithCredits));

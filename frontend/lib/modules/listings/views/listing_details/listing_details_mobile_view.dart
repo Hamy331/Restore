@@ -18,6 +18,7 @@ import '../../widgets/posting_limit_sheet.dart';
 import 'widgets/duplicate_listing_sheet.dart';
 import 'widgets/listing_attribute_field.dart';
 import 'widgets/listing_condition_section.dart';
+import '../../widgets/edit_listing_notice.dart';
 import '../../widgets/listing_display_days_card.dart';
 import 'widgets/listing_details_header.dart';
 import 'widgets/listing_details_section.dart';
@@ -31,6 +32,15 @@ class ListingDetailsMobileView extends StatelessWidget {
   void _onPublishStateChanged(BuildContext context, CreateListingState state) {
     final l10n = AppLocalizations.of(context)!;
     switch (state.publishStatus) {
+      case RequestStatus.success when state.isEditing:
+        TSnackBarHelper.showSuccess(
+          context,
+          message: state.isEditingApproved
+              ? l10n.editSubmittedLive
+              : l10n.editSubmitted,
+        );
+        // Thoát cả luồng sửa tin, về trang đã mở nó (chi tiết tin, Tài khoản)
+        Navigator.of(context, rootNavigator: true).pop(true);
       case RequestStatus.success:
         TSnackBarHelper.showSuccess(context, message: l10n.listingSubmitted);
         context.go('/home');
@@ -204,11 +214,17 @@ class ListingDetailsMobileView extends StatelessWidget {
             bottomBar: AppBottomActionBar(
               secondaryLabel: l10n.preview,
               onSecondary: () => context.push(createListingPreviewPath),
-              primaryLabel: l10n.publishListing,
+              primaryLabel: state.isEditing
+                  ? l10n.editSubmit
+                  : l10n.publishListing,
               isLoading: state.publishStatus == RequestStatus.loading,
               onPrimary: () => bloc.add(const PublishRequested()),
             ),
             children: [
+              if (state.isEditing) ...[
+                const EditListingNotice(),
+                const SizedBox(height: 14),
+              ],
               ListingDetailsHeader(category: category),
               // Thú cưng... không có tình trạng hàng
               if (category?.hasCondition ?? true) ...[
@@ -245,8 +261,11 @@ class ListingDetailsMobileView extends StatelessWidget {
                   ],
                 ),
               ],
-              const SizedBox(height: 14),
-              const ListingDisplayDaysCard(),
+              // Sửa tin không đổi thời gian hiển thị (muốn thêm ngày thì gia hạn)
+              if (!state.isEditing) ...[
+                const SizedBox(height: 14),
+                const ListingDisplayDaysCard(),
+              ],
               const SizedBox(height: 16),
               Text(
                 l10n.directArrangementNote,

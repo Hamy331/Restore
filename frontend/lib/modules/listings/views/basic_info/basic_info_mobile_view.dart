@@ -10,6 +10,7 @@ import '../../bloc/create_listing/create_listing_state.dart';
 import '../../models/create_listing_step.dart';
 import '../../utils/listing_validator.dart';
 import '../../widgets/create_listing_scaffold.dart';
+import '../../widgets/edit_listing_notice.dart';
 import 'widgets/basic_info_description_field.dart';
 import 'widgets/basic_info_location_field.dart';
 import 'widgets/basic_info_photos_section.dart';
@@ -50,6 +51,10 @@ class BasicInfoMobileView extends StatelessWidget {
             onPrimary: () => _onContinue(context),
           ),
           children: [
+            if (state.isEditing) ...[
+              const EditListingNotice(),
+              const SizedBox(height: 16),
+            ],
             BasicInfoPhotosSection(
               images: draft.images,
               hasError: errors.contains(ListingField.photos),
@@ -81,7 +86,7 @@ class BasicInfoMobileView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             // Loại người bán lấy theo gói tài khoản, không hỏi lúc đăng tin
-            if (state.categoryQuota != null)
+            if (state.categoryQuota != null && !state.isEditing)
               BasicInfoQuotaNote(quota: state.categoryQuota!),
           ],
         );

@@ -1,6 +1,6 @@
 import { ListingCondition, ListingStatus, Prisma } from '@prisma/client';
 import { prisma } from '../../../lib/prisma.js';
-import { adminListingSelect, listingSelect } from '../listing.dto.js';
+import { adminListingSelect, listingSelect, ownerListingSelect, revisionSelect } from '../listing.dto.js';
 
 /** Prisma client hoặc transaction đang chạy */
 export type Db = Prisma.TransactionClient;
@@ -23,14 +23,37 @@ export const findConditionPolicy = (db: Db, condition: ListingCondition) =>
 /* ---------- Tin của chủ tin ---------- */
 
 export const createListing = (data: Prisma.ListingUncheckedCreateInput, db: Db = prisma) =>
-  db.listing.create({ data, select: listingSelect });
+  db.listing.create({ data, select: ownerListingSelect });
 
-export const findOwned = (id: string, ownerId: string, db: Db = prisma) => db.listing.findFirst({ where: { id, ownerId } });
+export const findOwned = (id: string, ownerId: string, db: Db = prisma) =>
+  db.listing.findFirst({ where: { id, ownerId }, include: { revision: true } });
 
 export const findOwnedDetail = (id: string, ownerId: string) =>
-  prisma.listing.findFirst({ where: { id, ownerId }, select: listingSelect });
+  prisma.listing.findFirst({ where: { id, ownerId }, select: ownerListingSelect });
 
-export const findSelected = (db: Db, id: string) => db.listing.findUniqueOrThrow({ where: { id }, select: listingSelect });
+export const findSelected = (db: Db, id: string) => db.listing.findUniqueOrThrow({ where: { id }, select: ownerListingSelect });
+
+/* ---------- Bản sửa của tin đã duyệt ---------- */
+
+/** Tạo hoặc thay bản sửa của tin, đưa về chờ duyệt */
+export const upsertRevision = (db: Db, listingId: string, data: Omit<Prisma.ListingRevisionUncheckedCreateInput, 'listingId'>) =>
+  db.listingRevision.upsert({ where: { listingId }, create: { ...data, listingId }, update: data });
+
+/** Đổi ảnh bản sửa khi ảnh vẫn như lúc đọc; trả về số dòng đổi (0 = đã bị đổi) */
+export async function updateRevisionImagesIfUnchanged(listingId: string, current: string[], images: string[]) {
+  const changed = await prisma.listingRevision.updateMany({
+    where: { listingId, images: { equals: current } },
+    data: { images, status: 'PENDING', reviewReason: null },
+  });
+  return changed.count;
+}
+
+/** Xóa bản sửa của tin, trả về bản đã xóa (null nếu không có) */
+export async function deleteRevision(db: Db, listingId: string) {
+  const revision = await db.listingRevision.findUnique({ where: { listingId }, select: { images: true } });
+  if (revision) await db.listingRevision.delete({ where: { listingId } });
+  return revision;
+}
 
 /** Cập nhật khi tin vẫn đúng chủ và đúng trạng thái đã đọc; trả về số dòng đổi (0 = đã bị đổi) */
 export async function updateOwnedWhereStatus(db: Db, id: string, ownerId: string,
@@ -60,7 +83,7 @@ export const findMine = (ownerId: string, status: ListingStatus | undefined, ski
     ? [{ updatedAt: 'desc' as const }, { id: 'desc' as const }]
     : [{ createdAt: 'desc' as const }, { id: 'desc' as const }];
   return prisma.$transaction([
-    prisma.listing.findMany({ where, select: listingSelect, orderBy, skip, take }),
+    prisma.listing.findMany({ where, select: ownerListingSelect, orderBy, skip, take }),
     prisma.listing.count({ where }),
   ]);
 };
@@ -80,6 +103,10 @@ export async function updateImagesIfUnchanged(id: string, ownerId: string, curre
 /** Tin chứa ảnh [url], để kiểm tra ai được xem ảnh */
 export const findByImage = (url: string) =>
   prisma.listing.findFirst({ where: { images: { has: url } }, select: { ownerId: true, status: true, owner: { select: { status: true } } } });
+
+/** Tin có bản sửa chứa ảnh [url] (ảnh mới chưa duyệt: chỉ chủ tin và người duyệt xem được) */
+export const findByRevisionImage = (url: string) =>
+  prisma.listing.findFirst({ where: { revision: { images: { has: url } } }, select: { ownerId: true } });
 
 /* ---------- Công khai ---------- */
 
@@ -122,10 +149,29 @@ export const incrementViewCount = (id: string, skipCount: boolean, viewerId: str
 export const findPending = () =>
   prisma.listing.findMany({ where: { status: 'PENDING' }, select: listingSelect, orderBy: { publishedAt: 'asc' }, take: 100 });
 
+/** Tin đã duyệt có bản sửa chờ duyệt, gửi sớm trước */
+export const findPendingRevisions = () =>
+  prisma.listing.findMany({ where: { revision: { status: 'PENDING' } }, select: ownerListingSelect,
+    orderBy: { revision: { submittedAt: 'asc' } }, take: 100 });
+
 /** Tin cần đọc khi admin ra quyết định */
 export const findForModeration = (tx: Db, id: string) =>
   tx.listing.findUnique({ where: { id }, select: { id: true, ownerId: true, status: true, images: true, updatedAt: true, categoryId: true, condition: true, title: true,
-    expiresAt: true, startsAt: true, displayDays: true } });
+    expiresAt: true, startsAt: true, displayDays: true, revision: { select: revisionSelect } } });
+
+/** Áp bản sửa vào tin khi tin vẫn đúng trạng thái và bản sửa vẫn đúng updatedAt lúc admin mở; trả về số dòng đổi */
+export async function applyRevision(tx: Db, id: string, status: ListingStatus, revisionUpdatedAt: Date,
+  data: Prisma.ListingUncheckedUpdateManyInput) {
+  const removed = await tx.listingRevision.deleteMany({ where: { listingId: id, status: 'PENDING', updatedAt: revisionUpdatedAt } });
+  if (!removed.count) return 0;
+  return (await tx.listing.updateMany({ where: { id, status }, data })).count;
+}
+
+/** Từ chối bản sửa khi bản sửa vẫn đúng updatedAt lúc admin mở; trả về số dòng đổi */
+export async function rejectRevision(tx: Db, id: string, revisionUpdatedAt: Date, reason: string) {
+  return (await tx.listingRevision.updateMany({ where: { listingId: id, status: 'PENDING', updatedAt: revisionUpdatedAt },
+    data: { status: 'REJECTED', reviewReason: reason } })).count;
+}
 
 /** Đổi trạng thái khi tin vẫn đúng trạng thái và updatedAt lúc admin mở; trả về số dòng đổi */
 export async function updateWhereVersion(tx: Db, id: string, status: ListingStatus, updatedAt: Date,
@@ -138,7 +184,8 @@ export async function updateWhereVersion(tx: Db, id: string, status: ListingStat
 export function findAdminPage({ status, q }: { status?: ListingStatus; q?: string }, skip: number, take: number) {
   const where: Prisma.ListingWhereInput = { ...(status ? { status } : {}), ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}) };
   return prisma.$transaction([
-    prisma.listing.findMany({ where, select: adminListingSelect, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], skip, take }),
+    prisma.listing.findMany({ where, select: { ...adminListingSelect, revision: { select: revisionSelect } },
+      orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], skip, take }),
     prisma.listing.count({ where }),
   ]);
 }

@@ -4989,4 +4989,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get followingHubPartner => 'Partner';
+
+  @override
+  String get editListingTitle => 'Edit listing';
+
+  @override
+  String get editSubmit => 'Submit for review';
+
+  @override
+  String get editSubmittedLive =>
+      'Edit submitted. Buyers keep seeing the current version until it is approved';
+
+  @override
+  String get editSubmitted =>
+      'Changes saved, your listing is waiting for review again';
+
+  @override
+  String get editNoticeLive =>
+      'Buyers keep seeing the current version until your edit is approved. Boosts, Hot sale and applied discounts stay as they are.';
+
+  @override
+  String get editNoticeCategoryLocked =>
+      'The category of an approved listing can\'t be changed.';
+
+  @override
+  String get editNoticeReview =>
+      'After editing, your listing is reviewed again before it shows.';
+
+  @override
+  String editRejectedReason(String reason) {
+    return 'Last time it was rejected: $reason';
+  }
+
+  @override
+  String get editLoadFailed =>
+      'Couldn\'t open this listing for editing. Please try again.';
+
+  @override
+  String get leaveEditTitle => 'Discard your changes?';
+
+  @override
+  String get leaveEditMessage =>
+      'What you just edited won\'t be saved. The listing stays as it was.';
+
+  @override
+  String get leaveEditDiscard => 'Discard changes';
+
+  @override
+  String get leaveEditKeep => 'Keep editing';
+
+  @override
+  String get accEditPending => 'Edit waiting for review';
+
+  @override
+  String accEditRejected(String reason) {
+    return 'Edit rejected: $reason';
+  }
+
+  @override
+  String get accDiscardEdit => 'Discard edit';
+
+  @override
+  String get accEditDiscarded =>
+      'Edit discarded, the listing keeps its current version';
+
+  @override
+  String get accDiscardEditFailed =>
+      'Couldn\'t discard the edit. Please try again.';
 }

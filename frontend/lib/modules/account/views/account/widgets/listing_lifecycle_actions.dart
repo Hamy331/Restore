@@ -10,6 +10,7 @@ import '../../../../listings/models/display_pricing.dart';
 import '../../../../listings/models/posting_quota.dart';
 import '../../../../listings/widgets/display_days_sheet.dart';
 import '../../../../listings/widgets/posting_limit_sheet.dart';
+import '../../../../listings/views/edit_listing/edit_listing_view.dart';
 import '../../../bloc/account_listings/account_listings_cubit.dart';
 import '../../../models/account_listing.dart';
 import '../../../../plans/views/plans/plans_view.dart';
@@ -225,6 +226,28 @@ Future<void> promoteAccountListing(
   }
   final changed = await context.push<bool>(BoostListingView.location(item.id));
   if (changed == true) await cubit.load();
+}
+
+/// Mở luồng sửa tin; quay lại thì tải lại danh sách để thấy bản sửa đang
+/// chờ duyệt (tin đã duyệt vẫn hiện bản cũ) hoặc tin đã sang tab Chờ duyệt.
+Future<void> editAccountListing(
+  BuildContext context,
+  AccountListing item,
+) async {
+  final cubit = context.read<AccountListingsCubit>();
+  await context.push<bool>(EditListingView.location(item.id));
+  await cubit.load();
+}
+
+/// Bỏ bản sửa chờ duyệt / bị từ chối: tin giữ nguyên bản đang hiển thị
+Future<void> discardAccountListingEdit(
+  BuildContext context,
+  AccountListing item,
+) async {
+  final l = AppLocalizations.of(context)!;
+  final messenger = ScaffoldMessenger.of(context);
+  final done = await context.read<AccountListingsCubit>().discardEdit(item.id);
+  _toast(messenger, done ? l.accEditDiscarded : l.accDiscardEditFailed);
 }
 
 void _toast(ScaffoldMessengerState messenger, String? message) {

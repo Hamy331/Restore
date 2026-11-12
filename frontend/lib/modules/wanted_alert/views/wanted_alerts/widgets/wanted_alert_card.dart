@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/core/utils/formatters/time_ago_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
@@ -135,18 +137,10 @@ class _AlertIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: AppColors.primarySoft,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: const Icon(
-        AppIcons.wantedAlert,
-        size: 21,
-        color: AppColors.primaryDark,
-      ),
+    return AppImageIcon(
+      AppImages.uiIcons.wantedAlert,
+      size: 44,
+      fallback: AppIcons.wantedAlert,
     );
   }
 }
