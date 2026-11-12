@@ -10,10 +10,10 @@ const reportRouter = Router();
 const submit = requirePermission(PERMISSION.REPORT_SUBMIT);
 
 /**
- * Báo cáo tin đang hiển thị, thành viên hoặc bài viết bảng tin. Không tự báo cáo mình; mỗi đối tượng một báo cáo đang mở
+ * Báo cáo tin đang hiển thị hoặc thành viên. Không tự báo cáo mình; mỗi đối tượng một báo cáo đang mở
  *
  * Body:
- *  - targetType: 'LISTING' | 'USER' | 'FEED_POST'
+ *  - targetType: 'LISTING' | 'USER'
  *  - targetId: string
  *  - reason: string (5-300)
  *  - evidence: string (5-4000)

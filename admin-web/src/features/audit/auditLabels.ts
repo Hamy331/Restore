@@ -37,5 +37,4 @@ export const modules: Record<string, string> = {
   TICKET: 'Hỗ trợ',
   KNOWLEDGE: 'Kho tri thức',
   HOME_BANNER: 'Banner',
-  FEED_POST: 'Bài viết bảng tin',
 };
