@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_action_buttons.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
@@ -30,18 +32,10 @@ class CreditBalanceCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(
-                  AppIcons.wallet,
-                  size: 22,
-                  color: AppColors.primaryDark,
-                ),
+              AppImageIcon(
+                AppImages.uiIcons.wallet,
+                size: 40,
+                fallback: AppIcons.wallet,
               ),
               const SizedBox(width: 10),
               Expanded(

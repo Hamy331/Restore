@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 
@@ -24,7 +26,11 @@ class HubSummary extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(AppIcons.wallet, size: 20, color: AppColors.primary),
+              AppImageIcon(
+                AppImages.uiIcons.wallet,
+                size: 24,
+                fallback: AppIcons.wallet,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -44,6 +50,7 @@ class HubSummary extends StatelessWidget {
           if (hub.freePerMonth > 0)
             _Line(
               icon: AppIcons.boost,
+              image: AppImages.uiIcons.boost,
               text: l.hubFreeBoosts(hub.freeLeft, hub.freePerMonth),
             ),
           _Line(
@@ -62,8 +69,11 @@ class HubSummary extends StatelessWidget {
 }
 
 class _Line extends StatelessWidget {
-  const _Line({required this.icon, required this.text});
+  const _Line({required this.icon, required this.text, this.image});
   final IconData icon;
+
+  /// Icon 3D thay cho [icon] khi có
+  final String? image;
   final String text;
 
   @override
@@ -71,7 +81,10 @@ class _Line extends StatelessWidget {
     padding: const EdgeInsets.only(top: 4, right: 8),
     child: Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
+        if (image case final image?)
+          AppImageIcon(image, size: 18, fallback: icon)
+        else
+          Icon(icon, size: 16, color: AppColors.textSecondary),
         const SizedBox(width: 8),
         Expanded(
           child: Text(

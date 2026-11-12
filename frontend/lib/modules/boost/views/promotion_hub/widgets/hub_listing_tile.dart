@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 
@@ -145,6 +147,7 @@ class HubListingTile extends StatelessWidget {
                         _Action(
                           key: ValueKey('hub-boost-${item.id}'),
                           icon: bumped ? AppIcons.clock : AppIcons.boost,
+                          image: bumped ? null : AppImages.uiIcons.boost,
                           label: bumped
                               ? l.promoRunning
                               : boostCost == 0
@@ -194,9 +197,13 @@ class _Action extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.primary = false,
+    this.image,
   });
 
   final IconData icon;
+
+  /// Icon 3D thay cho [icon] khi có
+  final String? image;
   final String label;
   final VoidCallback? onTap;
   final bool primary;
@@ -216,7 +223,9 @@ class _Action extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
       ),
-      icon: Icon(icon, size: 16),
+      icon: image == null
+          ? Icon(icon, size: 16)
+          : AppImageIcon(image!, size: 20, fallback: icon),
       label: Text(label),
     ),
   );

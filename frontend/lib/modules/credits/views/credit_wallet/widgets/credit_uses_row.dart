@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
@@ -33,14 +35,21 @@ class CreditUsesRow extends StatelessWidget {
           children: [
             _Use(
               icon: AppIcons.post,
+              image: AppImages.uiIcons.post,
               label: l10n.creditUsePostMore,
               onTap: soon,
             ),
             const SizedBox(width: 8),
-            _Use(icon: AppIcons.boost, label: l10n.creditUseBoost, onTap: soon),
+            _Use(
+              icon: AppIcons.boost,
+              image: AppImages.uiIcons.boost,
+              label: l10n.creditUseBoost,
+              onTap: soon,
+            ),
             const SizedBox(width: 8),
             _Use(
               icon: AppIcons.pro,
+              image: AppImages.uiIcons.crown,
               label: l10n.creditUseUpgrade,
               onTap: () => context.push(PlansView.path),
             ),
@@ -53,10 +62,16 @@ class CreditUsesRow extends StatelessWidget {
 
 class _Use extends StatelessWidget {
   final IconData icon;
+  final String image;
   final String label;
   final VoidCallback onTap;
 
-  const _Use({required this.icon, required this.label, required this.onTap});
+  const _Use({
+    required this.icon,
+    required this.image,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +85,7 @@ class _Use extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
             child: Column(
               children: [
-                Icon(icon, size: 22, color: AppColors.primaryDark),
+                AppImageIcon(image, size: 32, fallback: icon),
                 const SizedBox(height: 6),
                 Text(
                   label,

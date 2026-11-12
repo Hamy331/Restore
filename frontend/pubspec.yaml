@@ -103,6 +103,7 @@ flutter:
   # Assets:
   assets:
     - assets/icons/
+    - assets/icons/ui/
     - assets/images/
     - assets/images/auth/
     - assets/images/marketplace/
