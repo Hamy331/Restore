@@ -47,3 +47,16 @@ export async function updateWhereVersion(tx: Db, id: string, updatedAt: Date, da
 }
 
 export const findByIdOrThrow = (tx: Db, id: string) => tx.blogPost.findUniqueOrThrow({ where: { id } });
+
+/** Bài viết cũ có thể chưa có nhật ký ghi nhận tác giả. */
+export async function findCreators(ids: string[]) {
+  const logs = await prisma.adminAudit.findMany({
+    where: { targetType: 'POST', action: 'CREATE', targetId: { in: ids } },
+    select: { targetId:true, actorId:true },
+  });
+  const users = await prisma.user.findMany({
+    where: { id: { in: [...new Set(logs.map(log => log.actorId))] } }, select: {id:true, fullName:true},
+  });
+  const names=new Map(users.map(user => [user.id,user.fullName]));
+  return new Map(logs.map(log => [log.targetId,names.get(log.actorId) ?? log.actorId]));
+}

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { PERMISSION } from '../../../common/auth/permissions.js';
 import { authorizePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
-import { pageOnlyQuery } from '../admin.validator.js';
+import { auditQuery } from '../admin.validator.js';
 import * as auditController from '../controllers/audit.controller.js';
 
 /** Nhật ký quản trị, gắn tại /api/v1/admin */
@@ -16,6 +16,6 @@ const auditRouter = Router();
  *
  * Trả về: { items, total, page }
  */
-auditRouter.get('/audit', authorizePermission(PERMISSION.ADMIN_ACCESS), validate({ query: pageOnlyQuery }), auditController.listLogs);
+auditRouter.get('/audit', authorizePermission(PERMISSION.ADMIN_ACCESS), validate({ query: auditQuery }), auditController.listLogs);
 
 export default auditRouter;
