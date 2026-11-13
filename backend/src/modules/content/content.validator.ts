@@ -122,3 +122,5 @@ export const resolveReportBody = z.unknown().transform((value) => {
     days: body.days, targetUpdatedAt: body.targetUpdatedAt,
   };
 });
+
+export const adminPostListQuery = z.record(z.string(), z.unknown()).transform(query => ({page:page(query.page), withAuthor:query.include === 'author'}));

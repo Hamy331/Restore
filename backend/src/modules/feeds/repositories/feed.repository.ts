@@ -28,6 +28,25 @@ export function followingFilter(userId: string) {
 export const findPost = (postId: string) =>
   prisma.feedPost.findFirst({ where: { id: postId, ...available } });
 
+export const findReportablePost = (db: Prisma.TransactionClient, postId: string) =>
+  db.feedPost.findFirst({
+    where: { id: postId, author: { status: 'ACTIVE' } },
+    select: { id: true, authorId: true },
+  });
+
+export const findAdminReportTarget = (postId: string) =>
+  prisma.feedPost.findUnique({
+    where: { id: postId },
+    select: {
+      id: true,
+      text: true,
+      imageUrl: true,
+      createdAt: true,
+      updatedAt: true,
+      author: { select: { id: true, fullName: true, status: true } },
+    },
+  });
+
 export const findPosts = (userId: string, limit: number, after: {createdAt: Date; id: string} | undefined, authorId: string | undefined, tab: unknown) =>
   prisma.feedPost.findMany({ where: { ...available,
     ...(tab === 'following' ? followingFilter(userId) : {}),
