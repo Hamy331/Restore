@@ -107,8 +107,12 @@ class _CreateListingScaffoldState extends State<CreateListingScaffold> {
   }
 
   /// Hỏi lưu nháp trước khi thoát; true khi được phép thoát
-  /// (đã lưu xong hoặc chọn bỏ thay đổi)
+  /// (đã lưu xong hoặc chọn bỏ thay đổi). Đang sửa tin đã đăng thì chỉ hỏi
+  /// bỏ thay đổi hay sửa tiếp.
   Future<bool> _confirmLeave(BuildContext context) async {
+    if (context.read<CreateListingBloc>().state.isEditing) {
+      return showLeaveEditSheet(context);
+    }
     final action = await showLeaveDraftSheet(context);
     if (action == null || !context.mounted) return false;
     if (action == LeaveDraftAction.discard) return true;
@@ -152,6 +156,9 @@ class _CreateListingScaffoldState extends State<CreateListingScaffold> {
     final headerHeight =
         _headerHeight ?? media.padding.top + kToolbarHeight + 120;
 
+    final isEditing = context.select(
+      (CreateListingBloc bloc) => bloc.state.isEditing,
+    );
     final guardLeave =
         _isFlowEntry(context) &&
         context.select(
@@ -244,7 +251,7 @@ class _CreateListingScaffoldState extends State<CreateListingScaffold> {
                               onPressed: busy ? null : () => _onBack(context),
                             ),
                             title: Text(
-                              widget.title,
+                              isEditing ? l10n.editListingTitle : widget.title,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -252,7 +259,7 @@ class _CreateListingScaffoldState extends State<CreateListingScaffold> {
                               ),
                             ),
                             actions: [
-                              if (widget.showSaveDraft)
+                              if (widget.showSaveDraft && !isEditing)
                                 _SaveDraftButton(label: l10n.saveDraft),
                             ],
                           ),

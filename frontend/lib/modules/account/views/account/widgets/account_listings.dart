@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_icons.dart';
 import '../../../../../core/utils/formatters/currency_formatter.dart';
@@ -11,7 +13,8 @@ import '../../../../listings/models/create_listing_step.dart';
 import '../../../bloc/account_listings/account_listings_cubit.dart';
 import '../../../bloc/account_listings/account_listings_state.dart';
 import '../../../models/account_listing.dart';
-import 'account_menu.dart';
+import '../../../../../data/models/listing_revision_model.dart';
+import 'listing_lifecycle_actions.dart';
 import '../../../widgets/profile_header.dart';
 
 /// Các sliver của mục "Tin đăng": tab trạng thái, danh sách và tải thêm.
@@ -22,7 +25,7 @@ List<Widget> accountListingSlivers(AccountListingsState state) => [
     const SliverToBoxAdapter(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 40),
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: AppLoadingIndicator()),
       ),
     )
   else if (state.displayed.isEmpty)
@@ -36,7 +39,7 @@ List<Widget> accountListingSlivers(AccountListingsState state) => [
     const SliverToBoxAdapter(
       child: Padding(
         padding: EdgeInsets.all(16),
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: AppLoadingIndicator()),
       ),
     ),
 ];
@@ -151,11 +154,34 @@ class _ListingRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final isHidden = item.status == AccountListingStatus.hidden;
+    final now = DateTime.now();
+    final expired = item.isExpiredAt(now);
+    final daysLeft = item.daysLeftAt(now);
     final meta = [
       if (item.category.isNotEmpty) item.category,
       if (item.createdAt != null) l.accPosted(feedTime(l, item.createdAt!)),
       l.accViews(item.views),
     ].join(' · ');
+    // Hạn hiển thị: tin đang hiện thì ngày hết hạn và số ngày còn lại,
+    // tin ẩn vì quá hạn thì báo đã hết hạn từ ngày nào
+    final end = item.expiresAt;
+    final endText = end == null
+        ? null
+        : DateFormat('dd/MM/yyyy').format(end.toLocal());
+    final scheduled = item.isScheduledAt(now);
+    final expiry = scheduled
+        ? l.displayDaysScheduled(
+            DateFormat('dd/MM/yyyy').format(item.startsAt!.toLocal()),
+          )
+        : expired && endText != null
+        ? l.accExpiredOn(endText)
+        : item.status == AccountListingStatus.visible &&
+              daysLeft != null &&
+              endText != null
+        ? l.accExpiresOn(endText, daysLeft)
+        : null;
+    final expiryUrgent = !scheduled && (expired || (daysLeft ?? 99) <= 3);
+    final visible = item.status == AccountListingStatus.visible;
     return Column(
       children: [
         const Divider(height: 1, color: AppColors.border),
@@ -214,57 +240,100 @@ class _ListingRow extends StatelessWidget {
                         color: AppColors.textSecondary,
                       ),
                     ),
+                    if (expiry != null) ...[
+                      const SizedBox(height: 6),
+                      _ExpiryChip(label: expiry, urgent: expiryUrgent),
+                    ],
+                    if (item.editStatus case final edit?) ...[
+                      const SizedBox(height: 6),
+                      _ExpiryChip(
+                        icon: edit == ListingRevisionStatus.pending
+                            ? AppIcons.edit
+                            : AppIcons.warning,
+                        label: edit == ListingRevisionStatus.pending
+                            ? l.accEditPending
+                            : l.accEditRejected(item.editReason ?? ''),
+                        urgent: edit == ListingRevisionStatus.rejected,
+                        maxLines: 2,
+                      ),
+                    ],
                   ],
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 9),
-        Row(
-          children: [
-            const SizedBox(width: 90),
-            Expanded(
-              child: _RowAction(
-                l.accEdit,
-                onTap: () => showComingSoon(context),
+        const SizedBox(height: 10),
+        // Hàng nút trải hết chiều ngang để nhãn không bị co chữ
+        Padding(
+          padding: EdgeInsets.zero,
+          child: Row(
+            children: [
+              Expanded(
+                child: _RowAction(
+                  l.accEdit,
+                  icon: AppIcons.edit,
+                  onTap: () => editAccountListing(context, item),
+                ),
               ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: _RowAction(
-                isHidden ? l.accShow : l.accHide,
-                onTap: () => context.read<AccountListingsCubit>().setStatus(
-                  item.id,
+              const SizedBox(width: 6),
+              Expanded(
+                child: _RowAction(
                   isHidden
-                      ? AccountListingStatus.visible
-                      : AccountListingStatus.hidden,
+                      ? (expired ? l.accReactivate : l.accShow)
+                      : l.accHide,
+                  icon: isHidden
+                      ? (expired ? AppIcons.refresh : AppIcons.visible)
+                      : AppIcons.hidden,
+                  // Tin ẩn: hiện lại / kích hoạt lại là việc chính
+                  filled: isHidden,
+                  onTap: () => isHidden
+                      ? showAccountListing(context, item)
+                      : context.read<AccountListingsCubit>().setStatus(
+                          item.id,
+                          AccountListingStatus.hidden,
+                        ),
                 ),
               ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: _RowAction(
-                l.accBoost,
-                filled: true,
-                onTap: () => context.push('/boost/${item.id}'),
-              ),
-            ),
-            SizedBox(
-              width: 30,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
-                tooltip: l.accMoreOptions,
-                onPressed: () => showComingSoon(context),
-                icon: const Icon(
-                  AppIcons.more,
-                  size: 19,
-                  color: AppColors.textPrimary,
+              if (visible) ...[
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _RowAction(
+                    l.accBoost,
+                    icon: AppIcons.boost,
+                    filled: true,
+                    onTap: () => promoteAccountListing(context, item),
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
+              if (visible || item.editStatus != null) ...[
+                const SizedBox(width: 6),
+                _MoreButton(
+                  tooltip: l.accMoreOptions,
+                  actions: [
+                    if (visible) ...[
+                      (
+                        AppIcons.hot,
+                        l.featureAction,
+                        () => promoteAccountListing(context, item),
+                      ),
+                      (
+                        AppIcons.calendar,
+                        l.accExtend,
+                        () => extendAccountListing(context, item),
+                      ),
+                    ],
+                    if (item.editStatus != null)
+                      (
+                        AppIcons.close,
+                        l.accDiscardEdit,
+                        () => discardAccountListingEdit(context, item),
+                      ),
+                  ],
+                ),
+              ],
+            ],
+          ),
         ),
         const SizedBox(height: 12),
       ],
@@ -273,34 +342,160 @@ class _ListingRow extends StatelessWidget {
 }
 
 class _RowAction extends StatelessWidget {
-  const _RowAction(this.label, {required this.onTap, this.filled = false});
+  const _RowAction(
+    this.label, {
+    required this.icon,
+    required this.onTap,
+    this.filled = false,
+  });
   final String label;
+  final IconData icon;
   final VoidCallback onTap;
   final bool filled;
 
   @override
-  Widget build(BuildContext context) => Material(
-    color: filled ? AppColors.primary : AppColors.background,
-    borderRadius: BorderRadius.circular(5),
-    child: InkWell(
-      borderRadius: BorderRadius.circular(5),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 8),
-        child: Center(
-          child: FittedBox(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontFamily: profileFontFamily,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+  Widget build(BuildContext context) {
+    const color = AppColors.textPrimary;
+    return Material(
+      color: filled ? AppColors.primary : AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(9),
+        side: filled
+            ? BorderSide.none
+            : const BorderSide(color: AppColors.border),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(9),
+        onTap: onTap,
+        child: SizedBox(
+          height: 34,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Center(
+              child: FittedBox(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 15, color: color),
+                    const SizedBox(width: 5),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontFamily: profileFontFamily,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: color,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Nút ⋯ vuông cùng cỡ với hàng nút, mở menu thao tác thêm của tin
+class _MoreButton extends StatelessWidget {
+  const _MoreButton({required this.tooltip, required this.actions});
+  final String tooltip;
+  final List<(IconData, String, VoidCallback)> actions;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 34,
+    height: 34,
+    child: PopupMenuButton<VoidCallback>(
+      tooltip: tooltip,
+      padding: EdgeInsets.zero,
+      position: PopupMenuPosition.under,
+      color: AppColors.surface,
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      onSelected: (action) => action(),
+      itemBuilder: (_) => [
+        for (final (icon, label, action) in actions)
+          PopupMenuItem(
+            value: action,
+            height: 44,
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: AppColors.textPrimary),
+                const SizedBox(width: 10),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: profileFontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(9),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: const Icon(
+          AppIcons.moreHorizontal,
+          size: 18,
+          color: AppColors.textPrimary,
+        ),
+      ),
     ),
   );
+}
+
+/// Dòng hạn hiển thị của tin: đỏ khi đã hết hạn hoặc còn tối đa 3 ngày
+class _ExpiryChip extends StatelessWidget {
+  const _ExpiryChip({
+    required this.label,
+    required this.urgent,
+    this.icon = AppIcons.clock,
+    this.maxLines = 1,
+  });
+  final String label;
+  final bool urgent;
+  final IconData icon;
+  final int maxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = urgent ? AppColors.error : AppColors.primaryDark;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: urgent ? AppColors.errorBg : AppColors.primarySoft,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: maxLines,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: profileFontFamily,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

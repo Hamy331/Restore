@@ -1,7 +1,11 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:equatable/equatable.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
+import 'package:restore/data/models/listing_revision_model.dart';
 import 'package:restore/shared/models/geo_point.dart';
+import 'package:restore/shared/models/localized_text.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/modules/location/models/address_info.dart';
 
@@ -32,6 +36,21 @@ class ListingModel extends Equatable {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  /// Hết hạn hiển thị (null = tin cũ / chưa duyệt); quá hạn thì tin tự ẩn
+  final DateTime? expiresAt;
+
+  /// Số xu đã trả cho tin (chỉ chủ tin thấy); > 0 thì tin không chiếm suất miễn phí
+  final int paidCredits;
+
+  /// Ngày hẹn bắt đầu hiển thị (null = hiện ngay khi duyệt)
+  final DateTime? startsAt;
+
+  /// Số ngày hiển thị người bán chọn lúc đăng (null = số ngày miễn phí)
+  final int? displayDays;
+
+  /// Tự gia hạn khi sắp hết hạn (chỉ chủ tin thấy, gói Cửa hàng)
+  final bool autoExtend;
+
   /// (đề xuất) Danh mục và thuộc tính theo danh mục (jsonb)
   final String? categoryId;
   final String categoryName;
@@ -47,6 +66,9 @@ class ListingModel extends Equatable {
   final String? reviewReason;
   final String sellerType;
   final bool isFavorite;
+
+  /// Bản sửa đang chờ duyệt / bị từ chối của tin đã duyệt (chỉ chủ tin thấy)
+  final ListingRevisionModel? pendingEdit;
 
   const ListingModel({
     required this.id,
@@ -64,6 +86,11 @@ class ListingModel extends Equatable {
     this.viewCount = 0,
     this.createdAt,
     this.updatedAt,
+    this.expiresAt,
+    this.paidCredits = 0,
+    this.startsAt,
+    this.displayDays,
+    this.autoExtend = false,
     this.categoryId,
     this.categoryName = '',
     this.attributes = const {},
@@ -76,6 +103,7 @@ class ListingModel extends Equatable {
     this.reviewReason,
     this.sellerType = 'PERSONAL',
     this.isFavorite = false,
+    this.pendingEdit,
   });
 
   String? get coverImage => images.isEmpty ? null : images.first;
@@ -122,8 +150,16 @@ class ListingModel extends Equatable {
       viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
       createdAt: DateTime.tryParse('${json['createdAt']}'),
       updatedAt: DateTime.tryParse('${json['updatedAt']}'),
+      expiresAt: DateTime.tryParse('${json['expiresAt']}'),
+      paidCredits: (json['paidCredits'] as num?)?.toInt() ?? 0,
+      startsAt: DateTime.tryParse('${json['startsAt']}'),
+      displayDays: (json['displayDays'] as num?)?.toInt(),
+      autoExtend: json['autoExtend'] == true,
       categoryId: json['categoryId'] as String?,
-      categoryName: (json['category'] as Map?)?['name'] as String? ?? '',
+      // Tên danh mục từ API là chuỗi hoặc map theo ngôn ngữ {vi, en}
+      categoryName: LocalizedText.fromJson(
+        (json['category'] as Map?)?['name'],
+      ).resolve(PlatformDispatcher.instance.locale.languageCode),
       attributes: Map<String, Object?>.from(json['attributes'] as Map? ?? {}),
       provinceCode: location is Map
           ? location['provinceCode'] as String?
@@ -152,6 +188,11 @@ class ListingModel extends Equatable {
       reviewReason: json['reviewReason'] as String?,
       sellerType: json['sellerType'] as String? ?? 'PERSONAL',
       isFavorite: json['isFavorite'] == true,
+      pendingEdit: ListingRevisionModel.fromListingJson(
+        json,
+        json['pendingEdit'],
+        apiBaseUrl: apiBaseUrl,
+      ),
     );
   }
 
@@ -172,6 +213,11 @@ class ListingModel extends Equatable {
     viewCount,
     createdAt,
     updatedAt,
+    expiresAt,
+    paidCredits,
+    startsAt,
+    displayDays,
+    autoExtend,
     categoryId,
     categoryName,
     attributes,
@@ -184,5 +230,6 @@ class ListingModel extends Equatable {
     reviewReason,
     sellerType,
     isFavorite,
+    pendingEdit,
   ];
 }

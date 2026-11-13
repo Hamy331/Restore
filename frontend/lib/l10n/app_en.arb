@@ -185,9 +185,9 @@
   "accFollowListEmpty": "No one here yet",
   "accComingSoon": "This feature is under development",
   "accActivity": "Activity",
-  "accProPlan": "Pro plan",
+  "accProPlan": "Account plan",
   "accCreateStore": "Create a store",
-  "accCoins": "ReStore coins",
+  "accCoins": "ReStore Points",
   "accSaved": "Saved",
   "accSavedSearches": "Saved searches",
   "accRecentlyViewed": "Recently viewed",
@@ -824,7 +824,7 @@
   "homeForYouTitle": "Picked for you",
   "homeLatestTitle": "Fresh listings",
   "homeSeeAll": "See all",
-  "homeFeaturedTag": "Featured",
+  "homeFeaturedTag": "Hot",
   "homeExchangeTag": "Swappable",
   "homeExchangeOnly": "Swap only",
   "homeSaveListing": "Save listing",
@@ -1588,7 +1588,7 @@
   "quickActionPoster": "Shop poster",
   "quickActionBoost": "Boost",
   "quickActionStats": "Insights",
-  "quickActionShopPage": "Shop page",
+  "quickActionShopManage": "Manage shop",
   "trustedShopsFamousEyebrow": "Official",
   "trustedShopsDealsEyebrow": "On sale",
   "trustedShopsNewReleasesEyebrow": "Just launched",
@@ -1784,5 +1784,1253 @@
         "type": "String"
       }
     }
-  }
+  },
+  "creditTitle": "ReStore Points",
+  "creditAvailable": "Available points",
+  "creditPoints": "{count, plural, =1{{amount} point} other{{amount} points}}",
+  "@creditPoints": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "creditUnit": "points",
+  "creditPaidLabel": "Purchased",
+  "creditBonusLabel": "Bonus",
+  "creditHeldLabel": "On hold",
+  "creditBonusExpiry": "Bonus points start expiring on {date}.",
+  "@creditBonusExpiry": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "creditHeldHint": "Points on hold belong to listings awaiting review and come back if a listing is rejected.",
+  "creditTopupAction": "Buy points",
+  "creditUsesTitle": "Use points to",
+  "creditUsePostMore": "Post more",
+  "creditUseBoost": "Boost a listing",
+  "creditUseUpgrade": "Upgrade plan",
+  "creditRecentTitle": "Recent activity",
+  "creditSeeAll": "See all",
+  "creditEmptyHistory": "No point activity yet",
+  "creditLoadError": "Couldn't load your points",
+  "creditHistoryTitle": "Points history",
+  "creditFilterAll": "All",
+  "creditFilterTopup": "Purchases",
+  "creditFilterSpend": "Spent",
+  "creditFilterRefund": "Refunds",
+  "creditTxnTopup": "Points purchase",
+  "creditTxnBonus": "Bonus points",
+  "creditTxnSpend": "Points spent",
+  "creditTxnRefund": "Points refunded",
+  "creditTxnExpire": "Points expired",
+  "creditTxnAdjust": "Adjustment",
+  "creditTxnOrder": "Order {code}",
+  "@creditTxnOrder": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "creditTopupTitle": "Choose a pack",
+  "creditRate": "1 point = 1,000 VND. Bigger packs include bonus points.",
+  "creditPopular": "Popular",
+  "creditBonusTag": "+{amount} bonus",
+  "@creditBonusTag": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "creditNoBonus": "No bonus",
+  "creditTerms": "Points can only be used in ReStore. They can't be cashed out or transferred to anyone. Bonus points are used first and expire after 90 days.",
+  "creditContinue": "Continue · {price}",
+  "@creditContinue": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "creditConfirmTitle": "Confirm purchase",
+  "creditSummaryPack": "Pack",
+  "creditSummaryReceive": "You get",
+  "creditSummaryTotal": "Total",
+  "creditReceiveWithBonus": "{total} points ({bonus} bonus)",
+  "@creditReceiveWithBonus": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "bonus": {
+        "type": "String"
+      }
+    }
+  },
+  "creditPayMethodTitle": "Payment method",
+  "creditMethodZalopay": "ZaloPay",
+  "creditMethodZalopayDesc": "ZaloPay wallet, local ATM card or international card.",
+  "creditMethodVietqr": "VietQR bank transfer",
+  "creditMethodVietqrDesc": "Scan with any banking app. Points arrive when the money does.",
+  "creditSandboxNote": "Test mode (sandbox): no real money is charged.",
+  "creditAgree": "I agree that points can't be exchanged back for cash, unless a payment fails or is charged twice.",
+  "creditPayAction": "Pay {price}",
+  "@creditPayAction": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "creditPayZalopayTitle": "Pay with ZaloPay",
+  "creditPayBankTitle": "Bank transfer",
+  "creditOrderCode": "Order code",
+  "creditGatewayNotConnected": "ZaloPay is skipped (debug mode or no server keys). Use the buttons below to simulate the result.",
+  "creditOpenGateway": "Open ZaloPay checkout",
+  "creditWaitingGateway": "Finish paying on the ZaloPay page, then come back here. Your points update automatically.",
+  "creditSimulateTitle": "Simulate the payment result (test mode only)",
+  "creditSimulateSuccess": "Paid",
+  "creditSimulateFail": "Failed",
+  "creditScanQr": "Scan with any banking app",
+  "creditAccountNo": "Account number",
+  "creditAccountName": "Account name",
+  "creditTransferContent": "Transfer note",
+  "creditQrExpires": "Code expires at {time}",
+  "@creditQrExpires": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "creditWaitingTransfer": "Waiting for your transfer. Keep the transfer note as is so the points arrive automatically.",
+  "creditVietQrUnavailable": "The receiving bank account isn't set up on the server yet.",
+  "creditCopied": "Copied",
+  "creditCopy": "Copy",
+  "creditCancelOrder": "Cancel order",
+  "creditResultTitle": "Result",
+  "creditSuccessTitle": "Purchase complete",
+  "creditSuccessAmount": "+{amount} points",
+  "@creditSuccessAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "creditSuccessBody": "The points are in your wallet.",
+  "creditPendingTitle": "Waiting for confirmation",
+  "creditPendingBody": "Your points will arrive as soon as the payment is confirmed. You can leave this page.",
+  "creditFailTitle": "Purchase not completed",
+  "creditFailBody": "The payment was cancelled or expired. You haven't been charged.",
+  "creditCheckAgain": "Check again",
+  "creditTryAgain": "Try again",
+  "creditDone": "Done",
+  "creditBackToWallet": "Back to wallet",
+  "creditErrorTooManyPending": "You have too many unpaid orders. Wait 15 minutes for them to expire or cancel one.",
+  "creditErrorGeneric": "Something went wrong, please try again.",
+  "creditPackagesError": "Couldn't load point packs",
+  "postingLimitTotalTitle": "Free listings used up",
+  "postingLimitTotalMessage": "A personal account can have at most {limit} free listings at once across all categories.",
+  "@postingLimitTotalMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLimitRecentMessage": "You have posted for free in {category} many times in the last {days} days. Each category allows up to twice its free slots every {days} days.",
+  "@postingLimitRecentMessage": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayTitle": "Post this listing for {credits} points",
+  "@postingPayTitle": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayBalance": "Your wallet: {available} points",
+  "@postingPayBalance": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayNote": "Points are held when you submit and only spent once the listing is approved. Rejected listings get their points back.",
+  "postingPayMissing": "You need {missing} more points.",
+  "@postingPayMissing": {
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayContinue": "Continue · {credits} points",
+  "@postingPayContinue": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayPublish": "Post · {credits} points",
+  "@postingPayPublish": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingTopUp": "Buy points",
+  "postingFreeWaysTitle": "Or free up a free slot",
+  "postingQuotaTotalUsage": "{used}/{limit} free listings used on your account",
+  "@postingQuotaTotalUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaPaidHint": "Out of slots? Post more with points, from {credits} points per listing.",
+  "@postingQuotaPaidHint": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpiresIn": "{days} days left",
+  "@accExpiresIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpired": "Expired",
+  "accReactivate": "Reactivate",
+  "accReactivated": "Listing reactivated",
+  "accExtend": "Extend listing",
+  "accExtendMessage": "Show this listing for {days} more days for {credits} points. Points are spent right away, no new review needed.",
+  "@accExtendMessage": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtendPay": "Extend · {credits} points",
+  "@accExtendPay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtendTooEarly": "You can extend once {days} days or fewer are left.",
+  "@accExtendTooEarly": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtended": "Listing extended",
+  "postingPayReactivate": "Reactivate · {credits} points",
+  "@postingPayReactivate": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLater": "Later",
+  "duplicateActiveTitle": "You already posted this",
+  "duplicateActiveMessage": "A matching listing of yours is live or waiting for review, so there is no need to post it again.",
+  "duplicateInactiveTitle": "Reuse your old listing?",
+  "duplicateInactiveMessage": "You have a matching listing that is hidden or expired. Reactivate it to keep its views and saves.",
+  "duplicateOpenOld": "See old listing",
+  "duplicatePostNew": "Post new anyway",
+  "postingPayReactivateTitle": "Show this listing again for {credits} points",
+  "@postingPayReactivateTitle": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayNowNote": "Points are spent as soon as the listing is shown again, no new review needed.",
+  "boostSheetMessage": "Your listing moves to the top of the list for 24 hours.",
+  "boostFreeNote": "Uses 1 free boost from your plan, {left}/{perMonth} left this month.",
+  "@boostFreeNote": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      },
+      "perMonth": {
+        "type": "int"
+      }
+    }
+  },
+  "boostPayNote": "Costs {credits} points, spent right away.",
+  "@boostPayNote": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "boostDiscountNote": "Your plan gets {percent}% off.",
+  "@boostDiscountNote": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "boostUseFree": "Boost for free",
+  "boostPay": "Boost · {credits} points",
+  "@boostPay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "boostDone": "Listing boosted to the top",
+  "boostTooSoon": "This listing was just boosted. You can boost it again in {hours} hours.",
+  "@boostTooSoon": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "plansTitle": "Account plans",
+  "plansSubtitle": "Paid with points, 30 days each time",
+  "plansCurrent": "Current plan",
+  "plansCurrentUntil": "Active until {date}",
+  "@plansCurrentUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plansFree": "Free",
+  "plansPersonalBenefitFree": "1 to 3 free listings per category, up to 5 in total",
+  "plansPersonalBenefitPay": "Out of slots? Post more with points",
+  "plansPrice": "{price} points / 30 days",
+  "@plansPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitActive": "{count} active listings at a time",
+  "@plansBenefitActive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitDaily": "{count} new listings per day",
+  "@plansBenefitDaily": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitDrafts": "Keep {count} drafts",
+  "@plansBenefitDrafts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitBoosts": "{count} free boosts every month",
+  "@plansBenefitBoosts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitBoostDiscount": "{percent}% off boosts",
+  "@plansBenefitBoostDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitPriority": "Shown first in your main category",
+  "plansBenefitShopPage": "Your own shop page (coming soon)",
+  "plansBuy": "Get this plan",
+  "plansRenew": "Renew",
+  "plansUpgrade": "Upgrade",
+  "plansInUse": "Current",
+  "plansLowerLocked": "Available when your current plan ends",
+  "plansNote": "Upgrading mid-period credits the unused part of your old plan. Renewing adds 30 days. Points are spent right away and the plan starts immediately.",
+  "plansCheckoutPrice": "Plan price",
+  "plansCheckoutCredit": "Credit for unused days",
+  "plansCheckoutTotal": "To pay",
+  "plansCheckoutUntil": "Active until",
+  "plansCheckoutCategory": "Main category",
+  "plansCheckoutCategoryHint": "Listings in this category are shown first.",
+  "plansCredits": "{count} points",
+  "@plansCredits": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansPay": "Pay {amount} points",
+  "@plansPay": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "plansActivated": "{name} plan activated",
+  "@plansActivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plansLoadError": "Couldn't load plans.",
+  "plansActionError": "Something went wrong. Please try again.",
+  "plansUpgradeAction": "Upgrade plan",
+  "postingUpgradeHint": "Need more listings? Upgrade your plan",
+  "hotSaleTitle": "Hot sale",
+  "featureAction": "Put on Hot sale",
+  "featureSheetMessage": "Your listing shows in Hot sale on the home page and at the top of its category, above other listings, for the time you choose.",
+  "featureDays": "{days} days",
+  "@featureDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "featurePay": "Buy · {credits} points",
+  "@featurePay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "featureDone": "Your listing is on Hot sale",
+  "featureRunning": "This listing is on Hot sale until {date}.",
+  "@featureRunning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "featureUnavailable": "Only visible listings can go on Hot sale.",
+  "featureNoOptions": "No Hot sale packages are on sale right now.",
+  "accExpiresOn": "Expires {date} · {days} days left",
+  "@accExpiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpiredOn": "Expired {date}",
+  "@accExpiredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "previewDisplayDays": "Your listing shows for {days} days after approval. You can extend it near the end, or reactivate it once it expires.",
+  "@previewDisplayDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hotSaleSubtitle": "Listings sellers are promoting right now, updated all the time.",
+  "hotSaleLoadError": "Couldn't load Hot sale listings",
+  "hotSaleEmptyTitle": "No Hot sale listings yet",
+  "hotSaleEmptyBody": "Listings that sellers put on Hot sale will show up here.",
+  "hotSaleEnd": "You've seen all Hot sale listings",
+  "displayDaysTitle": "Display time",
+  "displayDaysFree": "Free · {days} days",
+  "@displayDaysFree": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysPlus": "+{days} days",
+  "@displayDaysPlus": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysRange": "{start} → {end} · {days} days",
+  "@displayDaysRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysStart": "Starts",
+  "displayDaysEnd": "Ends",
+  "displayDaysToday": "Today, once approved",
+  "displayDaysCount": "Days on display",
+  "displayDaysExtraCount": "Extra days",
+  "displayDaysIncluded": "Includes {free} free days for this category",
+  "@displayDaysIncluded": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysExtraPrice": "{days} extra days: {credits} points",
+  "@displayDaysExtraPrice": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysNoCharge": "Free",
+  "displayDaysPackSave": "{days}-day pack price, you save {credits} points",
+  "@displayDaysPackSave": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysSuggest": "Get {days} days for {credits} points",
+  "@displayDaysSuggest": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysMax": "This category can be shown for up to {days} days.",
+  "@displayDaysMax": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysPayNote": "Points are held when you post, charged on approval and refunded if rejected.",
+  "displayDaysDone": "Done",
+  "displayDaysCardHint": "Tap to change the start date or add days",
+  "displayDaysScheduled": "Scheduled from {date}",
+  "@displayDaysScheduled": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendNewEnd": "New end date: {date}",
+  "@extendNewEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendCurrentEnd": "Showing until {date}",
+  "@extendCurrentEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendAddable": "You can add up to {days} more days",
+  "@extendAddable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "extendLimitReached": "This listing is already at the {days}-day maximum.",
+  "@extendLimitReached": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "extendChargeNote": "Points are charged now, no new review needed.",
+  "autoExtendTitle": "Auto-extend 30 days",
+  "autoExtendBody": "When less than a day is left, {credits} points are charged if your wallet has enough.",
+  "@autoExtendBody": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "autoExtendOn": "Auto-extend is on",
+  "autoExtendOff": "Auto-extend is off",
+  "accExtendedDays": "Extended by {days} days",
+  "@accExtendedDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysTodayShort": "Today",
+  "displayDaysShortTitle": "Not enough points for extra days",
+  "displayDaysShortBody": "You need {missing} more points for the extra days. Top up, or post with the free days.",
+  "@displayDaysShortBody": {
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysUseFree": "Post with {days} free days",
+  "@displayDaysUseFree": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "originalPriceLabel": "Original price (before discount)",
+  "originalPricePlaceholder": "Leave empty if not on sale",
+  "originalPriceHint": "For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.",
+  "originalPriceDiscount": "{percent}% off the original price",
+  "@originalPriceDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "originalPriceError": "Original price must be higher than the sale price",
+  "promoTitle": "Promote listing",
+  "promoNotPromotable": "This listing isn't visible, so it can't be promoted. Show it again in Manage listings, then come back.",
+  "promoBoostRunning": "At the top of the list until {date}",
+  "@promoBoostRunning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "promoBoostAgainAt": "Boost again after {date}",
+  "@promoBoostAgainAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "promoRunning": "Running",
+  "promoHistoryTitle": "Recent promotions",
+  "promoHistoryEmpty": "This listing hasn't been promoted yet.",
+  "promoHistoryFeature": "Hot sale {days} days",
+  "@promoHistoryFeature": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "promoFree": "Free",
+  "promoEnded": "Ended",
+  "promoLoadError": "Couldn't load promotion info",
+  "promoBalanceAfter": "{left} points left in your wallet after paying.",
+  "@promoBalanceAfter": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "promoPickTitle": "Pick a listing to promote",
+  "promoPickSubtitle": "Only visible listings can be boosted or put on Hot sale",
+  "promoPickEmpty": "You have no visible listings yet.",
+  "hubTitle": "Promotions",
+  "hubFreeBoosts": "{left}/{perMonth} free boosts left",
+  "@hubFreeBoosts": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      },
+      "perMonth": {
+        "type": "int"
+      }
+    }
+  },
+  "hubThisMonth": "This month: {boosts} boosts · {features} Hot sale",
+  "@hubThisMonth": {
+    "placeholders": {
+      "boosts": {
+        "type": "int"
+      },
+      "features": {
+        "type": "int"
+      }
+    }
+  },
+  "hubFilterAll": "All",
+  "hubFilterRunning": "Promoted",
+  "hubFilterExpiring": "Expiring soon",
+  "hubFilterIdle": "Not promoted",
+  "hubBoostedFor": "Boosted · {time} left",
+  "@hubBoostedFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubFeaturedFor": "Hot sale · {time} left",
+  "@hubFeaturedFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubExpiresIn": "Expires in {time}",
+  "@hubExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubHours": "{count, plural, =1{1 hour} other{{count} hours}}",
+  "@hubHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hubDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@hubDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hubAutoExtend": "Auto-extend",
+  "hubDetails": "Details",
+  "hubEmptyRunning": "No listing is boosted or on Hot sale right now.",
+  "hubEmptyExpiring": "No listing expires in the next 7 days.",
+  "hubEmptyIdle": "All your listings are being promoted.",
+  "hubExpiringTip": "{count} listings expiring soon: extend them so they stay visible.",
+  "@hubExpiringTip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insTitle": "Insights",
+  "insRangeDays": "{days} days",
+  "@insRangeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "insViews": "Views",
+  "insSaves": "Saves",
+  "insChats": "People who messaged",
+  "insUp": "Up {percent}% vs previous period",
+  "@insUp": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "insDown": "Down {percent}% vs previous period",
+  "@insDown": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "insSame": "Same as previous period",
+  "insNew": "None in previous period",
+  "insChartTitle": "Views per day",
+  "insChartEmpty": "No views in this period yet.",
+  "insChartDay": "{date}: {views} views · {saves} saves",
+  "@insChartDay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "views": {
+        "type": "int"
+      },
+      "saves": {
+        "type": "int"
+      }
+    }
+  },
+  "insChartHint": "Tap a bar to see that day",
+  "insListingsTitle": "Listings",
+  "insActive": "Active",
+  "insPending": "Pending",
+  "insHidden": "Hidden",
+  "insSold": "Sold",
+  "insTopTitle": "Most viewed listings",
+  "insTopStats": "{views} views · {saves} saves",
+  "@insTopStats": {
+    "placeholders": {
+      "views": {
+        "type": "int"
+      },
+      "saves": {
+        "type": "int"
+      }
+    }
+  },
+  "insTopEmpty": "No visible listings yet.",
+  "insTipsTitle": "Tips",
+  "insTipBoost": "\"{title}\" is your most viewed listing. Boost it to stay on top.",
+  "@insTipBoost": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "insTipExpiring": "{count} listings expire within 7 days. Extend them so they stay visible.",
+  "@insTipExpiring": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insTipNoViews": "No views yet: clear photos, a specific title and a fair price help people notice your listings.",
+  "insPromotions": "This period: {boosts} boosts · {features} Hot sale",
+  "@insPromotions": {
+    "placeholders": {
+      "boosts": {
+        "type": "int"
+      },
+      "features": {
+        "type": "int"
+      }
+    }
+  },
+  "insLoadError": "Couldn't load insights",
+  "insViewsNote": "Daily views are recorded from 11/11/2026.",
+  "spTitle": "Shop posters",
+  "spCreate": "New poster",
+  "spLoadError": "Couldn't load posters",
+  "spNoShopTitle": "You don't have a shop page yet",
+  "spNoShopBody": "Posters appear on your shop page and on Trusted shops, so you need a shop page first.",
+  "spPlanTitle": "Posters are part of the Store plan",
+  "spPlanBody": "Upgrade to the Store plan to run posters on your shop page and on Trusted shops.",
+  "spSeePlans": "See plans",
+  "spSlots": "Posters at once",
+  "spMonthly": "Sent this month",
+  "spUnverified": "Your shop isn't verified yet, so approved posters aren't shown publicly.",
+  "spCooldown": "You can't send posters until {date} because several were rejected.",
+  "@spCooldown": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "spRules": "1200×600 image (2:1), runs {min} to {max} days. Reviewed within about 24 hours.",
+  "@spRules": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "spMonthlyFull": "You've sent all {limit} posters for this month.",
+  "@spMonthlyFull": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "spFilterAll": "All",
+  "spFilterRunning": "Running",
+  "spFilterPending": "In review",
+  "spFilterScheduled": "Scheduled",
+  "spFilterRejected": "Rejected",
+  "spFilterEnded": "Ended",
+  "spStateStopped": "Stopped",
+  "spEmpty": "No posters yet",
+  "spEmptyBody": "Create your first poster to promote a shop campaign.",
+  "spEmptyFilter": "No posters here.",
+  "spDates": "{start} – {end} · {days} days",
+  "@spDates": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "spOpensShop": "Opens your shop page",
+  "spOpensListing": "Opens listing: {title}",
+  "@spOpensListing": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "spRejectedReason": "Rejected: {reason}",
+  "@spRejectedReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "spReasonWrongSize": "Wrong image size",
+  "spReasonMisleadingPrice": "Misleading price or offer",
+  "spReasonBrandMisuse": "Uses a brand or logo that isn't yours",
+  "spReasonProhibited": "Prohibited content",
+  "spReasonTooMuchText": "Too much text on the image",
+  "spReasonOther": "Other reason",
+  "spEdit": "Edit",
+  "spResubmit": "Edit and resend",
+  "spStop": "Stop",
+  "spCancel": "Withdraw",
+  "spStopTitle": "Stop this poster?",
+  "spStopBody": "The poster stops showing right away and can't be restarted.",
+  "spCancelTitle": "Withdraw this poster?",
+  "spCancelBody": "It still counts toward this month's posters.",
+  "spConfirmStop": "Stop poster",
+  "spConfirmCancel": "Withdraw",
+  "spKeep": "Keep",
+  "spStopped": "Poster stopped",
+  "spNewTitle": "New poster",
+  "spEditTitle": "Edit poster",
+  "spImage": "Poster image",
+  "spPickImage": "Choose a 1200×600 image",
+  "spChangeImage": "Change image",
+  "spImageHint": "Pick any image, then drag and zoom it into the 2:1 frame. Put the text in the image itself.",
+  "spImageRequired": "Choose a poster image.",
+  "spName": "Campaign name",
+  "spNameHint": "e.g. Galaxy Week up to 20% off",
+  "spNameHelper": "Not drawn on the image; used by screen readers and to keep track.",
+  "spNameRequired": "Enter a campaign name.",
+  "spOpens": "When people tap the poster",
+  "spOpenShop": "Open shop page",
+  "spOpenListing": "Open a listing",
+  "spChooseListing": "Choose listing",
+  "spNoListings": "Your shop has no active listings.",
+  "spListingRequired": "Choose a listing.",
+  "spStart": "Start date",
+  "spStartNow": "As soon as approved",
+  "spStartOn": "Pick a date",
+  "spDuration": "Duration",
+  "spDays": "{days} days",
+  "@spDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "spEndsOn": "Ends around {date}",
+  "@spEndsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "spEditRunningNote": "A running poster is hidden until it's approved again.",
+  "spSubmit": "Send for review",
+  "spSubmitted": "Poster sent. It's usually reviewed within 24 hours.",
+  "spErrSlotFull": "That time already has the most posters you can run at once. Pick another date or stop a poster.",
+  "spErrMonthly": "You've sent all your posters for this month.",
+  "spErrCooldown": "Sending posters is paused for your shop.",
+  "spErrPlan": "Only the Store plan can run posters.",
+  "spErrShop": "You need a shop page to run posters.",
+  "spErrListing": "That listing isn't for sale anymore. Choose another.",
+  "spErrStartLate": "The start date can be at most 14 days ahead.",
+  "spErrImage": "Couldn't upload the image. Try another one.",
+  "spErrNotEditable": "This poster has ended. Create a new one.",
+  "spErrGeneric": "Something went wrong. Please try again.",
+  "spSchedule": "Schedule",
+  "spCropTitle": "Adjust poster",
+  "spAdjust": "Adjust again",
+  "cropDone": "Use this image",
+  "cropFill": "Fill frame",
+  "cropFit": "Show whole image",
+  "cropZoom": "Zoom",
+  "cropHint": "Drag to move; pinch or use the slider to zoom. Empty space is filled with the background you pick.",
+  "cropLowRes": "The image is small for this frame and may look blurry. Zoom out or pick a larger image.",
+  "cropLoadError": "Couldn't open this image. Try another one.",
+  "accAvatarSection": "Profile photo",
+  "accAvatarHint": "Shown in a circle on your profile, listings and messages. Tap Adjust to choose which part shows.",
+  "accAdjustAvatar": "Adjust",
+  "accAvatarCropTitle": "Adjust profile photo",
+  "accInfoSection": "Profile details",
+  "accDisplayNameHint": "e.g. Jane Doe or your shop name",
+  "accUsernameHelper": "3–30 characters: lowercase letters, numbers, dots or underscores.",
+  "accBioHint": "A few lines about you or your shop",
+  "accSaved": "Profile saved",
+  "cropBackground": "Background",
+  "cropBgBlur": "Blur",
+  "cropBgAuto": "Match",
+  "cropBgWhite": "White",
+  "cropBgBlack": "Black",
+  "cropTrim": "Remove plain borders",
+  "cropTrimOn": "Plain borders removed",
+  "msTitle": "Manage shop",
+  "msLoadError": "Couldn't load your shop",
+  "msPlanTitle": "Shop pages come with the Store plan",
+  "msPlanBody": "Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.",
+  "msCreateTitle": "Open your shop page",
+  "msCreateBody": "Name your shop first, then add a logo, cover and description.",
+  "msCreateAction": "Open shop",
+  "msCreated": "Your shop page is open",
+  "msName": "Shop name",
+  "msNameHint": "e.g. Cozy Home Decor",
+  "msNameRequired": "Shop name must be 2 to 60 characters.",
+  "msNameLocked": "Verified shops can't change their name. Contact ReStore if you need to.",
+  "msTagline": "Short tagline",
+  "msTaglineHint": "e.g. Handmade decor, fast local delivery",
+  "msDescription": "About the shop",
+  "msDescriptionHint": "What you sell, quality promise, return policy...",
+  "msAddress": "Display address",
+  "msAddressHint": "e.g. District 1, Ho Chi Minh City",
+  "msInfoSection": "Shop details",
+  "msColorSection": "Brand colour",
+  "msColorHint": "Used for the letter logo, the default cover and accents on your shop page.",
+  "msColorAuto": "Default",
+  "msChangeCover": "Change cover",
+  "msChangeLogo": "Change logo",
+  "msImageNew": "Choose a new image",
+  "msImageAdjust": "Adjust again",
+  "msImageRemove": "Remove image",
+  "msCoverCropTitle": "Adjust cover",
+  "msLogoCropTitle": "Adjust logo",
+  "msStatFollowers": "Followers",
+  "msStatListings": "Listings",
+  "msStatPostersRunning": "Posters live",
+  "msStatPostersPending": "Posters pending",
+  "msVerifiedTitle": "Verified shop",
+  "msVerifiedBody": "Your shop appears in Trusted shops.",
+  "msCertificate": "Certificate: {code}.",
+  "@msCertificate": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "msUnverifiedTitle": "Not verified yet",
+  "msUnverifiedBody": "Your shop isn't in Trusted shops yet and posters can't run. Contact ReStore to get verified.",
+  "msPlanExpiredTitle": "Store plan expired",
+  "msPlanExpiredBody": "Your posters are hidden for now. Renew the plan to run them again.",
+  "msViewPublic": "View shop page",
+  "msPosters": "Shop posters",
+  "msPostersBody": "Promote your shop with posters on your shop page and Trusted shops.",
+  "msSave": "Save changes",
+  "msSaved": "Shop details saved",
+  "msErrExists": "You already have a shop page.",
+  "msErrImage": "That image is not valid. Try another one.",
+  "msErrGeneric": "Couldn't save. Please try again.",
+  "followShopsTab": "Shops",
+  "followShopsEmpty": "You're not following any shops yet",
+  "followShopsEmptyHint": "Follow trusted shops to see their new listings in one place.",
+  "followShopsBrowse": "Explore trusted shops",
+  "followShopsNewCount": "{count} new",
+  "@followShopsNewCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFollowerCount": "{count} followers",
+  "@followShopsFollowerCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFeedTitle": "Shops you follow",
+  "followShopsFeedCta": "See new listings",
+  "followShopsFeedNew": "{count} new listings in the last 7 days",
+  "@followShopsFeedNew": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsCount": "Following {count} shops",
+  "@followShopsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsStripHint": "Tap a shop to open its page",
+  "followShopsLatest": "Latest listings",
+  "followShopsLatestHint": "Newly posted by the shops you follow",
+  "followShopsListingsEmpty": "No listings yet",
+  "followShopsListingsEmptyHint": "The shops you follow have no active listings.",
+  "followShopsEnd": "You're all caught up",
+  "followShopsLoadError": "Couldn't load the shops you follow",
+  "msFollowersTitle": "Shop followers",
+  "msFollowersTitleCount": "Followers ({count})",
+  "@msFollowersTitleCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "msFollowersEmpty": "No one follows your shop yet",
+  "msFollowersEmptyHint": "Buyers who follow your shop will show up here.",
+  "msFollowedSince": "Since {date}",
+  "@msFollowedSince": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "followingHubTitle": "Following",
+  "followingHubSubtitle": "New from shops and people you follow",
+  "followingHubOnboardSubtitle": "Pick a few shops to get started",
+  "followingHubManage": "Manage who you follow",
+  "followingHubPeopleTitle": "People you follow",
+  "followingHubSeeAll": "See all",
+  "followingHubFeedTitle": "New from shops you follow",
+  "followingHubFeedHint": "Pick a shop to see only its listings",
+  "followingHubAll": "All",
+  "followingHubOpenShop": "Visit shop",
+  "followingHubSuggestHint": "Shops in categories you save and follow, ReStore partners first",
+  "followingHubOnboardTitle": "Follow shops so you never miss new listings",
+  "followingHubOnboardBody": "Tap Follow on the shops below and their new listings will show up here.",
+  "followingHubBenefitFeed": "New listings from every shop in one place",
+  "followingHubBenefitFilter": "Filter by shop in one tap",
+  "followingHubBenefitVerified": "Only shops verified by ReStore",
+  "followingHubNoSuggestions": "No shops to suggest yet",
+  "followingHubSeeFeed": "See new listings from {count} shops",
+  "@followingHubSeeFeed": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFollowerCountText": "{count} followers",
+  "@followShopsFollowerCountText": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "followingHubPostsTitle": "Recent posts",
+  "followingHubPostsHint": "New posts from people you follow",
+  "followingHubForYouTitle": "Shops for you",
+  "followingHubPartner": "Partner",
+  "editListingTitle": "Edit listing",
+  "editSubmit": "Submit for review",
+  "editSubmittedLive": "Edit submitted. Buyers keep seeing the current version until it is approved",
+  "editSubmitted": "Changes saved, your listing is waiting for review again",
+  "editNoticeLive": "Buyers keep seeing the current version until your edit is approved. Boosts, Hot sale and applied discounts stay as they are.",
+  "editNoticeCategoryLocked": "The category of an approved listing can't be changed.",
+  "editNoticeReview": "After editing, your listing is reviewed again before it shows.",
+  "editRejectedReason": "Last time it was rejected: {reason}",
+  "@editRejectedReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "editLoadFailed": "Couldn't open this listing for editing. Please try again.",
+  "leaveEditTitle": "Discard your changes?",
+  "leaveEditMessage": "What you just edited won't be saved. The listing stays as it was.",
+  "leaveEditDiscard": "Discard changes",
+  "leaveEditKeep": "Keep editing",
+  "accEditPending": "Edit waiting for review",
+  "accEditRejected": "Edit rejected: {reason}",
+  "@accEditRejected": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "accDiscardEdit": "Discard edit",
+  "accEditDiscarded": "Edit discarded, the listing keeps its current version",
+  "accDiscardEditFailed": "Couldn't discard the edit. Please try again."
 }

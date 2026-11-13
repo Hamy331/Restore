@@ -24,9 +24,10 @@ export async function listFeed(viewerId: string | undefined, { filters, paginati
   return { items, page: { page, limit, totalItems } };
 }
 
-/** Tin gợi ý: các tin đang được đẩy FEATURED */
-export async function listRecommended(viewerId: string | undefined, { limit }: RecommendedQuery, now = new Date()) {
-  const listings = await feedRepository.findFeatured(now, limit);
+/** Tin Hot sale: các tin đang có tin ưu tiên (FEATURED), lọc theo chuyên mục nếu có */
+export async function listRecommended(viewerId: string | undefined, { limit, page, categoryId }: RecommendedQuery,
+  now = new Date()) {
+  const listings = await feedRepository.findFeatured(now, limit, categoryId, (page - 1) * limit);
   const favoriteIds = await feedRepository.findFavoriteIds(viewerId, listings.map((listing) => listing.id));
   return listings.map((listing) =>
     toFeedItemDto(listing, { distanceKm: null, isFeatured: true, isFavorite: favoriteIds.has(listing.id) }));

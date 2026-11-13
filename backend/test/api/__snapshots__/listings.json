@@ -9,6 +9,7 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -51,6 +52,9 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -67,6 +71,7 @@
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -109,6 +114,9 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -146,6 +154,7 @@
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -188,6 +197,9 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -225,6 +237,7 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -267,6 +280,9 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -304,6 +320,7 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -346,6 +363,9 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -362,6 +382,7 @@
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -404,6 +425,9 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -420,6 +444,7 @@
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -462,6 +487,9 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -508,6 +536,7 @@
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -550,6 +579,9 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -587,6 +619,7 @@
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -629,6 +662,9 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -675,6 +711,7 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -717,6 +754,9 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -733,6 +773,7 @@
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -775,6 +816,9 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -791,6 +835,7 @@
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -833,6 +878,9 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -870,6 +918,7 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -912,6 +961,9 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -935,6 +987,7 @@
         "title": "Bàn gỗ sồi thật",
         "description": "Mô tả sản phẩm dùng để kiểm thử API.",
         "price": "1200000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-seller",
         "categoryId": "furniture",
@@ -976,7 +1029,7 @@
             "en": "Furniture & decor",
             "vi": "Nội thất, trang trí"
           },
-          "imageUrl": "assets/images/marketplace/listing-lamp.png",
+          "imageUrl": "assets/images/categories/furniture.png",
           "attributes": [
             {
               "key": "home_type",
@@ -1062,6 +1115,9 @@
         "createdAt": "2026-10-01T00:10:00.000Z",
         "viewCount": 1,
         "publishedAt": "2026-10-01T00:10:00.000Z",
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": null,
         "owner": {
           "id": "user-seller",
           "fullName": "user-seller",
@@ -1154,6 +1210,7 @@
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -1196,6 +1253,9 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 1,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1231,6 +1291,7 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -1273,6 +1334,9 @@
           "createdAt": "2026-10-01T00:30:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1289,6 +1353,7 @@
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -1331,6 +1396,9 @@
           "createdAt": "2026-10-01T00:20:00.000Z",
           "viewCount": 0,
           "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1347,6 +1415,7 @@
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -1389,6 +1458,9 @@
           "createdAt": "2026-10-01T00:10:00.000Z",
           "viewCount": 1,
           "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
@@ -1453,6 +1525,7 @@
         "title": "Tin tạo qua API thử",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -1498,12 +1571,18 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": "<date>",
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -1517,6 +1596,7 @@
         "title": "Tin tạo qua API thử",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -1562,12 +1642,18 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": "<date>",
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -1632,6 +1718,7 @@
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -1680,12 +1767,18 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": "<date>",
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -1708,6 +1801,7 @@
           "title": "Tin đã sửa qua API",
           "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
           "price": "250000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-buyer",
           "categoryId": "other",
@@ -1756,12 +1850,18 @@
           "createdAt": "<date>",
           "viewCount": 0,
           "publishedAt": "<date>",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": 45,
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "paidCredits": 0,
+          "paidDays": 0,
+          "autoExtend": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ]
@@ -1790,6 +1890,7 @@
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -1849,7 +1950,8 @@
           "description": {
             "en": "Items that fit no other category",
             "vi": "Các món đồ chưa có danh mục phù hợp"
-          }
+          },
+          "imageUrl": "assets/images/categories/other.png"
         },
         "images": [
           "/api/v1/listings/media/<uuid>.png",
@@ -1858,6 +1960,9 @@
         "createdAt": "<date>",
         "viewCount": 1,
         "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
@@ -1898,6 +2003,7 @@
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -1946,12 +2052,18 @@
         "createdAt": "<date>",
         "viewCount": 1,
         "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -1965,6 +2077,7 @@
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -2013,12 +2126,18 @@
         "createdAt": "<date>",
         "viewCount": 1,
         "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -2032,6 +2151,7 @@
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -2080,12 +2200,18 @@
         "createdAt": "<date>",
         "viewCount": 1,
         "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -2110,6 +2236,7 @@
           "title": "Tin đã sửa qua API",
           "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
           "price": "250000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-buyer",
           "categoryId": "other",
@@ -2158,12 +2285,18 @@
           "createdAt": "<date>",
           "viewCount": 1,
           "publishedAt": "<date>",
+          "expiresAt": "<date>",
+          "startsAt": null,
+          "displayDays": 45,
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "paidCredits": 0,
+          "paidDays": 0,
+          "autoExtend": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ],
@@ -2185,6 +2318,7 @@
           "title": "Tin đã sửa qua API",
           "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
           "price": "250000",
+          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-buyer",
           "categoryId": "other",
@@ -2233,12 +2367,18 @@
           "createdAt": "<date>",
           "viewCount": 1,
           "publishedAt": "<date>",
+          "expiresAt": "<date>",
+          "startsAt": null,
+          "displayDays": 45,
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "paidCredits": 0,
+          "paidDays": 0,
+          "autoExtend": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ],
@@ -2259,6 +2399,7 @@
         "title": "Nháp",
         "description": "",
         "price": "0",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": null,
@@ -2277,12 +2418,18 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": null,
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": null,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": ""
       }
     }
@@ -2296,6 +2443,7 @@
         "title": "Nháp đã đủ thông tin",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -2341,12 +2489,18 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": null,
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": null,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
@@ -2369,6 +2523,7 @@
         "title": "Nháp đã đủ thông tin",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
+        "originalPrice": null,
         "isNegotiable": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
@@ -2416,12 +2571,18 @@
         "createdAt": "<date>",
         "viewCount": 0,
         "publishedAt": "<date>",
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }

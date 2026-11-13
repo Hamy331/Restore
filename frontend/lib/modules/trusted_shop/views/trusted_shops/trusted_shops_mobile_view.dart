@@ -17,6 +17,7 @@ import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
+import '../../bloc/followed_shops/followed_shops_cubit.dart';
 import '../../bloc/trusted_shops/trusted_shops_cubit.dart';
 import '../../bloc/trusted_shops/trusted_shops_state.dart';
 import '../../models/shop_banner_item.dart';
@@ -26,7 +27,9 @@ import '../../widgets/shop_banner_carousel.dart';
 import '../../widgets/shop_verification_badge.dart';
 import '../../widgets/shop_verification_sheet.dart';
 import '../../widgets/trusted_shop_section_header.dart';
+import '../following_shops/following_shops_view.dart';
 import '../shop_detail/shop_detail_view.dart';
+import 'widgets/followed_shops_section.dart';
 import 'widgets/trusted_deals_section.dart';
 import 'widgets/trusted_new_releases.dart';
 import 'widgets/trusted_section_bar.dart';
@@ -177,12 +180,28 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
     );
     if (following == null || !mounted) return;
     context.read<TrustedShopsCubit>().syncFollowing(id, following);
+    context.read<FollowedShopsCubit>().load();
+  }
+
+  /// Theo dõi / bỏ theo dõi ở thẻ shop rồi tải lại dải "Shop bạn theo dõi"
+  Future<void> _toggleFollow(TrustedShopItem item) async {
+    final followed = context.read<FollowedShopsCubit>();
+    await context.read<TrustedShopsCubit>().toggleFollow(item);
+    await followed.load();
   }
 
   void _openShopItem(TrustedShopItem item) =>
       _openShop(item.shop.id, item: item);
 
-  void _openBanner(ShopBannerItem banner) => _openShop(banner.shop.id);
+  /// Banner gắn tin thì mở tin đó, không thì mở trang shop
+  void _openBanner(ShopBannerItem banner) {
+    final listingId = banner.banner.listingId;
+    if (listingId != null) {
+      context.push('/listings/$listingId');
+      return;
+    }
+    _openShop(banner.shop.id);
+  }
 
   /// Bật lọc "Đang giảm giá" rồi cuộn tới lưới sản phẩm
   void _showAllDeals() {
@@ -355,6 +374,12 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
           onTap: _scrollToSection,
         ),
       ),
+      SliverToBoxAdapter(
+        child: FollowedShopsSection(
+          onShopTap: (shop) => _openShopItem(shop.item),
+          onSeeAll: () => context.push(FollowingShopsView.path),
+        ),
+      ),
       if (overview.famousShops.isNotEmpty) ...[
         gap(8),
         SliverToBoxAdapter(
@@ -367,7 +392,7 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
               accent: ShopVerificationStyle.official.accent,
               shops: overview.famousShops,
               onShopTap: _openShopItem,
-              onFollowTap: cubit.toggleFollow,
+              onFollowTap: _toggleFollow,
             ),
           ),
         ),
@@ -412,7 +437,7 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
               accent: ShopVerificationStyle.certified.accent,
               shops: overview.newShops,
               onShopTap: _openShopItem,
-              onFollowTap: cubit.toggleFollow,
+              onFollowTap: _toggleFollow,
             ),
           ),
         ),

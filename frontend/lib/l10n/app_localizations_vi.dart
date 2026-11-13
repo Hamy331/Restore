@@ -300,7 +300,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accSave => 'Lưu';
 
   @override
-  String get accChangeAvatar => 'Đổi ảnh đại diện';
+  String get accChangeAvatar => 'Đổi ảnh';
 
   @override
   String get accRemoveAvatar => 'Xóa ảnh';
@@ -335,7 +335,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accActivity => 'Hoạt động';
 
   @override
-  String get accProPlan => 'Gói Pro';
+  String get accProPlan => 'Gói tài khoản';
 
   @override
   String get accCreateStore => 'Tạo cửa hàng';
@@ -344,7 +344,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accCoins => 'Xu ReStore';
 
   @override
-  String get accSaved => 'Đã lưu';
+  String get accSaved => 'Đã lưu hồ sơ';
 
   @override
   String get accSavedSearches => 'Tìm kiếm đã lưu';
@@ -1705,7 +1705,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeSeeAll => 'Xem tất cả';
 
   @override
-  String get homeFeaturedTag => 'Nổi bật';
+  String get homeFeaturedTag => 'Hot';
 
   @override
   String get homeExchangeTag => 'Đổi được';
@@ -2888,7 +2888,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get quickActionStats => 'Thống kê';
 
   @override
-  String get quickActionShopPage => 'Trang shop';
+  String get quickActionShopManage => 'Quản lý shop';
 
   @override
   String get trustedShopsFamousEyebrow => 'Chính hãng';
@@ -3210,4 +3210,1754 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feedMoreComments => 'Xem thêm bình luận';
+
+  @override
+  String get creditTitle => 'Xu ReStore';
+
+  @override
+  String get creditAvailable => 'Số xu có thể dùng';
+
+  @override
+  String creditPoints(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$amount xu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get creditUnit => 'xu';
+
+  @override
+  String get creditPaidLabel => 'Xu nạp';
+
+  @override
+  String get creditBonusLabel => 'Xu tặng';
+
+  @override
+  String get creditHeldLabel => 'Đang giữ';
+
+  @override
+  String creditBonusExpiry(String date) {
+    return 'Xu tặng bắt đầu hết hạn ngày $date.';
+  }
+
+  @override
+  String get creditHeldHint =>
+      'Xu đang giữ là của tin chờ duyệt, tin bị từ chối thì xu trả lại ví.';
+
+  @override
+  String get creditTopupAction => 'Nạp xu';
+
+  @override
+  String get creditUsesTitle => 'Dùng xu để';
+
+  @override
+  String get creditUsePostMore => 'Đăng thêm tin';
+
+  @override
+  String get creditUseBoost => 'Đẩy tin';
+
+  @override
+  String get creditUseUpgrade => 'Nâng gói';
+
+  @override
+  String get creditRecentTitle => 'Giao dịch gần đây';
+
+  @override
+  String get creditSeeAll => 'Xem tất cả';
+
+  @override
+  String get creditEmptyHistory => 'Chưa có giao dịch xu nào';
+
+  @override
+  String get creditLoadError => 'Không tải được ví xu';
+
+  @override
+  String get creditHistoryTitle => 'Lịch sử xu';
+
+  @override
+  String get creditFilterAll => 'Tất cả';
+
+  @override
+  String get creditFilterTopup => 'Nạp';
+
+  @override
+  String get creditFilterSpend => 'Đã dùng';
+
+  @override
+  String get creditFilterRefund => 'Hoàn';
+
+  @override
+  String get creditTxnTopup => 'Nạp xu';
+
+  @override
+  String get creditTxnBonus => 'Xu tặng kèm gói';
+
+  @override
+  String get creditTxnSpend => 'Dùng xu';
+
+  @override
+  String get creditTxnRefund => 'Hoàn xu';
+
+  @override
+  String get creditTxnExpire => 'Xu hết hạn';
+
+  @override
+  String get creditTxnAdjust => 'Điều chỉnh';
+
+  @override
+  String creditTxnOrder(String code) {
+    return 'Đơn $code';
+  }
+
+  @override
+  String get creditTopupTitle => 'Chọn gói nạp';
+
+  @override
+  String get creditRate => '1 xu = 1.000 đ. Gói lớn được tặng thêm xu.';
+
+  @override
+  String get creditPopular => 'Phổ biến';
+
+  @override
+  String creditBonusTag(String amount) {
+    return 'tặng $amount xu';
+  }
+
+  @override
+  String get creditNoBonus => 'Không kèm tặng';
+
+  @override
+  String get creditTerms =>
+      'Xu chỉ dùng trong ReStore: không rút ra tiền, không chuyển cho người khác. Xu tặng được dùng trước và hết hạn sau 90 ngày.';
+
+  @override
+  String creditContinue(String price) {
+    return 'Tiếp tục · $price';
+  }
+
+  @override
+  String get creditConfirmTitle => 'Xác nhận nạp xu';
+
+  @override
+  String get creditSummaryPack => 'Gói nạp';
+
+  @override
+  String get creditSummaryReceive => 'Xu nhận';
+
+  @override
+  String get creditSummaryTotal => 'Tổng thanh toán';
+
+  @override
+  String creditReceiveWithBonus(String total, String bonus) {
+    return '$total xu (gồm $bonus xu tặng)';
+  }
+
+  @override
+  String get creditPayMethodTitle => 'Cách thanh toán';
+
+  @override
+  String get creditMethodZalopay => 'ZaloPay';
+
+  @override
+  String get creditMethodZalopayDesc =>
+      'Ví ZaloPay, thẻ ATM nội địa hoặc thẻ quốc tế.';
+
+  @override
+  String get creditMethodVietqr => 'Chuyển khoản VietQR';
+
+  @override
+  String get creditMethodVietqrDesc =>
+      'Quét mã bằng app ngân hàng, xu vào khi tiền về.';
+
+  @override
+  String get creditSandboxNote => 'Chế độ thử (sandbox): không trừ tiền thật.';
+
+  @override
+  String get creditAgree =>
+      'Tôi đồng ý: xu không đổi lại thành tiền mặt, trừ khi thanh toán bị lỗi hoặc bị trừ hai lần.';
+
+  @override
+  String creditPayAction(String price) {
+    return 'Thanh toán $price';
+  }
+
+  @override
+  String get creditPayZalopayTitle => 'Thanh toán ZaloPay';
+
+  @override
+  String get creditPayBankTitle => 'Chuyển khoản';
+
+  @override
+  String get creditOrderCode => 'Mã đơn';
+
+  @override
+  String get creditGatewayNotConnected =>
+      'Đang bỏ qua cổng ZaloPay (chế độ debug hoặc máy chủ chưa có khoá). Dùng các nút bên dưới để giả lập kết quả.';
+
+  @override
+  String get creditOpenGateway => 'Mở trang thanh toán ZaloPay';
+
+  @override
+  String get creditWaitingGateway =>
+      'Thanh toán xong trên trang ZaloPay rồi quay lại đây, xu sẽ tự cập nhật.';
+
+  @override
+  String get creditSimulateTitle =>
+      'Giả lập kết quả thanh toán (chỉ ở chế độ thử)';
+
+  @override
+  String get creditSimulateSuccess => 'Đã trả tiền';
+
+  @override
+  String get creditSimulateFail => 'Thất bại';
+
+  @override
+  String get creditScanQr => 'Quét bằng app ngân hàng bất kỳ';
+
+  @override
+  String get creditAccountNo => 'Số tài khoản';
+
+  @override
+  String get creditAccountName => 'Chủ tài khoản';
+
+  @override
+  String get creditTransferContent => 'Nội dung';
+
+  @override
+  String creditQrExpires(String time) {
+    return 'Mã hết hạn lúc $time';
+  }
+
+  @override
+  String get creditWaitingTransfer =>
+      'Đang chờ tiền về. Giữ nguyên nội dung chuyển khoản để xu vào tự động.';
+
+  @override
+  String get creditVietQrUnavailable =>
+      'Máy chủ chưa cấu hình tài khoản nhận chuyển khoản.';
+
+  @override
+  String get creditCopied => 'Đã sao chép';
+
+  @override
+  String get creditCopy => 'Sao chép';
+
+  @override
+  String get creditCancelOrder => 'Huỷ đơn';
+
+  @override
+  String get creditResultTitle => 'Kết quả';
+
+  @override
+  String get creditSuccessTitle => 'Nạp thành công';
+
+  @override
+  String creditSuccessAmount(String amount) {
+    return '+$amount xu';
+  }
+
+  @override
+  String get creditSuccessBody => 'Xu đã vào ví của bạn.';
+
+  @override
+  String get creditPendingTitle => 'Đang chờ xác nhận';
+
+  @override
+  String get creditPendingBody =>
+      'Xu sẽ vào ví ngay khi cổng thanh toán xác nhận. Bạn có thể rời trang này.';
+
+  @override
+  String get creditFailTitle => 'Chưa nạp được';
+
+  @override
+  String get creditFailBody =>
+      'Giao dịch đã bị huỷ hoặc hết hạn. Bạn chưa bị trừ tiền.';
+
+  @override
+  String get creditCheckAgain => 'Kiểm tra lại';
+
+  @override
+  String get creditTryAgain => 'Thử lại';
+
+  @override
+  String get creditDone => 'Xong';
+
+  @override
+  String get creditBackToWallet => 'Về ví xu';
+
+  @override
+  String get creditErrorTooManyPending =>
+      'Bạn đang có quá nhiều đơn nạp chưa thanh toán. Đợi 15 phút để đơn hết hạn hoặc huỷ bớt.';
+
+  @override
+  String get creditErrorGeneric => 'Không thực hiện được, vui lòng thử lại.';
+
+  @override
+  String get creditPackagesError => 'Không tải được gói nạp';
+
+  @override
+  String get postingLimitTotalTitle => 'Đã đủ số tin miễn phí';
+
+  @override
+  String postingLimitTotalMessage(int limit) {
+    return 'Tài khoản cá nhân được đăng tối đa $limit tin miễn phí cùng lúc trên tất cả chuyên mục.';
+  }
+
+  @override
+  String postingLimitRecentMessage(String category, int days) {
+    return 'Bạn đã đăng miễn phí nhiều lần ở mục $category trong $days ngày qua. Mỗi chuyên mục được đăng miễn phí tối đa gấp đôi số suất trong $days ngày.';
+  }
+
+  @override
+  String postingPayTitle(int credits) {
+    return 'Đăng tin này với $credits xu';
+  }
+
+  @override
+  String postingPayBalance(int available) {
+    return 'Ví của bạn: $available xu';
+  }
+
+  @override
+  String get postingPayNote =>
+      'Xu được giữ khi gửi tin và chỉ bị trừ khi tin được duyệt. Tin bị từ chối sẽ được hoàn xu.';
+
+  @override
+  String postingPayMissing(int missing) {
+    return 'Bạn cần nạp thêm $missing xu.';
+  }
+
+  @override
+  String postingPayContinue(int credits) {
+    return 'Tiếp tục · $credits xu';
+  }
+
+  @override
+  String postingPayPublish(int credits) {
+    return 'Đăng · $credits xu';
+  }
+
+  @override
+  String get postingTopUp => 'Nạp xu';
+
+  @override
+  String get postingFreeWaysTitle => 'Hoặc giải phóng suất miễn phí';
+
+  @override
+  String postingQuotaTotalUsage(int used, int limit) {
+    return 'Đã dùng $used/$limit tin miễn phí của tài khoản';
+  }
+
+  @override
+  String postingQuotaPaidHint(int credits) {
+    return 'Hết suất? Đăng thêm bằng xu, từ $credits xu một tin.';
+  }
+
+  @override
+  String accExpiresIn(int days) {
+    return 'Còn $days ngày';
+  }
+
+  @override
+  String get accExpired => 'Hết hạn';
+
+  @override
+  String get accReactivate => 'Kích hoạt lại';
+
+  @override
+  String get accReactivated => 'Đã kích hoạt lại tin';
+
+  @override
+  String get accExtend => 'Gia hạn tin';
+
+  @override
+  String accExtendMessage(int days, int credits) {
+    return 'Tin hiển thị thêm $days ngày với $credits xu. Xu bị trừ ngay, không cần duyệt lại.';
+  }
+
+  @override
+  String accExtendPay(int credits) {
+    return 'Gia hạn · $credits xu';
+  }
+
+  @override
+  String accExtendTooEarly(int days) {
+    return 'Gia hạn được khi tin còn tối đa $days ngày.';
+  }
+
+  @override
+  String get accExtended => 'Đã gia hạn tin';
+
+  @override
+  String postingPayReactivate(int credits) {
+    return 'Kích hoạt · $credits xu';
+  }
+
+  @override
+  String get postingLater => 'Để sau';
+
+  @override
+  String get duplicateActiveTitle => 'Bạn đã có tin này';
+
+  @override
+  String get duplicateActiveMessage =>
+      'Tin giống vậy của bạn đang hiển thị hoặc chờ duyệt, không cần đăng thêm.';
+
+  @override
+  String get duplicateInactiveTitle => 'Dùng lại tin cũ?';
+
+  @override
+  String get duplicateInactiveMessage =>
+      'Bạn có tin giống vậy đã ẩn hoặc hết hạn. Kích hoạt lại tin cũ để giữ lượt xem và lượt lưu.';
+
+  @override
+  String get duplicateOpenOld => 'Xem tin cũ';
+
+  @override
+  String get duplicatePostNew => 'Vẫn đăng mới';
+
+  @override
+  String postingPayReactivateTitle(int credits) {
+    return 'Hiện lại tin này với $credits xu';
+  }
+
+  @override
+  String get postingPayNowNote =>
+      'Xu bị trừ ngay khi tin hiện lại, không cần duyệt lại.';
+
+  @override
+  String get boostSheetMessage =>
+      'Tin được đưa lên đầu danh sách trong 24 giờ.';
+
+  @override
+  String boostFreeNote(int left, int perMonth) {
+    return 'Dùng 1 lượt miễn phí của gói, còn $left/$perMonth lượt tháng này.';
+  }
+
+  @override
+  String boostPayNote(int credits) {
+    return 'Giá $credits xu, trừ ngay khi đẩy.';
+  }
+
+  @override
+  String boostDiscountNote(int percent) {
+    return 'Gói của bạn được giảm $percent%.';
+  }
+
+  @override
+  String get boostUseFree => 'Đẩy miễn phí';
+
+  @override
+  String boostPay(int credits) {
+    return 'Đẩy tin · $credits xu';
+  }
+
+  @override
+  String get boostDone => 'Đã đẩy tin lên đầu';
+
+  @override
+  String boostTooSoon(int hours) {
+    return 'Tin vừa được đẩy. Bạn đẩy lại được sau $hours giờ nữa.';
+  }
+
+  @override
+  String get plansTitle => 'Gói tài khoản';
+
+  @override
+  String get plansSubtitle => 'Trả bằng Xu, mỗi lần dùng 30 ngày';
+
+  @override
+  String get plansCurrent => 'Gói hiện tại';
+
+  @override
+  String plansCurrentUntil(String date) {
+    return 'Dùng đến $date';
+  }
+
+  @override
+  String get plansFree => 'Miễn phí';
+
+  @override
+  String get plansPersonalBenefitFree =>
+      '1 đến 3 tin miễn phí mỗi chuyên mục, tối đa 5 tin';
+
+  @override
+  String get plansPersonalBenefitPay => 'Hết suất thì đăng thêm bằng Xu';
+
+  @override
+  String plansPrice(int price) {
+    return '$price xu / 30 ngày';
+  }
+
+  @override
+  String plansBenefitActive(int count) {
+    return '$count tin đang hiển thị cùng lúc';
+  }
+
+  @override
+  String plansBenefitDaily(int count) {
+    return '$count tin mới mỗi ngày';
+  }
+
+  @override
+  String plansBenefitDrafts(int count) {
+    return 'Giữ $count tin nháp';
+  }
+
+  @override
+  String plansBenefitBoosts(int count) {
+    return '$count lượt đẩy tin miễn phí mỗi tháng';
+  }
+
+  @override
+  String plansBenefitBoostDiscount(int percent) {
+    return 'Giảm $percent% giá đẩy tin';
+  }
+
+  @override
+  String get plansBenefitPriority => 'Ưu tiên hiển thị trong chuyên mục chính';
+
+  @override
+  String get plansBenefitShopPage => 'Trang cửa hàng riêng (sắp có)';
+
+  @override
+  String get plansBuy => 'Mua gói';
+
+  @override
+  String get plansRenew => 'Gia hạn';
+
+  @override
+  String get plansUpgrade => 'Nâng cấp';
+
+  @override
+  String get plansInUse => 'Đang dùng';
+
+  @override
+  String get plansLowerLocked => 'Chọn được khi gói hiện tại hết hạn';
+
+  @override
+  String get plansNote =>
+      'Nâng gói giữa kỳ được trừ phần còn lại của gói cũ. Gia hạn thì cộng thêm 30 ngày. Xu bị trừ ngay, gói có hiệu lực luôn.';
+
+  @override
+  String get plansCheckoutPrice => 'Giá gói';
+
+  @override
+  String get plansCheckoutCredit => 'Trừ phần còn lại của gói cũ';
+
+  @override
+  String get plansCheckoutTotal => 'Cần trả';
+
+  @override
+  String get plansCheckoutUntil => 'Dùng đến';
+
+  @override
+  String get plansCheckoutCategory => 'Chuyên mục chính';
+
+  @override
+  String get plansCheckoutCategoryHint =>
+      'Tin ở chuyên mục này được ưu tiên hiển thị.';
+
+  @override
+  String plansCredits(int count) {
+    return '$count xu';
+  }
+
+  @override
+  String plansPay(int amount) {
+    return 'Thanh toán $amount xu';
+  }
+
+  @override
+  String plansActivated(String name) {
+    return 'Đã kích hoạt gói $name';
+  }
+
+  @override
+  String get plansLoadError => 'Không tải được danh sách gói.';
+
+  @override
+  String get plansActionError => 'Không thực hiện được. Vui lòng thử lại.';
+
+  @override
+  String get plansUpgradeAction => 'Nâng cấp gói';
+
+  @override
+  String get postingUpgradeHint => 'Cần đăng nhiều hơn? Nâng cấp gói';
+
+  @override
+  String get hotSaleTitle => 'Hot sale';
+
+  @override
+  String get featureAction => 'Lên Hot sale';
+
+  @override
+  String get featureSheetMessage =>
+      'Tin hiện ở mục Hot sale trên trang chủ và đầu trang chuyên mục, xếp trên các tin khác trong suốt thời gian đã chọn.';
+
+  @override
+  String featureDays(int days) {
+    return '$days ngày';
+  }
+
+  @override
+  String featurePay(int credits) {
+    return 'Mua · $credits xu';
+  }
+
+  @override
+  String get featureDone => 'Tin đã lên Hot sale';
+
+  @override
+  String featureRunning(String date) {
+    return 'Tin đang ở Hot sale đến $date.';
+  }
+
+  @override
+  String get featureUnavailable =>
+      'Chỉ tin đang hiển thị mới lên được Hot sale.';
+
+  @override
+  String get featureNoOptions => 'Hiện chưa có gói Hot sale nào đang bán.';
+
+  @override
+  String accExpiresOn(String date, int days) {
+    return 'Hết hạn $date · còn $days ngày';
+  }
+
+  @override
+  String accExpiredOn(String date) {
+    return 'Đã hết hạn $date';
+  }
+
+  @override
+  String previewDisplayDays(int days) {
+    return 'Tin hiển thị $days ngày kể từ khi được duyệt. Gần hết hạn bạn có thể gia hạn, hết hạn thì kích hoạt lại.';
+  }
+
+  @override
+  String get hotSaleSubtitle =>
+      'Tin đang được người bán ưu tiên hiển thị, cập nhật liên tục.';
+
+  @override
+  String get hotSaleLoadError => 'Không tải được tin Hot sale';
+
+  @override
+  String get hotSaleEmptyTitle => 'Chưa có tin Hot sale';
+
+  @override
+  String get hotSaleEmptyBody =>
+      'Các tin được người bán đưa lên Hot sale sẽ hiện ở đây.';
+
+  @override
+  String get hotSaleEnd => 'Đã xem hết tin Hot sale';
+
+  @override
+  String get displayDaysTitle => 'Thời gian hiển thị';
+
+  @override
+  String displayDaysFree(int days) {
+    return 'Miễn phí $days ngày';
+  }
+
+  @override
+  String displayDaysPlus(int days) {
+    return '+$days ngày';
+  }
+
+  @override
+  String displayDaysRange(String start, String end, int days) {
+    return '$start → $end · $days ngày';
+  }
+
+  @override
+  String get displayDaysStart => 'Bắt đầu';
+
+  @override
+  String get displayDaysEnd => 'Kết thúc';
+
+  @override
+  String get displayDaysToday => 'Hôm nay, khi tin được duyệt';
+
+  @override
+  String get displayDaysCount => 'Số ngày hiển thị';
+
+  @override
+  String get displayDaysExtraCount => 'Số ngày thêm';
+
+  @override
+  String displayDaysIncluded(int free) {
+    return 'Gồm $free ngày miễn phí của chuyên mục';
+  }
+
+  @override
+  String displayDaysExtraPrice(int days, int credits) {
+    return 'Thêm $days ngày: $credits xu';
+  }
+
+  @override
+  String get displayDaysNoCharge => 'Miễn phí';
+
+  @override
+  String displayDaysPackSave(int days, int credits) {
+    return 'Giá theo mốc $days ngày, tiết kiệm $credits xu';
+  }
+
+  @override
+  String displayDaysSuggest(int days, int credits) {
+    return 'Lấy $days ngày chỉ $credits xu';
+  }
+
+  @override
+  String displayDaysMax(int days) {
+    return 'Chuyên mục này hiển thị tối đa $days ngày.';
+  }
+
+  @override
+  String get displayDaysPayNote =>
+      'Xu được giữ khi gửi tin, trừ khi tin được duyệt, hoàn lại nếu bị từ chối.';
+
+  @override
+  String get displayDaysDone => 'Xong';
+
+  @override
+  String get displayDaysCardHint => 'Chạm để đổi ngày bắt đầu hoặc thêm ngày';
+
+  @override
+  String displayDaysScheduled(String date) {
+    return 'Hẹn hiện từ $date';
+  }
+
+  @override
+  String extendNewEnd(String date) {
+    return 'Hết hạn mới: $date';
+  }
+
+  @override
+  String extendCurrentEnd(String date) {
+    return 'Đang hiển thị đến $date';
+  }
+
+  @override
+  String extendAddable(int days) {
+    return 'Thêm được tối đa $days ngày nữa';
+  }
+
+  @override
+  String extendLimitReached(int days) {
+    return 'Tin đã hiển thị tối đa $days ngày, chưa gia hạn thêm được.';
+  }
+
+  @override
+  String get extendChargeNote => 'Xu bị trừ ngay, không cần duyệt lại.';
+
+  @override
+  String get autoExtendTitle => 'Tự gia hạn 30 ngày';
+
+  @override
+  String autoExtendBody(int credits) {
+    return 'Khi tin còn dưới 1 ngày, tự trừ $credits xu nếu ví đủ.';
+  }
+
+  @override
+  String get autoExtendOn => 'Đã bật tự gia hạn';
+
+  @override
+  String get autoExtendOff => 'Đã tắt tự gia hạn';
+
+  @override
+  String accExtendedDays(int days) {
+    return 'Đã gia hạn thêm $days ngày';
+  }
+
+  @override
+  String get displayDaysTodayShort => 'Hôm nay';
+
+  @override
+  String get displayDaysShortTitle => 'Không đủ xu cho ngày thêm';
+
+  @override
+  String displayDaysShortBody(int missing) {
+    return 'Ví còn thiếu $missing xu để hiển thị thêm ngày. Bạn có thể nạp xu, hoặc đăng với số ngày miễn phí.';
+  }
+
+  @override
+  String displayDaysUseFree(int days) {
+    return 'Đăng với $days ngày miễn phí';
+  }
+
+  @override
+  String get originalPriceLabel => 'Giá gốc (trước giảm)';
+
+  @override
+  String get originalPricePlaceholder => 'Để trống nếu không giảm giá';
+
+  @override
+  String get originalPriceHint =>
+      'Dành cho shop: người mua thấy giá gốc gạch ngang và % giảm. Sau khi đăng không sửa tăng được.';
+
+  @override
+  String originalPriceDiscount(int percent) {
+    return 'Giảm $percent% so với giá gốc';
+  }
+
+  @override
+  String get originalPriceError => 'Giá gốc phải cao hơn giá bán';
+
+  @override
+  String get promoTitle => 'Quảng bá tin';
+
+  @override
+  String get promoNotPromotable =>
+      'Tin chưa hiển thị nên chưa quảng bá được. Hiện lại tin trong Quản lý tin rồi quay lại đây.';
+
+  @override
+  String promoBoostRunning(String date) {
+    return 'Đang ở đầu danh sách đến $date';
+  }
+
+  @override
+  String promoBoostAgainAt(String date) {
+    return 'Đẩy lại sau $date';
+  }
+
+  @override
+  String get promoRunning => 'Đang chạy';
+
+  @override
+  String get promoHistoryTitle => 'Lượt quảng bá gần đây';
+
+  @override
+  String get promoHistoryEmpty => 'Tin này chưa được quảng bá lần nào.';
+
+  @override
+  String promoHistoryFeature(int days) {
+    return 'Hot sale $days ngày';
+  }
+
+  @override
+  String get promoFree => 'Lượt tặng';
+
+  @override
+  String get promoEnded => 'Đã kết thúc';
+
+  @override
+  String get promoLoadError => 'Không tải được thông tin quảng bá';
+
+  @override
+  String promoBalanceAfter(int left) {
+    return 'Ví còn $left xu sau khi trả.';
+  }
+
+  @override
+  String get promoPickTitle => 'Chọn tin để quảng bá';
+
+  @override
+  String get promoPickSubtitle =>
+      'Chỉ tin đang hiển thị mới đẩy hoặc lên Hot sale được';
+
+  @override
+  String get promoPickEmpty => 'Bạn chưa có tin nào đang hiển thị.';
+
+  @override
+  String get hubTitle => 'Quảng bá';
+
+  @override
+  String hubFreeBoosts(int left, int perMonth) {
+    return 'Đẩy miễn phí còn $left/$perMonth lượt';
+  }
+
+  @override
+  String hubThisMonth(int boosts, int features) {
+    return 'Tháng này: $boosts lượt đẩy · $features lượt Hot sale';
+  }
+
+  @override
+  String get hubFilterAll => 'Tất cả';
+
+  @override
+  String get hubFilterRunning => 'Đang quảng bá';
+
+  @override
+  String get hubFilterExpiring => 'Sắp hết hạn';
+
+  @override
+  String get hubFilterIdle => 'Chưa quảng bá';
+
+  @override
+  String hubBoostedFor(String time) {
+    return 'Đang đẩy · còn $time';
+  }
+
+  @override
+  String hubFeaturedFor(String time) {
+    return 'Hot sale · còn $time';
+  }
+
+  @override
+  String hubExpiresIn(String time) {
+    return 'Hết hạn sau $time';
+  }
+
+  @override
+  String hubHours(int count) {
+    return '$count giờ';
+  }
+
+  @override
+  String hubDays(int count) {
+    return '$count ngày';
+  }
+
+  @override
+  String get hubAutoExtend => 'Tự gia hạn';
+
+  @override
+  String get hubDetails => 'Chi tiết';
+
+  @override
+  String get hubEmptyRunning =>
+      'Chưa có tin nào đang được đẩy hoặc ở Hot sale.';
+
+  @override
+  String get hubEmptyExpiring => 'Không có tin nào hết hạn trong 7 ngày tới.';
+
+  @override
+  String get hubEmptyIdle => 'Tin nào của bạn cũng đang được quảng bá.';
+
+  @override
+  String hubExpiringTip(int count) {
+    return '$count tin sắp hết hạn: gia hạn để tin không bị ẩn.';
+  }
+
+  @override
+  String get insTitle => 'Thống kê';
+
+  @override
+  String insRangeDays(int days) {
+    return '$days ngày';
+  }
+
+  @override
+  String get insViews => 'Lượt xem';
+
+  @override
+  String get insSaves => 'Lượt lưu tin';
+
+  @override
+  String get insChats => 'Người nhắn tin';
+
+  @override
+  String insUp(int percent) {
+    return 'Tăng $percent% so với kỳ trước';
+  }
+
+  @override
+  String insDown(int percent) {
+    return 'Giảm $percent% so với kỳ trước';
+  }
+
+  @override
+  String get insSame => 'Bằng kỳ trước';
+
+  @override
+  String get insNew => 'Kỳ trước chưa có';
+
+  @override
+  String get insChartTitle => 'Lượt xem theo ngày';
+
+  @override
+  String get insChartEmpty => 'Chưa có lượt xem nào trong khoảng này.';
+
+  @override
+  String insChartDay(String date, int views, int saves) {
+    return '$date: $views lượt xem · $saves lượt lưu';
+  }
+
+  @override
+  String get insChartHint => 'Chạm vào cột để xem từng ngày';
+
+  @override
+  String get insListingsTitle => 'Tin đăng';
+
+  @override
+  String get insActive => 'Đang bán';
+
+  @override
+  String get insPending => 'Chờ duyệt';
+
+  @override
+  String get insHidden => 'Đã ẩn';
+
+  @override
+  String get insSold => 'Đã bán';
+
+  @override
+  String get insTopTitle => 'Tin được xem nhiều';
+
+  @override
+  String insTopStats(int views, int saves) {
+    return '$views lượt xem · $saves lượt lưu';
+  }
+
+  @override
+  String get insTopEmpty => 'Chưa có tin nào đang hiển thị.';
+
+  @override
+  String get insTipsTitle => 'Gợi ý';
+
+  @override
+  String insTipBoost(String title) {
+    return '\"$title\" đang được xem nhiều nhất. Đẩy tin để giữ ở đầu danh sách.';
+  }
+
+  @override
+  String insTipExpiring(int count) {
+    return '$count tin sắp hết hạn trong 7 ngày. Gia hạn để tin không bị ẩn.';
+  }
+
+  @override
+  String get insTipNoViews =>
+      'Tin chưa có lượt xem: thêm ảnh rõ, tiêu đề cụ thể và giá hợp lý để dễ được chú ý hơn.';
+
+  @override
+  String insPromotions(int boosts, int features) {
+    return 'Trong kỳ: $boosts lượt đẩy · $features lượt Hot sale';
+  }
+
+  @override
+  String get insLoadError => 'Không tải được thống kê';
+
+  @override
+  String get insViewsNote => 'Lượt xem theo ngày được ghi từ 11/11/2026.';
+
+  @override
+  String get spTitle => 'Poster shop';
+
+  @override
+  String get spCreate => 'Tạo poster';
+
+  @override
+  String get spLoadError => 'Không tải được poster';
+
+  @override
+  String get spNoShopTitle => 'Bạn chưa có trang shop';
+
+  @override
+  String get spNoShopBody =>
+      'Poster hiện ở trang shop và trang Shop uy tín, nên cần có trang shop trước.';
+
+  @override
+  String get spPlanTitle => 'Poster dành cho gói Cửa hàng';
+
+  @override
+  String get spPlanBody =>
+      'Nâng lên gói Cửa hàng để chạy poster ở trang shop và trang Shop uy tín.';
+
+  @override
+  String get spSeePlans => 'Xem gói';
+
+  @override
+  String get spSlots => 'Poster cùng lúc';
+
+  @override
+  String get spMonthly => 'Đã gửi tháng này';
+
+  @override
+  String get spUnverified =>
+      'Shop chưa được xác minh nên poster đã duyệt chưa hiện công khai.';
+
+  @override
+  String spCooldown(String date) {
+    return 'Bạn bị tạm khóa gửi poster đến $date vì poster bị từ chối nhiều lần.';
+  }
+
+  @override
+  String spRules(int min, int max) {
+    return 'Ảnh 1200×600 (tỉ lệ 2:1), chạy $min đến $max ngày. Admin duyệt trong khoảng 24 giờ.';
+  }
+
+  @override
+  String spMonthlyFull(int limit) {
+    return 'Bạn đã gửi đủ $limit poster của tháng này.';
+  }
+
+  @override
+  String get spFilterAll => 'Tất cả';
+
+  @override
+  String get spFilterRunning => 'Đang chạy';
+
+  @override
+  String get spFilterPending => 'Chờ duyệt';
+
+  @override
+  String get spFilterScheduled => 'Đã lên lịch';
+
+  @override
+  String get spFilterRejected => 'Bị từ chối';
+
+  @override
+  String get spFilterEnded => 'Đã kết thúc';
+
+  @override
+  String get spStateStopped => 'Đã dừng';
+
+  @override
+  String get spEmpty => 'Chưa có poster nào';
+
+  @override
+  String get spEmptyBody =>
+      'Tạo poster đầu tiên để quảng bá chương trình của shop.';
+
+  @override
+  String get spEmptyFilter => 'Không có poster nào ở mục này.';
+
+  @override
+  String spDates(String start, String end, int days) {
+    return '$start – $end · $days ngày';
+  }
+
+  @override
+  String get spOpensShop => 'Bấm vào mở trang shop';
+
+  @override
+  String spOpensListing(String title) {
+    return 'Bấm vào mở tin: $title';
+  }
+
+  @override
+  String spRejectedReason(String reason) {
+    return 'Lý do từ chối: $reason';
+  }
+
+  @override
+  String get spReasonWrongSize => 'Sai kích thước ảnh';
+
+  @override
+  String get spReasonMisleadingPrice => 'Giá hoặc ưu đãi gây hiểu lầm';
+
+  @override
+  String get spReasonBrandMisuse => 'Dùng logo, thương hiệu không thuộc shop';
+
+  @override
+  String get spReasonProhibited => 'Nội dung bị cấm';
+
+  @override
+  String get spReasonTooMuchText => 'Quá nhiều chữ trên ảnh';
+
+  @override
+  String get spReasonOther => 'Lý do khác';
+
+  @override
+  String get spEdit => 'Sửa';
+
+  @override
+  String get spResubmit => 'Sửa và gửi lại';
+
+  @override
+  String get spStop => 'Dừng';
+
+  @override
+  String get spCancel => 'Hủy gửi';
+
+  @override
+  String get spStopTitle => 'Dừng poster này?';
+
+  @override
+  String get spStopBody => 'Poster ngừng hiện ngay và không chạy lại được.';
+
+  @override
+  String get spCancelTitle => 'Hủy poster đang chờ duyệt?';
+
+  @override
+  String get spCancelBody => 'Lượt gửi trong tháng không được hoàn lại.';
+
+  @override
+  String get spConfirmStop => 'Dừng poster';
+
+  @override
+  String get spConfirmCancel => 'Hủy poster';
+
+  @override
+  String get spKeep => 'Giữ lại';
+
+  @override
+  String get spStopped => 'Đã dừng poster';
+
+  @override
+  String get spNewTitle => 'Tạo poster';
+
+  @override
+  String get spEditTitle => 'Sửa poster';
+
+  @override
+  String get spImage => 'Ảnh poster';
+
+  @override
+  String get spPickImage => 'Chọn ảnh 1200×600';
+
+  @override
+  String get spChangeImage => 'Đổi ảnh';
+
+  @override
+  String get spImageHint =>
+      'Chọn ảnh bất kỳ rồi kéo, thu phóng cho vừa khung 2:1. Chữ nên nằm sẵn trong ảnh.';
+
+  @override
+  String get spImageRequired => 'Hãy chọn ảnh poster.';
+
+  @override
+  String get spName => 'Tên chương trình';
+
+  @override
+  String get spNameHint => 'VD: Galaxy Week giảm tới 20%';
+
+  @override
+  String get spNameHelper =>
+      'Không hiện trên ảnh, dùng cho trình đọc màn hình và để bạn dễ quản lý.';
+
+  @override
+  String get spNameRequired => 'Hãy nhập tên chương trình.';
+
+  @override
+  String get spOpens => 'Khi bấm vào poster';
+
+  @override
+  String get spOpenShop => 'Mở trang shop';
+
+  @override
+  String get spOpenListing => 'Mở một tin';
+
+  @override
+  String get spChooseListing => 'Chọn tin';
+
+  @override
+  String get spNoListings => 'Shop chưa có tin nào đang bán.';
+
+  @override
+  String get spListingRequired => 'Hãy chọn tin.';
+
+  @override
+  String get spStart => 'Ngày bắt đầu';
+
+  @override
+  String get spStartNow => 'Ngay khi được duyệt';
+
+  @override
+  String get spStartOn => 'Chọn ngày';
+
+  @override
+  String get spDuration => 'Thời gian chạy';
+
+  @override
+  String spDays(int days) {
+    return '$days ngày';
+  }
+
+  @override
+  String spEndsOn(String date) {
+    return 'Kết thúc khoảng $date';
+  }
+
+  @override
+  String get spEditRunningNote =>
+      'Poster đang chạy sẽ tạm ẩn cho tới khi admin duyệt lại.';
+
+  @override
+  String get spSubmit => 'Gửi duyệt';
+
+  @override
+  String get spSubmitted =>
+      'Đã gửi poster, admin sẽ duyệt trong khoảng 24 giờ.';
+
+  @override
+  String get spErrSlotFull =>
+      'Khung giờ này đã đủ số poster chạy cùng lúc. Hãy chọn ngày khác hoặc dừng một poster.';
+
+  @override
+  String get spErrMonthly => 'Bạn đã gửi đủ số poster của tháng này.';
+
+  @override
+  String get spErrCooldown => 'Bạn đang bị tạm khóa gửi poster.';
+
+  @override
+  String get spErrPlan => 'Chỉ gói Cửa hàng mới đăng được poster.';
+
+  @override
+  String get spErrShop => 'Bạn cần có trang shop để đăng poster.';
+
+  @override
+  String get spErrListing => 'Tin này không còn bán, hãy chọn tin khác.';
+
+  @override
+  String get spErrStartLate => 'Chỉ hẹn ngày bắt đầu trước tối đa 14 ngày.';
+
+  @override
+  String get spErrImage => 'Tải ảnh thất bại, hãy thử ảnh khác.';
+
+  @override
+  String get spErrNotEditable => 'Poster đã kết thúc, hãy tạo poster mới.';
+
+  @override
+  String get spErrGeneric => 'Không gửi được, vui lòng thử lại.';
+
+  @override
+  String get spSchedule => 'Lịch chạy';
+
+  @override
+  String get spCropTitle => 'Căn chỉnh poster';
+
+  @override
+  String get spAdjust => 'Căn chỉnh lại';
+
+  @override
+  String get cropDone => 'Dùng ảnh này';
+
+  @override
+  String get cropFill => 'Lấp đầy khung';
+
+  @override
+  String get cropFit => 'Vừa toàn ảnh';
+
+  @override
+  String get cropZoom => 'Thu phóng';
+
+  @override
+  String get cropHint =>
+      'Kéo để di chuyển, chụm hai ngón hoặc kéo thanh trượt để phóng to, thu nhỏ. Phần trống được tô bằng nền bạn chọn.';
+
+  @override
+  String get cropLowRes =>
+      'Ảnh gốc khá nhỏ so với khung, ảnh có thể bị mờ. Thử thu nhỏ hoặc chọn ảnh lớn hơn.';
+
+  @override
+  String get cropLoadError => 'Không mở được ảnh này, hãy thử ảnh khác.';
+
+  @override
+  String get accAvatarSection => 'Ảnh đại diện';
+
+  @override
+  String get accAvatarHint =>
+      'Ảnh hiển thị trong khung tròn ở hồ sơ, tin đăng và tin nhắn. Bấm Căn chỉnh để chọn phần ảnh muốn hiện.';
+
+  @override
+  String get accAdjustAvatar => 'Căn chỉnh';
+
+  @override
+  String get accAvatarCropTitle => 'Căn chỉnh ảnh đại diện';
+
+  @override
+  String get accInfoSection => 'Thông tin hồ sơ';
+
+  @override
+  String get accDisplayNameHint => 'VD: Nguyễn Văn A hoặc tên cửa hàng';
+
+  @override
+  String get accUsernameHelper =>
+      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.';
+
+  @override
+  String get accBioHint => 'Vài dòng giới thiệu về bạn hoặc cửa hàng';
+
+  @override
+  String get cropBackground => 'Nền';
+
+  @override
+  String get cropBgBlur => 'Mờ';
+
+  @override
+  String get cropBgAuto => 'Theo ảnh';
+
+  @override
+  String get cropBgWhite => 'Trắng';
+
+  @override
+  String get cropBgBlack => 'Đen';
+
+  @override
+  String get cropTrim => 'Bỏ viền thừa';
+
+  @override
+  String get cropTrimOn => 'Đã bỏ viền thừa';
+
+  @override
+  String get msTitle => 'Quản lý shop';
+
+  @override
+  String get msLoadError => 'Chưa tải được thông tin shop';
+
+  @override
+  String get msPlanTitle => 'Trang shop dành cho gói Cửa hàng';
+
+  @override
+  String get msPlanBody =>
+      'Nâng cấp gói Cửa hàng để mở trang shop riêng với logo, ảnh bìa và poster, và có thể được xác minh để lên mục Shop uy tín.';
+
+  @override
+  String get msCreateTitle => 'Mở trang shop của bạn';
+
+  @override
+  String get msCreateBody =>
+      'Đặt tên shop trước, sau đó bạn thêm logo, ảnh bìa và giới thiệu.';
+
+  @override
+  String get msCreateAction => 'Mở shop';
+
+  @override
+  String get msCreated => 'Đã mở trang shop';
+
+  @override
+  String get msName => 'Tên shop';
+
+  @override
+  String get msNameHint => 'VD: Góc Nhà Decor';
+
+  @override
+  String get msNameRequired => 'Tên shop từ 2 đến 60 ký tự.';
+
+  @override
+  String get msNameLocked =>
+      'Shop đã xác minh nên không tự đổi tên được. Liên hệ ReStore nếu cần đổi.';
+
+  @override
+  String get msTagline => 'Câu giới thiệu ngắn';
+
+  @override
+  String get msTaglineHint => 'VD: Đồ decor handmade, giao nhanh nội thành';
+
+  @override
+  String get msDescription => 'Giới thiệu shop';
+
+  @override
+  String get msDescriptionHint =>
+      'Shop bán gì, cam kết chất lượng, chính sách đổi trả...';
+
+  @override
+  String get msAddress => 'Địa chỉ hiển thị';
+
+  @override
+  String get msAddressHint => 'VD: Quận 1, TP. Hồ Chí Minh';
+
+  @override
+  String get msInfoSection => 'Thông tin shop';
+
+  @override
+  String get msColorSection => 'Màu nhận diện';
+
+  @override
+  String get msColorHint =>
+      'Dùng cho logo chữ, ảnh bìa mặc định và điểm nhấn trên trang shop.';
+
+  @override
+  String get msColorAuto => 'Mặc định';
+
+  @override
+  String get msChangeCover => 'Đổi ảnh bìa';
+
+  @override
+  String get msChangeLogo => 'Đổi logo';
+
+  @override
+  String get msImageNew => 'Chọn ảnh mới';
+
+  @override
+  String get msImageAdjust => 'Căn chỉnh lại';
+
+  @override
+  String get msImageRemove => 'Xóa ảnh';
+
+  @override
+  String get msCoverCropTitle => 'Căn chỉnh ảnh bìa';
+
+  @override
+  String get msLogoCropTitle => 'Căn chỉnh logo';
+
+  @override
+  String get msStatFollowers => 'Người theo dõi';
+
+  @override
+  String get msStatListings => 'Tin đang bán';
+
+  @override
+  String get msStatPostersRunning => 'Poster đang chạy';
+
+  @override
+  String get msStatPostersPending => 'Poster chờ duyệt';
+
+  @override
+  String get msVerifiedTitle => 'Shop đã xác minh';
+
+  @override
+  String get msVerifiedBody => 'Shop đang hiện ở mục Shop uy tín.';
+
+  @override
+  String msCertificate(String code) {
+    return 'Mã chứng nhận: $code.';
+  }
+
+  @override
+  String get msUnverifiedTitle => 'Shop chưa xác minh';
+
+  @override
+  String get msUnverifiedBody =>
+      'Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Liên hệ ReStore để được xác minh.';
+
+  @override
+  String get msPlanExpiredTitle => 'Gói Cửa hàng đã hết hạn';
+
+  @override
+  String get msPlanExpiredBody =>
+      'Poster của shop đang tạm ẩn. Gia hạn gói để poster chạy lại.';
+
+  @override
+  String get msViewPublic => 'Xem trang shop';
+
+  @override
+  String get msPosters => 'Poster shop';
+
+  @override
+  String get msPostersBody =>
+      'Quảng bá shop bằng poster trên trang shop và Shop uy tín.';
+
+  @override
+  String get msSave => 'Lưu thay đổi';
+
+  @override
+  String get msSaved => 'Đã lưu thông tin shop';
+
+  @override
+  String get msErrExists => 'Bạn đã có trang shop.';
+
+  @override
+  String get msErrImage => 'Ảnh tải lên không hợp lệ, hãy thử ảnh khác.';
+
+  @override
+  String get msErrGeneric => 'Không lưu được, vui lòng thử lại.';
+
+  @override
+  String get followShopsTab => 'Shop';
+
+  @override
+  String get followShopsEmpty => 'Bạn chưa theo dõi shop nào';
+
+  @override
+  String get followShopsEmptyHint =>
+      'Theo dõi shop uy tín để xem tin mới của họ ở cùng một chỗ.';
+
+  @override
+  String get followShopsBrowse => 'Khám phá Shop uy tín';
+
+  @override
+  String followShopsNewCount(int count) {
+    return '$count tin mới';
+  }
+
+  @override
+  String followShopsFollowerCount(int count) {
+    return '$count người theo dõi';
+  }
+
+  @override
+  String get followShopsFeedTitle => 'Shop bạn theo dõi';
+
+  @override
+  String get followShopsFeedCta => 'Xem tin mới';
+
+  @override
+  String followShopsFeedNew(int count) {
+    return '$count tin mới trong 7 ngày qua';
+  }
+
+  @override
+  String followShopsCount(int count) {
+    return 'Đang theo dõi $count shop';
+  }
+
+  @override
+  String get followShopsStripHint => 'Bấm vào shop để mở trang của shop';
+
+  @override
+  String get followShopsLatest => 'Tin mới nhất';
+
+  @override
+  String get followShopsLatestHint => 'Tin vừa đăng của các shop bạn theo dõi';
+
+  @override
+  String get followShopsListingsEmpty => 'Chưa có tin nào';
+
+  @override
+  String get followShopsListingsEmptyHint =>
+      'Các shop bạn theo dõi chưa có tin đang bán.';
+
+  @override
+  String get followShopsEnd => 'Bạn đã xem hết tin mới';
+
+  @override
+  String get followShopsLoadError => 'Chưa tải được shop bạn theo dõi';
+
+  @override
+  String get msFollowersTitle => 'Người theo dõi shop';
+
+  @override
+  String msFollowersTitleCount(int count) {
+    return 'Người theo dõi ($count)';
+  }
+
+  @override
+  String get msFollowersEmpty => 'Chưa có ai theo dõi shop';
+
+  @override
+  String get msFollowersEmptyHint =>
+      'Người mua theo dõi shop của bạn sẽ hiện ở đây.';
+
+  @override
+  String msFollowedSince(String date) {
+    return 'Từ $date';
+  }
+
+  @override
+  String get followingHubTitle => 'Đang theo dõi';
+
+  @override
+  String get followingHubSubtitle => 'Tin mới từ shop và người bạn theo dõi';
+
+  @override
+  String get followingHubOnboardSubtitle => 'Chọn vài shop để bắt đầu';
+
+  @override
+  String get followingHubManage => 'Quản lý danh sách theo dõi';
+
+  @override
+  String get followingHubPeopleTitle => 'Người bạn theo dõi';
+
+  @override
+  String get followingHubSeeAll => 'Xem tất cả';
+
+  @override
+  String get followingHubFeedTitle => 'Mới từ shop bạn theo dõi';
+
+  @override
+  String get followingHubFeedHint =>
+      'Chọn một shop để xem riêng tin của shop đó';
+
+  @override
+  String get followingHubAll => 'Tất cả';
+
+  @override
+  String get followingHubOpenShop => 'Xem shop';
+
+  @override
+  String get followingHubSuggestHint =>
+      'Ưu tiên shop hợp danh mục bạn hay xem, lưu và đối tác của ReStore';
+
+  @override
+  String get followingHubOnboardTitle => 'Theo dõi shop để không bỏ lỡ tin mới';
+
+  @override
+  String get followingHubOnboardBody =>
+      'Bấm Theo dõi ở các shop bên dưới, tin mới của họ sẽ gom về trang này.';
+
+  @override
+  String get followingHubBenefitFeed => 'Tin mới của mọi shop gom về một chỗ';
+
+  @override
+  String get followingHubBenefitFilter => 'Lọc nhanh theo từng shop';
+
+  @override
+  String get followingHubBenefitVerified => 'Chỉ shop đã được ReStore xác minh';
+
+  @override
+  String get followingHubNoSuggestions => 'Chưa có shop nào để gợi ý';
+
+  @override
+  String followingHubSeeFeed(int count) {
+    return 'Xem tin mới từ $count shop';
+  }
+
+  @override
+  String followShopsFollowerCountText(String count) {
+    return '$count người theo dõi';
+  }
+
+  @override
+  String get followingHubPostsTitle => 'Bạn bè vừa đăng';
+
+  @override
+  String get followingHubPostsHint =>
+      'Bài mới trên Bảng tin của người bạn theo dõi';
+
+  @override
+  String get followingHubForYouTitle => 'Shop dành cho bạn';
+
+  @override
+  String get followingHubPartner => 'Đối tác';
+
+  @override
+  String get editListingTitle => 'Sửa tin đăng';
+
+  @override
+  String get editSubmit => 'Gửi duyệt lại';
+
+  @override
+  String get editSubmittedLive =>
+      'Đã gửi bản sửa. Tin vẫn hiển thị bản cũ cho tới khi được duyệt';
+
+  @override
+  String get editSubmitted => 'Đã lưu thay đổi, tin đang chờ duyệt lại';
+
+  @override
+  String get editNoticeLive =>
+      'Người mua vẫn thấy bản hiện tại cho tới khi bản sửa được duyệt. Đẩy tin, Hot sale và ưu đãi đã áp dụng giữ nguyên.';
+
+  @override
+  String get editNoticeCategoryLocked =>
+      'Tin đã duyệt không đổi được chuyên mục.';
+
+  @override
+  String get editNoticeReview =>
+      'Sửa xong, tin sẽ được duyệt lại trước khi hiển thị.';
+
+  @override
+  String editRejectedReason(String reason) {
+    return 'Lần trước bị từ chối: $reason';
+  }
+
+  @override
+  String get editLoadFailed => 'Không mở được tin để sửa. Vui lòng thử lại.';
+
+  @override
+  String get leaveEditTitle => 'Bỏ các thay đổi?';
+
+  @override
+  String get leaveEditMessage =>
+      'Những gì bạn vừa sửa sẽ không được lưu. Tin giữ nguyên như trước.';
+
+  @override
+  String get leaveEditDiscard => 'Bỏ thay đổi';
+
+  @override
+  String get leaveEditKeep => 'Sửa tiếp';
+
+  @override
+  String get accEditPending => 'Bản sửa đang chờ duyệt';
+
+  @override
+  String accEditRejected(String reason) {
+    return 'Bản sửa bị từ chối: $reason';
+  }
+
+  @override
+  String get accDiscardEdit => 'Bỏ bản sửa';
+
+  @override
+  String get accEditDiscarded =>
+      'Đã bỏ bản sửa, tin giữ nguyên bản đang hiển thị';
+
+  @override
+  String get accDiscardEditFailed => 'Chưa bỏ được bản sửa. Vui lòng thử lại.';
 }

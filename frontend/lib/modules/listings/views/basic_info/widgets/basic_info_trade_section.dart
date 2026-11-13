@@ -21,11 +21,23 @@ class BasicInfoTradeSection extends StatefulWidget {
   final bool isNegotiable;
   final bool hasPriceError;
 
+  /// Gói Cửa hàng: hiện thêm ô giá gốc để bán giảm giá
+  final bool canSetOriginalPrice;
+  final bool hasOriginalPriceError;
+
+  /// Giá bán và giá gốc hiện tại, để hiện mức giảm
+  final int? price;
+  final int? originalPrice;
+
   const BasicInfoTradeSection({
     super.key,
     required this.tradeType,
     required this.isNegotiable,
     this.hasPriceError = false,
+    this.canSetOriginalPrice = false,
+    this.hasOriginalPriceError = false,
+    this.price,
+    this.originalPrice,
   });
 
   @override
@@ -34,6 +46,8 @@ class BasicInfoTradeSection extends StatefulWidget {
 
 class _BasicInfoTradeSectionState extends State<BasicInfoTradeSection> {
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _originalPriceController =
+      TextEditingController();
   late final TextEditingController _exchangeWishController;
   ThousandsSeparatorInputFormatter? _priceFormatter;
   String? _locale;
@@ -60,11 +74,16 @@ class _BasicInfoTradeSectionState extends State<BasicInfoTradeSection> {
     _priceController.text = price == null
         ? ''
         : CurrencyFormatter.formatNumber(price, locale: locale);
+    final originalPrice = _bloc.state.draft.originalPrice;
+    _originalPriceController.text = originalPrice == null
+        ? ''
+        : CurrencyFormatter.formatNumber(originalPrice, locale: locale);
   }
 
   @override
   void dispose() {
     _priceController.dispose();
+    _originalPriceController.dispose();
     _exchangeWishController.dispose();
     super.dispose();
   }
@@ -97,6 +116,10 @@ class _BasicInfoTradeSectionState extends State<BasicInfoTradeSection> {
               if (tradeType.requiresPrice) ...[
                 const SizedBox(height: 16),
                 _buildPriceField(l10n),
+                if (widget.canSetOriginalPrice) ...[
+                  const SizedBox(height: 16),
+                  _buildOriginalPriceField(l10n),
+                ],
                 const SizedBox(height: 12),
                 AppSwitchTile(
                   label: l10n.negotiable,
@@ -142,6 +165,38 @@ class _BasicInfoTradeSectionState extends State<BasicInfoTradeSection> {
       ),
       onChanged: (value) => _bloc.add(
         PriceChanged(ThousandsSeparatorInputFormatter.parse(value)),
+      ),
+    );
+  }
+
+  /// Giá gốc trước giảm: để trống nếu không giảm giá; nhập thì hiện mức giảm
+  Widget _buildOriginalPriceField(AppLocalizations l10n) {
+    final price = widget.price;
+    final original = widget.originalPrice;
+    final percent = price != null && original != null && original > price
+        ? ((1 - price / original) * 100).round()
+        : null;
+    return AppLabeledTextField(
+      key: const ValueKey('listing-original-price'),
+      label: l10n.originalPriceLabel,
+      controller: _originalPriceController,
+      hintText: l10n.originalPricePlaceholder,
+      keyboardType: TextInputType.number,
+      inputFormatters: [?_priceFormatter],
+      helperText: percent != null
+          ? l10n.originalPriceDiscount(percent)
+          : l10n.originalPriceHint,
+      errorText: widget.hasOriginalPriceError ? l10n.originalPriceError : null,
+      suffix: const Text(
+        CurrencyFormatter.vndSymbol,
+        style: TextStyle(
+          fontSize: 16,
+          color: AppColors.textPrimary,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onChanged: (value) => _bloc.add(
+        OriginalPriceChanged(ThousandsSeparatorInputFormatter.parse(value)),
       ),
     );
   }

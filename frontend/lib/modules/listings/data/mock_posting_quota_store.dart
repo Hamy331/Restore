@@ -33,6 +33,15 @@ class MockPostingQuotaStore {
     return PostingQuotaMockData.personalLimit;
   }
 
+  /// Giá xu một tin vượt hạn mức của chuyên mục
+  static int? extraCreditsOf(String categoryId) {
+    if (DevPlanOverride.plan.value != SubscriptionPlan.personal) return null;
+    for (final item in _seed) {
+      if (item['categoryId'] == categoryId) return item['extraCredits'] as int?;
+    }
+    return 5;
+  }
+
   static void recordPublished(String categoryId) =>
       used[categoryId] = (used[categoryId] ?? 0) + 1;
 }

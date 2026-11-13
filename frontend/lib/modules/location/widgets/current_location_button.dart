@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/theme/app_glass.dart';
 import 'package:restore/core/utils/animations/app_animation_durations.dart';
@@ -54,8 +55,8 @@ class CurrentLocationButton extends StatelessWidget {
                       ? const Padding(
                           key: ValueKey('locating'),
                           padding: EdgeInsets.all(11),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                          child: AppLoadingIndicator(
+                            dotSize: 5,
                             color: AppColors.primaryDark,
                           ),
                         )

@@ -5,12 +5,14 @@ import { catalogRouter } from './modules/catalog/index.js';
 import { homeRouter } from './modules/home/index.js';
 import { promotionRouter, storeRouter } from './modules/commerce/index.js';
 import { contentRouter } from './modules/content/index.js';
+import { creditRouter, paymentRouter } from './modules/credits/index.js';
 import { listingsRouter } from './modules/listings/index.js';
 import { usersRouter } from './modules/users/index.js';
 import { wantedAlertRouter } from './modules/wanted-alerts/index.js';
 import { chatRouter } from './modules/chat/index.js';
 import { feedRouter } from './modules/feeds/index.js';
 import { mediaRouter } from './modules/media/media.route.js';
+import { shopRouter } from './modules/shops/index.js';
 
 /** Toàn bộ API, gắn dưới tiền tố /api/v1 trong app.ts. */
 export const apiRouter = Router();
@@ -23,7 +25,10 @@ apiRouter.use('/listings', listingsRouter);
 apiRouter.use('/wanted-alerts', wantedAlertRouter);
 
 apiRouter.use('/stores', storeRouter);
+apiRouter.use('/shops', shopRouter);
 apiRouter.use('/promotions', promotionRouter);
+apiRouter.use('/credits', creditRouter);
+apiRouter.use('/payments', paymentRouter);
 apiRouter.use('/content', contentRouter);
 apiRouter.use('/admin', adminRouter);
 apiRouter.use('/catalog', catalogRouter);

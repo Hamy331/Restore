@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -45,7 +46,7 @@ class PublicProfileMobileView extends StatelessWidget {
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 480),
-              child: RefreshIndicator(
+              child: AppPullToRefresh(
                 onRefresh: () => Future.wait([cubit.load(), posts.load()]),
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (n) => feedScrollListener(posts, n),

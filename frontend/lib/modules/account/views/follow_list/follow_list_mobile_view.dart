@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/modules/trusted_shop/repositories/shop_following_repository.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../feeds/widgets/feed_shared.dart';
@@ -8,6 +11,7 @@ import '../../bloc/follow_list/follow_list_cubit.dart';
 import '../../bloc/follow_list/follow_list_state.dart';
 import '../../models/profile_models.dart';
 import '../../repositories/profile_repository.dart';
+import 'widgets/followed_shops_tab.dart';
 
 /// Hai tab "Người theo dõi" / "Đang theo dõi" của [userId].
 class FollowListMobileView extends StatelessWidget {
@@ -16,18 +20,29 @@ class FollowListMobileView extends StatelessWidget {
     required this.userId,
     this.initial = FollowListKind.followers,
     this.repository,
+    this.showShops = false,
+    this.openShops = false,
+    this.shopRepository,
   });
   final String userId;
   final FollowListKind initial;
   final ProfileRepository? repository;
 
+  /// Hồ sơ của mình: thêm tab "Shop" (shop uy tín đang theo dõi)
+  final bool showShops;
+
+  /// Mở sẵn tab "Shop" (cần [showShops])
+  final bool openShops;
+  final ShopFollowingRepository? shopRepository;
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final repository = this.repository ?? ApiProfileRepository();
+    final kinds = FollowListKind.values.length;
     return DefaultTabController(
-      length: FollowListKind.values.length,
-      initialIndex: initial.index,
+      length: kinds + (showShops ? 1 : 0),
+      initialIndex: showShops && openShops ? kinds : initial.index,
       child: Scaffold(
         backgroundColor: AppColors.surface,
         appBar: AppBar(
@@ -36,6 +51,7 @@ class FollowListMobileView extends StatelessWidget {
             tabs: [
               Tab(text: l.accFollowers),
               Tab(text: l.accFollowing),
+              if (showShops) Tab(text: l.followShopsTab),
             ],
           ),
         ),
@@ -46,6 +62,10 @@ class FollowListMobileView extends StatelessWidget {
                 create: (_) =>
                     FollowListCubit(repository, userId, kind)..load(),
                 child: const _FollowList(),
+              ),
+            if (showShops)
+              FollowedShopsTab(
+                repository: shopRepository ?? ShopFollowingRepository(),
               ),
           ],
         ),
@@ -66,7 +86,7 @@ class _FollowList extends StatelessWidget {
       listener: (context, _) => feedNotice(context, l.feedActionError),
       builder: (context, state) {
         if (state.loading && state.users.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: AppLoadingIndicator());
         }
         if (state.failed) {
           return Center(
@@ -81,7 +101,7 @@ class _FollowList extends StatelessWidget {
             ),
           );
         }
-        return RefreshIndicator(
+        return AppPullToRefresh(
           onRefresh: cubit.load,
           child: NotificationListener<ScrollNotification>(
             onNotification: (n) {
@@ -94,7 +114,7 @@ class _FollowList extends StatelessWidget {
                 if (index == state.users.length) {
                   return const Padding(
                     padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(child: AppLoadingIndicator()),
                   );
                 }
                 final user = state.users[index];

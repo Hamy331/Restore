@@ -3,7 +3,9 @@ import { AppError } from '../../../common/errors/app-error.js';
 import { audit } from '../../../common/audit/admin-audit.js';
 import { ADMIN_PAGE_SIZE } from '../../../common/validation/admin-input.js';
 import type { AdminOrderQuery, StoreOrderInput, StorePackageInput } from '../commerce.dto.js';
+import { availableCredits, spendCredits } from '../../credits/credit.hold.js';
 import { MONTH_MS, PURCHASABLE_STORE_TIERS } from '../commerce.type.js';
+import { planPriceCredits, quotePlan } from '../plan-pricing.js';
 import * as storeRepository from '../repositories/store.repository.js';
 import { transaction } from '../repositories/quota.repository.js';
 import { assertBuyerActive, assertPending, auditDecision, markConfirmed, rejectOrder } from './order-approval.service.js';
@@ -11,7 +13,13 @@ import { storePackageForUser, storeUsage, withQuotaTransaction } from './quota.s
 
 export const listCategories = () => storeRepository.findAllCategories();
 
-export const listPackages = () => storeRepository.findPackagesByTier([...PURCHASABLE_STORE_TIERS]);
+type PackageRow = Awaited<ReturnType<typeof storeRepository.findPackageOrThrow>>;
+
+/** Gói kèm giá theo xu (1 xu = 1.000 đ) */
+const withCredits = <T extends PackageRow>(item: T) => ({ ...item, priceCredits: planPriceCredits(item.monthlyPrice) });
+
+export const listPackages = async () =>
+  (await storeRepository.findPackagesByTier([...PURCHASABLE_STORE_TIERS])).map(withCredits);
 
 /** Gói đang dùng, lượt đã dùng, lượt còn lại và đơn đang chờ của người dùng */
 export async function getMyStore(userId: string) {
@@ -21,7 +29,7 @@ export async function getMyStore(userId: string) {
     const usage = await storeUsage(tx, userId, now);
     const pendingOrder = await storeRepository.findLatestPendingOrderSummary(tx, userId);
     return {
-      package: current.package,
+      package: withCredits(current.package),
       category: current.category,
       endsAt: current.endsAt,
       pendingOrder,
@@ -33,6 +41,56 @@ export async function getMyStore(userId: string) {
         promotionsThisMonth: Math.max(0, current.package.monthlyPromotionQuota - usage.promotionsThisMonth),
       },
     };
+  });
+}
+
+/** Báo giá mua / gia hạn / nâng cấp sang [packageId]; hạ gói lúc gói cao hơn còn hạn thì 409 */
+async function planQuote(tx: Parameters<Parameters<typeof withQuotaTransaction>[0]>[0], userId: string, packageId: string, now: Date) {
+  const target = await storeRepository.findPackage(tx, packageId);
+  if (!target || target.tier === StoreTier.PERSONAL || !(PURCHASABLE_STORE_TIERS as readonly StoreTier[]).includes(target.tier)) {
+    throw new AppError(404, 'STORE_PACKAGE_NOT_FOUND', 'Gói không tồn tại.');
+  }
+  const current = await storePackageForUser(tx, userId, now);
+  const active = current.endsAt && current.package.tier !== StoreTier.PERSONAL
+    ? { packageId: current.package.id, priorityLevel: current.package.priorityLevel,
+      priceCredits: planPriceCredits(current.package.monthlyPrice), endsAt: current.endsAt }
+    : null;
+  const quote = quotePlan({ packageId: target.id, priorityLevel: target.priorityLevel, priceCredits: planPriceCredits(target.monthlyPrice) },
+    active, now);
+  if (!quote) {
+    throw new AppError(409, 'STORE_DOWNGRADE_NOT_ALLOWED', 'Gói hiện tại còn hạn. Bạn chuyển sang gói thấp hơn được khi gói này hết hạn.',
+      undefined, { endsAt: current.endsAt?.toISOString() });
+  }
+  return { target, current, quote };
+}
+
+/** Báo giá cho màn nâng cấp: { packageId, mode, price, credit, amount, endsAt, available } */
+export async function getPlanQuote(userId: string, packageId: string) {
+  return transaction(async (tx) => {
+    const now = new Date();
+    const { quote } = await planQuote(tx, userId, packageId, now);
+    const wallet = await availableCredits(tx, userId);
+    return { packageId, ...quote, available: wallet };
+  });
+}
+
+/**
+ * Mua / gia hạn / nâng cấp gói bằng xu, có hiệu lực ngay, không cần admin duyệt.
+ * Danh mục cửa hàng: lấy [categoryId], không gửi thì giữ danh mục đang dùng (mua mới thì bắt buộc).
+ * Thiếu xu thì 409 NOT_ENOUGH_CREDITS (details: required, available, missing).
+ */
+export async function subscribeWithCredits(userId: string, { packageId, categoryId }: { packageId: string; categoryId?: string }) {
+  return withQuotaTransaction(async (tx) => {
+    const now = new Date();
+    const { target, current, quote } = await planQuote(tx, userId, packageId, now);
+    const chosen = categoryId ?? current.category?.id;
+    const category = chosen ? await storeRepository.findActiveCategory(tx, chosen) : null;
+    if (!category) throw new AppError(400, 'STORE_CATEGORY_REQUIRED', 'Chọn chuyên mục chính của bạn.', 'categoryId');
+    await spendCredits(tx, { userId, amount: quote.amount, note: `${quote.mode === 'UPGRADE' ? 'Nâng cấp' : quote.mode === 'RENEW' ? 'Gia hạn' : 'Mua'} gói ${target.name} 30 ngày` });
+    const subscription = await storeRepository.upsertSubscription(tx, userId, {
+      packageId: target.id, categoryId: category.id, startsAt: now, endsAt: quote.endsAt,
+    });
+    return { ...quote, packageId: target.id, categoryId: category.id, subscription };
   });
 }
 

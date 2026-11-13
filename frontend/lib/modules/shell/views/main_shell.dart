@@ -1,9 +1,13 @@
+import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/boost/views/promotion_hub/promotion_hub_view.dart';
+import 'package:restore/modules/insights/views/insights/insights_view.dart';
+import 'package:restore/modules/shop_posters/views/shop_posters/shop_posters_view.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import '../bloc/shell_badges_cubit.dart';
 import '../models/shell_quick_action.dart';
@@ -43,11 +47,28 @@ class MainShell extends StatelessWidget {
     context.read<ShellBadgesCubit>().refresh();
   }
 
-  /// Nút trong menu xoè của gói tier cao. Chỉ Đăng tin đã có trang, các
-  /// nút còn lại (poster shop, đẩy tin, thống kê, trang shop) báo sắp có.
+  /// Nút trong menu xoè của gói tier cao. Đăng tin mở trang đăng, Đẩy tin
+  /// mở trang Boost (danh sách tin để quảng bá), Thống kê mở trang Thống kê,
+  /// Shop poster mở trang quản lý poster, Quản lý shop mở trang sửa shop.
   void _quickAction(BuildContext context, ShellQuickAction action) {
     if (action == ShellQuickAction.post) {
       _select(context, 2);
+      return;
+    }
+    if (action == ShellQuickAction.boost) {
+      context.push(PromotionHubView.path);
+      return;
+    }
+    if (action == ShellQuickAction.stats) {
+      context.push(InsightsView.path);
+      return;
+    }
+    if (action == ShellQuickAction.poster) {
+      context.push(ShopPostersView.path);
+      return;
+    }
+    if (action == ShellQuickAction.shopManage) {
+      context.push(MyShopView.path);
       return;
     }
     TSnackBarHelper.showInfo(

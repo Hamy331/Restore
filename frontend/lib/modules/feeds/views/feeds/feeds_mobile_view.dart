@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
@@ -64,9 +66,7 @@ class FeedsMobileView extends StatelessWidget {
                         builder: (context, state) {
                           final cubit = context.read<FeedsCubit>();
                           if (state.loading && state.posts.isEmpty) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
+                            return const Center(child: AppLoadingIndicator());
                           }
                           if (state.failed) {
                             return Center(
@@ -82,7 +82,7 @@ class FeedsMobileView extends StatelessWidget {
                               ),
                             );
                           }
-                          return RefreshIndicator(
+                          return AppPullToRefresh(
                             onRefresh: () => cubit.load(),
                             child: NotificationListener<ScrollNotification>(
                               onNotification: (n) =>

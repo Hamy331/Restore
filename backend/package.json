@@ -35,6 +35,7 @@
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
     "db:seed:demo": "tsx prisma/seed-demo.ts",
+    "db:seed:shops": "tsx prisma/seed-shops.ts",
     "storage:migrate": "tsx scripts/migrate-images.ts",
     "test:api": "node --import tsx --test --test-concurrency=1 \"test/api/*.api.test.ts\""
   },

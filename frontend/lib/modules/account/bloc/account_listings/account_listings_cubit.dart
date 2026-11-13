@@ -11,6 +11,9 @@ class AccountListingsCubit extends Cubit<AccountListingsState> {
 
   final AccountListingsRepository _repository;
 
+  /// Để màn hình lấy hạn mức / danh mục khi cần hỏi trả xu
+  AccountListingsRepository get repository => _repository;
+
   AccountListingsTab _tab(PagedResult<AccountListing> result) =>
       AccountListingsTab(
         items: result.items,
@@ -76,11 +79,34 @@ class AccountListingsCubit extends Cubit<AccountListingsState> {
     }
   }
 
+  /// Bỏ bản sửa chờ duyệt / bị từ chối rồi tải lại; true khi thành công
+  Future<bool> discardEdit(String id) async {
+    try {
+      await _repository.discardEdit(id);
+    } catch (_) {
+      return false;
+    }
+    if (!isClosed) await load();
+    return true;
+  }
+
+  /// Báo lỗi cập nhật tin (VD không tải được hạn mức trước khi gia hạn)
+  void reportUpdateError() {
+    if (!isClosed) emit(state.copyWith(error: AccountListingsError.update));
+  }
+
   void select(AccountListingStatus status) =>
       emit(state.copyWith(selected: status));
 
   /// Chuyển tin sang tab mới ngay trên giao diện sau khi API thành công.
-  Future<void> setStatus(String id, AccountListingStatus status) async {
+  /// Kích hoạt lại tin hết hạn thì tải lại để có hạn hiển thị mới.
+  /// Backend từ chối có mã (hết suất, thiếu xu) thì ném lại
+  /// [AccountListingActionException] để màn hình hỏi người dùng.
+  Future<void> setStatus(
+    String id,
+    AccountListingStatus status, {
+    bool payWithCredits = false,
+  }) async {
     AccountListing? item;
     for (final tab in state.tabs.values) {
       for (final listing in tab.items) {
@@ -89,12 +115,22 @@ class AccountListingsCubit extends Cubit<AccountListingsState> {
     }
     if (item == null || item.status == status) return;
     try {
-      await _repository.changeStatus(id, status);
+      await _repository.changeStatus(
+        id,
+        status,
+        payWithCredits: payWithCredits,
+      );
+    } on AccountListingActionException {
+      rethrow;
     } catch (_) {
       if (!isClosed) emit(state.copyWith(error: AccountListingsError.update));
       return;
     }
     if (isClosed) return;
+    if (item.isExpiredAt(DateTime.now())) {
+      await load();
+      return;
+    }
     final from = state.tabs[item.status] ?? const AccountListingsTab();
     final to = state.tabs[status] ?? const AccountListingsTab();
     emit(
@@ -116,5 +152,33 @@ class AccountListingsCubit extends Cubit<AccountListingsState> {
         },
       ),
     );
+  }
+
+  /// Gia hạn tin thêm [days] ngày bằng xu rồi tải lại để thấy hạn mới. Lỗi
+  /// có mã (thiếu xu, vượt số ngày tối đa) ném [AccountListingActionException].
+  Future<void> extend(String id, int days) async {
+    try {
+      await _repository.extend(id, days);
+    } on AccountListingActionException {
+      rethrow;
+    } catch (_) {
+      if (!isClosed) emit(state.copyWith(error: AccountListingsError.update));
+      return;
+    }
+    if (!isClosed) await load();
+  }
+
+  /// Bật/tắt tự gia hạn rồi tải lại. Lỗi có mã ném
+  /// [AccountListingActionException].
+  Future<void> setAutoExtend(String id, bool enabled) async {
+    try {
+      await _repository.setAutoExtend(id, enabled);
+    } on AccountListingActionException {
+      rethrow;
+    } catch (_) {
+      if (!isClosed) emit(state.copyWith(error: AccountListingsError.update));
+      return;
+    }
+    if (!isClosed) await load();
   }
 }

@@ -13,6 +13,7 @@ class ProfileData extends Equatable {
     this.avatarUrl,
     this.bio,
     this.isFollowing = false,
+    this.followingShopCount = 0,
   });
   final String id;
   final String fullName;
@@ -21,6 +22,9 @@ class ProfileData extends Equatable {
   final String? bio;
   final int followerCount;
   final int followingCount;
+
+  /// Số shop uy tín đang theo dõi (tab "Shop" ở trang Đang theo dõi)
+  final int followingShopCount;
   final double ratingAverage;
   final int ratingCount;
 
@@ -38,6 +42,7 @@ class ProfileData extends Equatable {
     ratingAverage: (json['ratingAverage'] as num?)?.toDouble() ?? 0,
     ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
     isFollowing: json['isFollowing'] == true,
+    followingShopCount: (json['followingShopCount'] as num?)?.toInt() ?? 0,
   );
 
   ProfileData copyWith({
@@ -59,6 +64,7 @@ class ProfileData extends Equatable {
     ratingAverage: ratingAverage,
     ratingCount: ratingCount,
     isFollowing: isFollowing ?? this.isFollowing,
+    followingShopCount: followingShopCount,
   );
 
   @override
@@ -73,6 +79,7 @@ class ProfileData extends Equatable {
     ratingAverage,
     ratingCount,
     isFollowing,
+    followingShopCount,
   ];
 }
 

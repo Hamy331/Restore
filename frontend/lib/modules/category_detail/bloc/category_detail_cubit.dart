@@ -93,16 +93,20 @@ class CategoryDetailCubit extends Cubit<CategoryDetailState> {
   }
 
   /// Cập nhật thẻ tin sau khi lưu / bỏ lưu ở trang chi tiết
-  void syncFavorite(String listingId, bool favorite) => emit(
-    state.copyWith(
-      items: [
-        for (final item in state.items)
-          item.listing.id == listingId
-              ? item.copyWith(isFavorite: favorite)
-              : item,
-      ],
-    ),
-  );
+  void syncFavorite(String listingId, bool favorite) {
+    List<ListingCardItem> update(List<ListingCardItem> items) => [
+      for (final item in items)
+        item.listing.id == listingId
+            ? item.copyWith(isFavorite: favorite)
+            : item,
+    ];
+    emit(
+      state.copyWith(
+        items: update(state.items),
+        hotItems: update(state.hotItems),
+      ),
+    );
+  }
 
   void _applyFilter(ListingFilter filter) {
     emit(state.copyWith(filter: filter));
@@ -123,11 +127,15 @@ class CategoryDetailCubit extends Cubit<CategoryDetailState> {
     }
     try {
       final category = state.category;
-      final (loadedCategory, result) = await (
+      final (loadedCategory, result, hotItems) = await (
         category != null
             ? Future.value(category)
             : _repository.getCategory(state.categoryId),
         _repository.getListings(state.filter),
+        // Lỗi mục Hot sale không làm hỏng cả trang
+        _repository
+            .getHotSale(state.categoryId)
+            .catchError((Object _) => <ListingCardItem>[]),
       ).wait;
       if (requestId != _requestId) return;
       emit(
@@ -135,6 +143,7 @@ class CategoryDetailCubit extends Cubit<CategoryDetailState> {
           category: loadedCategory,
           status: CategoryDetailStatus.ready,
           items: result.items,
+          hotItems: hotItems,
           page: result.page,
           hasMore: result.hasMore,
           isLoadingMore: false,

@@ -5,6 +5,7 @@ import 'package:restore/data/models/listing_model.dart';
 import '../../models/draft_quota.dart';
 import '../../models/listing_draft.dart';
 import '../../models/posting_quota.dart';
+import '../../repositories/listings_repository.dart' show DuplicateListing;
 import '../../utils/listing_validator.dart';
 
 enum RequestStatus { idle, loading, success, failure }
@@ -16,6 +17,9 @@ class CreateListingState extends Equatable {
   /// Hạn mức đăng tin; null khi chưa tải xong hoặc tải lỗi (khi đó app
   /// không chặn, backend vẫn kiểm tra lúc đăng)
   final PostingQuota? quota;
+
+  /// Trạng thái tải hạn mức (lỗi vẫn cho chọn chuyên mục, backend kiểm tra)
+  final RequestStatus quotaStatus;
   final ListingDraft draft;
   final bool showBasicInfoErrors;
   final bool showDetailErrors;
@@ -27,6 +31,19 @@ class CreateListingState extends Equatable {
 
   /// Tăng mỗi lần bị chặn vì chuyên mục đã đủ số tin để view mở thông báo
   final int postingLimitHits;
+
+  /// Tăng mỗi lần ví không đủ xu cho ngày hiển thị thêm (chuyên mục còn suất
+  /// hoặc đã đồng ý trả phí vượt hạn mức); [creditsMissing] là số xu thiếu
+  final int creditsShortHits;
+  final int creditsMissing;
+
+  /// Tăng mỗi lần bị chặn vì đã có tin giống vậy ([duplicate]) để view hỏi
+  /// kích hoạt lại tin cũ hay vẫn đăng mới
+  final int duplicateHits;
+  final DuplicateListing? duplicate;
+
+  /// Lần đăng bị chặn vì trùng có kèm trả xu không, để "Vẫn đăng mới" giữ nguyên
+  final bool duplicatePaid;
 
   /// Bản đã lưu gần nhất (lưu nháp hoặc mở từ danh sách nháp), để biết còn
   /// thay đổi chưa lưu khi thoát. null khi chưa lưu lần nào.
@@ -58,10 +75,18 @@ class CreateListingState extends Equatable {
   /// Lỗi của lần lưu nháp / đăng tin gần nhất để view báo đúng nguyên nhân
   final Object? saveError;
 
+  /// Tin đã đăng đang được sửa (bản đang lưu trên máy chủ, kèm bản sửa chờ
+  /// duyệt nếu có); null khi đang đăng tin mới hoặc soạn nháp
+  final ListingModel? editingListing;
+
+  /// Trạng thái tải tin để sửa
+  final RequestStatus openEditStatus;
+
   const CreateListingState({
     this.categories = const [],
     this.categoriesStatus = RequestStatus.idle,
     this.quota,
+    this.quotaStatus = RequestStatus.idle,
     this.draft = const ListingDraft(),
     this.showBasicInfoErrors = false,
     this.showDetailErrors = false,
@@ -69,6 +94,11 @@ class CreateListingState extends Equatable {
     this.publishStatus = RequestStatus.idle,
     this.invalidPublishAttempts = 0,
     this.postingLimitHits = 0,
+    this.creditsShortHits = 0,
+    this.creditsMissing = 0,
+    this.duplicateHits = 0,
+    this.duplicate,
+    this.duplicatePaid = false,
     this.savedDraft,
     this.drafts = const [],
     this.draftsStatus = RequestStatus.idle,
@@ -81,7 +111,25 @@ class CreateListingState extends Equatable {
     this.draftQuota,
     this.draftLimitHits = 0,
     this.saveError,
+    this.editingListing,
+    this.openEditStatus = RequestStatus.idle,
   });
+
+  /// Đang sửa tin đã đăng: không lưu nháp, không đổi thời gian hiển thị
+  bool get isEditing => editingListing != null;
+
+  /// Đang sửa tin đã duyệt: bản sửa chờ duyệt, tin vẫn hiện bản cũ, không
+  /// đổi được chuyên mục; đẩy tin, Hot sale, ưu đãi giữ nguyên
+  bool get isEditingApproved => editingListing?.status.isApproved ?? false;
+
+  /// Màn chọn chuyên mục đã tải xong danh mục, hạn mức và tin nháp (thành
+  /// công hay lỗi), để hiện tất cả cùng lúc: không cho chọn chuyên mục khi
+  /// chưa biết chuyên mục nào đã hết suất
+  bool get chooseCategoryReady {
+    bool done(RequestStatus status) =>
+        status == RequestStatus.success || status == RequestStatus.failure;
+    return done(categoriesStatus) && done(quotaStatus) && done(draftsStatus);
+  }
 
   /// Lưu nháp lần này sẽ tạo thêm một tin nháp (chưa phải nháp đã lưu)
   bool get savingAddsDraft =>
@@ -90,6 +138,7 @@ class CreateListingState extends Equatable {
   /// Đã nhập gì đó mà chưa lưu nháp (hỏi lại trước khi thoát luồng đăng tin)
   bool get hasUnsavedChanges {
     if (publishStatus == RequestStatus.success) return false;
+    if (openEditStatus == RequestStatus.loading) return false;
     final saved = savedDraft;
     if (saved == null) return draft.hasContent;
     return !draft.sameContentAs(saved);
@@ -123,6 +172,7 @@ class CreateListingState extends Equatable {
     List<CategoryModel>? categories,
     RequestStatus? categoriesStatus,
     PostingQuota? quota,
+    RequestStatus? quotaStatus,
     ListingDraft? draft,
     bool? showBasicInfoErrors,
     bool? showDetailErrors,
@@ -130,6 +180,11 @@ class CreateListingState extends Equatable {
     RequestStatus? publishStatus,
     int? invalidPublishAttempts,
     int? postingLimitHits,
+    int? creditsShortHits,
+    int? creditsMissing,
+    int? duplicateHits,
+    DuplicateListing? duplicate,
+    bool? duplicatePaid,
     ListingDraft? savedDraft,
     List<ListingModel>? drafts,
     RequestStatus? draftsStatus,
@@ -142,11 +197,14 @@ class CreateListingState extends Equatable {
     DraftQuota? draftQuota,
     int? draftLimitHits,
     Object? saveError,
+    ListingModel? editingListing,
+    RequestStatus? openEditStatus,
   }) {
     return CreateListingState(
       categories: categories ?? this.categories,
       categoriesStatus: categoriesStatus ?? this.categoriesStatus,
       quota: quota ?? this.quota,
+      quotaStatus: quotaStatus ?? this.quotaStatus,
       draft: draft ?? this.draft,
       showBasicInfoErrors: showBasicInfoErrors ?? this.showBasicInfoErrors,
       showDetailErrors: showDetailErrors ?? this.showDetailErrors,
@@ -155,6 +213,11 @@ class CreateListingState extends Equatable {
       invalidPublishAttempts:
           invalidPublishAttempts ?? this.invalidPublishAttempts,
       postingLimitHits: postingLimitHits ?? this.postingLimitHits,
+      creditsShortHits: creditsShortHits ?? this.creditsShortHits,
+      creditsMissing: creditsMissing ?? this.creditsMissing,
+      duplicateHits: duplicateHits ?? this.duplicateHits,
+      duplicate: duplicate ?? this.duplicate,
+      duplicatePaid: duplicatePaid ?? this.duplicatePaid,
       savedDraft: savedDraft ?? this.savedDraft,
       drafts: drafts ?? this.drafts,
       draftsStatus: draftsStatus ?? this.draftsStatus,
@@ -168,6 +231,8 @@ class CreateListingState extends Equatable {
       draftQuota: draftQuota ?? this.draftQuota,
       draftLimitHits: draftLimitHits ?? this.draftLimitHits,
       saveError: saveError ?? this.saveError,
+      editingListing: editingListing ?? this.editingListing,
+      openEditStatus: openEditStatus ?? this.openEditStatus,
     );
   }
 
@@ -176,6 +241,7 @@ class CreateListingState extends Equatable {
     categories,
     categoriesStatus,
     quota,
+    quotaStatus,
     draft,
     showBasicInfoErrors,
     showDetailErrors,
@@ -183,6 +249,10 @@ class CreateListingState extends Equatable {
     publishStatus,
     invalidPublishAttempts,
     postingLimitHits,
+    creditsShortHits,
+    creditsMissing,
+    duplicateHits,
+    duplicatePaid,
     savedDraft,
     drafts,
     draftsStatus,
@@ -195,5 +265,7 @@ class CreateListingState extends Equatable {
     draftQuota,
     draftLimitHits,
     saveError,
+    editingListing,
+    openEditStatus,
   ];
 }

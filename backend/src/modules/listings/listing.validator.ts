@@ -18,20 +18,32 @@ export function listingInput(value: unknown, draft = false) {
   const fail = (message: string, field?: string): never => { throw new AppError(400, draft ? 'INVALID_DRAFT' : 'INVALID_LISTING', message, field); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('Dữ liệu tin không hợp lệ.');
   const body = value as Record<string, unknown>;
-  const allowed = ['title','description','price','condition','categoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes'];
-  if (Object.keys(body).some((key) => !allowed.includes(key))) fail('Tin có trường không được hỗ trợ.');
+  const allowed = ['title','description','price','condition','categoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','originalPrice'];
+  // Cờ của thao tác đăng (trả xu, vẫn đăng dù trùng): controller đọc riêng, không thuộc nội dung tin
+  const flags = draft ? [] : ['payWithCredits', 'allowDuplicate'];
+  if (Object.keys(body).some((key) => !allowed.includes(key) && !flags.includes(key))) fail('Tin có trường không được hỗ trợ.');
+  if (flags.some((key) => body[key] !== undefined && typeof body[key] !== 'boolean')) fail('Dữ liệu tin không hợp lệ.');
   const title = body.title ?? '', description = body.description ?? '';
   if (typeof title !== 'string' || title.trim().length > 70 || (!draft && title.trim().length < 5)) fail('Tiêu đề cần từ 5 đến 70 ký tự.', 'title');
   if (typeof description !== 'string' || description.trim().length > 1500 || (!draft && description.trim().length < 10)) fail('Mô tả cần từ 10 đến 1500 ký tự.', 'description');
   const categoryId = body.categoryId == null || body.categoryId === '' ? null : body.categoryId;
   if ((categoryId !== null && (typeof categoryId !== 'string' || categoryId.length > 100)) || (!draft && !categoryId)) fail('Chọn danh mục hợp lệ.', 'categoryId');
   const condition = body.condition ?? null;
-  if (!(draft && condition === null) && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) fail('Tình trạng không hợp lệ.', 'condition');
+  // Tình trạng có thể trống (danh mục không hỏi tình trạng, VD thú cưng); bắt buộc hay không do assertPublishable xét theo danh mục
+  if (condition !== null && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) fail('Tình trạng không hợp lệ.', 'condition');
   const allowSale = body.allowSale ?? true, allowExchange = body.allowExchange ?? false;
   if (typeof allowSale !== 'boolean' || typeof allowExchange !== 'boolean' || (!allowSale && !allowExchange)) fail('Chọn bán hoặc trao đổi.');
   const rawPrice = body.price == null || body.price === '' ? '0' : String(body.price);
   if ((typeof body.price !== 'number' && typeof body.price !== 'string' && body.price != null) ||
       !/^(0|[1-9]\d{0,11})$/.test(rawPrice) || (!draft && allowSale && rawPrice === '0')) fail('Giá VND không hợp lệ.', 'price');
+  // Giá gốc trước giảm (chỉ gói Cửa hàng, xét ở service): null = không giảm; khi đăng phải cao hơn giá bán
+  const rawOriginal = body.originalPrice == null || body.originalPrice === '' ? null : String(body.originalPrice);
+  if ((body.originalPrice != null && typeof body.originalPrice !== 'number' && typeof body.originalPrice !== 'string') ||
+      (rawOriginal !== null && !/^[1-9]\d{0,11}$/.test(rawOriginal))) fail('Giá gốc không hợp lệ.', 'originalPrice');
+  const originalPrice = allowSale ? rawOriginal : null;
+  if (!draft && originalPrice !== null && BigInt(originalPrice) <= BigInt(rawPrice)) {
+    fail('Giá gốc phải cao hơn giá bán.', 'originalPrice');
+  }
   const exchangeWish = body.exchangeWish ?? '', sellerType = body.sellerType ?? 'PERSONAL';
   if (typeof exchangeWish !== 'string' || exchangeWish.trim().length > 200) fail('Mong muốn trao đổi tối đa 200 ký tự.', 'exchangeWish');
   if (sellerType !== 'PERSONAL' && sellerType !== 'BUSINESS') fail('Loại người bán không hợp lệ.', 'sellerType');
@@ -42,18 +54,27 @@ export function listingInput(value: unknown, draft = false) {
     Object.keys(attributes).length > 40 || JSON.stringify(attributes).length > 10000) fail('Thuộc tính không hợp lệ.', 'attributes');
   const location = listingLocation(body.location);
   if (!draft && !location) fail('Chọn địa chỉ giao dịch.', 'location');
+  // Thời gian hiển thị: số ngày (null = số ngày miễn phí) và ngày hẹn bắt đầu (null = ngay khi duyệt); khoảng hợp lệ xét theo chuyên mục
+  const displayDays = body.displayDays ?? null;
+  if (displayDays !== null && (typeof displayDays !== 'number' || !Number.isInteger(displayDays) || displayDays < 1 || displayDays > 365)) {
+    fail('Số ngày hiển thị không hợp lệ.', 'displayDays');
+  }
+  const rawStart = body.startsAt ?? null;
+  const startsAt = typeof rawStart === 'string' && rawStart.length <= 40 ? new Date(rawStart) : null;
+  if (rawStart !== null && (!startsAt || Number.isNaN(startsAt.getTime()))) fail('Ngày bắt đầu không hợp lệ.', 'startsAt');
   return { title: (title as string).trim(), description: (description as string).trim(), categoryId: categoryId as string | null,
-    condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0', isNegotiable: (allowSale && isNegotiable) as boolean,
+    condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0', originalPrice, isNegotiable: (allowSale && isNegotiable) as boolean,
     allowSale: allowSale as boolean, allowExchange: allowExchange as boolean,
     exchangeWish: allowExchange ? (exchangeWish as string).trim() : '', sellerType: sellerType as string,
     attributes: attributes as Prisma.InputJsonObject,
-    location: location ? JSON.parse(JSON.stringify(location)) as Prisma.InputJsonObject : Prisma.DbNull };
+    location: location ? JSON.parse(JSON.stringify(location)) as Prisma.InputJsonObject : Prisma.DbNull,
+    displayDays: displayDays as number | null, startsAt };
 }
 
-/** Tin đầy đủ để đăng: bắt buộc danh mục và tình trạng */
+/** Tin đầy đủ để đăng: bắt buộc danh mục (tình trạng xét theo danh mục trong assertPublishable) */
 export function createInput(value: unknown) {
   const data = listingInput(value);
-  return { ...data, categoryId: data.categoryId!, condition: data.condition! };
+  return { ...data, categoryId: data.categoryId! };
 }
 
 /** Bản nháp: mọi trường đều có thể trống */
@@ -134,14 +155,41 @@ export const favoriteIdParams = idParam(64);
 export const createListingBody = z.unknown().transform(createInput);
 export const draftBody = z.unknown().transform(draftInput);
 
-/** Body PATCH /:id/status: { status: AVAILABLE | HIDDEN | SOLD | EXCHANGED } */
+/** Body PATCH /:id/status: { status: AVAILABLE | HIDDEN | SOLD | EXCHANGED, payWithCredits?: boolean } */
 export const statusBody = z.unknown().transform((body) => {
-  const target = (body as { status?: unknown } | undefined)?.status;
+  const input = body as { status?: unknown; payWithCredits?: unknown } | undefined;
+  const target = input?.status;
   if (typeof target !== 'string' || !OWNER_STATUS_TARGETS.includes(target as ListingStatus) ||
-      !body || Object.keys(body).some((key) => key !== 'status')) {
+      !body || Object.keys(body).some((key) => key !== 'status' && key !== 'payWithCredits') ||
+      (input?.payWithCredits !== undefined && typeof input?.payWithCredits !== 'boolean')) {
     throw new AppError(400, 'INVALID_STATUS', 'Trạng thái tin không hợp lệ.');
   }
-  return { status: target as ListingStatus };
+  return { status: target as ListingStatus, payWithCredits: input?.payWithCredits === true };
+});
+
+/** Body POST /:id/extend: { days } số ngày hiển thị thêm (1-365); tối đa theo chuyên mục do service xét */
+export const extendBody = z.unknown().transform((body) => {
+  const days = (body as { days?: unknown } | undefined)?.days;
+  if (typeof days !== 'number' || !Number.isInteger(days) || days < 1 || days > 365) {
+    throw new AppError(400, 'INVALID_INPUT', 'Số ngày gia hạn không hợp lệ.', 'days');
+  }
+  return { days };
+});
+
+/** Body PATCH /:id/auto-extend: { enabled } */
+export const autoExtendBody = z.unknown().transform((body) => {
+  const enabled = (body as { enabled?: unknown } | undefined)?.enabled;
+  if (typeof enabled !== 'boolean') throw new AppError(400, 'INVALID_INPUT', 'Thiếu enabled.', 'enabled');
+  return { enabled };
+});
+
+/** Body POST /:id/feature: { packageId } là gói FEATURED đang bán */
+export const featureBody = z.unknown().transform((body) => {
+  const packageId = (body as { packageId?: unknown } | undefined)?.packageId;
+  if (typeof packageId !== 'string' || !packageId.trim() || packageId.length > 100) {
+    throw new AppError(400, 'INVALID_PACKAGE', 'Gói tin ưu tiên không hợp lệ.');
+  }
+  return { packageId: packageId.trim() };
 });
 
 /**
@@ -184,6 +232,13 @@ export const mineQuery = z.record(z.string(), z.unknown()).transform((query) => 
   return { page, pageSize, status: status as ListingStatus | undefined };
 });
 
+/** Query GET /listings/insights: days = 7 (mặc định) hoặc 30 */
+export const insightsQuery = z.record(z.string(), z.unknown()).transform((query) => {
+  const days = query.days === undefined ? 7 : Number(query.days);
+  if (days !== 7 && days !== 30) throw new AppError(400, 'INVALID_QUERY', 'Chỉ xem được 7 hoặc 30 ngày.');
+  return { days: days as 7 | 30 };
+});
+
 /** Body duyệt tin: { decision: APPROVED | REJECTED, reason?, updatedAt } */
 export const decisionBody = z.unknown().transform((body) => {
   const { decision, reason, updatedAt } = (body ?? {}) as Record<string, unknown>;
@@ -214,12 +269,19 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
     ...search,
     ...(filter === 'nearby' || (filter !== 'newest' && nearby) ? { nearby } : {}),
     ...(filter === 'exchange' || allowExchange ? { allowExchange: true } : {}),
+    // Trang Shop uy tín: chỉ tin của shop đã xác minh, onSale = đang giảm giá
+    ...(raw.verifiedShop === 'true' ? { verifiedShop: true } : {}),
+    ...(raw.onSale === 'true' ? { onSale: true } : {}),
   };
   return { filter, pagination, filters };
 });
 
 /** Query GET /listings/recommended */
-export const recommendedQuery = z.object({ limit: int('limit', { min: 1, max: 20, fallback: 10 }) });
+export const recommendedQuery = z.object({
+  limit: int('limit', { min: 1, max: 20, fallback: 10 }),
+  page: int('page', { min: 1, max: 1000, fallback: 1 }),
+  categoryId: z.string().max(100).optional().transform((value) => value?.trim() || undefined),
+});
 
 /** Query GET /listings/favorites: page, limit 1-100 (mặc định 20) */
 export const favoritesQuery = pageQuery({ defaultLimit: 20, maxLimit: 100 });

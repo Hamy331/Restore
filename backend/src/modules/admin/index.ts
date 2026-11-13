@@ -5,6 +5,7 @@ import { catalogAdminRouter } from '../catalog/index.js';
 import { commerceAdminRouter } from '../commerce/index.js';
 import { contentAdminRouter } from '../content/index.js';
 import { listingsAdminRouter } from '../listings/index.js';
+import { posterAdminRouter } from '../shops/index.js';
 import auditRouter from './routes/audit.route.js';
 import dashboardRouter from './routes/dashboard.route.js';
 import userRouter from './routes/user.route.js';
@@ -14,7 +15,7 @@ import userRouter from './routes/user.route.js';
  * trước, nên khách nhận 401 và thành viên nhận 403 thay vì 404, như API cũ.
  *
  * Module admin chỉ giữ hồ sơ admin, dashboard, thành viên, nhật ký. Phần còn lại do module sở hữu dữ liệu cung cấp:
- * listings (tin), commerce (gói, đơn), catalog (danh mục, tình trạng), content (bài viết, hỗ trợ, kiến thức, báo cáo).
+ * listings (tin), commerce (gói, đơn), catalog (danh mục, tình trạng), content (bài viết, hỗ trợ, kiến thức, báo cáo), shops (duyệt poster shop).
  */
 export const adminRouter = Router();
 adminRouter.use(requirePermission(PERMISSION.ADMIN_ACCESS));
@@ -25,3 +26,4 @@ adminRouter.use(contentAdminRouter);
 adminRouter.use(catalogAdminRouter);
 adminRouter.use(auditRouter);
 adminRouter.use(commerceAdminRouter);
+adminRouter.use(posterAdminRouter);

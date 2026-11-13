@@ -15,12 +15,16 @@ import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
 import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/modules/following/views/following_hub/following_hub_view.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
+import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
+import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/home_cubit.dart';
@@ -83,6 +87,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
   void _openSearch() => context.push(_searchPath);
 
+  void _openHotSale() => context.push(HotSaleView.path);
+
   void _openCategory(CategoryModel category) =>
       context.push(CategoryDetailView.location(category.id), extra: category);
 
@@ -136,7 +142,6 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   }
 
   void _onQuickAction(HomeQuickAction action) {
-    // TODO: mở trang riêng khi có (đang theo dõi)
     switch (action) {
       case HomeQuickAction.nearby:
         context.push(_nearbyPath);
@@ -145,7 +150,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       case HomeQuickAction.trustedShops:
         context.push(TrustedShopsView.path);
       case HomeQuickAction.following:
-        _comingSoon();
+        context.push(FollowingHubView.path);
     }
   }
 
@@ -285,6 +290,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
         child: HomeCategoryStrip(
           categories: state.categories,
           onTap: _openCategory,
+          onHotSaleTap: _openHotSale,
         ),
       ),
       const SliverToBoxAdapter(child: SizedBox(height: 14)),
@@ -302,31 +308,24 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       if (state.recommended.isNotEmpty) ...[
         const SliverToBoxAdapter(child: SizedBox(height: 18)),
         SliverToBoxAdapter(
-          child: HomeSectionHeader(
-            title: l10n.homeForYouTitle,
-            actionLabel: l10n.homeSeeAll,
-            onAction: _comingSoon,
-          ),
-        ),
-        const SliverToBoxAdapter(child: SizedBox(height: 8)),
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: AppListingCard.heightFor(_featuredCardWidth),
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
-              itemCount: state.recommended.length,
-              separatorBuilder: (_, _) => const SizedBox(width: _gridSpacing),
-              itemBuilder: (_, index) => SizedBox(
-                width: _featuredCardWidth,
-                child: card(state.recommended[index]),
-              ),
-            ),
+          child: AppHotSaleSection(
+            items: state.recommended,
+            onTap: _openDetail,
+            onFavoriteTap: _toggleFavorite,
+            onSeeAll: _openHotSale,
+            cardWidth: _featuredCardWidth,
+            sidePadding: _sidePadding,
+            spacing: _gridSpacing,
           ),
         ),
       ],
       const SliverToBoxAdapter(child: SizedBox(height: 18)),
-      SliverToBoxAdapter(child: HomeSectionHeader(title: l10n.homeLatestTitle)),
+      SliverToBoxAdapter(
+        child: HomeSectionHeader(
+          title: l10n.homeLatestTitle,
+          image: AppImages.coreImages.newArrivals,
+        ),
+      ),
       const SliverToBoxAdapter(child: SizedBox(height: 10)),
       if (state.latest.isEmpty)
         SliverToBoxAdapter(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/core/constants/app_colors.dart';
 
 /// Bộ nút hành động dùng chung (thanh cuối trang, nút trong sheet) để mọi
@@ -64,12 +65,9 @@ class AppPrimaryActionButton extends StatelessWidget {
           borderRadius: radius,
           child: Center(
             child: isLoading
-                ? const SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.textPrimary,
-                    ),
+                ? const AppLoadingIndicator(
+                    dotSize: 5,
+                    color: AppColors.textPrimary,
                   )
                 : _ButtonContent(
                     label: label,

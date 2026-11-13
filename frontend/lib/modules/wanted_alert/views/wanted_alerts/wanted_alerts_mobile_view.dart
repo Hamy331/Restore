@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -137,6 +138,7 @@ class _WantedAlertsMobileViewState extends State<WantedAlertsMobileView> {
         topInset,
         FeedbackView(
           icon: AppIcons.wantedAlert,
+          image: AppImages.uiIcons.wantedAlert,
           title: l10n.wantedAlertEmptyTitle,
           message: l10n.wantedAlertEmptyBody,
           action: FilledButton.icon(

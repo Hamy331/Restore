@@ -5,12 +5,17 @@ import 'package:restore/core/constants/app_icons.dart';
 /// Tiêu đề một khu trên trang chủ, có thể kèm nút "Xem tất cả"
 class HomeSectionHeader extends StatelessWidget {
   final String title;
+
+  /// Ảnh tiêu đề kiểu cụm HOT SALE (VD NEW ARRIVALS); [title] làm nhãn đọc
+  /// màn hình và chữ dự phòng khi ảnh lỗi
+  final String? image;
   final String? actionLabel;
   final VoidCallback? onAction;
 
   const HomeSectionHeader({
     super.key,
     required this.title,
+    this.image,
     this.actionLabel,
     this.onAction,
   });
@@ -24,17 +29,20 @@ class HomeSectionHeader extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.2,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              child: image == null
+                  ? _title()
+                  : Align(
+                      alignment: Alignment.centerLeft,
+                      child: Semantics(
+                        label: title,
+                        child: Image.asset(
+                          image!,
+                          height: 40,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => _title(),
+                        ),
+                      ),
+                    ),
             ),
             if (actionLabel != null)
               TextButton(
@@ -63,4 +71,16 @@ class HomeSectionHeader extends StatelessWidget {
       ),
     );
   }
+
+  Widget _title() => Text(
+    title,
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: const TextStyle(
+      fontSize: 17,
+      fontWeight: FontWeight.w800,
+      letterSpacing: -0.2,
+      color: AppColors.textPrimary,
+    ),
+  );
 }

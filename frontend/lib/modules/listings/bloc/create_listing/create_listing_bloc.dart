@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
 import '../../models/draft_quota.dart';
 import '../../models/listing_draft.dart';
+import '../../models/posting_quota.dart';
 import '../../repositories/category_repository.dart';
 import '../../repositories/listings_repository.dart';
 import '../../repositories/posting_quota_repository.dart';
@@ -48,6 +49,12 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         (draft) => draft.copyWith(price: () => event.price),
       ),
     );
+    on<OriginalPriceChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(originalPrice: () => event.originalPrice),
+      ),
+    );
     on<NegotiableChanged>(
       (event, emit) => _updateDraft(
         emit,
@@ -71,6 +78,15 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       ),
     );
     on<AttributeChanged>(_onAttributeChanged);
+    on<DisplayDaysChanged>(
+      (event, emit) => _updateDraft(
+        emit,
+        (draft) => draft.copyWith(
+          displayDays: () => event.days,
+          startsAt: () => event.startsAt,
+        ),
+      ),
+    );
     on<BasicInfoSubmitted>(
       (event, emit) => emit(state.copyWith(showBasicInfoErrors: true)),
     );
@@ -79,6 +95,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     on<DraftsRequested>(_onDraftsRequested);
     on<DraftOpened>(_onDraftOpened);
     on<DraftDeleted>(_onDraftDeleted);
+    on<ListingEditOpened>(_onListingEditOpened);
   }
 
   final ListingsRepository _repository;
@@ -115,17 +132,27 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     PostingQuotaRequested event,
     Emitter<CreateListingState> emit,
   ) async {
+    // Lần đầu mới báo đang tải; tải lại thì giữ hạn mức cũ trên màn hình
+    if (state.quotaStatus == RequestStatus.idle) {
+      emit(state.copyWith(quotaStatus: RequestStatus.loading));
+    }
     try {
       final quota = await _quotaRepository.getQuota();
       // Loại người bán theo tài khoản, không để người dùng tự chọn
       emit(
         state.copyWith(
           quota: quota,
+          quotaStatus: RequestStatus.success,
           draft: state.draft.copyWith(sellerType: quota.accountType),
         ),
       );
     } catch (_) {
       // Không tải được hạn mức thì vẫn cho đăng, backend sẽ kiểm tra
+      if (state.quota == null) {
+        emit(state.copyWith(quotaStatus: RequestStatus.failure));
+      }
+    } finally {
+      if (!(event.done?.isCompleted ?? true)) event.done!.complete();
     }
   }
 
@@ -140,6 +167,9 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         draft: state.draft.copyWith(
           categoryId: event.categoryId,
           attributes: const {},
+          // Mỗi danh mục có số ngày miễn phí / tối đa riêng: chọn lại từ đầu
+          displayDays: () => null,
+          startsAt: () => null,
         ),
         showDetailErrors: false,
       ),
@@ -282,7 +312,11 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       return;
     }
 
-    if (state.quota?.isFull(state.draft.categoryId) ?? false) {
+    // Hết suất miễn phí: hỏi người dùng có trả xu không trước khi gửi.
+    // Sửa tin đã đăng thì tin đã có suất (backend báo nếu cần suất mới)
+    if (!event.payWithCredits &&
+        !state.isEditing &&
+        (state.quota?.isFull(state.draft.categoryId) ?? false)) {
       emit(state.copyWith(postingLimitHits: state.postingLimitHits + 1));
       return;
     }
@@ -290,13 +324,31 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     emit(state.copyWith(publishStatus: RequestStatus.loading));
     final sent = state.draft;
     try {
-      final published = await _repository.publish(sent, state.category);
+      final published = await _repository.publish(
+        sent,
+        state.category,
+        payWithCredits: event.payWithCredits,
+        allowDuplicate: event.allowDuplicate,
+      );
       emit(
         state.copyWith(draft: published, publishStatus: RequestStatus.success),
       );
       add(const PostingQuotaRequested());
     } on ListingSaveException catch (error) {
       debugPrint('Đăng tin lỗi: $error');
+      final duplicate = error.duplicate;
+      if (duplicate != null) {
+        emit(
+          state.copyWith(
+            draft: _keepProgress(sent, error),
+            publishStatus: RequestStatus.idle,
+            duplicate: duplicate,
+            duplicatePaid: event.payWithCredits,
+            duplicateHits: state.duplicateHits + 1,
+          ),
+        );
+        return;
+      }
       if (!error.isPostingLimitReached) {
         // Tin đã tạo trên máy chủ: thử lại thì cập nhật đúng tin đó
         emit(
@@ -308,14 +360,39 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         );
         return;
       }
-      // Hạn mức trên máy đã cũ (VD đăng từ thiết bị khác): tải lại rồi báo
+      // Hạn mức trên máy đã cũ (VD đăng từ thiết bị khác) hoặc ví không đủ
+      // xu: tải lại hạn mức và số dư trước rồi mới báo, để sheet hiện đúng
+      PostingQuota? fresh;
+      try {
+        fresh = await _quotaRepository.getQuota();
+      } catch (_) {
+        fresh = null;
+      }
+      // Thiếu xu mà không phải do hết suất (hoặc đã đồng ý trả phí vượt hạn
+      // mức): là do ngày hiển thị thêm, hỏi nạp xu hay dùng ngày miễn phí
+      final missing = error.missingCredits;
+      final quota = fresh ?? state.quota;
+      if (missing != null &&
+          sent.displayDays != null &&
+          (event.payWithCredits ||
+              !(quota?.isFull(sent.categoryId) ?? false))) {
+        emit(
+          state.copyWith(
+            quota: quota,
+            publishStatus: RequestStatus.idle,
+            creditsMissing: missing,
+            creditsShortHits: state.creditsShortHits + 1,
+          ),
+        );
+        return;
+      }
       emit(
         state.copyWith(
+          quota: fresh ?? state.quota,
           publishStatus: RequestStatus.idle,
           postingLimitHits: state.postingLimitHits + 1,
         ),
       );
-      add(const PostingQuotaRequested());
     } catch (error) {
       emit(
         state.copyWith(publishStatus: RequestStatus.failure, saveError: error),
@@ -416,6 +493,49 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       add(const DraftsRequested());
     }
   }
+
+  Future<void> _onListingEditOpened(
+    ListingEditOpened event,
+    Emitter<CreateListingState> emit,
+  ) async {
+    if (state.openEditStatus == RequestStatus.loading) return;
+    emit(state.copyWith(openEditStatus: RequestStatus.loading));
+    try {
+      final listing = await _repository.getOwned(event.id);
+      if (!_editable.contains(listing.status)) {
+        throw StateError('Listing ${event.id} is ${listing.status}');
+      }
+      // Đang có bản sửa (chờ duyệt / bị từ chối) thì sửa tiếp bản đó
+      final loaded = ListingDraft.fromListing(
+        listing.pendingEdit?.content ?? listing,
+      );
+      final draft = state.quota == null
+          ? loaded
+          : loaded.copyWith(sellerType: state.quota!.accountType);
+      emit(
+        state.copyWith(
+          draft: draft,
+          savedDraft: draft,
+          editingListing: listing,
+          showBasicInfoErrors: false,
+          showDetailErrors: false,
+          publishStatus: RequestStatus.idle,
+          openEditStatus: RequestStatus.success,
+        ),
+      );
+    } catch (error) {
+      debugPrint('Mở tin ${event.id} để sửa lỗi: $error');
+      emit(state.copyWith(openEditStatus: RequestStatus.failure));
+    }
+  }
+
+  /// Trạng thái tin còn sửa được (giống LISTING_EDITABLE ở backend)
+  static const Set<ListingStatus> _editable = {
+    ListingStatus.available,
+    ListingStatus.hidden,
+    ListingStatus.pending,
+    ListingStatus.rejected,
+  };
 
   Future<void> _onDraftDeleted(
     DraftDeleted event,

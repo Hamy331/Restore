@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_icons.dart';
@@ -344,13 +345,7 @@ class _CommentsState extends State<_Comments> {
                               ? null
                               : send,
                           icon: sending
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                              ? const AppLoadingIndicator(dotSize: 5)
                               : const Icon(AppIcons.send),
                           color: AppColors.primaryDark,
                         ),

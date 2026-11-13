@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
+import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/data/models/enums/subscription_plan.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -126,10 +128,10 @@ class _AreaButton extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  AppIcons.location,
-                  size: 17,
-                  color: AppColors.primaryDark,
+                AppImageIcon(
+                  AppImages.uiIcons.location,
+                  size: 20,
+                  fallback: AppIcons.location,
                 ),
                 const SizedBox(width: 6),
                 Flexible(

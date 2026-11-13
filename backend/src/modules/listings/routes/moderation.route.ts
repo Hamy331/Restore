@@ -10,7 +10,9 @@ const moderationRouter = Router();
 const moderate = requirePermission(PERMISSION.LISTING_MODERATE);
 
 /**
- * Duyệt hoặc từ chối tin đang chờ, ghi AdminAudit
+ * Duyệt hoặc từ chối tin đang chờ, ghi AdminAudit.
+ * Tin đã duyệt có bản sửa chờ duyệt: duyệt thì bản sửa thay vào tin, từ chối thì tin giữ bản cũ
+ * (updatedAt lúc này là updatedAt của bản sửa, lấy từ /admin/pending).
  *
  * Path params:
  *  - id: string - mã tin
@@ -25,7 +27,8 @@ const moderate = requirePermission(PERMISSION.LISTING_MODERATE);
 moderationRouter.post('/admin/:id/decision', moderate, validate({ params: listingIdParams, body: decisionBody }), moderationController.decide);
 
 /**
- * Tối đa 100 tin chờ duyệt, gửi sớm trước
+ * Tối đa 100 tin chờ duyệt, gửi sớm trước, rồi tối đa 100 bản sửa của tin đã duyệt
+ * (edit: true, nội dung là bản sửa, current: nội dung đang hiển thị, updatedAt của bản sửa)
  */
 moderationRouter.get('/admin/pending', moderate, moderationController.listPending);
 

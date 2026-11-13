@@ -4,7 +4,7 @@ import { prisma } from '../../../lib/prisma.js';
 export const profileSelect = {
   id: true, fullName: true, username: true, avatarUrl: true, bio: true, status: true,
   ratingAverage: true, ratingCount: true, createdAt: true, lastActiveAt: true,
-  _count: { select: { followers: true, following: true } },
+  _count: { select: { followers: true, following: true, shopFollows: { where: { shop: { verificationType: { not: null } } } } } },
 } satisfies Prisma.UserSelect;
 
 

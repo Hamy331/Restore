@@ -17,16 +17,19 @@ const feedRouter = Router();
  *  - latitude?, longitude?: number - bắt buộc khi filter = nearby
  *  - radiusKm?: number (1-100, mặc định 5) - chỉ dùng với nearby
  *  - q?, categoryId?, condition?, minPrice?, maxPrice? - bộ lọc tìm kiếm
+ *  - verifiedShop?: 'true' - chỉ tin của shop uy tín (đã xác minh); onSale?: 'true' - chỉ tin đang giảm giá
  *
  * Trả về: Listing[] + areaLabel, distanceKm, isFeatured, isFavorite; pagination, meta
  */
 feedRouter.get('/', optionalAuth, validate({ query: feedQuery }), feedController.listFeed);
 
 /**
- * Tin gợi ý (đang đẩy FEATURED) cho mục "Dành cho bạn"
+ * Tin Hot sale (đang có tin ưu tiên FEATURED) cho trang chủ và đầu trang chuyên mục
  *
  * Query params:
  *  - limit?: number (1-20, mặc định 10)
+ *  - page?: number (từ 1, mặc định 1) - trang Hot sale tải thêm
+ *  - categoryId?: string - chỉ lấy tin của chuyên mục này
  */
 feedRouter.get('/recommended', optionalAuth, validate({ query: recommendedQuery }), feedController.listRecommended);
 

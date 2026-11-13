@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:flutter/services.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
@@ -166,6 +167,7 @@ class _BubbleFace extends StatelessWidget {
           // Nhấn do GestureDetector bên ngoài xử lý (để còn kéo được)
           ShellGlassRingButton(
             icon: AppIcons.sparkleActive,
+            image: AppImages.uiIcons.ai,
             label: label,
             size: size,
             onTap: null,

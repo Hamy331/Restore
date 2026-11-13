@@ -38,6 +38,10 @@ class ListingAttributeField extends StatefulWidget {
 class _ListingAttributeFieldState extends State<ListingAttributeField> {
   TextEditingController? _controller;
 
+  /// Đơn vị đang nhập khi ô số có nhiều đơn vị (tháng / năm). Giá trị gửi
+  /// lên luôn quy về đơn vị gốc.
+  AttributeUnitOption? _unit;
+
   CategoryAttributeModel get _attribute => widget.attribute;
 
   bool get _isTextInput =>
@@ -47,9 +51,32 @@ class _ListingAttributeFieldState extends State<ListingAttributeField> {
   @override
   void initState() {
     super.initState();
-    if (_isTextInput) {
-      _controller = TextEditingController(text: widget.value ?? '');
-    }
+    if (!_isTextInput) return;
+    final base = num.tryParse(widget.value ?? '');
+    _unit = _attribute.bestUnitFor(base);
+    final unit = _unit;
+    _controller = TextEditingController(
+      text: unit != null && base != null
+          ? _format(base / unit.factor)
+          : widget.value ?? '',
+    );
+  }
+
+  static String _format(num value) =>
+      value == value.truncate() ? '${value.toInt()}' : '$value';
+
+  /// Số đang nhập quy về đơn vị gốc rồi báo lên form
+  void _emit(String text) {
+    final unit = _unit;
+    if (unit == null) return widget.onChanged(text);
+    final value = num.tryParse(text.trim());
+    widget.onChanged(value == null ? '' : _format(value * unit.factor));
+  }
+
+  void _selectUnit(AttributeUnitOption unit) {
+    if (unit == _unit) return;
+    setState(() => _unit = unit);
+    _emit(_controller!.text);
   }
 
   @override
@@ -61,8 +88,11 @@ class _ListingAttributeFieldState extends State<ListingAttributeField> {
   String? _errorText(AppLocalizations l10n) => switch (widget.error) {
     null => null,
     AttributeError.outOfRange => l10n.numberRangeError(
-      '${_attribute.min ?? 0}',
-      '${_attribute.max ?? '∞'}',
+      _format((_attribute.min ?? 0) / (_unit?.factor ?? 1)),
+      switch (_attribute.max) {
+        final max? => _format(max / (_unit?.factor ?? 1)),
+        null => '∞',
+      },
     ),
     AttributeError.required =>
       _isTextInput ? l10n.fieldRequiredError : l10n.fieldSelectRequiredError,
@@ -147,16 +177,83 @@ class _ListingAttributeFieldState extends State<ListingAttributeField> {
       textInputAction: TextInputAction.next,
       inputFormatters: [if (isNumber) FilteringTextInputFormatter.digitsOnly],
       errorText: errorText,
-      suffix: unit == null
-          ? null
-          : Text(
-              unit,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
+      suffix: switch (_unit) {
+        final selected? => _UnitSwitch(
+          options: _attribute.unitOptions,
+          selected: selected,
+          onSelected: _selectUnit,
+        ),
+        null when unit != null => Text(
+          unit,
+          style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+        ),
+        null => null,
+      },
+      onChanged: _emit,
+    );
+  }
+}
+
+/// Nút chọn đơn vị nhỏ gọn đặt cuối ô số (tháng | năm)
+class _UnitSwitch extends StatelessWidget {
+  final List<AttributeUnitOption> options;
+  final AttributeUnitOption selected;
+  final ValueChanged<AttributeUnitOption> onSelected;
+
+  const _UnitSwitch({
+    required this.options,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: AppColors.cream,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final option in options)
+            Semantics(
+              button: true,
+              selected: option == selected,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => onSelected(option),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: option == selected
+                        ? AppColors.primary
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    option.label.of(context),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: option == selected
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                      color: option == selected
+                          ? Colors.white
+                          : AppColors.textSecondary,
+                    ),
+                  ),
+                ),
               ),
             ),
-      onChanged: widget.onChanged,
+        ],
+      ),
     );
   }
 }

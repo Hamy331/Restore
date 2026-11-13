@@ -174,7 +174,7 @@
   "accUsername": "Tên người dùng",
   "accBio": "Giới thiệu",
   "accSave": "Lưu",
-  "accChangeAvatar": "Đổi ảnh đại diện",
+  "accChangeAvatar": "Đổi ảnh",
   "accRemoveAvatar": "Xóa ảnh",
   "accNameRequired": "Nhập tên hiển thị.",
   "accUsernameInvalid": "3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.",
@@ -185,7 +185,7 @@
   "accFollowListEmpty": "Chưa có ai",
   "accComingSoon": "Tính năng này đang được phát triển",
   "accActivity": "Hoạt động",
-  "accProPlan": "Gói Pro",
+  "accProPlan": "Gói tài khoản",
   "accCreateStore": "Tạo cửa hàng",
   "accCoins": "Xu ReStore",
   "accSaved": "Đã lưu",
@@ -783,7 +783,7 @@
   "homeForYouTitle": "Dành cho bạn",
   "homeLatestTitle": "Tin đăng mới",
   "homeSeeAll": "Xem tất cả",
-  "homeFeaturedTag": "Nổi bật",
+  "homeFeaturedTag": "Hot",
   "homeExchangeTag": "Đổi được",
   "homeExchangeOnly": "Chỉ trao đổi",
   "homeSaveListing": "Lưu tin",
@@ -1533,7 +1533,7 @@
   "quickActionPoster": "Poster shop",
   "quickActionBoost": "Đẩy tin",
   "quickActionStats": "Thống kê",
-  "quickActionShopPage": "Trang shop",
+  "quickActionShopManage": "Quản lý shop",
   "trustedShopsFamousEyebrow": "Chính hãng",
   "trustedShopsDealsEyebrow": "Đang giảm giá",
   "trustedShopsNewReleasesEyebrow": "Vừa ra mắt",
@@ -1639,5 +1639,1184 @@
         "type": "String"
       }
     }
-  }
+  },
+  "creditTitle": "Xu ReStore",
+  "creditAvailable": "Số xu có thể dùng",
+  "creditPoints": "{count, plural, other{{amount} xu}}",
+  "creditUnit": "xu",
+  "creditPaidLabel": "Xu nạp",
+  "creditBonusLabel": "Xu tặng",
+  "creditHeldLabel": "Đang giữ",
+  "creditBonusExpiry": "Xu tặng bắt đầu hết hạn ngày {date}.",
+  "creditHeldHint": "Xu đang giữ là của tin chờ duyệt, tin bị từ chối thì xu trả lại ví.",
+  "creditTopupAction": "Nạp xu",
+  "creditUsesTitle": "Dùng xu để",
+  "creditUsePostMore": "Đăng thêm tin",
+  "creditUseBoost": "Đẩy tin",
+  "creditUseUpgrade": "Nâng gói",
+  "creditRecentTitle": "Giao dịch gần đây",
+  "creditSeeAll": "Xem tất cả",
+  "creditEmptyHistory": "Chưa có giao dịch xu nào",
+  "creditLoadError": "Không tải được ví xu",
+  "creditHistoryTitle": "Lịch sử xu",
+  "creditFilterAll": "Tất cả",
+  "creditFilterTopup": "Nạp",
+  "creditFilterSpend": "Đã dùng",
+  "creditFilterRefund": "Hoàn",
+  "creditTxnTopup": "Nạp xu",
+  "creditTxnBonus": "Xu tặng kèm gói",
+  "creditTxnSpend": "Dùng xu",
+  "creditTxnRefund": "Hoàn xu",
+  "creditTxnExpire": "Xu hết hạn",
+  "creditTxnAdjust": "Điều chỉnh",
+  "creditTxnOrder": "Đơn {code}",
+  "creditTopupTitle": "Chọn gói nạp",
+  "creditRate": "1 xu = 1.000 đ. Gói lớn được tặng thêm xu.",
+  "creditPopular": "Phổ biến",
+  "creditBonusTag": "tặng {amount} xu",
+  "creditNoBonus": "Không kèm tặng",
+  "creditTerms": "Xu chỉ dùng trong ReStore: không rút ra tiền, không chuyển cho người khác. Xu tặng được dùng trước và hết hạn sau 90 ngày.",
+  "creditContinue": "Tiếp tục · {price}",
+  "creditConfirmTitle": "Xác nhận nạp xu",
+  "creditSummaryPack": "Gói nạp",
+  "creditSummaryReceive": "Xu nhận",
+  "creditSummaryTotal": "Tổng thanh toán",
+  "creditReceiveWithBonus": "{total} xu (gồm {bonus} xu tặng)",
+  "creditPayMethodTitle": "Cách thanh toán",
+  "creditMethodZalopay": "ZaloPay",
+  "creditMethodZalopayDesc": "Ví ZaloPay, thẻ ATM nội địa hoặc thẻ quốc tế.",
+  "creditMethodVietqr": "Chuyển khoản VietQR",
+  "creditMethodVietqrDesc": "Quét mã bằng app ngân hàng, xu vào khi tiền về.",
+  "creditSandboxNote": "Chế độ thử (sandbox): không trừ tiền thật.",
+  "creditAgree": "Tôi đồng ý: xu không đổi lại thành tiền mặt, trừ khi thanh toán bị lỗi hoặc bị trừ hai lần.",
+  "creditPayAction": "Thanh toán {price}",
+  "creditPayZalopayTitle": "Thanh toán ZaloPay",
+  "creditPayBankTitle": "Chuyển khoản",
+  "creditOrderCode": "Mã đơn",
+  "creditGatewayNotConnected": "Đang bỏ qua cổng ZaloPay (chế độ debug hoặc máy chủ chưa có khoá). Dùng các nút bên dưới để giả lập kết quả.",
+  "creditOpenGateway": "Mở trang thanh toán ZaloPay",
+  "creditWaitingGateway": "Thanh toán xong trên trang ZaloPay rồi quay lại đây, xu sẽ tự cập nhật.",
+  "creditSimulateTitle": "Giả lập kết quả thanh toán (chỉ ở chế độ thử)",
+  "creditSimulateSuccess": "Đã trả tiền",
+  "creditSimulateFail": "Thất bại",
+  "creditScanQr": "Quét bằng app ngân hàng bất kỳ",
+  "creditAccountNo": "Số tài khoản",
+  "creditAccountName": "Chủ tài khoản",
+  "creditTransferContent": "Nội dung",
+  "creditQrExpires": "Mã hết hạn lúc {time}",
+  "creditWaitingTransfer": "Đang chờ tiền về. Giữ nguyên nội dung chuyển khoản để xu vào tự động.",
+  "creditVietQrUnavailable": "Máy chủ chưa cấu hình tài khoản nhận chuyển khoản.",
+  "creditCopied": "Đã sao chép",
+  "creditCopy": "Sao chép",
+  "creditCancelOrder": "Huỷ đơn",
+  "creditResultTitle": "Kết quả",
+  "creditSuccessTitle": "Nạp thành công",
+  "creditSuccessAmount": "+{amount} xu",
+  "creditSuccessBody": "Xu đã vào ví của bạn.",
+  "creditPendingTitle": "Đang chờ xác nhận",
+  "creditPendingBody": "Xu sẽ vào ví ngay khi cổng thanh toán xác nhận. Bạn có thể rời trang này.",
+  "creditFailTitle": "Chưa nạp được",
+  "creditFailBody": "Giao dịch đã bị huỷ hoặc hết hạn. Bạn chưa bị trừ tiền.",
+  "creditCheckAgain": "Kiểm tra lại",
+  "creditTryAgain": "Thử lại",
+  "creditDone": "Xong",
+  "creditBackToWallet": "Về ví xu",
+  "creditErrorTooManyPending": "Bạn đang có quá nhiều đơn nạp chưa thanh toán. Đợi 15 phút để đơn hết hạn hoặc huỷ bớt.",
+  "creditErrorGeneric": "Không thực hiện được, vui lòng thử lại.",
+  "creditPackagesError": "Không tải được gói nạp",
+  "postingLimitTotalTitle": "Đã đủ số tin miễn phí",
+  "postingLimitTotalMessage": "Tài khoản cá nhân được đăng tối đa {limit} tin miễn phí cùng lúc trên tất cả chuyên mục.",
+  "@postingLimitTotalMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLimitRecentMessage": "Bạn đã đăng miễn phí nhiều lần ở mục {category} trong {days} ngày qua. Mỗi chuyên mục được đăng miễn phí tối đa gấp đôi số suất trong {days} ngày.",
+  "@postingLimitRecentMessage": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayTitle": "Đăng tin này với {credits} xu",
+  "@postingPayTitle": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayBalance": "Ví của bạn: {available} xu",
+  "@postingPayBalance": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayNote": "Xu được giữ khi gửi tin và chỉ bị trừ khi tin được duyệt. Tin bị từ chối sẽ được hoàn xu.",
+  "postingPayMissing": "Bạn cần nạp thêm {missing} xu.",
+  "@postingPayMissing": {
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayContinue": "Tiếp tục · {credits} xu",
+  "@postingPayContinue": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayPublish": "Đăng · {credits} xu",
+  "@postingPayPublish": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingTopUp": "Nạp xu",
+  "postingFreeWaysTitle": "Hoặc giải phóng suất miễn phí",
+  "postingQuotaTotalUsage": "Đã dùng {used}/{limit} tin miễn phí của tài khoản",
+  "@postingQuotaTotalUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "postingQuotaPaidHint": "Hết suất? Đăng thêm bằng xu, từ {credits} xu một tin.",
+  "@postingQuotaPaidHint": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpiresIn": "Còn {days} ngày",
+  "@accExpiresIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpired": "Hết hạn",
+  "accReactivate": "Kích hoạt lại",
+  "accReactivated": "Đã kích hoạt lại tin",
+  "accExtend": "Gia hạn tin",
+  "accExtendMessage": "Tin hiển thị thêm {days} ngày với {credits} xu. Xu bị trừ ngay, không cần duyệt lại.",
+  "@accExtendMessage": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtendPay": "Gia hạn · {credits} xu",
+  "@accExtendPay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtendTooEarly": "Gia hạn được khi tin còn tối đa {days} ngày.",
+  "@accExtendTooEarly": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExtended": "Đã gia hạn tin",
+  "postingPayReactivate": "Kích hoạt · {credits} xu",
+  "@postingPayReactivate": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingLater": "Để sau",
+  "duplicateActiveTitle": "Bạn đã có tin này",
+  "duplicateActiveMessage": "Tin giống vậy của bạn đang hiển thị hoặc chờ duyệt, không cần đăng thêm.",
+  "duplicateInactiveTitle": "Dùng lại tin cũ?",
+  "duplicateInactiveMessage": "Bạn có tin giống vậy đã ẩn hoặc hết hạn. Kích hoạt lại tin cũ để giữ lượt xem và lượt lưu.",
+  "duplicateOpenOld": "Xem tin cũ",
+  "duplicatePostNew": "Vẫn đăng mới",
+  "postingPayReactivateTitle": "Hiện lại tin này với {credits} xu",
+  "@postingPayReactivateTitle": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "postingPayNowNote": "Xu bị trừ ngay khi tin hiện lại, không cần duyệt lại.",
+  "boostSheetMessage": "Tin được đưa lên đầu danh sách trong 24 giờ.",
+  "boostFreeNote": "Dùng 1 lượt miễn phí của gói, còn {left}/{perMonth} lượt tháng này.",
+  "@boostFreeNote": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      },
+      "perMonth": {
+        "type": "int"
+      }
+    }
+  },
+  "boostPayNote": "Giá {credits} xu, trừ ngay khi đẩy.",
+  "@boostPayNote": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "boostDiscountNote": "Gói của bạn được giảm {percent}%.",
+  "@boostDiscountNote": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "boostUseFree": "Đẩy miễn phí",
+  "boostPay": "Đẩy tin · {credits} xu",
+  "@boostPay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "boostDone": "Đã đẩy tin lên đầu",
+  "boostTooSoon": "Tin vừa được đẩy. Bạn đẩy lại được sau {hours} giờ nữa.",
+  "@boostTooSoon": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "plansTitle": "Gói tài khoản",
+  "plansSubtitle": "Trả bằng Xu, mỗi lần dùng 30 ngày",
+  "plansCurrent": "Gói hiện tại",
+  "plansCurrentUntil": "Dùng đến {date}",
+  "@plansCurrentUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plansFree": "Miễn phí",
+  "plansPersonalBenefitFree": "1 đến 3 tin miễn phí mỗi chuyên mục, tối đa 5 tin",
+  "plansPersonalBenefitPay": "Hết suất thì đăng thêm bằng Xu",
+  "plansPrice": "{price} xu / 30 ngày",
+  "@plansPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitActive": "{count} tin đang hiển thị cùng lúc",
+  "@plansBenefitActive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitDaily": "{count} tin mới mỗi ngày",
+  "@plansBenefitDaily": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitDrafts": "Giữ {count} tin nháp",
+  "@plansBenefitDrafts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitBoosts": "{count} lượt đẩy tin miễn phí mỗi tháng",
+  "@plansBenefitBoosts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitBoostDiscount": "Giảm {percent}% giá đẩy tin",
+  "@plansBenefitBoostDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "plansBenefitPriority": "Ưu tiên hiển thị trong chuyên mục chính",
+  "plansBenefitShopPage": "Trang cửa hàng riêng (sắp có)",
+  "plansBuy": "Mua gói",
+  "plansRenew": "Gia hạn",
+  "plansUpgrade": "Nâng cấp",
+  "plansInUse": "Đang dùng",
+  "plansLowerLocked": "Chọn được khi gói hiện tại hết hạn",
+  "plansNote": "Nâng gói giữa kỳ được trừ phần còn lại của gói cũ. Gia hạn thì cộng thêm 30 ngày. Xu bị trừ ngay, gói có hiệu lực luôn.",
+  "plansCheckoutPrice": "Giá gói",
+  "plansCheckoutCredit": "Trừ phần còn lại của gói cũ",
+  "plansCheckoutTotal": "Cần trả",
+  "plansCheckoutUntil": "Dùng đến",
+  "plansCheckoutCategory": "Chuyên mục chính",
+  "plansCheckoutCategoryHint": "Tin ở chuyên mục này được ưu tiên hiển thị.",
+  "plansCredits": "{count} xu",
+  "@plansCredits": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plansPay": "Thanh toán {amount} xu",
+  "@plansPay": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "plansActivated": "Đã kích hoạt gói {name}",
+  "@plansActivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plansLoadError": "Không tải được danh sách gói.",
+  "plansActionError": "Không thực hiện được. Vui lòng thử lại.",
+  "plansUpgradeAction": "Nâng cấp gói",
+  "postingUpgradeHint": "Cần đăng nhiều hơn? Nâng cấp gói",
+  "hotSaleTitle": "Hot sale",
+  "featureAction": "Lên Hot sale",
+  "featureSheetMessage": "Tin hiện ở mục Hot sale trên trang chủ và đầu trang chuyên mục, xếp trên các tin khác trong suốt thời gian đã chọn.",
+  "featureDays": "{days} ngày",
+  "@featureDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "featurePay": "Mua · {credits} xu",
+  "@featurePay": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "featureDone": "Tin đã lên Hot sale",
+  "featureRunning": "Tin đang ở Hot sale đến {date}.",
+  "@featureRunning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "featureUnavailable": "Chỉ tin đang hiển thị mới lên được Hot sale.",
+  "featureNoOptions": "Hiện chưa có gói Hot sale nào đang bán.",
+  "accExpiresOn": "Hết hạn {date} · còn {days} ngày",
+  "@accExpiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accExpiredOn": "Đã hết hạn {date}",
+  "@accExpiredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "previewDisplayDays": "Tin hiển thị {days} ngày kể từ khi được duyệt. Gần hết hạn bạn có thể gia hạn, hết hạn thì kích hoạt lại.",
+  "@previewDisplayDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hotSaleSubtitle": "Tin đang được người bán ưu tiên hiển thị, cập nhật liên tục.",
+  "hotSaleLoadError": "Không tải được tin Hot sale",
+  "hotSaleEmptyTitle": "Chưa có tin Hot sale",
+  "hotSaleEmptyBody": "Các tin được người bán đưa lên Hot sale sẽ hiện ở đây.",
+  "hotSaleEnd": "Đã xem hết tin Hot sale",
+  "displayDaysTitle": "Thời gian hiển thị",
+  "displayDaysFree": "Miễn phí {days} ngày",
+  "@displayDaysFree": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysPlus": "+{days} ngày",
+  "@displayDaysPlus": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysRange": "{start} → {end} · {days} ngày",
+  "@displayDaysRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysStart": "Bắt đầu",
+  "displayDaysEnd": "Kết thúc",
+  "displayDaysToday": "Hôm nay, khi tin được duyệt",
+  "displayDaysCount": "Số ngày hiển thị",
+  "displayDaysExtraCount": "Số ngày thêm",
+  "displayDaysIncluded": "Gồm {free} ngày miễn phí của chuyên mục",
+  "@displayDaysIncluded": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysExtraPrice": "Thêm {days} ngày: {credits} xu",
+  "@displayDaysExtraPrice": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysNoCharge": "Miễn phí",
+  "displayDaysPackSave": "Giá theo mốc {days} ngày, tiết kiệm {credits} xu",
+  "@displayDaysPackSave": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysSuggest": "Lấy {days} ngày chỉ {credits} xu",
+  "@displayDaysSuggest": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysMax": "Chuyên mục này hiển thị tối đa {days} ngày.",
+  "@displayDaysMax": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysPayNote": "Xu được giữ khi gửi tin, trừ khi tin được duyệt, hoàn lại nếu bị từ chối.",
+  "displayDaysDone": "Xong",
+  "displayDaysCardHint": "Chạm để đổi ngày bắt đầu hoặc thêm ngày",
+  "displayDaysScheduled": "Hẹn hiện từ {date}",
+  "@displayDaysScheduled": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendNewEnd": "Hết hạn mới: {date}",
+  "@extendNewEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendCurrentEnd": "Đang hiển thị đến {date}",
+  "@extendCurrentEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "extendAddable": "Thêm được tối đa {days} ngày nữa",
+  "@extendAddable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "extendLimitReached": "Tin đã hiển thị tối đa {days} ngày, chưa gia hạn thêm được.",
+  "@extendLimitReached": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "extendChargeNote": "Xu bị trừ ngay, không cần duyệt lại.",
+  "autoExtendTitle": "Tự gia hạn 30 ngày",
+  "autoExtendBody": "Khi tin còn dưới 1 ngày, tự trừ {credits} xu nếu ví đủ.",
+  "@autoExtendBody": {
+    "placeholders": {
+      "credits": {
+        "type": "int"
+      }
+    }
+  },
+  "autoExtendOn": "Đã bật tự gia hạn",
+  "autoExtendOff": "Đã tắt tự gia hạn",
+  "accExtendedDays": "Đã gia hạn thêm {days} ngày",
+  "@accExtendedDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysTodayShort": "Hôm nay",
+  "displayDaysShortTitle": "Không đủ xu cho ngày thêm",
+  "displayDaysShortBody": "Ví còn thiếu {missing} xu để hiển thị thêm ngày. Bạn có thể nạp xu, hoặc đăng với số ngày miễn phí.",
+  "@displayDaysShortBody": {
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "displayDaysUseFree": "Đăng với {days} ngày miễn phí",
+  "@displayDaysUseFree": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "originalPriceLabel": "Giá gốc (trước giảm)",
+  "originalPricePlaceholder": "Để trống nếu không giảm giá",
+  "originalPriceHint": "Dành cho shop: người mua thấy giá gốc gạch ngang và % giảm. Sau khi đăng không sửa tăng được.",
+  "originalPriceDiscount": "Giảm {percent}% so với giá gốc",
+  "@originalPriceDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "originalPriceError": "Giá gốc phải cao hơn giá bán",
+  "promoTitle": "Quảng bá tin",
+  "promoNotPromotable": "Tin chưa hiển thị nên chưa quảng bá được. Hiện lại tin trong Quản lý tin rồi quay lại đây.",
+  "promoBoostRunning": "Đang ở đầu danh sách đến {date}",
+  "@promoBoostRunning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "promoBoostAgainAt": "Đẩy lại sau {date}",
+  "@promoBoostAgainAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "promoRunning": "Đang chạy",
+  "promoHistoryTitle": "Lượt quảng bá gần đây",
+  "promoHistoryEmpty": "Tin này chưa được quảng bá lần nào.",
+  "promoHistoryFeature": "Hot sale {days} ngày",
+  "@promoHistoryFeature": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "promoFree": "Lượt tặng",
+  "promoEnded": "Đã kết thúc",
+  "promoLoadError": "Không tải được thông tin quảng bá",
+  "promoBalanceAfter": "Ví còn {left} xu sau khi trả.",
+  "@promoBalanceAfter": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "promoPickTitle": "Chọn tin để quảng bá",
+  "promoPickSubtitle": "Chỉ tin đang hiển thị mới đẩy hoặc lên Hot sale được",
+  "promoPickEmpty": "Bạn chưa có tin nào đang hiển thị.",
+  "hubTitle": "Quảng bá",
+  "hubFreeBoosts": "Đẩy miễn phí còn {left}/{perMonth} lượt",
+  "@hubFreeBoosts": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      },
+      "perMonth": {
+        "type": "int"
+      }
+    }
+  },
+  "hubThisMonth": "Tháng này: {boosts} lượt đẩy · {features} lượt Hot sale",
+  "@hubThisMonth": {
+    "placeholders": {
+      "boosts": {
+        "type": "int"
+      },
+      "features": {
+        "type": "int"
+      }
+    }
+  },
+  "hubFilterAll": "Tất cả",
+  "hubFilterRunning": "Đang quảng bá",
+  "hubFilterExpiring": "Sắp hết hạn",
+  "hubFilterIdle": "Chưa quảng bá",
+  "hubBoostedFor": "Đang đẩy · còn {time}",
+  "@hubBoostedFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubFeaturedFor": "Hot sale · còn {time}",
+  "@hubFeaturedFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubExpiresIn": "Hết hạn sau {time}",
+  "@hubExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hubHours": "{count} giờ",
+  "@hubHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hubDays": "{count} ngày",
+  "@hubDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hubAutoExtend": "Tự gia hạn",
+  "hubDetails": "Chi tiết",
+  "hubEmptyRunning": "Chưa có tin nào đang được đẩy hoặc ở Hot sale.",
+  "hubEmptyExpiring": "Không có tin nào hết hạn trong 7 ngày tới.",
+  "hubEmptyIdle": "Tin nào của bạn cũng đang được quảng bá.",
+  "hubExpiringTip": "{count} tin sắp hết hạn: gia hạn để tin không bị ẩn.",
+  "@hubExpiringTip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insTitle": "Thống kê",
+  "insRangeDays": "{days} ngày",
+  "@insRangeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "insViews": "Lượt xem",
+  "insSaves": "Lượt lưu tin",
+  "insChats": "Người nhắn tin",
+  "insUp": "Tăng {percent}% so với kỳ trước",
+  "@insUp": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "insDown": "Giảm {percent}% so với kỳ trước",
+  "@insDown": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "insSame": "Bằng kỳ trước",
+  "insNew": "Kỳ trước chưa có",
+  "insChartTitle": "Lượt xem theo ngày",
+  "insChartEmpty": "Chưa có lượt xem nào trong khoảng này.",
+  "insChartDay": "{date}: {views} lượt xem · {saves} lượt lưu",
+  "@insChartDay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "views": {
+        "type": "int"
+      },
+      "saves": {
+        "type": "int"
+      }
+    }
+  },
+  "insChartHint": "Chạm vào cột để xem từng ngày",
+  "insListingsTitle": "Tin đăng",
+  "insActive": "Đang bán",
+  "insPending": "Chờ duyệt",
+  "insHidden": "Đã ẩn",
+  "insSold": "Đã bán",
+  "insTopTitle": "Tin được xem nhiều",
+  "insTopStats": "{views} lượt xem · {saves} lượt lưu",
+  "@insTopStats": {
+    "placeholders": {
+      "views": {
+        "type": "int"
+      },
+      "saves": {
+        "type": "int"
+      }
+    }
+  },
+  "insTopEmpty": "Chưa có tin nào đang hiển thị.",
+  "insTipsTitle": "Gợi ý",
+  "insTipBoost": "\"{title}\" đang được xem nhiều nhất. Đẩy tin để giữ ở đầu danh sách.",
+  "@insTipBoost": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "insTipExpiring": "{count} tin sắp hết hạn trong 7 ngày. Gia hạn để tin không bị ẩn.",
+  "@insTipExpiring": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insTipNoViews": "Tin chưa có lượt xem: thêm ảnh rõ, tiêu đề cụ thể và giá hợp lý để dễ được chú ý hơn.",
+  "insPromotions": "Trong kỳ: {boosts} lượt đẩy · {features} lượt Hot sale",
+  "@insPromotions": {
+    "placeholders": {
+      "boosts": {
+        "type": "int"
+      },
+      "features": {
+        "type": "int"
+      }
+    }
+  },
+  "insLoadError": "Không tải được thống kê",
+  "insViewsNote": "Lượt xem theo ngày được ghi từ 11/11/2026.",
+  "spTitle": "Poster shop",
+  "spCreate": "Tạo poster",
+  "spLoadError": "Không tải được poster",
+  "spNoShopTitle": "Bạn chưa có trang shop",
+  "spNoShopBody": "Poster hiện ở trang shop và trang Shop uy tín, nên cần có trang shop trước.",
+  "spPlanTitle": "Poster dành cho gói Cửa hàng",
+  "spPlanBody": "Nâng lên gói Cửa hàng để chạy poster ở trang shop và trang Shop uy tín.",
+  "spSeePlans": "Xem gói",
+  "spSlots": "Poster cùng lúc",
+  "spMonthly": "Đã gửi tháng này",
+  "spUnverified": "Shop chưa được xác minh nên poster đã duyệt chưa hiện công khai.",
+  "spCooldown": "Bạn bị tạm khóa gửi poster đến {date} vì poster bị từ chối nhiều lần.",
+  "@spCooldown": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "spRules": "Ảnh 1200×600 (tỉ lệ 2:1), chạy {min} đến {max} ngày. Admin duyệt trong khoảng 24 giờ.",
+  "@spRules": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "spMonthlyFull": "Bạn đã gửi đủ {limit} poster của tháng này.",
+  "@spMonthlyFull": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "spFilterAll": "Tất cả",
+  "spFilterRunning": "Đang chạy",
+  "spFilterPending": "Chờ duyệt",
+  "spFilterScheduled": "Đã lên lịch",
+  "spFilterRejected": "Bị từ chối",
+  "spFilterEnded": "Đã kết thúc",
+  "spStateStopped": "Đã dừng",
+  "spEmpty": "Chưa có poster nào",
+  "spEmptyBody": "Tạo poster đầu tiên để quảng bá chương trình của shop.",
+  "spEmptyFilter": "Không có poster nào ở mục này.",
+  "spDates": "{start} – {end} · {days} ngày",
+  "@spDates": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "spOpensShop": "Bấm vào mở trang shop",
+  "spOpensListing": "Bấm vào mở tin: {title}",
+  "@spOpensListing": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "spRejectedReason": "Lý do từ chối: {reason}",
+  "@spRejectedReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "spReasonWrongSize": "Sai kích thước ảnh",
+  "spReasonMisleadingPrice": "Giá hoặc ưu đãi gây hiểu lầm",
+  "spReasonBrandMisuse": "Dùng logo, thương hiệu không thuộc shop",
+  "spReasonProhibited": "Nội dung bị cấm",
+  "spReasonTooMuchText": "Quá nhiều chữ trên ảnh",
+  "spReasonOther": "Lý do khác",
+  "spEdit": "Sửa",
+  "spResubmit": "Sửa và gửi lại",
+  "spStop": "Dừng",
+  "spCancel": "Hủy gửi",
+  "spStopTitle": "Dừng poster này?",
+  "spStopBody": "Poster ngừng hiện ngay và không chạy lại được.",
+  "spCancelTitle": "Hủy poster đang chờ duyệt?",
+  "spCancelBody": "Lượt gửi trong tháng không được hoàn lại.",
+  "spConfirmStop": "Dừng poster",
+  "spConfirmCancel": "Hủy poster",
+  "spKeep": "Giữ lại",
+  "spStopped": "Đã dừng poster",
+  "spNewTitle": "Tạo poster",
+  "spEditTitle": "Sửa poster",
+  "spImage": "Ảnh poster",
+  "spPickImage": "Chọn ảnh 1200×600",
+  "spChangeImage": "Đổi ảnh",
+  "spImageHint": "Chọn ảnh bất kỳ rồi kéo, thu phóng cho vừa khung 2:1. Chữ nên nằm sẵn trong ảnh.",
+  "spImageRequired": "Hãy chọn ảnh poster.",
+  "spName": "Tên chương trình",
+  "spNameHint": "VD: Galaxy Week giảm tới 20%",
+  "spNameHelper": "Không hiện trên ảnh, dùng cho trình đọc màn hình và để bạn dễ quản lý.",
+  "spNameRequired": "Hãy nhập tên chương trình.",
+  "spOpens": "Khi bấm vào poster",
+  "spOpenShop": "Mở trang shop",
+  "spOpenListing": "Mở một tin",
+  "spChooseListing": "Chọn tin",
+  "spNoListings": "Shop chưa có tin nào đang bán.",
+  "spListingRequired": "Hãy chọn tin.",
+  "spStart": "Ngày bắt đầu",
+  "spStartNow": "Ngay khi được duyệt",
+  "spStartOn": "Chọn ngày",
+  "spDuration": "Thời gian chạy",
+  "spDays": "{days} ngày",
+  "@spDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "spEndsOn": "Kết thúc khoảng {date}",
+  "@spEndsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "spEditRunningNote": "Poster đang chạy sẽ tạm ẩn cho tới khi admin duyệt lại.",
+  "spSubmit": "Gửi duyệt",
+  "spSubmitted": "Đã gửi poster, admin sẽ duyệt trong khoảng 24 giờ.",
+  "spErrSlotFull": "Khung giờ này đã đủ số poster chạy cùng lúc. Hãy chọn ngày khác hoặc dừng một poster.",
+  "spErrMonthly": "Bạn đã gửi đủ số poster của tháng này.",
+  "spErrCooldown": "Bạn đang bị tạm khóa gửi poster.",
+  "spErrPlan": "Chỉ gói Cửa hàng mới đăng được poster.",
+  "spErrShop": "Bạn cần có trang shop để đăng poster.",
+  "spErrListing": "Tin này không còn bán, hãy chọn tin khác.",
+  "spErrStartLate": "Chỉ hẹn ngày bắt đầu trước tối đa 14 ngày.",
+  "spErrImage": "Tải ảnh thất bại, hãy thử ảnh khác.",
+  "spErrNotEditable": "Poster đã kết thúc, hãy tạo poster mới.",
+  "spErrGeneric": "Không gửi được, vui lòng thử lại.",
+  "spSchedule": "Lịch chạy",
+  "spCropTitle": "Căn chỉnh poster",
+  "spAdjust": "Căn chỉnh lại",
+  "cropDone": "Dùng ảnh này",
+  "cropFill": "Lấp đầy khung",
+  "cropFit": "Vừa toàn ảnh",
+  "cropZoom": "Thu phóng",
+  "cropHint": "Kéo để di chuyển, chụm hai ngón hoặc kéo thanh trượt để phóng to, thu nhỏ. Phần trống được tô bằng nền bạn chọn.",
+  "cropLowRes": "Ảnh gốc khá nhỏ so với khung, ảnh có thể bị mờ. Thử thu nhỏ hoặc chọn ảnh lớn hơn.",
+  "cropLoadError": "Không mở được ảnh này, hãy thử ảnh khác.",
+  "accAvatarSection": "Ảnh đại diện",
+  "accAvatarHint": "Ảnh hiển thị trong khung tròn ở hồ sơ, tin đăng và tin nhắn. Bấm Căn chỉnh để chọn phần ảnh muốn hiện.",
+  "accAdjustAvatar": "Căn chỉnh",
+  "accAvatarCropTitle": "Căn chỉnh ảnh đại diện",
+  "accInfoSection": "Thông tin hồ sơ",
+  "accDisplayNameHint": "VD: Nguyễn Văn A hoặc tên cửa hàng",
+  "accUsernameHelper": "3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.",
+  "accBioHint": "Vài dòng giới thiệu về bạn hoặc cửa hàng",
+  "accSaved": "Đã lưu hồ sơ",
+  "cropBackground": "Nền",
+  "cropBgBlur": "Mờ",
+  "cropBgAuto": "Theo ảnh",
+  "cropBgWhite": "Trắng",
+  "cropBgBlack": "Đen",
+  "cropTrim": "Bỏ viền thừa",
+  "cropTrimOn": "Đã bỏ viền thừa",
+  "msTitle": "Quản lý shop",
+  "msLoadError": "Chưa tải được thông tin shop",
+  "msPlanTitle": "Trang shop dành cho gói Cửa hàng",
+  "msPlanBody": "Nâng cấp gói Cửa hàng để mở trang shop riêng với logo, ảnh bìa và poster, và có thể được xác minh để lên mục Shop uy tín.",
+  "msCreateTitle": "Mở trang shop của bạn",
+  "msCreateBody": "Đặt tên shop trước, sau đó bạn thêm logo, ảnh bìa và giới thiệu.",
+  "msCreateAction": "Mở shop",
+  "msCreated": "Đã mở trang shop",
+  "msName": "Tên shop",
+  "msNameHint": "VD: Góc Nhà Decor",
+  "msNameRequired": "Tên shop từ 2 đến 60 ký tự.",
+  "msNameLocked": "Shop đã xác minh nên không tự đổi tên được. Liên hệ ReStore nếu cần đổi.",
+  "msTagline": "Câu giới thiệu ngắn",
+  "msTaglineHint": "VD: Đồ decor handmade, giao nhanh nội thành",
+  "msDescription": "Giới thiệu shop",
+  "msDescriptionHint": "Shop bán gì, cam kết chất lượng, chính sách đổi trả...",
+  "msAddress": "Địa chỉ hiển thị",
+  "msAddressHint": "VD: Quận 1, TP. Hồ Chí Minh",
+  "msInfoSection": "Thông tin shop",
+  "msColorSection": "Màu nhận diện",
+  "msColorHint": "Dùng cho logo chữ, ảnh bìa mặc định và điểm nhấn trên trang shop.",
+  "msColorAuto": "Mặc định",
+  "msChangeCover": "Đổi ảnh bìa",
+  "msChangeLogo": "Đổi logo",
+  "msImageNew": "Chọn ảnh mới",
+  "msImageAdjust": "Căn chỉnh lại",
+  "msImageRemove": "Xóa ảnh",
+  "msCoverCropTitle": "Căn chỉnh ảnh bìa",
+  "msLogoCropTitle": "Căn chỉnh logo",
+  "msStatFollowers": "Người theo dõi",
+  "msStatListings": "Tin đang bán",
+  "msStatPostersRunning": "Poster đang chạy",
+  "msStatPostersPending": "Poster chờ duyệt",
+  "msVerifiedTitle": "Shop đã xác minh",
+  "msVerifiedBody": "Shop đang hiện ở mục Shop uy tín.",
+  "msCertificate": "Mã chứng nhận: {code}.",
+  "@msCertificate": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "msUnverifiedTitle": "Shop chưa xác minh",
+  "msUnverifiedBody": "Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Liên hệ ReStore để được xác minh.",
+  "msPlanExpiredTitle": "Gói Cửa hàng đã hết hạn",
+  "msPlanExpiredBody": "Poster của shop đang tạm ẩn. Gia hạn gói để poster chạy lại.",
+  "msViewPublic": "Xem trang shop",
+  "msPosters": "Poster shop",
+  "msPostersBody": "Quảng bá shop bằng poster trên trang shop và Shop uy tín.",
+  "msSave": "Lưu thay đổi",
+  "msSaved": "Đã lưu thông tin shop",
+  "msErrExists": "Bạn đã có trang shop.",
+  "msErrImage": "Ảnh tải lên không hợp lệ, hãy thử ảnh khác.",
+  "msErrGeneric": "Không lưu được, vui lòng thử lại.",
+  "followShopsTab": "Shop",
+  "followShopsEmpty": "Bạn chưa theo dõi shop nào",
+  "followShopsEmptyHint": "Theo dõi shop uy tín để xem tin mới của họ ở cùng một chỗ.",
+  "followShopsBrowse": "Khám phá Shop uy tín",
+  "followShopsNewCount": "{count} tin mới",
+  "@followShopsNewCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFollowerCount": "{count} người theo dõi",
+  "@followShopsFollowerCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFeedTitle": "Shop bạn theo dõi",
+  "followShopsFeedCta": "Xem tin mới",
+  "followShopsFeedNew": "{count} tin mới trong 7 ngày qua",
+  "@followShopsFeedNew": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsCount": "Đang theo dõi {count} shop",
+  "@followShopsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsStripHint": "Bấm vào shop để mở trang của shop",
+  "followShopsLatest": "Tin mới nhất",
+  "followShopsLatestHint": "Tin vừa đăng của các shop bạn theo dõi",
+  "followShopsListingsEmpty": "Chưa có tin nào",
+  "followShopsListingsEmptyHint": "Các shop bạn theo dõi chưa có tin đang bán.",
+  "followShopsEnd": "Bạn đã xem hết tin mới",
+  "followShopsLoadError": "Chưa tải được shop bạn theo dõi",
+  "msFollowersTitle": "Người theo dõi shop",
+  "msFollowersTitleCount": "Người theo dõi ({count})",
+  "@msFollowersTitleCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "msFollowersEmpty": "Chưa có ai theo dõi shop",
+  "msFollowersEmptyHint": "Người mua theo dõi shop của bạn sẽ hiện ở đây.",
+  "msFollowedSince": "Từ {date}",
+  "@msFollowedSince": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "followingHubTitle": "Đang theo dõi",
+  "followingHubSubtitle": "Tin mới từ shop và người bạn theo dõi",
+  "followingHubOnboardSubtitle": "Chọn vài shop để bắt đầu",
+  "followingHubManage": "Quản lý danh sách theo dõi",
+  "followingHubPeopleTitle": "Người bạn theo dõi",
+  "followingHubSeeAll": "Xem tất cả",
+  "followingHubFeedTitle": "Mới từ shop bạn theo dõi",
+  "followingHubFeedHint": "Chọn một shop để xem riêng tin của shop đó",
+  "followingHubAll": "Tất cả",
+  "followingHubOpenShop": "Xem shop",
+  "followingHubSuggestHint": "Ưu tiên shop hợp danh mục bạn hay xem, lưu và đối tác của ReStore",
+  "followingHubOnboardTitle": "Theo dõi shop để không bỏ lỡ tin mới",
+  "followingHubOnboardBody": "Bấm Theo dõi ở các shop bên dưới, tin mới của họ sẽ gom về trang này.",
+  "followingHubBenefitFeed": "Tin mới của mọi shop gom về một chỗ",
+  "followingHubBenefitFilter": "Lọc nhanh theo từng shop",
+  "followingHubBenefitVerified": "Chỉ shop đã được ReStore xác minh",
+  "followingHubNoSuggestions": "Chưa có shop nào để gợi ý",
+  "followingHubSeeFeed": "Xem tin mới từ {count} shop",
+  "@followingHubSeeFeed": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "followShopsFollowerCountText": "{count} người theo dõi",
+  "@followShopsFollowerCountText": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "followingHubPostsTitle": "Bạn bè vừa đăng",
+  "followingHubPostsHint": "Bài mới trên Bảng tin của người bạn theo dõi",
+  "followingHubForYouTitle": "Shop dành cho bạn",
+  "followingHubPartner": "Đối tác",
+  "editListingTitle": "Sửa tin đăng",
+  "editSubmit": "Gửi duyệt lại",
+  "editSubmittedLive": "Đã gửi bản sửa. Tin vẫn hiển thị bản cũ cho tới khi được duyệt",
+  "editSubmitted": "Đã lưu thay đổi, tin đang chờ duyệt lại",
+  "editNoticeLive": "Người mua vẫn thấy bản hiện tại cho tới khi bản sửa được duyệt. Đẩy tin, Hot sale và ưu đãi đã áp dụng giữ nguyên.",
+  "editNoticeCategoryLocked": "Tin đã duyệt không đổi được chuyên mục.",
+  "editNoticeReview": "Sửa xong, tin sẽ được duyệt lại trước khi hiển thị.",
+  "editRejectedReason": "Lần trước bị từ chối: {reason}",
+  "@editRejectedReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "editLoadFailed": "Không mở được tin để sửa. Vui lòng thử lại.",
+  "leaveEditTitle": "Bỏ các thay đổi?",
+  "leaveEditMessage": "Những gì bạn vừa sửa sẽ không được lưu. Tin giữ nguyên như trước.",
+  "leaveEditDiscard": "Bỏ thay đổi",
+  "leaveEditKeep": "Sửa tiếp",
+  "accEditPending": "Bản sửa đang chờ duyệt",
+  "accEditRejected": "Bản sửa bị từ chối: {reason}",
+  "@accEditRejected": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "accDiscardEdit": "Bỏ bản sửa",
+  "accEditDiscarded": "Đã bỏ bản sửa, tin giữ nguyên bản đang hiển thị",
+  "accDiscardEditFailed": "Chưa bỏ được bản sửa. Vui lòng thử lại."
 }

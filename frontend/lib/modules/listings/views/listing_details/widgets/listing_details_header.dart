@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/data/models/category_model.dart';
-import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/shared/widgets/app_category_icon.dart';
 
 /// Tên danh mục đã chọn kèm icon, nhắc người bán thông tin bên dưới theo danh mục nào
 class ListingDetailsHeader extends StatelessWidget {
@@ -25,10 +25,13 @@ class ListingDetailsHeader extends StatelessWidget {
             color: AppColors.primarySoft,
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            AppIcons.forCategory(category.iconKey),
-            size: 20,
-            color: AppColors.primaryDark,
+          child: Center(
+            child: AppCategoryIcon(
+              imageUrl: category.imageUrl,
+              iconKey: category.iconKey,
+              size: 28,
+              fallbackSize: 20,
+            ),
           ),
         ),
         const SizedBox(width: 12),
