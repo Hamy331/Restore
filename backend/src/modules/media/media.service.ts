@@ -2,21 +2,22 @@ import { randomUUID } from 'node:crypto';
 import { AppError } from '../../common/errors/app-error.js';
 import { contentTypeOf, getObject, putObject, type StorageArea } from '../../services/storage.service.js';
 
-/** Ảnh người dùng tải lên ngoài tin đăng: ảnh bài viết bảng tin và ảnh đại diện. */
-export const MEDIA_AREAS = { feed: 'feeds', avatar: 'avatars' } as const satisfies Record<string, StorageArea>;
+/** Ảnh người dùng tải lên ngoài tin đăng: ảnh bài viết bảng tin, ảnh đại diện, poster shop. */
+export const MEDIA_AREAS = { feed: 'feeds', avatar: 'avatars', poster: 'posters', shop: 'shops' } as const satisfies Record<string, StorageArea>;
 export type MediaPurpose = keyof typeof MEDIA_AREAS;
 type MediaArea = (typeof MEDIA_AREAS)[MediaPurpose];
 
 export const MEDIA_PREFIX = '/api/v1/media/';
 const MAX_BYTES = 5 * 1024 * 1024;
 
-/** Tên file: "<userId>_<uuid>.<ext>" để biết ảnh của ai mà không cần bảng riêng */
-const NAME = /^[0-9a-f-]{36}_[0-9a-f-]{36}\.(jpg|png|webp)$/;
+/** Tên file: "<userId>_<uuid>.<ext>" để biết ảnh của ai mà không cần bảng riêng.
+ *  userId là UUID, hoặc id chữ-số-gạch ngang của tài khoản seed (VD shop-samsung). */
+const NAME = /^[A-Za-z0-9-]{1,64}_[0-9a-f-]{36}\.(jpg|png|webp)$/;
 
 export function mediaPurpose(value: unknown): MediaPurpose {
   if (value === undefined) return 'feed';
   if (typeof value === 'string' && value in MEDIA_AREAS) return value as MediaPurpose;
-  throw new AppError(400, 'INVALID_PURPOSE', 'purpose must be feed or avatar');
+  throw new AppError(400, 'INVALID_PURPOSE', 'purpose must be feed, avatar or poster');
 }
 
 /** Đuôi file theo magic bytes; không phải JPEG/PNG/WebP thì 415 */

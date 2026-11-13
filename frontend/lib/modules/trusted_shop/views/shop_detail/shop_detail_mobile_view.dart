@@ -275,7 +275,15 @@ class _ShopDetailMobileViewState extends State<ShopDetailMobileView> {
         SliverToBoxAdapter(
           child: ShopBannerCarousel(
             banners: state.banners,
-            onTap: (_) => _scrollToProducts(),
+            // banner gắn tin thì mở tin, không thì cuộn xuống sản phẩm
+            onTap: (banner) {
+              final listingId = banner.banner.listingId;
+              if (listingId == null) {
+                _scrollToProducts();
+              } else {
+                context.push('/listings/$listingId');
+              }
+            },
           ),
         ),
       ],

@@ -365,16 +365,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accActivity => 'Activity';
 
   @override
-  String get accProPlan => 'Pro plan';
+  String get accProPlan => 'Account plan';
 
   @override
   String get accCreateStore => 'Create a store';
 
   @override
-  String get accCoins => 'ReStore coins';
+  String get accCoins => 'ReStore Points';
 
   @override
-  String get accSaved => 'Saved';
+  String get accSaved => 'Profile saved';
 
   @override
   String get accSavedSearches => 'Saved searches';
@@ -1742,7 +1742,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeSeeAll => 'See all';
 
   @override
-  String get homeFeaturedTag => 'Featured';
+  String get homeFeaturedTag => 'Hot';
 
   @override
   String get homeExchangeTag => 'Swappable';
@@ -2949,7 +2949,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickActionStats => 'Insights';
 
   @override
-  String get quickActionShopPage => 'Shop page';
+  String get quickActionShopManage => 'Manage shop';
 
   @override
   String get trustedShopsFamousEyebrow => 'Official';
@@ -3285,4 +3285,1775 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedMoreComments => 'Load more comments';
+
+  @override
+  String get creditTitle => 'ReStore Points';
+
+  @override
+  String get creditAvailable => 'Available points';
+
+  @override
+  String creditPoints(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$amount points',
+      one: '$amount point',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get creditUnit => 'points';
+
+  @override
+  String get creditPaidLabel => 'Purchased';
+
+  @override
+  String get creditBonusLabel => 'Bonus';
+
+  @override
+  String get creditHeldLabel => 'On hold';
+
+  @override
+  String creditBonusExpiry(String date) {
+    return 'Bonus points start expiring on $date.';
+  }
+
+  @override
+  String get creditHeldHint =>
+      'Points on hold belong to listings awaiting review and come back if a listing is rejected.';
+
+  @override
+  String get creditTopupAction => 'Buy points';
+
+  @override
+  String get creditUsesTitle => 'Use points to';
+
+  @override
+  String get creditUsePostMore => 'Post more';
+
+  @override
+  String get creditUseBoost => 'Boost a listing';
+
+  @override
+  String get creditUseUpgrade => 'Upgrade plan';
+
+  @override
+  String get creditRecentTitle => 'Recent activity';
+
+  @override
+  String get creditSeeAll => 'See all';
+
+  @override
+  String get creditEmptyHistory => 'No point activity yet';
+
+  @override
+  String get creditLoadError => 'Couldn\'t load your points';
+
+  @override
+  String get creditHistoryTitle => 'Points history';
+
+  @override
+  String get creditFilterAll => 'All';
+
+  @override
+  String get creditFilterTopup => 'Purchases';
+
+  @override
+  String get creditFilterSpend => 'Spent';
+
+  @override
+  String get creditFilterRefund => 'Refunds';
+
+  @override
+  String get creditTxnTopup => 'Points purchase';
+
+  @override
+  String get creditTxnBonus => 'Bonus points';
+
+  @override
+  String get creditTxnSpend => 'Points spent';
+
+  @override
+  String get creditTxnRefund => 'Points refunded';
+
+  @override
+  String get creditTxnExpire => 'Points expired';
+
+  @override
+  String get creditTxnAdjust => 'Adjustment';
+
+  @override
+  String creditTxnOrder(String code) {
+    return 'Order $code';
+  }
+
+  @override
+  String get creditTopupTitle => 'Choose a pack';
+
+  @override
+  String get creditRate =>
+      '1 point = 1,000 VND. Bigger packs include bonus points.';
+
+  @override
+  String get creditPopular => 'Popular';
+
+  @override
+  String creditBonusTag(String amount) {
+    return '+$amount bonus';
+  }
+
+  @override
+  String get creditNoBonus => 'No bonus';
+
+  @override
+  String get creditTerms =>
+      'Points can only be used in ReStore. They can\'t be cashed out or transferred to anyone. Bonus points are used first and expire after 90 days.';
+
+  @override
+  String creditContinue(String price) {
+    return 'Continue · $price';
+  }
+
+  @override
+  String get creditConfirmTitle => 'Confirm purchase';
+
+  @override
+  String get creditSummaryPack => 'Pack';
+
+  @override
+  String get creditSummaryReceive => 'You get';
+
+  @override
+  String get creditSummaryTotal => 'Total';
+
+  @override
+  String creditReceiveWithBonus(String total, String bonus) {
+    return '$total points ($bonus bonus)';
+  }
+
+  @override
+  String get creditPayMethodTitle => 'Payment method';
+
+  @override
+  String get creditMethodZalopay => 'ZaloPay';
+
+  @override
+  String get creditMethodZalopayDesc =>
+      'ZaloPay wallet, local ATM card or international card.';
+
+  @override
+  String get creditMethodVietqr => 'VietQR bank transfer';
+
+  @override
+  String get creditMethodVietqrDesc =>
+      'Scan with any banking app. Points arrive when the money does.';
+
+  @override
+  String get creditSandboxNote =>
+      'Test mode (sandbox): no real money is charged.';
+
+  @override
+  String get creditAgree =>
+      'I agree that points can\'t be exchanged back for cash, unless a payment fails or is charged twice.';
+
+  @override
+  String creditPayAction(String price) {
+    return 'Pay $price';
+  }
+
+  @override
+  String get creditPayZalopayTitle => 'Pay with ZaloPay';
+
+  @override
+  String get creditPayBankTitle => 'Bank transfer';
+
+  @override
+  String get creditOrderCode => 'Order code';
+
+  @override
+  String get creditGatewayNotConnected =>
+      'ZaloPay is skipped (debug mode or no server keys). Use the buttons below to simulate the result.';
+
+  @override
+  String get creditOpenGateway => 'Open ZaloPay checkout';
+
+  @override
+  String get creditWaitingGateway =>
+      'Finish paying on the ZaloPay page, then come back here. Your points update automatically.';
+
+  @override
+  String get creditSimulateTitle =>
+      'Simulate the payment result (test mode only)';
+
+  @override
+  String get creditSimulateSuccess => 'Paid';
+
+  @override
+  String get creditSimulateFail => 'Failed';
+
+  @override
+  String get creditScanQr => 'Scan with any banking app';
+
+  @override
+  String get creditAccountNo => 'Account number';
+
+  @override
+  String get creditAccountName => 'Account name';
+
+  @override
+  String get creditTransferContent => 'Transfer note';
+
+  @override
+  String creditQrExpires(String time) {
+    return 'Code expires at $time';
+  }
+
+  @override
+  String get creditWaitingTransfer =>
+      'Waiting for your transfer. Keep the transfer note as is so the points arrive automatically.';
+
+  @override
+  String get creditVietQrUnavailable =>
+      'The receiving bank account isn\'t set up on the server yet.';
+
+  @override
+  String get creditCopied => 'Copied';
+
+  @override
+  String get creditCopy => 'Copy';
+
+  @override
+  String get creditCancelOrder => 'Cancel order';
+
+  @override
+  String get creditResultTitle => 'Result';
+
+  @override
+  String get creditSuccessTitle => 'Purchase complete';
+
+  @override
+  String creditSuccessAmount(String amount) {
+    return '+$amount points';
+  }
+
+  @override
+  String get creditSuccessBody => 'The points are in your wallet.';
+
+  @override
+  String get creditPendingTitle => 'Waiting for confirmation';
+
+  @override
+  String get creditPendingBody =>
+      'Your points will arrive as soon as the payment is confirmed. You can leave this page.';
+
+  @override
+  String get creditFailTitle => 'Purchase not completed';
+
+  @override
+  String get creditFailBody =>
+      'The payment was cancelled or expired. You haven\'t been charged.';
+
+  @override
+  String get creditCheckAgain => 'Check again';
+
+  @override
+  String get creditTryAgain => 'Try again';
+
+  @override
+  String get creditDone => 'Done';
+
+  @override
+  String get creditBackToWallet => 'Back to wallet';
+
+  @override
+  String get creditErrorTooManyPending =>
+      'You have too many unpaid orders. Wait 15 minutes for them to expire or cancel one.';
+
+  @override
+  String get creditErrorGeneric => 'Something went wrong, please try again.';
+
+  @override
+  String get creditPackagesError => 'Couldn\'t load point packs';
+
+  @override
+  String get postingLimitTotalTitle => 'Free listings used up';
+
+  @override
+  String postingLimitTotalMessage(int limit) {
+    return 'A personal account can have at most $limit free listings at once across all categories.';
+  }
+
+  @override
+  String postingLimitRecentMessage(String category, int days) {
+    return 'You have posted for free in $category many times in the last $days days. Each category allows up to twice its free slots every $days days.';
+  }
+
+  @override
+  String postingPayTitle(int credits) {
+    return 'Post this listing for $credits points';
+  }
+
+  @override
+  String postingPayBalance(int available) {
+    return 'Your wallet: $available points';
+  }
+
+  @override
+  String get postingPayNote =>
+      'Points are held when you submit and only spent once the listing is approved. Rejected listings get their points back.';
+
+  @override
+  String postingPayMissing(int missing) {
+    return 'You need $missing more points.';
+  }
+
+  @override
+  String postingPayContinue(int credits) {
+    return 'Continue · $credits points';
+  }
+
+  @override
+  String postingPayPublish(int credits) {
+    return 'Post · $credits points';
+  }
+
+  @override
+  String get postingTopUp => 'Buy points';
+
+  @override
+  String get postingFreeWaysTitle => 'Or free up a free slot';
+
+  @override
+  String postingQuotaTotalUsage(int used, int limit) {
+    return '$used/$limit free listings used on your account';
+  }
+
+  @override
+  String postingQuotaPaidHint(int credits) {
+    return 'Out of slots? Post more with points, from $credits points per listing.';
+  }
+
+  @override
+  String accExpiresIn(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String get accExpired => 'Expired';
+
+  @override
+  String get accReactivate => 'Reactivate';
+
+  @override
+  String get accReactivated => 'Listing reactivated';
+
+  @override
+  String get accExtend => 'Extend listing';
+
+  @override
+  String accExtendMessage(int days, int credits) {
+    return 'Show this listing for $days more days for $credits points. Points are spent right away, no new review needed.';
+  }
+
+  @override
+  String accExtendPay(int credits) {
+    return 'Extend · $credits points';
+  }
+
+  @override
+  String accExtendTooEarly(int days) {
+    return 'You can extend once $days days or fewer are left.';
+  }
+
+  @override
+  String get accExtended => 'Listing extended';
+
+  @override
+  String postingPayReactivate(int credits) {
+    return 'Reactivate · $credits points';
+  }
+
+  @override
+  String get postingLater => 'Later';
+
+  @override
+  String get duplicateActiveTitle => 'You already posted this';
+
+  @override
+  String get duplicateActiveMessage =>
+      'A matching listing of yours is live or waiting for review, so there is no need to post it again.';
+
+  @override
+  String get duplicateInactiveTitle => 'Reuse your old listing?';
+
+  @override
+  String get duplicateInactiveMessage =>
+      'You have a matching listing that is hidden or expired. Reactivate it to keep its views and saves.';
+
+  @override
+  String get duplicateOpenOld => 'See old listing';
+
+  @override
+  String get duplicatePostNew => 'Post new anyway';
+
+  @override
+  String postingPayReactivateTitle(int credits) {
+    return 'Show this listing again for $credits points';
+  }
+
+  @override
+  String get postingPayNowNote =>
+      'Points are spent as soon as the listing is shown again, no new review needed.';
+
+  @override
+  String get boostSheetMessage =>
+      'Your listing moves to the top of the list for 24 hours.';
+
+  @override
+  String boostFreeNote(int left, int perMonth) {
+    return 'Uses 1 free boost from your plan, $left/$perMonth left this month.';
+  }
+
+  @override
+  String boostPayNote(int credits) {
+    return 'Costs $credits points, spent right away.';
+  }
+
+  @override
+  String boostDiscountNote(int percent) {
+    return 'Your plan gets $percent% off.';
+  }
+
+  @override
+  String get boostUseFree => 'Boost for free';
+
+  @override
+  String boostPay(int credits) {
+    return 'Boost · $credits points';
+  }
+
+  @override
+  String get boostDone => 'Listing boosted to the top';
+
+  @override
+  String boostTooSoon(int hours) {
+    return 'This listing was just boosted. You can boost it again in $hours hours.';
+  }
+
+  @override
+  String get plansTitle => 'Account plans';
+
+  @override
+  String get plansSubtitle => 'Paid with points, 30 days each time';
+
+  @override
+  String get plansCurrent => 'Current plan';
+
+  @override
+  String plansCurrentUntil(String date) {
+    return 'Active until $date';
+  }
+
+  @override
+  String get plansFree => 'Free';
+
+  @override
+  String get plansPersonalBenefitFree =>
+      '1 to 3 free listings per category, up to 5 in total';
+
+  @override
+  String get plansPersonalBenefitPay => 'Out of slots? Post more with points';
+
+  @override
+  String plansPrice(int price) {
+    return '$price points / 30 days';
+  }
+
+  @override
+  String plansBenefitActive(int count) {
+    return '$count active listings at a time';
+  }
+
+  @override
+  String plansBenefitDaily(int count) {
+    return '$count new listings per day';
+  }
+
+  @override
+  String plansBenefitDrafts(int count) {
+    return 'Keep $count drafts';
+  }
+
+  @override
+  String plansBenefitBoosts(int count) {
+    return '$count free boosts every month';
+  }
+
+  @override
+  String plansBenefitBoostDiscount(int percent) {
+    return '$percent% off boosts';
+  }
+
+  @override
+  String get plansBenefitPriority => 'Shown first in your main category';
+
+  @override
+  String get plansBenefitShopPage => 'Your own shop page (coming soon)';
+
+  @override
+  String get plansBuy => 'Get this plan';
+
+  @override
+  String get plansRenew => 'Renew';
+
+  @override
+  String get plansUpgrade => 'Upgrade';
+
+  @override
+  String get plansInUse => 'Current';
+
+  @override
+  String get plansLowerLocked => 'Available when your current plan ends';
+
+  @override
+  String get plansNote =>
+      'Upgrading mid-period credits the unused part of your old plan. Renewing adds 30 days. Points are spent right away and the plan starts immediately.';
+
+  @override
+  String get plansCheckoutPrice => 'Plan price';
+
+  @override
+  String get plansCheckoutCredit => 'Credit for unused days';
+
+  @override
+  String get plansCheckoutTotal => 'To pay';
+
+  @override
+  String get plansCheckoutUntil => 'Active until';
+
+  @override
+  String get plansCheckoutCategory => 'Main category';
+
+  @override
+  String get plansCheckoutCategoryHint =>
+      'Listings in this category are shown first.';
+
+  @override
+  String plansCredits(int count) {
+    return '$count points';
+  }
+
+  @override
+  String plansPay(int amount) {
+    return 'Pay $amount points';
+  }
+
+  @override
+  String plansActivated(String name) {
+    return '$name plan activated';
+  }
+
+  @override
+  String get plansLoadError => 'Couldn\'t load plans.';
+
+  @override
+  String get plansActionError => 'Something went wrong. Please try again.';
+
+  @override
+  String get plansUpgradeAction => 'Upgrade plan';
+
+  @override
+  String get postingUpgradeHint => 'Need more listings? Upgrade your plan';
+
+  @override
+  String get hotSaleTitle => 'Hot sale';
+
+  @override
+  String get featureAction => 'Put on Hot sale';
+
+  @override
+  String get featureSheetMessage =>
+      'Your listing shows in Hot sale on the home page and at the top of its category, above other listings, for the time you choose.';
+
+  @override
+  String featureDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String featurePay(int credits) {
+    return 'Buy · $credits points';
+  }
+
+  @override
+  String get featureDone => 'Your listing is on Hot sale';
+
+  @override
+  String featureRunning(String date) {
+    return 'This listing is on Hot sale until $date.';
+  }
+
+  @override
+  String get featureUnavailable => 'Only visible listings can go on Hot sale.';
+
+  @override
+  String get featureNoOptions => 'No Hot sale packages are on sale right now.';
+
+  @override
+  String accExpiresOn(String date, int days) {
+    return 'Expires $date · $days days left';
+  }
+
+  @override
+  String accExpiredOn(String date) {
+    return 'Expired $date';
+  }
+
+  @override
+  String previewDisplayDays(int days) {
+    return 'Your listing shows for $days days after approval. You can extend it near the end, or reactivate it once it expires.';
+  }
+
+  @override
+  String get hotSaleSubtitle =>
+      'Listings sellers are promoting right now, updated all the time.';
+
+  @override
+  String get hotSaleLoadError => 'Couldn\'t load Hot sale listings';
+
+  @override
+  String get hotSaleEmptyTitle => 'No Hot sale listings yet';
+
+  @override
+  String get hotSaleEmptyBody =>
+      'Listings that sellers put on Hot sale will show up here.';
+
+  @override
+  String get hotSaleEnd => 'You\'ve seen all Hot sale listings';
+
+  @override
+  String get displayDaysTitle => 'Display time';
+
+  @override
+  String displayDaysFree(int days) {
+    return 'Free · $days days';
+  }
+
+  @override
+  String displayDaysPlus(int days) {
+    return '+$days days';
+  }
+
+  @override
+  String displayDaysRange(String start, String end, int days) {
+    return '$start → $end · $days days';
+  }
+
+  @override
+  String get displayDaysStart => 'Starts';
+
+  @override
+  String get displayDaysEnd => 'Ends';
+
+  @override
+  String get displayDaysToday => 'Today, once approved';
+
+  @override
+  String get displayDaysCount => 'Days on display';
+
+  @override
+  String get displayDaysExtraCount => 'Extra days';
+
+  @override
+  String displayDaysIncluded(int free) {
+    return 'Includes $free free days for this category';
+  }
+
+  @override
+  String displayDaysExtraPrice(int days, int credits) {
+    return '$days extra days: $credits points';
+  }
+
+  @override
+  String get displayDaysNoCharge => 'Free';
+
+  @override
+  String displayDaysPackSave(int days, int credits) {
+    return '$days-day pack price, you save $credits points';
+  }
+
+  @override
+  String displayDaysSuggest(int days, int credits) {
+    return 'Get $days days for $credits points';
+  }
+
+  @override
+  String displayDaysMax(int days) {
+    return 'This category can be shown for up to $days days.';
+  }
+
+  @override
+  String get displayDaysPayNote =>
+      'Points are held when you post, charged on approval and refunded if rejected.';
+
+  @override
+  String get displayDaysDone => 'Done';
+
+  @override
+  String get displayDaysCardHint => 'Tap to change the start date or add days';
+
+  @override
+  String displayDaysScheduled(String date) {
+    return 'Scheduled from $date';
+  }
+
+  @override
+  String extendNewEnd(String date) {
+    return 'New end date: $date';
+  }
+
+  @override
+  String extendCurrentEnd(String date) {
+    return 'Showing until $date';
+  }
+
+  @override
+  String extendAddable(int days) {
+    return 'You can add up to $days more days';
+  }
+
+  @override
+  String extendLimitReached(int days) {
+    return 'This listing is already at the $days-day maximum.';
+  }
+
+  @override
+  String get extendChargeNote =>
+      'Points are charged now, no new review needed.';
+
+  @override
+  String get autoExtendTitle => 'Auto-extend 30 days';
+
+  @override
+  String autoExtendBody(int credits) {
+    return 'When less than a day is left, $credits points are charged if your wallet has enough.';
+  }
+
+  @override
+  String get autoExtendOn => 'Auto-extend is on';
+
+  @override
+  String get autoExtendOff => 'Auto-extend is off';
+
+  @override
+  String accExtendedDays(int days) {
+    return 'Extended by $days days';
+  }
+
+  @override
+  String get displayDaysTodayShort => 'Today';
+
+  @override
+  String get displayDaysShortTitle => 'Not enough points for extra days';
+
+  @override
+  String displayDaysShortBody(int missing) {
+    return 'You need $missing more points for the extra days. Top up, or post with the free days.';
+  }
+
+  @override
+  String displayDaysUseFree(int days) {
+    return 'Post with $days free days';
+  }
+
+  @override
+  String get originalPriceLabel => 'Original price (before discount)';
+
+  @override
+  String get originalPricePlaceholder => 'Leave empty if not on sale';
+
+  @override
+  String get originalPriceHint =>
+      'For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.';
+
+  @override
+  String originalPriceDiscount(int percent) {
+    return '$percent% off the original price';
+  }
+
+  @override
+  String get originalPriceError =>
+      'Original price must be higher than the sale price';
+
+  @override
+  String get promoTitle => 'Promote listing';
+
+  @override
+  String get promoNotPromotable =>
+      'This listing isn\'t visible, so it can\'t be promoted. Show it again in Manage listings, then come back.';
+
+  @override
+  String promoBoostRunning(String date) {
+    return 'At the top of the list until $date';
+  }
+
+  @override
+  String promoBoostAgainAt(String date) {
+    return 'Boost again after $date';
+  }
+
+  @override
+  String get promoRunning => 'Running';
+
+  @override
+  String get promoHistoryTitle => 'Recent promotions';
+
+  @override
+  String get promoHistoryEmpty => 'This listing hasn\'t been promoted yet.';
+
+  @override
+  String promoHistoryFeature(int days) {
+    return 'Hot sale $days days';
+  }
+
+  @override
+  String get promoFree => 'Free';
+
+  @override
+  String get promoEnded => 'Ended';
+
+  @override
+  String get promoLoadError => 'Couldn\'t load promotion info';
+
+  @override
+  String promoBalanceAfter(int left) {
+    return '$left points left in your wallet after paying.';
+  }
+
+  @override
+  String get promoPickTitle => 'Pick a listing to promote';
+
+  @override
+  String get promoPickSubtitle =>
+      'Only visible listings can be boosted or put on Hot sale';
+
+  @override
+  String get promoPickEmpty => 'You have no visible listings yet.';
+
+  @override
+  String get hubTitle => 'Promotions';
+
+  @override
+  String hubFreeBoosts(int left, int perMonth) {
+    return '$left/$perMonth free boosts left';
+  }
+
+  @override
+  String hubThisMonth(int boosts, int features) {
+    return 'This month: $boosts boosts · $features Hot sale';
+  }
+
+  @override
+  String get hubFilterAll => 'All';
+
+  @override
+  String get hubFilterRunning => 'Promoted';
+
+  @override
+  String get hubFilterExpiring => 'Expiring soon';
+
+  @override
+  String get hubFilterIdle => 'Not promoted';
+
+  @override
+  String hubBoostedFor(String time) {
+    return 'Boosted · $time left';
+  }
+
+  @override
+  String hubFeaturedFor(String time) {
+    return 'Hot sale · $time left';
+  }
+
+  @override
+  String hubExpiresIn(String time) {
+    return 'Expires in $time';
+  }
+
+  @override
+  String hubHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hubDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hubAutoExtend => 'Auto-extend';
+
+  @override
+  String get hubDetails => 'Details';
+
+  @override
+  String get hubEmptyRunning =>
+      'No listing is boosted or on Hot sale right now.';
+
+  @override
+  String get hubEmptyExpiring => 'No listing expires in the next 7 days.';
+
+  @override
+  String get hubEmptyIdle => 'All your listings are being promoted.';
+
+  @override
+  String hubExpiringTip(int count) {
+    return '$count listings expiring soon: extend them so they stay visible.';
+  }
+
+  @override
+  String get insTitle => 'Insights';
+
+  @override
+  String insRangeDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get insViews => 'Views';
+
+  @override
+  String get insSaves => 'Saves';
+
+  @override
+  String get insChats => 'People who messaged';
+
+  @override
+  String insUp(int percent) {
+    return 'Up $percent% vs previous period';
+  }
+
+  @override
+  String insDown(int percent) {
+    return 'Down $percent% vs previous period';
+  }
+
+  @override
+  String get insSame => 'Same as previous period';
+
+  @override
+  String get insNew => 'None in previous period';
+
+  @override
+  String get insChartTitle => 'Views per day';
+
+  @override
+  String get insChartEmpty => 'No views in this period yet.';
+
+  @override
+  String insChartDay(String date, int views, int saves) {
+    return '$date: $views views · $saves saves';
+  }
+
+  @override
+  String get insChartHint => 'Tap a bar to see that day';
+
+  @override
+  String get insListingsTitle => 'Listings';
+
+  @override
+  String get insActive => 'Active';
+
+  @override
+  String get insPending => 'Pending';
+
+  @override
+  String get insHidden => 'Hidden';
+
+  @override
+  String get insSold => 'Sold';
+
+  @override
+  String get insTopTitle => 'Most viewed listings';
+
+  @override
+  String insTopStats(int views, int saves) {
+    return '$views views · $saves saves';
+  }
+
+  @override
+  String get insTopEmpty => 'No visible listings yet.';
+
+  @override
+  String get insTipsTitle => 'Tips';
+
+  @override
+  String insTipBoost(String title) {
+    return '\"$title\" is your most viewed listing. Boost it to stay on top.';
+  }
+
+  @override
+  String insTipExpiring(int count) {
+    return '$count listings expire within 7 days. Extend them so they stay visible.';
+  }
+
+  @override
+  String get insTipNoViews =>
+      'No views yet: clear photos, a specific title and a fair price help people notice your listings.';
+
+  @override
+  String insPromotions(int boosts, int features) {
+    return 'This period: $boosts boosts · $features Hot sale';
+  }
+
+  @override
+  String get insLoadError => 'Couldn\'t load insights';
+
+  @override
+  String get insViewsNote => 'Daily views are recorded from 11/11/2026.';
+
+  @override
+  String get spTitle => 'Shop posters';
+
+  @override
+  String get spCreate => 'New poster';
+
+  @override
+  String get spLoadError => 'Couldn\'t load posters';
+
+  @override
+  String get spNoShopTitle => 'You don\'t have a shop page yet';
+
+  @override
+  String get spNoShopBody =>
+      'Posters appear on your shop page and on Trusted shops, so you need a shop page first.';
+
+  @override
+  String get spPlanTitle => 'Posters are part of the Store plan';
+
+  @override
+  String get spPlanBody =>
+      'Upgrade to the Store plan to run posters on your shop page and on Trusted shops.';
+
+  @override
+  String get spSeePlans => 'See plans';
+
+  @override
+  String get spSlots => 'Posters at once';
+
+  @override
+  String get spMonthly => 'Sent this month';
+
+  @override
+  String get spUnverified =>
+      'Your shop isn\'t verified yet, so approved posters aren\'t shown publicly.';
+
+  @override
+  String spCooldown(String date) {
+    return 'You can\'t send posters until $date because several were rejected.';
+  }
+
+  @override
+  String spRules(int min, int max) {
+    return '1200×600 image (2:1), runs $min to $max days. Reviewed within about 24 hours.';
+  }
+
+  @override
+  String spMonthlyFull(int limit) {
+    return 'You\'ve sent all $limit posters for this month.';
+  }
+
+  @override
+  String get spFilterAll => 'All';
+
+  @override
+  String get spFilterRunning => 'Running';
+
+  @override
+  String get spFilterPending => 'In review';
+
+  @override
+  String get spFilterScheduled => 'Scheduled';
+
+  @override
+  String get spFilterRejected => 'Rejected';
+
+  @override
+  String get spFilterEnded => 'Ended';
+
+  @override
+  String get spStateStopped => 'Stopped';
+
+  @override
+  String get spEmpty => 'No posters yet';
+
+  @override
+  String get spEmptyBody =>
+      'Create your first poster to promote a shop campaign.';
+
+  @override
+  String get spEmptyFilter => 'No posters here.';
+
+  @override
+  String spDates(String start, String end, int days) {
+    return '$start – $end · $days days';
+  }
+
+  @override
+  String get spOpensShop => 'Opens your shop page';
+
+  @override
+  String spOpensListing(String title) {
+    return 'Opens listing: $title';
+  }
+
+  @override
+  String spRejectedReason(String reason) {
+    return 'Rejected: $reason';
+  }
+
+  @override
+  String get spReasonWrongSize => 'Wrong image size';
+
+  @override
+  String get spReasonMisleadingPrice => 'Misleading price or offer';
+
+  @override
+  String get spReasonBrandMisuse => 'Uses a brand or logo that isn\'t yours';
+
+  @override
+  String get spReasonProhibited => 'Prohibited content';
+
+  @override
+  String get spReasonTooMuchText => 'Too much text on the image';
+
+  @override
+  String get spReasonOther => 'Other reason';
+
+  @override
+  String get spEdit => 'Edit';
+
+  @override
+  String get spResubmit => 'Edit and resend';
+
+  @override
+  String get spStop => 'Stop';
+
+  @override
+  String get spCancel => 'Withdraw';
+
+  @override
+  String get spStopTitle => 'Stop this poster?';
+
+  @override
+  String get spStopBody =>
+      'The poster stops showing right away and can\'t be restarted.';
+
+  @override
+  String get spCancelTitle => 'Withdraw this poster?';
+
+  @override
+  String get spCancelBody => 'It still counts toward this month\'s posters.';
+
+  @override
+  String get spConfirmStop => 'Stop poster';
+
+  @override
+  String get spConfirmCancel => 'Withdraw';
+
+  @override
+  String get spKeep => 'Keep';
+
+  @override
+  String get spStopped => 'Poster stopped';
+
+  @override
+  String get spNewTitle => 'New poster';
+
+  @override
+  String get spEditTitle => 'Edit poster';
+
+  @override
+  String get spImage => 'Poster image';
+
+  @override
+  String get spPickImage => 'Choose a 1200×600 image';
+
+  @override
+  String get spChangeImage => 'Change image';
+
+  @override
+  String get spImageHint =>
+      'Pick any image, then drag and zoom it into the 2:1 frame. Put the text in the image itself.';
+
+  @override
+  String get spImageRequired => 'Choose a poster image.';
+
+  @override
+  String get spName => 'Campaign name';
+
+  @override
+  String get spNameHint => 'e.g. Galaxy Week up to 20% off';
+
+  @override
+  String get spNameHelper =>
+      'Not drawn on the image; used by screen readers and to keep track.';
+
+  @override
+  String get spNameRequired => 'Enter a campaign name.';
+
+  @override
+  String get spOpens => 'When people tap the poster';
+
+  @override
+  String get spOpenShop => 'Open shop page';
+
+  @override
+  String get spOpenListing => 'Open a listing';
+
+  @override
+  String get spChooseListing => 'Choose listing';
+
+  @override
+  String get spNoListings => 'Your shop has no active listings.';
+
+  @override
+  String get spListingRequired => 'Choose a listing.';
+
+  @override
+  String get spStart => 'Start date';
+
+  @override
+  String get spStartNow => 'As soon as approved';
+
+  @override
+  String get spStartOn => 'Pick a date';
+
+  @override
+  String get spDuration => 'Duration';
+
+  @override
+  String spDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String spEndsOn(String date) {
+    return 'Ends around $date';
+  }
+
+  @override
+  String get spEditRunningNote =>
+      'A running poster is hidden until it\'s approved again.';
+
+  @override
+  String get spSubmit => 'Send for review';
+
+  @override
+  String get spSubmitted =>
+      'Poster sent. It\'s usually reviewed within 24 hours.';
+
+  @override
+  String get spErrSlotFull =>
+      'That time already has the most posters you can run at once. Pick another date or stop a poster.';
+
+  @override
+  String get spErrMonthly => 'You\'ve sent all your posters for this month.';
+
+  @override
+  String get spErrCooldown => 'Sending posters is paused for your shop.';
+
+  @override
+  String get spErrPlan => 'Only the Store plan can run posters.';
+
+  @override
+  String get spErrShop => 'You need a shop page to run posters.';
+
+  @override
+  String get spErrListing =>
+      'That listing isn\'t for sale anymore. Choose another.';
+
+  @override
+  String get spErrStartLate => 'The start date can be at most 14 days ahead.';
+
+  @override
+  String get spErrImage => 'Couldn\'t upload the image. Try another one.';
+
+  @override
+  String get spErrNotEditable => 'This poster has ended. Create a new one.';
+
+  @override
+  String get spErrGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get spSchedule => 'Schedule';
+
+  @override
+  String get spCropTitle => 'Adjust poster';
+
+  @override
+  String get spAdjust => 'Adjust again';
+
+  @override
+  String get cropDone => 'Use this image';
+
+  @override
+  String get cropFill => 'Fill frame';
+
+  @override
+  String get cropFit => 'Show whole image';
+
+  @override
+  String get cropZoom => 'Zoom';
+
+  @override
+  String get cropHint =>
+      'Drag to move; pinch or use the slider to zoom. Empty space is filled with the background you pick.';
+
+  @override
+  String get cropLowRes =>
+      'The image is small for this frame and may look blurry. Zoom out or pick a larger image.';
+
+  @override
+  String get cropLoadError => 'Couldn\'t open this image. Try another one.';
+
+  @override
+  String get accAvatarSection => 'Profile photo';
+
+  @override
+  String get accAvatarHint =>
+      'Shown in a circle on your profile, listings and messages. Tap Adjust to choose which part shows.';
+
+  @override
+  String get accAdjustAvatar => 'Adjust';
+
+  @override
+  String get accAvatarCropTitle => 'Adjust profile photo';
+
+  @override
+  String get accInfoSection => 'Profile details';
+
+  @override
+  String get accDisplayNameHint => 'e.g. Jane Doe or your shop name';
+
+  @override
+  String get accUsernameHelper =>
+      '3–30 characters: lowercase letters, numbers, dots or underscores.';
+
+  @override
+  String get accBioHint => 'A few lines about you or your shop';
+
+  @override
+  String get cropBackground => 'Background';
+
+  @override
+  String get cropBgBlur => 'Blur';
+
+  @override
+  String get cropBgAuto => 'Match';
+
+  @override
+  String get cropBgWhite => 'White';
+
+  @override
+  String get cropBgBlack => 'Black';
+
+  @override
+  String get cropTrim => 'Remove plain borders';
+
+  @override
+  String get cropTrimOn => 'Plain borders removed';
+
+  @override
+  String get msTitle => 'Manage shop';
+
+  @override
+  String get msLoadError => 'Couldn\'t load your shop';
+
+  @override
+  String get msPlanTitle => 'Shop pages come with the Store plan';
+
+  @override
+  String get msPlanBody =>
+      'Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.';
+
+  @override
+  String get msCreateTitle => 'Open your shop page';
+
+  @override
+  String get msCreateBody =>
+      'Name your shop first, then add a logo, cover and description.';
+
+  @override
+  String get msCreateAction => 'Open shop';
+
+  @override
+  String get msCreated => 'Your shop page is open';
+
+  @override
+  String get msName => 'Shop name';
+
+  @override
+  String get msNameHint => 'e.g. Cozy Home Decor';
+
+  @override
+  String get msNameRequired => 'Shop name must be 2 to 60 characters.';
+
+  @override
+  String get msNameLocked =>
+      'Verified shops can\'t change their name. Contact ReStore if you need to.';
+
+  @override
+  String get msTagline => 'Short tagline';
+
+  @override
+  String get msTaglineHint => 'e.g. Handmade decor, fast local delivery';
+
+  @override
+  String get msDescription => 'About the shop';
+
+  @override
+  String get msDescriptionHint =>
+      'What you sell, quality promise, return policy...';
+
+  @override
+  String get msAddress => 'Display address';
+
+  @override
+  String get msAddressHint => 'e.g. District 1, Ho Chi Minh City';
+
+  @override
+  String get msInfoSection => 'Shop details';
+
+  @override
+  String get msColorSection => 'Brand colour';
+
+  @override
+  String get msColorHint =>
+      'Used for the letter logo, the default cover and accents on your shop page.';
+
+  @override
+  String get msColorAuto => 'Default';
+
+  @override
+  String get msChangeCover => 'Change cover';
+
+  @override
+  String get msChangeLogo => 'Change logo';
+
+  @override
+  String get msImageNew => 'Choose a new image';
+
+  @override
+  String get msImageAdjust => 'Adjust again';
+
+  @override
+  String get msImageRemove => 'Remove image';
+
+  @override
+  String get msCoverCropTitle => 'Adjust cover';
+
+  @override
+  String get msLogoCropTitle => 'Adjust logo';
+
+  @override
+  String get msStatFollowers => 'Followers';
+
+  @override
+  String get msStatListings => 'Listings';
+
+  @override
+  String get msStatPostersRunning => 'Posters live';
+
+  @override
+  String get msStatPostersPending => 'Posters pending';
+
+  @override
+  String get msVerifiedTitle => 'Verified shop';
+
+  @override
+  String get msVerifiedBody => 'Your shop appears in Trusted shops.';
+
+  @override
+  String msCertificate(String code) {
+    return 'Certificate: $code.';
+  }
+
+  @override
+  String get msUnverifiedTitle => 'Not verified yet';
+
+  @override
+  String get msUnverifiedBody =>
+      'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.';
+
+  @override
+  String get msPlanExpiredTitle => 'Store plan expired';
+
+  @override
+  String get msPlanExpiredBody =>
+      'Your posters are hidden for now. Renew the plan to run them again.';
+
+  @override
+  String get msViewPublic => 'View shop page';
+
+  @override
+  String get msPosters => 'Shop posters';
+
+  @override
+  String get msPostersBody =>
+      'Promote your shop with posters on your shop page and Trusted shops.';
+
+  @override
+  String get msSave => 'Save changes';
+
+  @override
+  String get msSaved => 'Shop details saved';
+
+  @override
+  String get msErrExists => 'You already have a shop page.';
+
+  @override
+  String get msErrImage => 'That image is not valid. Try another one.';
+
+  @override
+  String get msErrGeneric => 'Couldn\'t save. Please try again.';
+
+  @override
+  String get followShopsTab => 'Shops';
+
+  @override
+  String get followShopsEmpty => 'You\'re not following any shops yet';
+
+  @override
+  String get followShopsEmptyHint =>
+      'Follow trusted shops to see their new listings in one place.';
+
+  @override
+  String get followShopsBrowse => 'Explore trusted shops';
+
+  @override
+  String followShopsNewCount(int count) {
+    return '$count new';
+  }
+
+  @override
+  String followShopsFollowerCount(int count) {
+    return '$count followers';
+  }
+
+  @override
+  String get followShopsFeedTitle => 'Shops you follow';
+
+  @override
+  String get followShopsFeedCta => 'See new listings';
+
+  @override
+  String followShopsFeedNew(int count) {
+    return '$count new listings in the last 7 days';
+  }
+
+  @override
+  String followShopsCount(int count) {
+    return 'Following $count shops';
+  }
+
+  @override
+  String get followShopsStripHint => 'Tap a shop to open its page';
+
+  @override
+  String get followShopsLatest => 'Latest listings';
+
+  @override
+  String get followShopsLatestHint => 'Newly posted by the shops you follow';
+
+  @override
+  String get followShopsListingsEmpty => 'No listings yet';
+
+  @override
+  String get followShopsListingsEmptyHint =>
+      'The shops you follow have no active listings.';
+
+  @override
+  String get followShopsEnd => 'You\'re all caught up';
+
+  @override
+  String get followShopsLoadError => 'Couldn\'t load the shops you follow';
+
+  @override
+  String get msFollowersTitle => 'Shop followers';
+
+  @override
+  String msFollowersTitleCount(int count) {
+    return 'Followers ($count)';
+  }
+
+  @override
+  String get msFollowersEmpty => 'No one follows your shop yet';
+
+  @override
+  String get msFollowersEmptyHint =>
+      'Buyers who follow your shop will show up here.';
+
+  @override
+  String msFollowedSince(String date) {
+    return 'Since $date';
+  }
+
+  @override
+  String get followingHubTitle => 'Following';
+
+  @override
+  String get followingHubSubtitle => 'New from shops and people you follow';
+
+  @override
+  String get followingHubOnboardSubtitle => 'Pick a few shops to get started';
+
+  @override
+  String get followingHubManage => 'Manage who you follow';
+
+  @override
+  String get followingHubPeopleTitle => 'People you follow';
+
+  @override
+  String get followingHubSeeAll => 'See all';
+
+  @override
+  String get followingHubFeedTitle => 'New from shops you follow';
+
+  @override
+  String get followingHubFeedHint => 'Pick a shop to see only its listings';
+
+  @override
+  String get followingHubAll => 'All';
+
+  @override
+  String get followingHubOpenShop => 'Visit shop';
+
+  @override
+  String get followingHubSuggestHint =>
+      'Shops in categories you save and follow, ReStore partners first';
+
+  @override
+  String get followingHubOnboardTitle =>
+      'Follow shops so you never miss new listings';
+
+  @override
+  String get followingHubOnboardBody =>
+      'Tap Follow on the shops below and their new listings will show up here.';
+
+  @override
+  String get followingHubBenefitFeed =>
+      'New listings from every shop in one place';
+
+  @override
+  String get followingHubBenefitFilter => 'Filter by shop in one tap';
+
+  @override
+  String get followingHubBenefitVerified => 'Only shops verified by ReStore';
+
+  @override
+  String get followingHubNoSuggestions => 'No shops to suggest yet';
+
+  @override
+  String followingHubSeeFeed(int count) {
+    return 'See new listings from $count shops';
+  }
+
+  @override
+  String followShopsFollowerCountText(String count) {
+    return '$count followers';
+  }
+
+  @override
+  String get followingHubPostsTitle => 'Recent posts';
+
+  @override
+  String get followingHubPostsHint => 'New posts from people you follow';
+
+  @override
+  String get followingHubForYouTitle => 'Shops for you';
+
+  @override
+  String get followingHubPartner => 'Partner';
+
+  @override
+  String get editListingTitle => 'Edit listing';
+
+  @override
+  String get editSubmit => 'Submit for review';
+
+  @override
+  String get editSubmittedLive =>
+      'Edit submitted. Buyers keep seeing the current version until it is approved';
+
+  @override
+  String get editSubmitted =>
+      'Changes saved, your listing is waiting for review again';
+
+  @override
+  String get editNoticeLive =>
+      'Buyers keep seeing the current version until your edit is approved. Boosts, Hot sale and applied discounts stay as they are.';
+
+  @override
+  String get editNoticeCategoryLocked =>
+      'The category of an approved listing can\'t be changed.';
+
+  @override
+  String get editNoticeReview =>
+      'After editing, your listing is reviewed again before it shows.';
+
+  @override
+  String editRejectedReason(String reason) {
+    return 'Last time it was rejected: $reason';
+  }
+
+  @override
+  String get editLoadFailed =>
+      'Couldn\'t open this listing for editing. Please try again.';
+
+  @override
+  String get leaveEditTitle => 'Discard your changes?';
+
+  @override
+  String get leaveEditMessage =>
+      'What you just edited won\'t be saved. The listing stays as it was.';
+
+  @override
+  String get leaveEditDiscard => 'Discard changes';
+
+  @override
+  String get leaveEditKeep => 'Keep editing';
+
+  @override
+  String get accEditPending => 'Edit waiting for review';
+
+  @override
+  String accEditRejected(String reason) {
+    return 'Edit rejected: $reason';
+  }
+
+  @override
+  String get accDiscardEdit => 'Discard edit';
+
+  @override
+  String get accEditDiscarded =>
+      'Edit discarded, the listing keeps its current version';
+
+  @override
+  String get accDiscardEditFailed =>
+      'Couldn\'t discard the edit. Please try again.';
 }

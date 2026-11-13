@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -14,9 +15,10 @@ import '../../bloc/user_profile/user_profile_state.dart';
 import '../../models/profile_models.dart';
 import './widgets/account_listings.dart';
 import './widgets/account_menu.dart';
-import './widgets/edit_profile_dialog.dart';
+import '../edit_profile/edit_profile_view.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/profile_posts.dart';
+import '../../../plans/views/plans/plans_view.dart';
 
 enum _Section { listings, posts }
 
@@ -60,8 +62,15 @@ class _AccountMobileViewState extends State<AccountMobileView> {
   ]);
 
   Future<void> openFollows(String userId, FollowListKind kind) async {
-    await context.push('/users/$userId/follows?tab=${kind.name}');
+    await context.push('/users/$userId/follows?tab=${kind.name}&me=1');
     if (mounted) context.read<UserProfileCubit>().load();
+  }
+
+  /// Trang chỉnh sửa hồ sơ dùng chung cubit nên lưu xong hồ sơ cập nhật ngay
+  void openEditProfile() {
+    final cubit = context.read<UserProfileCubit>();
+    if (cubit.state.profile == null) return;
+    context.push(EditProfileView.path, extra: cubit);
   }
 
   bool onScroll(ScrollNotification n) {
@@ -87,7 +96,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
-            child: RefreshIndicator(
+            child: AppPullToRefresh(
               onRefresh: refresh,
               child: NotificationListener<ScrollNotification>(
                 onNotification: onScroll,
@@ -105,8 +114,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                               children: [
                                 const SizedBox(height: 16),
                                 _TopBar(
-                                  onEdit: () =>
-                                      showEditProfileDialog(context, userCubit),
+                                  onEdit: openEditProfile,
                                   onFollowing: profile == null
                                       ? null
                                       : () => openFollows(
@@ -128,14 +136,9 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                 else
                                   ProfileHeader(
                                     profile: profile,
-                                    onAvatarTap: () => showEditProfileDialog(
-                                      context,
-                                      userCubit,
-                                    ),
-                                    onBioTap: () => showEditProfileDialog(
-                                      context,
-                                      userCubit,
-                                    ),
+                                    countFollowedShops: true,
+                                    onAvatarTap: openEditProfile,
+                                    onBioTap: openEditProfile,
                                     onFollowingTap: profile == null
                                         ? null
                                         : () => openFollows(
@@ -169,7 +172,8 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                       child: _TopAction(
                                         icon: AppIcons.pro,
                                         label: l.accProPlan,
-                                        onTap: () => showComingSoon(context),
+                                        onTap: () =>
+                                            context.push(PlansView.path),
                                       ),
                                     ),
                                     const SizedBox(width: 12),

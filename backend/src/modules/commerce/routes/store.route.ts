@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { PERMISSION } from '../../../common/auth/permissions.js';
 import { requirePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
-import { idParams, storeOrderBody } from '../commerce.validator.js';
+import { idParams, quoteQuery, storeOrderBody, subscribeBody } from '../commerce.validator.js';
 import * as storeController from '../controllers/store.controller.js';
 
 /** Gói cửa hàng và đơn mua gói, gắn tại /api/v1/stores */
@@ -26,6 +26,30 @@ storeRouter.get('/packages', storeController.listPackages);
  * Trả về: { package, category, endsAt, pendingOrder, usage, remaining }
  */
 storeRouter.get('/me', purchase, storeController.getMine);
+
+/**
+ * Báo giá mua / gia hạn / nâng cấp sang gói, trả bằng xu (1 xu = 1.000 đ)
+ *
+ * Query:
+ *  - packageId: string - gói BASIC hoặc PRO
+ *
+ * Trả về: { packageId, mode: NEW | RENEW | UPGRADE, price, credit (phần còn lại của gói cũ), amount, endsAt, available }
+ * Lỗi: 409 STORE_DOWNGRADE_NOT_ALLOWED { details: { endsAt } } khi hạ gói lúc gói cao hơn còn hạn
+ */
+storeRouter.get('/quote', purchase, validate({ query: quoteQuery }), storeController.quote);
+
+/**
+ * Mua / gia hạn / nâng cấp gói bằng xu, có hiệu lực ngay (không cần admin duyệt)
+ *
+ * Body:
+ *  - packageId: string - gói BASIC hoặc PRO
+ *  - categoryId?: string - chuyên mục chính; mua mới thì bắt buộc, không gửi thì giữ chuyên mục đang dùng
+ *
+ * Trả về: { packageId, categoryId, mode, price, credit, amount, endsAt, subscription }
+ * Lỗi: 409 NOT_ENOUGH_CREDITS { details: { required, available, missing } }, 409 STORE_DOWNGRADE_NOT_ALLOWED,
+ *      400 STORE_CATEGORY_REQUIRED
+ */
+storeRouter.post('/subscribe', purchase, validate({ body: subscribeBody }), storeController.subscribe);
 
 /**
  * Đặt mua gói cửa hàng; mỗi người chỉ có một đơn chờ

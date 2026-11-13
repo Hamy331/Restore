@@ -9,9 +9,9 @@ export const mediaRouter = Router();
 /**
  * Tải ảnh lên. Body là byte ảnh JPEG/PNG/WebP, tối đa 5 MB.
  *
- * Query: purpose = feed (mặc định) | avatar
+ * Query: purpose = feed (mặc định) | avatar | poster | shop
  *
- * Trả về: 201 { imageUrl: "/api/v1/media/<feeds|avatars>/<userId>_<uuid>.<ext>" }
+ * Trả về: 201 { imageUrl: "/api/v1/media/<feeds|avatars|posters|shops>/<userId>_<uuid>.<ext>" }
  */
 mediaRouter.post('/images', verifyToken, raw({ type: ['image/jpeg', 'image/png', 'image/webp'], limit: '5mb' }),
   async (req: AuthRequest, res: Response, next: NextFunction) => {

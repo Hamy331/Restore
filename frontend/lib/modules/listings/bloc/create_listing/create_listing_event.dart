@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:restore/modules/location/models/address_info.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
@@ -16,7 +18,10 @@ class CategoriesRequested extends CreateListingEvent {
 
 /// Tải hạn mức đăng tin của tài khoản (số tin đã dùng mỗi chuyên mục)
 class PostingQuotaRequested extends CreateListingEvent {
-  const PostingQuotaRequested();
+  /// Hoàn thành khi tải xong (kể cả lỗi), để màn chọn chuyên mục chờ hạn
+  /// mức mới nhất trước khi cho vào trang tạo tin
+  final Completer<void>? done;
+  const PostingQuotaRequested({this.done});
 }
 
 class CategorySelected extends CreateListingEvent {
@@ -75,6 +80,14 @@ class PriceChanged extends CreateListingEvent {
   List<Object?> get props => [price];
 }
 
+/// Giá gốc trước giảm (chỉ gói Cửa hàng), null = không giảm giá
+class OriginalPriceChanged extends CreateListingEvent {
+  final int? originalPrice;
+  const OriginalPriceChanged(this.originalPrice);
+  @override
+  List<Object?> get props => [originalPrice];
+}
+
 class NegotiableChanged extends CreateListingEvent {
   final bool isNegotiable;
   const NegotiableChanged(this.isNegotiable);
@@ -103,6 +116,16 @@ class ConditionChanged extends CreateListingEvent {
   List<Object?> get props => [condition];
 }
 
+/// Chọn thời gian hiển thị: [days] tổng số ngày (null = miễn phí),
+/// [startsAt] ngày hẹn bắt đầu (null = ngay khi duyệt)
+class DisplayDaysChanged extends CreateListingEvent {
+  final int? days;
+  final DateTime? startsAt;
+  const DisplayDaysChanged({this.days, this.startsAt});
+  @override
+  List<Object?> get props => [days, startsAt];
+}
+
 /// Đổi giá trị một thuộc tính theo danh mục (bước 3)
 class AttributeChanged extends CreateListingEvent {
   final String key;
@@ -122,7 +145,19 @@ class DraftSaveRequested extends CreateListingEvent {
 }
 
 class PublishRequested extends CreateListingEvent {
-  const PublishRequested();
+  /// Người dùng đã đồng ý trả xu cho tin vượt hạn mức
+  final bool payWithCredits;
+
+  /// Vẫn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn
+  final bool allowDuplicate;
+
+  const PublishRequested({
+    this.payWithCredits = false,
+    this.allowDuplicate = false,
+  });
+
+  @override
+  List<Object?> get props => [payWithCredits, allowDuplicate];
 }
 
 /// Tải danh sách tin nháp; [loadMore] lấy thêm trang sau
@@ -145,6 +180,15 @@ class DraftOpened extends CreateListingEvent {
 class DraftDeleted extends CreateListingEvent {
   final String id;
   const DraftDeleted(this.id);
+  @override
+  List<Object?> get props => [id];
+}
+
+/// Mở một tin đã đăng để sửa (đang hiển thị, đã ẩn, chờ duyệt, bị từ chối).
+/// Tin đã duyệt đang có bản sửa chờ duyệt thì mở bản sửa đó để sửa tiếp.
+class ListingEditOpened extends CreateListingEvent {
+  final String id;
+  const ListingEditOpened(this.id);
   @override
   List<Object?> get props => [id];
 }

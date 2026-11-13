@@ -32,6 +32,30 @@ Future<LeaveDraftAction?> showLeaveDraftSheet(BuildContext context) {
   );
 }
 
+/// Hỏi bỏ thay đổi khi thoát lúc đang sửa tin đã đăng (sửa tin không lưu
+/// nháp được, vì lưu nháp sẽ gỡ tin đang hiển thị). true khi bỏ thay đổi.
+Future<bool> showLeaveEditSheet(BuildContext context) async {
+  final l10n = AppLocalizations.of(context)!;
+  final discard = await showAppGlassSheet<bool>(
+    context,
+    title: l10n.leaveEditTitle,
+    icon: AppIcons.edit,
+    builder: (sheetContext) => _SheetBody(
+      message: l10n.leaveEditMessage,
+      secondary: AppSecondaryActionButton(
+        label: l10n.leaveEditDiscard,
+        onPressed: () => Navigator.of(sheetContext).pop(true),
+      ),
+      primary: AppPrimaryActionButton(
+        label: l10n.leaveEditKeep,
+        icon: AppIcons.edit,
+        onPressed: () => Navigator.of(sheetContext).pop(false),
+      ),
+    ),
+  );
+  return discard ?? false;
+}
+
 /// Báo đã giữ đủ [limit] tin nháp. [onViewDrafts] (tuỳ chọn) mở trang Tin
 /// nháp để xóa bớt; không có thì sheet chỉ có nút đóng.
 Future<void> showDraftLimitSheet(

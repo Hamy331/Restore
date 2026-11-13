@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -121,12 +122,7 @@ class _AddressStreetFieldState extends State<AddressStreetField> {
           maxLength: AddressStreetField.maxLength,
           textInputAction: TextInputAction.done,
           onChanged: _onChanged,
-          suffix: _loading
-              ? const SizedBox.square(
-                  dimension: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : null,
+          suffix: _loading ? const AppLoadingIndicator(dotSize: 5) : null,
         ),
         if (_suggestions.isNotEmpty)
           _SuggestionList(

@@ -10,6 +10,10 @@ export const findAllPackages = () =>
 
 export const findActivePackage = (tx: Db, id: string) => tx.promotionPackage.findFirst({ where: { id, active: true } });
 
+/** Gói đang bán của một loại, thời lượng ngắn trước */
+export const findActivePackagesOfKind = (tx: Db, kind: PromotionKind) =>
+  tx.promotionPackage.findMany({ where: { kind, active: true }, orderBy: [{ durationDays: 'asc' }, { id: 'asc' }] });
+
 export const createPackage = (tx: Db, data: Omit<Prisma.PromotionPackageCreateInput, 'id'>) =>
   tx.promotionPackage.create({ data: { id: randomUUID(), ...data } });
 
@@ -41,6 +45,26 @@ export const findRunningPromotion = (tx: Db, listingId: string, kind: PromotionK
     where: { listingId, endsAt: { gt: now }, package: { kind } },
     orderBy: { endsAt: 'desc' },
   });
+
+/** Lượt quảng bá gần nhất của một tin (đẩy tin, Hot sale), mới trước */
+export const findListingPromotions = (tx: Db, listingId: string, take = 10) =>
+  tx.promotion.findMany({
+    where: { listingId },
+    include: { package: { select: { kind: true, durationDays: true } } },
+    orderBy: { startsAt: 'desc' },
+    take,
+  });
+
+/** Quảng bá còn hiệu lực của nhiều tin (trang Boost) */
+export const findRunningPromotionsOf = (tx: Db, listingIds: string[], now: Date) =>
+  tx.promotion.findMany({
+    where: { listingId: { in: listingIds }, endsAt: { gt: now } },
+    select: { listingId: true, endsAt: true, package: { select: { kind: true } } },
+  });
+
+/** Loại các lượt quảng bá người dùng đã dùng từ [since] (đếm theo tháng) */
+export const findPromotionKindsSince = (tx: Db, userId: string, since: Date) =>
+  tx.promotion.findMany({ where: { userId, startsAt: { gte: since } }, select: { package: { select: { kind: true } } } });
 
 export const createPromotion = (tx: Db, data: Prisma.PromotionUncheckedCreateInput) =>
   tx.promotion.create({ data, include: { package: true } });

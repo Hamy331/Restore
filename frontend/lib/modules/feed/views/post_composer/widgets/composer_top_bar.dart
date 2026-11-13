@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/data/models/enums/post_audience.dart';
@@ -147,12 +148,9 @@ class _PostButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   loading
-                      ? const SizedBox.square(
-                          dimension: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
+                      ? const AppLoadingIndicator(
+                          dotSize: 5,
+                          color: Colors.white,
                         )
                       : const Icon(
                           AppIcons.send,

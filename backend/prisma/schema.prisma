@@ -63,9 +63,14 @@ model User {
   promotions     Promotion[]
   promotionOrders PromotionOrder[]
   wantedAlerts   WantedAlert[]
+  creditTopups   CreditTopupOrder[]
+  creditTransactions CreditTransaction[]
+  creditHolds    CreditHold[]
 
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
+  shop           Shop?
+  shopFollows    ShopFollow[]
 
   @@index([status, suspendedUntil])
 }
@@ -137,6 +142,38 @@ enum ListingCondition {
   FOR_PARTS
 }
 
+/// Trạng thái bản sửa của tin đã duyệt
+enum ListingRevisionStatus {
+  PENDING
+  REJECTED
+}
+
+/// Bản sửa của tin đã duyệt, chờ duyệt lại. Trong lúc chờ, tin vẫn hiện bản cũ;
+/// duyệt thì nội dung bản sửa thay vào tin, từ chối thì tin giữ nguyên bản cũ.
+/// Chuyên mục, thời gian hiển thị, xu đã trả, đẩy tin, Hot sale không nằm ở đây nên sửa tin không đổi được.
+model ListingRevision {
+  listingId     String                @id
+  listing       Listing               @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  status        ListingRevisionStatus @default(PENDING)
+  title         String
+  description   String
+  price         Decimal
+  originalPrice Decimal?
+  isNegotiable  Boolean
+  condition     ListingCondition?
+  allowSale     Boolean
+  allowExchange Boolean
+  exchangeWish  String
+  attributes    Json                  @default("{}")
+  location      Json?
+  images        String[]
+  reviewReason  String?
+  submittedAt   DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  @@index([status, submittedAt])
+}
+
 enum ListingStatus {
   DRAFT
   PENDING
@@ -158,6 +195,8 @@ model Listing {
   title         String
   description   String
   price         Decimal
+  /// Giá gốc trước khi giảm (null = không giảm); > price thì tin hiện ở "Trải nghiệm hàng hiệu"
+  originalPrice Decimal?
   isNegotiable  Boolean          @default(true)
   condition     ListingCondition?
   status        ListingStatus    @default(AVAILABLE)
@@ -172,13 +211,44 @@ model Listing {
   viewCount     Int              @default(0)
   createdAt     DateTime         @default(now())
   publishedAt   DateTime?
+  /// Số xu đã giữ/trừ để đăng tin vượt hạn mức; 0 = tin dùng suất miễn phí
+  paidCredits   Int              @default(0)
+  /// Hết hạn hiển thị (duyệt / kích hoạt lại / gia hạn mới đặt); quá hạn thì tự ẩn
+  expiresAt     DateTime?
+  /// Ngày hẹn bắt đầu hiển thị (null = hiện ngay khi duyệt). Tin đã duyệt mà chưa tới ngày: HIDDEN + startsAt
+  startsAt      DateTime?
+  /// Số ngày hiển thị người bán chọn lúc đăng, tính khi duyệt (null = số ngày miễn phí)
+  displayDays   Int?
+  /// Số ngày hiển thị đã trả xu lúc đăng
+  paidDays      Int              @default(0)
+  /// Tự gia hạn 30 ngày khi sắp hết hạn (gói có StorePackage.autoExtend)
+  autoExtend    Boolean          @default(false)
   updatedAt     DateTime         @updatedAt
+  creditHolds   CreditHold[]
   promotions    Promotion[]
   favorites     ListingFavorite[]
   promotionOrders PromotionOrder[]
   wantedAlertMatches WantedAlertMatch[]
+  viewDays      ListingViewDaily[]
+  posters       ShopBanner[]
+  /// Bản sửa đang chờ duyệt lại (chỉ tin đã duyệt: đang hiển thị / đã ẩn)
+  revision      ListingRevision?
 
   @@index([ownerId, publishedAt])
+  @@index([ownerId, categoryId, status])
+  @@index([status, expiresAt])
+  @@index([status, startsAt])
+}
+
+/// Lượt xem tin theo ngày (giờ Việt Nam), cộng cùng lúc với Listing.viewCount; dùng cho trang Thống kê
+model ListingViewDaily {
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  day       DateTime @db.Date
+  views     Int      @default(0)
+
+  @@id([listingId, day])
+  @@index([day])
 }
 
 model ListingFavorite {
@@ -196,6 +266,18 @@ model Category {
   id             String              @id
   name           String
   metadata       Json                @default("{}")
+  /// Tài khoản Cá nhân: số tin miễn phí đang hiển thị/chờ duyệt trong chuyên mục
+  freeListingLimit    Int            @default(2)
+  /// Giá (xu) một tin vượt hạn mức, hiển thị 60 ngày
+  extraListingCredits Int            @default(5)
+  /// Số ngày hiển thị miễn phí của gói Cá nhân (gói cao nhân theo StorePackage.freeDaysPercent)
+  displayDays         Int            @default(60)
+  /// Thời gian hiển thị tối đa (ngày, tính từ hôm nay) khi chọn ngày đăng hoặc gia hạn
+  maxDisplayDays      Int            @default(120)
+  /// Giá (xu) cho 30 ngày hiển thị thêm; giá một ngày = giá này / 30, làm tròn lên
+  dayPackCredits      Int            @default(4)
+  /// Giá (xu) một lần đẩy tin lên đầu, trước khi giảm theo gói
+  boostCredits        Int            @default(5)
   listings       Listing[]
   subscriptions  StoreSubscription[]
   storeOrders    StoreOrder[]
@@ -218,6 +300,18 @@ model StorePackage {
   /// Số tin nháp được giữ cùng lúc
   draftLimit            Int                 @default(3)
   monthlyPromotionQuota Int
+  /// Phần trăm giảm giá đẩy tin bằng xu của gói
+  boostDiscountPercent  Int                 @default(0)
+  /// Số ngày hiển thị miễn phí theo % của Category.displayDays (Cá nhân 100, Bán chuyên 150, Cửa hàng 200)
+  freeDaysPercent       Int                 @default(100)
+  /// Giảm giá (%) khi mua thêm ngày hiển thị
+  extendDiscountPercent Int                 @default(0)
+  /// Được bật tự gia hạn tin 30 ngày khi sắp hết hạn
+  autoExtend            Boolean             @default(false)
+  /// Poster shop chạy (hoặc chờ duyệt) cùng lúc; 0 = gói không được đăng poster
+  posterActiveLimit     Int                 @default(0)
+  /// Poster gửi duyệt mỗi tháng (tính theo ngày tạo)
+  posterMonthlyLimit    Int                 @default(0)
   priorityLevel         Int
   subscriptions         StoreSubscription[]
   orders                StoreOrder[]
@@ -521,4 +615,221 @@ model WantedAlertMatch {
   @@id([alertId, listingId])
   @@index([alertId, matchedAt])
   @@index([listingId])
+}
+
+/// Xu ReStore (credit). 1 xu = 1.000 đ. Số dư = tổng CreditTransaction.amount
+enum CreditPayMethod {
+  VNPAY
+  VIETQR
+  ZALOPAY
+}
+
+enum TopupStatus {
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
+enum CreditTxnType {
+  TOPUP
+  BONUS
+  SPEND
+  REFUND
+  EXPIRE
+  ADJUST
+}
+
+/// Xu nạp (PAID) hay xu tặng (BONUS); tiêu xu tặng trước
+enum CreditBucket {
+  PAID
+  BONUS
+}
+
+/// Gói nạp xu, admin sửa được
+model CreditPackage {
+  id           String             @id
+  priceVnd     Int
+  credits      Int
+  bonusCredits Int                @default(0)
+  popular      Boolean            @default(false)
+  active       Boolean            @default(true)
+  sortOrder    Int                @default(0)
+  orders       CreditTopupOrder[]
+}
+
+/// Đơn nạp xu; chỉ chuyển PAID khi cổng xác nhận (IPN có chữ ký) hoặc cổng thử
+model CreditTopupOrder {
+  id            String              @id @default(uuid())
+  /// Mã ngắn ghi vào nội dung chuyển khoản
+  code          String              @unique
+  userId        String
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  packageId     String
+  package       CreditPackage       @relation(fields: [packageId], references: [id])
+  method        CreditPayMethod
+  amountVnd     Int
+  credits       Int
+  bonusCredits  Int                 @default(0)
+  status        TopupStatus         @default(PENDING)
+  /// Mã giao dịch của cổng, mỗi mã chỉ cộng xu một lần
+  providerTxnId String?             @unique
+  /// Mã đơn bên cổng (ZaloPay app_trans_id) để hỏi trạng thái và khớp callback
+  providerRef   String?             @unique
+  /// Trang thanh toán của cổng
+  payUrl        String?
+  expiresAt     DateTime
+  paidAt        DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  transactions  CreditTransaction[]
+
+  @@index([userId, status])
+}
+
+/// Sổ cái xu: chỉ thêm, không sửa, không xoá
+model CreditTransaction {
+  id           String            @id @default(uuid())
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         CreditTxnType
+  bucket       CreditBucket
+  /// Dương là cộng, âm là trừ
+  amount       Int
+  expiresAt    DateTime?
+  topupOrderId String?
+  topupOrder   CreditTopupOrder? @relation(fields: [topupOrderId], references: [id], onDelete: SetNull)
+  note         String?
+  /// Lần giữ xu khi đăng tin (trừ khi giữ, hoàn khi tin bị từ chối)
+  holdId       String?
+  hold         CreditHold?       @relation(fields: [holdId], references: [id], onDelete: SetNull)
+  createdAt    DateTime          @default(now())
+
+  @@unique([topupOrderId, type])
+  @@index([userId, createdAt])
+}
+
+enum CreditHoldStatus {
+  /// Đã trừ khỏi ví, chờ admin duyệt tin
+  HELD
+  /// Tin đã duyệt, xu tiêu hẳn
+  CAPTURED
+  /// Tin bị từ chối hoặc huỷ, xu đã hoàn
+  RELEASED
+}
+
+/// Xu giữ khi gửi tin vượt hạn mức: trừ ngay khỏi số dư, duyệt thì tiêu hẳn, từ chối thì hoàn
+model CreditHold {
+  id           String              @id @default(uuid())
+  userId       String
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId    String?
+  listing      Listing?            @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  amount       Int
+  /// Phần lấy từ xu tặng / xu nạp, để hoàn đúng loại
+  bonusAmount  Int
+  paidAmount   Int
+  status       CreditHoldStatus    @default(HELD)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  transactions CreditTransaction[]
+
+  @@index([userId, status])
+  @@index([listingId, status])
+}
+
+/// Mốc mua ngày hiển thị rẻ hơn (30 / 60 / 90 ngày), admin sửa được
+model DisplayDayPack {
+  days            Int     @id
+  discountPercent Int
+  active          Boolean @default(true)
+}
+
+/// Cách shop được xác minh: shop gốc của thương hiệu, hoặc ReStore kiểm tra giấy tờ và cấp chứng nhận
+enum ShopVerificationType {
+  OFFICIAL_BRAND
+  CERTIFIED
+}
+
+enum ShopBannerStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  /// Shop tự dừng (poster đang chạy) hoặc hủy (poster chờ duyệt)
+  STOPPED
+}
+
+/// Lý do admin từ chối poster shop
+enum ShopBannerRejectReason {
+  WRONG_SIZE
+  MISLEADING_PRICE
+  BRAND_MISUSE
+  PROHIBITED
+  TOO_MUCH_TEXT
+  OTHER
+}
+
+/// Gian hàng của một tài khoản bán (thường là gói Cửa hàng). Chỉ hiện ở "Shop uy tín" khi đã xác minh
+model Shop {
+  id               String                @id @default(uuid())
+  ownerId          String                @unique
+  owner            User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name             String
+  tagline          String                @default("")
+  description      String                @default("")
+  logoUrl          String?
+  coverUrl         String?
+  /// Màu nhận diện hex, VD "#1428A0"
+  accentColor      String?
+  /// null = chưa xác minh
+  verificationType ShopVerificationType?
+  verifiedAt       DateTime?
+  /// Mã chứng nhận ReStore cấp, VD "RS-2026-00128"
+  certificateCode  String?
+  categoryIds      String[]
+  /// Địa chỉ hiển thị, VD "Quận 1, TP. Hồ Chí Minh"
+  address          String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  followers        ShopFollow[]
+  banners          ShopBanner[]
+
+  @@index([verificationType, verifiedAt])
+}
+
+model ShopFollow {
+  userId    String
+  shopId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, shopId])
+  @@index([shopId])
+}
+
+/// Banner sự kiện shop gửi lên (ảnh 1200 x 600), admin duyệt rồi mới hiện
+model ShopBanner {
+  id        String           @id @default(uuid())
+  shopId    String
+  shop      Shop             @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  title     String
+  imageUrl  String
+  startsAt  DateTime?
+  endsAt    DateTime?
+  status    ShopBannerStatus @default(PENDING)
+  /// Bấm poster mở tin này của shop; null = mở trang shop
+  listingId String?
+  listing   Listing?         @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  rejectReason ShopBannerRejectReason?
+  /// Ghi chú thêm của admin khi từ chối
+  rejectNote   String?
+  reviewedAt   DateTime?
+  reviewedById String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @default(now()) @updatedAt
+
+  @@index([shopId, status])
+  @@index([status, createdAt])
 }

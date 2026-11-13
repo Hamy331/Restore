@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import '../../core/constants/app_colors.dart';
 
 enum AppButtonVariant { primary, secondary, text }
@@ -30,12 +31,9 @@ class AppButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox.square(
-                dimension: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppColors.textPrimary,
-                ),
+              const AppLoadingIndicator(
+                dotSize: 5,
+                color: AppColors.textPrimary,
               ),
               const SizedBox(width: 8),
               Text(label),

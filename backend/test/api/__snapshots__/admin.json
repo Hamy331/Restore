@@ -101,9 +101,15 @@
           "name": "Cá nhân",
           "monthlyPrice": "0",
           "dailyListingLimit": 3,
-          "activeListingLimit": 10,
+          "activeListingLimit": 5,
           "draftLimit": 3,
           "monthlyPromotionQuota": 0,
+          "boostDiscountPercent": 0,
+          "freeDaysPercent": 100,
+          "extendDiscountPercent": 0,
+          "autoExtend": false,
+          "posterActiveLimit": 0,
+          "posterMonthlyLimit": 0,
           "priorityLevel": 0
         },
         {
@@ -114,7 +120,13 @@
           "dailyListingLimit": 10,
           "activeListingLimit": 30,
           "draftLimit": 10,
-          "monthlyPromotionQuota": 2,
+          "monthlyPromotionQuota": 5,
+          "boostDiscountPercent": 20,
+          "freeDaysPercent": 150,
+          "extendDiscountPercent": 20,
+          "autoExtend": false,
+          "posterActiveLimit": 0,
+          "posterMonthlyLimit": 0,
           "priorityLevel": 1
         },
         {
@@ -125,7 +137,13 @@
           "dailyListingLimit": 30,
           "activeListingLimit": 100,
           "draftLimit": 30,
-          "monthlyPromotionQuota": 10,
+          "monthlyPromotionQuota": 20,
+          "boostDiscountPercent": 30,
+          "freeDaysPercent": 200,
+          "extendDiscountPercent": 30,
+          "autoExtend": true,
+          "posterActiveLimit": 2,
+          "posterMonthlyLimit": 4,
           "priorityLevel": 2
         }
       ]
@@ -244,8 +262,15 @@
               "description": {
                 "en": "Items that fit no other category",
                 "vi": "Các món đồ chưa có danh mục phù hợp"
-              }
-            }
+              },
+              "imageUrl": "assets/images/categories/other.png"
+            },
+            "freeListingLimit": 2,
+            "extraListingCredits": 5,
+            "displayDays": 45,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4,
+            "boostCredits": 4
           },
           {
             "active": true,
@@ -258,7 +283,7 @@
                 "en": "Furniture & decor",
                 "vi": "Nội thất, trang trí"
               },
-              "imageUrl": "assets/images/marketplace/listing-lamp.png",
+              "imageUrl": "assets/images/categories/furniture.png",
               "attributes": [
                 {
                   "key": "home_type",
@@ -339,7 +364,13 @@
                 "en": "Furniture, lamps, kitchenware, decor...",
                 "vi": "Bàn ghế, đèn, đồ bếp, đồ trang trí..."
               }
-            }
+            },
+            "freeListingLimit": 2,
+            "extraListingCredits": 10,
+            "displayDays": 60,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 6,
+            "boostCredits": 6
           },
           {
             "active": true,
@@ -429,8 +460,15 @@
               "description": {
                 "en": "Textbooks, novels, course books...",
                 "vi": "Sách giáo khoa, truyện, giáo trình..."
-              }
-            }
+              },
+              "imageUrl": "assets/images/categories/books.png"
+            },
+            "freeListingLimit": 3,
+            "extraListingCredits": 5,
+            "displayDays": 60,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 3,
+            "boostCredits": 4
           },
           {
             "active": true,
@@ -443,7 +481,7 @@
                 "en": "Pets",
                 "vi": "Thú cưng"
               },
-              "imageUrl": null,
+              "imageUrl": "assets/images/categories/pets.png",
               "attributes": [
                 {
                   "key": "pet_type",
@@ -518,7 +556,25 @@
                     "en": "Age",
                     "vi": "Tuổi"
                   },
-                  "required": false
+                  "required": false,
+                  "unitOptions": [
+                    {
+                      "label": {
+                        "en": "months",
+                        "vi": "tháng"
+                      },
+                      "value": "month",
+                      "factor": 1
+                    },
+                    {
+                      "label": {
+                        "en": "years",
+                        "vi": "năm"
+                      },
+                      "value": "year",
+                      "factor": 12
+                    }
+                  ]
                 },
                 {
                   "key": "pet_gender",
@@ -557,8 +613,15 @@
               "description": {
                 "en": "Dogs, cats, birds, pet accessories...",
                 "vi": "Chó, mèo, chim, phụ kiện thú cưng..."
-              }
-            }
+              },
+              "hasCondition": false
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 10,
+            "displayDays": 21,
+            "maxDisplayDays": 60,
+            "dayPackCredits": 8,
+            "boostCredits": 6
           },
           {
             "active": true,
@@ -612,8 +675,15 @@
               "description": {
                 "en": "Gym gear, sport bikes, camping...",
                 "vi": "Dụng cụ tập, xe đạp thể thao, đồ cắm trại..."
-              }
-            }
+              },
+              "imageUrl": "assets/images/categories/sports.png"
+            },
+            "freeListingLimit": 2,
+            "extraListingCredits": 5,
+            "displayDays": 45,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4,
+            "boostCredits": 4
           },
           {
             "active": true,
@@ -626,7 +696,7 @@
                 "en": "Fashion",
                 "vi": "Thời trang"
               },
-              "imageUrl": null,
+              "imageUrl": "assets/images/categories/fashion.png",
               "attributes": [
                 {
                   "key": "product_type",
@@ -760,7 +830,13 @@
                 "en": "Clothes, shoes, bags...",
                 "vi": "Quần áo, giày dép, túi xách..."
               }
-            }
+            },
+            "freeListingLimit": 2,
+            "extraListingCredits": 5,
+            "displayDays": 30,
+            "maxDisplayDays": 90,
+            "dayPackCredits": 4,
+            "boostCredits": 4
           },
           {
             "active": true,
@@ -773,7 +849,7 @@
                 "en": "Vehicles",
                 "vi": "Xe cộ"
               },
-              "imageUrl": null,
+              "imageUrl": "assets/images/categories/vehicles.png",
               "attributes": [
                 {
                   "key": "vehicle_type",
@@ -898,7 +974,13 @@
                 "en": "Motorbikes, bicycles, cars, parts...",
                 "vi": "Xe máy, xe đạp, ô tô, phụ tùng..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 15,
+            "displayDays": 30,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 15,
+            "boostCredits": 10
           },
           {
             "active": true,
@@ -911,7 +993,7 @@
                 "en": "Phones",
                 "vi": "Điện thoại"
               },
-              "imageUrl": null,
+              "imageUrl": "assets/images/categories/phones.png",
               "attributes": [
                 {
                   "key": "brand",
@@ -1166,7 +1248,13 @@
                 "en": "iPhone, Samsung, Xiaomi, OPPO...",
                 "vi": "iPhone, Samsung, Xiaomi, OPPO..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 15,
+            "displayDays": 30,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 15,
+            "boostCredits": 10
           },
           {
             "active": true,
@@ -1179,7 +1267,7 @@
                 "en": "Appliances",
                 "vi": "Đồ gia dụng"
               },
-              "imageUrl": null,
+              "imageUrl": "assets/images/categories/appliances.png",
               "attributes": [
                 {
                   "key": "appliance_type",
@@ -1311,7 +1399,13 @@
                 "en": "Fridges, washing machines, air conditioners...",
                 "vi": "Tủ lạnh, máy giặt, điều hoà..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 10,
+            "displayDays": 45,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 8,
+            "boostCredits": 6
           },
           {
             "active": true,
@@ -1324,7 +1418,7 @@
                 "en": "Electronics",
                 "vi": "Đồ điện tử"
               },
-              "imageUrl": "assets/images/marketplace/listing-camera.png",
+              "imageUrl": "assets/images/categories/electronics.png",
               "attributes": [
                 {
                   "key": "device_type",
@@ -1466,7 +1560,13 @@
                 "en": "Laptops, cameras, headphones, tablets...",
                 "vi": "Laptop, máy ảnh, tai nghe, máy tính bảng..."
               }
-            }
+            },
+            "freeListingLimit": 1,
+            "extraListingCredits": 15,
+            "displayDays": 45,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 12,
+            "boostCredits": 10
           }
         ],
         "conditions": [
@@ -1524,7 +1624,13 @@
           "name": "Đồ cổ",
           "attributes": [],
           "description": "Đồ sưu tầm"
-        }
+        },
+        "freeListingLimit": 2,
+        "extraListingCredits": 5,
+        "displayDays": 60,
+        "maxDisplayDays": 120,
+        "dayPackCredits": 4,
+        "boostCredits": 5
       }
     }
   },
@@ -1548,7 +1654,13 @@
           "name": "Đồ cổ sưu tầm",
           "attributes": [],
           "description": "Đồ sưu tầm"
-        }
+        },
+        "freeListingLimit": 2,
+        "extraListingCredits": 5,
+        "displayDays": 60,
+        "maxDisplayDays": 120,
+        "dayPackCredits": 4,
+        "boostCredits": 5
       }
     }
   },
@@ -1577,6 +1689,12 @@
         "activeListingLimit": 30,
         "draftLimit": 10,
         "monthlyPromotionQuota": 2,
+        "boostDiscountPercent": 20,
+        "freeDaysPercent": 150,
+        "extendDiscountPercent": 20,
+        "autoExtend": false,
+        "posterActiveLimit": 0,
+        "posterMonthlyLimit": 0,
         "priorityLevel": 1
       }
     }
@@ -1638,22 +1756,34 @@
               "id": "basic",
               "name": "Cửa hàng Basic",
               "tier": "BASIC",
+              "autoExtend": false,
               "draftLimit": 10,
               "monthlyPrice": "99000",
               "priorityLevel": 1,
+              "freeDaysPercent": 150,
               "dailyListingLimit": 10,
+              "posterActiveLimit": 0,
               "activeListingLimit": 30,
-              "monthlyPromotionQuota": 2
+              "posterMonthlyLimit": 0,
+              "boostDiscountPercent": 20,
+              "extendDiscountPercent": 20,
+              "monthlyPromotionQuota": 5
             },
             "after": {
               "id": "basic",
               "name": "Cửa hàng Basic",
               "tier": "BASIC",
+              "autoExtend": false,
               "draftLimit": 10,
               "monthlyPrice": "109000",
               "priorityLevel": 1,
+              "freeDaysPercent": 150,
               "dailyListingLimit": 10,
+              "posterActiveLimit": 0,
               "activeListingLimit": 30,
+              "posterMonthlyLimit": 0,
+              "boostDiscountPercent": 20,
+              "extendDiscountPercent": 20,
               "monthlyPromotionQuota": 2
             },
             "createdAt": "<date>"
@@ -1684,7 +1814,13 @@
                 "name": "Đồ cổ",
                 "attributes": [],
                 "description": "Đồ sưu tầm"
-              }
+              },
+              "displayDays": 60,
+              "boostCredits": 5,
+              "dayPackCredits": 4,
+              "maxDisplayDays": 120,
+              "freeListingLimit": 2,
+              "extraListingCredits": 5
             },
             "after": {
               "id": "antiques",
@@ -1694,7 +1830,13 @@
                 "name": "Đồ cổ sưu tầm",
                 "attributes": [],
                 "description": "Đồ sưu tầm"
-              }
+              },
+              "displayDays": 60,
+              "boostCredits": 5,
+              "dayPackCredits": 4,
+              "maxDisplayDays": 120,
+              "freeListingLimit": 2,
+              "extraListingCredits": 5
             },
             "createdAt": "<date>"
           },

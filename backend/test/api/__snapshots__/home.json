@@ -19,6 +19,7 @@
         "bio": null,
         "followerCount": 0,
         "followingCount": 0,
+        "followingShopCount": 0,
         "presence": {
           "isOnline": false,
           "lastActiveAt": null
@@ -46,6 +47,7 @@
         "bio": null,
         "followerCount": 0,
         "followingCount": 0,
+        "followingShopCount": 0,
         "presence": {
           "isOnline": false,
           "lastActiveAt": null

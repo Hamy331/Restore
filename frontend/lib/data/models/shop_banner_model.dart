@@ -4,7 +4,8 @@ import 'package:restore/data/models/enums/shop_banner_status.dart';
 /// Một dòng của bảng ShopBanner (đề xuất, xem `backend/docs/trusted-shops.md`):
 /// banner sự kiện / ưu đãi do shop gửi lên, admin duyệt rồi mới hiện trên
 /// trang chủ, trang Shop uy tín và trang của shop. Banner chỉ là một ảnh shop
-/// tự thiết kế (chữ nằm sẵn trong ảnh); bấm vào mở thẳng trang shop.
+/// tự thiết kế (chữ nằm sẵn trong ảnh); bấm vào mở tin [listingId] nếu có,
+/// không thì mở trang shop.
 class ShopBannerModel extends Equatable {
   final String id;
   final String shopId;
@@ -22,6 +23,9 @@ class ShopBannerModel extends Equatable {
   final ShopBannerStatus status;
   final DateTime? createdAt;
 
+  /// Tin của shop mà banner mở khi bấm; null = mở trang shop
+  final String? listingId;
+
   const ShopBannerModel({
     required this.id,
     required this.shopId,
@@ -31,6 +35,7 @@ class ShopBannerModel extends Equatable {
     this.endsAt,
     this.status = ShopBannerStatus.approved,
     this.createdAt,
+    this.listingId,
   });
 
   factory ShopBannerModel.fromJson(Map<String, dynamic> json) =>
@@ -45,6 +50,7 @@ class ShopBannerModel extends Equatable {
             ShopBannerStatus.fromApi(json['status'] as String?) ??
             ShopBannerStatus.approved,
         createdAt: DateTime.tryParse('${json['createdAt']}'),
+        listingId: json['listingId'] as String?,
       );
 
   @override
@@ -57,5 +63,6 @@ class ShopBannerModel extends Equatable {
     endsAt,
     status,
     createdAt,
+    listingId,
   ];
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/app_image_icon.dart';
 
 class FeedbackView extends StatelessWidget {
   const FeedbackView({
     required this.icon,
+    this.image,
     required this.title,
     required this.message,
     this.action,
@@ -10,6 +12,9 @@ class FeedbackView extends StatelessWidget {
   });
 
   final IconData icon;
+
+  /// Icon 3D (AppImages.uiIcons) thay cho [icon] khi có
+  final String? image;
   final String title;
   final String message;
   final Widget? action;
@@ -22,7 +27,10 @@ class FeedbackView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 48, color: Theme.of(context).colorScheme.primary),
+            if (image case final image?)
+              AppImageIcon(image, size: 72, fallback: icon)
+            else
+              Icon(icon, size: 48, color: Theme.of(context).colorScheme.primary),
             const SizedBox(height: 16),
             Text(
               title,

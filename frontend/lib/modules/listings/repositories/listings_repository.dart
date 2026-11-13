@@ -14,15 +14,57 @@ import '../models/listing_draft.dart';
 import '../models/posting_quota.dart';
 import 'package:restore/data/models/enums/listing_status.dart';
 import 'package:restore/data/models/listing_model.dart';
+import 'package:restore/data/models/listing_revision_model.dart';
 
 /// Hợp đồng làm việc với dữ liệu tin đăng
 abstract class ListingsRepository {
   Future<ListingDraft> saveDraft(ListingDraft draft, CategoryModel? category);
-  Future<ListingDraft> publish(ListingDraft draft, CategoryModel? category);
+
+  /// Đăng tin. [payWithCredits]: người dùng đã đồng ý trả xu khi hết suất
+  /// miễn phí (backend giữ xu, duyệt thì trừ, từ chối thì hoàn).
+  /// [allowDuplicate]: vẫn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn.
+  Future<ListingDraft> publish(
+    ListingDraft draft,
+    CategoryModel? category, {
+    bool payWithCredits = false,
+    bool allowDuplicate = false,
+  });
   Future<ListingDraft> getDraft(String id);
+
+  /// Một tin của tôi, mọi trạng thái, kèm bản sửa đang chờ duyệt (nếu có)
+  Future<ListingModel> getOwned(String id);
+
+  /// Bỏ bản sửa đang chờ duyệt / bị từ chối của tin đã duyệt; tin giữ
+  /// nguyên bản đang hiển thị
+  Future<void> discardEdit(String id);
   Future<PagedResult<ListingModel>> mine({int page = 1, String? status});
   Future<ListingModel> detail(String id);
-  Future<void> changeStatus(String id, ListingStatus status);
+
+  /// Đổi trạng thái tin. Hiện lại tin đã hết hạn = kích hoạt lại: tính như
+  /// đăng mới, hết suất miễn phí thì cần [payWithCredits].
+  Future<void> changeStatus(
+    String id,
+    ListingStatus status, {
+    bool payWithCredits = false,
+  });
+
+  /// Gia hạn tin đang hiển thị thêm [days] ngày, trả xu theo chuyên mục
+  /// (giá theo ngày, tròn gói 30/60/90 thì rẻ hơn)
+  Future<void> extend(String id, int days);
+
+  /// Bật/tắt tự gia hạn (chỉ gói có hỗ trợ, ví dụ Cửa hàng)
+  Future<void> setAutoExtend(String id, bool enabled);
+
+  /// Đẩy tin đang hiển thị lên đầu 1 ngày: dùng lượt tặng của gói, hết lượt
+  /// thì trả xu. Lỗi 409 ném [ListingBoostException].
+  Future<BoostResult> boost(String id);
+
+  /// Báo giá tin ưu tiên (Hot sale) của tin đang hiển thị
+  Future<FeatureQuote> featureQuote(String id);
+
+  /// Mua tin ưu tiên gói [packageId] bằng xu. Lỗi 409 ném
+  /// [ListingBoostException] (FEATURE_ALREADY_ACTIVE, NOT_ENOUGH_CREDITS).
+  Future<DateTime?> feature(String id, String packageId);
   Future<void> deleteDraft(String id);
 
   /// Số tin nháp đang giữ và giới hạn của gói
@@ -45,27 +87,41 @@ class MockListingsRepository implements ListingsRepository {
 
   final Duration latency;
   static final Map<String, ListingDraft> _store = {};
+
+  /// Bản sửa chờ duyệt của tin đã duyệt (giống ListingRevision ở backend)
+  static final Map<String, ListingDraft> _edits = {};
   static final Set<String> _favorites = {};
   static int _nextId = 0;
-  ListingModel _model(ListingDraft draft) => ListingModel(
-    id: draft.id!,
-    ownerId: 'mock-user',
-    title: draft.title,
-    description: draft.description,
-    price: draft.price,
-    images: draft.images,
-    categoryId: draft.categoryId,
-    condition: draft.condition,
-    status: draft.status,
-    allowSale: draft.tradeType.allowsSale,
-    allowExchange: draft.tradeType.allowsExchange,
-    address: draft.address,
-    attributes: draft.attributes,
-    sellerName: 'Bạn',
-    exchangeWish: draft.exchangeWish,
-    sellerType: draft.sellerType.name.toUpperCase(),
-    updatedAt: draft.updatedAt,
-  );
+  ListingModel _model(ListingDraft draft, {bool withEdit = true}) =>
+      ListingModel(
+        id: draft.id!,
+        ownerId: 'mock-user',
+        title: draft.title,
+        description: draft.description,
+        price: draft.price,
+        images: draft.images,
+        categoryId: draft.categoryId,
+        condition: draft.condition,
+        status: draft.status,
+        allowSale: draft.tradeType.allowsSale,
+        allowExchange: draft.tradeType.allowsExchange,
+        address: draft.address,
+        attributes: draft.attributes,
+        sellerName: 'Bạn',
+        exchangeWish: draft.exchangeWish,
+        sellerType: draft.sellerType.name.toUpperCase(),
+        updatedAt: draft.updatedAt,
+        pendingEdit: !withEdit || _edits[draft.id] == null
+            ? null
+            : ListingRevisionModel(
+                status: ListingRevisionStatus.pending,
+                submittedAt: _edits[draft.id]!.updatedAt,
+                content: _model(
+                  _edits[draft.id]!.copyWith(status: draft.status),
+                  withEdit: false,
+                ),
+              ),
+      );
   @override
   Future<PagedResult<ListingModel>> mine({int page = 1, String? status}) async {
     final rows =
@@ -95,9 +151,38 @@ class MockListingsRepository implements ListingsRepository {
           ).firstWhere((item) => item['id'] == id),
         );
   @override
-  Future<void> changeStatus(String id, ListingStatus status) async {
+  Future<void> changeStatus(
+    String id,
+    ListingStatus status, {
+    bool payWithCredits = false,
+  }) async {
     _store[id] = (await getDraft(id)).copyWith(status: status);
   }
+
+  @override
+  Future<void> extend(String id, int days) async {}
+
+  @override
+  Future<void> setAutoExtend(String id, bool enabled) async {}
+
+  @override
+  Future<BoostResult> boost(String id) async =>
+      const BoostResult(free: false, credits: 4, freeLeft: 0);
+
+  @override
+  Future<FeatureQuote> featureQuote(String id) async => const FeatureQuote(
+    discountPercent: 0,
+    available: 50,
+    options: [
+      FeatureOption(packageId: 'featured-1', durationDays: 1, credits: 8),
+      FeatureOption(packageId: 'featured-3', durationDays: 3, credits: 23),
+      FeatureOption(packageId: 'featured-7', durationDays: 7, credits: 50),
+    ],
+  );
+
+  @override
+  Future<DateTime?> feature(String id, String packageId) async =>
+      DateTime.now().add(const Duration(days: 1));
 
   @override
   Future<void> deleteDraft(String id) async {
@@ -145,6 +230,23 @@ class MockListingsRepository implements ListingsRepository {
       _store[id] ?? (throw StateError('Không tìm thấy nháp.'));
 
   @override
+  Future<ListingModel> getOwned(String id) async {
+    await Future<void>.delayed(latency);
+    final stored = _store[id];
+    if (stored != null) return _model(stored);
+    // Tin mẫu trên trang chủ: coi như tin của tôi để thử luồng sửa tin
+    final sample = await detail(id);
+    _store[id] = ListingDraft.fromListing(sample);
+    return _model(_store[id]!);
+  }
+
+  @override
+  Future<void> discardEdit(String id) async {
+    await Future<void>.delayed(latency);
+    _edits.remove(id);
+  }
+
+  @override
   Future<DraftQuota> draftQuota() async => DraftQuota(
     used: _store.values
         .where((draft) => draft.status == ListingStatus.draft)
@@ -178,16 +280,31 @@ class MockListingsRepository implements ListingsRepository {
   @override
   Future<ListingDraft> publish(
     ListingDraft draft,
-    CategoryModel? category,
-  ) async {
+    CategoryModel? category, {
+    bool payWithCredits = false,
+    bool allowDuplicate = false,
+  }) async {
     await Future<void>.delayed(latency);
+    // Sửa tin đã duyệt: lưu bản sửa chờ duyệt, tin vẫn giữ bản cũ
+    final current = _store[draft.id];
+    if (current != null && current.status.isApproved) {
+      _edits[draft.id!] = draft.copyWith(updatedAt: DateTime.now());
+      return draft.copyWith(status: current.status);
+    }
     final categoryId = draft.categoryId;
-    final alreadyCounted = _store[draft.id]?.status == ListingStatus.pending;
-    // Backend cũng chặn khi chuyên mục đã đủ số tin của tài khoản cá nhân
+    var alreadyCounted = _store[draft.id]?.status == ListingStatus.pending;
+    // Backend cũng chặn khi chuyên mục đã đủ số tin của tài khoản cá nhân;
+    // đồng ý trả xu thì tin không chiếm suất miễn phí
     if (categoryId.isNotEmpty && !alreadyCounted) {
       final used = MockPostingQuotaStore.used[categoryId] ?? 0;
       if (used >= MockPostingQuotaStore.limitOf(categoryId)) {
-        throw ListingSaveException(draft, const PostingLimitReachedException());
+        if (!payWithCredits) {
+          throw ListingSaveException(
+            draft,
+            const PostingLimitReachedException(),
+          );
+        }
+        alreadyCounted = true;
       }
     }
     // Tin mới cần admin duyệt trước khi hiển thị (SRS 4.2)
@@ -218,6 +335,102 @@ class ListingImageException implements Exception {
 
 /// [missing]: file ảnh đã chọn không còn trên máy (bộ nhớ tạm bị dọn)
 enum ListingImageProblem { tooLarge, unsupported, missing }
+
+/// Tin cũ trùng với tin đang đăng. [active]: tin cũ đang hiển thị / chờ
+/// duyệt (không đăng được), ngược lại tin cũ đã ẩn / hết hạn (nên kích hoạt lại)
+/// Kết quả đẩy tin: [free] = dùng lượt tặng của gói, không thì trả [credits] xu
+class BoostResult {
+  const BoostResult({
+    required this.free,
+    required this.credits,
+    required this.freeLeft,
+  });
+  final bool free;
+  final int credits;
+
+  /// Lượt đẩy tin miễn phí còn lại trong tháng
+  final int freeLeft;
+
+  factory BoostResult.fromJson(Map<String, dynamic> json) => BoostResult(
+    free: json['free'] == true,
+    credits: (json['credits'] as num?)?.toInt() ?? 0,
+    freeLeft: (json['freeLeft'] as num?)?.toInt() ?? 0,
+  );
+}
+
+/// Một gói tin ưu tiên: [credits] xu cho [durationDays] ngày ở mục Hot sale
+class FeatureOption {
+  const FeatureOption({
+    required this.packageId,
+    required this.durationDays,
+    required this.credits,
+  });
+  final String packageId;
+  final int durationDays;
+  final int credits;
+
+  factory FeatureOption.fromJson(Map<String, dynamic> json) => FeatureOption(
+    packageId: '${json['packageId']}',
+    durationDays: (json['durationDays'] as num?)?.toInt() ?? 1,
+    credits: (json['credits'] as num?)?.toInt() ?? 0,
+  );
+}
+
+/// Báo giá tin ưu tiên: giá đã giảm theo gói ([discountPercent]), số xu
+/// đang có, [runningUntil] khác null khi tin đang ở Hot sale
+class FeatureQuote {
+  const FeatureQuote({
+    required this.discountPercent,
+    required this.available,
+    required this.options,
+    this.runningUntil,
+  });
+  final int discountPercent;
+  final int available;
+  final List<FeatureOption> options;
+  final DateTime? runningUntil;
+
+  factory FeatureQuote.fromJson(Map<String, dynamic> json) => FeatureQuote(
+    discountPercent: (json['discountPercent'] as num?)?.toInt() ?? 0,
+    available: (json['available'] as num?)?.toInt() ?? 0,
+    runningUntil: DateTime.tryParse('${json['runningUntil']}')?.toLocal(),
+    options: [
+      for (final option in (json['options'] as List? ?? const []))
+        if (option is Map)
+          FeatureOption.fromJson(Map<String, dynamic>.from(option)),
+    ],
+  );
+}
+
+/// Backend từ chối đẩy tin / tin ưu tiên (HTTP 409): [code] như
+/// `BOOST_TOO_SOON`, `FEATURE_ALREADY_ACTIVE`, `NOT_ENOUGH_CREDITS`,
+/// `LISTING_NOT_BOOSTABLE`
+class ListingBoostException implements Exception {
+  const ListingBoostException(
+    this.code, {
+    this.message,
+    this.details = const {},
+  });
+  final String code;
+  final String? message;
+  final Map<String, dynamic> details;
+
+  static const tooSoon = 'BOOST_TOO_SOON';
+  static const featureActive = 'FEATURE_ALREADY_ACTIVE';
+  static const notEnoughCredits = 'NOT_ENOUGH_CREDITS';
+
+  @override
+  String toString() => 'ListingBoostException($code)';
+}
+
+class DuplicateListing {
+  const DuplicateListing({required this.listingId, required this.active});
+  final String listingId;
+  final bool active;
+
+  static const activeCode = 'DUPLICATE_LISTING';
+  static const inactiveCode = 'DUPLICATE_INACTIVE';
+}
 
 /// Lưu / đăng tin lỗi giữa chừng. [draft] là bản đã lưu được tới lúc lỗi
 /// (đã có id, ảnh đã tải) để thử lại không tạo tin trùng, không tải lại ảnh.
@@ -263,10 +476,39 @@ class ListingSaveException implements Exception {
   String toString() => 'ListingSaveException(${draft.id}, $cause)';
 
   /// Chuyên mục đã đủ số tin cho phép (API trả 409 `POSTING_LIMIT_REACHED`)
+  /// hoặc đồng ý trả xu nhưng ví không đủ (`NOT_ENOUGH_CREDITS`)
   bool get isPostingLimitReached {
     final error = cause;
     if (error is PostingLimitReachedException) return true;
-    return _conflictCode == PostingLimitReachedException.code;
+    final code = _conflictCode;
+    return code == PostingLimitReachedException.code ||
+        code == PostingLimitReachedException.notEnoughCredits;
+  }
+
+  /// Ví không đủ xu (`NOT_ENOUGH_CREDITS`): số xu còn thiếu, null nếu không phải lỗi này
+  int? get missingCredits {
+    if (_conflictCode != PostingLimitReachedException.notEnoughCredits) {
+      return null;
+    }
+    final data = (cause as DioException).response?.data as Map;
+    final details = data['details'] is Map ? data['details'] as Map : const {};
+    return (details['missing'] as num?)?.toInt() ?? 0;
+  }
+
+  /// Đã có tin giống vậy (API trả 409 `DUPLICATE_LISTING` khi tin cũ đang
+  /// hiển thị / chờ duyệt, `DUPLICATE_INACTIVE` khi đã ẩn / hết hạn)
+  DuplicateListing? get duplicate {
+    final code = _conflictCode;
+    if (code != DuplicateListing.activeCode &&
+        code != DuplicateListing.inactiveCode) {
+      return null;
+    }
+    final data = (cause as DioException).response?.data as Map;
+    final details = data['details'] is Map ? data['details'] as Map : const {};
+    return DuplicateListing(
+      listingId: '${details['listingId'] ?? ''}',
+      active: code == DuplicateListing.activeCode,
+    );
   }
 
   /// Đã giữ đủ số tin nháp của gói (API trả 409 `DRAFT_LIMIT_REACHED`)
@@ -343,20 +585,42 @@ class ApiListingsRepository implements ListingsRepository {
   /// Đăng tin thẳng (`POST /listings`, tin vào hàng chờ duyệt) rồi tải ảnh lên.
   /// Bản nháp đã lưu trên máy chủ thì đăng qua luồng nháp như cũ.
   @override
-  Future<ListingDraft> publish(ListingDraft draft, CategoryModel? category) {
+  Future<ListingDraft> publish(
+    ListingDraft draft,
+    CategoryModel? category, {
+    bool payWithCredits = false,
+    bool allowDuplicate = false,
+  }) {
     if (draft.id != null && draft.status == ListingStatus.draft) {
-      return _saveDraft(draft, category, publish: true);
+      return _saveDraft(
+        draft,
+        category,
+        publish: true,
+        payWithCredits: payWithCredits,
+        allowDuplicate: allowDuplicate,
+      );
     }
-    return _publishListing(draft, category);
+    return _publishListing(
+      draft,
+      category,
+      payWithCredits: payWithCredits,
+      allowDuplicate: allowDuplicate,
+    );
   }
 
   Future<ListingDraft> _publishListing(
     ListingDraft draft,
-    CategoryModel? category,
-  ) async {
+    CategoryModel? category, {
+    bool payWithCredits = false,
+    bool allowDuplicate = false,
+  }) async {
     var working = draft;
     try {
-      final payload = draft.toPayload(category: category);
+      final payload = {
+        ...draft.toPayload(category: category),
+        if (payWithCredits) 'payWithCredits': true,
+        if (allowDuplicate) 'allowDuplicate': true,
+      };
       // Lần đầu: tạo tin mới. Thử lại sau khi tải ảnh lỗi giữa chừng: tin đã
       // tạo rồi nên chỉ cập nhật nội dung (không tạo trùng, không trừ thêm lượt)
       final response = draft.id == null
@@ -376,6 +640,8 @@ class ApiListingsRepository implements ListingsRepository {
     ListingDraft draft,
     CategoryModel? category, {
     required bool publish,
+    bool payWithCredits = false,
+    bool allowDuplicate = false,
   }) async {
     var working = draft;
     try {
@@ -402,7 +668,13 @@ class ApiListingsRepository implements ListingsRepository {
       if (!publish) return working;
       final id = Uri.encodeComponent(working.id!);
       final result = _data(
-        await _dio.post<Map<String, dynamic>>('/listings/drafts/$id/publish'),
+        await _dio.post<Map<String, dynamic>>(
+          '/listings/drafts/$id/publish',
+          data: {
+            if (payWithCredits) 'payWithCredits': true,
+            if (allowDuplicate) 'allowDuplicate': true,
+          },
+        ),
       );
       return _merge(working, result);
     } catch (error) {
@@ -485,14 +757,21 @@ class ApiListingsRepository implements ListingsRepository {
       : throw const ListingImageException(ListingImageProblem.unsupported);
 
   @override
-  Future<ListingDraft> getDraft(String id) async {
-    final data = _data(
+  Future<ListingDraft> getDraft(String id) async =>
+      ListingDraft.fromListing(await getOwned(id));
+
+  @override
+  Future<ListingModel> getOwned(String id) async => _listing(
+    _data(
       await _dio.get<Map<String, dynamic>>(
         '/listings/mine/${Uri.encodeComponent(id)}',
       ),
-    );
-    return ListingDraft.fromListing(_listing(data));
-  }
+    ),
+  );
+
+  @override
+  Future<void> discardEdit(String id) =>
+      _dio.delete<void>('/listings/${Uri.encodeComponent(id)}/edit');
 
   ListingModel _listing(Map<String, dynamic> data) =>
       ListingModel.fromJson(data, apiBaseUrl: _dio.options.baseUrl);
@@ -523,11 +802,73 @@ class ApiListingsRepository implements ListingsRepository {
     ),
   );
   @override
-  Future<void> changeStatus(String id, ListingStatus status) =>
-      _dio.patch<void>(
-        '/listings/${Uri.encodeComponent(id)}/status',
-        data: {'status': status.apiValue},
+  Future<void> changeStatus(
+    String id,
+    ListingStatus status, {
+    bool payWithCredits = false,
+  }) => _dio.patch<void>(
+    '/listings/${Uri.encodeComponent(id)}/status',
+    data: {
+      'status': status.apiValue,
+      if (payWithCredits) 'payWithCredits': true,
+    },
+  );
+
+  @override
+  Future<void> extend(String id, int days) => _dio.post<void>(
+    '/listings/${Uri.encodeComponent(id)}/extend',
+    data: {'days': days},
+  );
+
+  @override
+  Future<void> setAutoExtend(String id, bool enabled) => _dio.patch<void>(
+    '/listings/${Uri.encodeComponent(id)}/auto-extend',
+    data: {'enabled': enabled},
+  );
+
+  @override
+  Future<BoostResult> boost(String id) => _promotion(
+    () async => BoostResult.fromJson(
+      _data(
+        await _dio.post<Map<String, dynamic>>(
+          '/listings/${Uri.encodeComponent(id)}/boost',
+        ),
+      ),
+    ),
+  );
+
+  @override
+  Future<FeatureQuote> featureQuote(String id) async => FeatureQuote.fromJson(
+    _data(
+      await _dio.get<Map<String, dynamic>>(
+        '/listings/${Uri.encodeComponent(id)}/feature',
+      ),
+    ),
+  );
+
+  @override
+  Future<DateTime?> feature(String id, String packageId) => _promotion(
+    () async => DateTime.tryParse(
+      '${_data(await _dio.post<Map<String, dynamic>>('/listings/${Uri.encodeComponent(id)}/feature', data: {'packageId': packageId}))['endsAt']}',
+    )?.toLocal(),
+  );
+
+  /// Đổi lỗi 409 của đẩy tin / tin ưu tiên thành [ListingBoostException]
+  Future<T> _promotion<T>(Future<T> Function() request) async {
+    try {
+      return await request();
+    } on DioException catch (error) {
+      final data = error.response?.data;
+      if (error.response?.statusCode != 409 || data is! Map) rethrow;
+      final details = data['details'];
+      throw ListingBoostException(
+        '${data['code']}',
+        message: data['error'] as String?,
+        details: details is Map ? Map<String, dynamic>.from(details) : const {},
       );
+    }
+  }
+
   @override
   Future<void> deleteDraft(String id) async {
     try {

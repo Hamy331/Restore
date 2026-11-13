@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { created, ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
-import type { AdminOrderQuery, IdParams, StoreOrderInput, StorePackageInput } from '../commerce.dto.js';
+import type { AdminOrderQuery, IdParams, QuoteQuery, StoreOrderInput, StorePackageInput, SubscribeInput } from '../commerce.dto.js';
 import * as storeService from '../services/store.service.js';
 
 export async function listCategories(_req: AuthRequest, res: Response) {
@@ -15,6 +15,16 @@ export async function listPackages(_req: AuthRequest, res: Response) {
 
 export async function getMine(req: AuthRequest, res: Response) {
   ok(res, await storeService.getMyStore(req.user!.userId));
+}
+
+export async function quote(req: AuthRequest, res: Response) {
+  const { query } = getInput<ValidatedInput<QuoteQuery>>(res);
+  ok(res, await storeService.getPlanQuote(req.user!.userId, query.packageId));
+}
+
+export async function subscribe(req: AuthRequest, res: Response) {
+  const { body } = getInput<ValidatedInput<undefined, undefined, SubscribeInput>>(res);
+  ok(res, await storeService.subscribeWithCredits(req.user!.userId, body));
 }
 
 export async function createOrder(req: AuthRequest, res: Response) {
