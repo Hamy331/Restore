@@ -270,10 +270,27 @@ Backend chịu trách nhiệm xử lý:
 
 ## Development
 
-Chạy ứng dụng ở chế độ Debug:
+Cấu hình build nằm trong `env/` (đọc qua `AppEnvironment`, không có khoá bí mật):
+
+| Khoá | Ý nghĩa |
+| --- | --- |
+| `APP_ENV` | Tên môi trường: `dev`, `prod` |
+| `API_BASE_URL` | Địa chỉ API, VD `http://192.168.1.10:3000/api/v1`. Để trống: emulator Android dùng `10.0.2.2`, còn lại `localhost` |
+| `USE_MOCK_DATA` | `true` = dùng dữ liệu mẫu, không gọi backend |
+| `ENABLE_ADMIN_PREVIEW` | Mở `/admin-preview` ở bản release (bản debug luôn mở) |
+| `DEV_PLAN_SWITCH` | Hiện nút TEST đổi gói ở trang chủ |
+
+`env/dev.json` và `env/prod.json` là file riêng của từng máy (không commit). Lần đầu chép từ mẫu:
 
 ```bash
-flutter run
+cp env/env.example.json env/dev.json
+cp env/env.example.json env/prod.json   # rồi sửa APP_ENV, API_BASE_URL
+```
+
+Chạy ứng dụng ở chế độ Debug (VS Code: cấu hình "ReStore (dev)"):
+
+```bash
+flutter run --dart-define-from-file=env/dev.json
 ```
 
 Hoặc chỉ định thiết bị:
@@ -283,7 +300,7 @@ flutter devices
 ```
 
 ```bash
-flutter run -d <device_id>
+flutter run -d <device_id> --dart-define-from-file=env/dev.json
 ```
 
 ---
@@ -293,7 +310,7 @@ flutter run -d <device_id>
 Build Android APK ở chế độ Release:
 
 ```bash
-flutter build apk --release
+flutter build apk --release --dart-define-from-file=env/prod.json
 ```
 
 APK sau khi build sẽ nằm tại:
@@ -424,7 +441,7 @@ flutter analyze
 flutter test
 
 # Build release APK
-flutter build apk --release
+flutter build apk --release --dart-define-from-file=env/prod.json
 ```
 
 ---

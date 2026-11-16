@@ -1,18 +1,14 @@
 import 'dart:async';
-
 import 'package:restore/modules/content/views/community_content_view.dart';
 import 'package:restore/modules/credits/views/credit_history/credit_history_view.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
 import 'package:restore/modules/credits/views/credit_wallet/credit_wallet_view.dart';
 import 'package:restore/modules/admin/presentation/admin_live_workspace.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:restore/modules/admin/presentation/admin_workspace.dart';
 import 'package:restore/modules/admin/presentation/admin_commerce.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-// Tab Bảng tin dùng module feeds (danh sách + đăng bài có API); màn soạn bài
-// nhiều tuỳ chọn của module feed vẫn ở /feeds/compose.
 import 'package:restore/modules/feeds/views/feeds/feeds_view.dart';
 import 'package:restore/modules/account/models/profile_models.dart';
 import 'package:restore/modules/account/views/follow_list/follow_list_view.dart';
@@ -135,7 +131,7 @@ GoRouter createAppRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (_, _) => const CommunityContentView(),
     ),
-    if (kDebugMode || const bool.fromEnvironment('ENABLE_ADMIN_PREVIEW'))
+    if (AppEnvironment.enableAdminPreview)
       GoRoute(
         path: '/admin-preview',
         builder: (context, _) =>

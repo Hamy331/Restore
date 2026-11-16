@@ -14,8 +14,11 @@ Trong `frontend`:
 
 ```powershell
 flutter pub get
-flutter run -d chrome --dart-define=USE_MOCK_DATA=false
+copy env\env.example.json env\dev.json   # lần đầu
+flutter run -d chrome --dart-define-from-file=env/dev.json
 ```
+
+`env/dev.json` phải có `"USE_MOCK_DATA": false` (mặc định). Trong VS Code chọn cấu hình chạy "ReStore (dev)".
 
 Đăng nhập bằng tài khoản đã xác minh, có `role = ADMIN`. Sau đăng nhập mở `/admin`; tài khoản admin cũng có lối vào từ trang Tài khoản. Chỉ người quản trị database được cấp vai trò ban đầu; ứng dụng không có API tự nâng quyền.
 
