@@ -11,6 +11,7 @@ import {
   RightOutlined,
   ReloadOutlined,
   CheckCircleOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 import { useWorkspace } from '../../app/workspace';
 import { auditColumns } from '../audit/AuditTable';
@@ -27,6 +28,13 @@ const queue = [
     section: 'listings',
     label: 'Tin chờ duyệt',
     icon: SafetyCertificateOutlined,
+  },
+  {
+    key: 'pendingEdits',
+    section: 'listings',
+    filter: 'EDIT',
+    label: 'Bản sửa tin chờ duyệt',
+    icon: EditOutlined,
   },
   { key: 'openReports', section: 'reports', label: 'Báo cáo đang mở', icon: FlagOutlined },
   { key: 'pendingStores', section: 'stores', label: 'Đơn cửa hàng chờ xử lý', icon: ShopOutlined },
@@ -100,12 +108,12 @@ export function Dashboard({ session }: { session: Session }) {
         }
       >
         <div className="queue-grid">
-          {queue.map(({ key, section, label, icon: Icon }) => (
+          {queue.map(({ key, section, label, icon: Icon, ...rest }) => (
             <button
               type="button"
               disabled={!canOpen(section)}
               key={key}
-              onClick={() => openSection(section)}
+              onClick={() => openSection(section, 'filter' in rest ? rest.filter : undefined)}
               className="queue-item"
             >
               <span className="metric-icon">

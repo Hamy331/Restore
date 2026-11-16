@@ -22,8 +22,10 @@ type Props = {
   onConflict: () => void;
   busy: boolean;
   setBusy: (busy: boolean) => void;
+  /** Đổi nhãn một số quyết định theo ngữ cảnh (VD duyệt bản sửa tin) */
+  actionLabels?: Partial<Record<Action, string>>;
 };
-export function DecisionForm({ actions, save, onSaved, onConflict, busy, setBusy }: Props) {
+export function DecisionForm({ actions, save, onSaved, onConflict, busy, setBusy, actionLabels }: Props) {
   const [form] = Form.useForm<Decision>();
   const action = Form.useWatch('action', form);
   const [error, setError] = useState(''),
@@ -65,7 +67,7 @@ export function DecisionForm({ actions, save, onSaved, onConflict, busy, setBusy
       >
         <Select
           placeholder="Chọn quyết định"
-          options={actions.map((value) => ({ value, label: labels[value] }))}
+          options={actions.map((value) => ({ value, label: actionLabels?.[value] ?? labels[value] }))}
         />
       </Form.Item>
       {action === 'SUSPEND' && (

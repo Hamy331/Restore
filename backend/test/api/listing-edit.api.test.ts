@@ -70,6 +70,12 @@ test('edit approved listing: old version stays live until the edit is approved',
   const adminList = await api.get('/admin/listings?q=%C4%90%C3%A8n%20b%C3%A0n', { token: tokens.admin });
   const adminRow = adminList.body.data.items.find((row: { id: string }) => row.id === id);
   assert.deepEqual([adminRow.title, adminRow.pendingEdit.status, adminRow.pendingEdit.title], ['Đèn bàn gỗ cũ', 'PENDING', 'Đèn bàn gỗ sồi']);
+  assert.deepEqual([adminRow.current.title, adminRow.current.images], ['Đèn bàn gỗ cũ', [image]]);
+  const editQueue = await api.get('/admin/listings?edit=PENDING', { token: tokens.admin });
+  assert.ok(editQueue.body.data.items.length > 0 && editQueue.body.data.items.every((row: { pendingEdit?: { status: string } }) => row.pendingEdit?.status === 'PENDING'));
+  assert.ok(editQueue.body.data.items.some((row: { id: string }) => row.id === id), 'tin có bản sửa nằm trong bộ lọc bản sửa');
+  assert.equal((await api.get('/admin/listings?edit=REJECTED', { token: tokens.admin })).status, 400);
+  assert.equal((await api.get('/admin/dashboard', { token: tokens.admin })).body.data.pendingEdits >= 1, true);
 
   const queued = await decide(id, 'APPROVED');
   assert.deepEqual([queued.edit, queued.title, queued.current.title], [true, 'Đèn bàn gỗ sồi', 'Đèn bàn gỗ cũ']);

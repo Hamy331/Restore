@@ -333,6 +333,8 @@ export const favoritesQuery = pageQuery({ defaultLimit: 20, maxLimit: 100 });
 export const adminListingQuery = z.record(z.string(), z.unknown()).transform((query) => ({
   status: query.status ? choice(query.status, Object.values(ListingStatus)) : undefined,
   q: query.q ? text(query.q, 'q', 1, 100) : undefined,
+  /** edit=PENDING: chỉ tin đã duyệt có bản sửa đang chờ duyệt */
+  edit: query.edit ? choice(query.edit, ['PENDING'] as const) : undefined,
   page: page(query.page),
 }));
 

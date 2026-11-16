@@ -146,12 +146,21 @@ export async function listPending() {
 /* ---------- /admin/listings ---------- */
 
 /**
- * Mọi tin, lọc trạng thái / tiêu đề, 25 tin mỗi trang. Tin đã duyệt có bản sửa thì thêm
- * pendingEdit { status, title, price, ..., updatedAt } (ra quyết định trên bản sửa thì gửi updatedAt của bản sửa).
+ * Mọi tin, lọc trạng thái / tiêu đề / có bản sửa chờ duyệt, 25 tin mỗi trang. Tin đã duyệt có bản sửa thì thêm
+ * pendingEdit { status, title, price, ..., updatedAt } (ra quyết định trên bản sửa thì gửi updatedAt của bản sửa)
+ * và current { title, description, price, ..., images }: nội dung đang hiển thị, để so với bản sửa.
  */
-export async function listForAdmin({ status, q, page }: AdminListingQuery) {
-  const [rows, total] = await listingRepository.findAdminPage({ status, q }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
-  const items = rows.map(({ revision, ...item }) => ({ ...item, ...(revision && { pendingEdit: toRevisionDto(revision) }) }));
+export async function listForAdmin({ status, q, edit, page }: AdminListingQuery) {
+  const [rows, total] = await listingRepository.findAdminPage({ status, q, edit }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+  const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
+    ...item,
+    ...(revision && {
+      pendingEdit: toRevisionDto(revision),
+      current: { title: item.title, description: item.description, price: item.price.toString(),
+        originalPrice: originalPrice?.toString() ?? null, isNegotiable, condition: item.condition, allowSale, allowExchange,
+        exchangeWish, attributes, location, images: item.images },
+    }),
+  }));
   return { items, total, page };
 }
 

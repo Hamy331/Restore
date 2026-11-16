@@ -9,7 +9,7 @@ const dashboardRouter = Router();
 /**
  * Tổng quan
  *
- * Trả về: { pendingListings, openReports, activeUsers, activeListings, pendingStores, pendingPromotions,
+ * Trả về: { pendingListings, pendingEdits (bản sửa tin chờ duyệt), openReports, activeUsers, activeListings, pendingStores, pendingPromotions,
  *           promotionRevenue: string, logs: AdminAudit[10] }
  */
 dashboardRouter.get('/dashboard', authorizePermission(PERMISSION.ADMIN_ACCESS), dashboardController.getOverview);

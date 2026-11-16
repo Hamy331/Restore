@@ -39,6 +39,7 @@
       "success": true,
       "data": {
         "pendingListings": 0,
+        "pendingEdits": 0,
         "openReports": 0,
         "activeUsers": 2,
         "activeListings": 3,
