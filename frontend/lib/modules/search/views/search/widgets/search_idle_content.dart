@@ -48,8 +48,6 @@ class SearchIdleContent extends StatelessWidget {
           AppSearchSectionHeader(title: l10n.searchTipsTitle),
           for (final keyword in state.trending)
             AppSearchListTile(
-              icon: AppIcons.sparkle,
-              iconColor: AppColors.primary,
               title: keyword,
               onTap: () => onSubmit(keyword),
             ),

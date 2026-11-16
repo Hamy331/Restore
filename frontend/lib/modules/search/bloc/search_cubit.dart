@@ -8,11 +8,17 @@ import 'search_state.dart';
 
 /// Trang tìm kiếm: gợi ý tìm nhanh, lịch sử và gợi ý theo nội dung đang gõ
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit({required SearchRepository searchRepository, String query = ''})
-    : _repository = searchRepository,
-      super(SearchState(query: query.trim()));
+  SearchCubit({
+    required SearchRepository searchRepository,
+    String query = '',
+    this.showHistory = true,
+  }) : _repository = searchRepository,
+       super(SearchState(query: query.trim()));
 
   final SearchRepository _repository;
+
+  /// Lịch sử tìm kiếm lưu theo tài khoản: khách không có lịch sử
+  final bool showHistory;
 
   /// Chờ người dùng ngừng gõ một chút rồi mới hỏi gợi ý
   static const Duration _debounce = Duration(milliseconds: 250);
@@ -38,6 +44,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   Future<void> loadHistory() async {
+    if (!showHistory) return;
     try {
       final history = await _repository.getHistory();
       emit(state.copyWith(history: history));

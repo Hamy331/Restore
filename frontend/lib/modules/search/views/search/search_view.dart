@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 
 import '../../bloc/search_cubit.dart';
 import '../../repositories/search_repository.dart';
@@ -22,6 +23,7 @@ class SearchView extends StatelessWidget {
             ? MockSearchRepository()
             : ApiSearchRepository(),
         query: initialQuery,
+        showHistory: context.isSignedIn,
       )..start(),
       child: TResponsiveLayout(
         mobile: SearchMobileView(initialQuery: initialQuery),

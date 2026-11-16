@@ -6,13 +6,14 @@ import 'package:restore/l10n/app_localizations.dart';
 
 /// Một dòng trong trang tìm kiếm: gợi ý, lịch sử, khu vực...
 ///
+/// - [icon]: null thì không có icon, chữ sát lề trái (gợi ý tìm nhanh).
 /// - [boxed]: icon nằm trong ô vuông bo góc (lịch sử, khu vực); false thì
 ///   chỉ hiện icon nhỏ (gợi ý từ khoá).
 /// - [highlight]: tô đậm phần khớp với từ khoá đang gõ (so không dấu).
 /// - [onRemove]: nút thùng rác bên phải (xoá khỏi lịch sử).
 /// - [onFill]: nút mũi tên đưa nội dung lên ô tìm kiếm để sửa tiếp.
 class AppSearchListTile extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
   final String title;
   final String? subtitle;
   final String? highlight;
@@ -24,7 +25,7 @@ class AppSearchListTile extends StatelessWidget {
 
   const AppSearchListTile({
     super.key,
-    required this.icon,
+    this.icon,
     required this.title,
     required this.onTap,
     this.subtitle,
@@ -50,7 +51,9 @@ class AppSearchListTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            if (boxed)
+            if (icon == null)
+              const SizedBox(height: 40)
+            else if (boxed)
               Container(
                 width: 44,
                 height: 44,
@@ -69,7 +72,7 @@ class AppSearchListTile extends StatelessWidget {
                 height: 40,
                 child: Icon(icon, size: 18, color: iconColor),
               ),
-            SizedBox(width: boxed ? 12 : 10),
+            if (icon != null) SizedBox(width: boxed ? 12 : 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

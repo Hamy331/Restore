@@ -71,8 +71,26 @@ model User {
   following      UserFollow[]  @relation("FollowingUser")
   shop           Shop?
   shopFollows    ShopFollow[]
+  searchHistory  SearchHistory[]
 
   @@index([status, suspendedUntil])
+}
+
+/// Từ khoá người dùng đã tìm (trang kết quả tìm kiếm). Mỗi người giữ tối đa 10 từ khoá mới nhất;
+/// cũng là nguồn tính "Tìm nhiều" (trending) và gợi ý khi gõ.
+model SearchHistory {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Từ khoá như người dùng gõ (đã bỏ khoảng trắng thừa)
+  keyword    String
+  /// Từ khoá bỏ dấu, chữ thường, để gộp bản trùng ("Ghế gỗ" = "ghe go")
+  normalized String
+  searchedAt DateTime @default(now())
+
+  @@unique([userId, normalized])
+  @@index([userId, searchedAt])
+  @@index([searchedAt])
 }
 
 model UserFollow {

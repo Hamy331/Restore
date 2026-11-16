@@ -1,13 +1,22 @@
-import { FeedQuery, RecommendedQuery, toFeedItemDto } from '../listing.dto.js';
+import { FeedQuery, RecommendedQuery, SearchQuery, toFeedItemDto } from '../listing.dto.js';
+import type { SearchSort } from '../listing.validator.js';
 import * as feedRepository from '../repositories/feed.repository.js';
 
 /**
  * Danh sách tin cho trang chủ / gần bạn / trao đổi.
  * Mỗi item = Listing + areaLabel, distanceKm, isFeatured, isFavorite (theo người xem).
  */
-export async function listFeed(viewerId: string | undefined, { filters, pagination }: FeedQuery, now = new Date()) {
+export const listFeed = (viewerId: string | undefined, { filters, pagination }: FeedQuery, now = new Date()) =>
+  rankedPage(viewerId, filters, pagination, now);
+
+/** Kết quả tìm kiếm: như feed nhưng xếp theo [sort] (mặc định phù hợp nhất) */
+export const searchListings = (viewerId: string | undefined, { filters, pagination, sort }: SearchQuery, now = new Date()) =>
+  rankedPage(viewerId, filters, pagination, now, sort);
+
+async function rankedPage(viewerId: string | undefined, filters: FeedQuery['filters'], pagination: FeedQuery['pagination'],
+  now: Date, sort?: SearchSort) {
   const { page, limit, skip } = pagination;
-  const { rows, totalItems } = await feedRepository.findRankedPage(filters, now, limit, skip);
+  const { rows, totalItems } = await feedRepository.findRankedPage(filters, now, limit, skip, sort);
   const ids = rows.map((row) => row.id);
   const [listings, favoriteIds] = await Promise.all([
     feedRepository.findVisibleByIds(ids),

@@ -7,6 +7,7 @@ import { promotionRouter, storeRouter } from './modules/commerce/index.js';
 import { contentRouter } from './modules/content/index.js';
 import { creditRouter, paymentRouter } from './modules/credits/index.js';
 import { listingsRouter } from './modules/listings/index.js';
+import { listingSearchRouter, searchRouter } from './modules/search/index.js';
 import { usersRouter } from './modules/users/index.js';
 import { wantedAlertRouter } from './modules/wanted-alerts/index.js';
 import { chatRouter } from './modules/chat/index.js';
@@ -21,6 +22,8 @@ apiRouter.use('/auth', authRouter);
 apiRouter.use('/users', usersRouter);
 apiRouter.use('/home', homeRouter);
 
+apiRouter.use('/search', searchRouter);
+apiRouter.use('/listings', listingSearchRouter);
 apiRouter.use('/listings', listingsRouter);
 apiRouter.use('/wanted-alerts', wantedAlertRouter);
 

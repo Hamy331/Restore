@@ -70,9 +70,14 @@ test('listing images accept real supported bytes and cannot attach foreign URLs 
 });
 
 test('listing filters validate range and normalize search values', () => {
-  assert.deepEqual(listingFilters({ q: '  bàn gỗ ', categoryId: 'furniture', condition: 'USED_GOOD', minPrice: '100000', maxPrice: '200000' }), {
-    q: 'bàn gỗ', categoryId: 'furniture', condition: 'USED_GOOD', minPrice: '100000', maxPrice: '200000',
+  assert.deepEqual(listingFilters({ q: '  Bàn  GỖ! ', categoryId: 'furniture', condition: 'USED_GOOD', minPrice: '100000', maxPrice: '200000' }), {
+    q: 'Bàn  GỖ!', words: ['ban', 'go'], categoryId: 'furniture', conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000',
   });
+  const multi = listingFilters({ condition: 'NEW, USED_GOOD,NEW', deal: 'buy,exchange' });
+  assert.deepEqual(multi.conditions, ['NEW', 'USED_GOOD']);
+  assert.deepEqual(multi.deals, ['buy', 'exchange']);
+  assert.deepEqual(listingFilters({ q: 'Đèn ngủ gỗ' }).words, ['den', 'ngu', 'go']);
+  assert.throws(() => listingFilters({ deal: 'rent' }), { code: 'INVALID_QUERY' });
   assert.throws(() => listingFilters({ minPrice: '200', maxPrice: '100' }), { code: 'INVALID_QUERY' });
   assert.throws(() => listingFilters({ minPrice: '-1' }), { code: 'INVALID_QUERY' });
   assert.throws(() => listingFilters({ condition: 'FAKE' }), { code: 'INVALID_QUERY' });
