@@ -26,6 +26,8 @@ enum OtpPurpose {
 }
 
 model User {
+  aiConversations AiConversation[]
+  aiUsage AiUsage?
   feedPosts FeedPost[]
   feedComments FeedComment[]
   feedLikes FeedPostLike[]
@@ -74,6 +76,67 @@ model User {
 
   @@index([status, suspendedUntil])
 }
+
+model AiConversation {
+  id String @id
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lease String?
+  busyUntil DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  turns AiTurn[]
+  actions AiAction[]
+  @@index([userId, updatedAt])
+}
+
+model AiTurn {
+  id String @id @default(uuid())
+  conversationId String
+  conversation AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  requestId String
+  input String
+  response Json
+  contents Json
+  createdAt DateTime @default(now())
+  @@unique([conversationId, requestId])
+  @@index([conversationId, createdAt])
+}
+
+model AiAction {
+  id String @id
+  conversationId String
+  conversation AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  payload Json
+  result Json?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([conversationId])
+}
+
+model AiUsage {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  windowStart DateTime
+  windowCount Int
+  dayStart DateTime
+  dayCount Int
+}
+
+model AiKnowledgeChunk {
+  id String @id @default(uuid())
+  documentId String
+  document KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentVersion DateTime
+  ordinal Int
+  text String
+  embedding Float[]
+  model String
+  @@unique([documentId, ordinal])
+  @@index([model])
+}
+
+
 
 model UserFollow {
   followerId String
@@ -250,6 +313,7 @@ model ListingViewDaily {
   @@id([listingId, day])
   @@index([day])
 }
+
 
 model ListingFavorite {
   userId String
@@ -490,6 +554,7 @@ model SupportMessage {
   @@index([ticketId, createdAt])
 }
 model KnowledgeDocument {
+  aiChunks AiKnowledgeChunk[]
   id String @id @default(uuid())
   title String
   content String
