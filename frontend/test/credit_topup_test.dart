@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:restore/data/models/credit_topup_model.dart';
 import 'package:restore/data/models/enums/credit_enums.dart';
@@ -8,7 +9,9 @@ import 'package:restore/modules/credits/bloc/credit_topup/credit_topup_state.dar
 import 'package:restore/modules/credits/models/credit_history_filter.dart';
 import 'package:restore/modules/credits/models/topup_step.dart';
 import 'package:restore/modules/credits/repositories/credit_repository.dart';
+import 'package:restore/modules/credits/services/zalopay_launcher.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
+import 'package:restore/modules/credits/views/credit_topup/widgets/topup_pay_section.dart';
 import 'package:restore/modules/credits/views/credit_wallet/credit_wallet_view.dart';
 
 import 'feeds_test.dart' show host;
@@ -16,6 +19,7 @@ import 'feeds_test.dart' show host;
 void main() {
   setUp(MockCreditRepository.reset);
   gatewayFlowTests();
+  appToAppTests();
 
   MockCreditRepository repo() => MockCreditRepository(latency: Duration.zero);
 
@@ -166,7 +170,9 @@ void main() {
 
 /// Đơn có trang ZaloPay (backend không bỏ qua cổng)
 class _GatewayRepository extends MockCreditRepository {
-  _GatewayRepository() : super(latency: Duration.zero);
+  _GatewayRepository({this.withApp = false}) : super(latency: Duration.zero);
+
+  final bool withApp;
 
   @override
   Future<CreditTopupModel> createTopup(
@@ -185,6 +191,13 @@ class _GatewayRepository extends MockCreditRepository {
       expiresAt: order.expiresAt,
       sandbox: true,
       payUrl: 'https://qcgateway.zalopay.vn/openinapp?order=test',
+      zaloPay: withApp
+          ? const ZaloPayAppInfo(
+              appId: 2554,
+              zpTransToken: 'ACtest',
+              sandbox: true,
+            )
+          : null,
     );
   }
 }
@@ -218,10 +231,13 @@ void gatewayFlowTests() {
     // Có cổng thật (sandbox): không còn nút giả lập
     expect(find.text('Đã trả tiền'), findsNothing);
     // Trong test không có app nào mở được link: báo lỗi để người dùng thử lại
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 50)),
-    );
+    // Nhận biết máy (kênh native) rồi mở link: chờ thật vài lượt cho xong
+    for (var i = 0; i < 4; i++) {
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 50)),
+      );
+    }
     await tester.pump(const Duration(milliseconds: 300));
     // Mở lỗi xong thì nút mở lại ZaloPay hiện ra để thử lại
     expect(find.text('Mở trang thanh toán ZaloPay'), findsOneWidget);
@@ -229,5 +245,115 @@ void gatewayFlowTests() {
     // Đóng trang để dừng hỏi trạng thái định kỳ
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(seconds: 1));
+  });
+}
+
+/// Launcher giả: ghi lại lần mở app, trả kết quả định sẵn
+class _FakeLauncher extends ZaloPayLauncher {
+  _FakeLauncher(this.result);
+
+  final ZaloPayLaunchResult result;
+  final opened = <ZaloPayAppInfo>[];
+
+  @override
+  Future<bool> isTestDevice() async => false;
+
+  @override
+  Future<ZaloPayLaunchResult> pay(ZaloPayAppInfo info) async {
+    opened.add(info);
+    return result;
+  }
+}
+
+void appToAppTests() {
+  /// Cubit đã tạo đơn ZaloPay có thông tin app-to-app (bước trả tiền)
+  Future<CreditTopupCubit> payingCubit() async {
+    final cubit = CreditTopupCubit(
+      repository: _GatewayRepository(withApp: true),
+      pollInterval: const Duration(hours: 1),
+    );
+    await cubit.load();
+    cubit
+      ..next()
+      ..toggleAgreed();
+    await cubit.pay();
+    return cubit;
+  }
+
+  Future<void> pumpSection(
+    WidgetTester tester,
+    CreditTopupCubit cubit,
+    ZaloPayLauncher launcher, {
+    bool? isTestDevice,
+  }) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      host(
+        const Locale('vi'),
+        BlocProvider.value(
+          value: cubit,
+          child: TopupPaySection(
+            launcher: launcher,
+            isTestDevice: isTestDevice,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+  }
+
+  testWidgets('real phone opens the ZaloPay app and hides test tools', (
+    tester,
+  ) async {
+    final cubit = await tester.runAsync(payingCubit);
+    final launcher = _FakeLauncher(ZaloPayLaunchResult.opened);
+    await pumpSection(tester, cubit!, launcher, isTestDevice: false);
+
+    expect(launcher.opened.single.zpTransToken, 'ACtest');
+    expect(find.text('Mở app ZaloPay'), findsOneWidget);
+    expect(find.text('Đã trả tiền'), findsNothing);
+    expect(
+      find.text('Chế độ thử (sandbox): không trừ tiền thật.'),
+      findsNothing,
+    );
+    await tester.pumpWidget(const SizedBox());
+    await tester.runAsync(cubit.close);
+  });
+
+  testWidgets('real phone without ZaloPay shows a notice and the web option', (
+    tester,
+  ) async {
+    final cubit = await tester.runAsync(payingCubit);
+    await pumpSection(
+      tester,
+      cubit!,
+      _FakeLauncher(ZaloPayLaunchResult.notInstalled),
+      isTestDevice: false,
+    );
+
+    expect(find.textContaining('Máy chưa cài app ZaloPay'), findsOneWidget);
+    expect(find.text('Trả trên trang web ZaloPay'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    await tester.runAsync(cubit.close);
+  });
+
+  testWidgets('emulator does not open ZaloPay and shows the test tools', (
+    tester,
+  ) async {
+    final cubit = await tester.runAsync(payingCubit);
+    final launcher = _FakeLauncher(ZaloPayLaunchResult.opened);
+    await pumpSection(tester, cubit!, launcher, isTestDevice: true);
+
+    expect(launcher.opened, isEmpty);
+    expect(
+      find.text('Chế độ thử (sandbox): không trừ tiền thật.'),
+      findsOneWidget,
+    );
+    expect(find.text('Đã trả tiền'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    await tester.runAsync(cubit.close);
   });
 }

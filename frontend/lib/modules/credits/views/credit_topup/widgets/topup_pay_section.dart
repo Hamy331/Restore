@@ -13,12 +13,24 @@ import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../bloc/credit_topup/credit_topup_cubit.dart';
+import '../../../services/zalopay_launcher.dart';
 import '../../../utils/credit_format.dart';
 
-/// Bước 3: trả tiền. Trang ZaloPay (mở ngoài app) hoặc mã VietQR, kèm nút giả
-/// lập kết quả khi backend ở chế độ thử. Xu chỉ vào khi backend xác nhận.
+/// Bước 3: trả tiền. Điện thoại thật: mở thẳng app ZaloPay (hoặc trang web
+/// ZaloPay khi chưa cài app). Máy thử (emulator, web, desktop) ở chế độ
+/// sandbox: hiện hướng dẫn và nút thanh toán tạm. Xu chỉ vào khi backend xác nhận.
 class TopupPaySection extends StatefulWidget {
-  const TopupPaySection({super.key});
+  const TopupPaySection({
+    super.key,
+    this.launcher = const ZaloPayLauncher(),
+    this.isTestDevice,
+  });
+
+  /// Mở app ZaloPay; truyền bản giả trong test
+  final ZaloPayLauncher launcher;
+
+  /// Ép máy thử / máy thật (test); null thì tự nhận biết
+  final bool? isTestDevice;
 
   @override
   State<TopupPaySection> createState() => _TopupPaySectionState();
@@ -27,25 +39,70 @@ class TopupPaySection extends StatefulWidget {
 class _TopupPaySectionState extends State<TopupPaySection> {
   late final AppLifecycleListener _lifecycle;
 
-  /// Đang mở trang ZaloPay (lần tự mở đầu tiên hoặc khi bấm nút)
+  /// Máy thử (emulator...): null khi chưa biết
+  bool? _testDevice;
+
+  /// Đang chuyển sang ZaloPay (app hoặc trang web)
   bool _opening = false;
 
-  /// Lần mở gần nhất thất bại (máy không có app/trình duyệt mở được link)
+  /// Lần mở trang web gần nhất thất bại
   bool _openFailed = false;
+
+  /// Máy chưa cài app ZaloPay (đúng bản sandbox/thật theo đơn)
+  bool _appMissing = false;
+
+  /// Máy không mở app ZaloPay được (không phải Android): chỉ dùng trang web
+  bool _appUnsupported = false;
 
   @override
   void initState() {
     super.initState();
-    // Trả xong trên trang ZaloPay rồi quay lại app: hỏi ngay, khỏi chờ lượt hỏi kế
+    // Trả xong trên ZaloPay rồi quay lại app: hỏi ngay, khỏi chờ lượt hỏi kế
     _lifecycle = AppLifecycleListener(
       onResume: () => context.read<CreditTopupCubit>().checkNow(),
     );
-    // Có trang cổng thì chuyển người dùng sang ZaloPay luôn
-    final payUrl = context.read<CreditTopupCubit>().state.order?.payUrl;
-    if (payUrl != null) {
-      _opening = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _openGateway(payUrl));
+    _testDevice = widget.isTestDevice;
+    if (_testDevice == null) {
+      widget.launcher.isTestDevice().then((value) {
+        if (!mounted) return;
+        setState(() => _testDevice = value);
+        _autoOpen();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _autoOpen());
     }
+  }
+
+  /// Máy thật: chuyển người dùng sang ZaloPay luôn, ưu tiên app ZaloPay.
+  /// Máy thử thì không tự mở (thường không có app ZaloPay), dùng nút tạm.
+  void _autoOpen() {
+    if (!mounted || _testDevice != false) return;
+    final order = context.read<CreditTopupCubit>().state.order;
+    final zaloPay = order?.zaloPay;
+    final payUrl = order?.payUrl;
+    if (zaloPay != null) {
+      _openApp(zaloPay);
+    } else if (payUrl != null) {
+      _openGateway(payUrl);
+    }
+  }
+
+  Future<void> _openApp(ZaloPayAppInfo info) async {
+    setState(() {
+      _opening = true;
+      _openFailed = false;
+    });
+    final result = await widget.launcher.pay(info);
+    if (!mounted) return;
+    final payUrl = context.read<CreditTopupCubit>().state.order?.payUrl;
+    if (result == ZaloPayLaunchResult.unsupported) {
+      _appUnsupported = true;
+      if (payUrl != null) return _openGateway(payUrl);
+    }
+    setState(() {
+      _opening = false;
+      _appMissing = result == ZaloPayLaunchResult.notInstalled;
+    });
   }
 
   Future<void> _openGateway(String url) async {
@@ -85,11 +142,20 @@ class _TopupPaySectionState extends State<TopupPaySection> {
     final order = cubit.state.order;
     if (order == null) return const SizedBox.shrink();
     final busy = cubit.state.busy;
+    // Không có cách trả thật nào (backend bỏ qua cổng, VietQR chưa có tài
+    // khoản nhận): nút tạm là đường duy nhất, kể cả trên máy thật
+    final noRealPayment =
+        order.payUrl == null &&
+        order.zaloPay == null &&
+        (order.method != CreditPayMethod.vietQr || order.vietQr == null);
+    // Hướng dẫn + nút thanh toán tạm: chỉ ở sandbox (backend quyết định), trên
+    // máy thử; máy thật trả qua ZaloPay
+    final showTestTools =
+        order.sandbox && (_testDevice == true || noRealPayment);
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
       children: [
-        // Cờ sandbox do backend quyết định, app chỉ hiển thị
-        if (order.sandbox) ...[
+        if (showTestTools) ...[
           _Hint(
             text: l10n.creditSandboxNote,
             color: AppColors.info,
@@ -105,13 +171,13 @@ class _TopupPaySectionState extends State<TopupPaySection> {
             busy: busy,
             opening: _opening,
             openFailed: _openFailed,
-            onOpen: _openGateway,
+            appMissing: _appMissing,
+            onOpenWeb: _openGateway,
+            onOpenApp: order.zaloPay == null || _appUnsupported
+                ? null
+                : () => _openApp(order.zaloPay!),
           ),
-        // Nút giả lập chỉ khi không có cổng để trả (VietQR, hoặc backend bỏ
-        // qua ZaloPay). Có trang ZaloPay thì trả thật trên sandbox.
-        if (order.sandbox &&
-            (order.method == CreditPayMethod.vietQr ||
-                order.payUrl == null)) ...[
+        if (showTestTools) ...[
           const SizedBox(height: 16),
           Text(
             l10n.creditSimulateTitle,
@@ -162,20 +228,28 @@ class _GatewayPanel extends StatelessWidget {
   final bool busy;
   final bool opening;
   final bool openFailed;
-  final ValueChanged<String> onOpen;
+  final bool appMissing;
+  final ValueChanged<String> onOpenWeb;
+
+  /// Mở thẳng app ZaloPay; null khi không mở app được (không có thông tin
+  /// app-to-app, hoặc máy không phải Android)
+  final VoidCallback? onOpenApp;
 
   const _GatewayPanel({
     required this.order,
     required this.busy,
     required this.opening,
     required this.openFailed,
-    required this.onOpen,
+    required this.appMissing,
+    required this.onOpenWeb,
+    required this.onOpenApp,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final payUrl = order.payUrl;
+    final openApp = onOpenApp;
     return AppGlassContainer(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -199,27 +273,45 @@ class _GatewayPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          if (payUrl == null)
+          if (payUrl == null && openApp == null)
             _Hint(
               text: l10n.creditGatewayNotConnected,
               color: AppColors.warning,
               background: AppColors.warningBg,
             )
           else ...[
-            if (openFailed) ...[
+            if (appMissing || openFailed) ...[
               _Hint(
-                text: l10n.creditGatewayOpenFailed,
+                text: appMissing
+                    ? l10n.creditZaloPayNotInstalled
+                    : l10n.creditGatewayOpenFailed,
                 color: AppColors.warning,
                 background: AppColors.warningBg,
               ),
               const SizedBox(height: 12),
             ],
-            AppPrimaryActionButton(
-              label: l10n.creditOpenGateway,
-              icon: AppIcons.wallet,
-              isLoading: opening,
-              onPressed: opening ? null : () => onOpen(payUrl),
-            ),
+            if (openApp != null)
+              AppPrimaryActionButton(
+                label: l10n.creditOpenZaloPayApp,
+                icon: AppIcons.wallet,
+                isLoading: opening,
+                onPressed: opening ? null : openApp,
+              )
+            else if (payUrl != null)
+              AppPrimaryActionButton(
+                label: l10n.creditOpenGateway,
+                icon: AppIcons.wallet,
+                isLoading: opening,
+                onPressed: opening ? null : () => onOpenWeb(payUrl),
+              ),
+            // Có app thì trang web là lối phụ (máy chưa cài app ZaloPay)
+            if (openApp != null && payUrl != null && appMissing)
+              Center(
+                child: TextButton(
+                  onPressed: opening ? null : () => onOpenWeb(payUrl),
+                  child: Text(l10n.creditOpenGatewayWeb),
+                ),
+              ),
             const SizedBox(height: 14),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,

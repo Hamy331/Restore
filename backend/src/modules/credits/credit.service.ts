@@ -1,5 +1,6 @@
 import { CreditBucket, CreditPayMethod, CreditTxnType, Prisma, TopupStatus } from '@prisma/client';
 import { AppError } from '../../common/errors/app-error.js';
+import { prisma } from '../../lib/prisma.js';
 import { serializableTransaction } from '../commerce/repositories/quota.repository.js';
 import * as repo from './credit.repository.js';
 import type { HistoryQuery, TopupInput } from './credit.validator.js';
@@ -44,6 +45,8 @@ function withPayment(order: Order) {
       sandbox: sandboxEnabled(),
       // Trang thanh toán của cổng (ZaloPay); VietQR không có
       payUrl: order.payUrl ?? null,
+      // Mở thẳng app ZaloPay (app-to-app); chỉ khi đơn còn chờ trả
+      zaloPay: order.status === TopupStatus.PENDING ? zalopay.appToApp(order.payUrl) : null,
       vietQr: account && {
         bankBin: account.bankBin,
         accountNo: account.accountNo,
@@ -128,18 +131,19 @@ async function ownOrder(tx: repo.Db, userId: string, id: string) {
 
 /** Trạng thái đơn để app hỏi lại sau khi quay về từ cổng; đơn quá hạn chuyển EXPIRED */
 export async function getTopup(userId: string, id: string) {
-  const current = await inTransaction((tx) => ownOrder(tx, userId, id));
+  // App hỏi mỗi 5 giây: chỉ đọc thường, không mở transaction SERIALIZABLE (pool Supabase
+  // ít kết nối, mạng chậm thì transaction hết giờ và app chờ mãi). Đổi trạng thái vẫn an toàn
+  // vì decidePending chỉ cập nhật khi đơn còn PENDING; cộng xu vẫn qua markPaid (có transaction).
+  const current = await ownOrder(prisma, userId, id);
   // Hỏi cổng trước khi xét hết hạn: khách có thể vừa trả xong sát giờ
   if (current.status === TopupStatus.PENDING) await syncZaloPay(current);
-  const now = new Date();
-  const order = await inTransaction(async (tx) => {
-    const order = await ownOrder(tx, userId, id);
-    if (order.status === TopupStatus.PENDING && order.expiresAt <= now) {
-      await repo.decidePending(tx, id, { status: TopupStatus.EXPIRED });
-      return { ...order, status: TopupStatus.EXPIRED };
+  const order = await ownOrder(prisma, userId, id);
+  if (order.status === TopupStatus.PENDING && order.expiresAt <= new Date()) {
+    if (await repo.decidePending(prisma, id, { status: TopupStatus.EXPIRED })) {
+      return withPayment({ ...order, status: TopupStatus.EXPIRED });
     }
-    return order;
-  });
+    return withPayment(await ownOrder(prisma, userId, id));
+  }
   return withPayment(order);
 }
 

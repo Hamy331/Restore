@@ -29,6 +29,36 @@ class VietQrInfo extends Equatable {
   List<Object?> get props => [accountNo, accountName, content, imageUrl];
 }
 
+/// Thông tin mở thẳng app ZaloPay (app-to-app) cho một đơn đang chờ trả
+class ZaloPayAppInfo extends Equatable {
+  final int appId;
+  final String zpTransToken;
+
+  /// Đơn tạo trên cổng sandbox: phải mở app ZaloPay sandbox (backend quyết định)
+  final bool sandbox;
+
+  const ZaloPayAppInfo({
+    required this.appId,
+    required this.zpTransToken,
+    required this.sandbox,
+  });
+
+  static ZaloPayAppInfo? fromJson(Object? json) {
+    if (json is! Map) return null;
+    final appId = (json['appId'] as num?)?.toInt();
+    final token = json['zpTransToken'];
+    if (appId == null || token is! String || token.isEmpty) return null;
+    return ZaloPayAppInfo(
+      appId: appId,
+      zpTransToken: token,
+      sandbox: json['sandbox'] != false,
+    );
+  }
+
+  @override
+  List<Object?> get props => [appId, zpTransToken, sandbox];
+}
+
 /// Đơn nạp xu (bảng CreditTopupOrder) kèm cách trả do backend trả về
 class CreditTopupModel extends Equatable {
   final String id;
@@ -48,6 +78,9 @@ class CreditTopupModel extends Equatable {
 
   /// Trang thanh toán của cổng (ZaloPay), null khi máy chủ chưa cấu hình cổng
   final String? payUrl;
+
+  /// Mở thẳng app ZaloPay, null khi không có (VietQR, bỏ qua cổng, đơn hết chờ)
+  final ZaloPayAppInfo? zaloPay;
   final VietQrInfo? vietQr;
 
   const CreditTopupModel({
@@ -62,6 +95,7 @@ class CreditTopupModel extends Equatable {
     this.paidAt,
     this.sandbox = false,
     this.payUrl,
+    this.zaloPay,
     this.vietQr,
   });
 
@@ -85,6 +119,7 @@ class CreditTopupModel extends Equatable {
       paidAt: DateTime.tryParse('${json['paidAt']}')?.toLocal(),
       sandbox: pay['sandbox'] == true,
       payUrl: pay['payUrl'] as String?,
+      zaloPay: ZaloPayAppInfo.fromJson(pay['zaloPay']),
       vietQr: vietQr is Map
           ? VietQrInfo.fromJson(Map<String, dynamic>.from(vietQr))
           : null,
@@ -104,6 +139,7 @@ class CreditTopupModel extends Equatable {
         paidAt: paidAt ?? this.paidAt,
         sandbox: sandbox,
         payUrl: payUrl,
+        zaloPay: zaloPay,
         vietQr: vietQr,
       );
 

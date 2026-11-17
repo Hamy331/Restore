@@ -3409,6 +3409,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get creditGatewayOpening => 'Đang chuyển sang ZaloPay...';
 
   @override
+  String get creditZaloPayNotInstalled =>
+      'Máy chưa cài app ZaloPay (bản thử: ZaloPay sandbox). Cài app rồi bấm Mở ZaloPay, hoặc trả trên trang web của ZaloPay.';
+
+  @override
+  String get creditOpenZaloPayApp => 'Mở app ZaloPay';
+
+  @override
+  String get creditOpenGatewayWeb => 'Trả trên trang web ZaloPay';
+
+  @override
   String get creditWaitingGateway =>
       'Thanh toán xong trên trang ZaloPay rồi quay lại đây, xu sẽ tự cập nhật.';
 

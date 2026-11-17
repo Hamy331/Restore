@@ -57,7 +57,28 @@ function zaloPayMethods(raw: string | undefined) {
   return value ? value.split(',').map((m) => m.trim()).filter(Boolean) : ['domestic_card'];
 }
 
-export const hmac = (key: string, data: string) => createHmac('sha256', key).update(data).digest('hex');
+export type AppToApp = { appId: number; zpTransToken: string; sandbox: boolean };
+
+/**
+ * Thông tin để app mở thẳng app ZaloPay (app-to-app), lấy từ order_url mà ZaloPay trả về:
+ * tham số order là base64 của { zptranstoken, appid }. sandbox = đơn tạo trên cổng sandbox,
+ * app phải mở app ZaloPay sandbox. Đọc không được thì null (app dùng trang web).
+ */
+export function appToApp(payUrl: string | null | undefined, env: NodeJS.ProcessEnv = process.env): AppToApp | null {
+  if (!payUrl) return null;
+  try {
+    const order = new URL(payUrl).searchParams.get('order');
+    if (!order) return null;
+    const parsed = JSON.parse(Buffer.from(order, 'base64').toString('utf8')) as { zptranstoken?: unknown; appid?: unknown };
+    const appId = Number(parsed.appid);
+    if (typeof parsed.zptranstoken !== 'string' || !parsed.zptranstoken || !Number.isInteger(appId)) return null;
+    return { appId, zpTransToken: parsed.zptranstoken, sandbox: zaloPayEndpoint(env) === ZALOPAY_SANDBOX_ENDPOINT };
+  } catch {
+    return null;
+  }
+}
+
+export const hmac =(key: string, data: string) => createHmac('sha256', key).update(data).digest('hex');
 
 /** app_trans_id = yymmdd (giờ Việt Nam) + "_" + mã đơn, VD 261109_RS8F2K1X */
 export function appTransId(code: string, now: Date = new Date()) {

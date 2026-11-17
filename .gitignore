@@ -1,0 +1,13 @@
+# Bản sao lưu / file tạm do công cụ (Claude...) tạo trong repo: không bao giờ commit
+.claude-tmp/
+*.tgz
+*.tar.gz
+*.zip
+
+# Biến môi trường và khoá bí mật, ở mọi thư mục (chỉ commit file mẫu)
+.env
+.env.*
+*.env
+!.env.example
+!**/.env.example
+**/supabase/.temp/

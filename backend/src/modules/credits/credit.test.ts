@@ -4,7 +4,7 @@ import { AppError } from '../../common/errors/app-error.js';
 import { parse } from '../../common/validation/schemas.js';
 import { gatewaySkipped, sandboxEnabled, summarizeWallet, topupCode, vietQrAccount, vietQrImageUrl } from './credit.type.js';
 import { historyQuery, topupBody } from './credit.validator.js';
-import { appTransId, buildCreateOrder, hmac, verifyCallback, ZALOPAY_SANDBOX_ENDPOINT, zaloPayConfig, zaloPayEndpoint } from './credit.zalopay.js';
+import { appTransId, buildCreateOrder, hmac, verifyCallback, ZALOPAY_SANDBOX_ENDPOINT, zaloPayConfig, zaloPayEndpoint, appToApp } from './credit.zalopay.js';
 
 const code = (fn: () => unknown) => {
   try { fn(); } catch (error) { return (error as AppError).code + ':' + (error as AppError).field; }
@@ -103,4 +103,12 @@ test('ZaloPay redirect falls back to localhost when PUBLIC_API_URL is empty', ()
   const config = zaloPayConfig({ ZALOPAY_APP_ID: '2554', ZALOPAY_KEY1: 'k1', ZALOPAY_KEY2: 'k2', PUBLIC_API_URL: '', ZALOPAY_REDIRECT_URL: '' });
   assert.equal(config?.redirectUrl, 'http://localhost:3000/api/v1/payments/zalopay/return');
   assert.equal(config?.callbackUrl, undefined);
+});
+
+test('app-to-app info is read from the ZaloPay order_url', () => {
+  const order = Buffer.from(JSON.stringify({ zptranstoken: 'ACabc', appid: 2554 })).toString('base64');
+  assert.deepEqual(appToApp(`https://qcgateway.zalopay.vn/openinapp?order=${order}`, {}), { appId: 2554, zpTransToken: 'ACabc', sandbox: true });
+  assert.equal(appToApp(`https://qcgateway.zalopay.vn/openinapp?order=${order}`, { PAYMENT_MODE: 'live', ZALOPAY_ENDPOINT: 'https://openapi.zalopay.vn/v2' })?.sandbox, false);
+  assert.equal(appToApp(null), null);
+  assert.equal(appToApp('https://example.com/?order=notbase64json'), null);
 });

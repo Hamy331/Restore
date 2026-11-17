@@ -3487,6 +3487,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creditGatewayOpening => 'Opening ZaloPay...';
 
   @override
+  String get creditZaloPayNotInstalled =>
+      'The ZaloPay app is not installed (test mode: ZaloPay sandbox). Install it and tap Open ZaloPay, or pay on the ZaloPay web page.';
+
+  @override
+  String get creditOpenZaloPayApp => 'Open ZaloPay app';
+
+  @override
+  String get creditOpenGatewayWeb => 'Pay on the ZaloPay web page';
+
+  @override
   String get creditWaitingGateway =>
       'Finish paying on the ZaloPay page, then come back here. Your points update automatically.';
 

@@ -6170,6 +6170,24 @@ abstract class AppLocalizations {
   /// **'Opening ZaloPay...'**
   String get creditGatewayOpening;
 
+  /// No description provided for @creditZaloPayNotInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'The ZaloPay app is not installed (test mode: ZaloPay sandbox). Install it and tap Open ZaloPay, or pay on the ZaloPay web page.'**
+  String get creditZaloPayNotInstalled;
+
+  /// No description provided for @creditOpenZaloPayApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open ZaloPay app'**
+  String get creditOpenZaloPayApp;
+
+  /// No description provided for @creditOpenGatewayWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay on the ZaloPay web page'**
+  String get creditOpenGatewayWeb;
+
   /// No description provided for @creditWaitingGateway.
   ///
   /// In en, this message translates to:
