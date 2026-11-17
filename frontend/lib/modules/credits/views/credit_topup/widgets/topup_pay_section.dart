@@ -17,23 +17,101 @@ import '../../../utils/credit_format.dart';
 
 /// Bước 3: trả tiền. Trang ZaloPay (mở ngoài app) hoặc mã VietQR, kèm nút giả
 /// lập kết quả khi backend ở chế độ thử. Xu chỉ vào khi backend xác nhận.
-class TopupPaySection extends StatelessWidget {
+class TopupPaySection extends StatefulWidget {
   const TopupPaySection({super.key});
+
+  @override
+  State<TopupPaySection> createState() => _TopupPaySectionState();
+}
+
+class _TopupPaySectionState extends State<TopupPaySection> {
+  late final AppLifecycleListener _lifecycle;
+
+  /// Đang mở trang ZaloPay (lần tự mở đầu tiên hoặc khi bấm nút)
+  bool _opening = false;
+
+  /// Lần mở gần nhất thất bại (máy không có app/trình duyệt mở được link)
+  bool _openFailed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Trả xong trên trang ZaloPay rồi quay lại app: hỏi ngay, khỏi chờ lượt hỏi kế
+    _lifecycle = AppLifecycleListener(
+      onResume: () => context.read<CreditTopupCubit>().checkNow(),
+    );
+    // Có trang cổng thì chuyển người dùng sang ZaloPay luôn
+    final payUrl = context.read<CreditTopupCubit>().state.order?.payUrl;
+    if (payUrl != null) {
+      _opening = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _openGateway(payUrl));
+    }
+  }
+
+  Future<void> _openGateway(String url) async {
+    setState(() {
+      _opening = true;
+      _openFailed = false;
+    });
+    var opened = false;
+    try {
+      opened = await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      opened = false;
+    }
+    if (!mounted) return;
+    // Không mở được thì khung ZaloPay hiện lời báo và nút để thử lại
+    setState(() {
+      _opening = false;
+      _openFailed = !opened;
+    });
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final cubit = context.watch<CreditTopupCubit>();
-    final order = cubit.state.order!;
+    // Lùi về bước trước thì đơn bị xoá trong lúc trang này còn đang chạy
+    // hiệu ứng chuyển trang: không vẽ gì thay vì lỗi
+    final order = cubit.state.order;
+    if (order == null) return const SizedBox.shrink();
     final busy = cubit.state.busy;
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
       children: [
+        // Cờ sandbox do backend quyết định, app chỉ hiển thị
+        if (order.sandbox) ...[
+          _Hint(
+            text: l10n.creditSandboxNote,
+            color: AppColors.info,
+            background: AppColors.infoBg,
+          ),
+          const SizedBox(height: 12),
+        ],
         if (order.method == CreditPayMethod.vietQr)
           _VietQrPanel(order: order)
         else
-          _GatewayPanel(order: order, busy: busy),
-        if (order.sandbox) ...[
+          _GatewayPanel(
+            order: order,
+            busy: busy,
+            opening: _opening,
+            openFailed: _openFailed,
+            onOpen: _openGateway,
+          ),
+        // Nút giả lập chỉ khi không có cổng để trả (VietQR, hoặc backend bỏ
+        // qua ZaloPay). Có trang ZaloPay thì trả thật trên sandbox.
+        if (order.sandbox &&
+            (order.method == CreditPayMethod.vietQr ||
+                order.payUrl == null)) ...[
           const SizedBox(height: 16),
           Text(
             l10n.creditSimulateTitle,
@@ -82,21 +160,17 @@ class TopupPaySection extends StatelessWidget {
 class _GatewayPanel extends StatelessWidget {
   final CreditTopupModel order;
   final bool busy;
+  final bool opening;
+  final bool openFailed;
+  final ValueChanged<String> onOpen;
 
-  const _GatewayPanel({required this.order, required this.busy});
-
-  Future<void> _open(BuildContext context, String url) async {
-    final opened = await launchUrl(
-      Uri.parse(url),
-      mode: LaunchMode.externalApplication,
-    );
-    if (!opened && context.mounted) {
-      TSnackBarHelper.showError(
-        context,
-        message: AppLocalizations.of(context)!.creditErrorGeneric,
-      );
-    }
-  }
+  const _GatewayPanel({
+    required this.order,
+    required this.busy,
+    required this.opening,
+    required this.openFailed,
+    required this.onOpen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -132,10 +206,19 @@ class _GatewayPanel extends StatelessWidget {
               background: AppColors.warningBg,
             )
           else ...[
+            if (openFailed) ...[
+              _Hint(
+                text: l10n.creditGatewayOpenFailed,
+                color: AppColors.warning,
+                background: AppColors.warningBg,
+              ),
+              const SizedBox(height: 12),
+            ],
             AppPrimaryActionButton(
               label: l10n.creditOpenGateway,
               icon: AppIcons.wallet,
-              onPressed: () => _open(context, payUrl),
+              isLoading: opening,
+              onPressed: opening ? null : () => onOpen(payUrl),
             ),
             const SizedBox(height: 14),
             Row(
@@ -151,7 +234,9 @@ class _GatewayPanel extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    l10n.creditWaitingGateway,
+                    opening
+                        ? l10n.creditGatewayOpening
+                        : l10n.creditWaitingGateway,
                     style: const TextStyle(
                       fontSize: 13,
                       height: 1.5,

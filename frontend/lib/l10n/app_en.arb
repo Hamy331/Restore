@@ -1895,6 +1895,8 @@
   "creditOrderCode": "Order code",
   "creditGatewayNotConnected": "ZaloPay is skipped (debug mode or no server keys). Use the buttons below to simulate the result.",
   "creditOpenGateway": "Open ZaloPay checkout",
+  "creditGatewayOpenFailed": "Could not open ZaloPay. Install the ZaloPay app or a web browser, then tap the button to try again.",
+  "creditGatewayOpening": "Opening ZaloPay...",
   "creditWaitingGateway": "Finish paying on the ZaloPay page, then come back here. Your points update automatically.",
   "creditSimulateTitle": "Simulate the payment result (test mode only)",
   "creditSimulateSuccess": "Paid",

@@ -4,7 +4,7 @@ import { AppError } from '../../common/errors/app-error.js';
 import { parse } from '../../common/validation/schemas.js';
 import { gatewaySkipped, sandboxEnabled, summarizeWallet, topupCode, vietQrAccount, vietQrImageUrl } from './credit.type.js';
 import { historyQuery, topupBody } from './credit.validator.js';
-import { appTransId, buildCreateOrder, hmac, verifyCallback, ZALOPAY_SANDBOX_ENDPOINT, zaloPayConfig } from './credit.zalopay.js';
+import { appTransId, buildCreateOrder, hmac, verifyCallback, ZALOPAY_SANDBOX_ENDPOINT, zaloPayConfig, zaloPayEndpoint } from './credit.zalopay.js';
 
 const code = (fn: () => unknown) => {
   try { fn(); } catch (error) { return (error as AppError).code + ':' + (error as AppError).field; }
@@ -89,4 +89,18 @@ test('debug gateway skip only works while sandbox is on', () => {
   assert.equal(gatewaySkipped({ PAYMENT_SKIP_GATEWAY: 'true' }), true);
   assert.equal(gatewaySkipped({ PAYMENT_SKIP_GATEWAY: 'true', PAYMENT_MODE: 'live' }), false);
   assert.equal(gatewaySkipped({}), false);
+});
+
+test('ZaloPay stays on the sandbox endpoint unless PAYMENT_MODE is live', () => {
+  const real = 'https://openapi.zalopay.vn/v2';
+  assert.equal(zaloPayEndpoint({}), ZALOPAY_SANDBOX_ENDPOINT);
+  assert.equal(zaloPayEndpoint({ ZALOPAY_ENDPOINT: real }), ZALOPAY_SANDBOX_ENDPOINT);
+  assert.equal(zaloPayEndpoint({ ZALOPAY_ENDPOINT: real, PAYMENT_MODE: 'sandbox' }), ZALOPAY_SANDBOX_ENDPOINT);
+  assert.equal(zaloPayEndpoint({ ZALOPAY_ENDPOINT: `${real}/`, PAYMENT_MODE: 'live' }), real);
+});
+
+test('ZaloPay redirect falls back to localhost when PUBLIC_API_URL is empty', () => {
+  const config = zaloPayConfig({ ZALOPAY_APP_ID: '2554', ZALOPAY_KEY1: 'k1', ZALOPAY_KEY2: 'k2', PUBLIC_API_URL: '', ZALOPAY_REDIRECT_URL: '' });
+  assert.equal(config?.redirectUrl, 'http://localhost:3000/api/v1/payments/zalopay/return');
+  assert.equal(config?.callbackUrl, undefined);
 });

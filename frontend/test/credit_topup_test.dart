@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:restore/data/models/credit_topup_model.dart';
 import 'package:restore/data/models/enums/credit_enums.dart';
 import 'package:restore/modules/credits/bloc/credit_history/credit_history_cubit.dart';
 import 'package:restore/modules/credits/bloc/credit_topup/credit_topup_cubit.dart';
@@ -14,6 +15,7 @@ import 'feeds_test.dart' show host;
 
 void main() {
   setUp(MockCreditRepository.reset);
+  gatewayFlowTests();
 
   MockCreditRepository repo() => MockCreditRepository(latency: Duration.zero);
 
@@ -141,6 +143,15 @@ void main() {
         find.text(vi ? 'Thanh toán 100.000 đ' : 'Pay 100,000 đ'),
       );
       await tester.pumpAndSettle();
+      // Đơn mẫu có sandbox = true (backend quyết định) nên hiện ghi chú chế độ thử
+      expect(
+        find.text(
+          vi
+              ? 'Chế độ thử (sandbox): không trừ tiền thật.'
+              : 'Test mode (sandbox): no real money is charged.',
+        ),
+        findsOneWidget,
+      );
       await tester.tap(find.text(vi ? 'Đã trả tiền' : 'Paid'));
       await tester.pumpAndSettle();
       expect(
@@ -151,4 +162,72 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+}
+
+/// Đơn có trang ZaloPay (backend không bỏ qua cổng)
+class _GatewayRepository extends MockCreditRepository {
+  _GatewayRepository() : super(latency: Duration.zero);
+
+  @override
+  Future<CreditTopupModel> createTopup(
+    String packageId,
+    CreditPayMethod method,
+  ) async {
+    final order = await super.createTopup(packageId, method);
+    return CreditTopupModel(
+      id: order.id,
+      code: order.code,
+      status: order.status,
+      method: order.method,
+      amountVnd: order.amountVnd,
+      credits: order.credits,
+      bonusCredits: order.bonusCredits,
+      expiresAt: order.expiresAt,
+      sandbox: true,
+      payUrl: 'https://qcgateway.zalopay.vn/openinapp?order=test',
+    );
+  }
+}
+
+void gatewayFlowTests() {
+  testWidgets('ZaloPay order opens the gateway and hides simulate buttons', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      host(
+        const Locale('vi'),
+        CreditTopupView(repository: _GatewayRepository()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tiếp tục · 100.000 đ'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byType(Checkbox));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(Checkbox));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Thanh toán 100.000 đ'));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+
+    // Có cổng thật (sandbox): không còn nút giả lập
+    expect(find.text('Đã trả tiền'), findsNothing);
+    // Trong test không có app nào mở được link: báo lỗi để người dùng thử lại
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    // Mở lỗi xong thì nút mở lại ZaloPay hiện ra để thử lại
+    expect(find.text('Mở trang thanh toán ZaloPay'), findsOneWidget);
+    expect(find.textContaining('Không mở được ZaloPay'), findsWidgets);
+    // Đóng trang để dừng hỏi trạng thái định kỳ
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(seconds: 1));
+  });
 }

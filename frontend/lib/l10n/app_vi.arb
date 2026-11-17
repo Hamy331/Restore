@@ -1695,6 +1695,8 @@
   "creditOrderCode": "Mã đơn",
   "creditGatewayNotConnected": "Đang bỏ qua cổng ZaloPay (chế độ debug hoặc máy chủ chưa có khoá). Dùng các nút bên dưới để giả lập kết quả.",
   "creditOpenGateway": "Mở trang thanh toán ZaloPay",
+  "creditGatewayOpenFailed": "Không mở được ZaloPay. Hãy cài app ZaloPay hoặc trình duyệt rồi bấm nút để thử lại.",
+  "creditGatewayOpening": "Đang chuyển sang ZaloPay...",
   "creditWaitingGateway": "Thanh toán xong trên trang ZaloPay rồi quay lại đây, xu sẽ tự cập nhật.",
   "creditSimulateTitle": "Giả lập kết quả thanh toán (chỉ ở chế độ thử)",
   "creditSimulateSuccess": "Đã trả tiền",

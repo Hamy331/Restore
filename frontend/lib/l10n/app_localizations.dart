@@ -6158,6 +6158,18 @@ abstract class AppLocalizations {
   /// **'Open ZaloPay checkout'**
   String get creditOpenGateway;
 
+  /// No description provided for @creditGatewayOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open ZaloPay. Install the ZaloPay app or a web browser, then tap the button to try again.'**
+  String get creditGatewayOpenFailed;
+
+  /// No description provided for @creditGatewayOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening ZaloPay...'**
+  String get creditGatewayOpening;
+
   /// No description provided for @creditWaitingGateway.
   ///
   /// In en, this message translates to:

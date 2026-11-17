@@ -46,10 +46,17 @@ export async function zaloPayCallback(req: Request, res: Response) {
   res.json(await creditService.zaloPayCallback((req.body ?? {}) as { data?: unknown; mac?: unknown }));
 }
 
-/** Trang ZaloPay chuyển khách về sau khi trả. Không cộng xu ở đây: app hỏi lại trạng thái đơn. */
-export function zaloPayReturn(_req: Request, res: Response) {
+/**
+ * Trang ZaloPay chuyển khách về sau khi trả. Không cộng xu ở đây (tham số trên URL không đáng tin):
+ * app hỏi lại trạng thái đơn, máy chủ tự hỏi ZaloPay. status=1 là ZaloPay báo trả xong, khác là chưa trả được.
+ */
+export function zaloPayReturn(req: Request, res: Response) {
+  const paid = req.query.status === '1';
+  const [title, body] = paid
+    ? ['Thanh toán thành công', 'Quay lại ứng dụng ReStore, xu sẽ được cộng khi ZaloPay xác nhận.']
+    : ['Thanh toán chưa thành công', 'Giao dịch chưa hoàn tất. Quay lại ứng dụng ReStore để thử lại hoặc huỷ đơn.'];
   res.type('html').send(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ReStore</title></head>
 <body style="font-family:system-ui,sans-serif;text-align:center;padding:48px 16px;color:#333">
-<h2>Đã nhận kết quả thanh toán</h2><p>Bạn có thể đóng trang này và quay lại ứng dụng ReStore. Xu sẽ được cộng khi cổng xác nhận.</p>
+<h2>${title}</h2><p>${body}</p>
 </body></html>`);
 }
