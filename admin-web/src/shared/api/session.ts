@@ -72,6 +72,9 @@ export class Session {
   async feedImage(filename: string): Promise<Blob> {
     return this.mediaImage('/media/feeds/', filename);
   }
+  async posterImage(filename: string): Promise<Blob> {
+    return this.mediaImage('/media/posters/', filename);
+  }
   async upload<T>(path: string, file: Blob, mediaType: string): Promise<T> {
     return this.authorized((token) => request<T>(path, token, file, 'POST', mediaType));
   }
