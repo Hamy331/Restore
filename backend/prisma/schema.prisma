@@ -72,8 +72,50 @@ model User {
   shop           Shop?
   shopFollows    ShopFollow[]
   searchHistory  SearchHistory[]
+  notifications  Notification[]
+  pushDevices    PushDevice[]
 
   @@index([status, suspendedUntil])
+}
+
+/// Thông báo trong app của một người dùng (trang Thông báo, chuông ở trang chủ).
+/// `type` là chuỗi (xem NOTIFICATION_TYPES trong modules/notifications/notification.type.ts) để thêm
+/// loại mới không cần migration. App dựng câu chữ theo `type` + `data` (đa ngôn ngữ);
+/// `title` / `body` là câu tiếng Việt dự phòng do server ghi. `link` là route trong app khi bấm vào.
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String    @db.VarChar(48)
+  title     String    @db.VarChar(160)
+  body      String    @db.VarChar(500)
+  /// Tham số cho câu chữ: listingId, listingTitle, reason, amount...
+  data      Json      @default("{}")
+  imageUrl  String?
+  link      String?   @db.VarChar(300)
+  readAt    DateTime?
+  /// Lúc đã xử lý gửi push (FCM); null = chưa gửi. Gửi sau khi transaction ghi thông báo đã commit
+  pushedAt  DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@index([pushedAt, createdAt])
+}
+
+/// Thiết bị nhận push FCM của người dùng (app Android / trình duyệt). Một token chỉ thuộc một người:
+/// đăng nhập tài khoản khác trên cùng máy thì token chuyển sang người mới. Token hỏng (FCM báo) thì xoá.
+model PushDevice {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique @db.VarChar(512)
+  /// android | ios | web
+  platform   String   @db.VarChar(16)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
 }
 
 /// Từ khoá người dùng đã tìm (trang kết quả tìm kiếm). Mỗi người giữ tối đa 10 từ khoá mới nhất;

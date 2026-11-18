@@ -1,0 +1,141 @@
+/// Thông báo mẫu, cùng dạng JSON với `GET /notifications`.
+/// Thời gian tính lùi từ [now] để luôn có "hôm nay" và "trước đó".
+class NotificationMockData {
+  NotificationMockData._();
+
+  static List<Map<String, dynamic>> notifications(DateTime now) {
+    String ago(Duration duration) => now.subtract(duration).toIso8601String();
+    return [
+      {
+        'id': 'n-01',
+        'type': 'LISTING_APPROVED',
+        'group': 'listing',
+        'title': 'Tin đã được duyệt',
+        'body': 'Tin "iPhone 13 Pro 128GB xanh" đã hiển thị với người mua.',
+        'data': {
+          'listingId': 'l-001',
+          'listingTitle': 'iPhone 13 Pro 128GB xanh',
+        },
+        'imageUrl': 'assets/images/categories/phones.png',
+        'link': '/listings/l-001',
+        'readAt': null,
+        'createdAt': ago(const Duration(minutes: 3)),
+      },
+      {
+        'id': 'n-02',
+        'type': 'WANTED_ALERT_MATCH',
+        'group': 'activity',
+        'title': 'Có tin mới khớp "Báo khi có hàng"',
+        'body':
+            'Tin "Ghế công thái học Ergohuman" khớp với "ghế công thái học".',
+        'data': {
+          'alertId': 'wa-1',
+          'alertKeywords': 'ghế công thái học',
+          'listingId': 'l-002',
+          'listingTitle': 'Ghế công thái học Ergohuman',
+        },
+        'imageUrl': 'assets/images/categories/furniture.png',
+        'link': '/listings/l-002',
+        'readAt': null,
+        'createdAt': ago(const Duration(minutes: 42)),
+      },
+      {
+        'id': 'n-03',
+        'type': 'CREDIT_TOPUP_SUCCESS',
+        'group': 'wallet',
+        'title': 'Nạp Xu thành công',
+        'body': 'Bạn đã nhận 100 Xu (tặng thêm 10 Xu).',
+        'data': {'amount': 100, 'bonus': 10, 'topupCode': 'RS2611AB'},
+        'imageUrl': null,
+        'link': '/credits/history',
+        'readAt': null,
+        'createdAt': ago(const Duration(hours: 2)),
+      },
+      {
+        'id': 'n-04',
+        'type': 'LISTING_REJECTED',
+        'group': 'listing',
+        'title': 'Tin bị từ chối',
+        'body':
+            'Tin "Xe đạp thể thao" không được duyệt. Lý do: Ảnh không rõ sản phẩm',
+        'data': {
+          'listingId': 'l-003',
+          'listingTitle': 'Xe đạp thể thao',
+          'reason': 'Ảnh không rõ sản phẩm',
+        },
+        'imageUrl': 'assets/images/categories/sports.png',
+        'link': '/create-listing/edit/l-003',
+        'readAt': ago(const Duration(hours: 3)),
+        'createdAt': ago(const Duration(hours: 5)),
+      },
+      {
+        'id': 'n-05',
+        'type': 'BOOST_STARTED',
+        'group': 'wallet',
+        'title': 'Tin đang được đẩy',
+        'body': 'Tin "Sofa da 3 chỗ" được đẩy lên đầu trong 3 ngày.',
+        'data': {
+          'listingId': 'l-004',
+          'listingTitle': 'Sofa da 3 chỗ',
+          'days': 3,
+        },
+        'imageUrl': null,
+        'link': '/listings/l-004',
+        'readAt': ago(const Duration(days: 1)),
+        'createdAt': ago(const Duration(days: 1, hours: 2)),
+      },
+      {
+        'id': 'n-06',
+        'type': 'LISTING_EDIT_APPROVED',
+        'group': 'listing',
+        'title': 'Bản sửa tin đã được duyệt',
+        'body': 'Nội dung mới của tin "Máy ảnh Canon AE-1" đã được hiển thị.',
+        'data': {'listingId': 'l-005', 'listingTitle': 'Máy ảnh Canon AE-1'},
+        'imageUrl': 'assets/images/categories/electronics.png',
+        'link': '/listings/l-005',
+        'readAt': ago(const Duration(days: 2)),
+        'createdAt': ago(const Duration(days: 2, hours: 4)),
+      },
+      {
+        'id': 'n-07',
+        'type': 'NEW_FOLLOWER',
+        'group': 'activity',
+        'title': 'Có người theo dõi bạn',
+        'body': 'Minh Anh vừa theo dõi bạn.',
+        'data': {'userId': 'u-02', 'userName': 'Minh Anh'},
+        'imageUrl': null,
+        'link': '/users/u-02',
+        'readAt': ago(const Duration(days: 3)),
+        'createdAt': ago(const Duration(days: 3, hours: 1)),
+      },
+      {
+        'id': 'n-08',
+        'type': 'LISTING_EXPIRING',
+        'group': 'listing',
+        'title': 'Tin sắp hết hạn',
+        'body': 'Tin "Bàn làm việc gỗ sồi" còn 2 ngày hiển thị.',
+        'data': {
+          'listingId': 'l-006',
+          'listingTitle': 'Bàn làm việc gỗ sồi',
+          'days': 2,
+        },
+        'imageUrl': null,
+        'link': '/listings/l-006',
+        'readAt': ago(const Duration(days: 4)),
+        'createdAt': ago(const Duration(days: 4, hours: 6)),
+      },
+      {
+        'id': 'n-09',
+        'type': 'SYSTEM',
+        'group': 'system',
+        'title': 'Chào mừng bạn đến ReStore',
+        'body': 'Đăng tin đầu tiên để bắt đầu bán đồ cũ của bạn.',
+        'data': <String, dynamic>{},
+        'imageUrl': null,
+        'link': null,
+        'readAt': ago(const Duration(days: 6)),
+        'createdAt': ago(const Duration(days: 7)),
+      },
+    ];
+  }
+}

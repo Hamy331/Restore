@@ -1,4 +1,5 @@
 import { ListingStatus } from '@prisma/client';
+import { emit } from '../../../common/events/domain-events.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { prisma } from '../../../lib/prisma.js';
 import { storePackageForUser, withQuotaTransaction } from '../../commerce/index.js';
@@ -17,13 +18,46 @@ export async function expireDueListings(now = new Date()) {
   return changed.count;
 }
 
+/** Nhắc trước khi hết hạn chừng này ngày */
+export const EXPIRY_REMINDER_DAYS = 2;
+
+/**
+ * Nhắc người bán các tin đang hiển thị còn dưới EXPIRY_REMINDER_DAYS ngày (1.8). Tin bật tự gia hạn thì bỏ qua
+ * (job tự gia hạn lo, thiếu xu thì báo riêng). Job chạy mỗi 10 phút; mỗi lần hết hạn chỉ nhắc một lần
+ * (thông báo chống trùng theo tin + ngày hết hạn, gia hạn xong thì lần hết hạn sau lại được nhắc).
+ * Trả về số tin trong khoảng cần nhắc.
+ */
+export async function remindExpiringListings(now = new Date()) {
+  const due = await prisma.listing.findMany({
+    where: { status: ListingStatus.AVAILABLE, autoExtend: false, expiresAt: { gt: now, lte: addDays(now, EXPIRY_REMINDER_DAYS) } },
+    select: { id: true, ownerId: true, title: true, images: true, expiresAt: true },
+  });
+  for (const listing of due) {
+    const expiresAt = listing.expiresAt!;
+    await emit('listing.expiring', {
+      listingId: listing.id, ownerId: listing.ownerId, title: listing.title, image: listing.images[0] ?? null,
+      expiresAt, daysLeft: Math.max(1, Math.ceil((expiresAt.getTime() - now.getTime()) / 86_400_000)),
+    });
+  }
+  return due.length;
+}
+
 /** Hiện các tin đã duyệt tới ngày hẹn bắt đầu (HIDDEN + startsAt đã qua, còn hạn); trả về số tin vừa hiện */
 export async function publishScheduledListings(now = new Date()) {
-  const changed = await prisma.listing.updateMany({
-    where: { status: ListingStatus.HIDDEN, startsAt: { lte: now }, expiresAt: { gt: now } },
-    data: { status: ListingStatus.AVAILABLE, startsAt: null, publishedAt: now },
-  });
-  return changed.count;
+  const where = { status: ListingStatus.HIDDEN, startsAt: { lte: now }, expiresAt: { gt: now } };
+  const due = await prisma.listing.findMany({ where, select: { id: true, ownerId: true, title: true, images: true } });
+  let published = 0;
+  for (const listing of due) {
+    // Từng tin một: tin đổi trạng thái giữa chừng (chủ tin ẩn, admin gỡ) thì bỏ qua, không báo nhầm
+    const changed = await prisma.listing.updateMany({
+      where: { ...where, id: listing.id },
+      data: { status: ListingStatus.AVAILABLE, startsAt: null, publishedAt: now },
+    });
+    if (!changed.count) continue;
+    published++;
+    await emit('listing.published', { listingId: listing.id, ownerId: listing.ownerId, title: listing.title, image: listing.images[0] ?? null });
+  }
+  return published;
 }
 
 /**

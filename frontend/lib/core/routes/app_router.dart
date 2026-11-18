@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:restore/modules/content/views/community_content_view.dart';
 import 'package:restore/modules/credits/views/credit_history/credit_history_view.dart';
+import 'package:restore/modules/notifications/views/notifications/notifications_view.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
 import 'package:restore/modules/credits/views/credit_wallet/credit_wallet_view.dart';
 import 'package:restore/modules/admin/presentation/admin_live_workspace.dart';
@@ -519,6 +520,15 @@ GoRouter createAppRouter(
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const CreditHistoryView(),
+      ),
+    ),
+    // Thông báo trong app (chuông ở trang chủ)
+    GoRoute(
+      path: NotificationsView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const NotificationsView(),
       ),
     ),
     // Tạo thông báo; q là món cần tìm điền sẵn, from=alerts khi mở từ trang

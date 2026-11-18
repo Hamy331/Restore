@@ -1,0 +1,482 @@
+{
+  "list as guest": {
+    "status": 401,
+    "body": {
+      "success": false,
+      "error": "Vui lòng đăng nhập để tiếp tục.",
+      "code": "AUTH_REQUIRED"
+    }
+  },
+  "list as admin": {
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Bạn không có quyền thực hiện thao tác này.",
+      "code": "FORBIDDEN"
+    }
+  },
+  "list empty": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [],
+      "pagination": {
+        "page": 1,
+        "limit": 20,
+        "pageSize": 20,
+        "totalItems": 0,
+        "totalPages": 0,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 20,
+        "hasMore": false
+      }
+    }
+  },
+  "unread count empty": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "count": 0
+      }
+    }
+  },
+  "list invalid group": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "group chỉ nhận: listing, wallet, activity, system.",
+      "code": "INVALID_INPUT",
+      "field": "group"
+    }
+  },
+  "list invalid limit": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "limit phải là số nguyên từ 1 đến 50.",
+      "code": "INVALID_INPUT",
+      "field": "limit"
+    }
+  },
+  "read unknown": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy thông báo.",
+      "code": "NOTIFICATION_NOT_FOUND"
+    }
+  },
+  "delete unknown": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy thông báo.",
+      "code": "NOTIFICATION_NOT_FOUND"
+    }
+  },
+  "list after decisions": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "type": "LISTING_REJECTED",
+          "group": "listing",
+          "title": "Tin bị từ chối",
+          "body": "Tin \"Bàn gỗ thông báo\" không được duyệt. Lý do: Ảnh không rõ sản phẩm",
+          "data": {
+            "reason": "Ảnh không rõ sản phẩm",
+            "listingId": "<uuid>",
+            "scheduled": false,
+            "listingTitle": "Bàn gỗ thông báo"
+          },
+          "imageUrl": "/api/v1/listings/media/<uuid>.png",
+          "link": "/create-listing/edit/<uuid>",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        },
+        {
+          "id": "<uuid>",
+          "type": "LISTING_APPROVED",
+          "group": "listing",
+          "title": "Tin đã được duyệt",
+          "body": "Tin \"Ghế xoay văn phòng thông báo\" đã hiển thị với người mua.",
+          "data": {
+            "reason": null,
+            "listingId": "<uuid>",
+            "scheduled": false,
+            "listingTitle": "Ghế xoay văn phòng thông báo"
+          },
+          "imageUrl": "/api/v1/listings/media/<uuid>.png",
+          "link": "/listings/<uuid>",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 20,
+        "pageSize": 20,
+        "totalItems": 2,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 20,
+        "hasMore": false
+      }
+    }
+  },
+  "buyer gets nothing": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [],
+      "pagination": {
+        "page": 1,
+        "limit": 20,
+        "pageSize": 20,
+        "totalItems": 0,
+        "totalPages": 0,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 20,
+        "hasMore": false
+      }
+    }
+  },
+  "unread count": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "count": 2
+      }
+    }
+  },
+  "list group listing": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "type": "LISTING_REJECTED",
+          "group": "listing",
+          "title": "Tin bị từ chối",
+          "body": "Tin \"Bàn gỗ thông báo\" không được duyệt. Lý do: Ảnh không rõ sản phẩm",
+          "data": {
+            "reason": "Ảnh không rõ sản phẩm",
+            "listingId": "<uuid>",
+            "scheduled": false,
+            "listingTitle": "Bàn gỗ thông báo"
+          },
+          "imageUrl": "/api/v1/listings/media/<uuid>.png",
+          "link": "/create-listing/edit/<uuid>",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 1,
+        "pageSize": 1,
+        "totalItems": 2,
+        "totalPages": 2,
+        "hasMore": true
+      },
+      "meta": {
+        "page": 1,
+        "limit": 1,
+        "hasMore": true
+      }
+    }
+  },
+  "list group wallet": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [],
+      "pagination": {
+        "page": 1,
+        "limit": 20,
+        "pageSize": 20,
+        "totalItems": 0,
+        "totalPages": 0,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 20,
+        "hasMore": false
+      }
+    }
+  },
+  "read of other user": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy thông báo.",
+      "code": "NOTIFICATION_NOT_FOUND"
+    }
+  },
+  "read": {
+    "status": 204,
+    "body": null
+  },
+  "read again": {
+    "status": 204,
+    "body": null
+  },
+  "unread only": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "type": "LISTING_APPROVED",
+          "group": "listing",
+          "title": "Tin đã được duyệt",
+          "body": "Tin \"Ghế xoay văn phòng thông báo\" đã hiển thị với người mua.",
+          "data": {
+            "reason": null,
+            "listingId": "<uuid>",
+            "scheduled": false,
+            "listingTitle": "Ghế xoay văn phòng thông báo"
+          },
+          "imageUrl": "/api/v1/listings/media/<uuid>.png",
+          "link": "/listings/<uuid>",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 20,
+        "pageSize": 20,
+        "totalItems": 1,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 20,
+        "hasMore": false
+      }
+    }
+  },
+  "read all": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "updated": 1
+      }
+    }
+  },
+  "unread count after read all": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "count": 0
+      }
+    }
+  },
+  "delete of other user": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy thông báo.",
+      "code": "NOTIFICATION_NOT_FOUND"
+    }
+  },
+  "delete": {
+    "status": 204,
+    "body": null
+  },
+  "list after delete": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "type": "LISTING_REJECTED",
+          "group": "listing",
+          "title": "Tin bị từ chối",
+          "body": "Tin \"Bàn gỗ thông báo\" không được duyệt. Lý do: Ảnh không rõ sản phẩm",
+          "data": {
+            "reason": "Ảnh không rõ sản phẩm",
+            "listingId": "<uuid>",
+            "scheduled": false,
+            "listingTitle": "Bàn gỗ thông báo"
+          },
+          "imageUrl": "/api/v1/listings/media/<uuid>.png",
+          "link": "/create-listing/edit/<uuid>",
+          "isRead": true,
+          "readAt": "<date>",
+          "createdAt": "<date>"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 20,
+        "pageSize": 20,
+        "totalItems": 1,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 20,
+        "hasMore": false
+      }
+    }
+  },
+  "list after scheduled publish": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "type": "LISTING_PUBLISHED",
+          "group": "listing",
+          "title": "Tin đã bắt đầu hiển thị",
+          "body": "Tin \"Kệ sách hẹn ngày đăng\" tới ngày hẹn đăng và đã hiển thị với người mua.",
+          "data": {
+            "listingId": "<uuid>",
+            "listingTitle": "Kệ sách hẹn ngày đăng"
+          },
+          "imageUrl": "/api/v1/listings/media/<uuid>.png",
+          "link": "/listings/<uuid>",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        },
+        {
+          "id": "<uuid>",
+          "type": "LISTING_APPROVED",
+          "group": "listing",
+          "title": "Tin đã được duyệt",
+          "body": "Tin \"Kệ sách hẹn ngày đăng\" sẽ tự hiển thị vào ngày hẹn đăng.",
+          "data": {
+            "reason": null,
+            "listingId": "<uuid>",
+            "scheduled": true,
+            "listingTitle": "Kệ sách hẹn ngày đăng"
+          },
+          "imageUrl": "/api/v1/listings/media/<uuid>.png",
+          "link": "/account",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 2,
+        "pageSize": 2,
+        "totalItems": 3,
+        "totalPages": 2,
+        "hasMore": true
+      },
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "hasMore": true
+      }
+    }
+  },
+  "list after expiring reminder": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "type": "LISTING_EXPIRING",
+          "group": "listing",
+          "title": "Tin sắp hết hạn",
+          "body": "Tin \"Bàn gỗ sồi thật\" còn 2 ngày hiển thị. Gia hạn để tiếp tục bán.",
+          "data": {
+            "days": 2,
+            "expiresAt": "<date>",
+            "listingId": "listing-1",
+            "listingTitle": "Bàn gỗ sồi thật"
+          },
+          "imageUrl": null,
+          "link": "/account",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 1,
+        "pageSize": 1,
+        "totalItems": 4,
+        "totalPages": 4,
+        "hasMore": true
+      },
+      "meta": {
+        "page": 1,
+        "limit": 1,
+        "hasMore": true
+      }
+    }
+  },
+  "device invalid platform": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "platform chỉ nhận: android, ios, web.",
+      "code": "INVALID_INPUT",
+      "field": "platform"
+    }
+  },
+  "device missing token": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "token phải là chuỗi từ 1 đến 512 ký tự.",
+      "code": "INVALID_INPUT",
+      "field": "token"
+    }
+  },
+  "device as admin": {
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Bạn không có quyền thực hiện thao tác này.",
+      "code": "FORBIDDEN"
+    }
+  },
+  "device register": {
+    "status": 204,
+    "body": null
+  },
+  "device unregister": {
+    "status": 204,
+    "body": null
+  },
+  "device unregister other user": {
+    "status": 204,
+    "body": null
+  }
+}

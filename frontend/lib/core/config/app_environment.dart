@@ -42,6 +42,15 @@ class AppEnvironment {
     defaultValue: false,
   );
 
+  /// Khoá công khai Web Push (VAPID) của Firebase, cần để nhận push trên
+  /// trình duyệt. Lấy ở Firebase Console > Project settings > Cloud Messaging >
+  /// Web Push certificates. Đặt trong `env/dev.json` / `env/prod.json`
+  /// (không commit). Trống thì bản web không nhận push.
+  static const String fcmVapidKey = String.fromEnvironment(
+    'FCM_VAPID_KEY',
+    defaultValue: '',
+  );
+
   static String get apiBaseUrl {
     if (_configuredApiBaseUrl.isNotEmpty) return _configuredApiBaseUrl;
 

@@ -2823,5 +2823,177 @@
   },
   "accDiscardEdit": "Bỏ bản sửa",
   "accEditDiscarded": "Đã bỏ bản sửa, tin giữ nguyên bản đang hiển thị",
-  "accDiscardEditFailed": "Chưa bỏ được bản sửa. Vui lòng thử lại."
+  "accDiscardEditFailed": "Chưa bỏ được bản sửa. Vui lòng thử lại.",
+  "notificationsMarkAllRead": "Đọc tất cả",
+  "notificationsFilterAll": "Tất cả",
+  "notificationsFilterUnread": "Chưa đọc",
+  "notificationsFilterListing": "Tin đăng",
+  "notificationsFilterWallet": "Ví Xu",
+  "notificationsFilterActivity": "Hoạt động",
+  "notificationsToday": "Hôm nay",
+  "notificationsEarlier": "Trước đó",
+  "notificationsEmptyTitle": "Chưa có thông báo nào",
+  "notificationsEmptyMessage": "Khi tin của bạn được duyệt, có người quan tâm hay Xu thay đổi, thông báo sẽ hiện ở đây.",
+  "notificationsEmptyFiltered": "Không có thông báo nào trong mục này",
+  "notificationsLoadError": "Không tải được thông báo",
+  "notificationsLoadErrorMessage": "Kiểm tra kết nối mạng rồi thử lại.",
+  "notificationsDelete": "Xoá",
+  "notificationsDeleted": "Đã xoá thông báo",
+  "notificationsDeleteFailed": "Chưa xoá được thông báo. Vui lòng thử lại.",
+  "notificationsUnreadCount": "{count} chưa đọc",
+  "@notificationsUnreadCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifReason": "Lý do: {reason}",
+  "@notifReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "notifListingApprovedTitle": "Tin đã được duyệt",
+  "notifListingApprovedBody": "Tin \"{title}\" đã hiển thị với người mua.",
+  "@notifListingApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingScheduledBody": "Tin \"{title}\" sẽ tự hiển thị vào ngày hẹn đăng.",
+  "@notifListingScheduledBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingRejectedTitle": "Tin bị từ chối",
+  "notifListingRejectedBody": "Tin \"{title}\" không được duyệt.",
+  "@notifListingRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingChangesTitle": "Tin cần chỉnh sửa",
+  "notifListingChangesBody": "Sửa lại tin \"{title}\" để được duyệt.",
+  "@notifListingChangesBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingRemovedTitle": "Tin đã bị gỡ",
+  "notifListingRemovedBody": "Tin \"{title}\" đã bị gỡ khỏi ReStore.",
+  "@notifListingRemovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifEditApprovedTitle": "Bản sửa tin đã được duyệt",
+  "notifEditApprovedBody": "Nội dung mới của tin \"{title}\" đã được hiển thị.",
+  "@notifEditApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifEditRejectedTitle": "Bản sửa tin chưa được duyệt",
+  "notifEditRejectedBody": "Tin \"{title}\" vẫn hiển thị nội dung cũ.",
+  "@notifEditRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingExpiringTitle": "Tin sắp hết hạn",
+  "notifListingExpiringBody": "Tin \"{title}\" còn {days} ngày hiển thị.",
+  "@notifListingExpiringBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifListingExpiredTitle": "Tin đã hết hạn",
+  "notifListingExpiredBody": "Tin \"{title}\" đã hết thời gian hiển thị. Gia hạn để tiếp tục bán.",
+  "@notifListingExpiredBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifTopupSuccessTitle": "Nạp Xu thành công",
+  "notifTopupSuccessBody": "Bạn đã nhận {amount} Xu.",
+  "@notifTopupSuccessBody": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifTopupSuccessBonusBody": "Bạn đã nhận {amount} Xu (tặng thêm {bonus} Xu).",
+  "@notifTopupSuccessBonusBody": {
+    "placeholders": {
+      "amount": {"type": "int"},
+      "bonus": {"type": "int"}
+    }
+  },
+  "notifTopupFailedTitle": "Nạp Xu không thành công",
+  "notifTopupFailedBody": "Đơn nạp {code} chưa được thanh toán. Xu của bạn không thay đổi.",
+  "@notifTopupFailedBody": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "notifRefundTitle": "Đã hoàn Xu",
+  "notifRefundBody": "{amount} Xu đã được hoàn vào ví.",
+  "@notifRefundBody": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifBonusExpiringTitle": "Xu tặng sắp hết hạn",
+  "notifBonusExpiringBody": "{amount} Xu tặng sẽ hết hạn sau {days} ngày.",
+  "@notifBonusExpiringBody": {
+    "placeholders": {
+      "amount": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifBoostStartedTitle": "Tin đang được đẩy",
+  "notifBoostStartedBody": "Tin \"{title}\" được đẩy lên đầu trong {days} ngày.",
+  "@notifBoostStartedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifBoostEndedTitle": "Đã hết thời gian đẩy tin",
+  "notifBoostEndedBody": "Tin \"{title}\" đã hết thời gian đẩy.",
+  "@notifBoostEndedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifWantedMatchTitle": "Có tin mới khớp \"Báo khi có hàng\"",
+  "notifWantedMatchBody": "Tin \"{title}\" khớp với \"{keywords}\".",
+  "@notifWantedMatchBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "keywords": {"type": "String"}
+    }
+  },
+  "notifNewFollowerTitle": "Có người theo dõi bạn",
+  "notifNewFollowerBody": "{name} vừa theo dõi bạn.",
+  "@notifNewFollowerBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifFavoritedTitle": "Tin của bạn được quan tâm",
+  "notifFavoritedBody": "{name} đã lưu tin \"{title}\".",
+  "@notifFavoritedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingPublishedTitle": "Tin đã bắt đầu hiển thị",
+  "notifListingPublishedBody": "Tin \"{title}\" tới ngày hẹn đăng và đã hiển thị với người mua.",
+  "@notifListingPublishedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  }
 }

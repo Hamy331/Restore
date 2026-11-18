@@ -1,0 +1,47 @@
+/**
+ * Loại thông báo trong app. Cột Notification.type là chuỗi nên thêm loại mới không cần migration;
+ * app dựng câu chữ theo type (đa ngôn ngữ), loại lạ thì hiện title/body server ghi sẵn.
+ *
+ * Nhóm (group) dùng cho bộ lọc ở trang Thông báo:
+ *  - listing: tin đăng của tôi (duyệt, từ chối, bản sửa, hết hạn...)
+ *  - wallet: ví Xu, đẩy tin, gói
+ *  - activity: người khác tương tác (tin khớp "Báo khi có hàng", theo dõi, lưu tin...)
+ *  - system: ReStore gửi chung
+ */
+export const NOTIFICATION_GROUPS = ['listing', 'wallet', 'activity', 'system'] as const;
+export type NotificationGroup = (typeof NOTIFICATION_GROUPS)[number];
+
+export const NOTIFICATION_TYPES = {
+  LISTING_APPROVED: 'listing',
+  LISTING_REJECTED: 'listing',
+  LISTING_CHANGES_REQUESTED: 'listing',
+  LISTING_REMOVED: 'listing',
+  LISTING_EDIT_APPROVED: 'listing',
+  LISTING_EDIT_REJECTED: 'listing',
+  LISTING_PUBLISHED: 'listing',
+  LISTING_EXPIRING: 'listing',
+  LISTING_EXPIRED: 'listing',
+  CREDIT_TOPUP_SUCCESS: 'wallet',
+  CREDIT_TOPUP_FAILED: 'wallet',
+  CREDIT_REFUNDED: 'wallet',
+  CREDIT_BONUS_EXPIRING: 'wallet',
+  BOOST_STARTED: 'wallet',
+  BOOST_ENDED: 'wallet',
+  WANTED_ALERT_MATCH: 'activity',
+  NEW_FOLLOWER: 'activity',
+  LISTING_FAVORITED: 'activity',
+  SYSTEM: 'system',
+} as const satisfies Record<string, NotificationGroup>;
+
+export type NotificationType = keyof typeof NOTIFICATION_TYPES;
+
+/** Các loại thuộc nhóm [group] */
+export const typesOfGroup = (group: NotificationGroup) =>
+  (Object.keys(NOTIFICATION_TYPES) as NotificationType[]).filter((type) => NOTIFICATION_TYPES[type] === group);
+
+/** Nhóm của một loại; loại không có trong danh sách coi là system */
+export const groupOf = (type: string): NotificationGroup =>
+  (NOTIFICATION_TYPES as Record<string, NotificationGroup>)[type] ?? 'system';
+
+/** Mỗi người giữ tối đa chừng này thông báo, cũ hơn thì xoá khi ghi thêm */
+export const MAX_NOTIFICATIONS_PER_USER = 300;

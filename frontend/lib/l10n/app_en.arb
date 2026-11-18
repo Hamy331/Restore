@@ -3037,5 +3037,177 @@
   },
   "accDiscardEdit": "Discard edit",
   "accEditDiscarded": "Edit discarded, the listing keeps its current version",
-  "accDiscardEditFailed": "Couldn't discard the edit. Please try again."
+  "accDiscardEditFailed": "Couldn't discard the edit. Please try again.",
+  "notificationsMarkAllRead": "Mark all read",
+  "notificationsFilterAll": "All",
+  "notificationsFilterUnread": "Unread",
+  "notificationsFilterListing": "Listings",
+  "notificationsFilterWallet": "Point wallet",
+  "notificationsFilterActivity": "Activity",
+  "notificationsToday": "Today",
+  "notificationsEarlier": "Earlier",
+  "notificationsEmptyTitle": "No notifications yet",
+  "notificationsEmptyMessage": "When your listings are reviewed, someone shows interest or your Points change, you'll see it here.",
+  "notificationsEmptyFiltered": "Nothing in this section",
+  "notificationsLoadError": "Couldn't load notifications",
+  "notificationsLoadErrorMessage": "Check your connection and try again.",
+  "notificationsDelete": "Delete",
+  "notificationsDeleted": "Notification deleted",
+  "notificationsDeleteFailed": "Couldn't delete the notification. Please try again.",
+  "notificationsUnreadCount": "{count} unread",
+  "@notificationsUnreadCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifReason": "Reason: {reason}",
+  "@notifReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "notifListingApprovedTitle": "Listing approved",
+  "notifListingApprovedBody": "\"{title}\" is now visible to buyers.",
+  "@notifListingApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingScheduledBody": "\"{title}\" will go live on its scheduled date.",
+  "@notifListingScheduledBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingRejectedTitle": "Listing rejected",
+  "notifListingRejectedBody": "\"{title}\" was not approved.",
+  "@notifListingRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingChangesTitle": "Listing needs changes",
+  "notifListingChangesBody": "Update \"{title}\" to get it approved.",
+  "@notifListingChangesBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingRemovedTitle": "Listing removed",
+  "notifListingRemovedBody": "\"{title}\" was removed from ReStore.",
+  "@notifListingRemovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifEditApprovedTitle": "Edit approved",
+  "notifEditApprovedBody": "The new version of \"{title}\" is now live.",
+  "@notifEditApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifEditRejectedTitle": "Edit not approved",
+  "notifEditRejectedBody": "\"{title}\" keeps showing its previous version.",
+  "@notifEditRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingExpiringTitle": "Listing expiring soon",
+  "notifListingExpiringBody": "\"{title}\" has {days} days left.",
+  "@notifListingExpiringBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifListingExpiredTitle": "Listing expired",
+  "notifListingExpiredBody": "\"{title}\" is no longer shown. Renew it to keep selling.",
+  "@notifListingExpiredBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifTopupSuccessTitle": "Top-up successful",
+  "notifTopupSuccessBody": "You received {amount} Points.",
+  "@notifTopupSuccessBody": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifTopupSuccessBonusBody": "You received {amount} Points (+{bonus} bonus Points).",
+  "@notifTopupSuccessBonusBody": {
+    "placeholders": {
+      "amount": {"type": "int"},
+      "bonus": {"type": "int"}
+    }
+  },
+  "notifTopupFailedTitle": "Top-up not completed",
+  "notifTopupFailedBody": "Order {code} was not paid. Your Points are unchanged.",
+  "@notifTopupFailedBody": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "notifRefundTitle": "Points refunded",
+  "notifRefundBody": "{amount} Points were refunded to your wallet.",
+  "@notifRefundBody": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifBonusExpiringTitle": "Bonus Points expiring",
+  "notifBonusExpiringBody": "{amount} bonus Points expire in {days} days.",
+  "@notifBonusExpiringBody": {
+    "placeholders": {
+      "amount": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifBoostStartedTitle": "Listing boosted",
+  "notifBoostStartedBody": "\"{title}\" is pinned to the top for {days} days.",
+  "@notifBoostStartedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifBoostEndedTitle": "Boost ended",
+  "notifBoostEndedBody": "The boost for \"{title}\" has ended.",
+  "@notifBoostEndedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifWantedMatchTitle": "New match for your wanted alert",
+  "notifWantedMatchBody": "\"{title}\" matches \"{keywords}\".",
+  "@notifWantedMatchBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "keywords": {"type": "String"}
+    }
+  },
+  "notifNewFollowerTitle": "New follower",
+  "notifNewFollowerBody": "{name} started following you.",
+  "@notifNewFollowerBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifFavoritedTitle": "Someone likes your listing",
+  "notifFavoritedBody": "{name} saved \"{title}\".",
+  "@notifFavoritedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingPublishedTitle": "Listing is now live",
+  "notifListingPublishedBody": "\"{title}\" reached its scheduled date and is now visible to buyers.",
+  "@notifListingPublishedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  }
 }

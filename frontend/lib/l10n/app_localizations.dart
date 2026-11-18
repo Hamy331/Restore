@@ -8809,6 +8809,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t discard the edit. Please try again.'**
   String get accDiscardEditFailed;
+
+  /// No description provided for @notificationsMarkAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read'**
+  String get notificationsMarkAllRead;
+
+  /// No description provided for @notificationsFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get notificationsFilterAll;
+
+  /// No description provided for @notificationsFilterUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notificationsFilterUnread;
+
+  /// No description provided for @notificationsFilterListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get notificationsFilterListing;
+
+  /// No description provided for @notificationsFilterWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Point wallet'**
+  String get notificationsFilterWallet;
+
+  /// No description provided for @notificationsFilterActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get notificationsFilterActivity;
+
+  /// No description provided for @notificationsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notificationsToday;
+
+  /// No description provided for @notificationsEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get notificationsEarlier;
+
+  /// No description provided for @notificationsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get notificationsEmptyTitle;
+
+  /// No description provided for @notificationsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'When your listings are reviewed, someone shows interest or your Points change, you\'ll see it here.'**
+  String get notificationsEmptyMessage;
+
+  /// No description provided for @notificationsEmptyFiltered.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this section'**
+  String get notificationsEmptyFiltered;
+
+  /// No description provided for @notificationsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load notifications'**
+  String get notificationsLoadError;
+
+  /// No description provided for @notificationsLoadErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get notificationsLoadErrorMessage;
+
+  /// No description provided for @notificationsDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get notificationsDelete;
+
+  /// No description provided for @notificationsDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification deleted'**
+  String get notificationsDeleted;
+
+  /// No description provided for @notificationsDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete the notification. Please try again.'**
+  String get notificationsDeleteFailed;
+
+  /// No description provided for @notificationsUnreadCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unread'**
+  String notificationsUnreadCount(int count);
+
+  /// No description provided for @notifReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String notifReason(String reason);
+
+  /// No description provided for @notifListingApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing approved'**
+  String get notifListingApprovedTitle;
+
+  /// No description provided for @notifListingApprovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is now visible to buyers.'**
+  String notifListingApprovedBody(String title);
+
+  /// No description provided for @notifListingScheduledBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" will go live on its scheduled date.'**
+  String notifListingScheduledBody(String title);
+
+  /// No description provided for @notifListingRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing rejected'**
+  String get notifListingRejectedTitle;
+
+  /// No description provided for @notifListingRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" was not approved.'**
+  String notifListingRejectedBody(String title);
+
+  /// No description provided for @notifListingChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing needs changes'**
+  String get notifListingChangesTitle;
+
+  /// No description provided for @notifListingChangesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Update \"{title}\" to get it approved.'**
+  String notifListingChangesBody(String title);
+
+  /// No description provided for @notifListingRemovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing removed'**
+  String get notifListingRemovedTitle;
+
+  /// No description provided for @notifListingRemovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" was removed from ReStore.'**
+  String notifListingRemovedBody(String title);
+
+  /// No description provided for @notifEditApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit approved'**
+  String get notifEditApprovedTitle;
+
+  /// No description provided for @notifEditApprovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The new version of \"{title}\" is now live.'**
+  String notifEditApprovedBody(String title);
+
+  /// No description provided for @notifEditRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit not approved'**
+  String get notifEditRejectedTitle;
+
+  /// No description provided for @notifEditRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" keeps showing its previous version.'**
+  String notifEditRejectedBody(String title);
+
+  /// No description provided for @notifListingExpiringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing expiring soon'**
+  String get notifListingExpiringTitle;
+
+  /// No description provided for @notifListingExpiringBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" has {days} days left.'**
+  String notifListingExpiringBody(String title, int days);
+
+  /// No description provided for @notifListingExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing expired'**
+  String get notifListingExpiredTitle;
+
+  /// No description provided for @notifListingExpiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is no longer shown. Renew it to keep selling.'**
+  String notifListingExpiredBody(String title);
+
+  /// No description provided for @notifTopupSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top-up successful'**
+  String get notifTopupSuccessTitle;
+
+  /// No description provided for @notifTopupSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You received {amount} Points.'**
+  String notifTopupSuccessBody(int amount);
+
+  /// No description provided for @notifTopupSuccessBonusBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You received {amount} Points (+{bonus} bonus Points).'**
+  String notifTopupSuccessBonusBody(int amount, int bonus);
+
+  /// No description provided for @notifTopupFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top-up not completed'**
+  String get notifTopupFailedTitle;
+
+  /// No description provided for @notifTopupFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Order {code} was not paid. Your Points are unchanged.'**
+  String notifTopupFailedBody(String code);
+
+  /// No description provided for @notifRefundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Points refunded'**
+  String get notifRefundTitle;
+
+  /// No description provided for @notifRefundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} Points were refunded to your wallet.'**
+  String notifRefundBody(int amount);
+
+  /// No description provided for @notifBonusExpiringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus Points expiring'**
+  String get notifBonusExpiringTitle;
+
+  /// No description provided for @notifBonusExpiringBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} bonus Points expire in {days} days.'**
+  String notifBonusExpiringBody(int amount, int days);
+
+  /// No description provided for @notifBoostStartedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing boosted'**
+  String get notifBoostStartedTitle;
+
+  /// No description provided for @notifBoostStartedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is pinned to the top for {days} days.'**
+  String notifBoostStartedBody(String title, int days);
+
+  /// No description provided for @notifBoostEndedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost ended'**
+  String get notifBoostEndedTitle;
+
+  /// No description provided for @notifBoostEndedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The boost for \"{title}\" has ended.'**
+  String notifBoostEndedBody(String title);
+
+  /// No description provided for @notifWantedMatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New match for your wanted alert'**
+  String get notifWantedMatchTitle;
+
+  /// No description provided for @notifWantedMatchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" matches \"{keywords}\".'**
+  String notifWantedMatchBody(String title, String keywords);
+
+  /// No description provided for @notifNewFollowerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New follower'**
+  String get notifNewFollowerTitle;
+
+  /// No description provided for @notifNewFollowerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} started following you.'**
+  String notifNewFollowerBody(String name);
+
+  /// No description provided for @notifFavoritedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone likes your listing'**
+  String get notifFavoritedTitle;
+
+  /// No description provided for @notifFavoritedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} saved \"{title}\".'**
+  String notifFavoritedBody(String name, String title);
+
+  /// No description provided for @notifListingPublishedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing is now live'**
+  String get notifListingPublishedTitle;
+
+  /// No description provided for @notifListingPublishedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" reached its scheduled date and is now visible to buyers.'**
+  String notifListingPublishedBody(String title);
 }
 
 class _AppLocalizationsDelegate

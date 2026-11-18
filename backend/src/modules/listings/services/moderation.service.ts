@@ -10,7 +10,7 @@ import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
 import { freeDaysFor } from '../display-pricing.js';
 import type { ModerationAction } from '../listing.type.js';
 import * as listingRepository from '../repositories/listing.repository.js';
-import { runApprovalHooks } from './approval-hooks.js';
+import { runApprovalHooks, runModeratedHooks } from './approval-hooks.js';
 
 /**
  * Ra quyết định trên một tin trong transaction [tx], ghi AdminAudit.
@@ -19,6 +19,7 @@ import { runApprovalHooks } from './approval-hooks.js';
  * updatedAt phải khớp [expected] lúc admin mở tin (409 ADMIN_STALE nếu không).
  * Dùng ở /listings/admin, /admin/listings và khi xử lý báo cáo vi phạm.
  * Duyệt xong thì chạy các hook onListingApproved (VD chấm điểm thông báo "Báo khi có hàng").
+ * Mọi quyết định chạy các hook onListingModerated (VD gửi thông báo cho người bán).
  * Tin đã duyệt có bản sửa chờ duyệt: APPROVE / REJECT / REQUEST_CHANGES áp lên bản sửa (xem moderateRevision).
  * Trả về URL ảnh không còn dùng, để xóa file sau khi transaction xong (removeStoredImages).
  */
@@ -69,6 +70,8 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
     // Từ chối khi đang chờ duyệt: hoàn xu đang giữ (đã duyệt rồi bị gỡ thì không hoàn)
     await releaseListingHold(tx, id, `Hoàn xu · tin bị từ chối: ${item.title}`.slice(0, 200));
   }
+  await runModeratedHooks(tx, { listingId: id, ownerId: item.ownerId, title: item.title, image: item.images[0] ?? null,
+    action, reason, edit: false, scheduled });
   return removed;
 }
 
@@ -90,6 +93,8 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
   if (action !== 'APPROVE') {
     changed(await listingRepository.rejectRevision(tx, item.id, expected, reason));
     await audit(tx, actorId, `${action}_EDIT`, 'LISTING', item.id, reason, { edit: 'PENDING' }, { edit: 'REJECTED' });
+    await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
+      image: revision.images[0] ?? item.images[0] ?? null, action, reason, edit: true, scheduled: false });
     return [];
   }
   if (!revision.images.length) throw new AppError(400, 'INVALID_LISTING', 'Tin cần ít nhất một ảnh.');
@@ -109,6 +114,8 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
   }));
   await audit(tx, actorId, 'APPROVE_EDIT', 'LISTING', item.id, reason,
     { title: item.title, edit: 'PENDING' }, { title: revision.title, edit: 'APPROVED' });
+  await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
+    image: revision.images[0] ?? null, action, reason, edit: true, scheduled: false });
   // Ảnh cũ không còn trong bản mới
   return item.images.filter((url) => !revision.images.includes(url));
 }

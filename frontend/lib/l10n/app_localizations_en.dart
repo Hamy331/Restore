@@ -5073,4 +5073,219 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accDiscardEditFailed =>
       'Couldn\'t discard the edit. Please try again.';
+
+  @override
+  String get notificationsMarkAllRead => 'Mark all read';
+
+  @override
+  String get notificationsFilterAll => 'All';
+
+  @override
+  String get notificationsFilterUnread => 'Unread';
+
+  @override
+  String get notificationsFilterListing => 'Listings';
+
+  @override
+  String get notificationsFilterWallet => 'Point wallet';
+
+  @override
+  String get notificationsFilterActivity => 'Activity';
+
+  @override
+  String get notificationsToday => 'Today';
+
+  @override
+  String get notificationsEarlier => 'Earlier';
+
+  @override
+  String get notificationsEmptyTitle => 'No notifications yet';
+
+  @override
+  String get notificationsEmptyMessage =>
+      'When your listings are reviewed, someone shows interest or your Points change, you\'ll see it here.';
+
+  @override
+  String get notificationsEmptyFiltered => 'Nothing in this section';
+
+  @override
+  String get notificationsLoadError => 'Couldn\'t load notifications';
+
+  @override
+  String get notificationsLoadErrorMessage =>
+      'Check your connection and try again.';
+
+  @override
+  String get notificationsDelete => 'Delete';
+
+  @override
+  String get notificationsDeleted => 'Notification deleted';
+
+  @override
+  String get notificationsDeleteFailed =>
+      'Couldn\'t delete the notification. Please try again.';
+
+  @override
+  String notificationsUnreadCount(int count) {
+    return '$count unread';
+  }
+
+  @override
+  String notifReason(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get notifListingApprovedTitle => 'Listing approved';
+
+  @override
+  String notifListingApprovedBody(String title) {
+    return '\"$title\" is now visible to buyers.';
+  }
+
+  @override
+  String notifListingScheduledBody(String title) {
+    return '\"$title\" will go live on its scheduled date.';
+  }
+
+  @override
+  String get notifListingRejectedTitle => 'Listing rejected';
+
+  @override
+  String notifListingRejectedBody(String title) {
+    return '\"$title\" was not approved.';
+  }
+
+  @override
+  String get notifListingChangesTitle => 'Listing needs changes';
+
+  @override
+  String notifListingChangesBody(String title) {
+    return 'Update \"$title\" to get it approved.';
+  }
+
+  @override
+  String get notifListingRemovedTitle => 'Listing removed';
+
+  @override
+  String notifListingRemovedBody(String title) {
+    return '\"$title\" was removed from ReStore.';
+  }
+
+  @override
+  String get notifEditApprovedTitle => 'Edit approved';
+
+  @override
+  String notifEditApprovedBody(String title) {
+    return 'The new version of \"$title\" is now live.';
+  }
+
+  @override
+  String get notifEditRejectedTitle => 'Edit not approved';
+
+  @override
+  String notifEditRejectedBody(String title) {
+    return '\"$title\" keeps showing its previous version.';
+  }
+
+  @override
+  String get notifListingExpiringTitle => 'Listing expiring soon';
+
+  @override
+  String notifListingExpiringBody(String title, int days) {
+    return '\"$title\" has $days days left.';
+  }
+
+  @override
+  String get notifListingExpiredTitle => 'Listing expired';
+
+  @override
+  String notifListingExpiredBody(String title) {
+    return '\"$title\" is no longer shown. Renew it to keep selling.';
+  }
+
+  @override
+  String get notifTopupSuccessTitle => 'Top-up successful';
+
+  @override
+  String notifTopupSuccessBody(int amount) {
+    return 'You received $amount Points.';
+  }
+
+  @override
+  String notifTopupSuccessBonusBody(int amount, int bonus) {
+    return 'You received $amount Points (+$bonus bonus Points).';
+  }
+
+  @override
+  String get notifTopupFailedTitle => 'Top-up not completed';
+
+  @override
+  String notifTopupFailedBody(String code) {
+    return 'Order $code was not paid. Your Points are unchanged.';
+  }
+
+  @override
+  String get notifRefundTitle => 'Points refunded';
+
+  @override
+  String notifRefundBody(int amount) {
+    return '$amount Points were refunded to your wallet.';
+  }
+
+  @override
+  String get notifBonusExpiringTitle => 'Bonus Points expiring';
+
+  @override
+  String notifBonusExpiringBody(int amount, int days) {
+    return '$amount bonus Points expire in $days days.';
+  }
+
+  @override
+  String get notifBoostStartedTitle => 'Listing boosted';
+
+  @override
+  String notifBoostStartedBody(String title, int days) {
+    return '\"$title\" is pinned to the top for $days days.';
+  }
+
+  @override
+  String get notifBoostEndedTitle => 'Boost ended';
+
+  @override
+  String notifBoostEndedBody(String title) {
+    return 'The boost for \"$title\" has ended.';
+  }
+
+  @override
+  String get notifWantedMatchTitle => 'New match for your wanted alert';
+
+  @override
+  String notifWantedMatchBody(String title, String keywords) {
+    return '\"$title\" matches \"$keywords\".';
+  }
+
+  @override
+  String get notifNewFollowerTitle => 'New follower';
+
+  @override
+  String notifNewFollowerBody(String name) {
+    return '$name started following you.';
+  }
+
+  @override
+  String get notifFavoritedTitle => 'Someone likes your listing';
+
+  @override
+  String notifFavoritedBody(String name, String title) {
+    return '$name saved \"$title\".';
+  }
+
+  @override
+  String get notifListingPublishedTitle => 'Listing is now live';
+
+  @override
+  String notifListingPublishedBody(String title) {
+    return '\"$title\" reached its scheduled date and is now visible to buyers.';
+  }
 }

@@ -4977,4 +4977,220 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accDiscardEditFailed => 'Chưa bỏ được bản sửa. Vui lòng thử lại.';
+
+  @override
+  String get notificationsMarkAllRead => 'Đọc tất cả';
+
+  @override
+  String get notificationsFilterAll => 'Tất cả';
+
+  @override
+  String get notificationsFilterUnread => 'Chưa đọc';
+
+  @override
+  String get notificationsFilterListing => 'Tin đăng';
+
+  @override
+  String get notificationsFilterWallet => 'Ví Xu';
+
+  @override
+  String get notificationsFilterActivity => 'Hoạt động';
+
+  @override
+  String get notificationsToday => 'Hôm nay';
+
+  @override
+  String get notificationsEarlier => 'Trước đó';
+
+  @override
+  String get notificationsEmptyTitle => 'Chưa có thông báo nào';
+
+  @override
+  String get notificationsEmptyMessage =>
+      'Khi tin của bạn được duyệt, có người quan tâm hay Xu thay đổi, thông báo sẽ hiện ở đây.';
+
+  @override
+  String get notificationsEmptyFiltered =>
+      'Không có thông báo nào trong mục này';
+
+  @override
+  String get notificationsLoadError => 'Không tải được thông báo';
+
+  @override
+  String get notificationsLoadErrorMessage =>
+      'Kiểm tra kết nối mạng rồi thử lại.';
+
+  @override
+  String get notificationsDelete => 'Xoá';
+
+  @override
+  String get notificationsDeleted => 'Đã xoá thông báo';
+
+  @override
+  String get notificationsDeleteFailed =>
+      'Chưa xoá được thông báo. Vui lòng thử lại.';
+
+  @override
+  String notificationsUnreadCount(int count) {
+    return '$count chưa đọc';
+  }
+
+  @override
+  String notifReason(String reason) {
+    return 'Lý do: $reason';
+  }
+
+  @override
+  String get notifListingApprovedTitle => 'Tin đã được duyệt';
+
+  @override
+  String notifListingApprovedBody(String title) {
+    return 'Tin \"$title\" đã hiển thị với người mua.';
+  }
+
+  @override
+  String notifListingScheduledBody(String title) {
+    return 'Tin \"$title\" sẽ tự hiển thị vào ngày hẹn đăng.';
+  }
+
+  @override
+  String get notifListingRejectedTitle => 'Tin bị từ chối';
+
+  @override
+  String notifListingRejectedBody(String title) {
+    return 'Tin \"$title\" không được duyệt.';
+  }
+
+  @override
+  String get notifListingChangesTitle => 'Tin cần chỉnh sửa';
+
+  @override
+  String notifListingChangesBody(String title) {
+    return 'Sửa lại tin \"$title\" để được duyệt.';
+  }
+
+  @override
+  String get notifListingRemovedTitle => 'Tin đã bị gỡ';
+
+  @override
+  String notifListingRemovedBody(String title) {
+    return 'Tin \"$title\" đã bị gỡ khỏi ReStore.';
+  }
+
+  @override
+  String get notifEditApprovedTitle => 'Bản sửa tin đã được duyệt';
+
+  @override
+  String notifEditApprovedBody(String title) {
+    return 'Nội dung mới của tin \"$title\" đã được hiển thị.';
+  }
+
+  @override
+  String get notifEditRejectedTitle => 'Bản sửa tin chưa được duyệt';
+
+  @override
+  String notifEditRejectedBody(String title) {
+    return 'Tin \"$title\" vẫn hiển thị nội dung cũ.';
+  }
+
+  @override
+  String get notifListingExpiringTitle => 'Tin sắp hết hạn';
+
+  @override
+  String notifListingExpiringBody(String title, int days) {
+    return 'Tin \"$title\" còn $days ngày hiển thị.';
+  }
+
+  @override
+  String get notifListingExpiredTitle => 'Tin đã hết hạn';
+
+  @override
+  String notifListingExpiredBody(String title) {
+    return 'Tin \"$title\" đã hết thời gian hiển thị. Gia hạn để tiếp tục bán.';
+  }
+
+  @override
+  String get notifTopupSuccessTitle => 'Nạp Xu thành công';
+
+  @override
+  String notifTopupSuccessBody(int amount) {
+    return 'Bạn đã nhận $amount Xu.';
+  }
+
+  @override
+  String notifTopupSuccessBonusBody(int amount, int bonus) {
+    return 'Bạn đã nhận $amount Xu (tặng thêm $bonus Xu).';
+  }
+
+  @override
+  String get notifTopupFailedTitle => 'Nạp Xu không thành công';
+
+  @override
+  String notifTopupFailedBody(String code) {
+    return 'Đơn nạp $code chưa được thanh toán. Xu của bạn không thay đổi.';
+  }
+
+  @override
+  String get notifRefundTitle => 'Đã hoàn Xu';
+
+  @override
+  String notifRefundBody(int amount) {
+    return '$amount Xu đã được hoàn vào ví.';
+  }
+
+  @override
+  String get notifBonusExpiringTitle => 'Xu tặng sắp hết hạn';
+
+  @override
+  String notifBonusExpiringBody(int amount, int days) {
+    return '$amount Xu tặng sẽ hết hạn sau $days ngày.';
+  }
+
+  @override
+  String get notifBoostStartedTitle => 'Tin đang được đẩy';
+
+  @override
+  String notifBoostStartedBody(String title, int days) {
+    return 'Tin \"$title\" được đẩy lên đầu trong $days ngày.';
+  }
+
+  @override
+  String get notifBoostEndedTitle => 'Đã hết thời gian đẩy tin';
+
+  @override
+  String notifBoostEndedBody(String title) {
+    return 'Tin \"$title\" đã hết thời gian đẩy.';
+  }
+
+  @override
+  String get notifWantedMatchTitle => 'Có tin mới khớp \"Báo khi có hàng\"';
+
+  @override
+  String notifWantedMatchBody(String title, String keywords) {
+    return 'Tin \"$title\" khớp với \"$keywords\".';
+  }
+
+  @override
+  String get notifNewFollowerTitle => 'Có người theo dõi bạn';
+
+  @override
+  String notifNewFollowerBody(String name) {
+    return '$name vừa theo dõi bạn.';
+  }
+
+  @override
+  String get notifFavoritedTitle => 'Tin của bạn được quan tâm';
+
+  @override
+  String notifFavoritedBody(String name, String title) {
+    return '$name đã lưu tin \"$title\".';
+  }
+
+  @override
+  String get notifListingPublishedTitle => 'Tin đã bắt đầu hiển thị';
+
+  @override
+  String notifListingPublishedBody(String title) {
+    return 'Tin \"$title\" tới ngày hẹn đăng và đã hiển thị với người mua.';
+  }
 }

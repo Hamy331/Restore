@@ -65,6 +65,7 @@ class AppIcons {
   static const IconData logout = LucideIcons.logOut300;
   static const IconData settings = LucideIcons.settings300;
   static const IconData notification = LucideIcons.bell300;
+  static const IconData readAll = LucideIcons.checkCheck300;
   static const IconData favorite = LucideIcons.heart300;
   static const IconData favoriteActive = LucideIcons.heart500;
   static const IconData star = LucideIcons.star300;
