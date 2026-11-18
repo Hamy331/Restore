@@ -97,6 +97,29 @@ async function dispatch(now: Date) {
   return sent;
 }
 
+/**
+ * Push thẳng, không ghi Notification (tin nhắn chat 3.2: chat có số chưa đọc riêng).
+ * [messages] theo người nhận; trả về số push đã gửi được.
+ */
+export async function pushToUsers(messages: { userId: string; message: PushMessage }[]): Promise<number> {
+  if (!enabled() || !messages.length) return 0;
+  const devices = await prisma.pushDevice.findMany({
+    where: { userId: { in: [...new Set(messages.map((item) => item.userId))] } }, select: { token: true, userId: true },
+  });
+  const invalid = new Set<string>();
+  let sent = 0;
+  for (const { userId, message } of messages) {
+    for (const device of devices) {
+      if (device.userId !== userId || invalid.has(device.token)) continue;
+      const result = await sender(device.token, message);
+      if (result === 'ok') sent++;
+      if (result === 'invalid') invalid.add(device.token);
+    }
+  }
+  if (invalid.size) await prisma.pushDevice.deleteMany({ where: { token: { in: [...invalid] } } });
+  return sent;
+}
+
 /* ---------- Thiết bị ---------- */
 
 /** Lưu token FCM của thiết bị cho người dùng (token đã thuộc người khác thì chuyển sang người này) */

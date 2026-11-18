@@ -14,6 +14,9 @@ export const findMember = (conversationId: string, userId: string) =>
 export const findRecipient = (recipientId: string) =>
   prisma.user.findUnique({ where: { id: recipientId }, select: { id: true, status: true } });
 
+export const findListingOwner = (listingId: string) =>
+  prisma.listing.findUnique({ where: { id: listingId }, select: { ownerId: true } });
+
 export const upsertConversation = (pairKey: string, selfId: string, recipientId: string) =>
   prisma.conversation.upsert({
     where: { pairKey },

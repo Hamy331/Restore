@@ -47,10 +47,42 @@ class NotificationPresenter {
     NotificationType.posterApproved => l10n.notifPosterApprovedTitle,
     NotificationType.posterRejected => l10n.notifPosterRejectedTitle,
     NotificationType.wantedAlertMatch => l10n.notifWantedMatchTitle,
-    NotificationType.newFollower => l10n.notifNewFollowerTitle,
+    NotificationType.newFollower =>
+      item.text('shopName') != null
+          ? l10n.notifShopFollowerTitle
+          : l10n.notifNewFollowerTitle,
     NotificationType.listingFavorited => l10n.notifFavoritedTitle,
+    NotificationType.followedNewListing => l10n.notifFollowedListingTitle,
+    NotificationType.savedListingPriceDrop => l10n.notifPriceDropTitle,
+    NotificationType.savedListingSold =>
+      item.data['exchanged'] == true
+          ? l10n.notifSavedExchangedTitle
+          : l10n.notifSavedSoldTitle,
+    NotificationType.feedPostLiked => l10n.notifPostLikedTitle,
+    NotificationType.feedPostCommented => l10n.notifPostCommentedTitle,
+    NotificationType.feedCommentReplied => l10n.notifCommentRepliedTitle,
+    NotificationType.feedCommentLiked => l10n.notifCommentLikedTitle,
+    NotificationType.chatMessage => _chatTitle(l10n, item),
     NotificationType.system || NotificationType.unknown => item.title,
   };
+
+  /// Tên người gửi, kèm số tin chưa đọc khi nhiều hơn một
+  static String _chatTitle(AppLocalizations l10n, NotificationModel item) {
+    final name = item.text('senderName');
+    final count = item.number('count');
+    if (name == null) return item.title;
+    return count != null && count > 1
+        ? l10n.notifChatManyTitle(name, count)
+        : name;
+  }
+
+  /// Giá VND như "199.000 đ"
+  static String? _price(NotificationModel item, String key) {
+    final value = num.tryParse(item.text(key) ?? '');
+    return value == null
+        ? null
+        : '${NumberFormat.decimalPattern('vi').format(value)} đ';
+  }
 
   static String body(AppLocalizations l10n, NotificationModel item) {
     final text = _body(l10n, item);
@@ -106,6 +138,9 @@ class NotificationPresenter {
     final plan = item.text('planName') ?? item.text('packageName');
     final date = _date(item);
     final poster = item.text('posterTitle');
+    final comment = item.text('commentText');
+    // Thông báo gộp: số người khác ngoài người mới nhất
+    final others = ((item.number('count') ?? 1) - 1).clamp(0, 1 << 30).toInt();
     return switch (item.type) {
       NotificationType.listingApproved when title != null =>
         item.data['scheduled'] == true
@@ -172,10 +207,41 @@ class NotificationPresenter {
       NotificationType.wantedAlertMatch
           when title != null && item.text('alertKeywords') != null =>
         l10n.notifWantedMatchBody(title, item.text('alertKeywords')!),
+      NotificationType.newFollower
+          when name != null && item.text('shopName') != null =>
+        l10n.notifShopFollowerBody(name, item.text('shopName')!),
       NotificationType.newFollower when name != null =>
         l10n.notifNewFollowerBody(name),
+      NotificationType.listingFavorited
+          when name != null && title != null && others > 0 =>
+        l10n.notifFavoritedManyBody(name, others, title),
       NotificationType.listingFavorited when name != null && title != null =>
         l10n.notifFavoritedBody(name, title),
+      NotificationType.followedNewListing when name != null && title != null =>
+        item.data['shop'] == true
+            ? l10n.notifFollowedShopListingBody(name, title)
+            : l10n.notifFollowedListingBody(name, title),
+      NotificationType.savedListingPriceDrop when title != null => switch ((
+        _price(item, 'oldPrice'),
+        _price(item, 'price'),
+      )) {
+        (final from?, final to?) => l10n.notifPriceDropBody(title, from, to),
+        _ => null,
+      },
+      NotificationType.savedListingSold when title != null =>
+        item.data['exchanged'] == true
+            ? l10n.notifSavedExchangedBody(title)
+            : l10n.notifSavedSoldBody(title),
+      NotificationType.feedPostLiked when name != null =>
+        l10n.notifPostLikedBody(name, others),
+      NotificationType.feedCommentLiked when name != null =>
+        l10n.notifCommentLikedBody(name, others),
+      NotificationType.feedPostCommented when name != null && comment != null =>
+        l10n.notifPostCommentedBody(name, comment),
+      NotificationType.feedCommentReplied
+          when name != null && comment != null =>
+        l10n.notifCommentRepliedBody(name, comment),
+      NotificationType.chatMessage => item.text('text'),
       _ => null,
     };
   }
@@ -206,7 +272,15 @@ class NotificationPresenter {
     NotificationType.posterRejected => AppIcons.image,
     NotificationType.wantedAlertMatch => AppIcons.wantedAlert,
     NotificationType.newFollower => AppIcons.followUser,
-    NotificationType.listingFavorited => AppIcons.favoriteActive,
+    NotificationType.listingFavorited ||
+    NotificationType.feedPostLiked ||
+    NotificationType.feedCommentLiked => AppIcons.favoriteActive,
+    NotificationType.followedNewListing => AppIcons.store,
+    NotificationType.savedListingPriceDrop => AppIcons.priceDown,
+    NotificationType.savedListingSold => AppIcons.buy,
+    NotificationType.feedPostCommented ||
+    NotificationType.feedCommentReplied ||
+    NotificationType.chatMessage => AppIcons.chat,
     NotificationType.system ||
     NotificationType.unknown => AppIcons.notification,
   };
@@ -224,7 +298,9 @@ class NotificationPresenter {
     NotificationType.creditTopupFailed ||
     NotificationType.orderRejected ||
     NotificationType.posterRejected ||
-    NotificationType.listingFavorited => AppColors.error,
+    NotificationType.listingFavorited ||
+    NotificationType.feedPostLiked ||
+    NotificationType.feedCommentLiked => AppColors.error,
     NotificationType.listingChangesRequested ||
     NotificationType.listingEditRejected ||
     NotificationType.listingExpiring ||
@@ -232,13 +308,19 @@ class NotificationPresenter {
     NotificationType.creditBonusExpiring ||
     NotificationType.planExpiring => AppColors.warning,
     NotificationType.listingExpired ||
-    NotificationType.planExpired => AppColors.textSecondary,
+    NotificationType.planExpired ||
+    NotificationType.savedListingSold => AppColors.textSecondary,
     NotificationType.boostStarted ||
     NotificationType.boostEnded ||
-    NotificationType.wantedAlertMatch => AppColors.primaryDark,
+    NotificationType.wantedAlertMatch ||
+    NotificationType.followedNewListing => AppColors.primaryDark,
+    NotificationType.savedListingPriceDrop => AppColors.success,
     NotificationType.creditRefunded ||
     NotificationType.listingAutoExtended ||
     NotificationType.newFollower ||
+    NotificationType.feedPostCommented ||
+    NotificationType.feedCommentReplied ||
+    NotificationType.chatMessage ||
     NotificationType.system ||
     NotificationType.unknown => AppColors.info,
   };

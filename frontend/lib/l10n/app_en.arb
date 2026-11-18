@@ -1422,6 +1422,8 @@
     }
   },
   "shopFollow": "Follow",
+  "shopMessage": "Message the shop",
+  "shopMessageFailed": "Couldn't open the chat. Please try again.",
   "shopFollowing": "Following",
   "shopFollowerCount": "{count} followers",
   "@shopFollowerCount": {
@@ -3323,5 +3325,99 @@
   "creditBonusNoExpiry": "No expiry",
   "creditBonusEmpty": "You have no bonus points right now.",
   "creditBonusLoadError": "Could not load your bonus points. Please try again.",
-  "creditBonusTapHint": "Tap to see expiry dates"
+  "creditBonusTapHint": "Tap to see expiry dates",
+  "notifShopFollowerTitle": "New shop follower",
+  "notifShopFollowerBody": "{name} started following {shop}.",
+  "@notifShopFollowerBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "shop": {"type": "String"}
+    }
+  },
+  "notifFavoritedManyBody": "{name} and {others, plural, =1{1 other} other{{others} others}} saved \"{title}\".",
+  "@notifFavoritedManyBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifFollowedListingTitle": "New listing from someone you follow",
+  "notifFollowedListingBody": "{name} just posted \"{title}\".",
+  "@notifFollowedListingBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifFollowedShopListingBody": "Shop {name} just posted \"{title}\".",
+  "@notifFollowedShopListingBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifPriceDropTitle": "A saved listing dropped in price",
+  "notifPriceDropBody": "\"{title}\" dropped from {from} to {to}.",
+  "@notifPriceDropBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "notifSavedSoldTitle": "A saved listing was sold",
+  "notifSavedSoldBody": "\"{title}\" has been sold.",
+  "@notifSavedSoldBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifSavedExchangedTitle": "A saved listing was exchanged",
+  "notifSavedExchangedBody": "\"{title}\" has been exchanged.",
+  "@notifSavedExchangedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPostLikedTitle": "Your post got likes",
+  "notifPostLikedBody": "{others, plural, =0{{name} liked your post.} =1{{name} and 1 other liked your post.} other{{name} and {others} others liked your post.}}",
+  "@notifPostLikedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"}
+    }
+  },
+  "notifCommentLikedTitle": "Your comment got likes",
+  "notifCommentLikedBody": "{others, plural, =0{{name} liked your comment.} =1{{name} and 1 other liked your comment.} other{{name} and {others} others liked your comment.}}",
+  "@notifCommentLikedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"}
+    }
+  },
+  "notifPostCommentedTitle": "New comment on your post",
+  "notifPostCommentedBody": "{name} commented: \"{text}\"",
+  "@notifPostCommentedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "notifCommentRepliedTitle": "New reply to your comment",
+  "notifCommentRepliedBody": "{name} replied: \"{text}\"",
+  "@notifCommentRepliedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "notifChatManyTitle": "{name} ({count} new messages)",
+  "@notifChatManyTitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "feedPostUnavailable": "This post is no longer available."
 }

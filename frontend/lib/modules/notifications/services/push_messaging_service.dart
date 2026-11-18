@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:restore/core/config/app_environment.dart';
+import 'package:restore/data/models/enums/notification_type.dart';
 import 'package:restore/data/models/notification_model.dart';
 
 import '../repositories/notification_repository.dart';
@@ -161,6 +162,9 @@ class PushNotification {
 
   String? get link => notification.link;
 
+  /// Tin nhắn chat (chỉ push, không có dòng nào trong trang Thông báo)
+  bool get isChat => notification.type == NotificationType.chatMessage;
+
   static PushNotification? fromRemote(RemoteMessage message) => fromData(
     message.data,
     message.notification?.title,
@@ -173,7 +177,9 @@ class PushNotification {
     String? title,
     String? body,
   ]) {
-    if (data['kind'] != 'notification' || data['notificationId'] == null) {
+    final kind = data['kind'];
+    final chat = kind == 'chat';
+    if (!chat && (kind != 'notification' || data['notificationId'] == null)) {
       return null;
     }
     Object? payload;
@@ -185,7 +191,7 @@ class PushNotification {
     final link = data['link'] as String?;
     return PushNotification(
       notification: NotificationModel.fromJson({
-        'id': data['notificationId'],
+        'id': data['notificationId'] ?? '',
         'type': data['type'],
         'group': data['group'],
         'title': title ?? '',

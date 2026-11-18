@@ -5,6 +5,10 @@ import {
   notifyListingModerated, notifyListingPublished, notifyOrderRejected, notifyPlanActivated, notifyPlanExpired, notifyPlanExpiring,
   notifyPosterReviewed, notifyPromotionEnded, notifyPromotionStarted, notifyTopupFailed, notifyTopupPaid,
 } from './notification.listeners.js';
+import {
+  notifyActivityOnModeration, notifyChatMessage, notifyCommentLiked, notifyFeedCommented, notifyFollowersOnPublish,
+  notifyListingFavorited, notifyListingSold, notifyPostLiked, notifyShopFollowed, notifyUserFollowed, notifyWantedAlertMatched,
+} from './notification.activity.js';
 
 // Admin ra quyết định trên tin → báo người bán
 onListingModerated(notifyListingModerated);
@@ -27,6 +31,18 @@ on('plan.activated', notifyPlanActivated);
 on('plan.expiring', notifyPlanExpiring);
 on('plan.expired', notifyPlanExpired);
 on('poster.reviewed', notifyPosterReviewed);
+// Hoạt động giữa người dùng (mục 3)
+on('wantedAlert.matched', notifyWantedAlertMatched);
+on('chat.messageSent', notifyChatMessage);
+on('user.followed', notifyUserFollowed);
+on('shop.followed', notifyShopFollowed);
+on('listing.favorited', notifyListingFavorited);
+onListingModerated(notifyActivityOnModeration);
+on('listing.published', notifyFollowersOnPublish);
+on('listing.sold', notifyListingSold);
+on('feed.postLiked', notifyPostLiked);
+on('feed.commentLiked', notifyCommentLiked);
+on('feed.commented', notifyFeedCommented);
 
 export { default as notificationRouter } from './notification.route.js';
 export { notify } from './notification.service.js';

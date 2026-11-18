@@ -50,6 +50,16 @@ enum NotificationType {
   wantedAlertMatch('WANTED_ALERT_MATCH', NotificationGroup.activity),
   newFollower('NEW_FOLLOWER', NotificationGroup.activity),
   listingFavorited('LISTING_FAVORITED', NotificationGroup.activity),
+  followedNewListing('FOLLOWED_NEW_LISTING', NotificationGroup.activity),
+  savedListingPriceDrop('SAVED_LISTING_PRICE_DROP', NotificationGroup.activity),
+  savedListingSold('SAVED_LISTING_SOLD', NotificationGroup.activity),
+  feedPostLiked('FEED_POST_LIKED', NotificationGroup.activity),
+  feedPostCommented('FEED_POST_COMMENTED', NotificationGroup.activity),
+  feedCommentReplied('FEED_COMMENT_REPLIED', NotificationGroup.activity),
+  feedCommentLiked('FEED_COMMENT_LIKED', NotificationGroup.activity),
+
+  /// Tin nhắn chat: chỉ đến qua push, không có trong trang Thông báo
+  chatMessage('CHAT_MESSAGE', NotificationGroup.activity),
   system('SYSTEM', NotificationGroup.system),
   unknown('', NotificationGroup.system);
 

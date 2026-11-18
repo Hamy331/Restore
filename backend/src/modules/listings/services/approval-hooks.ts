@@ -29,6 +29,8 @@ export type ListingModeration = {
   scheduled: boolean;
   /** Số xu đã hoàn vào ví khi tin chờ duyệt bị từ chối (2.3 gộp vào thông báo từ chối) */
   refunded?: number;
+  /** Bản sửa được duyệt làm giá giảm khi tin đang hiển thị (3.7): giá cũ, giá mới (VND) */
+  priceDrop?: { from: string; to: string };
 };
 
 export type ListingModeratedHook = (tx: Prisma.TransactionClient, event: ListingModeration) => Promise<void>;

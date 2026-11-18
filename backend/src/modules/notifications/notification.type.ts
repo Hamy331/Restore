@@ -38,10 +38,26 @@ export const NOTIFICATION_TYPES = {
   WANTED_ALERT_MATCH: 'activity',
   NEW_FOLLOWER: 'activity',
   LISTING_FAVORITED: 'activity',
+  FOLLOWED_NEW_LISTING: 'activity',
+  SAVED_LISTING_PRICE_DROP: 'activity',
+  SAVED_LISTING_SOLD: 'activity',
+  FEED_POST_LIKED: 'activity',
+  FEED_POST_COMMENTED: 'activity',
+  FEED_COMMENT_REPLIED: 'activity',
+  FEED_COMMENT_LIKED: 'activity',
   SYSTEM: 'system',
 } as const satisfies Record<string, NotificationGroup>;
 
 export type NotificationType = keyof typeof NOTIFICATION_TYPES;
+
+/**
+ * Loại chỉ hiện trong trang Thông báo (cột Push = Không trong tài liệu luồng): ghi sẵn pushedAt nên job không đẩy lên máy.
+ * Tin nhắn chat (3.2) thì ngược lại: chỉ push, không ghi dòng nào (xem notifyChatMessage).
+ */
+export const IN_APP_ONLY_TYPES: ReadonlySet<NotificationType> = new Set<NotificationType>([
+  'NEW_FOLLOWER', 'LISTING_FAVORITED', 'FOLLOWED_NEW_LISTING', 'SAVED_LISTING_SOLD',
+  'FEED_POST_LIKED', 'FEED_POST_COMMENTED', 'FEED_COMMENT_LIKED',
+]);
 
 /** Các loại thuộc nhóm [group] */
 export const typesOfGroup = (group: NotificationGroup) =>

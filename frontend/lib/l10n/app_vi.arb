@@ -1381,6 +1381,8 @@
     }
   },
   "shopFollow": "Theo dõi",
+  "shopMessage": "Nhắn tin với shop",
+  "shopMessageFailed": "Chưa mở được cuộc trò chuyện, vui lòng thử lại.",
   "shopFollowing": "Đang theo dõi",
   "shopFollowerCount": "{count} theo dõi",
   "@shopFollowerCount": {
@@ -3109,5 +3111,99 @@
   "creditBonusNoExpiry": "Không hết hạn",
   "creditBonusEmpty": "Bạn chưa có xu tặng nào.",
   "creditBonusLoadError": "Chưa tải được xu tặng. Vui lòng thử lại.",
-  "creditBonusTapHint": "Bấm để xem hạn dùng"
+  "creditBonusTapHint": "Bấm để xem hạn dùng",
+  "notifShopFollowerTitle": "Có người theo dõi shop",
+  "notifShopFollowerBody": "{name} vừa theo dõi shop {shop}.",
+  "@notifShopFollowerBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "shop": {"type": "String"}
+    }
+  },
+  "notifFavoritedManyBody": "{name} và {others} người khác đã lưu tin \"{title}\".",
+  "@notifFavoritedManyBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifFollowedListingTitle": "Có tin mới từ người bạn theo dõi",
+  "notifFollowedListingBody": "{name} vừa đăng \"{title}\".",
+  "@notifFollowedListingBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifFollowedShopListingBody": "Shop {name} vừa đăng \"{title}\".",
+  "@notifFollowedShopListingBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifPriceDropTitle": "Tin bạn lưu vừa giảm giá",
+  "notifPriceDropBody": "Tin \"{title}\" giảm từ {from} còn {to}.",
+  "@notifPriceDropBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "notifSavedSoldTitle": "Tin bạn lưu đã bán",
+  "notifSavedSoldBody": "Tin \"{title}\" đã bán.",
+  "@notifSavedSoldBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifSavedExchangedTitle": "Tin bạn lưu đã trao đổi",
+  "notifSavedExchangedBody": "Tin \"{title}\" đã được trao đổi.",
+  "@notifSavedExchangedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPostLikedTitle": "Bài viết của bạn được thích",
+  "notifPostLikedBody": "{others, plural, =0{{name} đã thích bài viết của bạn.} other{{name} và {others} người khác đã thích bài viết của bạn.}}",
+  "@notifPostLikedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"}
+    }
+  },
+  "notifCommentLikedTitle": "Bình luận của bạn được thích",
+  "notifCommentLikedBody": "{others, plural, =0{{name} đã thích bình luận của bạn.} other{{name} và {others} người khác đã thích bình luận của bạn.}}",
+  "@notifCommentLikedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"}
+    }
+  },
+  "notifPostCommentedTitle": "Bài viết của bạn có bình luận mới",
+  "notifPostCommentedBody": "{name} đã bình luận: \"{text}\"",
+  "@notifPostCommentedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "notifCommentRepliedTitle": "Có người trả lời bình luận của bạn",
+  "notifCommentRepliedBody": "{name} đã trả lời: \"{text}\"",
+  "@notifCommentRepliedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "notifChatManyTitle": "{name} ({count} tin nhắn mới)",
+  "@notifChatManyTitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "feedPostUnavailable": "Bài viết không còn hiển thị."
 }

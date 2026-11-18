@@ -4970,6 +4970,18 @@ abstract class AppLocalizations {
   /// **'Follow'**
   String get shopFollow;
 
+  /// No description provided for @shopMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message the shop'**
+  String get shopMessage;
+
+  /// No description provided for @shopMessageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the chat. Please try again.'**
+  String get shopMessageFailed;
+
   /// No description provided for @shopFollowing.
   ///
   /// In en, this message translates to:
@@ -9343,6 +9355,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to see expiry dates'**
   String get creditBonusTapHint;
+
+  /// No description provided for @notifShopFollowerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New shop follower'**
+  String get notifShopFollowerTitle;
+
+  /// No description provided for @notifShopFollowerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} started following {shop}.'**
+  String notifShopFollowerBody(String name, String shop);
+
+  /// No description provided for @notifFavoritedManyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} and {others, plural, =1{1 other} other{{others} others}} saved \"{title}\".'**
+  String notifFavoritedManyBody(String name, int others, String title);
+
+  /// No description provided for @notifFollowedListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New listing from someone you follow'**
+  String get notifFollowedListingTitle;
+
+  /// No description provided for @notifFollowedListingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} just posted \"{title}\".'**
+  String notifFollowedListingBody(String name, String title);
+
+  /// No description provided for @notifFollowedShopListingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop {name} just posted \"{title}\".'**
+  String notifFollowedShopListingBody(String name, String title);
+
+  /// No description provided for @notifPriceDropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved listing dropped in price'**
+  String get notifPriceDropTitle;
+
+  /// No description provided for @notifPriceDropBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" dropped from {from} to {to}.'**
+  String notifPriceDropBody(String title, String from, String to);
+
+  /// No description provided for @notifSavedSoldTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved listing was sold'**
+  String get notifSavedSoldTitle;
+
+  /// No description provided for @notifSavedSoldBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" has been sold.'**
+  String notifSavedSoldBody(String title);
+
+  /// No description provided for @notifSavedExchangedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved listing was exchanged'**
+  String get notifSavedExchangedTitle;
+
+  /// No description provided for @notifSavedExchangedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" has been exchanged.'**
+  String notifSavedExchangedBody(String title);
+
+  /// No description provided for @notifPostLikedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your post got likes'**
+  String get notifPostLikedTitle;
+
+  /// No description provided for @notifPostLikedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{others, plural, =0{{name} liked your post.} =1{{name} and 1 other liked your post.} other{{name} and {others} others liked your post.}}'**
+  String notifPostLikedBody(String name, int others);
+
+  /// No description provided for @notifCommentLikedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your comment got likes'**
+  String get notifCommentLikedTitle;
+
+  /// No description provided for @notifCommentLikedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{others, plural, =0{{name} liked your comment.} =1{{name} and 1 other liked your comment.} other{{name} and {others} others liked your comment.}}'**
+  String notifCommentLikedBody(String name, int others);
+
+  /// No description provided for @notifPostCommentedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New comment on your post'**
+  String get notifPostCommentedTitle;
+
+  /// No description provided for @notifPostCommentedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} commented: \"{text}\"'**
+  String notifPostCommentedBody(String name, String text);
+
+  /// No description provided for @notifCommentRepliedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New reply to your comment'**
+  String get notifCommentRepliedTitle;
+
+  /// No description provided for @notifCommentRepliedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} replied: \"{text}\"'**
+  String notifCommentRepliedBody(String name, String text);
+
+  /// No description provided for @notifChatManyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({count} new messages)'**
+  String notifChatManyTitle(String name, int count);
+
+  /// No description provided for @feedPostUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This post is no longer available.'**
+  String get feedPostUnavailable;
 }
 
 class _AppLocalizationsDelegate

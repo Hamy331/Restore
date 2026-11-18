@@ -16,6 +16,7 @@ import '../utils/notification_presenter.dart';
 /// Nghe push FCM cho cả app (đặt trong main.dart, dưới các provider):
 /// - Push tới khi app đang mở: cập nhật chấm đỏ, hiện banner (bấm để mở).
 /// - Bấm thông báo hệ thống: đánh dấu đã đọc rồi mở route của thông báo.
+/// - Tin nhắn chat: không đụng chấm đỏ thông báo; đang mở đúng cuộc trò chuyện thì không hiện banner.
 class PushNotificationListener extends StatefulWidget {
   const PushNotificationListener({
     super.key,
@@ -58,9 +59,24 @@ class _PushNotificationListenerState extends State<PushNotificationListener> {
     count == null ? badge.refresh() : badge.set(count);
   }
 
+  /// Đang mở đúng trang của push (VD cuộc trò chuyện của tin nhắn)
+  bool _isOnLink(PushNotification push) {
+    final link = push.link;
+    if (link == null) return false;
+    final config = widget.router.routerDelegate.currentConfiguration;
+    // Trang mở bằng push() nằm trên cùng dưới dạng ImperativeRouteMatch
+    final last = config.isEmpty ? null : config.last;
+    final uri = last is ImperativeRouteMatch ? last.matches.uri : config.uri;
+    return uri.toString() == link;
+  }
+
   void _onReceived(PushNotification push) {
     if (!mounted) return;
-    _syncBadge(push);
+    if (push.isChat) {
+      if (_isOnLink(push)) return;
+    } else {
+      _syncBadge(push);
+    }
     // Context của Navigator nằm trên Overlay của nó, nên đưa thẳng overlay
     // cho toastification (app không bọc ToastificationWrapper)
     final navigator = widget.router.routerDelegate.navigatorKey.currentState;
@@ -118,7 +134,10 @@ class _PushNotificationListenerState extends State<PushNotificationListener> {
     final repository = context.read<NotificationRepository>();
     final badge = context.read<NotificationBadgeCubit>();
     final link = push.link;
-    if (link != null && link.startsWith('/')) widget.router.push(link);
+    if (link != null && link.startsWith('/') && !_isOnLink(push)) {
+      widget.router.push(link);
+    }
+    if (push.isChat) return;
     try {
       await repository.markRead(push.notification.id);
     } catch (_) {

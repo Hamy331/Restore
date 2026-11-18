@@ -2761,6 +2761,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopFollow => 'Follow';
 
   @override
+  String get shopMessage => 'Message the shop';
+
+  @override
+  String get shopMessageFailed => 'Couldn\'t open the chat. Please try again.';
+
+  @override
   String get shopFollowing => 'Following';
 
   @override
@@ -5426,4 +5432,114 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get creditBonusTapHint => 'Tap to see expiry dates';
+
+  @override
+  String get notifShopFollowerTitle => 'New shop follower';
+
+  @override
+  String notifShopFollowerBody(String name, String shop) {
+    return '$name started following $shop.';
+  }
+
+  @override
+  String notifFavoritedManyBody(String name, int others, String title) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$others others',
+      one: '1 other',
+    );
+    return '$name and $_temp0 saved \"$title\".';
+  }
+
+  @override
+  String get notifFollowedListingTitle => 'New listing from someone you follow';
+
+  @override
+  String notifFollowedListingBody(String name, String title) {
+    return '$name just posted \"$title\".';
+  }
+
+  @override
+  String notifFollowedShopListingBody(String name, String title) {
+    return 'Shop $name just posted \"$title\".';
+  }
+
+  @override
+  String get notifPriceDropTitle => 'A saved listing dropped in price';
+
+  @override
+  String notifPriceDropBody(String title, String from, String to) {
+    return '\"$title\" dropped from $from to $to.';
+  }
+
+  @override
+  String get notifSavedSoldTitle => 'A saved listing was sold';
+
+  @override
+  String notifSavedSoldBody(String title) {
+    return '\"$title\" has been sold.';
+  }
+
+  @override
+  String get notifSavedExchangedTitle => 'A saved listing was exchanged';
+
+  @override
+  String notifSavedExchangedBody(String title) {
+    return '\"$title\" has been exchanged.';
+  }
+
+  @override
+  String get notifPostLikedTitle => 'Your post got likes';
+
+  @override
+  String notifPostLikedBody(String name, int others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$name and $others others liked your post.',
+      one: '$name and 1 other liked your post.',
+      zero: '$name liked your post.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifCommentLikedTitle => 'Your comment got likes';
+
+  @override
+  String notifCommentLikedBody(String name, int others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$name and $others others liked your comment.',
+      one: '$name and 1 other liked your comment.',
+      zero: '$name liked your comment.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifPostCommentedTitle => 'New comment on your post';
+
+  @override
+  String notifPostCommentedBody(String name, String text) {
+    return '$name commented: \"$text\"';
+  }
+
+  @override
+  String get notifCommentRepliedTitle => 'New reply to your comment';
+
+  @override
+  String notifCommentRepliedBody(String name, String text) {
+    return '$name replied: \"$text\"';
+  }
+
+  @override
+  String notifChatManyTitle(String name, int count) {
+    return '$name ($count new messages)';
+  }
+
+  @override
+  String get feedPostUnavailable => 'This post is no longer available.';
 }

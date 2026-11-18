@@ -115,8 +115,10 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
   }));
   await audit(tx, actorId, 'APPROVE_EDIT', 'LISTING', item.id, reason,
     { title: item.title, edit: 'PENDING' }, { title: revision.title, edit: 'APPROVED' });
+  const priceDrop = item.status === ListingStatus.AVAILABLE && revision.price.lessThan(item.price)
+    ? { from: item.price.toFixed(0), to: revision.price.toFixed(0) } : undefined;
   await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
-    image: revision.images[0] ?? null, action, reason, edit: true, scheduled: false });
+    image: revision.images[0] ?? null, action, reason, edit: true, scheduled: false, priceDrop });
   // Ảnh cũ không còn trong bản mới
   return item.images.filter((url) => !revision.images.includes(url));
 }

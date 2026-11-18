@@ -8,6 +8,7 @@ import { toBannerDto, toShopDto, type ShopDto } from './shop.dto.js';
 import * as shopRepository from './shop.repository.js';
 import type { ShopRecord } from './shop.repository.js';
 import type { ShopListingsQuery } from './shop.validator.js';
+import { emit } from '../../common/events/domain-events.js';
 
 /** Shop mới: xác minh trong 180 ngày gần đây */
 const NEW_SHOP_DAYS = 180;
@@ -119,6 +120,8 @@ export async function listShopListings(viewerId: string | undefined, id: string,
 export async function setFollowing(userId: string, id: string, following: boolean) {
   const shop = await requireShop(userId, id);
   if (shop.ownerId === userId) throw new AppError(409, 'CANNOT_FOLLOW_OWN_SHOP', 'Không thể theo dõi shop của chính mình.');
-  if (following) await shopRepository.follow(userId, id);
-  else await shopRepository.unfollow(userId, id);
+  if (following) {
+    await shopRepository.follow(userId, id);
+    await emit('shop.followed', { userId, shopId: id });
+  } else await shopRepository.unfollow(userId, id);
 }

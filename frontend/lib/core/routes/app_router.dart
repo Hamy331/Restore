@@ -299,7 +299,12 @@ GoRouter createAppRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/feeds', builder: (_, _) => const FeedsView()),
+            // ?post=<id>: mở sẵn bình luận của bài (bấm từ thông báo)
+            GoRoute(
+              path: FeedsView.path,
+              builder: (_, state) =>
+                  FeedsView(openPostId: state.uri.queryParameters['post']),
+            ),
           ],
         ),
         StatefulShellBranch(

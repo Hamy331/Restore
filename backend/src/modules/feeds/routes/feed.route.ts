@@ -5,6 +5,7 @@ export const feedRouter = Router();
 
 feedRouter.get('/feeds', verifyToken, controller.listPosts);
 feedRouter.post('/feeds', verifyToken, controller.createPost);
+feedRouter.get('/feeds/:id', verifyToken, controller.getPost);
 feedRouter.delete('/feeds/:id', verifyToken, controller.deletePost);
 feedRouter.get('/feeds/:id/comments', verifyToken, controller.listComments);
 feedRouter.post('/feeds/:id/comments', verifyToken, controller.createComment);

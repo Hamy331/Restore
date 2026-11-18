@@ -16,6 +16,13 @@ export async function createPost(r: AuthRequest, res: Response, next: NextFuncti
   } catch (error) { next(error); }
 }
 
+export async function getPost(r: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const data = await service.getPost(r.user!.userId, r.params.id as string);
+    res.status(200).json({ success: true, data });
+  } catch (error) { next(error); }
+}
+
 export async function deletePost(r: AuthRequest, res: Response, next: NextFunction) {
   try {
     const data = await service.deletePost(r.user!.userId, r.params.id as string);

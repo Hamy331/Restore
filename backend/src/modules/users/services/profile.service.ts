@@ -6,6 +6,7 @@ import { publish } from '../../chat/services/chat.events.js';
 import { isMediaUrl } from '../../media/media.service.js';
 
 import { profileSelect } from '../repositories/profile.repository.js';
+import { emit } from '../../../common/events/domain-events.js';
 const onlineThresholdMs = 2 * 60 * 1000;
 type ProfileRow = Prisma.UserGetPayload<{ select: typeof profileSelect }>;
 const formatProfile = (user: ProfileRow) => ({
@@ -120,6 +121,7 @@ export const follow = async (selfId: string, targetId: string) => {
   const target = await repository.findTarget(targetId);
   if (!target || target.status !== 'ACTIVE') throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
   await repository.upsertFollow(selfId, targetId);
+  await emit('user.followed', { followerId: selfId, followingId: targetId });
   return { following: true };
 };
 

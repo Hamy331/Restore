@@ -40,6 +40,21 @@ export type DomainEvents = {
   /** Admin duyệt / từ chối poster của shop (2.10) */
   'poster.reviewed': { ownerId: string; posterId: string; title: string; imageUrl: string | null; approved: boolean;
     reason: string | null; note: string | null };
+  /** Tin mới khớp các thông báo "Báo khi có hàng" và đang hiển thị (3.1); mỗi người nhận một dòng (điểm cao nhất) */
+  'wantedAlert.matched': ListingRef & { matches: { userId: string; alertId: string; keywords: string }[] };
+  /** Tin nhắn chat mới (3.2): chỉ push, không ghi trang Thông báo */
+  'chat.messageSent': { conversationId: string; messageId: string; senderId: string; text: string };
+  /** Có người theo dõi tôi / shop của tôi (3.4) */
+  'user.followed': { followerId: string; followingId: string };
+  'shop.followed': { userId: string; shopId: string };
+  /** Có người lưu tin (3.5) */
+  'listing.favorited': { userId: string; listingId: string };
+  /** Người bán đánh dấu đã bán / đã trao đổi (3.7) */
+  'listing.sold': ListingRef & { exchanged: boolean };
+  /** Bảng tin: thích bài, thích bình luận, bình luận / trả lời (3.8) */
+  'feed.postLiked': { userId: string; postId: string };
+  'feed.commentLiked': { userId: string; commentId: string };
+  'feed.commented': { userId: string; postId: string; commentId: string; parentId: string | null; text: string };
 };
 
 export type TopupRef = { userId: string; orderId: string; code: string };

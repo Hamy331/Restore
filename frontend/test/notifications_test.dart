@@ -232,6 +232,144 @@ void main() {
     );
   });
 
+  test('3. activity notifications are localized', () {
+    NotificationModel item(String type, Map<String, dynamic> data) =>
+        NotificationModel.fromJson({
+          'id': type,
+          'type': type,
+          'title': 'server title',
+          'body': 'server text',
+          'data': data,
+          'createdAt': '2026-11-18T10:00:00.000Z',
+        });
+    final vi = AppLocalizationsVi();
+    final en = AppLocalizationsEn();
+    String body(AppLocalizations l, String type, Map<String, dynamic> data) =>
+        NotificationPresenter.body(l, item(type, data));
+    String title(AppLocalizations l, String type, Map<String, dynamic> data) =>
+        NotificationPresenter.title(l, item(type, data));
+
+    expect(
+      body(vi, 'WANTED_ALERT_MATCH', {
+        'listingTitle': 'Đèn bàn',
+        'alertKeywords': 'đèn bàn gỗ',
+      }),
+      'Tin "Đèn bàn" khớp với "đèn bàn gỗ".',
+    );
+    expect(
+      title(en, 'NEW_FOLLOWER', {'userName': 'Lan', 'shopName': 'Nhà Gỗ'}),
+      'New shop follower',
+    );
+    expect(
+      body(vi, 'NEW_FOLLOWER', {'userName': 'Lan', 'shopName': 'Nhà Gỗ'}),
+      'Lan vừa theo dõi shop Nhà Gỗ.',
+    );
+    // Lưu tin gộp: 1 người / nhiều người
+    final saved = {'userName': 'Lan', 'listingTitle': 'Đèn bàn'};
+    expect(
+      body(vi, 'LISTING_FAVORITED', {...saved, 'count': 1}),
+      'Lan đã lưu tin "Đèn bàn".',
+    );
+    expect(
+      body(vi, 'LISTING_FAVORITED', {...saved, 'count': 3}),
+      'Lan và 2 người khác đã lưu tin "Đèn bàn".',
+    );
+    expect(
+      body(en, 'LISTING_FAVORITED', {...saved, 'count': 2}),
+      'Lan and 1 other saved "Đèn bàn".',
+    );
+    expect(
+      body(vi, 'FOLLOWED_NEW_LISTING', {
+        'userName': 'Nhà Gỗ',
+        'listingTitle': 'Kệ sách',
+        'shop': true,
+      }),
+      'Shop Nhà Gỗ vừa đăng "Kệ sách".',
+    );
+    expect(
+      body(vi, 'SAVED_LISTING_PRICE_DROP', {
+        'listingTitle': 'Đèn bàn',
+        'oldPrice': '250000',
+        'price': '199000',
+      }),
+      'Tin "Đèn bàn" giảm từ 250.000 đ còn 199.000 đ.',
+    );
+    expect(
+      title(en, 'SAVED_LISTING_SOLD', {
+        'listingTitle': 'Đèn bàn',
+        'exchanged': true,
+      }),
+      'A saved listing was exchanged',
+    );
+    expect(
+      body(vi, 'SAVED_LISTING_SOLD', {'listingTitle': 'Đèn bàn'}),
+      'Tin "Đèn bàn" đã bán.',
+    );
+    expect(
+      body(en, 'FEED_POST_LIKED', {'userName': 'Lan', 'count': 1}),
+      'Lan liked your post.',
+    );
+    expect(
+      body(en, 'FEED_POST_LIKED', {'userName': 'Lan', 'count': 4}),
+      'Lan and 3 others liked your post.',
+    );
+    expect(
+      body(vi, 'FEED_COMMENT_LIKED', {'userName': 'Lan', 'count': 2}),
+      'Lan và 1 người khác đã thích bình luận của bạn.',
+    );
+    expect(
+      body(vi, 'FEED_COMMENT_REPLIED', {
+        'userName': 'Lan',
+        'commentText': 'Còn hàng không?',
+      }),
+      'Lan đã trả lời: "Còn hàng không?"',
+    );
+    expect(
+      body(en, 'FEED_POST_COMMENTED', {
+        'userName': 'Lan',
+        'commentText': 'Đẹp quá',
+      }),
+      'Lan commented: "Đẹp quá"',
+    );
+    for (final type in [
+      'FOLLOWED_NEW_LISTING',
+      'SAVED_LISTING_PRICE_DROP',
+      'SAVED_LISTING_SOLD',
+      'FEED_POST_LIKED',
+      'FEED_POST_COMMENTED',
+      'FEED_COMMENT_REPLIED',
+      'FEED_COMMENT_LIKED',
+    ]) {
+      expect(item(type, {}).group, NotificationGroup.activity, reason: type);
+      // Thiếu dữ liệu thì dùng câu server
+      expect(body(vi, type, {}), 'server text', reason: type);
+    }
+  });
+
+  test('chat push shows the sender and the latest message', () {
+    final push = PushNotification.fromData(
+      {
+        'kind': 'chat',
+        'notificationId': '',
+        'type': 'CHAT_MESSAGE',
+        'link': '/messages/c-1',
+        'payload': '{"senderName":"Lan","text":"Bàn còn không?","count":2}',
+      },
+      'Lan (2 tin nhắn mới)',
+      'Bàn còn không?',
+    )!;
+    expect(push.isChat, isTrue);
+    expect(push.link, '/messages/c-1');
+    expect(
+      NotificationPresenter.title(AppLocalizationsEn(), push.notification),
+      'Lan (2 new messages)',
+    );
+    expect(
+      NotificationPresenter.body(AppLocalizationsEn(), push.notification),
+      'Bàn còn không?',
+    );
+  });
+
   test('push data from FCM becomes a localized notification', () {
     final push = PushNotification.fromData(
       {
@@ -254,8 +392,8 @@ void main() {
       NotificationPresenter.body(AppLocalizationsEn(), push.notification),
       '"Đèn bàn" is now visible to buyers.',
     );
-    // Push không phải thông báo (VD chat sau này) hoặc payload hỏng
-    expect(PushNotification.fromData({'kind': 'chat'}), isNull);
+    // Push không phải thông báo hoặc payload hỏng
+    expect(PushNotification.fromData({'kind': 'other'}), isNull);
     final broken = PushNotification.fromData(
       {
         'kind': 'notification',
@@ -399,6 +537,10 @@ void main() {
           path: '/listings/:id',
           builder: (_, state) => Text('listing ${state.pathParameters['id']}'),
         ),
+        GoRoute(
+          path: '/messages/:id',
+          builder: (_, state) => Text('chat ${state.pathParameters['id']}'),
+        ),
       ],
     );
     addTearDown(router.dispose);
@@ -454,6 +596,30 @@ void main() {
     expect(find.text('listing l-001'), findsOneWidget);
     // n-01 trong dữ liệu mẫu chưa đọc: bấm banner thì đánh dấu đã đọc
     expect(badge.state, 2);
+
+    // Tin nhắn chat: hiện banner nhưng không đụng chấm đỏ thông báo, bấm thì mở cuộc trò chuyện
+    PushNotification chat(String text) => PushNotification.fromData({
+      'kind': 'chat',
+      'type': 'CHAT_MESSAGE',
+      'link': '/messages/c-1',
+      'payload': '{"senderName":"Lan","text":"$text","count":1}',
+    })!;
+    push.addReceivedForTest(chat('Bàn còn không?'));
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    expect(find.text('Bàn còn không?'), findsOneWidget);
+    expect(badge.state, 2);
+    await tester.tap(find.text('Lan'));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(const Duration(seconds: 6));
+    expect(find.text('chat c-1'), findsOneWidget);
+    // Đang mở đúng cuộc trò chuyện: không hiện banner
+    push.addReceivedForTest(chat('Mình lấy nhé'));
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    expect(find.text('Mình lấy nhé'), findsNothing);
     await push.dispose();
   });
 }

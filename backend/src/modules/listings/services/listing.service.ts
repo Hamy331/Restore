@@ -208,6 +208,7 @@ export async function discardRevision(ownerId: string, id: string) {
 /** Ẩn, hiện lại, đánh dấu đã bán / đã trao đổi */
 export async function changeStatus(ownerId: string, id: string, target: ListingStatus, payWithCredits = false) {
   let dropped: string[] = [];
+  let sold: { title: string; image: string | null } | null = null;
   const listing = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const current = await requireOwnedListing(tx, id, ownerId);
@@ -249,10 +250,15 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
     if (target === ListingStatus.SOLD || target === ListingStatus.EXCHANGED) {
       const revision = await listingRepository.deleteRevision(tx, id);
       dropped = revisionOnlyImages(revision?.images ?? [], current.images);
+      sold = { title: current.title, image: current.images[0] ?? null };
     }
     return listingRepository.findSelected(tx, id);
   });
   await removeStoredImages(dropped);
+  // 3.7: báo người đã lưu tin
+  // Gán trong callback của transaction nên TS không thu hẹp được kiểu
+  const soldInfo = sold as { title: string; image: string | null } | null;
+  if (soldInfo) await emit('listing.sold', { listingId: id, ownerId, ...soldInfo, exchanged: target === ListingStatus.EXCHANGED });
   return toOwnerListingDto(listing);
 }
 

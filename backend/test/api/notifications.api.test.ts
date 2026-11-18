@@ -334,3 +334,142 @@ test('notifications: wallet, boost, plan and poster flows', async () => {
   assert.equal(wallet.body.data.length, 12);
   assert.ok(wallet.body.data.every((item: { group: string }) => item.group === 'wallet'));
 });
+
+/**
+ * Mục 3 (hoạt động giữa người dùng): tin khớp "Báo khi có hàng", chat chỉ push, theo dõi người / shop,
+ * lưu tin (gộp), người theo dõi đăng tin mới (1 lần/ngày), tin đã lưu giảm giá / đã bán, bảng tin thích / bình luận / trả lời.
+ */
+test('notifications: activity flows between users', async () => {
+  const { api, tokens } = ctx;
+  const { prisma } = await import('../../src/lib/prisma.js');
+  const push = await import('../../src/modules/notifications/notification.push.js');
+  const profile = await import('../../src/modules/users/services/profile.service.js');
+  const shops = await import('../../src/modules/shops/shop.service.js');
+  const favorites = await import('../../src/modules/listings/services/favorite.service.js');
+  const listings = await import('../../src/modules/listings/services/listing.service.js');
+  const feed = await import('../../src/modules/feeds/services/feed.service.js');
+  const { notifyActivityOnModeration } = await import('../../src/modules/notifications/notification.activity.js');
+  const of = (userId: string, type: string) => prisma.notification.findMany({ where: { userId, type }, orderBy: { createdAt: 'asc' } });
+  const data = (row: { data: unknown }) => row.data as Record<string, unknown>;
+  await prisma.user.upsert({ where: { id: 'user-third' }, update: {},
+    create: { id: 'user-third', email: 'third@restore.test', username: 'third', fullName: 'Người Thứ Ba', status: 'ACTIVE' } });
+  const seller = await prisma.user.findUniqueOrThrow({ where: { id: 'user-seller' }, select: { fullName: true } });
+  const buyer = await prisma.user.findUniqueOrThrow({ where: { id: 'user-buyer' }, select: { fullName: true } });
+  const shop = await prisma.shop.upsert({ where: { ownerId: 'user-seller' }, update: {},
+    create: { ownerId: 'user-seller', name: 'Shop người bán', verificationType: 'CERTIFIED', verifiedAt: new Date(), categoryIds: ['other'] },
+    select: { id: true, name: true } });
+
+  // 3.4 theo dõi người bán (bỏ rồi theo dõi lại không báo thêm) và theo dõi shop
+  await profile.follow('user-buyer', 'user-seller');
+  await profile.unfollow('user-buyer', 'user-seller');
+  await profile.follow('user-buyer', 'user-seller');
+  await shops.setFollowing('user-third', shop.id, true);
+  const followers = await of('user-seller', 'NEW_FOLLOWER');
+  assert.equal(followers.length, 2);
+  assert.deepEqual([followers[0].body, followers[0].link, followers[0].pushedAt !== null],
+    [`${buyer.fullName} vừa theo dõi bạn.`, '/users/user-buyer', true]);
+  assert.equal(data(followers[1]).shopName, shop.name);
+
+  // 3.1 + 3.6: tin mới khớp "Báo khi có hàng" của buyer; người theo dõi người bán / shop được báo một lần mỗi ngày
+  await prisma.wantedAlert.create({ data: { userId: 'user-buyer', keywords: 'đèn bàn gỗ' } });
+  // Tạo thẳng tin chờ duyệt (người bán đã hết suất đăng miễn phí ở các test trước)
+  const submitListing = async (title: string) => {
+    const row = await prisma.listing.create({ data: { ownerId: 'user-seller', categoryId: 'other', title,
+      description: 'Mô tả đủ dài cho tin đăng thử nghiệm.', price: 250_000, condition: 'USED_GOOD', status: 'PENDING',
+      images: ['/api/v1/listings/media/den.jpg'], location: { provinceCode: '79', wardCode: '26740' }, publishedAt: new Date() } });
+    return { id: row.id, updatedAt: row.updatedAt.toISOString() };
+  };
+  const lamp = await submitListing('Đèn bàn gỗ sồi');
+  await api.post(`/listings/admin/${lamp.id}/decision`, { token: tokens.admin, body: { decision: 'APPROVED', updatedAt: lamp.updatedAt } });
+  const second = await submitListing('Ghế đẩu nhựa');
+  await api.post(`/listings/admin/${second.id}/decision`, { token: tokens.admin, body: { decision: 'APPROVED', updatedAt: second.updatedAt } });
+  const matched = await of('user-buyer', 'WANTED_ALERT_MATCH');
+  assert.equal(matched.length, 1);
+  assert.deepEqual([data(matched[0]).alertKeywords, matched[0].link, matched[0].pushedAt], ['đèn bàn gỗ', `/listings/${lamp.id}`, null]);
+  for (const userId of ['user-buyer', 'user-third']) {
+    const fresh = await of(userId, 'FOLLOWED_NEW_LISTING');
+    assert.equal(fresh.length, 1, `${userId}: một lần mỗi ngày`);
+    assert.deepEqual([fresh[0].body, data(fresh[0]).shop], [`Shop ${shop.name} vừa đăng "Đèn bàn gỗ sồi".`, true]);
+  }
+
+  // 3.5 lưu tin: gộp vào một thông báo chưa đọc, người đã có trong nhóm không tính lại
+  await favorites.addFavorite('user-buyer', lamp.id);
+  await favorites.addFavorite('user-third', lamp.id);
+  await favorites.removeFavorite('user-buyer', lamp.id);
+  await favorites.addFavorite('user-buyer', lamp.id);
+  let saved = await of('user-seller', 'LISTING_FAVORITED');
+  assert.equal(saved.length, 1);
+  assert.deepEqual([data(saved[0]).count, saved[0].body], [2, `Người Thứ Ba và 1 người khác đã lưu tin "Đèn bàn gỗ sồi".`]);
+  // Đã đọc thì người mới mở nhóm mới
+  await prisma.notification.update({ where: { id: saved[0].id }, data: { readAt: new Date() } });
+  await favorites.addFavorite('user-buyer', lamp.id);
+  assert.equal((await of('user-seller', 'LISTING_FAVORITED')).length, 1, 'người cũ lưu lại không báo');
+  await favorites.addFavorite('user-third', second.id);
+  saved = await of('user-seller', 'LISTING_FAVORITED');
+  assert.equal(saved.length, 2);
+
+  // 3.7 tin đã lưu giảm giá (bản sửa được duyệt) có push; đã bán không push
+  await prisma.$transaction((tx) => notifyActivityOnModeration(tx, { listingId: lamp.id, ownerId: 'user-seller', title: 'Đèn bàn gỗ sồi',
+    image: null, action: 'APPROVE', reason: '', edit: true, scheduled: false, priceDrop: { from: '250000', to: '199000' } }));
+  const drops = await of('user-third', 'SAVED_LISTING_PRICE_DROP');
+  assert.deepEqual([drops.length, data(drops[0]).price, drops[0].pushedAt], [1, '199000', null]);
+  assert.equal((await of('user-buyer', 'SAVED_LISTING_PRICE_DROP')).length, 1);
+  await listings.changeStatus('user-seller', lamp.id, 'SOLD');
+  const sold = await of('user-buyer', 'SAVED_LISTING_SOLD');
+  assert.deepEqual([sold.length, sold[0].body, sold[0].pushedAt !== null], [1, 'Tin "Đèn bàn gỗ sồi" đã bán.', true]);
+
+  // 3.8 bảng tin: thích bài (gộp), bình luận bài, trả lời bình luận (có push), thích bình luận
+  const post = await prisma.feedPost.create({ data: { authorId: 'user-seller', text: 'Mới dọn nhà, ai cần đồ cũ không?' } });
+  await feed.likePost('user-buyer', post.id, true);
+  await feed.likePost('user-third', post.id, true);
+  await feed.likePost('user-seller', post.id, true);
+  const liked = await of('user-seller', 'FEED_POST_LIKED');
+  assert.deepEqual([liked.length, data(liked[0]).count, liked[0].link], [1, 2, `/feeds?post=${post.id}`]);
+  const comment = await feed.createComment('user-buyer', post.id, { text: 'Mình cần cái bàn' });
+  await feed.createComment('user-seller', post.id, { text: 'Bạn nhắn mình nhé', parentId: comment.id });
+  await feed.createComment('user-third', post.id, { text: 'Mình cũng cần', parentId: comment.id });
+  await feed.likeComment('user-third', comment.id, true);
+  const commented = await of('user-seller', 'FEED_POST_COMMENTED');
+  assert.deepEqual(commented.map((row) => data(row).commentText), ['Mình cần cái bàn', 'Mình cũng cần']);
+  const replies = await of('user-buyer', 'FEED_COMMENT_REPLIED');
+  assert.deepEqual(replies.map((row) => row.body), [`${seller.fullName} đã trả lời: "Bạn nhắn mình nhé"`,
+    'Người Thứ Ba đã trả lời: "Mình cũng cần"']);
+  assert.ok(replies.every((row) => row.pushedAt === null), 'trả lời bình luận có push');
+  assert.equal((await of('user-buyer', 'FEED_COMMENT_LIKED')).length, 1);
+  const detail = await api.get(`/feeds/${post.id}`, { token: tokens.buyer });
+  assert.deepEqual([detail.status, detail.body.data.id], [200, post.id]);
+  assert.equal((await api.get('/feeds/00000000-0000-4000-8000-000000000999', { token: tokens.buyer })).status, 404);
+
+  // 3.2 chat: chỉ push cho người còn lại, không ghi trang Thông báo; cùng cuộc trò chuyện dùng chung tag
+  await prisma.pushDevice.create({ data: { userId: 'user-buyer', token: 'buyer-chat-phone', platform: 'android' } });
+  const sent: { token: string; title: string; body: string; data: Record<string, string> }[] = [];
+  push.setPushSenderForTest(async (token, message) => {
+    sent.push({ token, title: message.title, body: message.body, data: message.data });
+    return 'ok';
+  });
+  try {
+    const conversation = await api.post('/conversations', { token: tokens.seller, body: { recipientId: 'user-buyer' } });
+    const conversationId = conversation.body.data.id;
+    // Nhắn từ trang tin (listingId): người nhận là người đăng, cùng cuộc trò chuyện
+    const fromListing = await api.post('/conversations', { token: tokens.buyer, body: { listingId: lamp.id } });
+    assert.equal(fromListing.body.data?.id, conversationId);
+    const missing = await api.post('/conversations', { token: tokens.buyer, body: { listingId: 'khong-co' } });
+    assert.equal(missing.status, 404);
+    const before = await prisma.notification.count();
+    for (const [index, text] of ['Chào bạn', 'Bàn còn không?'].entries()) {
+      await api.post(`/conversations/${conversationId}/messages`, { token: tokens.seller,
+        body: { clientId: `00000000-0000-4000-8000-00000000000${index}`, text } });
+    }
+    for (let i = 0; i < 50 && sent.filter((item) => item.token === 'buyer-chat-phone').length < 2; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    const chat = sent.filter((item) => item.token === 'buyer-chat-phone');
+    assert.equal(chat.length, 2);
+    assert.deepEqual([chat[1].title, chat[1].body, chat[1].data.kind, chat[1].data.tag, chat[1].data.link],
+      [`${seller.fullName} (2 tin nhắn mới)`, 'Bàn còn không?', 'chat', `chat:${conversationId}`, `/messages/${conversationId}`]);
+    assert.ok(sent.every((item) => item.data.kind === 'chat'), 'không push nhầm cho người gửi hay thông báo khác');
+    assert.equal(await prisma.notification.count(), before, 'chat không ghi trang Thông báo');
+  } finally {
+    push.setPushSenderForTest(null);
+  }
+});

@@ -1,11 +1,13 @@
 import { AppError } from '../../../common/errors/app-error.js';
 import { FavoritesQuery, toListingDto } from '../listing.dto.js';
 import * as favoriteRepository from '../repositories/favorite.repository.js';
+import { emit } from '../../../common/events/domain-events.js';
 
 export async function addFavorite(userId: string, listingId: string) {
   const listing = await favoriteRepository.findVisibleListingId(listingId);
   if (!listing) throw new AppError(404, 'LISTING_NOT_FOUND', 'Tin không còn hiển thị.');
   await favoriteRepository.upsertFavorite(userId, listing.id);
+  await emit('listing.favorited', { userId, listingId: listing.id });
   return { listingId: listing.id, isFavorite: true };
 }
 

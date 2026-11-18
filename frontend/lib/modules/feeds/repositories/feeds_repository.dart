@@ -16,6 +16,9 @@ abstract class FeedsRepository {
     String? cursor,
   });
   Future<FeedPost> publish(String text, String? imageUrl);
+
+  /// Một bài (mở từ thông báo); bài đã xoá / ẩn thì lỗi 404
+  Future<FeedPost> post(String id);
   Future<void> delete(String postId);
   Future<LikeResult> likePost(String id, bool value);
   Future<LikeResult> likeComment(String id, bool value);
@@ -65,6 +68,10 @@ class ApiFeedsRepository implements FeedsRepository {
         FeedPost.fromJson(Map<String, dynamic>.from(j)),
     ], data['nextCursor']);
   }
+
+  @override
+  Future<FeedPost> post(String id) async =>
+      FeedPost.fromJson(await _get('/feeds/$id'));
 
   @override
   Future<FeedPost> publish(String text, String? imageUrl) async =>

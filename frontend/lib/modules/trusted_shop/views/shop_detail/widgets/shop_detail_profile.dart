@@ -21,11 +21,15 @@ class ShopDetailProfile extends StatelessWidget {
   final VoidCallback onFollowTap;
   final VoidCallback onCertificateTap;
 
+  /// Nhắn tin với chủ shop
+  final VoidCallback onMessageTap;
+
   const ShopDetailProfile({
     super.key,
     required this.item,
     required this.onFollowTap,
     required this.onCertificateTap,
+    required this.onMessageTap,
   });
 
   static const double _coverHeight = 120;
@@ -70,11 +74,20 @@ class ShopDetailProfile extends StatelessWidget {
                 Positioned(
                   right: 0,
                   bottom: 0,
-                  child: ShopFollowButton(
-                    following: item.isFollowing,
-                    accent: accent,
-                    large: true,
-                    onTap: onFollowTap,
+                  child: Row(
+                    children: [
+                      _MessageButton(
+                        tooltip: l10n.shopMessage,
+                        onTap: onMessageTap,
+                      ),
+                      const SizedBox(width: 8),
+                      ShopFollowButton(
+                        following: item.isFollowing,
+                        accent: accent,
+                        large: true,
+                        onTap: onFollowTap,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -439,6 +452,33 @@ class _ExpandableDescriptionState extends State<_ExpandableDescription> {
           ],
         );
       },
+    );
+  }
+}
+
+/// Nút tròn nhắn tin với shop, cao bằng nút theo dõi lớn (40)
+class _MessageButton extends StatelessWidget {
+  final String tooltip;
+  final VoidCallback onTap;
+
+  const _MessageButton({required this.tooltip, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: AppColors.surface,
+        shape: const CircleBorder(side: BorderSide(color: AppColors.border)),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: const SizedBox.square(
+            dimension: 40,
+            child: Icon(AppIcons.chat, size: 18, color: AppColors.textPrimary),
+          ),
+        ),
+      ),
     );
   }
 }

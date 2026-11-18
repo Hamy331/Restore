@@ -2704,6 +2704,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get shopFollow => 'Theo dõi';
 
   @override
+  String get shopMessage => 'Nhắn tin với shop';
+
+  @override
+  String get shopMessageFailed =>
+      'Chưa mở được cuộc trò chuyện, vui lòng thử lại.';
+
+  @override
   String get shopFollowing => 'Đang theo dõi';
 
   @override
@@ -5329,4 +5336,106 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get creditBonusTapHint => 'Bấm để xem hạn dùng';
+
+  @override
+  String get notifShopFollowerTitle => 'Có người theo dõi shop';
+
+  @override
+  String notifShopFollowerBody(String name, String shop) {
+    return '$name vừa theo dõi shop $shop.';
+  }
+
+  @override
+  String notifFavoritedManyBody(String name, int others, String title) {
+    return '$name và $others người khác đã lưu tin \"$title\".';
+  }
+
+  @override
+  String get notifFollowedListingTitle => 'Có tin mới từ người bạn theo dõi';
+
+  @override
+  String notifFollowedListingBody(String name, String title) {
+    return '$name vừa đăng \"$title\".';
+  }
+
+  @override
+  String notifFollowedShopListingBody(String name, String title) {
+    return 'Shop $name vừa đăng \"$title\".';
+  }
+
+  @override
+  String get notifPriceDropTitle => 'Tin bạn lưu vừa giảm giá';
+
+  @override
+  String notifPriceDropBody(String title, String from, String to) {
+    return 'Tin \"$title\" giảm từ $from còn $to.';
+  }
+
+  @override
+  String get notifSavedSoldTitle => 'Tin bạn lưu đã bán';
+
+  @override
+  String notifSavedSoldBody(String title) {
+    return 'Tin \"$title\" đã bán.';
+  }
+
+  @override
+  String get notifSavedExchangedTitle => 'Tin bạn lưu đã trao đổi';
+
+  @override
+  String notifSavedExchangedBody(String title) {
+    return 'Tin \"$title\" đã được trao đổi.';
+  }
+
+  @override
+  String get notifPostLikedTitle => 'Bài viết của bạn được thích';
+
+  @override
+  String notifPostLikedBody(String name, int others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$name và $others người khác đã thích bài viết của bạn.',
+      zero: '$name đã thích bài viết của bạn.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifCommentLikedTitle => 'Bình luận của bạn được thích';
+
+  @override
+  String notifCommentLikedBody(String name, int others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$name và $others người khác đã thích bình luận của bạn.',
+      zero: '$name đã thích bình luận của bạn.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifPostCommentedTitle => 'Bài viết của bạn có bình luận mới';
+
+  @override
+  String notifPostCommentedBody(String name, String text) {
+    return '$name đã bình luận: \"$text\"';
+  }
+
+  @override
+  String get notifCommentRepliedTitle => 'Có người trả lời bình luận của bạn';
+
+  @override
+  String notifCommentRepliedBody(String name, String text) {
+    return '$name đã trả lời: \"$text\"';
+  }
+
+  @override
+  String notifChatManyTitle(String name, int count) {
+    return '$name ($count tin nhắn mới)';
+  }
+
+  @override
+  String get feedPostUnavailable => 'Bài viết không còn hiển thị.';
 }

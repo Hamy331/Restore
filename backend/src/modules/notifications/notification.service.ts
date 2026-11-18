@@ -4,7 +4,9 @@ import { prisma } from '../../lib/prisma.js';
 import { ListQuery, NotificationIdParams, toNotificationDto } from './notification.dto.js';
 import { schedulePushDispatch } from './notification.push.js';
 import * as notificationRepository from './notification.repository.js';
-import { MAX_NOTIFICATIONS_PER_USER, NotificationType, typesOfGroup } from './notification.type.js';
+import { IN_APP_ONLY_TYPES, MAX_NOTIFICATIONS_PER_USER, NotificationType, typesOfGroup } from './notification.type.js';
+
+export type NotificationData = Record<string, string | number | boolean | null>;
 
 /** Một thông báo cần gửi (xem notify) */
 export type NotificationInput = {
@@ -13,7 +15,7 @@ export type NotificationInput = {
   /** Câu tiếng Việt dự phòng; app tự dựng câu theo type + data khi biết loại này */
   title: string;
   body: string;
-  data?: Record<string, string | number | boolean | null>;
+  data?: NotificationData;
   imageUrl?: string | null;
   /** Route trong app khi bấm, VD /listings/<id> */
   link?: string | null;
@@ -66,6 +68,7 @@ export async function notify(inputs: NotificationInput | NotificationInput[], tx
   const list = Array.isArray(inputs) ? inputs : [inputs];
   if (!list.length) return;
   const db = tx ?? prisma;
+  const now = new Date();
   const { count } = await notificationRepository.createMany(db, list.map((input) => ({
     userId: input.userId,
     type: input.type,
@@ -75,9 +78,61 @@ export async function notify(inputs: NotificationInput | NotificationInput[], tx
     imageUrl: input.imageUrl ?? null,
     link: input.link ? input.link.slice(0, 300) : null,
     dedupeKey: input.dedupeKey ? input.dedupeKey.slice(0, 160) : null,
+    // Loại chỉ hiện trong app: coi như đã push
+    pushedAt: IN_APP_ONLY_TYPES.has(input.type) ? now : null,
   })));
   // Toàn bộ là bản trùng (đã gửi trước đó) thì không có gì mới
   if (!count) return;
   await notificationRepository.trim(db, [...new Set(list.map((input) => input.userId))], MAX_NOTIFICATIONS_PER_USER);
   schedulePushDispatch();
+}
+
+/** Thông báo gộp nhiều người (VD "Lan và 2 người khác đã lưu tin"), xem notifyGrouped */
+export type GroupedInput = Omit<NotificationInput, 'dedupeKey' | 'body'> & {
+  /** Khoá nhóm, VD fav:<listingId>; mỗi người nhận có tối đa một thông báo chưa đọc cho một khoá */
+  groupKey: string;
+  /** Người vừa làm hành động: đã có trong nhóm thì không tính thêm */
+  actorId: string;
+  /** Câu tiếng Việt dự phòng theo số người trong nhóm */
+  body: (count: number) => string;
+};
+
+/** Số người tối đa nhớ trong một nhóm (để không tính trùng); nhóm lớn hơn vẫn đếm tiếp */
+const MAX_GROUP_ACTORS = 50;
+
+/**
+ * Gộp hành động lặp lại vào một thông báo: người nhận còn thông báo chưa đọc cùng [groupKey] thì cập nhật nó
+ * (count + 1, người mới nhất, đưa lên đầu), đã đọc thì bắt đầu nhóm mới. Không đi qua transaction của nghiệp vụ.
+ */
+export async function notifyGrouped(input: GroupedInput) {
+  const { groupKey, actorId, body, ...rest } = input;
+  const key = groupKey.slice(0, 160);
+  const existing = await prisma.notification.findFirst({
+    where: { userId: rest.userId, dedupeKey: key }, select: { id: true, readAt: true, data: true },
+  });
+  if (existing && !existing.readAt) {
+    const data = (existing.data ?? {}) as NotificationData;
+    const actors = String(data.actorIds ?? '').split(',').filter(Boolean);
+    if (actors.includes(actorId)) return;
+    const count = (Number(data.count) || actors.length || 1) + 1;
+    await prisma.notification.update({
+      where: { id: existing.id },
+      data: {
+        title: clip(rest.title, 160),
+        body: clip(body(count), 500),
+        data: { ...rest.data, count, actorIds: [actorId, ...actors].slice(0, MAX_GROUP_ACTORS).join(',') },
+        imageUrl: rest.imageUrl ?? null,
+        link: rest.link ? rest.link.slice(0, 300) : null,
+        createdAt: new Date(),
+      },
+    });
+    return;
+  }
+  // Nhóm cũ đã đọc: người này đã có trong nhóm thì thôi, không thì nhả khoá cho nhóm mới
+  if (existing) {
+    const actors = String(((existing.data ?? {}) as NotificationData).actorIds ?? '').split(',');
+    if (actors.includes(actorId)) return;
+    await prisma.notification.update({ where: { id: existing.id }, data: { dedupeKey: null } });
+  }
+  await notify({ ...rest, body: body(1), data: { ...rest.data, count: 1, actorIds: actorId }, dedupeKey: key });
 }

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_bar.dart';
@@ -86,6 +89,31 @@ class _ShopDetailMobileViewState extends State<ShopDetailMobileView> {
       return;
     }
     context.pop(_followChanged ? following : null);
+  }
+
+  bool _openingChat = false;
+
+  /// Mở (hoặc tạo) cuộc trò chuyện với chủ shop
+  Future<void> _openChat() async {
+    final shop = context.read<ShopDetailCubit>().state.shop?.shop;
+    if (shop == null || _openingChat) return;
+    _openingChat = true;
+    final ChatRepository repository = AppEnvironment.useMockData
+        ? MockChatRepository()
+        : ApiChatRepository();
+    try {
+      final id = await repository.startConversation(shop.ownerId);
+      if (mounted) await context.push('/messages/$id');
+    } catch (_) {
+      if (mounted) {
+        TSnackBarHelper.showError(
+          context,
+          message: AppLocalizations.of(context)!.shopMessageFailed,
+        );
+      }
+    } finally {
+      _openingChat = false;
+    }
   }
 
   void _showCertificate() {
@@ -260,6 +288,7 @@ class _ShopDetailMobileViewState extends State<ShopDetailMobileView> {
                 item: shop,
                 onFollowTap: cubit.toggleFollow,
                 onCertificateTap: _showCertificate,
+                onMessageTap: _openChat,
               ),
       ),
       if (shop != null && state.banners.isNotEmpty) ...[

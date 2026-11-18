@@ -105,9 +105,6 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
     if (mounted) await _cubit.refresh();
   }
 
-  void _comingSoon() =>
-      TSnackBarHelper.showInfo(context, message: _l10n.featureComingSoon);
-
   void _openChat(String conversationId) =>
       context.push('/messages/$conversationId');
 
@@ -294,8 +291,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
         ProductDetailSellerCard(
           seller: detail.seller,
           activeListings: detail.sellerActiveListings,
-          // TODO: mở trang người bán khi có route hồ sơ công khai
-          onTap: _comingSoon,
+          onTap: () => context.push('/users/${detail.seller.id}'),
         ),
       ProductDetailDescription(description: detail.listing.description),
       if (category != null && category.attributes.isNotEmpty)

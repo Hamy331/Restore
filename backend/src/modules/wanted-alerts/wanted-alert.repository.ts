@@ -112,7 +112,7 @@ export const findListingForMatching = (tx: Db, id: string) =>
     where: { id },
     select: {
       id: true, ownerId: true, title: true, description: true, price: true, condition: true,
-      allowSale: true, allowExchange: true, categoryId: true, location: true,
+      allowSale: true, allowExchange: true, categoryId: true, location: true, status: true, images: true,
     },
   });
 
@@ -125,7 +125,7 @@ export const findCandidateAlerts = (tx: Db, listing: { ownerId: string; category
       OR: [{ categoryId: null }, ...(listing.categoryId ? [{ categoryId: listing.categoryId }] : [])],
     },
     select: {
-      id: true, keywords: true, matchLevel: true, categoryId: true, minPrice: true, maxPrice: true,
+      id: true, userId: true, keywords: true, matchLevel: true, categoryId: true, minPrice: true, maxPrice: true,
       conditions: true, dealTypes: true, areaCode: true, areaLevel: true, createdAt: true,
     },
   });
@@ -139,3 +139,11 @@ export async function saveMatches(tx: Db, listingId: string, matches: { alertId:
   });
   await tx.wantedAlert.updateMany({ where: { id: { in: matches.map((match) => match.alertId) } }, data: { lastMatchedAt: at } });
 }
+
+/** Các thông báo đã khớp tin [listingId] (người đặt còn hoạt động), điểm cao trước */
+export const findMatchesOfListing = (listingId: string) =>
+  prisma.wantedAlertMatch.findMany({
+    where: { listingId, alert: { user: { status: 'ACTIVE' } } },
+    orderBy: { score: 'desc' },
+    select: { alert: { select: { id: true, userId: true, keywords: true } } },
+  });
