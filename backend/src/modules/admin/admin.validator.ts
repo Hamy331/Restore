@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { choice, integer, object, page, text, version } from '../../common/validation/admin-input.js';
-import { DEFAULT_SUSPEND_DAYS, USER_ACTIONS } from './admin.type.js';
+import { DEFAULT_SUSPEND_DAYS, MEMBER_TYPES, USER_ACTIONS } from './admin.type.js';
 
 /* Đầu vào của module admin; lỗi INVALID_ADMIN_INPUT / INVALID_QUERY như API cũ */
 
@@ -15,6 +15,8 @@ export const userListQuery = z.record(z.string(), z.unknown()).transform((query)
   details: query.details === '1',
   q: query.q ? { name: text(query.q, 'q', 1, 100), email: String(query.q) } : undefined,
   status: query.status ? choice(query.status, ['UNVERIFIED', 'ACTIVE', 'SUSPENDED', 'BANNED'] as const) : undefined,
+  /** Phân loại: gói đang dùng (Cá nhân / Bán chuyên / Cửa hàng) hoặc tài khoản quản trị (chỉ xem) */
+  type: query.type ? choice(query.type, MEMBER_TYPES) : undefined,
   page: page(query.page),
 }));
 

@@ -28,6 +28,44 @@ test('admin: users', async () => {
   expect('restore user', await api.post(`/admin/users/${seller.id}/action`, { token: tokens.admin, body: { action: 'RESTORE', reason: 'Đã khắc phục vi phạm', updatedAt: after.body.data.items[0].updatedAt } }));
 });
 
+test('admin: member types', async () => {
+  const { api, tokens } = ctx;
+  const { prisma } = await import('../../src/lib/prisma.js');
+  const list = async (query: string) => (await api.get(`/admin/users?details=1&${query}`, { token: tokens.admin })).body.data;
+  const all = await list('');
+  const { PERSONAL, BASIC, PRO, ADMIN } = all.counts;
+  assert.equal(PERSONAL + BASIC + PRO, all.total, 'tất cả = cá nhân + bán chuyên + cửa hàng');
+  assert.ok(ADMIN >= 1);
+  assert.ok(all.items.every((item: { role: string }) => item.role === 'USER'), 'mặc định không lẫn admin');
+  const admins = await list('type=ADMIN');
+  assert.equal(admins.total, ADMIN);
+  assert.ok(admins.items.every((item: { role: string }) => item.role === 'ADMIN'));
+  // Cho người bán gói Cửa hàng còn hạn: chuyển từ Cá nhân sang Cửa hàng; hết hạn thì về lại Cá nhân
+  const pro = await prisma.storePackage.findFirstOrThrow({ where: { tier: 'PRO' } });
+  const category = await prisma.category.findFirstOrThrow();
+  const before = await prisma.storeSubscription.findUnique({ where: { userId: 'user-seller' } });
+  const endsAt = new Date(Date.now() + 86_400_000);
+  await prisma.storeSubscription.upsert({ where: { userId: 'user-seller' },
+    create: { userId: 'user-seller', packageId: pro.id, categoryId: category.id, endsAt }, update: { packageId: pro.id, endsAt } });
+  try {
+    const shops = await list('type=PRO&q=user-seller');
+    assert.deepEqual(shops.items.map((item: { id: string; planTier: string }) => [item.id, item.planTier]), [['user-seller', 'PRO']]);
+    assert.equal((await list('type=PERSONAL&q=user-seller')).total, 0);
+    await prisma.storeSubscription.update({ where: { userId: 'user-seller' }, data: { endsAt: new Date(Date.now() - 1000) } });
+    const personal = await list('type=PERSONAL&q=user-seller');
+    assert.deepEqual(personal.items.map((item: { planTier: string }) => item.planTier), ['PERSONAL']);
+  } finally {
+    if (before) await prisma.storeSubscription.update({ where: { userId: 'user-seller' }, data: before });
+    else await prisma.storeSubscription.delete({ where: { userId: 'user-seller' } });
+  }
+  // Tài khoản admin không xử lý được (chỉ xem)
+  const admin = admins.items[0];
+  const act = await api.post(`/admin/users/${admin.id}/action`, { token: tokens.admin,
+    body: { action: 'WARN', reason: 'Thử cảnh cáo admin', updatedAt: admin.updatedAt } });
+  assert.equal(act.status, 409);
+  assert.equal((await api.get('/admin/users?details=1&type=SHOP', { token: tokens.admin })).status, 400);
+});
+
 test('admin: catalog, packages, listing decisions, audit', async () => {
   const { api, tokens } = ctx;
   expect('catalog', await api.get('/admin/catalog', { token: tokens.admin }));
