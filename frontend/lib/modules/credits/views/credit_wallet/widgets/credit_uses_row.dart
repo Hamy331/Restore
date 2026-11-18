@@ -3,22 +3,29 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/shared/widgets/app_image_icon.dart';
-import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/modules/boost/views/promotion_hub/promotion_hub_view.dart';
+import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/plans/views/plans/plans_view.dart';
 
-/// "Dùng xu để": đăng thêm tin, đẩy tin, nâng gói.
-/// Trừ xu cho các việc này làm ở bước định mức sau, nên tạm báo sắp có.
+/// "Dùng xu để": đăng thêm tin (luồng đăng tin, vượt hạn mức thì trả xu),
+/// đẩy tin / Hot sale (trang Boost), nâng gói (trang Gói).
+/// Quay lại ví thì gọi [onReturn] (VD tải lại số dư vì có thể đã tiêu xu).
 class CreditUsesRow extends StatelessWidget {
-  const CreditUsesRow({super.key});
+  const CreditUsesRow({super.key, this.onReturn});
+
+  final VoidCallback? onReturn;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    void soon() =>
-        TSnackBarHelper.showInfo(context, message: l10n.featureComingSoon);
+    Future<void> open(String path) async {
+      await context.push(path);
+      onReturn?.call();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -37,21 +44,21 @@ class CreditUsesRow extends StatelessWidget {
               icon: AppIcons.post,
               image: AppImages.uiIcons.post,
               label: l10n.creditUsePostMore,
-              onTap: soon,
+              onTap: () => open(CreateListingStep.category.path),
             ),
             const SizedBox(width: 8),
             _Use(
               icon: AppIcons.boost,
               image: AppImages.uiIcons.boost,
               label: l10n.creditUseBoost,
-              onTap: soon,
+              onTap: () => open(PromotionHubView.path),
             ),
             const SizedBox(width: 8),
             _Use(
               icon: AppIcons.pro,
               image: AppImages.uiIcons.crown,
               label: l10n.creditUseUpgrade,
-              onTap: () => context.push(PlansView.path),
+              onTap: () => open(PlansView.path),
             ),
           ],
         ),

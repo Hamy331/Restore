@@ -441,6 +441,98 @@
       }
     }
   },
+  "list after expired": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "type": "LISTING_EXPIRED",
+          "group": "listing",
+          "title": "Tin đã hết hạn",
+          "body": "Tin \"Bàn gỗ sồi thật\" đã hết thời gian hiển thị. Gia hạn để tiếp tục bán.",
+          "data": {
+            "listingId": "listing-1",
+            "listingTitle": "Bàn gỗ sồi thật"
+          },
+          "imageUrl": null,
+          "link": "/account",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 1,
+        "pageSize": 1,
+        "totalItems": 6,
+        "totalPages": 6,
+        "hasMore": true
+      },
+      "meta": {
+        "page": 1,
+        "limit": 1,
+        "hasMore": true
+      }
+    }
+  },
+  "list after auto extend": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "type": "LISTING_AUTO_EXTENDED",
+          "group": "listing",
+          "title": "Tin đã được tự gia hạn",
+          "body": "Tin \"Bàn gỗ sồi thật\" được gia hạn thêm 30 ngày, trừ 6 Xu.",
+          "data": {
+            "days": 30,
+            "amount": 6,
+            "listingId": "listing-1",
+            "listingTitle": "Bàn gỗ sồi thật"
+          },
+          "imageUrl": null,
+          "link": "/credits/history",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        },
+        {
+          "id": "<uuid>",
+          "type": "LISTING_AUTO_EXTEND_FAILED",
+          "group": "listing",
+          "title": "Không đủ Xu để tự gia hạn",
+          "body": "Tin \"Bàn gỗ sồi thật\" sắp hết hạn nhưng ví không đủ Xu để tự gia hạn. Nạp thêm Xu để giữ tin hiển thị.",
+          "data": {
+            "listingId": "listing-1",
+            "listingTitle": "Bàn gỗ sồi thật"
+          },
+          "imageUrl": null,
+          "link": "/credits/topup",
+          "isRead": false,
+          "readAt": null,
+          "createdAt": "<date>"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 2,
+        "pageSize": 2,
+        "totalItems": 8,
+        "totalPages": 4,
+        "hasMore": true
+      },
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "hasMore": true
+      }
+    }
+  },
   "device invalid platform": {
     "status": 400,
     "body": {

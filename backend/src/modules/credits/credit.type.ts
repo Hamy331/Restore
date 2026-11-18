@@ -7,6 +7,9 @@ export const MAX_PENDING_TOPUPS = 3;
 /** Xu tặng hết hạn sau 90 ngày, xu nạp sau 12 tháng */
 export const BONUS_TTL_MS = 90 * 24 * 60 * 60 * 1000;
 export const PAID_TTL_MS = 365 * 24 * 60 * 60 * 1000;
+export const DAY_MS = 24 * 60 * 60 * 1000;
+/** Nhắc xu tặng sắp hết hạn trước chừng này ngày */
+export const BONUS_REMINDER_DAYS = 7;
 
 /** Bộ lọc lịch sử trên app → loại bút toán */
 export const HISTORY_FILTERS: Record<string, CreditTxnType[]> = {

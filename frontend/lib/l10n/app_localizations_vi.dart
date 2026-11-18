@@ -5193,4 +5193,140 @@ class AppLocalizationsVi extends AppLocalizations {
   String notifListingPublishedBody(String title) {
     return 'Tin \"$title\" tới ngày hẹn đăng và đã hiển thị với người mua.';
   }
+
+  @override
+  String get notifAutoExtendedTitle => 'Tin đã được tự gia hạn';
+
+  @override
+  String notifAutoExtendedBody(String title, int days, int amount) {
+    return 'Tin \"$title\" được gia hạn thêm $days ngày, trừ $amount Xu.';
+  }
+
+  @override
+  String get notifAutoExtendFailedTitle => 'Không đủ Xu để tự gia hạn';
+
+  @override
+  String notifAutoExtendFailedBody(String title) {
+    return 'Tin \"$title\" sắp hết hạn nhưng ví không đủ Xu để tự gia hạn. Nạp thêm Xu để giữ tin hiển thị.';
+  }
+
+  @override
+  String get notifFeatureStartedTitle => 'Tin đã lên Hot sale';
+
+  @override
+  String notifFeatureStartedBody(String title, int days) {
+    return 'Tin \"$title\" nằm trong mục Hot sale $days ngày.';
+  }
+
+  @override
+  String get notifFeatureEndedTitle => 'Tin đã hết thời gian Hot sale';
+
+  @override
+  String notifFeatureEndedBody(String title) {
+    return 'Tin \"$title\" đã rời mục Hot sale.';
+  }
+
+  @override
+  String notifRefundIncluded(int amount) {
+    return 'Đã hoàn $amount Xu vào ví.';
+  }
+
+  @override
+  String get notifOrderRejectedTitle => 'Đơn bị từ chối';
+
+  @override
+  String notifPlanOrderRejectedBody(String plan) {
+    return 'Đơn mua gói $plan không được xác nhận.';
+  }
+
+  @override
+  String notifPromotionOrderRejectedBody(String name, String title) {
+    return 'Đơn $name cho tin \"$title\" không được xác nhận.';
+  }
+
+  @override
+  String get notifPlanActivatedTitle => 'Gói đã kích hoạt';
+
+  @override
+  String notifPlanActivatedBody(String plan, String date) {
+    return 'Gói $plan đã kích hoạt, dùng đến ngày $date.';
+  }
+
+  @override
+  String get notifPlanExpiringTitle => 'Gói sắp hết hạn';
+
+  @override
+  String notifPlanExpiringBody(String plan, String date) {
+    return 'Gói $plan hết hạn ngày $date. Gia hạn để giữ hạn mức đăng tin.';
+  }
+
+  @override
+  String get notifPlanExpiredTitle => 'Gói đã hết hạn';
+
+  @override
+  String notifPlanExpiredBody(String plan) {
+    return 'Gói $plan đã hết hạn, tài khoản chuyển về gói Cá nhân. Gia hạn để dùng lại hạn mức của gói.';
+  }
+
+  @override
+  String get notifPosterApprovedTitle => 'Poster đã được duyệt';
+
+  @override
+  String notifPosterApprovedBody(String title) {
+    return 'Poster \"$title\" đã được duyệt và sẽ lên trang chủ theo lịch chạy.';
+  }
+
+  @override
+  String get notifPosterRejectedTitle => 'Poster bị từ chối';
+
+  @override
+  String notifPosterRejectedBody(String title) {
+    return 'Poster \"$title\" không được duyệt.';
+  }
+
+  @override
+  String get creditBonusSheetTitle => 'Xu tặng và hạn dùng';
+
+  @override
+  String get creditBonusSheetHint =>
+      'Xu tặng được dùng trước xu nạp, phần hết hạn sớm nhất dùng trước. Xu tặng chưa dùng sẽ bị trừ khi hết hạn.';
+
+  @override
+  String get creditBonusFromTopup => 'Tặng kèm khi nạp';
+
+  @override
+  String get creditBonusFromRefund => 'Xu được hoàn';
+
+  @override
+  String creditBonusReceived(String date) {
+    return 'Nhận ngày $date';
+  }
+
+  @override
+  String creditBonusExpiresOn(String date) {
+    return 'Hết hạn $date';
+  }
+
+  @override
+  String creditBonusDaysLeft(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'còn $days ngày',
+      zero: 'hết hạn hôm nay',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get creditBonusNoExpiry => 'Không hết hạn';
+
+  @override
+  String get creditBonusEmpty => 'Bạn chưa có xu tặng nào.';
+
+  @override
+  String get creditBonusLoadError => 'Chưa tải được xu tặng. Vui lòng thử lại.';
+
+  @override
+  String get creditBonusTapHint => 'Bấm để xem hạn dùng';
 }

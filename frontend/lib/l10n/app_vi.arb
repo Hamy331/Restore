@@ -2995,5 +2995,119 @@
     "placeholders": {
       "title": {"type": "String"}
     }
-  }
+  },
+  "notifAutoExtendedTitle": "Tin đã được tự gia hạn",
+  "notifAutoExtendedBody": "Tin \"{title}\" được gia hạn thêm {days} ngày, trừ {amount} Xu.",
+  "@notifAutoExtendedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"},
+      "amount": {"type": "int"}
+    }
+  },
+  "notifAutoExtendFailedTitle": "Không đủ Xu để tự gia hạn",
+  "notifAutoExtendFailedBody": "Tin \"{title}\" sắp hết hạn nhưng ví không đủ Xu để tự gia hạn. Nạp thêm Xu để giữ tin hiển thị.",
+  "@notifAutoExtendFailedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifFeatureStartedTitle": "Tin đã lên Hot sale",
+  "notifFeatureStartedBody": "Tin \"{title}\" nằm trong mục Hot sale {days} ngày.",
+  "@notifFeatureStartedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifFeatureEndedTitle": "Tin đã hết thời gian Hot sale",
+  "notifFeatureEndedBody": "Tin \"{title}\" đã rời mục Hot sale.",
+  "@notifFeatureEndedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifRefundIncluded": "Đã hoàn {amount} Xu vào ví.",
+  "@notifRefundIncluded": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifOrderRejectedTitle": "Đơn bị từ chối",
+  "notifPlanOrderRejectedBody": "Đơn mua gói {plan} không được xác nhận.",
+  "@notifPlanOrderRejectedBody": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "notifPromotionOrderRejectedBody": "Đơn {name} cho tin \"{title}\" không được xác nhận.",
+  "@notifPromotionOrderRejectedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifPlanActivatedTitle": "Gói đã kích hoạt",
+  "notifPlanActivatedBody": "Gói {plan} đã kích hoạt, dùng đến ngày {date}.",
+  "@notifPlanActivatedBody": {
+    "placeholders": {
+      "plan": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "notifPlanExpiringTitle": "Gói sắp hết hạn",
+  "notifPlanExpiringBody": "Gói {plan} hết hạn ngày {date}. Gia hạn để giữ hạn mức đăng tin.",
+  "@notifPlanExpiringBody": {
+    "placeholders": {
+      "plan": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "notifPlanExpiredTitle": "Gói đã hết hạn",
+  "notifPlanExpiredBody": "Gói {plan} đã hết hạn, tài khoản chuyển về gói Cá nhân. Gia hạn để dùng lại hạn mức của gói.",
+  "@notifPlanExpiredBody": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "notifPosterApprovedTitle": "Poster đã được duyệt",
+  "notifPosterApprovedBody": "Poster \"{title}\" đã được duyệt và sẽ lên trang chủ theo lịch chạy.",
+  "@notifPosterApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPosterRejectedTitle": "Poster bị từ chối",
+  "notifPosterRejectedBody": "Poster \"{title}\" không được duyệt.",
+  "@notifPosterRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "creditBonusSheetTitle": "Xu tặng và hạn dùng",
+  "creditBonusSheetHint": "Xu tặng được dùng trước xu nạp, phần hết hạn sớm nhất dùng trước. Xu tặng chưa dùng sẽ bị trừ khi hết hạn.",
+  "creditBonusFromTopup": "Tặng kèm khi nạp",
+  "creditBonusFromRefund": "Xu được hoàn",
+  "creditBonusReceived": "Nhận ngày {date}",
+  "@creditBonusReceived": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "creditBonusExpiresOn": "Hết hạn {date}",
+  "@creditBonusExpiresOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "creditBonusDaysLeft": "{days, plural, =0{hết hạn hôm nay} other{còn {days} ngày}}",
+  "@creditBonusDaysLeft": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "creditBonusNoExpiry": "Không hết hạn",
+  "creditBonusEmpty": "Bạn chưa có xu tặng nào.",
+  "creditBonusLoadError": "Chưa tải được xu tặng. Vui lòng thử lại.",
+  "creditBonusTapHint": "Bấm để xem hạn dùng"
 }

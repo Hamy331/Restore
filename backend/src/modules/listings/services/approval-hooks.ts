@@ -27,6 +27,8 @@ export type ListingModeration = {
   edit: boolean;
   /** Duyệt nhưng chưa tới ngày hẹn đăng (tin chờ, job tự hiện) */
   scheduled: boolean;
+  /** Số xu đã hoàn vào ví khi tin chờ duyệt bị từ chối (2.3 gộp vào thông báo từ chối) */
+  refunded?: number;
 };
 
 export type ListingModeratedHook = (tx: Prisma.TransactionClient, event: ListingModeration) => Promise<void>;

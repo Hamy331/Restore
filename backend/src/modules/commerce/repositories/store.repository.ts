@@ -72,3 +72,15 @@ export function findOrderPage(status: Prisma.StoreOrderWhereInput['status'] | un
 export const findPackageOrThrow = (tx: Db, id: string) => tx.storePackage.findUniqueOrThrow({ where: { id } });
 
 export const updatePackage = (tx: Db, id: string, data: Prisma.StorePackageUpdateInput) => tx.storePackage.update({ where: { id }, data });
+
+/** Đơn kèm tên gói, để báo người mua khi đơn bị từ chối */
+export const findOrderSummary = (tx: Db, id: string) =>
+  tx.storeOrder.findUnique({ where: { id }, select: { userId: true, package: { select: { name: true } } } });
+
+/** Gói cửa hàng (không phải Cá nhân) hết hạn trong (from, to], kèm tên gói (job nhắc gói) */
+export const findSubscriptionsEnding = (from: Date, to: Date) =>
+  prisma.storeSubscription.findMany({
+    where: { endsAt: { gt: from, lte: to }, package: { tier: { not: 'PERSONAL' } } },
+    select: { userId: true, packageId: true, endsAt: true, package: { select: { name: true } } },
+    take: 500,
+  });

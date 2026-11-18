@@ -11,6 +11,7 @@ import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import '../../bloc/credit_wallet/credit_wallet_cubit.dart';
 import '../../bloc/credit_wallet/credit_wallet_state.dart';
 import '../../widgets/credit_page_scaffold.dart';
+import '../credit_bonus/credit_bonus_view.dart';
 import '../credit_history/credit_history_view.dart';
 import '../credit_topup/credit_topup_view.dart';
 import 'widgets/credit_balance_card.dart';
@@ -65,9 +66,10 @@ class CreditWalletMobileView extends StatelessWidget {
                 CreditBalanceCard(
                   wallet: state.wallet,
                   onTopup: () => _topup(context),
+                  onBonusTap: () => context.push(CreditBonusView.path),
                 ),
                 const SizedBox(height: 20),
-                const CreditUsesRow(),
+                CreditUsesRow(onReturn: context.read<CreditWalletCubit>().load),
                 const SizedBox(height: 20),
                 CreditRecentSection(
                   items: state.recent,

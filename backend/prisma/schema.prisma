@@ -96,11 +96,14 @@ model Notification {
   readAt    DateTime?
   /// Lúc đã xử lý gửi push (FCM); null = chưa gửi. Gửi sau khi transaction ghi thông báo đã commit
   pushedAt  DateTime?
+  /// Khoá chống gửi trùng, mỗi người một khoá (VD nhắc tin sắp hết hạn)
+  dedupeKey String?   @db.VarChar(160)
   createdAt DateTime  @default(now())
 
   @@index([userId, createdAt])
   @@index([userId, readAt])
   @@index([pushedAt, createdAt])
+  @@unique([userId, dedupeKey])
 }
 
 /// Thiết bị nhận push FCM của người dùng (app Android / trình duyệt). Một token chỉ thuộc một người:

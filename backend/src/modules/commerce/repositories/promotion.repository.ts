@@ -92,7 +92,8 @@ export const findPendingOrders = () =>
 export const findOrderForApproval = (tx: Db, id: string) =>
   tx.promotionOrder.findUnique({
     where: { id },
-    include: { package: true, user: { select: { role: true, status: true } }, listing: { select: { ownerId: true, status: true } } },
+    include: { package: true, user: { select: { role: true, status: true } },
+      listing: { select: { id: true, ownerId: true, status: true, title: true, images: true } } },
   });
 
 /** Đổi trạng thái đơn khi còn PENDING; trả về số dòng đổi */
@@ -109,3 +110,22 @@ export function findOrderPage(status: Prisma.PromotionOrderWhereInput['status'] 
     prisma.promotionOrder.count({ where }),
   ]);
 }
+
+/** Đơn kèm tên gói và tin, để báo người mua khi đơn bị từ chối */
+export const findOrderSummary = (tx: Db, id: string) =>
+  tx.promotionOrder.findUnique({
+    where: { id },
+    select: { userId: true, package: { select: { name: true } }, listing: { select: { id: true, title: true } } },
+  });
+
+/**
+ * Lượt quảng bá đã kết thúc trong [since, now] của tin còn hiển thị, kèm gói và tin
+ * (job báo hết thời gian đẩy tin / Hot sale)
+ */
+export const findEndedPromotions = (since: Date, now: Date, take = 500) =>
+  prisma.promotion.findMany({
+    where: { endsAt: { gt: since, lte: now }, listing: { status: 'AVAILABLE' } },
+    include: { package: { select: { kind: true } }, listing: { select: { id: true, ownerId: true, title: true, images: true } } },
+    orderBy: { endsAt: 'asc' },
+    take,
+  });

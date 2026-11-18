@@ -3209,5 +3209,119 @@
     "placeholders": {
       "title": {"type": "String"}
     }
-  }
+  },
+  "notifAutoExtendedTitle": "Listing auto-renewed",
+  "notifAutoExtendedBody": "\"{title}\" was renewed for {days} more days, {amount} Points deducted.",
+  "@notifAutoExtendedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"},
+      "amount": {"type": "int"}
+    }
+  },
+  "notifAutoExtendFailedTitle": "Not enough Points to auto-renew",
+  "notifAutoExtendFailedBody": "\"{title}\" is about to expire but your wallet doesn't have enough Points to renew it. Top up to keep it visible.",
+  "@notifAutoExtendFailedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifFeatureStartedTitle": "Listing is in Hot sale",
+  "notifFeatureStartedBody": "\"{title}\" is in the Hot sale section for {days} days.",
+  "@notifFeatureStartedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifFeatureEndedTitle": "Hot sale has ended",
+  "notifFeatureEndedBody": "\"{title}\" has left the Hot sale section.",
+  "@notifFeatureEndedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifRefundIncluded": "{amount} Points were refunded to your wallet.",
+  "@notifRefundIncluded": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifOrderRejectedTitle": "Order rejected",
+  "notifPlanOrderRejectedBody": "Your order for the {plan} plan was not confirmed.",
+  "@notifPlanOrderRejectedBody": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "notifPromotionOrderRejectedBody": "Your {name} order for \"{title}\" was not confirmed.",
+  "@notifPromotionOrderRejectedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifPlanActivatedTitle": "Plan activated",
+  "notifPlanActivatedBody": "The {plan} plan is active until {date}.",
+  "@notifPlanActivatedBody": {
+    "placeholders": {
+      "plan": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "notifPlanExpiringTitle": "Plan expiring soon",
+  "notifPlanExpiringBody": "The {plan} plan expires on {date}. Renew to keep your posting limits.",
+  "@notifPlanExpiringBody": {
+    "placeholders": {
+      "plan": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "notifPlanExpiredTitle": "Plan expired",
+  "notifPlanExpiredBody": "The {plan} plan has expired and your account is back on the Personal plan. Renew to get its limits back.",
+  "@notifPlanExpiredBody": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "notifPosterApprovedTitle": "Poster approved",
+  "notifPosterApprovedBody": "Poster \"{title}\" was approved and will appear on the home page as scheduled.",
+  "@notifPosterApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPosterRejectedTitle": "Poster rejected",
+  "notifPosterRejectedBody": "Poster \"{title}\" was not approved.",
+  "@notifPosterRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "creditBonusSheetTitle": "Bonus points and expiry",
+  "creditBonusSheetHint": "Bonus points are spent before paid points, the ones expiring soonest first. Unused bonus points are removed when they expire.",
+  "creditBonusFromTopup": "Top-up bonus",
+  "creditBonusFromRefund": "Refunded points",
+  "creditBonusReceived": "Received {date}",
+  "@creditBonusReceived": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "creditBonusExpiresOn": "Expires {date}",
+  "@creditBonusExpiresOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "creditBonusDaysLeft": "{days, plural, =0{expires today} =1{1 day left} other{{days} days left}}",
+  "@creditBonusDaysLeft": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "creditBonusNoExpiry": "No expiry",
+  "creditBonusEmpty": "You have no bonus points right now.",
+  "creditBonusLoadError": "Could not load your bonus points. Please try again.",
+  "creditBonusTapHint": "Tap to see expiry dates"
 }

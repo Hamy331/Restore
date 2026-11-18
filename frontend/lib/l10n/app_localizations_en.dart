@@ -5288,4 +5288,142 @@ class AppLocalizationsEn extends AppLocalizations {
   String notifListingPublishedBody(String title) {
     return '\"$title\" reached its scheduled date and is now visible to buyers.';
   }
+
+  @override
+  String get notifAutoExtendedTitle => 'Listing auto-renewed';
+
+  @override
+  String notifAutoExtendedBody(String title, int days, int amount) {
+    return '\"$title\" was renewed for $days more days, $amount Points deducted.';
+  }
+
+  @override
+  String get notifAutoExtendFailedTitle => 'Not enough Points to auto-renew';
+
+  @override
+  String notifAutoExtendFailedBody(String title) {
+    return '\"$title\" is about to expire but your wallet doesn\'t have enough Points to renew it. Top up to keep it visible.';
+  }
+
+  @override
+  String get notifFeatureStartedTitle => 'Listing is in Hot sale';
+
+  @override
+  String notifFeatureStartedBody(String title, int days) {
+    return '\"$title\" is in the Hot sale section for $days days.';
+  }
+
+  @override
+  String get notifFeatureEndedTitle => 'Hot sale has ended';
+
+  @override
+  String notifFeatureEndedBody(String title) {
+    return '\"$title\" has left the Hot sale section.';
+  }
+
+  @override
+  String notifRefundIncluded(int amount) {
+    return '$amount Points were refunded to your wallet.';
+  }
+
+  @override
+  String get notifOrderRejectedTitle => 'Order rejected';
+
+  @override
+  String notifPlanOrderRejectedBody(String plan) {
+    return 'Your order for the $plan plan was not confirmed.';
+  }
+
+  @override
+  String notifPromotionOrderRejectedBody(String name, String title) {
+    return 'Your $name order for \"$title\" was not confirmed.';
+  }
+
+  @override
+  String get notifPlanActivatedTitle => 'Plan activated';
+
+  @override
+  String notifPlanActivatedBody(String plan, String date) {
+    return 'The $plan plan is active until $date.';
+  }
+
+  @override
+  String get notifPlanExpiringTitle => 'Plan expiring soon';
+
+  @override
+  String notifPlanExpiringBody(String plan, String date) {
+    return 'The $plan plan expires on $date. Renew to keep your posting limits.';
+  }
+
+  @override
+  String get notifPlanExpiredTitle => 'Plan expired';
+
+  @override
+  String notifPlanExpiredBody(String plan) {
+    return 'The $plan plan has expired and your account is back on the Personal plan. Renew to get its limits back.';
+  }
+
+  @override
+  String get notifPosterApprovedTitle => 'Poster approved';
+
+  @override
+  String notifPosterApprovedBody(String title) {
+    return 'Poster \"$title\" was approved and will appear on the home page as scheduled.';
+  }
+
+  @override
+  String get notifPosterRejectedTitle => 'Poster rejected';
+
+  @override
+  String notifPosterRejectedBody(String title) {
+    return 'Poster \"$title\" was not approved.';
+  }
+
+  @override
+  String get creditBonusSheetTitle => 'Bonus points and expiry';
+
+  @override
+  String get creditBonusSheetHint =>
+      'Bonus points are spent before paid points, the ones expiring soonest first. Unused bonus points are removed when they expire.';
+
+  @override
+  String get creditBonusFromTopup => 'Top-up bonus';
+
+  @override
+  String get creditBonusFromRefund => 'Refunded points';
+
+  @override
+  String creditBonusReceived(String date) {
+    return 'Received $date';
+  }
+
+  @override
+  String creditBonusExpiresOn(String date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String creditBonusDaysLeft(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days left',
+      one: '1 day left',
+      zero: 'expires today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get creditBonusNoExpiry => 'No expiry';
+
+  @override
+  String get creditBonusEmpty => 'You have no bonus points right now.';
+
+  @override
+  String get creditBonusLoadError =>
+      'Could not load your bonus points. Please try again.';
+
+  @override
+  String get creditBonusTapHint => 'Tap to see expiry dates';
 }

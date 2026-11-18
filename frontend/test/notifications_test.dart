@@ -110,6 +110,128 @@ void main() {
     );
   });
 
+  test('1.9 expired and 1.10 auto-renew notifications are localized', () {
+    NotificationModel item(String type, Map<String, dynamic> data) =>
+        NotificationModel.fromJson({
+          'id': type,
+          'type': type,
+          'title': 't',
+          'body': 'server text',
+          'data': {'listingId': 'l-9', 'listingTitle': 'Kệ sách', ...data},
+          'createdAt': '2026-11-18T10:00:00.000Z',
+        });
+    final vi = AppLocalizationsVi();
+    expect(
+      NotificationPresenter.body(vi, item('LISTING_EXPIRED', {})),
+      'Tin "Kệ sách" đã hết thời gian hiển thị. Gia hạn để tiếp tục bán.',
+    );
+    final renewed = item('LISTING_AUTO_EXTENDED', {'days': 30, 'amount': 4});
+    expect(renewed.type, NotificationType.listingAutoExtended);
+    expect(
+      NotificationPresenter.body(AppLocalizationsEn(), renewed),
+      '"Kệ sách" was renewed for 30 more days, 4 Points deducted.',
+    );
+    final failed = item('LISTING_AUTO_EXTEND_FAILED', {});
+    expect(failed.group, NotificationGroup.listing);
+    expect(
+      NotificationPresenter.title(vi, failed),
+      'Không đủ Xu để tự gia hạn',
+    );
+  });
+
+  test('2. wallet, boost, plan and poster notifications are localized', () {
+    NotificationModel item(String type, Map<String, dynamic> data) =>
+        NotificationModel.fromJson({
+          'id': type,
+          'type': type,
+          'title': 'server title',
+          'body': 'server text',
+          'data': data,
+          'createdAt': '2026-11-18T10:00:00.000Z',
+        });
+    final vi = AppLocalizationsVi();
+    final en = AppLocalizationsEn();
+    expect(
+      NotificationPresenter.body(
+        vi,
+        item('CREDIT_TOPUP_SUCCESS', {'amount': 100, 'bonus': 10}),
+      ),
+      'Bạn đã nhận 100 Xu (tặng thêm 10 Xu).',
+    );
+    expect(
+      NotificationPresenter.body(
+        en,
+        item('CREDIT_TOPUP_FAILED', {'topupCode': 'RS8F2K1X'}),
+      ),
+      contains('RS8F2K1X'),
+    );
+    // 2.3 hoàn xu gộp vào thông báo từ chối tin
+    expect(
+      NotificationPresenter.body(
+        vi,
+        item('LISTING_REJECTED', {
+          'listingTitle': 'Ghế',
+          'reason': 'Ảnh mờ',
+          'refunded': 4,
+        }),
+      ),
+      'Tin "Ghế" không được duyệt. Lý do: Ảnh mờ Đã hoàn 4 Xu vào ví.',
+    );
+    final featured = item('BOOST_STARTED', {
+      'listingTitle': 'Tủ sách',
+      'kind': 'FEATURED',
+      'days': 3,
+    });
+    expect(NotificationPresenter.title(vi, featured), 'Tin đã lên Hot sale');
+    expect(
+      NotificationPresenter.body(en, featured),
+      '"Tủ sách" is in the Hot sale section for 3 days.',
+    );
+    expect(
+      NotificationPresenter.title(
+        vi,
+        item('BOOST_ENDED', {'listingTitle': 'Tủ sách', 'kind': 'BUMP'}),
+      ),
+      'Đã hết thời gian đẩy tin',
+    );
+    final rejected = item('ORDER_REJECTED', {
+      'orderKind': 'PROMOTION_ORDER',
+      'packageName': 'Hot sale 3 ngày',
+      'listingTitle': 'Tủ sách',
+      'reason': 'Chưa nhận được thanh toán',
+    });
+    expect(rejected.group, NotificationGroup.wallet);
+    expect(
+      NotificationPresenter.body(vi, rejected),
+      'Đơn Hot sale 3 ngày cho tin "Tủ sách" không được xác nhận. '
+      'Lý do: Chưa nhận được thanh toán',
+    );
+    final endsAt = DateTime(2026, 12, 18, 12).toUtc().toIso8601String();
+    expect(
+      NotificationPresenter.body(
+        vi,
+        item('STORE_PLAN_EXPIRING', {'planName': 'Cơ bản', 'endsAt': endsAt}),
+      ),
+      'Gói Cơ bản hết hạn ngày 18/12/2026. Gia hạn để giữ hạn mức đăng tin.',
+    );
+    expect(
+      NotificationPresenter.title(en, item('STORE_PLAN_ACTIVATED', {})),
+      'Plan activated',
+    );
+    expect(
+      NotificationPresenter.body(
+        en,
+        item('SHOP_POSTER_REJECTED', {
+          'posterTitle': 'Xả kho',
+          'reasonCode': 'TOO_MUCH_TEXT',
+          'note': 'Bớt chữ',
+        }),
+      ),
+      'Poster "Xả kho" was not approved. '
+      '${en.notifReason('${en.spReasonTooMuchText}: Bớt chữ')}',
+    );
+  });
+
   test('push data from FCM becomes a localized notification', () {
     final push = PushNotification.fromData(
       {

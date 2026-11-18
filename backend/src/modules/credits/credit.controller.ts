@@ -15,6 +15,10 @@ export async function getWallet(req: AuthRequest, res: Response) {
   ok(res, await creditService.getWallet(req.user!.userId));
 }
 
+export async function getBonusBatches(req: AuthRequest, res: Response) {
+  ok(res, await creditService.getBonusBatches(req.user!.userId));
+}
+
 export async function listTransactions(req: AuthRequest, res: Response) {
   const { query } = getInput<ValidatedInput<HistoryQuery>>(res);
   const { items, ...page } = await creditService.listTransactions(req.user!.userId, query);

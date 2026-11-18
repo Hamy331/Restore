@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:restore/modules/content/views/community_content_view.dart';
+import 'package:restore/modules/credits/views/credit_bonus/credit_bonus_view.dart';
 import 'package:restore/modules/credits/views/credit_history/credit_history_view.dart';
 import 'package:restore/modules/notifications/views/notifications/notifications_view.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
@@ -512,6 +513,14 @@ GoRouter createAppRouter(
           preselectId: state.uri.queryParameters['package'],
           need: int.tryParse(state.uri.queryParameters['need'] ?? ''),
         ),
+      ),
+    ),
+    GoRoute(
+      path: CreditBonusView.path,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const CreditBonusView(),
       ),
     ),
     GoRoute(

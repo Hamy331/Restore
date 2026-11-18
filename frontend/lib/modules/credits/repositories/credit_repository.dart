@@ -7,6 +7,7 @@ import 'package:restore/data/models/enums/credit_enums.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
 import '../data/credit_mock_data.dart';
+import '../models/credit_bonus_batch.dart';
 import '../models/credit_history_filter.dart';
 import '../models/credit_wallet.dart';
 
@@ -28,6 +29,9 @@ abstract class CreditRepository {
   static const int pageSize = 20;
 
   Future<CreditWallet> getWallet();
+
+  /// Xu tặng còn trong ví theo từng lần tặng, gần hết hạn trước
+  Future<List<CreditBonusBatch>> getBonusBatches();
 
   Future<List<CreditPackageModel>> getPackages();
 
@@ -100,6 +104,46 @@ class MockCreditRepository implements CreditRepository {
       bonus: bonus,
       nextBonusExpiry: bonus > 0 ? expiry : null,
     );
+  }
+
+  /// Như backend: số dư xu tặng chia từ lần tặng hạn xa nhất về
+  @override
+  Future<List<CreditBonusBatch>> getBonusBatches() async {
+    await _wait();
+    final now = DateTime.now();
+    var left = 0;
+    final grants = <Map<String, dynamic>>[];
+    for (final row in _ledger) {
+      if (row['bucket'] != 'BONUS') continue;
+      final amount = row['amount'] as int;
+      left += amount;
+      final expires = DateTime.tryParse('${row['expiresAt']}');
+      if (amount > 0 && (expires == null || expires.isAfter(now))) {
+        grants.add(row);
+      }
+    }
+    DateTime? expiry(Map<String, dynamic> row) =>
+        DateTime.tryParse('${row['expiresAt']}');
+    grants.sort((a, b) {
+      final x = expiry(a);
+      final y = expiry(b);
+      if (x == null || y == null) return x == null ? (y == null ? 0 : -1) : 1;
+      return y.compareTo(x);
+    });
+    final batches = <CreditBonusBatch>[];
+    for (final row in grants) {
+      if (left <= 0) break;
+      final amount = (row['amount'] as int).clamp(0, left);
+      left -= amount;
+      batches.add(
+        CreditBonusBatch.fromJson({
+          ...row,
+          'amount': amount,
+          'grantedAt': row['createdAt'],
+        }),
+      );
+    }
+    return batches.reversed.toList();
   }
 
   @override
@@ -271,6 +315,17 @@ class ApiCreditRepository implements CreditRepository {
   Future<CreditWallet> getWallet() => _call(() async {
     final response = await _dio.get<Map<String, dynamic>>('/credits/wallet');
     return CreditWallet.fromJson(_data(response));
+  });
+
+  @override
+  Future<List<CreditBonusBatch>> getBonusBatches() => _call(() async {
+    final response = await _dio.get<Map<String, dynamic>>('/credits/bonus');
+    final data = response.data?['data'];
+    if (data is! List) throw const FormatException('Missing response data');
+    return [
+      for (final item in data)
+        CreditBonusBatch.fromJson(Map<String, dynamic>.from(item as Map)),
+    ];
   });
 
   @override

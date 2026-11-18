@@ -128,6 +128,10 @@ class PushMessagingService {
 
   void _emit(StreamController<PushNotification> sink, RemoteMessage message) {
     final push = PushNotification.fromRemote(message);
+    debugPrint(
+      'Push: ${identical(sink, _received) ? 'nhận khi app đang mở' : 'bấm mở thông báo'} '
+      'type=${message.data['type']} link=${message.data['link']}',
+    );
     if (push != null && !sink.isClosed) sink.add(push);
   }
 

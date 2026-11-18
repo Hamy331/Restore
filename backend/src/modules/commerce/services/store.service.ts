@@ -1,10 +1,11 @@
 import { StoreTier } from '@prisma/client';
 import { AppError } from '../../../common/errors/app-error.js';
 import { audit } from '../../../common/audit/admin-audit.js';
+import { emit } from '../../../common/events/domain-events.js';
 import { ADMIN_PAGE_SIZE } from '../../../common/validation/admin-input.js';
 import type { AdminOrderQuery, StoreOrderInput, StorePackageInput } from '../commerce.dto.js';
 import { availableCredits, spendCredits } from '../../credits/credit.hold.js';
-import { MONTH_MS, PURCHASABLE_STORE_TIERS } from '../commerce.type.js';
+import { DAY_MS, MONTH_MS, PURCHASABLE_STORE_TIERS } from '../commerce.type.js';
 import { planPriceCredits, quotePlan } from '../plan-pricing.js';
 import * as storeRepository from '../repositories/store.repository.js';
 import { transaction } from '../repositories/quota.repository.js';
@@ -80,7 +81,7 @@ export async function getPlanQuote(userId: string, packageId: string) {
  * Thiếu xu thì 409 NOT_ENOUGH_CREDITS (details: required, available, missing).
  */
 export async function subscribeWithCredits(userId: string, { packageId, categoryId }: { packageId: string; categoryId?: string }) {
-  return withQuotaTransaction(async (tx) => {
+  const { result, planName } = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const { target, current, quote } = await planQuote(tx, userId, packageId, now);
     const chosen = categoryId ?? current.category?.id;
@@ -90,8 +91,11 @@ export async function subscribeWithCredits(userId: string, { packageId, category
     const subscription = await storeRepository.upsertSubscription(tx, userId, {
       packageId: target.id, categoryId: category.id, startsAt: now, endsAt: quote.endsAt,
     });
-    return { ...quote, packageId: target.id, categoryId: category.id, subscription };
+    return { result: { ...quote, packageId: target.id, categoryId: category.id, subscription }, planName: target.name };
   });
+  // Sau khi commit: báo gói đã kích hoạt (2.8)
+  await emit('plan.activated', { userId, packageId: result.packageId, planName, endsAt: result.subscription.endsAt, mode: result.mode });
+  return result;
 }
 
 /** Đặt mua gói cửa hàng cho một danh mục; mỗi người chỉ có một đơn chờ */
@@ -117,7 +121,7 @@ export const listPendingOrders = () => storeRepository.findPendingOrders();
  * Mua lại đúng gói và danh mục đang chạy thì cộng dồn từ ngày hết hạn cũ.
  */
 export async function confirmOrder(actorId: string, id: string, reason: unknown) {
-  return withQuotaTransaction(async (tx) => {
+  const { result, planName, userId } = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const order = await storeRepository.findOrderForApproval(tx, id);
     assertPending('STORE_ORDER', order);
@@ -132,8 +136,35 @@ export async function confirmOrder(actorId: string, id: string, reason: unknown)
       packageId: order.packageId, categoryId: order.categoryId, startsAt: now, endsAt: new Date(base.getTime() + MONTH_MS),
     });
     await auditDecision(tx, 'STORE_ORDER', actorId, id, 'CONFIRM', reason, { status: 'PENDING' }, { status: 'CONFIRMED', amount: order.amount });
-    return { orderId: id, subscription };
+    const storePackage = await storeRepository.findPackage(tx, order.packageId);
+    return { result: { orderId: id, subscription }, planName: storePackage?.name ?? order.packageId, userId: order.userId };
   });
+  // Sau khi commit: báo người mua gói đã kích hoạt (2.8)
+  await emit('plan.activated', { userId, packageId: result.subscription.packageId, planName, endsAt: result.subscription.endsAt, mode: 'ORDER' });
+  return result;
+}
+
+/** Nhắc gói cửa hàng sắp hết hạn trước chừng này ngày */
+export const PLAN_REMINDER_DAYS = 3;
+/** Gói hết hạn quá chừng này thì không báo nữa (backend tắt lâu) */
+const PLAN_EXPIRED_LOOKBACK_MS = 2 * DAY_MS;
+
+/**
+ * Job nhắc gói cửa hàng (2.9): còn dưới 3 ngày thì nhắc gia hạn, đã hết hạn thì báo về gói Cá nhân.
+ * Mỗi mốc hết hạn báo một lần (dedupeKey theo endsAt, gia hạn xong là mốc mới).
+ */
+export async function remindStorePlans(now = new Date()) {
+  const [expiring, expired] = await Promise.all([
+    storeRepository.findSubscriptionsEnding(now, new Date(now.getTime() + PLAN_REMINDER_DAYS * DAY_MS)),
+    storeRepository.findSubscriptionsEnding(new Date(now.getTime() - PLAN_EXPIRED_LOOKBACK_MS), now),
+  ]);
+  const ref = (row: (typeof expiring)[number]) =>
+    ({ userId: row.userId, packageId: row.packageId, planName: row.package.name, endsAt: row.endsAt });
+  for (const row of expiring) {
+    await emit('plan.expiring', { ...ref(row), daysLeft: Math.max(1, Math.ceil((row.endsAt.getTime() - now.getTime()) / DAY_MS)) });
+  }
+  for (const row of expired) await emit('plan.expired', ref(row));
+  return expiring.length + expired.length;
 }
 
 export const rejectStoreOrder = (actorId: string, id: string, reason: unknown) => rejectOrder('STORE_ORDER', actorId, id, reason);

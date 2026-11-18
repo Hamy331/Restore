@@ -9145,6 +9145,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'\"{title}\" reached its scheduled date and is now visible to buyers.'**
   String notifListingPublishedBody(String title);
+
+  /// No description provided for @notifAutoExtendedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing auto-renewed'**
+  String get notifAutoExtendedTitle;
+
+  /// No description provided for @notifAutoExtendedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" was renewed for {days} more days, {amount} Points deducted.'**
+  String notifAutoExtendedBody(String title, int days, int amount);
+
+  /// No description provided for @notifAutoExtendFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough Points to auto-renew'**
+  String get notifAutoExtendFailedTitle;
+
+  /// No description provided for @notifAutoExtendFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is about to expire but your wallet doesn\'t have enough Points to renew it. Top up to keep it visible.'**
+  String notifAutoExtendFailedBody(String title);
+
+  /// No description provided for @notifFeatureStartedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing is in Hot sale'**
+  String get notifFeatureStartedTitle;
+
+  /// No description provided for @notifFeatureStartedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is in the Hot sale section for {days} days.'**
+  String notifFeatureStartedBody(String title, int days);
+
+  /// No description provided for @notifFeatureEndedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot sale has ended'**
+  String get notifFeatureEndedTitle;
+
+  /// No description provided for @notifFeatureEndedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" has left the Hot sale section.'**
+  String notifFeatureEndedBody(String title);
+
+  /// No description provided for @notifRefundIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} Points were refunded to your wallet.'**
+  String notifRefundIncluded(int amount);
+
+  /// No description provided for @notifOrderRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order rejected'**
+  String get notifOrderRejectedTitle;
+
+  /// No description provided for @notifPlanOrderRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order for the {plan} plan was not confirmed.'**
+  String notifPlanOrderRejectedBody(String plan);
+
+  /// No description provided for @notifPromotionOrderRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {name} order for \"{title}\" was not confirmed.'**
+  String notifPromotionOrderRejectedBody(String name, String title);
+
+  /// No description provided for @notifPlanActivatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan activated'**
+  String get notifPlanActivatedTitle;
+
+  /// No description provided for @notifPlanActivatedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The {plan} plan is active until {date}.'**
+  String notifPlanActivatedBody(String plan, String date);
+
+  /// No description provided for @notifPlanExpiringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan expiring soon'**
+  String get notifPlanExpiringTitle;
+
+  /// No description provided for @notifPlanExpiringBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The {plan} plan expires on {date}. Renew to keep your posting limits.'**
+  String notifPlanExpiringBody(String plan, String date);
+
+  /// No description provided for @notifPlanExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan expired'**
+  String get notifPlanExpiredTitle;
+
+  /// No description provided for @notifPlanExpiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The {plan} plan has expired and your account is back on the Personal plan. Renew to get its limits back.'**
+  String notifPlanExpiredBody(String plan);
+
+  /// No description provided for @notifPosterApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster approved'**
+  String get notifPosterApprovedTitle;
+
+  /// No description provided for @notifPosterApprovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster \"{title}\" was approved and will appear on the home page as scheduled.'**
+  String notifPosterApprovedBody(String title);
+
+  /// No description provided for @notifPosterRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster rejected'**
+  String get notifPosterRejectedTitle;
+
+  /// No description provided for @notifPosterRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster \"{title}\" was not approved.'**
+  String notifPosterRejectedBody(String title);
+
+  /// No description provided for @creditBonusSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus points and expiry'**
+  String get creditBonusSheetTitle;
+
+  /// No description provided for @creditBonusSheetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus points are spent before paid points, the ones expiring soonest first. Unused bonus points are removed when they expire.'**
+  String get creditBonusSheetHint;
+
+  /// No description provided for @creditBonusFromTopup.
+  ///
+  /// In en, this message translates to:
+  /// **'Top-up bonus'**
+  String get creditBonusFromTopup;
+
+  /// No description provided for @creditBonusFromRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded points'**
+  String get creditBonusFromRefund;
+
+  /// No description provided for @creditBonusReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received {date}'**
+  String creditBonusReceived(String date);
+
+  /// No description provided for @creditBonusExpiresOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String creditBonusExpiresOn(String date);
+
+  /// No description provided for @creditBonusDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{expires today} =1{1 day left} other{{days} days left}}'**
+  String creditBonusDaysLeft(int days);
+
+  /// No description provided for @creditBonusNoExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'No expiry'**
+  String get creditBonusNoExpiry;
+
+  /// No description provided for @creditBonusEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no bonus points right now.'**
+  String get creditBonusEmpty;
+
+  /// No description provided for @creditBonusLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your bonus points. Please try again.'**
+  String get creditBonusLoadError;
+
+  /// No description provided for @creditBonusTapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to see expiry dates'**
+  String get creditBonusTapHint;
 }
 
 class _AppLocalizationsDelegate

@@ -4,11 +4,13 @@ import { validateEnvironment } from './config/env.js';
 import { startAccountStatusJob } from './jobs/account-status.job.js';
 import { startListingExpiryJob } from './jobs/listing-expiry.job.js';
 import { startNotificationPushJob } from './jobs/notification-push.job.js';
+import { startWalletReminderJob } from './jobs/wallet-reminder.job.js';
 
 validateEnvironment();
 startAccountStatusJob();
 startListingExpiryJob();
 startNotificationPushJob();
+startWalletReminderJob();
 
 const PORT = process.env.PORT || 3000;
 createApp().listen(PORT, () => {

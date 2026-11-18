@@ -11,12 +11,21 @@ import { findDayPacks } from '../repositories/posting-quota.repository.js';
 
 /** Ẩn các tin đang hiển thị đã quá hạn; trả về số tin vừa ẩn */
 export async function expireDueListings(now = new Date()) {
-  const changed = await prisma.listing.updateMany({
-    where: { status: ListingStatus.AVAILABLE, expiresAt: { lte: now } },
-    data: { status: ListingStatus.HIDDEN },
-  });
-  return changed.count;
+  const where = { status: ListingStatus.AVAILABLE, expiresAt: { lte: now } };
+  const due = await prisma.listing.findMany({ where, select: { id: true, ownerId: true, title: true, images: true, expiresAt: true } });
+  let expired = 0;
+  for (const listing of due) {
+    // Từng tin một: tin đổi giữa chừng (vừa gia hạn, chủ tin ẩn) thì bỏ qua, không báo nhầm
+    const changed = await prisma.listing.updateMany({ where: { ...where, id: listing.id }, data: { status: ListingStatus.HIDDEN } });
+    if (!changed.count) continue;
+    expired++;
+    await emit('listing.expired', { ...listingRef(listing), expiresAt: listing.expiresAt! });
+  }
+  return expired;
 }
+
+const listingRef = (listing: { id: string; ownerId: string; title: string; images: string[] }) =>
+  ({ listingId: listing.id, ownerId: listing.ownerId, title: listing.title, image: listing.images[0] ?? null });
 
 /** Nhắc trước khi hết hạn chừng này ngày */
 export const EXPIRY_REMINDER_DAYS = 2;
@@ -71,11 +80,13 @@ export async function autoExtendDueListings(now = new Date()) {
   });
   let extended = 0;
   for (const { id } of due) {
+    let target: { id: string; ownerId: string; title: string; images: string[]; expiresAt: Date } | null = null;
     try {
       const done = await withQuotaTransaction(async (tx) => {
         const listing = await tx.listing.findUnique({ where: { id }, include: { category: true } });
         if (!listing?.autoExtend || listing.status !== ListingStatus.AVAILABLE || !listing.expiresAt || !listing.category) return false;
         if (listing.expiresAt.getTime() > addDays(now, 1).getTime()) return false;
+        target = { id, ownerId: listing.ownerId, title: listing.title, images: listing.images, expiresAt: listing.expiresAt };
         const [plan, packs] = await Promise.all([storePackageForUser(tx, listing.ownerId, now), findDayPacks(tx)]);
         if (!plan.package.autoExtend) {
           await tx.listing.update({ where: { id }, data: { autoExtend: false } });
@@ -85,12 +96,16 @@ export async function autoExtendDueListings(now = new Date()) {
         const credits = extraDaysCredits(AUTO_EXTEND_DAYS, listing.category, packs, plan.package);
         await spendForListing(tx, listing.ownerId, id, credits, `Tự gia hạn tin ${AUTO_EXTEND_DAYS} ngày · ${listing.title}`);
         await tx.listing.update({ where: { id }, data: { expiresAt: addDays(listing.expiresAt, AUTO_EXTEND_DAYS) } });
-        return true;
+        return credits;
       });
-      if (done) extended++;
+      if (done !== false && target) {
+        extended++;
+        await emit('listing.autoExtended', { ...listingRef(target), credits: done, days: AUTO_EXTEND_DAYS });
+      }
     } catch (error) {
-      // Thiếu xu: bỏ qua, tin hết hạn như thường
+      // Thiếu xu: tin hết hạn như thường, báo chủ tin nạp thêm (mỗi lần hết hạn báo một lần)
       if ((error as { code?: string }).code !== 'NOT_ENOUGH_CREDITS') throw error;
+      if (target) await emit('listing.autoExtendFailed', { ...listingRef(target), expiresAt: (target as { expiresAt: Date }).expiresAt });
     }
   }
   return extended;

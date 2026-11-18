@@ -1,6 +1,10 @@
 import { on } from '../../common/events/domain-events.js';
 import { onListingModerated } from '../listings/index.js';
-import { notifyListingExpiring, notifyListingModerated, notifyListingPublished } from './notification.listeners.js';
+import {
+  notifyBonusExpiring, notifyListingAutoExtended, notifyListingAutoExtendFailed, notifyListingExpired, notifyListingExpiring,
+  notifyListingModerated, notifyListingPublished, notifyOrderRejected, notifyPlanActivated, notifyPlanExpired, notifyPlanExpiring,
+  notifyPosterReviewed, notifyPromotionEnded, notifyPromotionStarted, notifyTopupFailed, notifyTopupPaid,
+} from './notification.listeners.js';
 
 // Admin ra quyết định trên tin → báo người bán
 onListingModerated(notifyListingModerated);
@@ -8,6 +12,21 @@ onListingModerated(notifyListingModerated);
 on('listing.published', notifyListingPublished);
 // Tin sắp hết hạn
 on('listing.expiring', notifyListingExpiring);
+// Tin hết hạn, tự gia hạn thành công / thiếu xu
+on('listing.expired', notifyListingExpired);
+on('listing.autoExtended', notifyListingAutoExtended);
+on('listing.autoExtendFailed', notifyListingAutoExtendFailed);
+// Ví Xu, đẩy tin, gói, poster (mục 2)
+on('credit.topupPaid', notifyTopupPaid);
+on('credit.topupFailed', notifyTopupFailed);
+on('credit.bonusExpiring', notifyBonusExpiring);
+on('promotion.started', notifyPromotionStarted);
+on('promotion.ended', notifyPromotionEnded);
+on('order.rejected', notifyOrderRejected);
+on('plan.activated', notifyPlanActivated);
+on('plan.expiring', notifyPlanExpiring);
+on('plan.expired', notifyPlanExpired);
+on('poster.reviewed', notifyPosterReviewed);
 
 export { default as notificationRouter } from './notification.route.js';
 export { notify } from './notification.service.js';

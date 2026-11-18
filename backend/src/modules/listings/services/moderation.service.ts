@@ -35,6 +35,7 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
   let expiresAt: Date | undefined;
   let scheduled = false;
   let startsAt: Date | null = null;
+  let refunded = 0;
   const now = new Date();
   if (action === 'APPROVE') {
     if (!item.images.length) throw new AppError(400, 'INVALID_LISTING', 'Tin cần ít nhất một ảnh.');
@@ -68,10 +69,10 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
     await runApprovalHooks(tx, id, new Date());
   } else {
     // Từ chối khi đang chờ duyệt: hoàn xu đang giữ (đã duyệt rồi bị gỡ thì không hoàn)
-    await releaseListingHold(tx, id, `Hoàn xu · tin bị từ chối: ${item.title}`.slice(0, 200));
+    refunded = await releaseListingHold(tx, id, `Hoàn xu · tin bị từ chối: ${item.title}`.slice(0, 200));
   }
   await runModeratedHooks(tx, { listingId: id, ownerId: item.ownerId, title: item.title, image: item.images[0] ?? null,
-    action, reason, edit: false, scheduled });
+    action, reason, edit: false, scheduled, refunded });
   return removed;
 }
 

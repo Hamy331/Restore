@@ -10,6 +10,7 @@ import 'package:restore/modules/credits/models/credit_history_filter.dart';
 import 'package:restore/modules/credits/models/topup_step.dart';
 import 'package:restore/modules/credits/repositories/credit_repository.dart';
 import 'package:restore/modules/credits/services/zalopay_launcher.dart';
+import 'package:restore/modules/credits/views/credit_bonus/credit_bonus_view.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
 import 'package:restore/modules/credits/views/credit_topup/widgets/topup_pay_section.dart';
 import 'package:restore/modules/credits/views/credit_wallet/credit_wallet_view.dart';
@@ -94,6 +95,33 @@ void main() {
     await cubit.load(CreditHistoryFilter.spend);
     expect(cubit.state.items.every((t) => t.amount < 0), isTrue);
     await cubit.close();
+  });
+
+  test('bonus points are split per grant, soonest expiry first', () async {
+    final batches = await repo().getBonusBatches();
+    // Số dư xu tặng 30 chia từ lần hạn xa nhất về: tặng kèm nạp 10 (83 ngày), hoàn 20/25 (81 ngày)
+    expect(batches.map((b) => b.amount), [20, 10]);
+    expect(batches.first.type, CreditTxnType.refund);
+    expect(batches.first.daysLeft(DateTime.now()), 81);
+  });
+
+  testWidgets('bonus page lists each grant and its expiry date', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      host(const Locale('vi'), CreditBonusView(repository: repo())),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Xu tặng và hạn dùng'), findsOneWidget);
+    expect(find.textContaining('30'), findsWidgets);
+    expect(find.text('Xu được hoàn'), findsOneWidget);
+    expect(find.text('Tặng kèm khi nạp'), findsOneWidget);
+    expect(find.textContaining('còn 81 ngày'), findsOneWidget);
+    expect(find.textContaining('còn 83 ngày'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   for (final locale in const [Locale('vi'), Locale('en')]) {
