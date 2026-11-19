@@ -4,6 +4,8 @@ export class AppError extends Error {
     public readonly code: string,
     message: string,
     public readonly field?: string,
+    /** Dữ liệu thêm cho app xử lý lỗi, VD giá xu khi vượt hạn mức */
+    public readonly details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = 'AppError';

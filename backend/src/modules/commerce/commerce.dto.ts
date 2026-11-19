@@ -1,9 +1,11 @@
 import type { z } from 'zod';
-import type { adminOrderQuery, promotionPackageBody, purchaseBody, storeOrderBody, storePackageBody } from './commerce.validator.js';
+import type { adminOrderQuery, promotionPackageBody, purchaseBody, quoteQuery, storeOrderBody, storePackageBody, subscribeBody } from './commerce.validator.js';
 
 /* Vào (suy ra từ schema). Kết quả trả ra là bản ghi Prisma kèm quan hệ, giữ nguyên như API cũ. */
 
 export type StoreOrderInput = z.output<typeof storeOrderBody>;
+export type SubscribeInput = z.output<typeof subscribeBody>;
+export type QuoteQuery = z.output<typeof quoteQuery>;
 export type PromotionPackageInput = z.output<typeof promotionPackageBody>;
 export type PurchaseInput = z.output<typeof purchaseBody>;
 export type IdParams = { id: string };

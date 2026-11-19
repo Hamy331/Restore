@@ -63,6 +63,9 @@ model User {
   promotions     Promotion[]
   promotionOrders PromotionOrder[]
   wantedAlerts   WantedAlert[]
+  creditTopups   CreditTopupOrder[]
+  creditTransactions CreditTransaction[]
+  creditHolds    CreditHold[]
   receivedReviews UserReview[] @relation("ReviewTarget")
   writtenReviews UserReview[] @relation("ReviewAuthor")
   dealsAsCounterparty ListingDeal[] @relation("DealCounterparty")
@@ -181,6 +184,9 @@ model Listing {
   favorites     ListingFavorite[]
   promotionOrders PromotionOrder[]
   wantedAlertMatches WantedAlertMatch[]
+  viewDays      ListingViewDaily[]
+  posters       ShopBanner[]
+  revision      ListingRevision?
   deal ListingDeal?
 
   @@index([ownerId, publishedAt])

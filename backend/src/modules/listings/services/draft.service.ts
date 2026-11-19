@@ -6,7 +6,9 @@ import { DRAFT_EDITABLE } from '../listing.type.js';
 import { createInput, validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
-import { assertPublishable, assertQuota, requireOwnedListing, updateOwnedListing } from './listing.service.js';
+import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing } from './listing.service.js';
+import { assertNotDuplicate } from './listing-lifecycle.service.js';
+import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
 
 /** Số tin nháp đang giữ và giới hạn của gói */
 export const getDraftQuota = (ownerId: string) =>
@@ -37,13 +39,15 @@ export async function updateDraft(ownerId: string, id: string, data: DraftInput)
     const category = data.categoryId ? await listingRepository.findCategory(data.categoryId, tx) : null;
     if (category) validateAttributes(data.attributes, category.metadata, false);
     await updateOwnedListing(tx, id, ownerId, current.status, { ...data, status: ListingStatus.DRAFT, reviewReason: null });
+    // Tin đã duyệt đưa về nháp: bản sửa chờ duyệt không còn dùng (nháp đã chứa nội dung mới)
+    if (current.revision) await listingRepository.deleteRevision(tx, id);
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);
 }
 
 /** Đăng nháp: kiểm tra đủ nội dung như tin mới, cần ít nhất một ảnh, trừ lượt đăng */
-export async function publishDraft(ownerId: string, id: string) {
+export async function publishDraft(ownerId: string, id: string, payWithCredits = false, allowDuplicate = false) {
   const listing = await withQuotaTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (current.status === ListingStatus.PENDING) return listingRepository.findSelected(tx, id);
@@ -52,18 +56,24 @@ export async function publishDraft(ownerId: string, id: string) {
     const location = current.location as Record<string, unknown> | null;
     const data = createInput({
       title: current.title, description: current.description,
-      price: current.price.toString(), condition: current.condition,
+      price: current.price.toString(), originalPrice: current.originalPrice?.toString() ?? null, condition: current.condition,
       categoryId: current.categoryId, isNegotiable: current.isNegotiable,
       allowSale: current.allowSale, allowExchange: current.allowExchange,
       exchangeWish: current.exchangeWish, sellerType: current.sellerType, attributes: current.attributes,
+      displayDays: current.displayDays, startsAt: current.startsAt?.toISOString() ?? null,
       location: location
         ? Object.fromEntries(['provinceCode', 'wardCode', 'streetAddress', 'latitude', 'longitude', 'geoSource'].map((key) => [key, location[key]]))
         : null,
     });
-    await assertPublishable(tx, data);
+    const category = await assertPublishable(tx, data);
     const now = new Date();
-    await assertQuota(tx, ownerId, now, { daily: true });
-    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now });
+    await assertNotDuplicate(tx, ownerId, data, { excludeId: id, allowDuplicate, now });
+    const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
+    await assertOriginalPrice(tx, ownerId, now, data);
+    const display = await resolveDisplay(tx, ownerId, now, category, data);
+    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price,
+      condition: data.condition, displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays });
+    await chargeListing(tx, ownerId, id, price, data.title, display);
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);

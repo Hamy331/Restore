@@ -18,15 +18,15 @@ enum ShellQuickAction {
   /// Thống kê lượt xem, lượt quan tâm
   stats,
 
-  /// Trang cửa hàng của mình
-  shopPage;
+  /// Quản lý shop: thông tin, logo, ảnh bìa, màu nhận diện của shop mình
+  shopManage;
 
   IconData get icon => switch (this) {
     post => AppIcons.add,
     poster => AppIcons.posterPromo,
     boost => AppIcons.boost,
     stats => AppIcons.stats,
-    shopPage => AppIcons.shop,
+    shopManage => AppIcons.shop,
   };
 
   String label(AppLocalizations l10n) => switch (this) {
@@ -34,7 +34,7 @@ enum ShellQuickAction {
     poster => l10n.quickActionPoster,
     boost => l10n.quickActionBoost,
     stats => l10n.quickActionStats,
-    shopPage => l10n.quickActionShopPage,
+    shopManage => l10n.quickActionShopManage,
   };
 
   /// Nút nổi bật (tô cam) trong menu: quyền lợi chính của gói
@@ -46,6 +46,6 @@ enum ShellQuickAction {
       switch (plan) {
         SubscriptionPlan.personal => const [],
         SubscriptionPlan.pro => const [post, boost, stats],
-        SubscriptionPlan.shop => const [post, poster, boost, shopPage],
+        SubscriptionPlan.shop => const [post, poster, boost, shopManage],
       };
 }

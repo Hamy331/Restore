@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/core/utils/formatters/distance_formatter.dart';
 import 'package:restore/core/utils/formatters/time_ago_formatter.dart';
@@ -101,10 +102,7 @@ class AppListingCard extends StatelessWidget {
                             textColor: Colors.white,
                           ),
                         if (item.isFeatured)
-                          _Tag(
-                            label: l10n.homeFeaturedTag,
-                            color: AppColors.primary,
-                          ),
+                          _HotBadge(label: l10n.homeFeaturedTag),
                         if (listing.allowExchange)
                           _Tag(label: l10n.homeExchangeTag),
                       ],
@@ -270,6 +268,24 @@ class _Tag extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Nhãn tin Hot sale: nguyên cụm icon (ngọn lửa + chữ HOT SALE)
+class _HotBadge extends StatelessWidget {
+  const _HotBadge({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: label,
+    child: Image.asset(
+      AppImages.coreImages.hotSale,
+      height: 26,
+      fit: BoxFit.contain,
+      errorBuilder: (_, _, _) =>
+          const Icon(AppIcons.hot, size: 16, color: AppColors.error),
+    ),
+  );
 }
 
 class _FavoriteButton extends StatelessWidget {

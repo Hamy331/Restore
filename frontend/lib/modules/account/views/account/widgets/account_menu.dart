@@ -6,8 +6,10 @@ import '../../../../../core/constants/app_icons.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../auth/bloc/auth/auth_bloc.dart';
 import '../../../../auth/bloc/auth/auth_event.dart';
+import '../../../../credits/views/credit_wallet/credit_wallet_view.dart';
 import '../../../../trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import '../../../widgets/profile_header.dart';
+import '../../../../plans/views/plans/plans_view.dart';
 
 /// Báo tính năng chưa có màn hình; giữ nút theo thiết kế Figma.
 void showComingSoon(BuildContext context) =>
@@ -47,7 +49,11 @@ void showAccountMenu(BuildContext context) {
                   children: [
                     _MenuGroup(
                       items: [
-                        _MenuItem(AppIcons.wallet, l.accCoins, onTap: soon),
+                        _MenuItem(
+                          AppIcons.wallet,
+                          l.accCoins,
+                          onTap: () => open(CreditWalletView.path),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -70,7 +76,11 @@ void showAccountMenu(BuildContext context) {
                     const SizedBox(height: 16),
                     _MenuGroup(
                       items: [
-                        _MenuItem(AppIcons.pro, l.accProPlan, onTap: soon),
+                        _MenuItem(
+                          AppIcons.pro,
+                          l.accProPlan,
+                          onTap: () => open(PlansView.path),
+                        ),
                         _MenuItem(
                           AppIcons.listings,
                           l.accTransactions,

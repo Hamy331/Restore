@@ -24,6 +24,9 @@ class ListingDraft extends Equatable {
   final String description;
   final TradeType tradeType;
   final int? price; // VND
+
+  /// Giá gốc trước giảm (chỉ gói Cửa hàng), null = không giảm giá
+  final int? originalPrice;
   final bool isNegotiable;
   final String exchangeWish;
   final AddressInfo? address;
@@ -35,6 +38,12 @@ class ListingDraft extends Equatable {
   final ListingStatus status;
   final DateTime? updatedAt;
 
+  /// Số ngày hiển thị người bán chọn (null = số ngày miễn phí của chuyên mục)
+  final int? displayDays;
+
+  /// Ngày hẹn bắt đầu hiển thị (null = ngay khi được duyệt)
+  final DateTime? startsAt;
+
   const ListingDraft({
     this.id,
     this.categoryId = '',
@@ -43,6 +52,7 @@ class ListingDraft extends Equatable {
     this.description = '',
     this.tradeType = TradeType.sell,
     this.price,
+    this.originalPrice,
     this.isNegotiable = true,
     this.exchangeWish = '',
     this.address,
@@ -51,6 +61,8 @@ class ListingDraft extends Equatable {
     this.attributes = const {},
     this.status = ListingStatus.draft,
     this.updatedAt,
+    this.displayDays,
+    this.startsAt,
   });
 
   String? get coverImage => images.isEmpty ? null : images.first;
@@ -83,6 +95,7 @@ class ListingDraft extends Equatable {
             model.price == 0
         ? null
         : model.price,
+    originalPrice: model.originalPrice,
     condition: model.condition,
     isNegotiable: model.isNegotiable,
     tradeType: model.allowSale
@@ -96,6 +109,8 @@ class ListingDraft extends Equatable {
     attributes: model.attributes.map((key, value) => MapEntry(key, '$value')),
     status: model.status,
     updatedAt: model.updatedAt,
+    displayDays: model.displayDays,
+    startsAt: model.startsAt,
   );
 
   ListingDraft copyWith({
@@ -106,6 +121,7 @@ class ListingDraft extends Equatable {
     String? description,
     TradeType? tradeType,
     int? Function()? price,
+    int? Function()? originalPrice,
     bool? isNegotiable,
     String? exchangeWish,
     AddressInfo? address,
@@ -114,6 +130,8 @@ class ListingDraft extends Equatable {
     Map<String, String>? attributes,
     ListingStatus? status,
     DateTime? updatedAt,
+    int? Function()? displayDays,
+    DateTime? Function()? startsAt,
   }) {
     return ListingDraft(
       id: id ?? this.id,
@@ -123,6 +141,9 @@ class ListingDraft extends Equatable {
       description: description ?? this.description,
       tradeType: tradeType ?? this.tradeType,
       price: price != null ? price() : this.price,
+      originalPrice: originalPrice != null
+          ? originalPrice()
+          : this.originalPrice,
       isNegotiable: isNegotiable ?? this.isNegotiable,
       exchangeWish: exchangeWish ?? this.exchangeWish,
       address: address ?? this.address,
@@ -131,6 +152,8 @@ class ListingDraft extends Equatable {
       attributes: attributes ?? this.attributes,
       status: status ?? this.status,
       updatedAt: updatedAt ?? this.updatedAt,
+      displayDays: displayDays != null ? displayDays() : this.displayDays,
+      startsAt: startsAt != null ? startsAt() : this.startsAt,
     );
   }
 
@@ -148,12 +171,20 @@ class ListingDraft extends Equatable {
       'allowSale': tradeType.allowsSale,
       'allowExchange': tradeType.allowsExchange,
       'price': tradeType.requiresPrice ? '${price ?? 0}' : '0',
+      'originalPrice': tradeType.requiresPrice && originalPrice != null
+          ? '$originalPrice'
+          : null,
       'isNegotiable': tradeType.requiresPrice && isNegotiable,
       'exchangeWish': tradeType.allowsExchange ? exchangeWish.trim() : '',
-      'condition': condition?.apiValue,
+      // Danh mục không hỏi tình trạng (thú cưng) thì không gửi
+      'condition': (category?.hasCondition ?? true)
+          ? condition?.apiValue
+          : null,
       'sellerType': sellerType.name.toUpperCase(),
       'location': address?.toPayload(),
       'attributes': attributeValues,
+      'displayDays': displayDays,
+      'startsAt': startsAt?.toUtc().toIso8601String(),
     };
   }
 
@@ -166,6 +197,7 @@ class ListingDraft extends Equatable {
     description,
     tradeType,
     price,
+    originalPrice,
     isNegotiable,
     exchangeWish,
     address,
@@ -174,6 +206,8 @@ class ListingDraft extends Equatable {
     attributes,
     status,
     updatedAt,
+    displayDays,
+    startsAt,
   ];
 }
 
@@ -187,6 +221,7 @@ class _ContentKey extends Equatable {
         draft.description.trim(),
         draft.tradeType,
         draft.price,
+        draft.originalPrice,
         draft.isNegotiable,
         draft.exchangeWish.trim(),
         draft.address,
@@ -195,6 +230,8 @@ class _ContentKey extends Equatable {
           for (final entry in draft.attributes.entries)
             if (entry.value.trim().isNotEmpty) entry.key: entry.value.trim(),
         },
+        draft.displayDays,
+        draft.startsAt,
       ];
 
   @override

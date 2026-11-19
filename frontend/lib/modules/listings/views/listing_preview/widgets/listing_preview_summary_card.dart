@@ -31,7 +31,7 @@ class ListingPreviewSummaryCard extends StatelessWidget {
     final location = draft.address?.areaLabel;
     final tags = [
       ?category?.name.of(context),
-      ?draft.condition?.label(l10n),
+      if (category?.hasCondition ?? true) ?draft.condition?.label(l10n),
       if (draft.tradeType.requiresPrice && draft.isNegotiable) l10n.negotiable,
       draft.sellerType == SellerType.personal
           ? l10n.sellerPersonal

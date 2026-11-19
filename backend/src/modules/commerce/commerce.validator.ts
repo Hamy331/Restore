@@ -14,6 +14,19 @@ export const storeOrderBody = z.unknown().transform((body) => {
   return { packageId, categoryId };
 });
 
+/** Body POST /stores/subscribe: { packageId, categoryId? } */
+export const subscribeBody = z.unknown().transform((body) => {
+  const { packageId, categoryId } = (body ?? {}) as Record<string, unknown>;
+  if (typeof packageId !== 'string' || packageId.length > 100 ||
+      (categoryId !== undefined && (typeof categoryId !== 'string' || categoryId.length > 100))) {
+    throw new AppError(400, 'INVALID_STORE_ORDER', 'Gói hoặc danh mục không hợp lệ.');
+  }
+  return { packageId, categoryId: categoryId as string | undefined };
+});
+
+/** Query GET /stores/quote: { packageId } */
+export const quoteQuery = z.object({ packageId: z.string().min(1).max(100) });
+
 /* ---------- Gói đẩy tin ---------- */
 
 /** Gói đẩy tin: BUMP có priority 0, FEATURED có priority 1-10; thời lượng 1-30 ngày; giá chuỗi số VND */

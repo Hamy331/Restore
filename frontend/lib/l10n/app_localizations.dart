@@ -695,7 +695,7 @@ abstract class AppLocalizations {
   /// No description provided for @accProPlan.
   ///
   /// In en, this message translates to:
-  /// **'Pro plan'**
+  /// **'Account plan'**
   String get accProPlan;
 
   /// No description provided for @accCreateStore.
@@ -707,13 +707,13 @@ abstract class AppLocalizations {
   /// No description provided for @accCoins.
   ///
   /// In en, this message translates to:
-  /// **'ReStore coins'**
+  /// **'ReStore Points'**
   String get accCoins;
 
   /// No description provided for @accSaved.
   ///
   /// In en, this message translates to:
-  /// **'Saved'**
+  /// **'Profile saved'**
   String get accSaved;
 
   /// No description provided for @accSavedSearches.
@@ -3239,7 +3239,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeFeaturedTag.
   ///
   /// In en, this message translates to:
-  /// **'Featured'**
+  /// **'Hot'**
   String get homeFeaturedTag;
 
   /// No description provided for @homeExchangeTag.
@@ -5270,11 +5270,11 @@ abstract class AppLocalizations {
   /// **'Insights'**
   String get quickActionStats;
 
-  /// No description provided for @quickActionShopPage.
+  /// No description provided for @quickActionShopManage.
   ///
   /// In en, this message translates to:
-  /// **'Shop page'**
-  String get quickActionShopPage;
+  /// **'Manage shop'**
+  String get quickActionShopManage;
 
   /// No description provided for @trustedShopsFamousEyebrow.
   ///
@@ -5827,6 +5827,2958 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load more comments'**
   String get feedMoreComments;
+
+  /// No description provided for @creditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore Points'**
+  String get creditTitle;
+
+  /// No description provided for @creditAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available points'**
+  String get creditAvailable;
+
+  /// No description provided for @creditPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{amount} point} other{{amount} points}}'**
+  String creditPoints(int count, String amount);
+
+  /// No description provided for @creditUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'points'**
+  String get creditUnit;
+
+  /// No description provided for @creditPaidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchased'**
+  String get creditPaidLabel;
+
+  /// No description provided for @creditBonusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus'**
+  String get creditBonusLabel;
+
+  /// No description provided for @creditHeldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'On hold'**
+  String get creditHeldLabel;
+
+  /// No description provided for @creditBonusExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus points start expiring on {date}.'**
+  String creditBonusExpiry(String date);
+
+  /// No description provided for @creditHeldHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Points on hold belong to listings awaiting review and come back if a listing is rejected.'**
+  String get creditHeldHint;
+
+  /// No description provided for @creditTopupAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy points'**
+  String get creditTopupAction;
+
+  /// No description provided for @creditUsesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use points to'**
+  String get creditUsesTitle;
+
+  /// No description provided for @creditUsePostMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Post more'**
+  String get creditUsePostMore;
+
+  /// No description provided for @creditUseBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost a listing'**
+  String get creditUseBoost;
+
+  /// No description provided for @creditUseUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade plan'**
+  String get creditUseUpgrade;
+
+  /// No description provided for @creditRecentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent activity'**
+  String get creditRecentTitle;
+
+  /// No description provided for @creditSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get creditSeeAll;
+
+  /// No description provided for @creditEmptyHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No point activity yet'**
+  String get creditEmptyHistory;
+
+  /// No description provided for @creditLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your points'**
+  String get creditLoadError;
+
+  /// No description provided for @creditHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Points history'**
+  String get creditHistoryTitle;
+
+  /// No description provided for @creditFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get creditFilterAll;
+
+  /// No description provided for @creditFilterTopup.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases'**
+  String get creditFilterTopup;
+
+  /// No description provided for @creditFilterSpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get creditFilterSpend;
+
+  /// No description provided for @creditFilterRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get creditFilterRefund;
+
+  /// No description provided for @creditTxnTopup.
+  ///
+  /// In en, this message translates to:
+  /// **'Points purchase'**
+  String get creditTxnTopup;
+
+  /// No description provided for @creditTxnBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus points'**
+  String get creditTxnBonus;
+
+  /// No description provided for @creditTxnSpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Points spent'**
+  String get creditTxnSpend;
+
+  /// No description provided for @creditTxnRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Points refunded'**
+  String get creditTxnRefund;
+
+  /// No description provided for @creditTxnExpire.
+  ///
+  /// In en, this message translates to:
+  /// **'Points expired'**
+  String get creditTxnExpire;
+
+  /// No description provided for @creditTxnAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment'**
+  String get creditTxnAdjust;
+
+  /// No description provided for @creditTxnOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order {code}'**
+  String creditTxnOrder(String code);
+
+  /// No description provided for @creditTopupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a pack'**
+  String get creditTopupTitle;
+
+  /// No description provided for @creditRate.
+  ///
+  /// In en, this message translates to:
+  /// **'1 point = 1,000 VND. Bigger packs include bonus points.'**
+  String get creditRate;
+
+  /// No description provided for @creditPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get creditPopular;
+
+  /// No description provided for @creditBonusTag.
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} bonus'**
+  String creditBonusTag(String amount);
+
+  /// No description provided for @creditNoBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'No bonus'**
+  String get creditNoBonus;
+
+  /// No description provided for @creditTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Points can only be used in ReStore. They can\'t be cashed out or transferred to anyone. Bonus points are used first and expire after 90 days.'**
+  String get creditTerms;
+
+  /// No description provided for @creditContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue · {price}'**
+  String creditContinue(String price);
+
+  /// No description provided for @creditConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm purchase'**
+  String get creditConfirmTitle;
+
+  /// No description provided for @creditSummaryPack.
+  ///
+  /// In en, this message translates to:
+  /// **'Pack'**
+  String get creditSummaryPack;
+
+  /// No description provided for @creditSummaryReceive.
+  ///
+  /// In en, this message translates to:
+  /// **'You get'**
+  String get creditSummaryReceive;
+
+  /// No description provided for @creditSummaryTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get creditSummaryTotal;
+
+  /// No description provided for @creditReceiveWithBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'{total} points ({bonus} bonus)'**
+  String creditReceiveWithBonus(String total, String bonus);
+
+  /// No description provided for @creditPayMethodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get creditPayMethodTitle;
+
+  /// No description provided for @creditMethodZalopay.
+  ///
+  /// In en, this message translates to:
+  /// **'ZaloPay'**
+  String get creditMethodZalopay;
+
+  /// No description provided for @creditMethodZalopayDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'ZaloPay wallet, local ATM card or international card.'**
+  String get creditMethodZalopayDesc;
+
+  /// No description provided for @creditMethodVietqr.
+  ///
+  /// In en, this message translates to:
+  /// **'VietQR bank transfer'**
+  String get creditMethodVietqr;
+
+  /// No description provided for @creditMethodVietqrDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan with any banking app. Points arrive when the money does.'**
+  String get creditMethodVietqrDesc;
+
+  /// No description provided for @creditSandboxNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Test mode (sandbox): no real money is charged.'**
+  String get creditSandboxNote;
+
+  /// No description provided for @creditAgree.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree that points can\'t be exchanged back for cash, unless a payment fails or is charged twice.'**
+  String get creditAgree;
+
+  /// No description provided for @creditPayAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {price}'**
+  String creditPayAction(String price);
+
+  /// No description provided for @creditPayZalopayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with ZaloPay'**
+  String get creditPayZalopayTitle;
+
+  /// No description provided for @creditPayBankTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank transfer'**
+  String get creditPayBankTitle;
+
+  /// No description provided for @creditOrderCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Order code'**
+  String get creditOrderCode;
+
+  /// No description provided for @creditGatewayNotConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'ZaloPay is skipped (debug mode or no server keys). Use the buttons below to simulate the result.'**
+  String get creditGatewayNotConnected;
+
+  /// No description provided for @creditOpenGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Open ZaloPay checkout'**
+  String get creditOpenGateway;
+
+  /// No description provided for @creditWaitingGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish paying on the ZaloPay page, then come back here. Your points update automatically.'**
+  String get creditWaitingGateway;
+
+  /// No description provided for @creditSimulateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate the payment result (test mode only)'**
+  String get creditSimulateTitle;
+
+  /// No description provided for @creditSimulateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get creditSimulateSuccess;
+
+  /// No description provided for @creditSimulateFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get creditSimulateFail;
+
+  /// No description provided for @creditScanQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan with any banking app'**
+  String get creditScanQr;
+
+  /// No description provided for @creditAccountNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Account number'**
+  String get creditAccountNo;
+
+  /// No description provided for @creditAccountName.
+  ///
+  /// In en, this message translates to:
+  /// **'Account name'**
+  String get creditAccountName;
+
+  /// No description provided for @creditTransferContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer note'**
+  String get creditTransferContent;
+
+  /// No description provided for @creditQrExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Code expires at {time}'**
+  String creditQrExpires(String time);
+
+  /// No description provided for @creditWaitingTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for your transfer. Keep the transfer note as is so the points arrive automatically.'**
+  String get creditWaitingTransfer;
+
+  /// No description provided for @creditVietQrUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The receiving bank account isn\'t set up on the server yet.'**
+  String get creditVietQrUnavailable;
+
+  /// No description provided for @creditCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get creditCopied;
+
+  /// No description provided for @creditCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get creditCopy;
+
+  /// No description provided for @creditCancelOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get creditCancelOrder;
+
+  /// No description provided for @creditResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get creditResultTitle;
+
+  /// No description provided for @creditSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase complete'**
+  String get creditSuccessTitle;
+
+  /// No description provided for @creditSuccessAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} points'**
+  String creditSuccessAmount(String amount);
+
+  /// No description provided for @creditSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The points are in your wallet.'**
+  String get creditSuccessBody;
+
+  /// No description provided for @creditPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for confirmation'**
+  String get creditPendingTitle;
+
+  /// No description provided for @creditPendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your points will arrive as soon as the payment is confirmed. You can leave this page.'**
+  String get creditPendingBody;
+
+  /// No description provided for @creditFailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase not completed'**
+  String get creditFailTitle;
+
+  /// No description provided for @creditFailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment was cancelled or expired. You haven\'t been charged.'**
+  String get creditFailBody;
+
+  /// No description provided for @creditCheckAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get creditCheckAgain;
+
+  /// No description provided for @creditTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get creditTryAgain;
+
+  /// No description provided for @creditDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get creditDone;
+
+  /// No description provided for @creditBackToWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to wallet'**
+  String get creditBackToWallet;
+
+  /// No description provided for @creditErrorTooManyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'You have too many unpaid orders. Wait 15 minutes for them to expire or cancel one.'**
+  String get creditErrorTooManyPending;
+
+  /// No description provided for @creditErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong, please try again.'**
+  String get creditErrorGeneric;
+
+  /// No description provided for @creditPackagesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load point packs'**
+  String get creditPackagesError;
+
+  /// No description provided for @postingLimitTotalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Free listings used up'**
+  String get postingLimitTotalTitle;
+
+  /// No description provided for @postingLimitTotalMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A personal account can have at most {limit} free listings at once across all categories.'**
+  String postingLimitTotalMessage(int limit);
+
+  /// No description provided for @postingLimitRecentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have posted for free in {category} many times in the last {days} days. Each category allows up to twice its free slots every {days} days.'**
+  String postingLimitRecentMessage(String category, int days);
+
+  /// No description provided for @postingPayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post this listing for {credits} points'**
+  String postingPayTitle(int credits);
+
+  /// No description provided for @postingPayBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallet: {available} points'**
+  String postingPayBalance(int available);
+
+  /// No description provided for @postingPayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points are held when you submit and only spent once the listing is approved. Rejected listings get their points back.'**
+  String get postingPayNote;
+
+  /// No description provided for @postingPayMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'You need {missing} more points.'**
+  String postingPayMissing(int missing);
+
+  /// No description provided for @postingPayContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue · {credits} points'**
+  String postingPayContinue(int credits);
+
+  /// No description provided for @postingPayPublish.
+  ///
+  /// In en, this message translates to:
+  /// **'Post · {credits} points'**
+  String postingPayPublish(int credits);
+
+  /// No description provided for @postingTopUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy points'**
+  String get postingTopUp;
+
+  /// No description provided for @postingFreeWaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Or free up a free slot'**
+  String get postingFreeWaysTitle;
+
+  /// No description provided for @postingQuotaTotalUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'{used}/{limit} free listings used on your account'**
+  String postingQuotaTotalUsage(int used, int limit);
+
+  /// No description provided for @postingQuotaPaidHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of slots? Post more with points, from {credits} points per listing.'**
+  String postingQuotaPaidHint(int credits);
+
+  /// No description provided for @accExpiresIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String accExpiresIn(int days);
+
+  /// No description provided for @accExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get accExpired;
+
+  /// No description provided for @accReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get accReactivate;
+
+  /// No description provided for @accReactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing reactivated'**
+  String get accReactivated;
+
+  /// No description provided for @accExtend.
+  ///
+  /// In en, this message translates to:
+  /// **'Extend listing'**
+  String get accExtend;
+
+  /// No description provided for @accExtendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this listing for {days} more days for {credits} points. Points are spent right away, no new review needed.'**
+  String accExtendMessage(int days, int credits);
+
+  /// No description provided for @accExtendPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Extend · {credits} points'**
+  String accExtendPay(int credits);
+
+  /// No description provided for @accExtendTooEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'You can extend once {days} days or fewer are left.'**
+  String accExtendTooEarly(int days);
+
+  /// No description provided for @accExtended.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing extended'**
+  String get accExtended;
+
+  /// No description provided for @postingPayReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate · {credits} points'**
+  String postingPayReactivate(int credits);
+
+  /// No description provided for @postingLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get postingLater;
+
+  /// No description provided for @duplicateActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You already posted this'**
+  String get duplicateActiveTitle;
+
+  /// No description provided for @duplicateActiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A matching listing of yours is live or waiting for review, so there is no need to post it again.'**
+  String get duplicateActiveMessage;
+
+  /// No description provided for @duplicateInactiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reuse your old listing?'**
+  String get duplicateInactiveTitle;
+
+  /// No description provided for @duplicateInactiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a matching listing that is hidden or expired. Reactivate it to keep its views and saves.'**
+  String get duplicateInactiveMessage;
+
+  /// No description provided for @duplicateOpenOld.
+  ///
+  /// In en, this message translates to:
+  /// **'See old listing'**
+  String get duplicateOpenOld;
+
+  /// No description provided for @duplicatePostNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Post new anyway'**
+  String get duplicatePostNew;
+
+  /// No description provided for @postingPayReactivateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this listing again for {credits} points'**
+  String postingPayReactivateTitle(int credits);
+
+  /// No description provided for @postingPayNowNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points are spent as soon as the listing is shown again, no new review needed.'**
+  String get postingPayNowNote;
+
+  /// No description provided for @boostSheetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing moves to the top of the list for 24 hours.'**
+  String get boostSheetMessage;
+
+  /// No description provided for @boostFreeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses 1 free boost from your plan, {left}/{perMonth} left this month.'**
+  String boostFreeNote(int left, int perMonth);
+
+  /// No description provided for @boostPayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Costs {credits} points, spent right away.'**
+  String boostPayNote(int credits);
+
+  /// No description provided for @boostDiscountNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan gets {percent}% off.'**
+  String boostDiscountNote(int percent);
+
+  /// No description provided for @boostUseFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost for free'**
+  String get boostUseFree;
+
+  /// No description provided for @boostPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost · {credits} points'**
+  String boostPay(int credits);
+
+  /// No description provided for @boostDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing boosted to the top'**
+  String get boostDone;
+
+  /// No description provided for @boostTooSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing was just boosted. You can boost it again in {hours} hours.'**
+  String boostTooSoon(int hours);
+
+  /// No description provided for @plansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account plans'**
+  String get plansTitle;
+
+  /// No description provided for @plansSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid with points, 30 days each time'**
+  String get plansSubtitle;
+
+  /// No description provided for @plansCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current plan'**
+  String get plansCurrent;
+
+  /// No description provided for @plansCurrentUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until {date}'**
+  String plansCurrentUntil(String date);
+
+  /// No description provided for @plansFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get plansFree;
+
+  /// No description provided for @plansPersonalBenefitFree.
+  ///
+  /// In en, this message translates to:
+  /// **'1 to 3 free listings per category, up to 5 in total'**
+  String get plansPersonalBenefitFree;
+
+  /// No description provided for @plansPersonalBenefitPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of slots? Post more with points'**
+  String get plansPersonalBenefitPay;
+
+  /// No description provided for @plansPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} points / 30 days'**
+  String plansPrice(int price);
+
+  /// No description provided for @plansBenefitActive.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active listings at a time'**
+  String plansBenefitActive(int count);
+
+  /// No description provided for @plansBenefitDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new listings per day'**
+  String plansBenefitDaily(int count);
+
+  /// No description provided for @plansBenefitDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep {count} drafts'**
+  String plansBenefitDrafts(int count);
+
+  /// No description provided for @plansBenefitBoosts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} free boosts every month'**
+  String plansBenefitBoosts(int count);
+
+  /// No description provided for @plansBenefitBoostDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off boosts'**
+  String plansBenefitBoostDiscount(int percent);
+
+  /// No description provided for @plansBenefitPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown first in your main category'**
+  String get plansBenefitPriority;
+
+  /// No description provided for @plansBenefitShopPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own shop page (coming soon)'**
+  String get plansBenefitShopPage;
+
+  /// No description provided for @plansBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Get this plan'**
+  String get plansBuy;
+
+  /// No description provided for @plansRenew.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew'**
+  String get plansRenew;
+
+  /// No description provided for @plansUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade'**
+  String get plansUpgrade;
+
+  /// No description provided for @plansInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get plansInUse;
+
+  /// No description provided for @plansLowerLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Available when your current plan ends'**
+  String get plansLowerLocked;
+
+  /// No description provided for @plansNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrading mid-period credits the unused part of your old plan. Renewing adds 30 days. Points are spent right away and the plan starts immediately.'**
+  String get plansNote;
+
+  /// No description provided for @plansCheckoutPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan price'**
+  String get plansCheckoutPrice;
+
+  /// No description provided for @plansCheckoutCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit for unused days'**
+  String get plansCheckoutCredit;
+
+  /// No description provided for @plansCheckoutTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'To pay'**
+  String get plansCheckoutTotal;
+
+  /// No description provided for @plansCheckoutUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until'**
+  String get plansCheckoutUntil;
+
+  /// No description provided for @plansCheckoutCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Main category'**
+  String get plansCheckoutCategory;
+
+  /// No description provided for @plansCheckoutCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings in this category are shown first.'**
+  String get plansCheckoutCategoryHint;
+
+  /// No description provided for @plansCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} points'**
+  String plansCredits(int count);
+
+  /// No description provided for @plansPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount} points'**
+  String plansPay(int amount);
+
+  /// No description provided for @plansActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} plan activated'**
+  String plansActivated(String name);
+
+  /// No description provided for @plansLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load plans.'**
+  String get plansLoadError;
+
+  /// No description provided for @plansActionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get plansActionError;
+
+  /// No description provided for @plansUpgradeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade plan'**
+  String get plansUpgradeAction;
+
+  /// No description provided for @postingUpgradeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Need more listings? Upgrade your plan'**
+  String get postingUpgradeHint;
+
+  /// No description provided for @hotSaleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot sale'**
+  String get hotSaleTitle;
+
+  /// No description provided for @featureAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Put on Hot sale'**
+  String get featureAction;
+
+  /// No description provided for @featureSheetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing shows in Hot sale on the home page and at the top of its category, above other listings, for the time you choose.'**
+  String get featureSheetMessage;
+
+  /// No description provided for @featureDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String featureDays(int days);
+
+  /// No description provided for @featurePay.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy · {credits} points'**
+  String featurePay(int credits);
+
+  /// No description provided for @featureDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing is on Hot sale'**
+  String get featureDone;
+
+  /// No description provided for @featureRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing is on Hot sale until {date}.'**
+  String featureRunning(String date);
+
+  /// No description provided for @featureUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Only visible listings can go on Hot sale.'**
+  String get featureUnavailable;
+
+  /// No description provided for @featureNoOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'No Hot sale packages are on sale right now.'**
+  String get featureNoOptions;
+
+  /// No description provided for @accExpiresOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date} · {days} days left'**
+  String accExpiresOn(String date, int days);
+
+  /// No description provided for @accExpiredOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired {date}'**
+  String accExpiredOn(String date);
+
+  /// No description provided for @previewDisplayDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing shows for {days} days after approval. You can extend it near the end, or reactivate it once it expires.'**
+  String previewDisplayDays(int days);
+
+  /// No description provided for @hotSaleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings sellers are promoting right now, updated all the time.'**
+  String get hotSaleSubtitle;
+
+  /// No description provided for @hotSaleLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load Hot sale listings'**
+  String get hotSaleLoadError;
+
+  /// No description provided for @hotSaleEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Hot sale listings yet'**
+  String get hotSaleEmptyTitle;
+
+  /// No description provided for @hotSaleEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings that sellers put on Hot sale will show up here.'**
+  String get hotSaleEmptyBody;
+
+  /// No description provided for @hotSaleEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen all Hot sale listings'**
+  String get hotSaleEnd;
+
+  /// No description provided for @displayDaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Display time'**
+  String get displayDaysTitle;
+
+  /// No description provided for @displayDaysFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free · {days} days'**
+  String displayDaysFree(int days);
+
+  /// No description provided for @displayDaysPlus.
+  ///
+  /// In en, this message translates to:
+  /// **'+{days} days'**
+  String displayDaysPlus(int days);
+
+  /// No description provided for @displayDaysRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} → {end} · {days} days'**
+  String displayDaysRange(String start, String end, int days);
+
+  /// No description provided for @displayDaysStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get displayDaysStart;
+
+  /// No description provided for @displayDaysEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get displayDaysEnd;
+
+  /// No description provided for @displayDaysToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today, once approved'**
+  String get displayDaysToday;
+
+  /// No description provided for @displayDaysCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Days on display'**
+  String get displayDaysCount;
+
+  /// No description provided for @displayDaysExtraCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra days'**
+  String get displayDaysExtraCount;
+
+  /// No description provided for @displayDaysIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes {free} free days for this category'**
+  String displayDaysIncluded(int free);
+
+  /// No description provided for @displayDaysExtraPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} extra days: {credits} points'**
+  String displayDaysExtraPrice(int days, int credits);
+
+  /// No description provided for @displayDaysNoCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get displayDaysNoCharge;
+
+  /// No description provided for @displayDaysPackSave.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}-day pack price, you save {credits} points'**
+  String displayDaysPackSave(int days, int credits);
+
+  /// No description provided for @displayDaysSuggest.
+  ///
+  /// In en, this message translates to:
+  /// **'Get {days} days for {credits} points'**
+  String displayDaysSuggest(int days, int credits);
+
+  /// No description provided for @displayDaysMax.
+  ///
+  /// In en, this message translates to:
+  /// **'This category can be shown for up to {days} days.'**
+  String displayDaysMax(int days);
+
+  /// No description provided for @displayDaysPayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points are held when you post, charged on approval and refunded if rejected.'**
+  String get displayDaysPayNote;
+
+  /// No description provided for @displayDaysDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get displayDaysDone;
+
+  /// No description provided for @displayDaysCardHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change the start date or add days'**
+  String get displayDaysCardHint;
+
+  /// No description provided for @displayDaysScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled from {date}'**
+  String displayDaysScheduled(String date);
+
+  /// No description provided for @extendNewEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'New end date: {date}'**
+  String extendNewEnd(String date);
+
+  /// No description provided for @extendCurrentEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing until {date}'**
+  String extendCurrentEnd(String date);
+
+  /// No description provided for @extendAddable.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add up to {days} more days'**
+  String extendAddable(int days);
+
+  /// No description provided for @extendLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing is already at the {days}-day maximum.'**
+  String extendLimitReached(int days);
+
+  /// No description provided for @extendChargeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points are charged now, no new review needed.'**
+  String get extendChargeNote;
+
+  /// No description provided for @autoExtendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-extend 30 days'**
+  String get autoExtendTitle;
+
+  /// No description provided for @autoExtendBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When less than a day is left, {credits} points are charged if your wallet has enough.'**
+  String autoExtendBody(int credits);
+
+  /// No description provided for @autoExtendOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-extend is on'**
+  String get autoExtendOn;
+
+  /// No description provided for @autoExtendOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-extend is off'**
+  String get autoExtendOff;
+
+  /// No description provided for @accExtendedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Extended by {days} days'**
+  String accExtendedDays(int days);
+
+  /// No description provided for @displayDaysTodayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get displayDaysTodayShort;
+
+  /// No description provided for @displayDaysShortTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough points for extra days'**
+  String get displayDaysShortTitle;
+
+  /// No description provided for @displayDaysShortBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You need {missing} more points for the extra days. Top up, or post with the free days.'**
+  String displayDaysShortBody(int missing);
+
+  /// No description provided for @displayDaysUseFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Post with {days} free days'**
+  String displayDaysUseFree(int days);
+
+  /// No description provided for @originalPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Original price (before discount)'**
+  String get originalPriceLabel;
+
+  /// No description provided for @originalPricePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty if not on sale'**
+  String get originalPricePlaceholder;
+
+  /// No description provided for @originalPriceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.'**
+  String get originalPriceHint;
+
+  /// No description provided for @originalPriceDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off the original price'**
+  String originalPriceDiscount(int percent);
+
+  /// No description provided for @originalPriceError.
+  ///
+  /// In en, this message translates to:
+  /// **'Original price must be higher than the sale price'**
+  String get originalPriceError;
+
+  /// No description provided for @promoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote listing'**
+  String get promoTitle;
+
+  /// No description provided for @promoNotPromotable.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing isn\'t visible, so it can\'t be promoted. Show it again in Manage listings, then come back.'**
+  String get promoNotPromotable;
+
+  /// No description provided for @promoBoostRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'At the top of the list until {date}'**
+  String promoBoostRunning(String date);
+
+  /// No description provided for @promoBoostAgainAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost again after {date}'**
+  String promoBoostAgainAt(String date);
+
+  /// No description provided for @promoRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get promoRunning;
+
+  /// No description provided for @promoHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent promotions'**
+  String get promoHistoryTitle;
+
+  /// No description provided for @promoHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing hasn\'t been promoted yet.'**
+  String get promoHistoryEmpty;
+
+  /// No description provided for @promoHistoryFeature.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot sale {days} days'**
+  String promoHistoryFeature(int days);
+
+  /// No description provided for @promoFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get promoFree;
+
+  /// No description provided for @promoEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get promoEnded;
+
+  /// No description provided for @promoLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load promotion info'**
+  String get promoLoadError;
+
+  /// No description provided for @promoBalanceAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'{left} points left in your wallet after paying.'**
+  String promoBalanceAfter(int left);
+
+  /// No description provided for @promoPickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a listing to promote'**
+  String get promoPickTitle;
+
+  /// No description provided for @promoPickSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Only visible listings can be boosted or put on Hot sale'**
+  String get promoPickSubtitle;
+
+  /// No description provided for @promoPickEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no visible listings yet.'**
+  String get promoPickEmpty;
+
+  /// No description provided for @hubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotions'**
+  String get hubTitle;
+
+  /// No description provided for @hubFreeBoosts.
+  ///
+  /// In en, this message translates to:
+  /// **'{left}/{perMonth} free boosts left'**
+  String hubFreeBoosts(int left, int perMonth);
+
+  /// No description provided for @hubThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month: {boosts} boosts · {features} Hot sale'**
+  String hubThisMonth(int boosts, int features);
+
+  /// No description provided for @hubFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hubFilterAll;
+
+  /// No description provided for @hubFilterRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Promoted'**
+  String get hubFilterRunning;
+
+  /// No description provided for @hubFilterExpiring.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring soon'**
+  String get hubFilterExpiring;
+
+  /// No description provided for @hubFilterIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not promoted'**
+  String get hubFilterIdle;
+
+  /// No description provided for @hubBoostedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Boosted · {time} left'**
+  String hubBoostedFor(String time);
+
+  /// No description provided for @hubFeaturedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot sale · {time} left'**
+  String hubFeaturedFor(String time);
+
+  /// No description provided for @hubExpiresIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires in {time}'**
+  String hubExpiresIn(String time);
+
+  /// No description provided for @hubHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour} other{{count} hours}}'**
+  String hubHours(int count);
+
+  /// No description provided for @hubDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String hubDays(int count);
+
+  /// No description provided for @hubAutoExtend.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-extend'**
+  String get hubAutoExtend;
+
+  /// No description provided for @hubDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get hubDetails;
+
+  /// No description provided for @hubEmptyRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'No listing is boosted or on Hot sale right now.'**
+  String get hubEmptyRunning;
+
+  /// No description provided for @hubEmptyExpiring.
+  ///
+  /// In en, this message translates to:
+  /// **'No listing expires in the next 7 days.'**
+  String get hubEmptyExpiring;
+
+  /// No description provided for @hubEmptyIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'All your listings are being promoted.'**
+  String get hubEmptyIdle;
+
+  /// No description provided for @hubExpiringTip.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} listings expiring soon: extend them so they stay visible.'**
+  String hubExpiringTip(int count);
+
+  /// No description provided for @insTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insTitle;
+
+  /// No description provided for @insRangeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String insRangeDays(int days);
+
+  /// No description provided for @insViews.
+  ///
+  /// In en, this message translates to:
+  /// **'Views'**
+  String get insViews;
+
+  /// No description provided for @insSaves.
+  ///
+  /// In en, this message translates to:
+  /// **'Saves'**
+  String get insSaves;
+
+  /// No description provided for @insChats.
+  ///
+  /// In en, this message translates to:
+  /// **'People who messaged'**
+  String get insChats;
+
+  /// No description provided for @insUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Up {percent}% vs previous period'**
+  String insUp(int percent);
+
+  /// No description provided for @insDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Down {percent}% vs previous period'**
+  String insDown(int percent);
+
+  /// No description provided for @insSame.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as previous period'**
+  String get insSame;
+
+  /// No description provided for @insNew.
+  ///
+  /// In en, this message translates to:
+  /// **'None in previous period'**
+  String get insNew;
+
+  /// No description provided for @insChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Views per day'**
+  String get insChartTitle;
+
+  /// No description provided for @insChartEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No views in this period yet.'**
+  String get insChartEmpty;
+
+  /// No description provided for @insChartDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}: {views} views · {saves} saves'**
+  String insChartDay(String date, int views, int saves);
+
+  /// No description provided for @insChartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a bar to see that day'**
+  String get insChartHint;
+
+  /// No description provided for @insListingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get insListingsTitle;
+
+  /// No description provided for @insActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get insActive;
+
+  /// No description provided for @insPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get insPending;
+
+  /// No description provided for @insHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get insHidden;
+
+  /// No description provided for @insSold.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold'**
+  String get insSold;
+
+  /// No description provided for @insTopTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Most viewed listings'**
+  String get insTopTitle;
+
+  /// No description provided for @insTopStats.
+  ///
+  /// In en, this message translates to:
+  /// **'{views} views · {saves} saves'**
+  String insTopStats(int views, int saves);
+
+  /// No description provided for @insTopEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No visible listings yet.'**
+  String get insTopEmpty;
+
+  /// No description provided for @insTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips'**
+  String get insTipsTitle;
+
+  /// No description provided for @insTipBoost.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is your most viewed listing. Boost it to stay on top.'**
+  String insTipBoost(String title);
+
+  /// No description provided for @insTipExpiring.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} listings expire within 7 days. Extend them so they stay visible.'**
+  String insTipExpiring(int count);
+
+  /// No description provided for @insTipNoViews.
+  ///
+  /// In en, this message translates to:
+  /// **'No views yet: clear photos, a specific title and a fair price help people notice your listings.'**
+  String get insTipNoViews;
+
+  /// No description provided for @insPromotions.
+  ///
+  /// In en, this message translates to:
+  /// **'This period: {boosts} boosts · {features} Hot sale'**
+  String insPromotions(int boosts, int features);
+
+  /// No description provided for @insLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load insights'**
+  String get insLoadError;
+
+  /// No description provided for @insViewsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily views are recorded from 11/11/2026.'**
+  String get insViewsNote;
+
+  /// No description provided for @spTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop posters'**
+  String get spTitle;
+
+  /// No description provided for @spCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'New poster'**
+  String get spCreate;
+
+  /// No description provided for @spLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load posters'**
+  String get spLoadError;
+
+  /// No description provided for @spNoShopTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have a shop page yet'**
+  String get spNoShopTitle;
+
+  /// No description provided for @spNoShopBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters appear on your shop page and on Trusted shops, so you need a shop page first.'**
+  String get spNoShopBody;
+
+  /// No description provided for @spPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters are part of the Store plan'**
+  String get spPlanTitle;
+
+  /// No description provided for @spPlanBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to the Store plan to run posters on your shop page and on Trusted shops.'**
+  String get spPlanBody;
+
+  /// No description provided for @spSeePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'See plans'**
+  String get spSeePlans;
+
+  /// No description provided for @spSlots.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters at once'**
+  String get spSlots;
+
+  /// No description provided for @spMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent this month'**
+  String get spMonthly;
+
+  /// No description provided for @spUnverified.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop isn\'t verified yet, so approved posters aren\'t shown publicly.'**
+  String get spUnverified;
+
+  /// No description provided for @spCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t send posters until {date} because several were rejected.'**
+  String spCooldown(String date);
+
+  /// No description provided for @spRules.
+  ///
+  /// In en, this message translates to:
+  /// **'1200×600 image (2:1), runs {min} to {max} days. Reviewed within about 24 hours.'**
+  String spRules(int min, int max);
+
+  /// No description provided for @spMonthlyFull.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve sent all {limit} posters for this month.'**
+  String spMonthlyFull(int limit);
+
+  /// No description provided for @spFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get spFilterAll;
+
+  /// No description provided for @spFilterRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get spFilterRunning;
+
+  /// No description provided for @spFilterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get spFilterPending;
+
+  /// No description provided for @spFilterScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get spFilterScheduled;
+
+  /// No description provided for @spFilterRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get spFilterRejected;
+
+  /// No description provided for @spFilterEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get spFilterEnded;
+
+  /// No description provided for @spStateStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get spStateStopped;
+
+  /// No description provided for @spEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No posters yet'**
+  String get spEmpty;
+
+  /// No description provided for @spEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first poster to promote a shop campaign.'**
+  String get spEmptyBody;
+
+  /// No description provided for @spEmptyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No posters here.'**
+  String get spEmptyFilter;
+
+  /// No description provided for @spDates.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end} · {days} days'**
+  String spDates(String start, String end, int days);
+
+  /// No description provided for @spOpensShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens your shop page'**
+  String get spOpensShop;
+
+  /// No description provided for @spOpensListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens listing: {title}'**
+  String spOpensListing(String title);
+
+  /// No description provided for @spRejectedReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected: {reason}'**
+  String spRejectedReason(String reason);
+
+  /// No description provided for @spReasonWrongSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong image size'**
+  String get spReasonWrongSize;
+
+  /// No description provided for @spReasonMisleadingPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Misleading price or offer'**
+  String get spReasonMisleadingPrice;
+
+  /// No description provided for @spReasonBrandMisuse.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a brand or logo that isn\'t yours'**
+  String get spReasonBrandMisuse;
+
+  /// No description provided for @spReasonProhibited.
+  ///
+  /// In en, this message translates to:
+  /// **'Prohibited content'**
+  String get spReasonProhibited;
+
+  /// No description provided for @spReasonTooMuchText.
+  ///
+  /// In en, this message translates to:
+  /// **'Too much text on the image'**
+  String get spReasonTooMuchText;
+
+  /// No description provided for @spReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other reason'**
+  String get spReasonOther;
+
+  /// No description provided for @spEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get spEdit;
+
+  /// No description provided for @spResubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit and resend'**
+  String get spResubmit;
+
+  /// No description provided for @spStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get spStop;
+
+  /// No description provided for @spCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get spCancel;
+
+  /// No description provided for @spStopTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop this poster?'**
+  String get spStopTitle;
+
+  /// No description provided for @spStopBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The poster stops showing right away and can\'t be restarted.'**
+  String get spStopBody;
+
+  /// No description provided for @spCancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw this poster?'**
+  String get spCancelTitle;
+
+  /// No description provided for @spCancelBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It still counts toward this month\'s posters.'**
+  String get spCancelBody;
+
+  /// No description provided for @spConfirmStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop poster'**
+  String get spConfirmStop;
+
+  /// No description provided for @spConfirmCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get spConfirmCancel;
+
+  /// No description provided for @spKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get spKeep;
+
+  /// No description provided for @spStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster stopped'**
+  String get spStopped;
+
+  /// No description provided for @spNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New poster'**
+  String get spNewTitle;
+
+  /// No description provided for @spEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit poster'**
+  String get spEditTitle;
+
+  /// No description provided for @spImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster image'**
+  String get spImage;
+
+  /// No description provided for @spPickImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a 1200×600 image'**
+  String get spPickImage;
+
+  /// No description provided for @spChangeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change image'**
+  String get spChangeImage;
+
+  /// No description provided for @spImageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick any image, then drag and zoom it into the 2:1 frame. Put the text in the image itself.'**
+  String get spImageHint;
+
+  /// No description provided for @spImageRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a poster image.'**
+  String get spImageRequired;
+
+  /// No description provided for @spName.
+  ///
+  /// In en, this message translates to:
+  /// **'Campaign name'**
+  String get spName;
+
+  /// No description provided for @spNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Galaxy Week up to 20% off'**
+  String get spNameHint;
+
+  /// No description provided for @spNameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Not drawn on the image; used by screen readers and to keep track.'**
+  String get spNameHelper;
+
+  /// No description provided for @spNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a campaign name.'**
+  String get spNameRequired;
+
+  /// No description provided for @spOpens.
+  ///
+  /// In en, this message translates to:
+  /// **'When people tap the poster'**
+  String get spOpens;
+
+  /// No description provided for @spOpenShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Open shop page'**
+  String get spOpenShop;
+
+  /// No description provided for @spOpenListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a listing'**
+  String get spOpenListing;
+
+  /// No description provided for @spChooseListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose listing'**
+  String get spChooseListing;
+
+  /// No description provided for @spNoListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop has no active listings.'**
+  String get spNoListings;
+
+  /// No description provided for @spListingRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a listing.'**
+  String get spListingRequired;
+
+  /// No description provided for @spStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get spStart;
+
+  /// No description provided for @spStartNow.
+  ///
+  /// In en, this message translates to:
+  /// **'As soon as approved'**
+  String get spStartNow;
+
+  /// No description provided for @spStartOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get spStartOn;
+
+  /// No description provided for @spDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get spDuration;
+
+  /// No description provided for @spDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String spDays(int days);
+
+  /// No description provided for @spEndsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends around {date}'**
+  String spEndsOn(String date);
+
+  /// No description provided for @spEditRunningNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A running poster is hidden until it\'s approved again.'**
+  String get spEditRunningNote;
+
+  /// No description provided for @spSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send for review'**
+  String get spSubmit;
+
+  /// No description provided for @spSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster sent. It\'s usually reviewed within 24 hours.'**
+  String get spSubmitted;
+
+  /// No description provided for @spErrSlotFull.
+  ///
+  /// In en, this message translates to:
+  /// **'That time already has the most posters you can run at once. Pick another date or stop a poster.'**
+  String get spErrSlotFull;
+
+  /// No description provided for @spErrMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve sent all your posters for this month.'**
+  String get spErrMonthly;
+
+  /// No description provided for @spErrCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending posters is paused for your shop.'**
+  String get spErrCooldown;
+
+  /// No description provided for @spErrPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the Store plan can run posters.'**
+  String get spErrPlan;
+
+  /// No description provided for @spErrShop.
+  ///
+  /// In en, this message translates to:
+  /// **'You need a shop page to run posters.'**
+  String get spErrShop;
+
+  /// No description provided for @spErrListing.
+  ///
+  /// In en, this message translates to:
+  /// **'That listing isn\'t for sale anymore. Choose another.'**
+  String get spErrListing;
+
+  /// No description provided for @spErrStartLate.
+  ///
+  /// In en, this message translates to:
+  /// **'The start date can be at most 14 days ahead.'**
+  String get spErrStartLate;
+
+  /// No description provided for @spErrImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t upload the image. Try another one.'**
+  String get spErrImage;
+
+  /// No description provided for @spErrNotEditable.
+  ///
+  /// In en, this message translates to:
+  /// **'This poster has ended. Create a new one.'**
+  String get spErrNotEditable;
+
+  /// No description provided for @spErrGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get spErrGeneric;
+
+  /// No description provided for @spSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get spSchedule;
+
+  /// No description provided for @spCropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust poster'**
+  String get spCropTitle;
+
+  /// No description provided for @spAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust again'**
+  String get spAdjust;
+
+  /// No description provided for @cropDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this image'**
+  String get cropDone;
+
+  /// No description provided for @cropFill.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill frame'**
+  String get cropFill;
+
+  /// No description provided for @cropFit.
+  ///
+  /// In en, this message translates to:
+  /// **'Show whole image'**
+  String get cropFit;
+
+  /// No description provided for @cropZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom'**
+  String get cropZoom;
+
+  /// No description provided for @cropHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move; pinch or use the slider to zoom. Empty space is filled with the background you pick.'**
+  String get cropHint;
+
+  /// No description provided for @cropLowRes.
+  ///
+  /// In en, this message translates to:
+  /// **'The image is small for this frame and may look blurry. Zoom out or pick a larger image.'**
+  String get cropLowRes;
+
+  /// No description provided for @cropLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this image. Try another one.'**
+  String get cropLoadError;
+
+  /// No description provided for @accAvatarSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get accAvatarSection;
+
+  /// No description provided for @accAvatarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown in a circle on your profile, listings and messages. Tap Adjust to choose which part shows.'**
+  String get accAvatarHint;
+
+  /// No description provided for @accAdjustAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust'**
+  String get accAdjustAvatar;
+
+  /// No description provided for @accAvatarCropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust profile photo'**
+  String get accAvatarCropTitle;
+
+  /// No description provided for @accInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile details'**
+  String get accInfoSection;
+
+  /// No description provided for @accDisplayNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Jane Doe or your shop name'**
+  String get accDisplayNameHint;
+
+  /// No description provided for @accUsernameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'3–30 characters: lowercase letters, numbers, dots or underscores.'**
+  String get accUsernameHelper;
+
+  /// No description provided for @accBioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A few lines about you or your shop'**
+  String get accBioHint;
+
+  /// No description provided for @cropBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Background'**
+  String get cropBackground;
+
+  /// No description provided for @cropBgBlur.
+  ///
+  /// In en, this message translates to:
+  /// **'Blur'**
+  String get cropBgBlur;
+
+  /// No description provided for @cropBgAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Match'**
+  String get cropBgAuto;
+
+  /// No description provided for @cropBgWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get cropBgWhite;
+
+  /// No description provided for @cropBgBlack.
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get cropBgBlack;
+
+  /// No description provided for @cropTrim.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove plain borders'**
+  String get cropTrim;
+
+  /// No description provided for @cropTrimOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain borders removed'**
+  String get cropTrimOn;
+
+  /// No description provided for @msTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage shop'**
+  String get msTitle;
+
+  /// No description provided for @msLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your shop'**
+  String get msLoadError;
+
+  /// No description provided for @msPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop pages come with the Store plan'**
+  String get msPlanTitle;
+
+  /// No description provided for @msPlanBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.'**
+  String get msPlanBody;
+
+  /// No description provided for @msCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your shop page'**
+  String get msCreateTitle;
+
+  /// No description provided for @msCreateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Name your shop first, then add a logo, cover and description.'**
+  String get msCreateBody;
+
+  /// No description provided for @msCreateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open shop'**
+  String get msCreateAction;
+
+  /// No description provided for @msCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop page is open'**
+  String get msCreated;
+
+  /// No description provided for @msName.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop name'**
+  String get msName;
+
+  /// No description provided for @msNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Cozy Home Decor'**
+  String get msNameHint;
+
+  /// No description provided for @msNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop name must be 2 to 60 characters.'**
+  String get msNameRequired;
+
+  /// No description provided for @msNameLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified shops can\'t change their name. Contact ReStore if you need to.'**
+  String get msNameLocked;
+
+  /// No description provided for @msTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Short tagline'**
+  String get msTagline;
+
+  /// No description provided for @msTaglineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Handmade decor, fast local delivery'**
+  String get msTaglineHint;
+
+  /// No description provided for @msDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'About the shop'**
+  String get msDescription;
+
+  /// No description provided for @msDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What you sell, quality promise, return policy...'**
+  String get msDescriptionHint;
+
+  /// No description provided for @msAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Display address'**
+  String get msAddress;
+
+  /// No description provided for @msAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. District 1, Ho Chi Minh City'**
+  String get msAddressHint;
+
+  /// No description provided for @msInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop details'**
+  String get msInfoSection;
+
+  /// No description provided for @msColorSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand colour'**
+  String get msColorSection;
+
+  /// No description provided for @msColorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for the letter logo, the default cover and accents on your shop page.'**
+  String get msColorHint;
+
+  /// No description provided for @msColorAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get msColorAuto;
+
+  /// No description provided for @msChangeCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Change cover'**
+  String get msChangeCover;
+
+  /// No description provided for @msChangeLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Change logo'**
+  String get msChangeLogo;
+
+  /// No description provided for @msImageNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new image'**
+  String get msImageNew;
+
+  /// No description provided for @msImageAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust again'**
+  String get msImageAdjust;
+
+  /// No description provided for @msImageRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove image'**
+  String get msImageRemove;
+
+  /// No description provided for @msCoverCropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust cover'**
+  String get msCoverCropTitle;
+
+  /// No description provided for @msLogoCropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust logo'**
+  String get msLogoCropTitle;
+
+  /// No description provided for @msStatFollowers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get msStatFollowers;
+
+  /// No description provided for @msStatListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get msStatListings;
+
+  /// No description provided for @msStatPostersRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters live'**
+  String get msStatPostersRunning;
+
+  /// No description provided for @msStatPostersPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Posters pending'**
+  String get msStatPostersPending;
+
+  /// No description provided for @msVerifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified shop'**
+  String get msVerifiedTitle;
+
+  /// No description provided for @msVerifiedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop appears in Trusted shops.'**
+  String get msVerifiedBody;
+
+  /// No description provided for @msCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate: {code}.'**
+  String msCertificate(String code);
+
+  /// No description provided for @msUnverifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not verified yet'**
+  String get msUnverifiedTitle;
+
+  /// No description provided for @msUnverifiedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.'**
+  String get msUnverifiedBody;
+
+  /// No description provided for @msPlanExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Store plan expired'**
+  String get msPlanExpiredTitle;
+
+  /// No description provided for @msPlanExpiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your posters are hidden for now. Renew the plan to run them again.'**
+  String get msPlanExpiredBody;
+
+  /// No description provided for @msViewPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'View shop page'**
+  String get msViewPublic;
+
+  /// No description provided for @msPosters.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop posters'**
+  String get msPosters;
+
+  /// No description provided for @msPostersBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote your shop with posters on your shop page and Trusted shops.'**
+  String get msPostersBody;
+
+  /// No description provided for @msSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get msSave;
+
+  /// No description provided for @msSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop details saved'**
+  String get msSaved;
+
+  /// No description provided for @msErrExists.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a shop page.'**
+  String get msErrExists;
+
+  /// No description provided for @msErrImage.
+  ///
+  /// In en, this message translates to:
+  /// **'That image is not valid. Try another one.'**
+  String get msErrImage;
+
+  /// No description provided for @msErrGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Please try again.'**
+  String get msErrGeneric;
+
+  /// No description provided for @followShopsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops'**
+  String get followShopsTab;
+
+  /// No description provided for @followShopsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not following any shops yet'**
+  String get followShopsEmpty;
+
+  /// No description provided for @followShopsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow trusted shops to see their new listings in one place.'**
+  String get followShopsEmptyHint;
+
+  /// No description provided for @followShopsBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore trusted shops'**
+  String get followShopsBrowse;
+
+  /// No description provided for @followShopsNewCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new'**
+  String followShopsNewCount(int count);
+
+  /// No description provided for @followShopsFollowerCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} followers'**
+  String followShopsFollowerCount(int count);
+
+  /// No description provided for @followShopsFeedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops you follow'**
+  String get followShopsFeedTitle;
+
+  /// No description provided for @followShopsFeedCta.
+  ///
+  /// In en, this message translates to:
+  /// **'See new listings'**
+  String get followShopsFeedCta;
+
+  /// No description provided for @followShopsFeedNew.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new listings in the last 7 days'**
+  String followShopsFeedNew(int count);
+
+  /// No description provided for @followShopsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Following {count} shops'**
+  String followShopsCount(int count);
+
+  /// No description provided for @followShopsStripHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a shop to open its page'**
+  String get followShopsStripHint;
+
+  /// No description provided for @followShopsLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest listings'**
+  String get followShopsLatest;
+
+  /// No description provided for @followShopsLatestHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Newly posted by the shops you follow'**
+  String get followShopsLatestHint;
+
+  /// No description provided for @followShopsListingsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings yet'**
+  String get followShopsListingsEmpty;
+
+  /// No description provided for @followShopsListingsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The shops you follow have no active listings.'**
+  String get followShopsListingsEmptyHint;
+
+  /// No description provided for @followShopsEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get followShopsEnd;
+
+  /// No description provided for @followShopsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the shops you follow'**
+  String get followShopsLoadError;
+
+  /// No description provided for @msFollowersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop followers'**
+  String get msFollowersTitle;
+
+  /// No description provided for @msFollowersTitleCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers ({count})'**
+  String msFollowersTitleCount(int count);
+
+  /// No description provided for @msFollowersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No one follows your shop yet'**
+  String get msFollowersEmpty;
+
+  /// No description provided for @msFollowersEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyers who follow your shop will show up here.'**
+  String get msFollowersEmptyHint;
+
+  /// No description provided for @msFollowedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {date}'**
+  String msFollowedSince(String date);
+
+  /// No description provided for @followingHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get followingHubTitle;
+
+  /// No description provided for @followingHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New from shops and people you follow'**
+  String get followingHubSubtitle;
+
+  /// No description provided for @followingHubOnboardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a few shops to get started'**
+  String get followingHubOnboardSubtitle;
+
+  /// No description provided for @followingHubManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage who you follow'**
+  String get followingHubManage;
+
+  /// No description provided for @followingHubPeopleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'People you follow'**
+  String get followingHubPeopleTitle;
+
+  /// No description provided for @followingHubSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get followingHubSeeAll;
+
+  /// No description provided for @followingHubFeedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New from shops you follow'**
+  String get followingHubFeedTitle;
+
+  /// No description provided for @followingHubFeedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a shop to see only its listings'**
+  String get followingHubFeedHint;
+
+  /// No description provided for @followingHubAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get followingHubAll;
+
+  /// No description provided for @followingHubOpenShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit shop'**
+  String get followingHubOpenShop;
+
+  /// No description provided for @followingHubSuggestHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops in categories you save and follow, ReStore partners first'**
+  String get followingHubSuggestHint;
+
+  /// No description provided for @followingHubOnboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow shops so you never miss new listings'**
+  String get followingHubOnboardTitle;
+
+  /// No description provided for @followingHubOnboardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Follow on the shops below and their new listings will show up here.'**
+  String get followingHubOnboardBody;
+
+  /// No description provided for @followingHubBenefitFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'New listings from every shop in one place'**
+  String get followingHubBenefitFeed;
+
+  /// No description provided for @followingHubBenefitFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by shop in one tap'**
+  String get followingHubBenefitFilter;
+
+  /// No description provided for @followingHubBenefitVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Only shops verified by ReStore'**
+  String get followingHubBenefitVerified;
+
+  /// No description provided for @followingHubNoSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'No shops to suggest yet'**
+  String get followingHubNoSuggestions;
+
+  /// No description provided for @followingHubSeeFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'See new listings from {count} shops'**
+  String followingHubSeeFeed(int count);
+
+  /// No description provided for @followShopsFollowerCountText.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} followers'**
+  String followShopsFollowerCountText(String count);
+
+  /// No description provided for @followingHubPostsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent posts'**
+  String get followingHubPostsTitle;
+
+  /// No description provided for @followingHubPostsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New posts from people you follow'**
+  String get followingHubPostsHint;
+
+  /// No description provided for @followingHubForYouTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops for you'**
+  String get followingHubForYouTitle;
+
+  /// No description provided for @followingHubPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get followingHubPartner;
+
+  /// No description provided for @editListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit listing'**
+  String get editListingTitle;
+
+  /// No description provided for @editSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for review'**
+  String get editSubmit;
+
+  /// No description provided for @editSubmittedLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit submitted. Buyers keep seeing the current version until it is approved'**
+  String get editSubmittedLive;
+
+  /// No description provided for @editSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved, your listing is waiting for review again'**
+  String get editSubmitted;
+
+  /// No description provided for @editNoticeLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyers keep seeing the current version until your edit is approved. Boosts, Hot sale and applied discounts stay as they are.'**
+  String get editNoticeLive;
+
+  /// No description provided for @editNoticeCategoryLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The category of an approved listing can\'t be changed.'**
+  String get editNoticeCategoryLocked;
+
+  /// No description provided for @editNoticeReview.
+  ///
+  /// In en, this message translates to:
+  /// **'After editing, your listing is reviewed again before it shows.'**
+  String get editNoticeReview;
+
+  /// No description provided for @editRejectedReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Last time it was rejected: {reason}'**
+  String editRejectedReason(String reason);
+
+  /// No description provided for @editLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this listing for editing. Please try again.'**
+  String get editLoadFailed;
+
+  /// No description provided for @leaveEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard your changes?'**
+  String get leaveEditTitle;
+
+  /// No description provided for @leaveEditMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'What you just edited won\'t be saved. The listing stays as it was.'**
+  String get leaveEditMessage;
+
+  /// No description provided for @leaveEditDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes'**
+  String get leaveEditDiscard;
+
+  /// No description provided for @leaveEditKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get leaveEditKeep;
+
+  /// No description provided for @accEditPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit waiting for review'**
+  String get accEditPending;
+
+  /// No description provided for @accEditRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit rejected: {reason}'**
+  String accEditRejected(String reason);
+
+  /// No description provided for @accDiscardEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard edit'**
+  String get accDiscardEdit;
+
+  /// No description provided for @accEditDiscarded.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit discarded, the listing keeps its current version'**
+  String get accEditDiscarded;
+
+  /// No description provided for @accDiscardEditFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t discard the edit. Please try again.'**
+  String get accDiscardEditFailed;
 }
 
 class _AppLocalizationsDelegate

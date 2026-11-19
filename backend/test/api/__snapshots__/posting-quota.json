@@ -1,0 +1,1231 @@
+{
+  "quota": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "tier": "PERSONAL",
+        "displayDays": 60,
+        "recentWindowDays": 30,
+        "businessLimit": 30,
+        "daily": {
+          "used": 0,
+          "limit": 3
+        },
+        "wallet": {
+          "available": 0
+        },
+        "boost": {
+          "freePerMonth": 0,
+          "freeLeft": 0,
+          "discountPercent": 0
+        },
+        "display": {
+          "packs": [
+            {
+              "days": 30,
+              "discountPercent": 10
+            },
+            {
+              "days": 60,
+              "discountPercent": 20
+            },
+            {
+              "days": 90,
+              "discountPercent": 30
+            }
+          ],
+          "freeDaysPercent": 100,
+          "extendDiscountPercent": 0,
+          "autoExtend": false,
+          "maxStartDelayDays": 14
+        },
+        "accountType": "personal",
+        "defaultLimit": 2,
+        "total": {
+          "used": 0,
+          "limit": 5
+        },
+        "categories": [
+          {
+            "categoryId": "appliances",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 10,
+            "extendCredits": 8,
+            "displayDays": 45,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 8
+          },
+          {
+            "categoryId": "books",
+            "used": 0,
+            "limit": 3,
+            "recentUsed": 0,
+            "recentLimit": 6,
+            "extraCredits": 5,
+            "extendCredits": 3,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 3
+          },
+          {
+            "categoryId": "electronics",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 11,
+            "displayDays": 45,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 12
+          },
+          {
+            "categoryId": "fashion",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 4,
+            "displayDays": 30,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4,
+            "maxDisplayDays": 90,
+            "dayPackCredits": 4
+          },
+          {
+            "categoryId": "furniture",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 10,
+            "extendCredits": 6,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 6
+          },
+          {
+            "categoryId": "other",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 4,
+            "displayDays": 45,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4
+          },
+          {
+            "categoryId": "pets",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 10,
+            "extendCredits": 8,
+            "displayDays": 21,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6,
+            "maxDisplayDays": 60,
+            "dayPackCredits": 8
+          },
+          {
+            "categoryId": "phones",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 14,
+            "displayDays": 30,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 15
+          },
+          {
+            "categoryId": "sports",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 4,
+            "displayDays": 45,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4
+          },
+          {
+            "categoryId": "vehicles",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 14,
+            "displayDays": 30,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 15
+          }
+        ]
+      }
+    }
+  },
+  "create free 1": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Đồng hồ treo tường cũ",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "originalPrice": null,
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "PENDING",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
+    }
+  },
+  "create free 2": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Quạt bàn mini",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "originalPrice": null,
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "PENDING",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
+    }
+  },
+  "create over limit": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Chuyên mục này chỉ được 2 tin miễn phí đang hiển thị.",
+      "code": "POSTING_LIMIT_REACHED",
+      "details": {
+        "categoryId": "other",
+        "blockedBy": "CATEGORY",
+        "used": 2,
+        "limit": 2,
+        "totalUsed": 2,
+        "totalLimit": 5,
+        "extraCredits": 5,
+        "available": 0
+      }
+    }
+  },
+  "pay without points": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Cần 5 xu để đăng tin này, ví của bạn còn 0 xu.",
+      "code": "NOT_ENOUGH_CREDITS",
+      "details": {
+        "required": 5,
+        "available": 0,
+        "missing": 5
+      }
+    }
+  },
+  "pay with points": {
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Máy may cổ",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "originalPrice": null,
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "PENDING",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": null,
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 5,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
+    }
+  },
+  "duplicate of active": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Bạn đã có tin giống vậy đang hiển thị hoặc chờ duyệt.",
+      "code": "DUPLICATE_LISTING",
+      "field": "title",
+      "details": {
+        "listingId": "<uuid>"
+      }
+    }
+  },
+  "expired listing": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Đồng hồ treo tường cũ",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "originalPrice": null,
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "HIDDEN",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [
+          "/api/v1/listings/media/<uuid>.png"
+        ],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
+    }
+  },
+  "duplicate of expired": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Bạn có tin giống vậy đã ẩn hoặc hết hạn. Kích hoạt lại tin cũ để giữ lượt xem?",
+      "code": "DUPLICATE_INACTIVE",
+      "field": "title",
+      "details": {
+        "listingId": "<uuid>",
+        "expired": true
+      }
+    }
+  },
+  "reactivate free": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Đồng hồ treo tường cũ",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "originalPrice": null,
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "AVAILABLE",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [
+          "/api/v1/listings/media/<uuid>.png"
+        ],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 0,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
+    }
+  },
+  "reactivate over limit": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Chuyên mục này chỉ được 2 tin miễn phí đang hiển thị.",
+      "code": "POSTING_LIMIT_REACHED",
+      "details": {
+        "categoryId": "other",
+        "blockedBy": "CATEGORY",
+        "used": 2,
+        "limit": 2,
+        "totalUsed": 2,
+        "totalLimit": 5,
+        "extraCredits": 5,
+        "available": 50
+      }
+    }
+  },
+  "reactivate with points": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Đồng hồ treo tường cũ",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "originalPrice": null,
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "AVAILABLE",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [
+          "/api/v1/listings/media/<uuid>.png"
+        ],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 5,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
+    }
+  },
+  "extend": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Đồng hồ treo tường cũ",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "originalPrice": null,
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "AVAILABLE",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [
+          "/api/v1/listings/media/<uuid>.png"
+        ],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 5,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
+    }
+  },
+  "extend too long": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Tin chỉ gia hạn thêm được tối đa 45 ngày (hiển thị tối đa 120 ngày).",
+      "code": "EXTEND_TOO_LONG",
+      "field": "days",
+      "details": {
+        "addableDays": 45,
+        "maxDisplayDays": 120
+      }
+    }
+  },
+  "extend bad body": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Số ngày gia hạn không hợp lệ.",
+      "code": "INVALID_INPUT",
+      "field": "days"
+    }
+  },
+  "extend hidden": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy tin đăng của bạn.",
+      "code": "LISTING_NOT_FOUND"
+    }
+  },
+  "extend 7 days": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": "<uuid>",
+        "title": "Đồng hồ treo tường cũ",
+        "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
+        "price": "250000",
+        "originalPrice": null,
+        "isNegotiable": true,
+        "ownerId": "user-buyer",
+        "categoryId": "other",
+        "status": "AVAILABLE",
+        "updatedAt": "<date>",
+        "allowSale": true,
+        "allowExchange": false,
+        "exchangeWish": "",
+        "sellerType": "PERSONAL",
+        "attributes": {},
+        "location": {
+          "ward": {
+            "code": "26740",
+            "name": "Phường Sài Gòn",
+            "level": "ward",
+            "center": {
+              "latitude": 10.780926,
+              "longitude": 106.70418
+            },
+            "shortName": "Sài Gòn",
+            "parentCode": "79"
+          },
+          "latitude": 10.780926,
+          "province": {
+            "code": "79",
+            "name": "Thành phố Hồ Chí Minh",
+            "level": "province",
+            "shortName": "Hồ Chí Minh"
+          },
+          "wardCode": "26740",
+          "geoSource": "ward_center",
+          "longitude": 106.70418,
+          "provinceCode": "79",
+          "streetAddress": "1 Đường Thử"
+        },
+        "reviewReason": null,
+        "condition": "USED_GOOD",
+        "category": {
+          "id": "other",
+          "name": "Khác"
+        },
+        "images": [
+          "/api/v1/listings/media/<uuid>.png"
+        ],
+        "createdAt": "<date>",
+        "viewCount": 0,
+        "publishedAt": "<date>",
+        "expiresAt": "<date>",
+        "startsAt": null,
+        "displayDays": 45,
+        "owner": {
+          "id": "user-buyer",
+          "fullName": "user-buyer",
+          "ratingAverage": 0,
+          "ratingCount": 0
+        },
+        "paidCredits": 5,
+        "paidDays": 0,
+        "autoExtend": false,
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
+      }
+    }
+  },
+  "boost with points": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "free": false,
+        "credits": 4,
+        "startsAt": "<date>",
+        "endsAt": "<date>",
+        "freeLeft": 0
+      }
+    }
+  },
+  "boost too soon": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Tin vừa được đẩy, mỗi tin đẩy tối đa 1 lần mỗi ngày.",
+      "code": "BOOST_TOO_SOON",
+      "details": {
+        "availableAt": "<date>"
+      }
+    }
+  },
+  "boost hidden": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Không tìm thấy tin đăng của bạn.",
+      "code": "LISTING_NOT_FOUND"
+    }
+  },
+  "boost free": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "free": true,
+        "credits": 0,
+        "startsAt": "<date>",
+        "endsAt": "<date>",
+        "freeLeft": 0
+      }
+    }
+  },
+  "boost discounted": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "free": false,
+        "credits": 2,
+        "startsAt": "<date>",
+        "endsAt": "<date>",
+        "freeLeft": 0
+      }
+    }
+  },
+  "feature quote": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "discountPercent": 0,
+        "available": 34,
+        "runningUntil": null,
+        "options": [
+          {
+            "packageId": "featured-1",
+            "durationDays": 1,
+            "credits": 8
+          },
+          {
+            "packageId": "featured-3",
+            "durationDays": 3,
+            "credits": 23
+          },
+          {
+            "packageId": "featured-7",
+            "durationDays": 7,
+            "credits": 50
+          }
+        ]
+      }
+    }
+  },
+  "feature not enough": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Cần 50 xu để đăng tin này, ví của bạn còn 34 xu.",
+      "code": "NOT_ENOUGH_CREDITS",
+      "details": {
+        "required": 50,
+        "available": 34,
+        "missing": 16
+      }
+    }
+  },
+  "feature bump package": {
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Gói tin ưu tiên không còn bán.",
+      "code": "PROMOTION_PACKAGE_NOT_FOUND"
+    }
+  },
+  "feature bad body": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Gói tin ưu tiên không hợp lệ.",
+      "code": "INVALID_PACKAGE"
+    }
+  },
+  "feature 3 days": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "listingId": "<uuid>",
+        "packageId": "featured-3",
+        "credits": 23,
+        "startsAt": "<date>",
+        "endsAt": "<date>"
+      }
+    }
+  },
+  "feature again": {
+    "status": 409,
+    "body": {
+      "success": false,
+      "error": "Tin đang ở mục Hot sale.",
+      "code": "FEATURE_ALREADY_ACTIVE",
+      "details": {
+        "availableAt": "<date>"
+      }
+    }
+  },
+  "quota after": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "tier": "PERSONAL",
+        "displayDays": 60,
+        "recentWindowDays": 30,
+        "businessLimit": 30,
+        "daily": {
+          "used": 3,
+          "limit": 3
+        },
+        "wallet": {
+          "available": 7
+        },
+        "boost": {
+          "freePerMonth": 0,
+          "freeLeft": 0,
+          "discountPercent": 0
+        },
+        "display": {
+          "packs": [
+            {
+              "days": 30,
+              "discountPercent": 10
+            },
+            {
+              "days": 60,
+              "discountPercent": 20
+            },
+            {
+              "days": 90,
+              "discountPercent": 30
+            }
+          ],
+          "freeDaysPercent": 100,
+          "extendDiscountPercent": 0,
+          "autoExtend": false,
+          "maxStartDelayDays": 14
+        },
+        "accountType": "personal",
+        "defaultLimit": 2,
+        "total": {
+          "used": 2,
+          "limit": 5
+        },
+        "categories": [
+          {
+            "categoryId": "appliances",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 10,
+            "extendCredits": 8,
+            "displayDays": 45,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 8
+          },
+          {
+            "categoryId": "books",
+            "used": 0,
+            "limit": 3,
+            "recentUsed": 0,
+            "recentLimit": 6,
+            "extraCredits": 5,
+            "extendCredits": 3,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 3
+          },
+          {
+            "categoryId": "electronics",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 11,
+            "displayDays": 45,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 12
+          },
+          {
+            "categoryId": "fashion",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 4,
+            "displayDays": 30,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4,
+            "maxDisplayDays": 90,
+            "dayPackCredits": 4
+          },
+          {
+            "categoryId": "furniture",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 10,
+            "extendCredits": 6,
+            "displayDays": 60,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 6
+          },
+          {
+            "categoryId": "other",
+            "used": 2,
+            "limit": 2,
+            "recentUsed": 1,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 4,
+            "displayDays": 45,
+            "freeAvailable": false,
+            "blockedBy": "CATEGORY",
+            "boostCredits": 4,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4
+          },
+          {
+            "categoryId": "pets",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 10,
+            "extendCredits": 8,
+            "displayDays": 21,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 6,
+            "maxDisplayDays": 60,
+            "dayPackCredits": 8
+          },
+          {
+            "categoryId": "phones",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 14,
+            "displayDays": 30,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 15
+          },
+          {
+            "categoryId": "sports",
+            "used": 0,
+            "limit": 2,
+            "recentUsed": 0,
+            "recentLimit": 4,
+            "extraCredits": 5,
+            "extendCredits": 4,
+            "displayDays": 45,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 4,
+            "maxDisplayDays": 120,
+            "dayPackCredits": 4
+          },
+          {
+            "categoryId": "vehicles",
+            "used": 0,
+            "limit": 1,
+            "recentUsed": 0,
+            "recentLimit": 2,
+            "extraCredits": 15,
+            "extendCredits": 14,
+            "displayDays": 30,
+            "freeAvailable": true,
+            "blockedBy": null,
+            "boostCredits": 10,
+            "maxDisplayDays": 180,
+            "dayPackCredits": 15
+          }
+        ]
+      }
+    }
+  }
+}

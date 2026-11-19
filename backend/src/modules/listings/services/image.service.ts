@@ -32,28 +32,50 @@ export async function removeStoredImages(urls: string[]) {
   }
 }
 
+/** Ảnh chỉ bản sửa dùng (tin đang hiển thị không dùng), để xóa file khi bỏ bản sửa */
+export const revisionOnlyImages = (revisionImages: string[], listingImages: string[]) =>
+  revisionImages.filter((url) => !listingImages.includes(url));
+
+/** Tin đã duyệt: ảnh sửa vào bản sửa chờ duyệt, tin vẫn giữ ảnh cũ */
+const REVISABLE: readonly ListingStatus[] = [ListingStatus.AVAILABLE, ListingStatus.HIDDEN];
+
+/**
+ * Bộ ảnh đang sửa: tin đã duyệt thì là ảnh của bản sửa (phải gửi nội dung sửa qua PUT /:id trước,
+ * nếu không 409 EDIT_NOT_STARTED), tin khác là ảnh của tin.
+ */
 async function requireImageEditable(ownerId: string, id: string) {
   const current = await listingRepository.findOwned(id, ownerId);
   if (!current) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy tin đăng của bạn.');
   if (!IMAGE_EDITABLE.includes(current.status)) throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Tin này không thể sửa ảnh.');
-  return current;
+  if (!REVISABLE.includes(current.status)) return { current, images: current.images, revision: false };
+  if (!current.revision) {
+    throw new AppError(409, 'EDIT_NOT_STARTED', 'Tin đã duyệt: gửi nội dung sửa trước rồi mới đổi ảnh.');
+  }
+  return { current, images: current.revision.images, revision: true };
 }
 
 /** Sau khi đổi ảnh: nháp vẫn là nháp, tin khác quay lại chờ duyệt */
 const statusAfterImageChange = (status: ListingStatus) => status === ListingStatus.DRAFT ? ListingStatus.DRAFT : ListingStatus.PENDING;
 
-/** Thêm một ảnh vào cuối danh sách ảnh của tin */
+/** Lưu bộ ảnh mới vào tin hoặc bản sửa khi chưa ai đổi từ lúc đọc; 409 LISTING_CHANGED nếu đã đổi */
+async function saveImages(ownerId: string, id: string, editable: Awaited<ReturnType<typeof requireImageEditable>>, images: string[]) {
+  const { current } = editable;
+  const changed = editable.revision
+    ? await listingRepository.updateRevisionImagesIfUnchanged(id, editable.images, images)
+    : await listingRepository.updateImagesIfUnchanged(id, ownerId, current, { images, status: statusAfterImageChange(current.status) });
+  if (!changed) throw new AppError(409, 'LISTING_CHANGED', 'Tin đã thay đổi. Vui lòng thử lại.');
+}
+
+/** Thêm một ảnh vào cuối danh sách ảnh của tin (tin đã duyệt: của bản sửa) */
 export async function addImage(ownerId: string, id: string, contentType: string | undefined, bytes: unknown) {
   const extension = imageExtension(contentType, bytes);
-  const current = await requireImageEditable(ownerId, id);
-  if (current.images.length >= MAX_IMAGES) throw new AppError(409, 'IMAGE_LIMIT', 'Mỗi tin được tối đa 20 ảnh.');
+  const editable = await requireImageEditable(ownerId, id);
+  if (editable.images.length >= MAX_IMAGES) throw new AppError(409, 'IMAGE_LIMIT', 'Mỗi tin được tối đa 20 ảnh.');
   const filename = `${randomUUID()}.${extension}`;
   try {
     await putObject(AREA, filename, bytes as Buffer);
     const url = `${IMAGE_PREFIX}${filename}`;
-    const changed = await listingRepository.updateImagesIfUnchanged(id, ownerId, current,
-      { images: [...current.images, url], status: statusAfterImageChange(current.status) });
-    if (!changed) throw new AppError(409, 'LISTING_CHANGED', 'Tin đã thay đổi. Vui lòng thử lại.');
+    await saveImages(ownerId, id, editable, [...editable.images, url]);
     return { url };
   } catch (error) {
     await removeObject(AREA, filename).catch(() => {});
@@ -61,14 +83,16 @@ export async function addImage(ownerId: string, id: string, contentType: string 
   }
 }
 
-/** Sắp xếp lại / bỏ bớt ảnh; file của ảnh bị bỏ được xóa */
+/**
+ * Sắp xếp lại / bỏ bớt ảnh; file của ảnh bị bỏ được xóa.
+ * Tin đã duyệt: đổi ảnh của bản sửa, ảnh tin đang hiển thị còn dùng thì giữ file.
+ */
 export async function reorderImages(ownerId: string, id: string, body: unknown) {
-  const current = await requireImageEditable(ownerId, id);
-  const images = orderedImages(body, current.images);
-  const changed = await listingRepository.updateImagesIfUnchanged(id, ownerId, current,
-    { images, status: statusAfterImageChange(current.status) });
-  if (!changed) throw new AppError(409, 'LISTING_CHANGED', 'Tin đã thay đổi. Vui lòng thử lại.');
-  await removeStoredImages(current.images.filter((item) => !images.includes(item)));
+  const editable = await requireImageEditable(ownerId, id);
+  const images = orderedImages(body, editable.images);
+  await saveImages(ownerId, id, editable, images);
+  const dropped = editable.images.filter((item) => !images.includes(item));
+  await removeStoredImages(editable.revision ? revisionOnlyImages(dropped, editable.current.images) : dropped);
   return { images };
 }
 
@@ -80,8 +104,15 @@ export async function readImage(viewer: AuthRequest['user'], filename: string) {
   const notFound = () => new AppError(404, 'IMAGE_NOT_FOUND', 'Không tìm thấy ảnh.');
   if (!IMAGE_NAME.test(filename)) throw notFound();
   const listing = await listingRepository.findByImage(IMAGE_PREFIX + filename);
-  if (!listing || !(hasPermission(viewer?.role, PERMISSION.LISTING_MODERATE) || viewer?.userId === listing.ownerId ||
-    (listing.status === ListingStatus.AVAILABLE && listing.owner.status === 'ACTIVE'))) throw notFound();
+  const moderator = hasPermission(viewer?.role, PERMISSION.LISTING_MODERATE);
+  if (listing) {
+    if (!(moderator || viewer?.userId === listing.ownerId ||
+      (listing.status === ListingStatus.AVAILABLE && listing.owner.status === 'ACTIVE'))) throw notFound();
+  } else {
+    // Ảnh mới của bản sửa chưa duyệt: chỉ chủ tin và người duyệt xem được
+    const edited = await listingRepository.findByRevisionImage(IMAGE_PREFIX + filename);
+    if (!edited || !(moderator || viewer?.userId === edited.ownerId)) throw notFound();
+  }
   const bytes = await getObject(AREA, filename);
   if (!bytes) throw notFound();
   return { bytes, contentType: contentTypeOf(filename) };

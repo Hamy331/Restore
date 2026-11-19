@@ -257,6 +257,7 @@ class ListingMockData {
       ),
       'icon': 'pet',
       'imageUrl': AppImages.categoryImages.pets,
+      'hasCondition': false,
       'attributes': [
         _select(
           'pet_type',
@@ -276,12 +277,16 @@ class ListingMockData {
           hint: _t('VD: Poodle, Mèo Anh lông ngắn', 'e.g. Poodle'),
         ),
         _number(
-          'age_months',
-          _t('Tuổi', 'Age'),
-          unit: _t('tháng', 'months'),
-          min: 0,
-          max: 360,
-        ),
+            'age_months',
+            _t('Tuổi', 'Age'),
+            unit: _t('tháng', 'months'),
+            min: 0,
+            max: 360,
+          )
+          ..['unitOptions'] = [
+            {'value': 'month', 'label': _t('tháng', 'months'), 'factor': 1},
+            {'value': 'year', 'label': _t('năm', 'years'), 'factor': 12},
+          ],
         _select(
           'pet_gender',
           _t('Giới tính', 'Gender'),
@@ -335,6 +340,7 @@ class ListingMockData {
         'Textbooks, novels, course books...',
       ),
       'icon': 'book',
+      'imageUrl': AppImages.categoryImages.books,
       'attributes': [
         _select(
           'genre',
@@ -366,6 +372,7 @@ class ListingMockData {
         'Gym gear, sport bikes, camping...',
       ),
       'icon': 'sport',
+      'imageUrl': AppImages.categoryImages.sports,
       'attributes': [
         _text(
           'sport_type',
@@ -385,6 +392,7 @@ class ListingMockData {
         'Items that fit no other category',
       ),
       'icon': 'other',
+      'imageUrl': AppImages.categoryImages.other,
       'attributes': [_text('brand', _t('Thương hiệu', 'Brand'))],
     },
   ];
