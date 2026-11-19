@@ -50,6 +50,18 @@ export async function zaloPayCallback(req: Request, res: Response) {
   res.json(await creditService.zaloPayCallback((req.body ?? {}) as { data?: unknown; mac?: unknown }));
 }
 
+/** SePay báo tiền vào tài khoản VietQR (chữ ký X-SePay-Signature, hoặc Authorization: Apikey ...) */
+export async function sepayWebhook(req: Request, res: Response) {
+  const { status, body } = await creditService.sepayWebhook({
+    authorization: req.headers.authorization,
+    signature: req.headers['x-sepay-signature'],
+    timestamp: req.headers['x-sepay-timestamp'],
+    rawBody: (req as Request & { rawBody?: Buffer }).rawBody,
+    body: req.body,
+  });
+  res.status(status).json(body);
+}
+
 /**
  * Trang ZaloPay chuyển khách về sau khi trả. Không cộng xu ở đây (tham số trên URL không đáng tin):
  * app hỏi lại trạng thái đơn, máy chủ tự hỏi ZaloPay. status=1 là ZaloPay báo trả xong, khác là chưa trả được.

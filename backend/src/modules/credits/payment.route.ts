@@ -13,4 +13,10 @@ paymentRouter.post('/zalopay/callback', creditController.zaloPayCallback);
 /** Trang khách được chuyển về sau khi trả trên ZaloPay */
 paymentRouter.get('/zalopay/return', creditController.zaloPayReturn);
 
+/**
+ * Webhook SePay: tiền vào tài khoản nhận VietQR. Header "Authorization: Apikey <SEPAY_WEBHOOK_API_KEY>".
+ * Trả 200 + { success: true } khi đã ghi nhận (kể cả chuyển khoản không phải nạp xu).
+ */
+paymentRouter.post('/sepay/webhook', creditController.sepayWebhook);
+
 export default paymentRouter;

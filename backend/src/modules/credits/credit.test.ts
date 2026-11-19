@@ -4,6 +4,8 @@ import { AppError } from '../../common/errors/app-error.js';
 import { parse } from '../../common/validation/schemas.js';
 import { gatewaySkipped, sandboxEnabled, summarizeWallet, topupCode, vietQrAccount, vietQrImageUrl } from './credit.type.js';
 import { historyQuery, topupBody } from './credit.validator.js';
+import { createHmac } from 'node:crypto';
+import { extractTopupCode, parseWebhook, sepayWebhookKey, verifyApiKey, verifySignature } from './credit.sepay.js';
 import { appTransId, buildCreateOrder, hmac, verifyCallback, ZALOPAY_SANDBOX_ENDPOINT, zaloPayConfig, zaloPayEndpoint, appToApp } from './credit.zalopay.js';
 
 const code = (fn: () => unknown) => {
@@ -111,4 +113,36 @@ test('app-to-app info is read from the ZaloPay order_url', () => {
   assert.equal(appToApp(`https://qcgateway.zalopay.vn/openinapp?order=${order}`, { PAYMENT_MODE: 'live', ZALOPAY_ENDPOINT: 'https://openapi.zalopay.vn/v2' })?.sandbox, false);
   assert.equal(appToApp(null), null);
   assert.equal(appToApp('https://example.com/?order=notbase64json'), null);
+});
+
+test('SePay webhook needs the exact Apikey header', () => {
+  assert.equal(sepayWebhookKey({}), null);
+  assert.equal(sepayWebhookKey({ SEPAY_WEBHOOK_API_KEY: ' k1 ' }), 'k1');
+  assert.equal(verifyApiKey('Apikey secret123', 'secret123'), true);
+  assert.equal(verifyApiKey('apikey  secret123 ', 'secret123'), true);
+  assert.equal(verifyApiKey('Apikey secret124', 'secret123'), false);
+  assert.equal(verifyApiKey('Bearer secret123', 'secret123'), false);
+  assert.equal(verifyApiKey(undefined, 'secret123'), false);
+});
+
+test('SePay payload is parsed and the topup code found in code or content', () => {
+  const sample = { id: 92704, gateway: 'MBBank', code: 'RS8F2K3X', content: 'RS8F2K3X chuyen tien', transferType: 'in', transferAmount: 50000 };
+  assert.deepEqual(parseWebhook(sample), { id: '92704', transferType: 'in', amount: 50000, code: 'RS8F2K3X', content: 'RS8F2K3X chuyen tien' });
+  assert.equal(parseWebhook({ id: 1, transferAmount: 'abc' }), null);
+  assert.equal(parseWebhook(null), null);
+  assert.equal(extractTopupCode({ code: null, content: 'MBVCB.123.rs8f2k3x.CT tu 0123' }), 'RS8F2K3X');
+  assert.equal(extractTopupCode({ code: 'RS8F2K3X', content: '' }), 'RS8F2K3X');
+  assert.equal(extractTopupCode({ code: null, content: 'chuyen tien an trua' }), null);
+});
+
+test('SePay HMAC signature is checked over timestamp and raw body', () => {
+  const rawBody = Buffer.from('{"id":1,"content":"RSABCDEF tien Viet có dấu"}');
+  const timestamp = '1795110000';
+  const sign = (secret: string) => 'sha256=' + createHmac('sha256', secret).update(`${timestamp}.${rawBody.toString()}`).digest('hex');
+  const base = { timestamp, rawBody, secret: 's3cret', nowSeconds: 1795110100 };
+  assert.equal(verifySignature({ ...base, signature: sign('s3cret') }), true);
+  assert.equal(verifySignature({ ...base, signature: sign('other') }), false);
+  assert.equal(verifySignature({ ...base, signature: sign('s3cret'), nowSeconds: 1795110000 + 301 }), false);
+  assert.equal(verifySignature({ ...base, signature: undefined }), false);
+  assert.equal(verifySignature({ ...base, signature: sign('s3cret'), rawBody: undefined }), false);
 });

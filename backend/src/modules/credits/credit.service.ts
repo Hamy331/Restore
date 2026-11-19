@@ -9,6 +9,7 @@ import {
   BONUS_REMINDER_DAYS, BONUS_TTL_MS, DAY_MS, HISTORY_FILTERS, MAX_PENDING_TOPUPS, PAID_TTL_MS, TOPUP_TTL_MS,
   gatewaySkipped, sandboxEnabled, summarizeWallet, topupCode, vietQrAccount, vietQrImageUrl,
 } from './credit.type.js';
+import * as sepay from './credit.sepay.js';
 import * as zalopay from './credit.zalopay.js';
 
 /**
@@ -339,6 +340,57 @@ export async function zaloPayCallback(body: { data?: unknown; mac?: unknown }) {
     if (error instanceof AppError && error.code === 'TOPUP_ALREADY_PROCESSED') return { return_code: 1, return_message: 'success' };
     console.error('[credits] ZaloPay callback failed', data.app_trans_id, error);
     return { return_code: 0, return_message: error instanceof Error ? error.message : 'error' };
+  }
+}
+
+/**
+ * Webhook SePay khi tài khoản nhận VietQR có tiền vào. Chỉ cộng xu khi đúng API key,
+ * nội dung có mã đơn VietQR và số tiền khớp đơn. SePay coi là nhận khi trả 200 + { success: true };
+ * lỗi tạm trả 500 để SePay gửi lại. Mỗi giao dịch SePay (id) chỉ cộng một lần.
+ */
+export type SepayRequest = { authorization: unknown; signature: unknown; timestamp: unknown; rawBody: Buffer | undefined; body: unknown };
+
+export async function sepayWebhook({ authorization, signature, timestamp, rawBody, body }: SepayRequest) {
+  // Có Secret Key thì kiểm chữ ký HMAC (khuyến nghị, chạy được qua SePay CLI), không thì kiểm API Key
+  const secret = sepay.sepayWebhookSecret();
+  const key = sepay.sepayWebhookKey();
+  if (!secret && !key) return { status: 503, body: { success: false, message: 'not configured' } };
+  const authorized = secret
+    ? sepay.verifySignature({ signature, timestamp, rawBody, secret })
+    : sepay.verifyApiKey(authorization, key!);
+  if (!authorized) {
+    // Không ghi key ra log, chỉ ghi lý do để dò cấu hình
+    console.warn('[credits] SePay webhook unauthorized:', secret
+      ? `HMAC signature ${signature ? 'mismatch or expired' : 'header missing'}`
+      : sepay.describeAuthHeader(authorization));
+    return { status: 401, body: { success: false, message: 'unauthorized' } };
+  }
+  const transfer = sepay.parseWebhook(body);
+  if (!transfer) return { status: 400, body: { success: false, message: 'invalid payload' } };
+  // Tiền ra, hoặc chuyển khoản không phải để nạp xu: ghi nhận để SePay không gửi lại
+  const ignore = (reason: string) => {
+    console.info('[credits] SePay ignored', transfer.id, reason);
+    return { status: 200, body: { success: true, message: reason } };
+  };
+  if (transfer.transferType !== 'in') return ignore('not incoming');
+  const code = sepay.extractTopupCode(transfer);
+  if (!code) return ignore('no topup code');
+  try {
+    const order = await inTransaction((tx) => repo.findOrderByCode(tx, code));
+    if (!order || order.method !== CreditPayMethod.VIETQR) return ignore(`order not found ${code}`);
+    // Chuyển thiếu/thừa: không tự cộng, cần đối soát tay
+    if (transfer.amount !== order.amountVnd) {
+      console.warn('[credits] SePay amount mismatch', code, transfer.amount, order.amountVnd);
+      return ignore('amount mismatch');
+    }
+    await markPaid(order.id, { providerTxnId: `SEPAY-${transfer.id}`, amountVnd: transfer.amount });
+    return { status: 200, body: { success: true } };
+  } catch (error) {
+    if (error instanceof AppError && ['TOPUP_ALREADY_PROCESSED', 'TOPUP_NOT_PENDING'].includes(error.code)) {
+      return ignore(error.code);
+    }
+    console.error('[credits] SePay webhook failed', transfer.id, error);
+    return { status: 500, body: { success: false } };
   }
 }
 

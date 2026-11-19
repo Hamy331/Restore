@@ -51,6 +51,8 @@ export const createOrder = (tx: Db, data: Prisma.CreditTopupOrderUncheckedCreate
 
 export const findOrder = (tx: Db, id: string) => tx.creditTopupOrder.findUnique({ where: { id } });
 
+export const findOrderByCode = (tx: Db, code: string) => tx.creditTopupOrder.findUnique({ where: { code } });
+
 export const findOrderByProviderRef = (tx: Db, providerRef: string) => tx.creditTopupOrder.findUnique({ where: { providerRef } });
 
 /** Gắn mã đơn và trang thanh toán của cổng vào đơn vừa tạo */
