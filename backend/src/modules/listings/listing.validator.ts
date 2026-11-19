@@ -155,16 +155,19 @@ export const favoriteIdParams = idParam(64);
 export const createListingBody = z.unknown().transform(createInput);
 export const draftBody = z.unknown().transform(draftInput);
 
-/** Body PATCH /:id/status: { status: AVAILABLE | HIDDEN | SOLD | EXCHANGED, payWithCredits?: boolean } */
+/** Body PATCH /:id/status */
 export const statusBody = z.unknown().transform((body) => {
-  const input = body as { status?: unknown; payWithCredits?: unknown } | undefined;
+  const input = body as { status?: unknown; payWithCredits?: unknown; counterpartyId?: unknown } | undefined;
   const target = input?.status;
   if (typeof target !== 'string' || !OWNER_STATUS_TARGETS.includes(target as ListingStatus) ||
-      !body || Object.keys(body).some((key) => key !== 'status' && key !== 'payWithCredits') ||
-      (input?.payWithCredits !== undefined && typeof input?.payWithCredits !== 'boolean')) {
+      !body || Object.keys(body).some((key) => !['status', 'payWithCredits', 'counterpartyId'].includes(key)) ||
+      (input?.payWithCredits !== undefined && typeof input?.payWithCredits !== 'boolean') ||
+      (input?.counterpartyId !== undefined && (typeof input.counterpartyId !== 'string' || !input.counterpartyId.trim())) ||
+      (input?.counterpartyId !== undefined && !['SOLD', 'EXCHANGED'].includes(target))) {
     throw new AppError(400, 'INVALID_STATUS', 'Trạng thái tin không hợp lệ.');
   }
-  return { status: target as ListingStatus, payWithCredits: input?.payWithCredits === true };
+  return { status: target as ListingStatus, payWithCredits: input?.payWithCredits === true,
+    ...(input?.counterpartyId ? { counterpartyId: input.counterpartyId.trim() } : {}) };
 });
 
 /** Body POST /:id/extend: { days } số ngày hiển thị thêm (1-365); tối đa theo chuyên mục do service xét */
