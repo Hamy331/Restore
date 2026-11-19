@@ -7,6 +7,7 @@ import '../../feeds/bloc/feeds/feeds_cubit.dart';
 import '../../feeds/bloc/feeds/feeds_state.dart';
 import '../../feeds/widgets/feed_post_list.dart';
 import '../../feeds/widgets/feed_shared.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 
 /// Bài viết của một người trên trang hồ sơ, dùng lại thẻ bài của bảng tin.
 class ProfilePostsSliver extends StatelessWidget {
@@ -32,14 +33,10 @@ class ProfilePostsSliver extends StatelessWidget {
           }
           if (state.failed) {
             return SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 32),
-                child: Column(
-                  children: [
-                    Text(l.feedLoadError),
-                    TextButton(onPressed: cubit.load, child: Text(l.retry)),
-                  ],
-                ),
+              child: AppLoadErrorView(
+                title: l.feedLoadError,
+                onRetry: cubit.load,
+                compact: true,
               ),
             );
           }

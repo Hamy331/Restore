@@ -14,6 +14,7 @@ import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
 import 'package:restore/shared/widgets/app_circle_icon_button.dart';
 import 'package:restore/shared/widgets/app_page_header.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
@@ -105,11 +106,9 @@ class FollowingHubMobileView extends StatelessWidget {
         return [
           SliverFillRemaining(
             hasScrollBody: false,
-            child: FeedbackView(
-              icon: AppIcons.offline,
+            child: AppLoadErrorView(
               title: l.followShopsLoadError,
-              message: l.trustedShopsLoadErrorBody,
-              action: FilledButton(onPressed: cubit.load, child: Text(l.retry)),
+              onRetry: cubit.load,
             ),
           ),
         ];

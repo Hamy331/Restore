@@ -443,7 +443,7 @@ abstract class AppLocalizations {
   /// No description provided for @accLoadError.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t load your profile. Tap to retry'**
+  /// **'Couldn\'t load your profile'**
   String get accLoadError;
 
   /// No description provided for @accLoading.
@@ -1808,6 +1808,18 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
+  /// No description provided for @loadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load data'**
+  String get loadErrorTitle;
+
+  /// No description provided for @loadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get loadErrorBody;
+
   /// No description provided for @featureApiPending.
   ///
   /// In en, this message translates to:
@@ -2978,12 +2990,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load categories'**
   String get loadCategoriesFailedTitle;
 
-  /// No description provided for @loadCategoriesFailedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again'**
-  String get loadCategoriesFailedMessage;
-
   /// No description provided for @negotiableHint.
   ///
   /// In en, this message translates to:
@@ -3271,12 +3277,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load the home page'**
   String get homeLoadErrorTitle;
-
-  /// No description provided for @homeLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get homeLoadErrorBody;
 
   /// No description provided for @timeJustNow.
   ///
@@ -3872,12 +3872,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load nearby listings'**
   String get nearbyLoadErrorTitle;
 
-  /// No description provided for @nearbyLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get nearbyLoadErrorBody;
-
   /// No description provided for @nearbyEndOfList.
   ///
   /// In en, this message translates to:
@@ -3979,12 +3973,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load results'**
   String get searchLoadErrorTitle;
-
-  /// No description provided for @searchLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get searchLoadErrorBody;
 
   /// No description provided for @searchEndOfList.
   ///
@@ -4202,12 +4190,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load this category'**
   String get categoryDetailLoadErrorTitle;
 
-  /// No description provided for @categoryDetailLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get categoryDetailLoadErrorBody;
-
   /// No description provided for @categoryDetailEndOfList.
   ///
   /// In en, this message translates to:
@@ -4261,12 +4243,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load your alerts'**
   String get wantedAlertLoadErrorTitle;
-
-  /// No description provided for @wantedAlertLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get wantedAlertLoadErrorBody;
 
   /// No description provided for @wantedAlertNewMatches.
   ///
@@ -4766,12 +4742,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load trusted shops'**
   String get trustedShopsLoadErrorTitle;
 
-  /// No description provided for @trustedShopsLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get trustedShopsLoadErrorBody;
-
   /// No description provided for @trustedShopsFamousTitle.
   ///
   /// In en, this message translates to:
@@ -5059,12 +5029,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load this shop'**
   String get shopDetailLoadErrorTitle;
-
-  /// No description provided for @shopDetailLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get shopDetailLoadErrorBody;
 
   /// No description provided for @postingQuotaPersonalTitle.
   ///
@@ -5671,12 +5635,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load drafts'**
   String get draftsLoadFailedTitle;
-
-  /// No description provided for @draftsLoadFailedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get draftsLoadFailedMessage;
 
   /// No description provided for @draftOpenFailed.
   ///
@@ -8893,12 +8851,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load notifications'**
   String get notificationsLoadError;
-
-  /// No description provided for @notificationsLoadErrorMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get notificationsLoadErrorMessage;
 
   /// No description provided for @notificationsDelete.
   ///

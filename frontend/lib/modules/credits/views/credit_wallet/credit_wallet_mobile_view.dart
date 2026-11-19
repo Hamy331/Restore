@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_circle_icon_button.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 
 import '../../bloc/credit_wallet/credit_wallet_cubit.dart';
@@ -49,14 +49,9 @@ class CreditWalletMobileView extends StatelessWidget {
           CreditWalletStatus.loading => const Center(
             child: AppLoadingIndicator(),
           ),
-          CreditWalletStatus.failure => FeedbackView(
-            icon: AppIcons.offline,
+          CreditWalletStatus.failure => AppLoadErrorView(
             title: l10n.creditLoadError,
-            message: l10n.creditErrorGeneric,
-            action: TextButton(
-              onPressed: context.read<CreditWalletCubit>().load,
-              child: Text(l10n.retry),
-            ),
+            onRetry: context.read<CreditWalletCubit>().load,
           ),
           CreditWalletStatus.ready => AppPullToRefresh(
             onRefresh: context.read<CreditWalletCubit>().load,

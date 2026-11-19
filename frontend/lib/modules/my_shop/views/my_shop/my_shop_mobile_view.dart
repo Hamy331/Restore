@@ -16,6 +16,7 @@ import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
 import 'package:restore/shared/widgets/app_labeled_text_field.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/image_crop/image_crop.dart';
 import 'package:restore/shared/widgets/image_crop/image_crop_view.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
@@ -56,15 +57,7 @@ class MyShopMobileView extends StatelessWidget {
         if (overview == null) {
           return _MyShopScaffold(
             body: state.status == MyShopStatus.failure
-                ? FeedbackView(
-                    icon: AppIcons.offline,
-                    title: l.msLoadError,
-                    message: l.categoryDetailLoadErrorBody,
-                    action: FilledButton(
-                      onPressed: cubit.load,
-                      child: Text(l.retry),
-                    ),
-                  )
+                ? AppLoadErrorView(title: l.msLoadError, onRetry: cubit.load)
                 : const Center(child: AppLoadingIndicator()),
           );
         }

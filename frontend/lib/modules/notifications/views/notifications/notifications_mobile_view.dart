@@ -8,6 +8,7 @@ import 'package:restore/data/models/notification_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_page_header.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/glass/app_glass_background.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
@@ -98,11 +99,9 @@ class NotificationsMobileView extends StatelessWidget {
       case NotificationsStatus.loading:
         return const Center(child: AppLoadingIndicator());
       case NotificationsStatus.failure:
-        return FeedbackView(
-          icon: AppIcons.offline,
+        return AppLoadErrorView(
           title: l10n.notificationsLoadError,
-          message: l10n.notificationsLoadErrorMessage,
-          action: TextButton(onPressed: cubit.load, child: Text(l10n.retry)),
+          onRetry: cubit.load,
         );
       case NotificationsStatus.ready when state.items.isEmpty:
         return AppPullToRefresh(

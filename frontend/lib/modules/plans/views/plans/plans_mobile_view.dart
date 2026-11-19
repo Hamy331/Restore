@@ -10,7 +10,7 @@ import 'package:restore/data/models/enums/subscription_plan.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
 import 'package:restore/shared/widgets/app_page_header.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/glass/app_glass_background.dart';
 import 'package:restore/shared/widgets/glass/app_glass_sheet.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
@@ -133,14 +133,9 @@ class PlansMobileView extends StatelessWidget {
                     PlansStatus.loading => const Center(
                       child: AppLoadingIndicator(),
                     ),
-                    PlansStatus.failure => FeedbackView(
-                      icon: AppIcons.offline,
+                    PlansStatus.failure => AppLoadErrorView(
                       title: l10n.plansLoadError,
-                      message: l10n.plansActionError,
-                      action: TextButton(
-                        onPressed: context.read<PlansCubit>().load,
-                        child: Text(l10n.retry),
-                      ),
+                      onRetry: context.read<PlansCubit>().load,
                     ),
                     PlansStatus.ready => AppPullToRefresh(
                       onRefresh: () =>

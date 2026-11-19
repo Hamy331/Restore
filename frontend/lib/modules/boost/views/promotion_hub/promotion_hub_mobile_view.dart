@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 
 import '../../../account/models/account_listing.dart';
 import '../../../credits/utils/credit_format.dart';
@@ -165,14 +165,9 @@ class PromotionHubMobileView extends StatelessWidget {
           final hub = state.hub;
           if (hub == null) {
             if (state.status == PromotionHubStatus.failure) {
-              return FeedbackView(
-                icon: AppIcons.offline,
+              return AppLoadErrorView(
                 title: l.promoLoadError,
-                message: l.categoryDetailLoadErrorBody,
-                action: FilledButton(
-                  onPressed: cubit.load,
-                  child: Text(l.retry),
-                ),
+                onRetry: cubit.load,
               );
             }
             return const Center(child: AppLoadingIndicator());

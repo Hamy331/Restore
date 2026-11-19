@@ -11,6 +11,7 @@ import 'package:restore/modules/location/views/area_search/area_search_view.dart
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
@@ -284,14 +285,9 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
         return [
           SliverFillRemaining(
             hasScrollBody: false,
-            child: FeedbackView(
-              icon: AppIcons.offline,
+            child: AppLoadErrorView(
               title: l10n.nearbyLoadErrorTitle,
-              message: l10n.nearbyLoadErrorBody,
-              action: FilledButton(
-                onPressed: cubit.retry,
-                child: Text(l10n.retry),
-              ),
+              onRetry: cubit.retry,
             ),
           ),
         ];

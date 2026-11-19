@@ -6,6 +6,7 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
@@ -62,14 +63,9 @@ class FollowingShopsMobileView extends StatelessWidget {
             case FollowingFeedStatus.loading:
               return const Center(child: AppLoadingIndicator());
             case FollowingFeedStatus.failure:
-              return FeedbackView(
-                icon: AppIcons.offline,
+              return AppLoadErrorView(
                 title: l.followShopsLoadError,
-                message: l.trustedShopsLoadErrorBody,
-                action: FilledButton(
-                  onPressed: cubit.load,
-                  child: Text(l.retry),
-                ),
+                onRetry: cubit.load,
               );
             case FollowingFeedStatus.ready:
               break;

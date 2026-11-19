@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 
 import '../../../credits/utils/credit_format.dart';
 import '../../../credits/views/credit_topup/credit_topup_view.dart';
@@ -138,14 +138,9 @@ class BoostListingMobileView extends StatelessWidget {
               return const Center(child: AppLoadingIndicator());
             }
             if (promotion == null) {
-              return FeedbackView(
-                icon: AppIcons.offline,
+              return AppLoadErrorView(
                 title: l.promoLoadError,
-                message: l.categoryDetailLoadErrorBody,
-                action: FilledButton(
-                  onPressed: cubit.load,
-                  child: Text(l.retry),
-                ),
+                onRetry: cubit.load,
               );
             }
             final now = DateTime.now();

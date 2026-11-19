@@ -8,6 +8,7 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
 import 'package:restore/shared/widgets/app_page_header.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/glass/app_glass_background.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
@@ -191,20 +192,17 @@ class _ListingDraftsMobileViewState extends State<ListingDraftsMobileView> {
       if (loading || state.draftsStatus == RequestStatus.idle) {
         return const Center(child: AppLoadingIndicator());
       }
-      final failed = state.draftsStatus == RequestStatus.failure;
+      if (state.draftsStatus == RequestStatus.failure) {
+        return AppLoadErrorView(
+          title: l10n.draftsLoadFailedTitle,
+          onRetry: () => bloc.add(const DraftsRequested()),
+        );
+      }
       return Center(
         child: FeedbackView(
-          icon: failed ? AppIcons.offline : AppIcons.saveDraft,
-          title: failed ? l10n.draftsLoadFailedTitle : l10n.draftsEmptyTitle,
-          message: failed
-              ? l10n.draftsLoadFailedMessage
-              : l10n.draftsEmptyMessage,
-          action: failed
-              ? FilledButton(
-                  onPressed: () => bloc.add(const DraftsRequested()),
-                  child: Text(l10n.retry),
-                )
-              : null,
+          icon: AppIcons.saveDraft,
+          title: l10n.draftsEmptyTitle,
+          message: l10n.draftsEmptyMessage,
         ),
       );
     }

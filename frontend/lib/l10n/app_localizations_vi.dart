@@ -195,7 +195,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accMenu => 'Menu và cài đặt';
 
   @override
-  String get accLoadError => 'Không tải được hồ sơ. Bấm để thử lại';
+  String get accLoadError => 'Không tải được hồ sơ';
 
   @override
   String get accLoading => 'Đang tải…';
@@ -931,6 +931,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get retry => 'Thử lại';
 
   @override
+  String get loadErrorTitle => 'Chưa tải được dữ liệu';
+
+  @override
+  String get loadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
   String featureApiPending(String action) {
     return '$action sẽ được kết nối ở bước API.';
   }
@@ -1568,9 +1574,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loadCategoriesFailedTitle => 'Không tải được danh mục';
 
   @override
-  String get loadCategoriesFailedMessage => 'Kiểm tra kết nối mạng rồi thử lại';
-
-  @override
   String get negotiableHint => 'Người mua có thể trả giá khi nhắn tin';
 
   @override
@@ -1721,9 +1724,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get homeLoadErrorTitle => 'Chưa tải được trang chủ';
-
-  @override
-  String get homeLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
 
   @override
   String get timeJustNow => 'Vừa xong';
@@ -2060,9 +2060,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get nearbyLoadErrorTitle => 'Chưa tải được tin gần bạn';
 
   @override
-  String get nearbyLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
-
-  @override
   String get nearbyEndOfList => 'Bạn đã xem hết tin quanh đây';
 
   @override
@@ -2121,9 +2118,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get searchLoadErrorTitle => 'Chưa tải được kết quả';
-
-  @override
-  String get searchLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
 
   @override
   String get searchEndOfList => 'Bạn đã xem hết kết quả';
@@ -2251,10 +2245,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get categoryDetailLoadErrorTitle => 'Chưa tải được danh mục';
 
   @override
-  String get categoryDetailLoadErrorBody =>
-      'Kiểm tra kết nối mạng rồi thử lại nhé.';
-
-  @override
   String get categoryDetailEndOfList => 'Bạn đã xem hết tin trong danh mục này';
 
   @override
@@ -2284,10 +2274,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get wantedAlertLoadErrorTitle => 'Chưa tải được thông báo';
-
-  @override
-  String get wantedAlertLoadErrorBody =>
-      'Kiểm tra kết nối mạng rồi thử lại nhé.';
 
   @override
   String wantedAlertNewMatches(int count) {
@@ -2583,10 +2569,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get trustedShopsLoadErrorTitle => 'Chưa tải được shop uy tín';
 
   @override
-  String get trustedShopsLoadErrorBody =>
-      'Kiểm tra kết nối mạng rồi thử lại nhé.';
-
-  @override
   String get trustedShopsFamousTitle => 'Thương hiệu nổi tiếng';
 
   @override
@@ -2755,10 +2737,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get shopDetailLoadErrorTitle => 'Chưa tải được trang shop';
-
-  @override
-  String get shopDetailLoadErrorBody =>
-      'Kiểm tra kết nối mạng rồi thử lại nhé.';
 
   @override
   String get postingQuotaPersonalTitle => 'Tài khoản cá nhân';
@@ -3112,9 +3090,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get draftsLoadFailedTitle => 'Không tải được tin nháp';
-
-  @override
-  String get draftsLoadFailedMessage => 'Kiểm tra kết nối mạng rồi thử lại.';
 
   @override
   String get draftOpenFailed =>
@@ -5022,10 +4997,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get notificationsLoadError => 'Không tải được thông báo';
-
-  @override
-  String get notificationsLoadErrorMessage =>
-      'Kiểm tra kết nối mạng rồi thử lại.';
 
   @override
   String get notificationsDelete => 'Xoá';

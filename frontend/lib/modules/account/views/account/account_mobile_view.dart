@@ -19,6 +19,7 @@ import '../edit_profile/edit_profile_view.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/profile_posts.dart';
 import '../../../plans/views/plans/plans_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 
 enum _Section { listings, posts }
 
@@ -124,14 +125,10 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                 ),
                                 const SizedBox(height: 26),
                                 if (userState.failed)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 24,
-                                    ),
-                                    child: TextButton(
-                                      onPressed: userCubit.load,
-                                      child: Text(l.accLoadError),
-                                    ),
+                                  AppLoadErrorView(
+                                    title: l.accLoadError,
+                                    onRetry: userCubit.load,
+                                    compact: true,
                                   )
                                 else
                                   ProfileHeader(

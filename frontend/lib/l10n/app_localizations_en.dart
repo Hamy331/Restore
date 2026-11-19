@@ -225,7 +225,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accMenu => 'Menu and settings';
 
   @override
-  String get accLoadError => 'Couldn\'t load your profile. Tap to retry';
+  String get accLoadError => 'Couldn\'t load your profile';
 
   @override
   String get accLoading => 'Loading…';
@@ -963,6 +963,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get loadErrorTitle => 'Couldn\'t load data';
+
+  @override
+  String get loadErrorBody => 'Check your connection and try again.';
+
+  @override
   String featureApiPending(String action) {
     return '$action will be connected in the API phase.';
   }
@@ -1602,10 +1608,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadCategoriesFailedTitle => 'Couldn\'t load categories';
 
   @override
-  String get loadCategoriesFailedMessage =>
-      'Check your connection and try again';
-
-  @override
   String get negotiableHint => 'Buyers can make offers in chat';
 
   @override
@@ -1758,9 +1760,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeLoadErrorTitle => 'Couldn\'t load the home page';
-
-  @override
-  String get homeLoadErrorBody => 'Check your connection and try again.';
 
   @override
   String get timeJustNow => 'Just now';
@@ -2098,9 +2097,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nearbyLoadErrorTitle => 'Couldn\'t load nearby listings';
 
   @override
-  String get nearbyLoadErrorBody => 'Check your connection and try again.';
-
-  @override
   String get nearbyEndOfList => 'You\'ve seen everything nearby';
 
   @override
@@ -2159,9 +2155,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchLoadErrorTitle => 'Couldn\'t load results';
-
-  @override
-  String get searchLoadErrorBody => 'Check your connection and try again.';
 
   @override
   String get searchEndOfList => 'You\'ve seen all results';
@@ -2288,10 +2281,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryDetailLoadErrorTitle => 'Couldn\'t load this category';
 
   @override
-  String get categoryDetailLoadErrorBody =>
-      'Check your connection and try again.';
-
-  @override
   String get categoryDetailEndOfList =>
       'You\'ve seen every listing in this category';
 
@@ -2328,9 +2317,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wantedAlertLoadErrorTitle => 'Couldn\'t load your alerts';
-
-  @override
-  String get wantedAlertLoadErrorBody => 'Check your connection and try again.';
 
   @override
   String wantedAlertNewMatches(int count) {
@@ -2640,10 +2626,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trustedShopsLoadErrorTitle => 'Couldn\'t load trusted shops';
 
   @override
-  String get trustedShopsLoadErrorBody =>
-      'Check your connection and try again.';
-
-  @override
   String get trustedShopsFamousTitle => 'Famous brands';
 
   @override
@@ -2817,9 +2799,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopDetailLoadErrorTitle => 'Couldn\'t load this shop';
-
-  @override
-  String get shopDetailLoadErrorBody => 'Check your connection and try again.';
 
   @override
   String get postingQuotaPersonalTitle => 'Personal account';
@@ -3179,9 +3158,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get draftsLoadFailedTitle => 'Couldn\'t load drafts';
-
-  @override
-  String get draftsLoadFailedMessage => 'Check your connection and try again.';
 
   @override
   String get draftOpenFailed =>
@@ -5116,10 +5092,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsLoadError => 'Couldn\'t load notifications';
-
-  @override
-  String get notificationsLoadErrorMessage =>
-      'Check your connection and try again.';
 
   @override
   String get notificationsDelete => 'Delete';

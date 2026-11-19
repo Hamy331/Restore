@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/constants/app_colors.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -18,7 +17,7 @@ import 'package:restore/modules/following/views/following_hub/following_hub_view
 import 'package:restore/modules/notifications/views/notifications/notifications_view.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
 import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
@@ -244,14 +243,9 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                           HomeStatus.failure => [
                             SliverFillRemaining(
                               hasScrollBody: false,
-                              child: FeedbackView(
-                                icon: AppIcons.offline,
+                              child: AppLoadErrorView(
                                 title: l10n.homeLoadErrorTitle,
-                                message: l10n.homeLoadErrorBody,
-                                action: FilledButton(
-                                  onPressed: cubit.load,
-                                  child: Text(l10n.retry),
-                                ),
+                                onRetry: cubit.load,
                               ),
                             ),
                           ],

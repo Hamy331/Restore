@@ -7,9 +7,8 @@ import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dar
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import '../../bloc/create_listing/create_listing_bloc.dart';
 import '../../bloc/create_listing/create_listing_event.dart';
 import '../../bloc/create_listing/create_listing_state.dart';
@@ -166,16 +165,11 @@ class ChooseCategoryMobileView extends StatelessWidget {
                             onSelect: (category) =>
                                 _onSelect(context, category),
                           ),
-                          RequestStatus.failure => FeedbackView(
-                            icon: AppIcons.offline,
+                          RequestStatus.failure => AppLoadErrorView(
                             title: l10n.loadCategoriesFailedTitle,
-                            message: l10n.loadCategoriesFailedMessage,
-                            action: FilledButton(
-                              onPressed: () => context
-                                  .read<CreateListingBloc>()
-                                  .add(const CategoriesRequested()),
-                              child: Text(l10n.retry),
-                            ),
+                            onRetry: () => context
+                                .read<CreateListingBloc>()
+                                .add(const CategoriesRequested()),
                           ),
                           _ => const CategoryListSkeleton(),
                         },

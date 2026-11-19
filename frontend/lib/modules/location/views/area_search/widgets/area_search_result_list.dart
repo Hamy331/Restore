@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 
 import '../../../bloc/area_search/area_search_state.dart';
@@ -37,11 +38,9 @@ class AreaSearchResultList extends StatelessWidget {
       );
     }
     if (state.status == AreaSearchStatus.failure) {
-      return FeedbackView(
-        icon: AppIcons.offline,
+      return AppLoadErrorView(
         title: l10n.areaSearchErrorTitle,
-        message: l10n.searchLoadErrorBody,
-        action: FilledButton(onPressed: onRetry, child: Text(l10n.retry)),
+        onRetry: onRetry,
       );
     }
     if (state.status == AreaSearchStatus.ready && state.results.isEmpty) {

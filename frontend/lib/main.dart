@@ -32,11 +32,20 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 /// Xong khi Firebase khởi tạo (hoặc bỏ qua vì lỗi); push FCM chờ cái này
 late final Future<void> _firebaseReady;
 
+bool get _isWebOrDesktop =>
+    kIsWeb ||
+    defaultTargetPlatform == TargetPlatform.windows ||
+    defaultTargetPlatform == TargetPlatform.macOS ||
+    defaultTargetPlatform == TargetPlatform.linux;
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
-    DevicePreview(enabled: !kReleaseMode, builder: (context) => const MyApp()),
+    DevicePreview(
+      enabled: !kReleaseMode && _isWebOrDesktop,
+      builder: (context) => const MyApp(),
+    ),
   );
 
   _firebaseReady = _initializeFirebase();

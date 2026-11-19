@@ -7,6 +7,7 @@ import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
@@ -314,14 +315,9 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
         return [
           SliverFillRemaining(
             hasScrollBody: false,
-            child: FeedbackView(
-              icon: AppIcons.offline,
+            child: AppLoadErrorView(
               title: l10n.trustedShopsLoadErrorTitle,
-              message: l10n.trustedShopsLoadErrorBody,
-              action: FilledButton(
-                onPressed: cubit.retry,
-                child: Text(l10n.retry),
-              ),
+              onRetry: cubit.retry,
             ),
           ),
         ];

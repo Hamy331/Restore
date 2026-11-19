@@ -8,6 +8,7 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
@@ -209,14 +210,9 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
         return [
           SliverFillRemaining(
             hasScrollBody: false,
-            child: FeedbackView(
-              icon: AppIcons.offline,
+            child: AppLoadErrorView(
               title: l10n.searchLoadErrorTitle,
-              message: l10n.searchLoadErrorBody,
-              action: FilledButton(
-                onPressed: cubit.retry,
-                child: Text(l10n.retry),
-              ),
+              onRetry: cubit.retry,
             ),
           ),
         ];

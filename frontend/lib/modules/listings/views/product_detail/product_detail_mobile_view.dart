@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/product_detail/product_detail_cubit.dart';
@@ -238,14 +237,10 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
                       ProductDetailStatus.failure => [
                         SliverFillRemaining(
                           hasScrollBody: false,
-                          child: FeedbackView(
-                            icon: AppIcons.offline,
+                          child: AppLoadErrorView(
                             title: _l10n.productLoadErrorTitle,
                             message: _l10n.productLoadErrorBody,
-                            action: FilledButton(
-                              onPressed: _cubit.load,
-                              child: Text(_l10n.retry),
-                            ),
+                            onRetry: _cubit.load,
                           ),
                         ),
                       ],

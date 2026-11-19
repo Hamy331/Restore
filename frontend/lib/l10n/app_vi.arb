@@ -98,7 +98,7 @@
   "feedCloseImage": "Đóng ảnh",
   "accEditPage": "Chỉnh sửa trang",
   "accMenu": "Menu và cài đặt",
-  "accLoadError": "Không tải được hồ sơ. Bấm để thử lại",
+  "accLoadError": "Không tải được hồ sơ",
   "accLoading": "Đang tải…",
   "accFollowing": "Đang theo dõi",
   "accFollowers": "Người theo dõi",
@@ -432,6 +432,8 @@
   "aiErrorTitle": "Chưa thể trả lời lúc này",
   "aiErrorDescription": "Nội dung cuộc trò chuyện vẫn được giữ. Bạn có thể thử lại mà không cần nhập lại từ đầu.",
   "retry": "Thử lại",
+  "loadErrorTitle": "Chưa tải được dữ liệu",
+  "loadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "featureApiPending": "{action} sẽ được kết nối ở bước API.",
   "@featureApiPending": {
     "placeholders": {
@@ -733,7 +735,6 @@
   "yes": "Có",
   "no": "Không",
   "loadCategoriesFailedTitle": "Không tải được danh mục",
-  "loadCategoriesFailedMessage": "Kiểm tra kết nối mạng rồi thử lại",
   "negotiableHint": "Người mua có thể trả giá khi nhắn tin",
   "addressNearbyHint": "Giúp người mua gần bạn tìm thấy tin",
   "privateStreetAddress": "{street} (không công khai)",
@@ -789,7 +790,6 @@
   "homeSaveListing": "Lưu tin",
   "homeUnsaveListing": "Bỏ lưu tin",
   "homeLoadErrorTitle": "Chưa tải được trang chủ",
-  "homeLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "timeJustNow": "Vừa xong",
   "timeMinutesAgo": "{count} phút trước",
   "@timeMinutesAgo": {
@@ -1003,7 +1003,6 @@
     }
   },
   "nearbyLoadErrorTitle": "Chưa tải được tin gần bạn",
-  "nearbyLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "nearbyEndOfList": "Bạn đã xem hết tin quanh đây",
   "distanceMeters": "{meters} m",
   "@distanceMeters": {
@@ -1049,7 +1048,6 @@
   "searchEmptyBody": "Thử từ khoá ngắn hơn, từ khoá khác hoặc bỏ bớt bộ lọc nhé.",
   "searchTryAnother": "Đổi từ khoá",
   "searchLoadErrorTitle": "Chưa tải được kết quả",
-  "searchLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "searchEndOfList": "Bạn đã xem hết kết quả",
   "areaSearchHint": "Tìm phường/xã, tỉnh/thành...",
   "areaMyLocationSubtitle": "Dùng vị trí GPS hiện tại của bạn",
@@ -1131,7 +1129,6 @@
   "categoryDetailFilteredEmptyTitle": "Không có tin khớp bộ lọc",
   "categoryDetailFilteredEmptyBody": "Thử bỏ bớt bộ lọc để xem thêm tin nhé.",
   "categoryDetailLoadErrorTitle": "Chưa tải được danh mục",
-  "categoryDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "categoryDetailEndOfList": "Bạn đã xem hết tin trong danh mục này",
   "wantedAlertTitle": "Báo khi có hàng",
   "wantedAlertSubtitle": "Đặt trước món bạn cần, có tin giống là báo ngay",
@@ -1148,7 +1145,6 @@
   "wantedAlertEmptyTitle": "Chưa có thông báo nào",
   "wantedAlertEmptyBody": "Đặt trước món bạn đang tìm, ReStore sẽ báo ngay khi có người đăng món gần giống.",
   "wantedAlertLoadErrorTitle": "Chưa tải được thông báo",
-  "wantedAlertLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "wantedAlertNewMatches": "{count} tin mới",
   "@wantedAlertNewMatches": {
     "placeholders": {
@@ -1326,7 +1322,6 @@
   "trustedShopsEmptyTitle": "Chưa có shop uy tín trong mục này",
   "trustedShopsEmptyBody": "Khi có shop được xác minh bán mặt hàng này, shop sẽ hiện ở đây.",
   "trustedShopsLoadErrorTitle": "Chưa tải được shop uy tín",
-  "trustedShopsLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "trustedShopsFamousTitle": "Thương hiệu nổi tiếng",
   "trustedShopsFamousSubtitle": "Gian hàng chính hãng của các thương hiệu lớn",
   "trustedShopsDealsTitle": "Trải nghiệm hàng hiệu",
@@ -1417,7 +1412,6 @@
   "shopDetailEmptyBody": "Theo dõi shop để biết ngay khi có sản phẩm mới.",
   "shopDetailEndOfList": "Bạn đã xem hết sản phẩm của shop",
   "shopDetailLoadErrorTitle": "Chưa tải được trang shop",
-  "shopDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "postingQuotaPersonalTitle": "Tài khoản cá nhân",
   "postingQuotaBannerMessage": "Mỗi chuyên mục được {min} đến {max} tin miễn phí đang hiển thị. Mỗi tin hiển thị {days} ngày.",
   "@postingQuotaBannerMessage": {
@@ -1600,7 +1594,6 @@
   "draftsEmptyTitle": "Chưa có tin nháp",
   "draftsEmptyMessage": "Khi đăng tin, bấm Lưu nháp để soạn tiếp lúc khác.",
   "draftsLoadFailedTitle": "Không tải được tin nháp",
-  "draftsLoadFailedMessage": "Kiểm tra kết nối mạng rồi thử lại.",
   "draftOpenFailed": "Không mở được tin nháp, có thể tin đã được đăng hoặc đã xóa",
   "draftDeleteTitle": "Xóa tin nháp?",
   "draftDeleteMessage": "Tin nháp và ảnh đã tải lên sẽ bị xóa, không khôi phục được.",
@@ -2838,7 +2831,6 @@
   "notificationsEmptyMessage": "Khi tin của bạn được duyệt, có người quan tâm hay Xu thay đổi, thông báo sẽ hiện ở đây.",
   "notificationsEmptyFiltered": "Không có thông báo nào trong mục này",
   "notificationsLoadError": "Không tải được thông báo",
-  "notificationsLoadErrorMessage": "Kiểm tra kết nối mạng rồi thử lại.",
   "notificationsDelete": "Xoá",
   "notificationsDeleted": "Đã xoá thông báo",
   "notificationsDeleteFailed": "Chưa xoá được thông báo. Vui lòng thử lại.",

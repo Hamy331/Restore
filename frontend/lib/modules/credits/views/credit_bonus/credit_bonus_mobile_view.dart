@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
@@ -34,11 +33,9 @@ class CreditBonusMobileView extends StatelessWidget {
           CreditBonusStatus.loading => const Center(
             child: AppLoadingIndicator(),
           ),
-          CreditBonusStatus.failure => FeedbackView(
-            icon: AppIcons.offline,
+          CreditBonusStatus.failure => AppLoadErrorView(
             title: l10n.creditBonusLoadError,
-            message: l10n.creditErrorGeneric,
-            action: TextButton(onPressed: cubit.load, child: Text(l10n.retry)),
+            onRetry: cubit.load,
           ),
           CreditBonusStatus.ready => AppPullToRefresh(
             onRefresh: cubit.load,
