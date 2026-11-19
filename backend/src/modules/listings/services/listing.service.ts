@@ -85,7 +85,7 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
 }
 
 /** Ẩn, hiện lại, đánh dấu đã bán / đã trao đổi */
-export async function changeStatus(ownerId: string, id: string, target: ListingStatus) {
+export async function changeStatus(ownerId: string, id: string, target: ListingStatus, counterpartyId?: string) {
   const listing = await withQuotaTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if ((target === ListingStatus.SOLD && !current.allowSale) || (target === ListingStatus.EXCHANGED && !current.allowExchange)) {
@@ -94,8 +94,16 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
     if (!canChangeListingStatus(current.status, target)) {
       throw new AppError(409, 'INVALID_STATUS_CHANGE', 'Không thể đổi trạng thái tin theo cách này.');
     }
+    if ([ListingStatus.SOLD, ListingStatus.EXCHANGED].includes(target) && counterpartyId) {
+      if (counterpartyId === ownerId || !await tx.user.findFirst({ where: { id: counterpartyId, status: 'ACTIVE' }, select: { id: true } })) {
+        throw new AppError(400, 'INVALID_COUNTERPARTY', 'Người giao dịch không hợp lệ.', 'counterpartyId');
+      }
+    }
     if (target === ListingStatus.AVAILABLE) await assertQuota(tx, ownerId, new Date(), { daily: false });
     await updateOwnedListing(tx, id, ownerId, current.status, { status: target });
+    if ([ListingStatus.SOLD, ListingStatus.EXCHANGED].includes(target) && counterpartyId) {
+      await tx.listingDeal.create({ data: { listingId: id, sellerId: ownerId, counterpartyId } });
+    }
     return listingRepository.findSelected(tx, id);
   });
   return toOwnerListingDto(listing);

@@ -17,7 +17,7 @@ export async function update(req: AuthRequest, res: Response) {
 
 export async function changeStatus(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, StatusInput>>(res);
-  ok(res, await listingService.changeStatus(req.user!.userId, params.id, body.status));
+  ok(res, await listingService.changeStatus(req.user!.userId, params.id, body.status, body.counterpartyId));
 }
 
 export async function summary(req: AuthRequest, res: Response) {

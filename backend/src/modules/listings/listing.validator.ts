@@ -134,14 +134,19 @@ export const favoriteIdParams = idParam(64);
 export const createListingBody = z.unknown().transform(createInput);
 export const draftBody = z.unknown().transform(draftInput);
 
-/** Body PATCH /:id/status: { status: AVAILABLE | HIDDEN | SOLD | EXCHANGED } */
+/** counterpartyId is recorded only when the seller declares a completed deal. */
 export const statusBody = z.unknown().transform((body) => {
-  const target = (body as { status?: unknown } | undefined)?.status;
+  const value = body as { status?: unknown; counterpartyId?: unknown } | undefined;
+  const target = value?.status;
   if (typeof target !== 'string' || !OWNER_STATUS_TARGETS.includes(target as ListingStatus) ||
-      !body || Object.keys(body).some((key) => key !== 'status')) {
+      !body || Object.keys(body).some((key) => key !== 'status' && key !== 'counterpartyId') ||
+      (value?.counterpartyId !== undefined && (typeof value.counterpartyId !== 'string' || !value.counterpartyId.trim()))) {
     throw new AppError(400, 'INVALID_STATUS', 'Trạng thái tin không hợp lệ.');
   }
-  return { status: target as ListingStatus };
+  if (![ListingStatus.SOLD, ListingStatus.EXCHANGED].includes(target as ListingStatus) && value?.counterpartyId !== undefined) {
+    throw new AppError(400, 'INVALID_STATUS', 'counterpartyId chỉ được gửi khi tin hoàn tất giao dịch.', 'counterpartyId');
+  }
+  return { status: target as ListingStatus, ...(value?.counterpartyId ? { counterpartyId: value.counterpartyId.trim() } : {}) };
 });
 
 /**

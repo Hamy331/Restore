@@ -63,6 +63,10 @@ model User {
   promotions     Promotion[]
   promotionOrders PromotionOrder[]
   wantedAlerts   WantedAlert[]
+  receivedReviews UserReview[] @relation("ReviewTarget")
+  writtenReviews UserReview[] @relation("ReviewAuthor")
+  dealsAsCounterparty ListingDeal[] @relation("DealCounterparty")
+  dealsAsSeller ListingDeal[] @relation("DealSeller")
 
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
@@ -177,6 +181,7 @@ model Listing {
   favorites     ListingFavorite[]
   promotionOrders PromotionOrder[]
   wantedAlertMatches WantedAlertMatch[]
+  deal ListingDeal?
 
   @@index([ownerId, publishedAt])
 }
@@ -189,6 +194,38 @@ model ListingFavorite {
   createdAt DateTime @default(now())
   @@id([userId, listingId])
   @@index([listingId])
+}
+
+/// Completed deal recorded by the listing owner. Both participants can review each other.
+model ListingDeal {
+  id             String   @id @default(uuid())
+  listingId      String   @unique
+  sellerId       String
+  counterpartyId String
+  completedAt    DateTime @default(now())
+  listing        Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  seller         User     @relation("DealSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  counterparty   User     @relation("DealCounterparty", fields: [counterpartyId], references: [id], onDelete: Cascade)
+  reviews        UserReview[]
+
+  @@index([counterpartyId, completedAt])
+}
+
+/// Each participant may review the other once for a completed deal.
+model UserReview {
+  id         String      @id @default(uuid())
+  listingId  String
+  reviewerId String
+  targetId   String
+  rating     Int
+  comment    String?     @db.VarChar(1000)
+  createdAt  DateTime    @default(now())
+  reviewer   User        @relation("ReviewAuthor", fields: [reviewerId], references: [id], onDelete: Cascade)
+  target     User        @relation("ReviewTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  deal       ListingDeal @relation(fields: [listingId], references: [listingId], onDelete: Cascade)
+
+  @@unique([listingId, reviewerId])
+  @@index([targetId, createdAt])
 }
 
 model Category {

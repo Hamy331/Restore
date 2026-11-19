@@ -64,6 +64,7 @@ listingRouter.put('/:id', manageOwn, validate({ params: listingIdParams, body: c
  *
  * Body:
  *  - status: 'AVAILABLE' | 'HIDDEN' | 'SOLD' | 'EXCHANGED'
+ *  - counterpartyId?: mã người giao dịch, khi hoàn tất để mở quyền đánh giá hai chiều
  */
 listingRouter.patch('/:id/status', manageOwn, validate({ params: listingIdParams, body: statusBody }), listingController.changeStatus);
 

@@ -5,6 +5,7 @@ import feedRouter from './routes/feed.route.js';
 import imageRouter from './routes/image.route.js';
 import listingRouter from './routes/listing.route.js';
 import moderationRouter from './routes/moderation.route.js';
+import reviewRouter from './routes/review.route.js';
 
 /**
  * Toàn bộ API /api/v1/listings. Thứ tự mount quan trọng: các đường dẫn một đoạn
@@ -16,6 +17,7 @@ listingsRouter.use(favoriteRouter);
 listingsRouter.use(draftRouter);
 listingsRouter.use(imageRouter);
 listingsRouter.use(moderationRouter);
+listingsRouter.use(reviewRouter);
 listingsRouter.use(listingRouter);
 
 export { imageExtension } from './services/image.service.js';
