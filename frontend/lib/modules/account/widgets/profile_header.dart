@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/utils/app_image_provider.dart';
 import '../models/profile_models.dart';
 
 const profileFontFamily = 'DM Sans';
@@ -201,7 +202,7 @@ class _Avatar extends StatelessWidget {
           CircleAvatar(
             radius: 45,
             backgroundColor: AppColors.background,
-            foregroundImage: url != null ? NetworkImage(url) : null,
+            foregroundImage: url != null ? appImageProvider(url) : null,
             child: Text(
               initials,
               style: const TextStyle(

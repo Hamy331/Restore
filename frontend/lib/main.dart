@@ -26,6 +26,7 @@ import 'modules/notifications/views/notifications/notifications_view.dart';
 import 'modules/notifications/widgets/push_notification_listener.dart';
 import 'core/config/app_environment.dart';
 import 'core/network/api_client.dart';
+import 'shared/utils/image_cache/app_image_disk_cache.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -49,6 +50,13 @@ void main() {
   );
 
   _firebaseReady = _initializeFirebase();
+
+  // Dọn cache ảnh trên đĩa sau khi app đã hiện, không tranh tài nguyên với
+  // khung hình đầu
+  Future<void>.delayed(
+    const Duration(seconds: 5),
+    AppImageDiskCache.instance.prune,
+  );
 }
 
 Future<void> _initializeFirebase() async {
