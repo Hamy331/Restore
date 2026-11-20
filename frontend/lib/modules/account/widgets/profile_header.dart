@@ -54,6 +54,7 @@ class ProfileHeader extends StatelessWidget {
     this.onBioTap,
     this.onFollowingTap,
     this.onFollowersTap,
+    this.onRatingTap,
     this.extraStat,
     this.action,
     this.countFollowedShops = false,
@@ -62,6 +63,7 @@ class ProfileHeader extends StatelessWidget {
   /// `null` khi đang tải lần đầu.
   final ProfileData? profile;
   final VoidCallback? onAvatarTap, onBioTap, onFollowingTap, onFollowersTap;
+  final VoidCallback? onRatingTap;
 
   /// Ô số liệu thứ ba (ví dụ số tin đăng).
   final Widget? extraStat;
@@ -119,9 +121,14 @@ class ProfileHeader extends StatelessWidget {
                   if (profile != null) ...[
                     const SizedBox(height: 6),
                     InkWell(
-                      onTap: () =>
-                          context.push('/users/${profile.id}?tab=reviews'),
-                      child: _Rating(profile: profile),
+                      onTap:
+                          onRatingTap ??
+                          () =>
+                              context.push('/users/${profile.id}?tab=reviews'),
+                      child: _Rating(
+                        profile: profile,
+                        showChevron: onRatingTap != null,
+                      ),
                     ),
                   ],
                 ],
@@ -191,8 +198,9 @@ class ProfileHeader extends StatelessWidget {
 }
 
 class _Rating extends StatelessWidget {
-  const _Rating({required this.profile});
+  const _Rating({required this.profile, required this.showChevron});
   final ProfileData profile;
+  final bool showChevron;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -222,6 +230,7 @@ class _Rating extends StatelessWidget {
             ),
           ),
         ),
+        if (showChevron) const Icon(AppIcons.chevronRight, size: 14),
       ],
     );
   }

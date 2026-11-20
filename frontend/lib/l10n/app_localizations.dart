@@ -938,6 +938,36 @@ abstract class AppLocalizations {
   /// **'My reviews'**
   String get accMyReviews;
 
+  /// No description provided for @accReceivedRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings'**
+  String get accReceivedRatings;
+
+  /// No description provided for @accPendingReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending reviews'**
+  String get accPendingReviews;
+
+  /// No description provided for @accSubmittedReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get accSubmittedReviews;
+
+  /// No description provided for @accNoPendingReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no transactions waiting for a review.'**
+  String get accNoPendingReviews;
+
+  /// No description provided for @accNoSubmittedReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t submitted any reviews yet.'**
+  String get accNoSubmittedReviews;
+
   /// No description provided for @accTransactions.
   ///
   /// In en, this message translates to:

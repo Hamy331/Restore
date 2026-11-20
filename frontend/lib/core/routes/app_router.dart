@@ -13,6 +13,7 @@ import 'package:restore/modules/feeds/views/feeds/feeds_view.dart';
 import 'package:restore/modules/account/models/profile_models.dart';
 import 'package:restore/modules/account/views/follow_list/follow_list_view.dart';
 import 'package:restore/modules/account/views/language_settings/language_settings_view.dart';
+import 'package:restore/modules/account/views/my_reviews/my_reviews_view.dart';
 import 'package:restore/modules/account/views/public_profile/public_profile_view.dart';
 import 'package:restore/modules/account/views/account/account_view.dart';
 import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dart';
@@ -358,6 +359,16 @@ GoRouter createAppRouter(
       path: '/settings',
       parentNavigatorKey: _frameNavigatorKey,
       builder: (_, _) => const LanguageSettingsView(),
+    ),
+    GoRoute(
+      path: MyReviewsView.path,
+      parentNavigatorKey: _frameNavigatorKey,
+      builder: (_, _) => const MyReviewsView(),
+    ),
+    GoRoute(
+      path: MyReviewsView.ratingsPath,
+      parentNavigatorKey: _frameNavigatorKey,
+      builder: (_, _) => const MyReviewsView(received: true),
     ),
     // Chỉnh sửa hồ sơ, mở từ tab Tài khoản (extra = UserProfileCubit);
     // thiếu extra (VD mở lại từ link) thì về tab Tài khoản

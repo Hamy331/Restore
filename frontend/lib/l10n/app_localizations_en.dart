@@ -491,6 +491,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accMyReviews => 'My reviews';
 
   @override
+  String get accReceivedRatings => 'Ratings';
+
+  @override
+  String get accPendingReviews => 'Pending reviews';
+
+  @override
+  String get accSubmittedReviews => 'Submitted';
+
+  @override
+  String get accNoPendingReviews =>
+      'You have no transactions waiting for a review.';
+
+  @override
+  String get accNoSubmittedReviews => 'You haven\'t submitted any reviews yet.';
+
+  @override
   String get accTransactions => 'Transaction history';
 
   @override

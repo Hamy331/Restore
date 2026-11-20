@@ -5,6 +5,7 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/account/views/my_reviews/my_reviews_view.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 import 'package:restore/modules/credits/views/credit_wallet/credit_wallet_view.dart';
@@ -196,6 +197,8 @@ class _AccountDesktopViewState extends State<AccountDesktopView> {
                           ProfileHeader(
                             profile: profile,
                             countFollowedShops: true,
+                            onRatingTap: () =>
+                                context.push(MyReviewsView.ratingsPath),
                             onAvatarTap: _openEditProfile,
                             onBioTap: _openEditProfile,
                             onFollowingTap: profile == null

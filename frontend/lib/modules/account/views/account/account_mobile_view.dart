@@ -16,6 +16,7 @@ import '../../models/profile_models.dart';
 import './widgets/account_listings.dart';
 import './widgets/account_menu.dart';
 import '../edit_profile/edit_profile_view.dart';
+import '../my_reviews/my_reviews_view.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/profile_posts.dart';
 import '../../../plans/views/plans/plans_view.dart';
@@ -159,6 +160,8 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                   ProfileHeader(
                                     profile: profile,
                                     countFollowedShops: true,
+                                    onRatingTap: () =>
+                                        context.push(MyReviewsView.ratingsPath),
                                     onAvatarTap: openEditProfile,
                                     onBioTap: openEditProfile,
                                     onFollowingTap: profile == null

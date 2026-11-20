@@ -11,8 +11,13 @@ import '../../widgets/profile_header.dart';
 import 'seller_profile_summary.dart';
 
 class ProfileReviews extends StatefulWidget {
-  const ProfileReviews({super.key, required this.profile});
+  const ProfileReviews({
+    super.key,
+    required this.profile,
+    this.showTitle = true,
+  });
   final ProfileData profile;
+  final bool showTitle;
   @override
   State<ProfileReviews> createState() => _ProfileReviewsState();
 }
@@ -88,10 +93,11 @@ class _ProfileReviewsState extends State<ProfileReviews> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  l.sellerRatingsTitle,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+                if (widget.showTitle)
+                  Text(
+                    l.sellerRatingsTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: ProfileAvatar(

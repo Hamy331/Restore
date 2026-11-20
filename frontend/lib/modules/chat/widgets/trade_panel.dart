@@ -62,12 +62,12 @@ class _TradePanelState extends State<TradePanel> {
   }
 
   Future<void> review() async {
-    final sent = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder: (_) => TradeReviewForm(conversation: widget.conversation),
+    final sent = await TradeReviewForm.show(
+      context,
+      conversationId: widget.trade.contextId ?? widget.conversation.id,
+      title: widget.trade.title,
+      recipientName: widget.conversation.otherUser.fullName,
+      isSeller: widget.trade.seller,
     );
     if (sent == true && mounted) await widget.refresh();
   }
@@ -131,8 +131,37 @@ class _TradePanelState extends State<TradePanel> {
 }
 
 class TradeReviewForm extends StatefulWidget {
-  const TradeReviewForm({super.key, required this.conversation});
-  final ChatConversation conversation;
+  const TradeReviewForm({
+    super.key,
+    required this.conversationId,
+    required this.title,
+    required this.recipientName,
+    required this.isSeller,
+  });
+
+  final String conversationId;
+  final String title;
+  final String? recipientName;
+  final bool isSeller;
+
+  static Future<bool?> show(
+    BuildContext context, {
+    required String conversationId,
+    required String title,
+    required String? recipientName,
+    required bool isSeller,
+  }) => showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    showDragHandle: true,
+    builder: (_) => TradeReviewForm(
+      conversationId: conversationId,
+      title: title,
+      recipientName: recipientName,
+      isSeller: isSeller,
+    ),
+  );
   @override
   State<TradeReviewForm> createState() => _TradeReviewFormState();
 }
@@ -156,7 +185,7 @@ class _TradeReviewFormState extends State<TradeReviewForm> {
     });
     try {
       await ApiClient().dio.post(
-        '/conversations/${widget.conversation.trade?.contextId ?? widget.conversation.id}/review',
+        '/conversations/${Uri.encodeComponent(widget.conversationId)}/review',
         data: {
           'stars': stars,
           'tags': tags.toList(),
@@ -176,8 +205,7 @@ class _TradeReviewFormState extends State<TradeReviewForm> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!,
-        seller = widget.conversation.trade!.seller;
+    final l = AppLocalizations.of(context)!, seller = widget.isSeller;
     final labels = reviewTags(l);
     return SafeArea(
       child: SingleChildScrollView(
@@ -194,8 +222,8 @@ class _TradeReviewFormState extends State<TradeReviewForm> {
               seller ? l.tradeBuyerReview : l.tradeSellerReview,
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            Text(widget.conversation.otherUser.fullName),
-            Text(widget.conversation.trade!.title),
+            if (widget.recipientName case final name?) Text(name),
+            Text(widget.title),
             ReviewStars(
               stars.toDouble(),
               size: 32,

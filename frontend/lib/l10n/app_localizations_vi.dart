@@ -458,7 +458,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accRecentlyViewed => 'Xem gần đây';
 
   @override
-  String get accMyReviews => 'Đánh giá từ tôi';
+  String get accMyReviews => 'Đánh giá của tôi';
+
+  @override
+  String get accReceivedRatings => 'Đánh giá nhận được';
+
+  @override
+  String get accPendingReviews => 'Chờ đánh giá';
+
+  @override
+  String get accSubmittedReviews => 'Đã đánh giá';
+
+  @override
+  String get accNoPendingReviews => 'Bạn không có giao dịch nào chờ đánh giá.';
+
+  @override
+  String get accNoSubmittedReviews => 'Bạn chưa gửi đánh giá nào.';
 
   @override
   String get accTransactions => 'Lịch sử giao dịch';

@@ -10,12 +10,21 @@ import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 
 import '../../widgets/profile_header.dart';
+import '../my_reviews/my_reviews_view.dart';
 import 'widgets/account_menu.dart' show confirmLogout;
 
 /// Đường dẫn thuộc nhóm "Tài khoản" trên web desktop: hiện menu bên trái
 /// như trang Tài khoản của Shopee, nội dung trang nằm bên phải.
 bool isAccountSectionPath(String path, {String? userId}) {
-  const exact = {'/account', '/profile/edit', '/settings', '/plans', '/insights'};
+  const exact = {
+    '/account',
+    '/profile/edit',
+    '/settings',
+    '/plans',
+    '/insights',
+    MyReviewsView.path,
+    MyReviewsView.ratingsPath,
+  };
   const prefixes = [
     '/credits',
     '/wanted-alerts',
@@ -116,6 +125,8 @@ class _Sidebar extends StatelessWidget {
             '/account',
             match: const ['/profile/edit'],
           ),
+          _Item(AppIcons.star, l.accMyReviews, MyReviewsView.path),
+          _Item(AppIcons.star, l.accReceivedRatings, MyReviewsView.ratingsPath),
           _Item(AppIcons.settings, l.settingsPageTitle, '/settings'),
         ],
       ),
