@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
+import 'package:restore/modules/shell/widgets/desktop_chat_controller.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
 import '../../../models/product_detail.dart';
+
+void openListingConversation(BuildContext context, String id) {
+  DesktopChatScope.maybeOf(context)?.invalidateInbox();
+  if (!openDesktopChat(context, conversationId: id)) {
+    context.push('/messages/$id');
+  }
+}
 
 List<String> productQuestions(ProductDetail detail, AppLocalizations l) {
   final fields = {

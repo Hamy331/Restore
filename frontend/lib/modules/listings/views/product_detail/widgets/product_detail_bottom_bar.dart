@@ -14,6 +14,7 @@ class ProductDetailBottomBar extends StatelessWidget {
   final VoidCallback onChat;
   final VoidCallback onSave;
   final VoidCallback? onCall;
+  final String? callLabel;
   final VoidCallback onEdit;
   final VoidCallback onBoost;
   final VoidCallback onFeature;
@@ -25,6 +26,7 @@ class ProductDetailBottomBar extends StatelessWidget {
     required this.onChat,
     required this.onSave,
     required this.onCall,
+    this.callLabel,
     required this.onEdit,
     required this.onBoost,
     required this.onFeature,
@@ -88,7 +90,7 @@ class ProductDetailBottomBar extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: AppCompactActionButton(
-                  label: l10n.listingCall,
+                  label: callLabel ?? l10n.listingCall,
                   secondary: true,
                   onPressed: onCall,
                 ),

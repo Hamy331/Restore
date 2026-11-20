@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/core/utils/formatters/thousands_separator_input_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -49,7 +48,7 @@ class _DealState extends State<ProductDealSection> {
     );
     if (mounted && id != null) {
       _amount.clear();
-      context.push('/messages/$id');
+      openListingConversation(context, id);
     }
   }
 

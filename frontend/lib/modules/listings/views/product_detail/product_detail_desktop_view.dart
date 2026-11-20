@@ -11,11 +11,9 @@ import 'package:restore/modules/auth/utils/auth_route_guard.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
 import 'package:restore/modules/content/views/community_content_view.dart'
     show reportListing;
-import 'package:restore/modules/shell/widgets/desktop_chat_controller.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
 import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../boost/views/boost_listing/boost_listing_view.dart';
 import '../../bloc/product_detail/product_detail_cubit.dart';
@@ -47,6 +45,7 @@ class ProductDetailDesktopView extends StatefulWidget {
 class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
   final _scrollController = ScrollController();
   late final AppLifecycleListener _lifecycle;
+  (String, String)? _visiblePhone;
 
   ProductDetailCubit get _cubit => context.read<ProductDetailCubit>();
   AppLocalizations get _l10n => AppLocalizations.of(context)!;
@@ -82,9 +81,7 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
     if (!_signedIn()) return;
     final id = await showProductChatSheet(context, detail);
     if (!mounted || id == null) return;
-    if (!openDesktopChat(context, conversationId: id)) {
-      context.push('/messages/$id');
-    }
+    openListingConversation(context, id);
   }
 
   Future<void> _onPromote(ProductDetail detail) async {
@@ -101,23 +98,6 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
   Future<void> _onEdit(ProductDetail detail) async {
     await context.push<bool>(EditListingView.location(detail.listing.id));
     if (mounted) await _cubit.refresh();
-  }
-
-  Future<void> _call(String number) async {
-    try {
-      if (await launchUrl(
-        Uri(scheme: 'tel', path: number),
-        mode: LaunchMode.externalApplication,
-      )) {
-        return;
-      }
-    } catch (_) {}
-    if (mounted) {
-      TSnackBarHelper.showInfo(
-        context,
-        message: '${_l10n.listingCallUnavailable} $number',
-      );
-    }
   }
 
   void _onChanged(BuildContext context, ProductDetailState state) {
@@ -196,15 +176,14 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
   }) {
     final category = detail.category;
     final categoryId = detail.listing.categoryId ?? category?.id;
-    final phone = detail.seller.phone?.replaceAll(RegExp(r'[\s().-]'), '');
+    final phone = detail.seller.phone?.trim() ?? '';
+    final canShowPhone = RegExp(
+      r'^\+?[0-9]{7,15}$',
+    ).hasMatch(phone.replaceAll(RegExp(r'[\s().-]'), ''));
+    final phoneKey = (detail.listing.id, phone);
+    final phoneVisible = canShowPhone && _visiblePhone == phoneKey;
 
     final details = <Widget>[
-      if (!detail.isOwner && detail.isAvailable && detail.canMakeOffer)
-        ProductDealSection(
-          key: ValueKey(detail.listing.id),
-          detail: detail,
-          signedIn: _signedIn,
-        ),
       ProductDetailDescription(description: detail.listing.description),
       if (category != null && category.attributes.isNotEmpty)
         ProductDetailAttributes(
@@ -271,12 +250,15 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
                               isSubmitting: submitting,
                               onChat: () => _onChat(detail),
                               onSave: _save,
-                              onCall:
-                                  phone != null &&
-                                      RegExp(
-                                        r'^\+?[0-9]{7,15}$',
-                                      ).hasMatch(phone)
-                                  ? () => _call(phone)
+                              callLabel: phoneVisible
+                                  ? phone
+                                  : _l10n.listingShowPhone,
+                              onCall: canShowPhone
+                                  ? () => setState(() {
+                                      _visiblePhone = phoneVisible
+                                          ? null
+                                          : phoneKey;
+                                    })
                                   : null,
                               onEdit: () => _onEdit(detail),
                               onBoost: () => _onPromote(detail),
@@ -286,6 +268,16 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
                         ),
                       ),
                     ),
+                    if (!detail.isOwner &&
+                        detail.isAvailable &&
+                        detail.canMakeOffer) ...[
+                      const SizedBox(height: 16),
+                      ProductDealSection(
+                        key: ValueKey(detail.listing.id),
+                        detail: detail,
+                        signedIn: _signedIn,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -296,30 +288,20 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
       SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.only(top: 20),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (var i = 0; i < details.length; i++) ...[
-                      if (i > 0) const SizedBox(height: 16),
-                      details[i],
-                    ],
-                  ],
-                ),
-              ),
               if (!detail.isOwner) ...[
-                const SizedBox(width: 20),
-                SizedBox(
-                  width: 380,
-                  child: ProductDetailSellerCard(
-                    key: ValueKey(detail.seller.id),
-                    detail: detail,
-                    signedIn: _signedIn,
-                  ),
+                ProductDetailSellerCard(
+                  key: ValueKey(detail.seller.id),
+                  detail: detail,
+                  signedIn: _signedIn,
                 ),
+                const SizedBox(height: 16),
+              ],
+              for (var i = 0; i < details.length; i++) ...[
+                if (i > 0) const SizedBox(height: 16),
+                details[i],
               ],
             ],
           ),
@@ -457,8 +439,9 @@ class _GalleryState extends State<_Gallery> {
                       child: Center(
                         child: _NavButton(
                           icon: Icons.chevron_left,
-                          onTap: () =>
-                              _select((index - 1 + images.length) % images.length),
+                          onTap: () => _select(
+                            (index - 1 + images.length) % images.length,
+                          ),
                         ),
                       ),
                     ),
@@ -573,7 +556,9 @@ class _GalleryState extends State<_Gallery> {
                     : AppColors.textSecondary,
               ),
               label: Text(
-                widget.isFavorite ? l10n.homeUnsaveListing : l10n.homeSaveListing,
+                widget.isFavorite
+                    ? l10n.homeUnsaveListing
+                    : l10n.homeSaveListing,
                 style: const TextStyle(color: AppColors.textSecondary),
               ),
             ),

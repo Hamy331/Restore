@@ -118,7 +118,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
   Future<void> _onChat(ProductDetail detail) async {
     if (!_signedIn()) return;
     final id = await showProductChatSheet(context, detail);
-    if (mounted && id != null) context.push('/messages/$id');
+    if (mounted && id != null) openListingConversation(context, id);
   }
 
   Future<void> _call(String number) async {
@@ -277,15 +277,15 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
     final categoryId = detail.listing.categoryId ?? category?.id;
     final sections = <Widget>[
       ProductDetailSummary(detail: detail, previousPrice: previousPrice),
-      if (!detail.isOwner)
-        ProductDetailSellerCard(
-          key: ValueKey(detail.seller.id),
-          detail: detail,
-          signedIn: _signedIn,
-        ),
       if (!detail.isOwner && detail.isAvailable && detail.canMakeOffer)
         ProductDealSection(
           key: ValueKey(detail.listing.id),
+          detail: detail,
+          signedIn: _signedIn,
+        ),
+      if (!detail.isOwner)
+        ProductDetailSellerCard(
+          key: ValueKey(detail.seller.id),
           detail: detail,
           signedIn: _signedIn,
         ),

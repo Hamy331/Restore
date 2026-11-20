@@ -57,7 +57,7 @@ class _SellerState extends State<ProductDetailSellerCard> {
       final id = await _sender.send(widget.detail, _message.text.trim());
       if (!mounted) return;
       _message.clear();
-      context.push('/messages/$id');
+      openListingConversation(context, id);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -349,16 +349,19 @@ class _SellerState extends State<ProductDetailSellerCard> {
           ],
           if (shop) ...[
             const Divider(),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              dense: true,
-              leading: const Icon(
-                Icons.verified_user,
-                color: Colors.deepOrange,
+            Material(
+              type: MaterialType.transparency,
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                leading: const Icon(
+                  Icons.verified_user,
+                  color: Colors.deepOrange,
+                ),
+                title: Text(l.sellerPartnerTitle),
+                trailing: const Icon(Icons.expand_more),
+                onTap: () => _partner(l),
               ),
-              title: Text(l.sellerPartnerTitle),
-              trailing: const Icon(Icons.expand_more),
-              onTap: () => _partner(l),
             ),
           ],
         ],
