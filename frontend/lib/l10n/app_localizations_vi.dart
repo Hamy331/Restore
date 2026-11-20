@@ -2123,6 +2123,45 @@ class AppLocalizationsVi extends AppLocalizations {
   String get searchEndOfList => 'Bạn đã xem hết kết quả';
 
   @override
+  String get searchShopsSection => 'Cửa hàng';
+
+  @override
+  String get searchUsersSection => 'Người dùng';
+
+  @override
+  String searchShopSubtitle(int followers, int listings) {
+    return '$followers người theo dõi · $listings tin đang bán';
+  }
+
+  @override
+  String searchUserSubtitle(String username, int listings) {
+    return '@$username · $listings tin đang bán';
+  }
+
+  @override
+  String get searchUserHasShop => 'Có cửa hàng uy tín';
+
+  @override
+  String get searchTabListings => 'Tin đăng';
+
+  @override
+  String get searchShopStripTitle => 'Cửa hàng phù hợp';
+
+  @override
+  String searchShopsEmpty(String query) {
+    return 'Không có cửa hàng nào khớp “$query”';
+  }
+
+  @override
+  String searchUsersEmpty(String query) {
+    return 'Không có người dùng nào khớp “$query”';
+  }
+
+  @override
+  String get searchAccountsEmptyBody =>
+      'Thử gõ đúng tên, hoặc gõ @ trước username nhé.';
+
+  @override
   String get areaSearchHint => 'Tìm phường/xã, tỉnh/thành...';
 
   @override

@@ -4,15 +4,18 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/widgets/app_circle_icon_button.dart';
 import 'package:restore/shared/widgets/app_search_pill.dart';
+import 'package:restore/shared/widgets/app_underline_tabs.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_bar.dart';
 
 import '../../../bloc/search_results_state.dart';
 
-/// Phần ghim đầu trang kết quả: nút quay lại, ô hiện từ khoá (bấm để sửa)
-/// và hàng lọc nhanh
+/// Phần ghim đầu trang kết quả: nút quay lại, ô hiện từ khoá (bấm để sửa),
+/// tab Tin đăng / Cửa hàng / Người dùng và hàng lọc nhanh (chỉ ở tab Tin đăng)
 class SearchResultsHeader extends StatelessWidget {
   final String query;
+  final SearchResultsTab tab;
+  final ValueChanged<SearchResultsTab> onTabChanged;
   final ListingFilter filter;
   final VoidCallback onBack;
   final VoidCallback onEditQuery;
@@ -24,6 +27,8 @@ class SearchResultsHeader extends StatelessWidget {
   const SearchResultsHeader({
     super.key,
     required this.query,
+    required this.tab,
+    required this.onTabChanged,
     required this.filter,
     required this.onBack,
     required this.onEditQuery,
@@ -33,8 +38,14 @@ class SearchResultsHeader extends StatelessWidget {
     required this.onClearTap,
   });
 
-  /// Ô tìm kiếm (48) + khoảng cách + hàng chip lọc + lề trên dưới
-  static const double height = 8 + 48 + 10 + AppFilterChip.height + 12;
+  /// Ô tìm kiếm (48) + hàng tab + hàng chip lọc (tab Tin đăng) + lề trên dưới
+  static double heightFor(SearchResultsTab tab) =>
+      8 +
+      48 +
+      4 +
+      AppUnderlineTabs.height +
+      (tab == SearchResultsTab.listings ? 10 + AppFilterChip.height : 0) +
+      12;
 
   @override
   Widget build(BuildContext context) {
@@ -63,15 +74,27 @@ class SearchResultsHeader extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          AppListingFilterBar(
-            filter: filter,
-            defaults: SearchResultsState.defaultFilter,
-            onFiltersTap: onFiltersTap,
-            onDealToggle: onDealToggle,
-            onSortTap: onSortTap,
-            onClearTap: onClearTap,
+          const SizedBox(height: 4),
+          AppUnderlineTabs(
+            labels: [
+              l10n.searchTabListings,
+              l10n.searchShopsSection,
+              l10n.searchUsersSection,
+            ],
+            selectedIndex: tab.index,
+            onChanged: (index) => onTabChanged(SearchResultsTab.values[index]),
           ),
+          if (tab == SearchResultsTab.listings) ...[
+            const SizedBox(height: 10),
+            AppListingFilterBar(
+              filter: filter,
+              defaults: SearchResultsState.defaultFilter,
+              onFiltersTap: onFiltersTap,
+              onDealToggle: onDealToggle,
+              onSortTap: onSortTap,
+              onClearTap: onClearTap,
+            ),
+          ],
         ],
       ),
     );

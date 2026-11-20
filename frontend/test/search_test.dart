@@ -1,8 +1,19 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
+import 'package:restore/l10n/app_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:restore/modules/search/bloc/search_accounts_cubit.dart';
 import 'package:restore/modules/search/bloc/search_cubit.dart';
+import 'package:restore/modules/search/bloc/search_results_cubit.dart';
+import 'package:restore/modules/search/bloc/search_results_state.dart';
+import 'package:restore/modules/search/views/search_results/search_results_mobile_view.dart';
+import 'package:restore/modules/search/bloc/search_state.dart';
+import 'package:restore/modules/search/views/search/widgets/search_suggestion_list.dart';
 import 'package:restore/modules/search/repositories/search_repository.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 
@@ -95,5 +106,196 @@ void main() {
     await member.start();
     expect(member.state.history, isNotEmpty);
     await member.close();
+  });
+
+  test(
+    'mock account search matches names without accents and @username',
+    () async {
+      final repository = MockSearchRepository(latency: Duration.zero);
+      final shops = await repository.searchShops('kodo');
+      expect(shops.items.map((item) => item.shop.id), ['shop_kodo']);
+      expect((await repository.searchShops('@kodo.cam')).items, hasLength(1));
+
+      final binh = await repository.searchUsers('binh');
+      expect(binh.items.map((user) => user.id), ['user_binh']);
+      expect(
+        (await repository.searchUsers('lan.decor')).items.first.id,
+        'user_lan',
+      );
+      // Gõ "@" chỉ xét username, không xét tên hiển thị
+      expect((await repository.searchUsers('@tran')).items, isEmpty);
+      expect((await repository.searchUsers('@lan')).items.first.id, 'user_lan');
+      expect((await repository.searchUsers('  ')).items, isEmpty);
+    },
+  );
+
+  test('account search parses GET /search/shops and /search/users', () async {
+    final (client, requests) = _fakeClient({
+      'data': [
+        {
+          'id': 'u1',
+          'fullName': 'Nguyễn Văn Bình',
+          'username': 'binh',
+          'followerCount': 3,
+          'listingCount': 2,
+          'isFollowing': true,
+          'shopId': 's1',
+        },
+      ],
+      'meta': {'hasMore': false},
+      'pagination': {'totalItems': 1},
+    });
+    final users = await ApiSearchRepository(
+      apiClient: client,
+    ).searchUsers('binh', limit: 2);
+    expect(requests.last.path, '/search/users');
+    expect(requests.last.queryParameters, {'q': 'binh', 'page': 1, 'limit': 2});
+    final user = users.items.single;
+    expect(
+      [user.fullName, user.isFollowing, user.hasShop],
+      ['Nguyễn Văn Bình', true, true],
+    );
+    expect(users.hasMore, isFalse);
+  });
+
+  test('typing loads a few matching shops and users', () async {
+    final cubit = SearchCubit(
+      searchRepository: MockSearchRepository(latency: Duration.zero),
+      query: 'kodo',
+    );
+    await cubit.start();
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    expect(cubit.state.shops.map((item) => item.shop.id), ['shop_kodo']);
+    expect(cubit.state.users.map((user) => user.id), ['user_kodo']);
+    cubit.queryChanged('');
+    expect(cubit.state.shops, isEmpty);
+    expect(cubit.state.users, isEmpty);
+    await cubit.close();
+  });
+
+  testWidgets('suggestion list shows shops and users above keywords', (
+    tester,
+  ) async {
+    final repository = MockSearchRepository(latency: Duration.zero);
+    late final SearchState state;
+    await tester.runAsync(() async {
+      state = SearchState(
+        query: 'kodo',
+        shops: (await repository.searchShops('kodo')).items,
+        users: (await repository.searchUsers('kodo')).items,
+        accountsQuery: 'kodo',
+      );
+    });
+    String? openedShop;
+    String? openedUser;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('vi'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SearchSuggestionList(
+            state: state,
+            onSubmit: (_) {},
+            onFill: (_) {},
+            onRemoveHistory: (_) {},
+            onOpenShop: (item) => openedShop = item.shop.id,
+            onOpenUser: (user) => openedUser = user.id,
+          ),
+        ),
+      ),
+    );
+    expect(find.textContaining('tin đang bán'), findsNWidgets(2));
+    expect(find.textContaining('@kodo.camera'), findsOneWidget);
+    await tester.tap(find.textContaining('người theo dõi'));
+    await tester.tap(find.textContaining('@kodo.camera'));
+    expect([openedShop, openedUser], ['shop_kodo', 'user_kodo']);
+  });
+
+  test('results page loads matching shops and users with paging', () async {
+    final cubit = SearchAccountsCubit(
+      searchRepository: MockSearchRepository(latency: Duration.zero),
+      query: 'o',
+    );
+    await cubit.start();
+    expect(cubit.state.shops.status, SearchResultsStatus.ready);
+    expect(cubit.state.shops.items, isNotEmpty);
+    expect(
+      cubit.state.users.items.map((user) => user.id),
+      contains('user_kodo'),
+    );
+    final shop = cubit.state.shops.items.first;
+    cubit.syncShopFollowing(shop.shop.id, !shop.isFollowing);
+    expect(cubit.state.shops.items.first.isFollowing, !shop.isFollowing);
+    await cubit.close();
+  });
+
+  testWidgets('results page switches between listings, shops and users tabs', (
+    tester,
+  ) async {
+    final repository = MockSearchRepository(latency: Duration.zero);
+    final results = SearchResultsCubit(
+      searchRepository: repository,
+      query: 'kodo',
+    );
+    final accounts = SearchAccountsCubit(
+      searchRepository: repository,
+      query: 'kodo',
+    );
+    await tester.runAsync(
+      () => Future.wait([results.start(), accounts.start()]),
+    );
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => MultiBlocProvider(
+            providers: [
+              BlocProvider.value(value: results),
+              BlocProvider.value(value: accounts),
+            ],
+            child: const SearchResultsMobileView(),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        locale: const Locale('vi'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pump();
+    // Tab Tin đăng có dải cửa hàng khớp từ khoá
+    expect(find.text('Cửa hàng phù hợp'), findsOneWidget);
+    expect(find.text('Bộ lọc'), findsOneWidget);
+
+    await tester.tap(find.text('Cửa hàng'));
+    await tester.pump();
+    expect(find.text('Cửa hàng phù hợp'), findsNothing);
+    expect(
+      find.text('Bộ lọc'),
+      findsNothing,
+      reason: 'chỉ tab Tin đăng có bộ lọc',
+    );
+    expect(find.textContaining('người theo dõi ·'), findsOneWidget);
+
+    await tester.tap(find.text('Người dùng'));
+    await tester.pump();
+    expect(find.textContaining('@kodo.camera'), findsOneWidget);
+    await results.close();
+    await accounts.close();
   });
 }

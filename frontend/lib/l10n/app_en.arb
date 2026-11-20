@@ -1090,6 +1090,38 @@
   "searchTryAnother": "Change keyword",
   "searchLoadErrorTitle": "Couldn't load results",
   "searchEndOfList": "You've seen all results",
+  "searchShopsSection": "Shops",
+  "searchUsersSection": "People",
+  "searchShopSubtitle": "{followers} followers · {listings} listings",
+  "@searchShopSubtitle": {
+    "placeholders": {
+      "followers": {"type": "int"},
+      "listings": {"type": "int"}
+    }
+  },
+  "searchUserSubtitle": "@{username} · {listings} listings",
+  "@searchUserSubtitle": {
+    "placeholders": {
+      "username": {"type": "String"},
+      "listings": {"type": "int"}
+    }
+  },
+  "searchUserHasShop": "Has a trusted shop",
+  "searchTabListings": "Listings",
+  "searchShopStripTitle": "Matching shops",
+  "searchShopsEmpty": "No shops match “{query}”",
+  "@searchShopsEmpty": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchUsersEmpty": "No people match “{query}”",
+  "@searchUsersEmpty": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchAccountsEmptyBody": "Try the exact name, or type @ before a username.",
   "areaSearchHint": "Search ward or province...",
   "areaMyLocationSubtitle": "Use your current GPS location",
   "areaRecentTitle": "Recently chosen areas",

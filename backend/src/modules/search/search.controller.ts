@@ -3,7 +3,7 @@ import { noContent, ok, paginated } from '../../common/http/response.js';
 import { AuthRequest } from '../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../middlewares/validate.middleware.js';
 import { searchListings, type SearchQuery } from '../listings/index.js';
-import type { SuggestionsQuery } from './search.dto.js';
+import type { AccountSearchQuery, SuggestionsQuery } from './search.dto.js';
 import * as searchService from './search.service.js';
 
 /** Tìm tin; trang đầu có từ khoá thì lưu vào lịch sử của người đã đăng nhập */
@@ -42,4 +42,16 @@ export async function deleteHistory(req: AuthRequest, res: Response) {
 export async function clearHistory(req: AuthRequest, res: Response) {
   await searchService.clearHistory(req.user!.userId);
   noContent(res);
+}
+
+export async function shops(req: AuthRequest, res: Response) {
+  const { query } = getInput<ValidatedInput<AccountSearchQuery>>(res);
+  const { items, page } = await searchService.searchShops(req.user?.userId, query);
+  paginated(res, items, page);
+}
+
+export async function users(req: AuthRequest, res: Response) {
+  const { query } = getInput<ValidatedInput<AccountSearchQuery>>(res);
+  const { items, page } = await searchService.searchUsers(req.user?.userId, query);
+  paginated(res, items, page);
 }

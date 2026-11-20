@@ -81,3 +81,89 @@ export async function findSuggestions(words: string[], limit: number) {
   ]);
   return [...keywords, ...categories, ...titles].map((row) => row.text);
 }
+
+/* ---------- Tìm cửa hàng, người dùng ---------- */
+
+/** Username bỏ ký tự đặc biệt (VD "tu_lanh.99" → "tulanh99") để so với từ khoá ghép liền */
+const usernameKey = (column: Prisma.Sql) => Prisma.sql`regexp_replace(lower(${column}), '[^a-z0-9]', '', 'g')`;
+
+type Page = { limit: number; skip: number };
+
+/**
+ * Shop uy tín (đã xác minh, chủ shop còn hoạt động) có tên chứa đủ mọi từ đã gõ, hoặc username chủ shop
+ * chứa [handle]. Xếp: trùng tên → tên bắt đầu bằng từ khoá → nhiều người theo dõi → tên.
+ * Trả về id theo thứ tự, kèm tổng số.
+ */
+export async function findShopIds(words: string[], handle: string, usernameOnly: boolean, { limit, skip }: Page) {
+  const phrase = words.join(' ');
+  const name = foldedText(Prisma.sql`s.name`);
+  const match = usernameOnly
+    ? Prisma.sql`POSITION(${handle} IN ${usernameKey(Prisma.sql`u.username`)}) > 0`
+    : Prisma.sql`(${containsAll(name, words)} OR ${usernameKey(Prisma.sql`u.username`)} = ${handle})`;
+  const where = Prisma.sql`s."verificationType" IS NOT NULL AND u.status = 'ACTIVE' AND ${match}`;
+  const [rows, total] = await Promise.all([
+    prisma.$queryRaw<{ id: string }[]>`
+      SELECT s.id FROM "Shop" s JOIN "User" u ON u.id = s."ownerId"
+      WHERE ${where}
+      ORDER BY (${name} = ${phrase}) DESC, (POSITION(${phrase} IN ${name}) = 1) DESC,
+        (SELECT COUNT(*) FROM "ShopFollow" f WHERE f."shopId" = s.id) DESC, s.name, s.id
+      LIMIT ${limit} OFFSET ${skip}`,
+    prisma.$queryRaw<{ count: bigint }[]>`
+      SELECT COUNT(*) AS count FROM "Shop" s JOIN "User" u ON u.id = s."ownerId" WHERE ${where}`,
+  ]);
+  return { ids: rows.map((row) => row.id), totalItems: Number(total[0]?.count ?? 0) };
+}
+
+/**
+ * Người dùng (đang hoạt động, không phải admin) có tên hiển thị chứa đủ mọi từ đã gõ, hoặc username chứa
+ * [handle]; [usernameOnly] (gõ "@...") thì chỉ xét username. Xếp: trùng username → username bắt đầu bằng
+ * từ khoá → tên bắt đầu bằng từ khoá → nhiều người theo dõi → tên. Trả về id theo thứ tự, kèm tổng số.
+ */
+export async function findUserIds(words: string[], handle: string, usernameOnly: boolean, { limit, skip }: Page) {
+  const phrase = words.join(' ');
+  const name = foldedText(Prisma.sql`u."fullName"`);
+  const key = usernameKey(Prisma.sql`u.username`);
+  const byUsername = Prisma.sql`POSITION(${handle} IN ${key}) > 0`;
+  const match = usernameOnly ? byUsername : Prisma.sql`(${containsAll(name, words)} OR ${byUsername})`;
+  const where = Prisma.sql`u.status = 'ACTIVE' AND u.role = 'USER' AND ${match}`;
+  const [rows, total] = await Promise.all([
+    prisma.$queryRaw<{ id: string }[]>`
+      SELECT u.id FROM "User" u
+      WHERE ${where}
+      ORDER BY (${key} = ${handle}) DESC, (POSITION(${handle} IN ${key}) = 1) DESC,
+        (POSITION(${phrase} IN ${name}) = 1) DESC,
+        (SELECT COUNT(*) FROM "UserFollow" f WHERE f."followingId" = u.id) DESC, u."fullName", u.id
+      LIMIT ${limit} OFFSET ${skip}`,
+    prisma.$queryRaw<{ count: bigint }[]>`SELECT COUNT(*) AS count FROM "User" u WHERE ${where}`,
+  ]);
+  return { ids: rows.map((row) => row.id), totalItems: Number(total[0]?.count ?? 0) };
+}
+
+/** Thông tin hiển thị của các người dùng [ids] (chưa theo thứ tự) */
+export const findUsers = (ids: string[]) =>
+  prisma.user.findMany({
+    where: { id: { in: ids } },
+    select: {
+      id: true, fullName: true, username: true, avatarUrl: true, bio: true, ratingAverage: true, ratingCount: true,
+      _count: { select: { followers: true } },
+      shop: { select: { id: true, verificationType: true } },
+    },
+  });
+
+/** Số tin đang bán theo người đăng */
+export async function countVisibleListings(ownerIds: string[]) {
+  if (!ownerIds.length) return new Map<string, number>();
+  const rows = await prisma.listing.groupBy({
+    by: ['ownerId'], where: { status: 'AVAILABLE', ownerId: { in: ownerIds } }, _count: true,
+  });
+  return new Map(rows.map((row) => [row.ownerId, row._count]));
+}
+
+/** Những người trong [ids] mà [viewerId] đang theo dõi */
+export async function findFollowedUserIds(viewerId: string | undefined, ids: string[]) {
+  if (!viewerId || !ids.length) return new Set<string>();
+  const rows = await prisma.userFollow.findMany({
+    where: { followerId: viewerId, followingId: { in: ids } }, select: { followingId: true },
+  });
+  return new Set(rows.map((row) => row.followingId));
+}

@@ -3980,6 +3980,66 @@ abstract class AppLocalizations {
   /// **'You\'ve seen all results'**
   String get searchEndOfList;
 
+  /// No description provided for @searchShopsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops'**
+  String get searchShopsSection;
+
+  /// No description provided for @searchUsersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get searchUsersSection;
+
+  /// No description provided for @searchShopSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{followers} followers · {listings} listings'**
+  String searchShopSubtitle(int followers, int listings);
+
+  /// No description provided for @searchUserSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'@{username} · {listings} listings'**
+  String searchUserSubtitle(String username, int listings);
+
+  /// No description provided for @searchUserHasShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Has a trusted shop'**
+  String get searchUserHasShop;
+
+  /// No description provided for @searchTabListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get searchTabListings;
+
+  /// No description provided for @searchShopStripTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching shops'**
+  String get searchShopStripTitle;
+
+  /// No description provided for @searchShopsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No shops match “{query}”'**
+  String searchShopsEmpty(String query);
+
+  /// No description provided for @searchUsersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No people match “{query}”'**
+  String searchUsersEmpty(String query);
+
+  /// No description provided for @searchAccountsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try the exact name, or type @ before a username.'**
+  String get searchAccountsEmptyBody;
+
   /// No description provided for @areaSearchHint.
   ///
   /// In en, this message translates to:

@@ -124,30 +124,34 @@ class AppSearchListTile extends StatelessWidget {
     );
   }
 
-  TextSpan _titleSpan() {
-    const base = TextStyle(
+  TextSpan _titleSpan() => highlightSpan(
+    title,
+    highlight,
+    const TextStyle(
       fontSize: 14.5,
       fontWeight: FontWeight.w500,
       color: AppColors.textPrimary,
-    );
-    final query = highlight;
-    final range = query == null
-        ? null
-        : VietnameseText.matchRange(title, query);
-    if (range == null) return TextSpan(text: title, style: base);
+    ),
+  );
+
+  /// [text] với phần khớp [query] (so không dấu) tô đậm, phần còn lại nhạt
+  /// hơn; không khớp thì giữ nguyên kiểu [base]
+  static TextSpan highlightSpan(String text, String? query, TextStyle base) {
+    final range = query == null ? null : VietnameseText.matchRange(text, query);
+    if (range == null) return TextSpan(text: text, style: base);
     final (start, end) = range;
     return TextSpan(
       style: base.copyWith(color: AppColors.textSecondary),
       children: [
-        TextSpan(text: title.substring(0, start)),
+        TextSpan(text: text.substring(0, start)),
         TextSpan(
-          text: title.substring(start, end),
+          text: text.substring(start, end),
           style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
         ),
-        TextSpan(text: title.substring(end)),
+        TextSpan(text: text.substring(end)),
       ],
     );
   }

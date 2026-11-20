@@ -1049,6 +1049,38 @@
   "searchTryAnother": "Đổi từ khoá",
   "searchLoadErrorTitle": "Chưa tải được kết quả",
   "searchEndOfList": "Bạn đã xem hết kết quả",
+  "searchShopsSection": "Cửa hàng",
+  "searchUsersSection": "Người dùng",
+  "searchShopSubtitle": "{followers} người theo dõi · {listings} tin đang bán",
+  "@searchShopSubtitle": {
+    "placeholders": {
+      "followers": {"type": "int"},
+      "listings": {"type": "int"}
+    }
+  },
+  "searchUserSubtitle": "@{username} · {listings} tin đang bán",
+  "@searchUserSubtitle": {
+    "placeholders": {
+      "username": {"type": "String"},
+      "listings": {"type": "int"}
+    }
+  },
+  "searchUserHasShop": "Có cửa hàng uy tín",
+  "searchTabListings": "Tin đăng",
+  "searchShopStripTitle": "Cửa hàng phù hợp",
+  "searchShopsEmpty": "Không có cửa hàng nào khớp “{query}”",
+  "@searchShopsEmpty": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchUsersEmpty": "Không có người dùng nào khớp “{query}”",
+  "@searchUsersEmpty": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchAccountsEmptyBody": "Thử gõ đúng tên, hoặc gõ @ trước username nhé.",
   "areaSearchHint": "Tìm phường/xã, tỉnh/thành...",
   "areaMyLocationSubtitle": "Dùng vị trí GPS hiện tại của bạn",
   "areaRecentTitle": "Khu vực đã chọn gần đây",

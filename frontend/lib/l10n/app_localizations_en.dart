@@ -2160,6 +2160,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchEndOfList => 'You\'ve seen all results';
 
   @override
+  String get searchShopsSection => 'Shops';
+
+  @override
+  String get searchUsersSection => 'People';
+
+  @override
+  String searchShopSubtitle(int followers, int listings) {
+    return '$followers followers · $listings listings';
+  }
+
+  @override
+  String searchUserSubtitle(String username, int listings) {
+    return '@$username · $listings listings';
+  }
+
+  @override
+  String get searchUserHasShop => 'Has a trusted shop';
+
+  @override
+  String get searchTabListings => 'Listings';
+
+  @override
+  String get searchShopStripTitle => 'Matching shops';
+
+  @override
+  String searchShopsEmpty(String query) {
+    return 'No shops match “$query”';
+  }
+
+  @override
+  String searchUsersEmpty(String query) {
+    return 'No people match “$query”';
+  }
+
+  @override
+  String get searchAccountsEmptyBody =>
+      'Try the exact name, or type @ before a username.';
+
+  @override
   String get areaSearchHint => 'Search ward or province...';
 
   @override

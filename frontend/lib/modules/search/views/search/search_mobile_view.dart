@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
+import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.dart';
 import 'package:restore/shared/widgets/search/app_search_header.dart';
 import 'package:restore/shared/widgets/search/app_search_input.dart';
 
 import '../../bloc/search_cubit.dart';
 import '../../bloc/search_state.dart';
+import '../../models/search_user_item.dart';
 import '../search_results/search_results_view.dart';
 import 'widgets/search_idle_content.dart';
 import 'widgets/search_suggestion_list.dart';
@@ -49,6 +52,18 @@ class _SearchMobileViewState extends State<SearchMobileView> {
     await context.push(SearchResultsView.location(query, fromSearch: true));
     // Từ khoá vừa tìm đã được lưu vào lịch sử
     if (mounted) cubit.loadHistory();
+  }
+
+  /// Mở trang shop từ gợi ý khi đang gõ
+  void _openShop(TrustedShopItem item) {
+    _focusNode.unfocus();
+    context.push(ShopDetailView.location(item.shop.id), extra: item);
+  }
+
+  /// Mở trang cá nhân từ gợi ý khi đang gõ
+  void _openUser(SearchUserItem user) {
+    _focusNode.unfocus();
+    context.push('/users/${user.id}');
   }
 
   /// Đưa gợi ý lên ô tìm kiếm để gõ tiếp
@@ -100,6 +115,8 @@ class _SearchMobileViewState extends State<SearchMobileView> {
                             onSubmit: _submit,
                             onFill: _fill,
                             onRemoveHistory: cubit.removeHistory,
+                            onOpenShop: _openShop,
+                            onOpenUser: _openUser,
                           )
                         : SearchIdleContent(
                             key: const ValueKey('idle'),

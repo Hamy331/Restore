@@ -54,3 +54,57 @@ test('search: history, trending and suggestions', async () => {
   expect('history clear', await api.delete('/search/history', { token: tokens.seller }));
   assert.deepEqual((await api.get('/search/history', { token: tokens.seller })).body.data, []);
 });
+
+test('search: shops and users by name or username', async () => {
+  const { api, tokens } = ctx;
+  const { prisma } = await import('../../src/lib/prisma.js');
+  await prisma.user.update({ where: { id: 'user-seller' }, data: { fullName: 'Trần Thị Bích', username: 'bich.shop' } });
+  await prisma.user.update({ where: { id: 'user-buyer' }, data: { fullName: 'Nguyễn Văn Bình', username: 'binh_nguyen' } });
+  await prisma.user.update({ where: { id: 'user-admin' }, data: { fullName: 'Bình Admin' } });
+  await prisma.user.update({ where: { id: 'user-banned' }, data: { fullName: 'Bình Bị Khoá' } });
+  await prisma.shop.create({ data: {
+    id: 'shop-seller', ownerId: 'user-seller', name: 'Nội Thất Bích', verificationType: 'CERTIFIED', verifiedAt: new Date(), categoryIds: ['furniture'],
+  } });
+  await prisma.shop.create({ data: { id: 'shop-hidden', ownerId: 'user-admin', name: 'Nội Thất Chưa Duyệt', categoryIds: [] } });
+  await prisma.userFollow.create({ data: { followerId: 'user-buyer', followingId: 'user-seller' } });
+
+  const ids = (res: { body: { data: { id: string }[] } }) => res.body.data.map((item) => item.id);
+
+  // Shop: không dấu, đủ mọi từ; shop chưa xác minh không hiện
+  const shops = await api.get('/search/shops?q=noi%20that', { token: tokens.buyer });
+  assert.equal(shops.status, 200, JSON.stringify(shops.body));
+  assert.deepEqual(ids(shops), ['shop-seller']);
+  assert.equal(shops.body.data[0].listingCount, 3);
+  assert.equal(shops.body.pagination.totalItems, 1);
+  assert.deepEqual(ids(await api.get('/search/shops?q=bich')), ['shop-seller']);
+  // Trùng username chủ shop cũng ra shop
+  assert.deepEqual(ids(await api.get('/search/shops?q=bich.shop')), ['shop-seller']);
+  assert.deepEqual(ids(await api.get('/search/shops?q=%40bichsh')), ['shop-seller']);
+  assert.deepEqual(ids(await api.get('/search/shops?q=ban')), []);
+
+  // Người dùng: tên không dấu hoặc username; admin và tài khoản bị khoá không hiện
+  const binh = await api.get('/search/users?q=b%C3%ACnh', { token: tokens.seller });
+  assert.deepEqual(ids(binh), ['user-buyer']);
+  assert.equal(binh.body.data[0].isFollowing, false);
+  const bich = await api.get('/search/users?q=bich', { token: tokens.buyer });
+  assert.deepEqual(ids(bich), ['user-seller']);
+  assert.deepEqual(
+    [bich.body.data[0].isFollowing, bich.body.data[0].followerCount, bich.body.data[0].listingCount, bich.body.data[0].shopId],
+    [true, 1, 3, 'shop-seller'],
+  );
+  assert.equal(bich.body.data[0].email, undefined, 'không lộ email');
+  assert.deepEqual(ids(await api.get('/search/users?q=binh_ng')), ['user-buyer']);
+  // Gõ "@" thì chỉ xét username, không xét tên hiển thị
+  assert.deepEqual(ids(await api.get('/search/users?q=%40binh')), ['user-buyer']);
+  assert.deepEqual(ids(await api.get('/search/users?q=%40tran')), []);
+  // Trùng username đứng trước người chỉ trùng tên
+  await prisma.user.update({ where: { id: 'user-seller' }, data: { fullName: 'Bình Bán Hàng', username: 'seller99' } });
+  await prisma.user.update({ where: { id: 'user-buyer' }, data: { username: 'binh' } });
+  assert.deepEqual(ids(await api.get('/search/users?q=binh')), ['user-buyer', 'user-seller']);
+  // Phân trang, từ khoá rỗng, từ khoá sai
+  const page2 = await api.get('/search/users?q=binh&page=2&limit=1');
+  assert.deepEqual([ids(page2), page2.body.pagination.totalItems, page2.body.meta.hasMore], [['user-seller'], 2, false]);
+  assert.deepEqual(ids(await api.get('/search/users?q=%20')), []);
+  assert.equal((await api.get(`/search/users?q=${'a'.repeat(101)}`)).status, 400);
+  assert.equal((await api.get('/search/shops?q=a&limit=99')).status, 400);
+});
