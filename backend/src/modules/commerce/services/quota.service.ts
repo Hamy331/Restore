@@ -49,8 +49,11 @@ export async function assertDraftQuota(tx: Db, userId: string, now: Date) {
 }
 
 /** Chạy [work] trong transaction SERIALIZABLE, thử lại khi xung đột; vẫn xung đột thì 503 QUOTA_BUSY */
-export async function withQuotaTransaction<T>(work: (tx: Db) => Promise<T>): Promise<T> {
-  const result = await quotaRepository.serializableTransaction(work);
+export async function withQuotaTransaction<T>(
+  work: (tx: Db) => Promise<T>,
+  options?: { timeout?: number },
+): Promise<T> {
+  const result = await quotaRepository.serializableTransaction(work, options);
   if (!result) throw new AppError(503, 'QUOTA_BUSY', 'Có thao tác đồng thời trên tài khoản. Vui lòng thử lại.');
   return result.value;
 }

@@ -1,5 +1,23 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+
+test('listing search is routed as a feed query rather than a listing ID', async () => {
+  const { createServer } = await import('node:http');
+  const { createApp } = await import('../../app.js');
+  const server = createServer(createApp());
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  const address = server.address() as { port: number };
+  try {
+    // Invalid pagination must reach feed validation without making a database query.
+    const response = await fetch(`http://127.0.0.1:${address.port}/api/v1/listings/search?q=phone&limit=0`);
+    assert.equal(response.status, 400);
+    const body = await response.json() as { code: string };
+    assert.notEqual(body.code, 'LISTING_NOT_FOUND');
+  } finally {
+    server.closeAllConnections();
+    await new Promise<void>(resolve => server.close(() => resolve()));
+  }
+});
 import { ListingStatus, Prisma } from '@prisma/client';
 import { createInput, draftInput, feedQuery, listingFilters, orderedImages, recommendedQuery, validateAttributes } from './listing.validator.js';
 import { canChangeListingStatus, requireOwnedListing, updateOwnedListing } from './services/listing.service.js';
