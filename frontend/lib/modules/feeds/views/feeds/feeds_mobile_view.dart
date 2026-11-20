@@ -36,7 +36,10 @@ class FeedsMobileView extends StatelessWidget {
                         child: Text(
                           l.feedsTitle,
                           style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w700),
+                              ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppHeaderPalette.foreground,
+                              ),
                         ),
                       ),
                       HomeHeaderIconButton(

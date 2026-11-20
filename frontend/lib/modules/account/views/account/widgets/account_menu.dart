@@ -114,7 +114,7 @@ void showAccountMenu(BuildContext context) {
                           danger: true,
                           onTap: () async {
                             Navigator.of(dialogContext).pop();
-                            if (await _confirmLogout(context) &&
+                            if (await confirmLogout(context) &&
                                 context.mounted) {
                               context.read<AuthBloc>().add(LoggedOut());
                             }
@@ -140,7 +140,8 @@ void showAccountMenu(BuildContext context) {
   );
 }
 
-Future<bool> _confirmLogout(BuildContext context) async {
+/// Hỏi lại trước khi đăng xuất (menu Tài khoản, menu trái trên desktop)
+Future<bool> confirmLogout(BuildContext context) async {
   final l = AppLocalizations.of(context)!;
   return await showDialog<bool>(
         context: context,

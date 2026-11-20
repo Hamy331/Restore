@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
@@ -16,12 +17,17 @@ class AppPageTitleRow extends StatelessWidget {
   final VoidCallback onBack;
   final Widget? trailing;
 
+  /// Đặt trên nền đầu trang xanh đậm ([AppPageHeader]): chữ trắng.
+  /// Mặc định chữ tối cho nền sáng (header kính, nền trắng).
+  final bool onDark;
+
   const AppPageTitleRow({
     super.key,
     required this.title,
     required this.onBack,
     this.subtitle,
     this.trailing,
+    this.onDark = false,
   });
 
   @override
@@ -47,12 +53,14 @@ class AppPageTitleRow extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 21,
                     height: 1.2,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.4,
-                    color: AppColors.textPrimary,
+                    color: onDark
+                        ? AppHeaderPalette.foreground
+                        : AppColors.textPrimary,
                   ),
                 ),
                 if (subtitle != null && subtitle.isNotEmpty) ...[
@@ -61,9 +69,11 @@ class AppPageTitleRow extends StatelessWidget {
                     subtitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12.5,
-                      color: AppColors.textSecondary,
+                      color: onDark
+                          ? AppHeaderPalette.foregroundMuted
+                          : AppColors.textSecondary,
                     ),
                   ),
                 ],
@@ -96,15 +106,20 @@ class AppPageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppHeaderPalette.gradient),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 6, bottom: 8),
-        child: AppPageTitleRow(
-          title: title,
-          subtitle: subtitle,
-          onBack: onBack,
-          trailing: trailing,
+    // Nền xanh đậm: icon thanh trạng thái màu sáng
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(gradient: AppHeaderPalette.gradient),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 6, bottom: 8),
+          child: AppPageTitleRow(
+            title: title,
+            subtitle: subtitle,
+            onBack: onBack,
+            trailing: trailing,
+            onDark: true,
+          ),
         ),
       ),
     );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_dimesions.dart';
+import 'auth_desktop_layout.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({
@@ -75,6 +77,10 @@ class AuthScreen extends StatelessWidget {
         ),
       ),
     );
+
+    if (width >= AppDimesions.desktopWidth) {
+      return AuthDesktopLayout(title: title, height: height, child: body);
+    }
 
     return Scaffold(
       backgroundColor: tablet ? AppColors.background : backgroundColor,

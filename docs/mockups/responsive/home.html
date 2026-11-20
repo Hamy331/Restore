@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Restore web — Trang chủ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<div data-header></div>
+
+<main class="wrap">
+  <!-- Banner (HomeBannerCarousel) -->
+  <section class="hero">
+    <div><img src="../../../frontend/assets/images/banners/banner-super-sale.jpg">
+      <span class="arrow l"><i data-i="left"></i></span><span class="arrow r"><i data-i="right"></i></span>
+      <div class="dots"><i class="on"></i><i></i><i></i><i></i></div></div>
+    <div class="side">
+      <div><img src="../../../frontend/assets/images/banners/banner-black-friday.jpg"></div>
+      <div><img src="../../../frontend/assets/images/banners/banner-kodo-week.jpg"></div>
+    </div>
+  </section>
+
+  <!-- Lối tắt (HomeQuickActions) -->
+  <section class="quick">
+    <a class="qa"><span class="ic" style="background:#E5F5F2"><img src="../../../frontend/assets/icons/ui/nearby.png"></span><div><b style="color:#0E7C70">Gần bạn</b><span>Quanh đây trong 5 km</span></div></a>
+    <a class="qa"><span class="ic" style="background:#FFF1D6"><img src="../../../frontend/assets/icons/ui/wanted-alert.png"></span><div><b style="color:#A65B00">Báo khi có hàng</b><span>Đặt trước món bạn cần</span></div></a>
+    <a class="qa"><span class="ic" style="background:#EAF1FD"><img src="../../../frontend/assets/icons/ui/trusted-shop.png"></span><div><b style="color:#2B63C6">Shop uy tín</b><span>Đã xác minh, đánh giá tốt</span></div></a>
+    <a class="qa"><span class="ic" style="background:#FDECF1"><img src="../../../frontend/assets/icons/ui/following.png"></span><div><b style="color:#C23A62">Đang theo dõi</b><span>Shop và người bạn theo dõi</span></div></a>
+  </section>
+
+  <!-- Danh mục (HomeCategoryStrip) -->
+  <section class="box sec">
+    <div class="sec-hd"><h2>Danh mục</h2><a class="see-all">Xem tất cả <i data-i="right"></i></a></div>
+    <div class="cats" id="cats"></div>
+  </section>
+
+  <!-- Hot sale (AppHotSaleSection) -->
+  <section class="box sec">
+    <div class="sec-hd"><h2><img src="../../../frontend/assets/images/hot-flame.png"> <span style="color:#B91C1C">HOT SALE</span> <span class="muted" style="font-size:13px;font-weight:500">· Tin được đẩy bằng xu</span></h2><a class="see-all">Xem tất cả <i data-i="right"></i></a></div>
+    <div class="grid g6 pad" id="hot"></div>
+  </section>
+
+  <!-- Shop uy tín -->
+  <section class="box sec">
+    <div class="sec-hd"><h2><img src="../../../frontend/assets/icons/ui/trusted-shop.png"> Shop uy tín</h2><a class="see-all">Xem tất cả <i data-i="right"></i></a></div>
+    <div class="shops pad" id="shops"></div>
+  </section>
+
+  <!-- Dành cho bạn / Gần bạn / Mới nhất -->
+  <section class="sec">
+    <div class="tabs"><a class="on">Dành cho bạn</a><a>Gần bạn</a><a>Mới nhất</a></div>
+    <div class="feed"><div class="grid g6 pad" id="feed"></div>
+      <div class="more"><a class="btn btn-ghost">Xem thêm</a></div></div>
+  </section>
+</main>
+
+<div data-footer></div>
+<a class="ai-bubble" style="position:absolute;top:780px;bottom:auto"><img src="../../../frontend/assets/icons/ui/ai.png"></a>
+
+<script src="mockup.js"></script>
+<script>
+const C = A + 'images/categories/';
+const cats = [['hot-sale', 'Hot sale', 1], ['electronics', 'Điện tử'], ['phones', 'Điện thoại'], ['fashion', 'Thời trang'], ['furniture', 'Nội thất'],
+  ['appliances', 'Gia dụng'], ['books', 'Sách'], ['sports', 'Thể thao'], ['vehicles', 'Xe cộ'], ['pets', 'Thú cưng'], ['other', 'Khác']];
+document.getElementById('cats').innerHTML = cats.map(([f, n, hot]) =>
+  `<a class="cat ${hot ? 'hot' : ''}"><span class="ci"><img src="${hot ? A + 'images/hot-sale.png' : C + f + '.png'}"></span><span>${n}</span></a>`).join('');
+
+const hot = [0, 3, 2, 5, 10, 14].map((i) => ({ ...LISTINGS[i], hot: 1 }));
+document.getElementById('hot').innerHTML = hot.map((x) => card(x)).join('');
+
+const S = A + 'images/shops/', B = A + 'images/banners/';
+const shops = [['apple', 'Apple Store cũ', 'shop-apple', '1,2k tin'], ['samsung', 'Samsung Zone', 'shop-samsung', '860 tin'], ['ikea', 'Nhà Gỗ IKEA', 'shop-ikea', '420 tin'],
+  ['pawhouse', 'PawHouse', 'shop-pawhouse', '310 tin'], ['vinfast', 'VinFast Xe cũ', 'shop-vinfast', '95 tin'], ['sony', 'Sony Center', 'shop-black-friday', '540 tin']];
+document.getElementById('shops').innerHTML = shops.map(([l, n, cv, c]) =>
+  `<a class="shop"><div class="cv"><img src="${B}${cv === 'shop-black-friday' ? 'banner-mocan-sale' : cv}.jpg"><span class="lg"><img src="${S}${l}.png"></span></div>
+   <div class="nm"><b>${n} ${ic('check')}</b><span>★ 4.9 · ${c}</span></div></a>`).join('');
+
+document.getElementById('feed').innerHTML = LISTINGS.map((x, i) => card(x, i === 7 ? 'hover' : '')).join('');
+// Nhúng làm nền cho mockup cửa sổ chat: bỏ bong bóng AI (trang cha tự vẽ)
+if (location.hash === '#embed') document.querySelector('.ai-bubble').remove();
+mount();
+document.title = String(document.documentElement.scrollHeight);
+</script>
+</body>
+</html>

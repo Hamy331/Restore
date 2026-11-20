@@ -1,5 +1,6 @@
 import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 import 'account_mobile_view.dart';
+import 'account_desktop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../auth/bloc/auth/auth_context.dart';
@@ -69,7 +70,10 @@ class AccountView extends StatelessWidget {
           ),
         );
       },
-      child: const TResponsiveLayout(mobile: AccountMobileView()),
+      child: const TResponsiveLayout(
+        mobile: AccountMobileView(),
+        desktop: AccountDesktopView(),
+      ),
     ),
   );
 }

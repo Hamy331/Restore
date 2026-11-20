@@ -214,13 +214,19 @@ void main() {
               matching: find.byType(IconButton),
             )
             .first;
-        final contentRight = width <= 680 ? width : (width + 680) / 2;
-        expect(
-          tester.getRect(menu).right,
-          inInclusiveRange(contentRight - 12, contentRight - 4),
-        );
+        // Từ 1024px là bố cục web desktop 3 cột, không còn cột 680px ở giữa
+        if (width < 1024) {
+          final contentRight = width <= 680 ? width : (width + 680) / 2;
+          expect(
+            tester.getRect(menu).right,
+            inInclusiveRange(contentRight - 12, contentRight - 4),
+          );
+        } else {
+          expect(tester.getRect(menu).right, lessThan(width));
+        }
+        // Desktop: menu trái cũng có mục "Đang theo dõi", tab nằm sau cùng
         await tester.tap(
-          find.text(code == 'vi' ? 'Đang theo dõi' : 'Following'),
+          find.text(code == 'vi' ? 'Đang theo dõi' : 'Following').last,
         );
         await tester.pumpAndSettle();
         expect(find.text('Minh Anh'), findsNothing);

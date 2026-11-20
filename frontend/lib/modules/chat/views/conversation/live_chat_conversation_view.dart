@@ -9,16 +9,22 @@ class LiveChatConversationView extends StatelessWidget {
   const LiveChatConversationView({
     required this.conversationId,
     this.repository,
+    this.onBack,
     super.key,
   });
   final String conversationId;
   final ChatRepository? repository;
+
+  /// Nút quay lại khi nhúng trong cửa sổ chat nổi (desktop); null thì đóng trang
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
     create: (_) =>
         ConversationCubit(repository ?? ApiChatRepository(), conversationId)
           ..start(),
-    child: const TResponsiveLayout(mobile: LiveChatConversationMobileView()),
+    child: TResponsiveLayout(
+      mobile: LiveChatConversationMobileView(onBack: onBack),
+    ),
   );
 }

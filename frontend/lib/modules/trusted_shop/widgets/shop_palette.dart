@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/data/models/shop_model.dart';
 
 import 'shop_logo.dart';
@@ -18,6 +17,6 @@ class ShopPalette {
 
   /// Nền nhạt cho thẻ / khối trong trang
   Color get soft => accent == null
-      ? AppHeaderPalette.top
+      ? const Color(0xFFFFF4E0)
       : Color.lerp(Colors.white, accent, 0.07)!;
 }

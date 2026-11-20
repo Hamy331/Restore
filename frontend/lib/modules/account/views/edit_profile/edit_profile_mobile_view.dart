@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/ui/responsive/responsive_content.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -6,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
-import '../../../../core/utils/helpers/t_snackbar_helper.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../services/media_picker_service.dart';
 import '../../../../shared/widgets/app_bottom_action_bar.dart';
@@ -53,6 +53,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   /// Ảnh mới đã cắt (chưa lưu) và ảnh gốc của nó để căn chỉnh lại không bị
   /// mất phần đã cắt.
   Uint8List? _avatarBytes, _sourceBytes;
+  String? _uploadedAvatar;
   bool _saving = false, _loadingAvatar = false, _showErrors = false;
   String? _usernameError;
 
@@ -65,6 +66,8 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   }
 
   Future<void> _pick() async {
+    if (_loadingAvatar || _saving) return;
+    setState(() => _loadingAvatar = true);
     try {
       final paths = await (widget.picker ?? MediaPickerService()).pickImages(
         source: MediaSource.gallery,
@@ -77,6 +80,8 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       // người dùng từ chối quyền truy cập ảnh: giữ nguyên
     } catch (_) {
       if (mounted) _error(AppLocalizations.of(context)!.feedPhotoError);
+    } finally {
+      if (mounted) setState(() => _loadingAvatar = false);
     }
   }
 
@@ -108,6 +113,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     setState(() {
       _avatarBytes = cropped;
       _sourceBytes = source;
+      _uploadedAvatar = null;
     });
   }
 
@@ -115,15 +121,18 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     _avatarUrl = null;
     _avatarBytes = null;
     _sourceBytes = null;
+    _uploadedAvatar = null;
   });
 
-  void _error(String message) =>
-      TSnackBarHelper.showError(context, message: message);
+  void _error(String message) => ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(message)));
 
   bool get _nameValid => _name.text.trim().isNotEmpty;
   bool get _usernameValid => _usernamePattern.hasMatch(_username.text.trim());
 
   Future<void> _save() async {
+    if (_saving || _loadingAvatar) return;
     final l = AppLocalizations.of(context)!;
     final cubit = context.read<UserProfileCubit>();
     setState(() {
@@ -131,18 +140,23 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       _usernameError = null;
     });
     if (!_nameValid || !_usernameValid) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _saving = true);
     // Chỉ gửi avatarUrl khi đổi hoặc xoá ảnh: URL đang hiển thị đã được ghép
     // origin nên không gửi ngược lại server.
     final changes = <String, dynamic>{
-      'fullName': _name.text.trim(),
-      'username': _username.text.trim(),
-      'bio': _bio.text.trim(),
+      if (_name.text.trim() != _profile?.fullName)
+        'fullName': _name.text.trim(),
+      if (_username.text.trim() != _profile?.username)
+        'username': _username.text.trim(),
+      if (_bio.text.trim() != (_profile?.bio ?? '')) 'bio': _bio.text.trim(),
     };
     final bytes = _avatarBytes;
     if (bytes != null) {
       try {
-        changes['avatarUrl'] = await cubit.uploadAvatar(bytes);
+        _uploadedAvatar ??= await cubit.uploadAvatar(bytes);
+        if (!mounted || cubit.isClosed) return;
+        changes['avatarUrl'] = _uploadedAvatar;
       } catch (_) {
         if (!mounted) return;
         setState(() => _saving = false);
@@ -152,12 +166,15 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     } else if (_avatarUrl == null && _profile?.avatarUrl != null) {
       changes['avatarUrl'] = null;
     }
+    if (changes.isEmpty) {
+      context.pop();
+      return;
+    }
     final result = await cubit.update(changes);
     if (!mounted) return;
     switch (result) {
       case ProfileSaveResult.saved:
-        TSnackBarHelper.showSuccess(context, message: l.accSaved);
-        context.pop();
+        context.pop(true);
       case ProfileSaveResult.usernameTaken:
         setState(() {
           _saving = false;
@@ -178,102 +195,115 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final hasAvatar = _avatarBytes != null || _avatarUrl != null;
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
+    return PopScope(
+      canPop: !_saving,
+      child: Scaffold(
         backgroundColor: AppColors.background,
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          icon: const Icon(AppIcons.back, color: AppColors.textPrimary),
-          onPressed: _saving ? null : () => context.pop(),
-        ),
-        centerTitle: true,
-        title: Text(
-          l.accEditTitle,
-          style: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+        appBar: AppBar(
+          backgroundColor: AppColors.background,
+          surfaceTintColor: Colors.transparent,
+          leading: IconButton(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: const Icon(AppIcons.back, color: AppColors.textPrimary),
+            onPressed: _saving ? null : () => context.pop(),
+          ),
+          centerTitle: true,
+          title: Text(
+            l.accEditTitle,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: AppBottomActionBar(
-        key: const ValueKey('edit-profile-save'),
-        primaryLabel: l.accSave,
-        primaryIcon: AppIcons.check,
-        isLoading: _saving,
-        onPrimary: _saving || _loadingAvatar ? null : _save,
-      ),
-      body: ListView(
-        key: const ValueKey('edit-profile-list'),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        children: [
-          EditProfileSection(
-            title: l.accAvatarSection,
-            child: EditProfileAvatar(
-              initials: ProfileHeader.initials(
-                _name.text.isEmpty ? (_profile?.fullName ?? '') : _name.text,
+        bottomNavigationBar: AppBottomActionBar(
+          key: const ValueKey('edit-profile-save'),
+          primaryLabel: l.accSave,
+          primaryIcon: AppIcons.check,
+          isLoading: _saving,
+          onPrimary: _saving || _loadingAvatar ? null : _save,
+        ),
+        // Màn rộng (web desktop): form gọn ở giữa thay vì kéo hết bề ngang
+        body: ResponsiveContent(
+          maxWidth: 680,
+          padding: EdgeInsets.zero,
+          child: AbsorbPointer(
+          absorbing: _saving,
+          child: ListView(
+            key: const ValueKey('edit-profile-list'),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+            children: [
+              EditProfileSection(
+                title: l.accAvatarSection,
+                child: EditProfileAvatar(
+                  initials: ProfileHeader.initials(
+                    _name.text.isEmpty
+                        ? (_profile?.fullName ?? '')
+                        : _name.text,
+                  ),
+                  bytes: _avatarBytes,
+                  url: _avatarUrl,
+                  busy: _loadingAvatar,
+                  onPick: _pick,
+                  onAdjust: hasAvatar ? _adjust : null,
+                  onRemove: hasAvatar ? _remove : null,
+                ),
               ),
-              bytes: _avatarBytes,
-              url: _avatarUrl,
-              busy: _loadingAvatar,
-              onPick: _pick,
-              onAdjust: hasAvatar ? _adjust : null,
-              onRemove: hasAvatar ? _remove : null,
-            ),
+              EditProfileSection(
+                title: l.accInfoSection,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AppLabeledTextField(
+                      key: const ValueKey('edit-profile-name'),
+                      label: l.accDisplayName,
+                      isRequired: true,
+                      controller: _name,
+                      maxLength: 80,
+                      hintText: l.accDisplayNameHint,
+                      errorText: _showErrors && !_nameValid
+                          ? l.accNameRequired
+                          : null,
+                      onChanged: (_) => setState(() {}),
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 14),
+                    AppLabeledTextField(
+                      key: const ValueKey('edit-profile-username'),
+                      label: l.accUsername,
+                      isRequired: true,
+                      controller: _username,
+                      maxLength: 30,
+                      prefixText: '@',
+                      helperText: l.accUsernameHelper,
+                      errorText:
+                          _usernameError ??
+                          (_showErrors && !_usernameValid
+                              ? l.accUsernameInvalid
+                              : null),
+                      onChanged: (_) => setState(() => _usernameError = null),
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 14),
+                    AppLabeledTextField(
+                      key: const ValueKey('edit-profile-bio'),
+                      label: l.accBio,
+                      controller: _bio,
+                      maxLength: 300,
+                      minLines: 3,
+                      maxLines: 5,
+                      hintText: l.accBioHint,
+                      helperText: '${_bio.text.length}/300',
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          EditProfileSection(
-            title: l.accInfoSection,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppLabeledTextField(
-                  key: const ValueKey('edit-profile-name'),
-                  label: l.accDisplayName,
-                  isRequired: true,
-                  controller: _name,
-                  maxLength: 80,
-                  hintText: l.accDisplayNameHint,
-                  errorText: _showErrors && !_nameValid
-                      ? l.accNameRequired
-                      : null,
-                  onChanged: (_) => setState(() {}),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-                AppLabeledTextField(
-                  key: const ValueKey('edit-profile-username'),
-                  label: l.accUsername,
-                  isRequired: true,
-                  controller: _username,
-                  maxLength: 30,
-                  prefixText: '@',
-                  helperText: l.accUsernameHelper,
-                  errorText:
-                      _usernameError ??
-                      (_showErrors && !_usernameValid
-                          ? l.accUsernameInvalid
-                          : null),
-                  onChanged: (_) => setState(() => _usernameError = null),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-                AppLabeledTextField(
-                  key: const ValueKey('edit-profile-bio'),
-                  label: l.accBio,
-                  controller: _bio,
-                  maxLength: 300,
-                  minLines: 3,
-                  maxLines: 5,
-                  hintText: l.accBioHint,
-                  helperText: '${_bio.text.length}/300',
-                  onChanged: (_) => setState(() {}),
-                ),
-              ],
-            ),
           ),
-        ],
+        ),
       ),
     );
   }

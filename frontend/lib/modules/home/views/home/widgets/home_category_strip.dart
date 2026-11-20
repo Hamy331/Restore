@@ -4,6 +4,7 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/shared/widgets/app_category_circle.dart';
 import 'package:restore/shared/widgets/app_category_icon.dart';
 
 /// Hàng danh mục cuộn ngang: icon trong vòng tròn kem, tên bên dưới
@@ -36,6 +37,7 @@ class HomeCategoryStrip extends StatelessWidget {
             return _StripItem(
               label: AppLocalizations.of(context)!.hotSaleTitle,
               onTap: hot,
+              photo: hotSaleCategoryPhoto,
               icon: Image.asset(
                 AppImages.coreImages.hotSale,
                 width: 44,
@@ -49,6 +51,7 @@ class HomeCategoryStrip extends StatelessWidget {
           return _StripItem(
             label: category.name.of(context),
             onTap: () => onTap(category),
+            photo: categoryPhotoFor(category),
             icon: AppCategoryIcon(
               imageUrl: category.imageUrl,
               iconKey: category.iconKey,
@@ -67,10 +70,14 @@ class _StripItem extends StatelessWidget {
   final Widget icon;
   final VoidCallback onTap;
 
+  /// Ảnh thật của danh mục (nếu có), chưa có thì hiện [icon]
+  final String? photo;
+
   const _StripItem({
     required this.label,
     required this.icon,
     required this.onTap,
+    this.photo,
   });
 
   @override
@@ -87,16 +94,8 @@ class _StripItem extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 4),
-              Container(
-                width: 52,
-                height: 52,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.cream,
-                ),
-                child: icon,
-              ),
+              // Dùng chung với hàng danh mục web desktop
+              AppCategoryCircle(size: 52, photo: photo, fallback: icon),
               const SizedBox(height: 6),
               Text(
                 label,
