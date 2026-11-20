@@ -27,6 +27,7 @@ import 'modules/notifications/widgets/push_notification_listener.dart';
 import 'core/config/app_environment.dart';
 import 'core/network/api_client.dart';
 import 'shared/utils/image_cache/app_image_disk_cache.dart';
+import 'shared/widgets/app_system_nav_bar_guard.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -158,6 +159,10 @@ class _MyAppState extends State<MyApp> {
                         supportedLocales: const [Locale('en'), Locale('vi')],
                         theme: AppTheme.lightTheme,
                         routerConfig: _router,
+                        // Máy Android thanh 3 nút: chừa dải trắng ở đáy để
+                        // thanh không che nội dung cuối trang
+                        builder: (context, child) =>
+                            AppSystemNavBarGuard(child: child!),
                       );
                     },
                   );
