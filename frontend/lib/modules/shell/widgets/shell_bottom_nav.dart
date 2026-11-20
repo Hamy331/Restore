@@ -201,13 +201,13 @@ class _CurvedStrokePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final edge = clipper.topEdge(size);
-    // Viền sáng như mép kính, thêm một nét cam rất nhạt để bắt màu app
+    // Viền mảnh trung tính + một nét sáng như mép kính
     canvas.drawPath(
       edge,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
-        ..color = AppColors.primary.withValues(alpha: 0.28),
+        ..color = AppColors.border,
     );
     canvas.drawPath(
       edge.shift(const Offset(0, 1)),
@@ -231,8 +231,8 @@ class _CurvedShadowPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.drawShadow(
       clipper.getClip(size),
-      AppColors.primaryDark.withValues(alpha: 0.35),
-      6,
+      AppColors.primaryDark.withValues(alpha: 0.22),
+      8,
       false,
     );
   }
@@ -264,11 +264,11 @@ class _NavItem extends StatefulWidget {
   State<_NavItem> createState() => _NavItemState();
 }
 
-/// Mục điều hướng: khi chọn thì icon phát sáng cam (quầng sáng mờ phía sau,
-/// vệt đèn trên mép thanh). Nhấn hoặc giữ thì thu nhỏ lại và quầng sáng
-/// loé lên, thả tay thì nảy về.
+/// Mục điều hướng: khi chọn thì icon nằm trong viên thuốc cam nhạt (nở ngang
+/// từ giữa), icon và chữ đậm màu cam. Nhấn hoặc giữ thì thu nhỏ lại và hiện
+/// viên thuốc mờ, thả tay thì nảy về.
 class _NavItemState extends State<_NavItem> {
-  static const _duration = Duration(milliseconds: 320);
+  static const _duration = Duration(milliseconds: 280);
 
   bool _pressed = false;
 
@@ -280,7 +280,7 @@ class _NavItemState extends State<_NavItem> {
   Widget build(BuildContext context) {
     final selected = widget.selected;
     final color = selected ? AppColors.primaryDark : AppColors.textSecondary;
-    final glow = selected ? 1.0 : (_pressed ? 0.55 : 0.0);
+    final pillAlpha = selected ? 0.16 : (_pressed ? 0.08 : 0.0);
 
     return Semantics(
       button: true,
@@ -302,190 +302,76 @@ class _NavItemState extends State<_NavItem> {
           widget.onTap();
         },
         behavior: HitTestBehavior.opaque,
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.topCenter,
-          children: [
-            // Luồng sáng hắt từ vệt đèn xuống icon
-            Positioned(
-              top: 0,
-              child: IgnorePointer(
-                child: AnimatedOpacity(
-                  opacity: selected ? 1 : 0,
-                  duration: _duration,
-                  child: const CustomPaint(
-                    size: Size(56, 46),
-                    painter: _LightBeamPainter(),
-                  ),
-                ),
-              ),
-            ),
-            // Vệt đèn nhỏ trên mép thanh, ngay trên mục đang chọn
-            Positioned(
-              top: 0,
-              child: AnimatedContainer(
-                duration: _duration,
-                curve: Curves.easeOutCubic,
-                width: selected ? 22 : 0,
-                height: 3,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.75),
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(3),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(
-                        alpha: selected ? 0.35 : 0,
+        child: AnimatedScale(
+          scale: _pressed ? 0.9 : 1,
+          duration: _pressed
+              ? const Duration(milliseconds: 110)
+              : const Duration(milliseconds: 360),
+          curve: _pressed ? Curves.easeOut : Curves.easeOutBack,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 56,
+                height: 30,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    // Viên thuốc nền sau icon
+                    AnimatedContainer(
+                      duration: _duration,
+                      curve: Curves.easeOutCubic,
+                      width: selected || _pressed ? 56 : 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: pillAlpha),
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      blurRadius: 10,
-                      spreadRadius: 1,
                     ),
+                    AnimatedSwitcher(
+                      duration: _duration,
+                      transitionBuilder: (child, animation) => ScaleTransition(
+                        scale: Tween(begin: 0.8, end: 1.0).animate(animation),
+                        child: FadeTransition(opacity: animation, child: child),
+                      ),
+                      child: Icon(
+                        selected ? widget.activeIcon : widget.icon,
+                        key: ValueKey(selected),
+                        size: 22,
+                        color: color,
+                      ),
+                    ),
+                    if (widget.badge > 0)
+                      Positioned(
+                        left: 31,
+                        top: -5,
+                        child: _CountBadge(count: widget.badge),
+                      ),
                   ],
                 ),
               ),
-            ),
-            AnimatedScale(
-              scale: _pressed ? 0.86 : 1,
-              duration: _pressed
-                  ? const Duration(milliseconds: 110)
-                  : const Duration(milliseconds: 380),
-              curve: _pressed ? Curves.easeOut : Curves.easeOutBack,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 44,
-                    height: 32,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        // Quầng sáng mờ phía sau icon
-                        AnimatedOpacity(
-                          opacity: glow,
-                          duration: _duration,
-                          child: AnimatedScale(
-                            scale: _pressed ? 1.25 : 1,
-                            duration: _duration,
-                            curve: Curves.easeOutCubic,
-                            child: const _GlowHalo(size: 54),
-                          ),
-                        ),
-                        TweenAnimationBuilder<double>(
-                          tween: Tween(end: selected ? 1 : 0),
-                          duration: _duration,
-                          curve: Curves.easeOutCubic,
-                          builder: (context, t, _) => Transform.translate(
-                            offset: Offset(0, -1.5 * t),
-                            child: Icon(
-                              selected ? widget.activeIcon : widget.icon,
-                              size: 24,
-                              color: color,
-                              shadows: [
-                                Shadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.35 * t,
-                                  ),
-                                  blurRadius: 12 * t,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (widget.badge > 0)
-                          Positioned(
-                            right: 0,
-                            top: -6,
-                            child: _CountBadge(count: widget.badge),
-                          ),
-                      ],
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: AnimatedDefaultTextStyle(
+                    duration: _duration,
+                    style: TextStyle(
+                      fontSize: 11,
+                      height: 1.2,
+                      letterSpacing: 0.1,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                      color: color,
+                      fontFamily: DefaultTextStyle.of(context).style.fontFamily,
                     ),
+                    child: Text(widget.label, maxLines: 1),
                   ),
-                  const SizedBox(height: 3),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: AnimatedDefaultTextStyle(
-                        duration: _duration,
-                        style: TextStyle(
-                          fontSize: 11,
-                          letterSpacing: 0.2,
-                          fontWeight: selected
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          color: color,
-                          fontFamily: DefaultTextStyle.of(
-                            context,
-                          ).style.fontFamily,
-                        ),
-                        child: Text(widget.label, maxLines: 1),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Hình thang loe xuống, cam nhạt mờ dần: ánh đèn từ mép thanh rọi xuống
-class _LightBeamPainter extends CustomPainter {
-  const _LightBeamPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const topHalf = 11.0;
-    final cx = size.width / 2;
-    final path = Path()
-      ..moveTo(cx - topHalf, 0)
-      ..lineTo(cx + topHalf, 0)
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-    canvas.drawPath(
-      path,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColors.primary.withValues(alpha: 0.15),
-            AppColors.primary.withValues(alpha: 0),
-          ],
-        ).createShader(Offset.zero & size),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_LightBeamPainter oldDelegate) => false;
-}
-
-/// Quầng sáng tròn cam mờ dần ra mép, như đèn hắt sau icon
-class _GlowHalo extends StatelessWidget {
-  final double size;
-
-  const _GlowHalo({required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [
-            AppColors.primary.withValues(alpha: 0.24),
-            AppColors.primary.withValues(alpha: 0.09),
-            AppColors.primary.withValues(alpha: 0),
-          ],
-          stops: const [0, 0.5, 1],
+            ],
+          ),
         ),
       ),
     );

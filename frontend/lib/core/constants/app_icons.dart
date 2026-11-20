@@ -34,8 +34,8 @@ class AppIcons {
   static const IconData chatActive = LucideIcons.messageCircleMore500;
   static const IconData listings = LucideIcons.package300;
   static const IconData listingsActive = LucideIcons.package500;
-  static const IconData feeds = LucideIcons.galleryVerticalEnd300;
-  static const IconData feedsActive = LucideIcons.galleryVerticalEnd500;
+  static const IconData feeds = LucideIcons.newspaper300;
+  static const IconData feedsActive = LucideIcons.newspaper500;
   static const IconData post = LucideIcons.squarePlus300;
   static const IconData postActive = LucideIcons.squarePlus500;
   static const IconData user = LucideIcons.userRound300;
