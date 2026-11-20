@@ -29,10 +29,12 @@ class DesktopHeader extends StatefulWidget {
     required this.location,
     required this.unreadMessages,
     required this.onMessagesTap,
+    this.listingSearchQuery,
   });
 
   /// Đường dẫn hiện tại, để tô đậm mục đang mở
   final String location;
+  final String? listingSearchQuery;
   final int unreadMessages;
   final VoidCallback onMessagesTap;
 
@@ -44,23 +46,43 @@ class _DesktopHeaderState extends State<DesktopHeader> {
   static const _onBar = Colors.white;
   static const _onNav = Colors.white;
 
-  final _query = TextEditingController();
+  late final _query = TextEditingController(text: widget.listingSearchQuery);
+  final _searchFocus = FocusNode();
+
+  @override
+  void didUpdateWidget(DesktopHeader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final query = widget.listingSearchQuery;
+    if (query != null &&
+        query != oldWidget.listingSearchQuery &&
+        query != _query.text) {
+      _query.value = TextEditingValue(
+        text: query,
+        selection: TextSelection.collapsed(offset: query.length),
+      );
+    }
+  }
 
   @override
   void dispose() {
     _query.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
   void _search() {
     final q = _query.text.trim();
     if (q.isEmpty) {
-      context.push('/search');
+      _searchFocus.requestFocus();
       return;
     }
-    context.push(
-      '${SearchResultsView.path}?q=${Uri.encodeQueryComponent(q)}&from=search',
-    );
+    _searchFocus.unfocus();
+    final destination = SearchResultsView.location(q);
+    if (widget.location == SearchResultsView.path) {
+      if (q != widget.listingSearchQuery) context.pushReplacement(destination);
+    } else {
+      context.push(destination);
+    }
   }
 
   Future<void> _pickArea() async {
@@ -200,6 +222,7 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                 Expanded(
                   child: _SearchBox(
                     controller: _query,
+                    focusNode: _searchFocus,
                     hint: l10n.homeSearchHint,
                     onSearch: _search,
                   ),
@@ -329,28 +352,32 @@ class _DesktopHeaderState extends State<DesktopHeader> {
           color: AppHeaderPalette.desktopNav,
           child: _centered(
             height: 38,
-            child: Row(
-              children: [
-                for (final (label, path, go) in [
-                  (l10n.homeTitle, '/home', true),
-                  (l10n.feedsTitle, '/feeds', true),
-                  (l10n.homeQuickNearby, '/nearby', false),
-                  (l10n.hotSaleTitle, '/hot-sale', false),
-                  (l10n.homeQuickTrustedShops, '/trusted-shops', false),
-                  (l10n.homeQuickWanted, '/wanted-alerts', false),
-                  (l10n.homeQuickFollowing, '/following', false),
-                  (t('Gói thành viên', 'Membership'), '/plans', false),
-                  ('Blog', '/blog', false),
-                  (t('Trợ giúp', 'Help'), '/support', false),
-                ])
-                  _NavLink(
-                    label: label,
-                    active: widget.location == path ||
-                        widget.location.startsWith('$path/'),
-                    onTap: () => go ? context.go(path) : context.push(path),
-                    color: _onNav,
-                  ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final (label, path, go) in [
+                    (l10n.homeTitle, '/home', true),
+                    (l10n.feedsTitle, '/feeds', true),
+                    (l10n.homeQuickNearby, '/nearby', false),
+                    (l10n.hotSaleTitle, '/hot-sale', false),
+                    (l10n.homeQuickTrustedShops, '/trusted-shops', false),
+                    (l10n.homeQuickWanted, '/wanted-alerts', false),
+                    (l10n.homeQuickFollowing, '/following', false),
+                    (t('Gói thành viên', 'Membership'), '/plans', false),
+                    ('Blog', '/blog', false),
+                    (t('Trợ giúp', 'Help'), '/support', false),
+                  ])
+                    _NavLink(
+                      label: label,
+                      active:
+                          widget.location == path ||
+                          widget.location.startsWith('$path/'),
+                      onTap: () => go ? context.go(path) : context.push(path),
+                      color: _onNav,
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -432,9 +459,7 @@ class _NavLinkState extends State<_NavLink> {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(3),
-          border: Border.all(
-            color: _hover ? widget.color : Colors.transparent,
-          ),
+          border: Border.all(color: _hover ? widget.color : Colors.transparent),
         ),
         child: Text(
           widget.label,
@@ -452,11 +477,13 @@ class _NavLinkState extends State<_NavLink> {
 class _SearchBox extends StatelessWidget {
   const _SearchBox({
     required this.controller,
+    required this.focusNode,
     required this.hint,
     required this.onSearch,
   });
 
   final TextEditingController controller;
+  final FocusNode focusNode;
   final String hint;
   final VoidCallback onSearch;
 
@@ -473,6 +500,7 @@ class _SearchBox extends StatelessWidget {
         Expanded(
           child: TextField(
             controller: controller,
+            focusNode: focusNode,
             onSubmitted: (_) => onSearch(),
             textInputAction: TextInputAction.search,
             style: const TextStyle(fontSize: 14),

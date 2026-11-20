@@ -197,6 +197,9 @@ GoRouter createAppRouter(
       navigatorKey: _frameNavigatorKey,
       builder: (_, state, child) => DesktopFrame(
         location: state.uri.path,
+        listingSearchQuery: state.uri.path == SearchResultsView.path
+            ? state.uri.queryParameters['q'] ?? ''
+            : null,
         assistant: assistant,
         child: child,
       ),

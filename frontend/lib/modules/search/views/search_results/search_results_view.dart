@@ -31,6 +31,7 @@ class SearchResultsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+      key: ValueKey(query),
       create: (_) => SearchResultsCubit(
         searchRepository: AppEnvironment.useMockData
             ? MockSearchRepository()

@@ -20,6 +20,7 @@ class SearchResultsHeader extends StatelessWidget {
   final ValueChanged<ListingDealType> onDealToggle;
   final VoidCallback onSortTap;
   final VoidCallback onClearTap;
+  final bool showSearch;
 
   const SearchResultsHeader({
     super.key,
@@ -31,10 +32,12 @@ class SearchResultsHeader extends StatelessWidget {
     required this.onDealToggle,
     required this.onSortTap,
     required this.onClearTap,
+    this.showSearch = true,
   });
 
   /// Ô tìm kiếm (48) + khoảng cách + hàng chip lọc + lề trên dưới
-  static const double height = 8 + 48 + 10 + AppFilterChip.height + 12;
+  static const double filtersHeight = 8 + AppFilterChip.height + 12;
+  static const double height = filtersHeight + 48 + 10;
 
   @override
   Widget build(BuildContext context) {
@@ -43,27 +46,29 @@ class SearchResultsHeader extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8, bottom: 12),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
-            child: Row(
-              children: [
-                AppCircleIconButton(
-                  icon: AppIcons.back,
-                  tooltip: l10n.back,
-                  onTap: onBack,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: AppSearchPill(
-                    text: query,
-                    isPlaceholder: false,
-                    onTap: onEditQuery,
+          if (showSearch) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
+              child: Row(
+                children: [
+                  AppCircleIconButton(
+                    icon: AppIcons.back,
+                    tooltip: l10n.back,
+                    onTap: onBack,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: AppSearchPill(
+                      text: query,
+                      isPlaceholder: false,
+                      onTap: onEditQuery,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
+            const SizedBox(height: 10),
+          ],
           AppListingFilterBar(
             filter: filter,
             defaults: SearchResultsState.defaultFilter,

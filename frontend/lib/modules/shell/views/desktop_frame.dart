@@ -53,10 +53,12 @@ class DesktopFrame extends StatefulWidget {
     super.key,
     required this.location,
     required this.child,
+    this.listingSearchQuery,
     this.assistant,
   });
 
   final String location;
+  final String? listingSearchQuery;
   final Widget child;
   final AiAssistantCubit Function()? assistant;
 
@@ -133,6 +135,7 @@ class _DesktopFrameState extends State<DesktopFrame> {
                   BlocBuilder<ShellBadgesCubit, int>(
                     builder: (context, unread) => DesktopHeader(
                       location: location,
+                      listingSearchQuery: widget.listingSearchQuery,
                       unreadMessages: unread,
                       onMessagesTap: _chat.toggle,
                     ),
