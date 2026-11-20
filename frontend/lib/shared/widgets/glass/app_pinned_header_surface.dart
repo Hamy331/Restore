@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/theme/app_glass.dart';
@@ -30,12 +28,11 @@ class AppPinnedHeaderSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     // Giữ nguyên cấu trúc cây ở cả hai trạng thái, chỉ bật/tắt hiệu ứng
     return ClipRect(
-      child: BackdropFilter(
+      // grouped: dùng chung lượt blur với thanh điều hướng (BackdropGroup
+      // ở MainShell); trang ngoài shell thì blur riêng như cũ
+      child: BackdropFilter.grouped(
         enabled: pinned,
-        filter: ImageFilter.blur(
-          sigmaX: AppGlass.blurSigma,
-          sigmaY: AppGlass.blurSigma,
-        ),
+        filter: AppGlass.blur,
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: pinned ? pinnedColor : color,

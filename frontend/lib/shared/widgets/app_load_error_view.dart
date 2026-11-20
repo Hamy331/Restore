@@ -112,7 +112,7 @@ class _AppLoadErrorViewState extends State<AppLoadErrorView> {
   }
 }
 
-/// Icon trong vòng kính mờ có quầng cam nhạt phía sau
+/// Icon trong vòng kính, chỉ một bóng mảnh bên dưới (không quầng cam mờ)
 class _IconBadge extends StatelessWidget {
   const _IconBadge({required this.icon, required this.size});
 
@@ -121,38 +121,22 @@ class _IconBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final halo = size * 1.35;
-    return SizedBox(
-      width: halo,
-      height: halo,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.22),
-                  AppColors.primary.withValues(alpha: 0),
-                ],
-              ),
-            ),
-            child: SizedBox(width: halo, height: halo),
-          ),
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: AppGlass.sheen(),
-              border: Border.all(color: AppGlass.stroke, width: 1.5),
-              boxShadow: AppGlass.shadow,
-            ),
-            child: Icon(icon, size: size * 0.42, color: AppColors.primaryDark),
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: AppGlass.sheen(),
+        border: Border.all(color: AppGlass.stroke, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryDark.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
+      child: Icon(icon, size: size * 0.42, color: AppColors.primaryDark),
     );
   }
 }

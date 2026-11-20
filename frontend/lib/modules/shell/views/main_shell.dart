@@ -108,24 +108,28 @@ class MainShell extends StatelessWidget {
 
     // extendBody: nội dung chạy xuống dưới thanh điều hướng kính để thấy
     // hiệu ứng mờ; MediaQuery padding dưới của body đã gồm chiều cao thanh
-    return Scaffold(
-      extendBody: true,
-      body: Stack(
-        children: [
-          navigationShell,
-          Positioned.fill(child: aiBubble),
-        ],
-      ),
-      // Gói lấy từ nút test đổi gói (chưa có API gói đăng ký)
-      bottomNavigationBar: ValueListenableBuilder(
-        valueListenable: DevPlanOverride.plan,
-        builder: (context, plan, _) => BlocBuilder<ShellBadgesCubit, int>(
-          builder: (context, unread) => ShellBottomNav(
-            selectedIndex: _uiIndex,
-            onSelected: (i) => _select(context, i),
-            unreadMessages: unread,
-            quickActions: ShellQuickAction.forPlan(plan),
-            onQuickAction: (action) => _quickAction(context, action),
+    // BackdropGroup: thanh điều hướng và đầu trang ghim của các trang trong
+    // shell dùng chung một lượt chụp nền + blur (BackdropFilter.grouped)
+    return BackdropGroup(
+      child: Scaffold(
+        extendBody: true,
+        body: Stack(
+          children: [
+            navigationShell,
+            Positioned.fill(child: aiBubble),
+          ],
+        ),
+        // Gói lấy từ nút test đổi gói (chưa có API gói đăng ký)
+        bottomNavigationBar: ValueListenableBuilder(
+          valueListenable: DevPlanOverride.plan,
+          builder: (context, plan, _) => BlocBuilder<ShellBadgesCubit, int>(
+            builder: (context, unread) => ShellBottomNav(
+              selectedIndex: _uiIndex,
+              onSelected: (i) => _select(context, i),
+              unreadMessages: unread,
+              quickActions: ShellQuickAction.forPlan(plan),
+              onQuickAction: (action) => _quickAction(context, action),
+            ),
           ),
         ),
       ),

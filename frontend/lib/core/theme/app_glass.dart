@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 
@@ -8,6 +10,15 @@ class AppGlass {
   AppGlass._();
 
   static const double blurSigma = 18;
+
+  /// Bộ lọc blur dùng chung cho mọi lớp kính nằm trên nội dung cuộn.
+  /// Các lớp cùng nằm trong một [BackdropGroup] và dùng đúng bộ lọc này
+  /// (`BackdropFilter.grouped`) thì engine chỉ chụp nền và làm mờ một lần
+  /// cho cả nhóm (VD thanh điều hướng + đầu trang ghim), đỡ tốn GPU khi cuộn.
+  static final ImageFilter blur = ImageFilter.blur(
+    sigmaX: blurSigma,
+    sigmaY: blurSigma,
+  );
   static const double radius = 24;
   static const double fieldRadius = 18;
 

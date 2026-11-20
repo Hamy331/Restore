@@ -105,6 +105,8 @@ class _ShellFanMenuState extends State<ShellFanMenu>
           icon: _hasMenu ? AppIcons.quickMenu : AppIcons.add,
           label: _hasMenu ? l10n.quickMenuOpen : l10n.createListing,
           size: widget.size,
+          // Nằm trên mặt kính của thanh điều hướng, nền đã được blur
+          blur: false,
           onTap: _hasMenu ? _open : widget.onPostTap,
         ),
       ),

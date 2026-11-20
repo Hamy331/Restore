@@ -39,14 +39,26 @@ class _ShellAiBubbleState extends State<ShellAiBubble>
   /// Toạ độ góc trên trái trong lúc đang kéo
   Offset? _dragPosition;
 
+  /// Số nhịp sáng khi bong bóng xuất hiện. Không lặp mãi: animation chạy
+  /// liên tục bắt app vẽ lại 60 khung hình/giây kể cả lúc đứng yên, và mỗi
+  /// khung hình đều phải blur lại thanh điều hướng, đầu trang... gây nóng
+  /// máy và giật khi cuộn.
+  static const int _haloPulses = 3;
+
+  bool _haloPlayed = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Tôn trọng cài đặt giảm chuyển động của hệ thống
     if (MediaQuery.disableAnimationsOf(context)) {
       _halo.stop();
-    } else if (!_halo.isAnimating) {
-      _halo.repeat();
+    } else if (!_haloPlayed) {
+      _haloPlayed = true;
+      _halo.repeat(count: _haloPulses).whenCompleteOrCancel(() {
+        // Dừng ở trạng thái vòng sáng đã tắt hẳn
+        if (mounted) _halo.value = 0;
+      });
     }
   }
 

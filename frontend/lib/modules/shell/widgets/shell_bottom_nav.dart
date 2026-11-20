@@ -1,9 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/theme/app_glass.dart';
 import 'package:restore/l10n/app_localizations.dart';
 
 import '../models/shell_quick_action.dart';
@@ -133,8 +132,10 @@ class _GlassCurvedBar extends StatelessWidget {
       foregroundPainter: _CurvedStrokePainter(clipper),
       child: ClipPath(
         clipper: clipper,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+        // grouped + bộ lọc chung: cùng một lượt blur với đầu trang ghim của
+        // các trang trong shell (BackdropGroup ở MainShell)
+        child: BackdropFilter.grouped(
+          filter: AppGlass.blur,
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(

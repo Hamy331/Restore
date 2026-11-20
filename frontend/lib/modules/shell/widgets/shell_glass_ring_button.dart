@@ -16,6 +16,10 @@ class ShellGlassRingButton extends StatefulWidget {
   final double size;
   final VoidCallback? onTap;
 
+  /// Làm mờ nội dung phía sau mặt nút. Tắt khi nút nằm trên một lớp kính
+  /// đã blur sẵn (nút giữa thanh điều hướng) để khỏi blur hai lần.
+  final bool blur;
+
   const ShellGlassRingButton({
     super.key,
     required this.icon,
@@ -23,6 +27,7 @@ class ShellGlassRingButton extends StatefulWidget {
     required this.label,
     required this.onTap,
     this.size = 58,
+    this.blur = true,
   });
 
   @override
@@ -89,6 +94,7 @@ class _ShellGlassRingButtonState extends State<ShellGlassRingButton> {
               ),
               child: ClipOval(
                 child: BackdropFilter(
+                  enabled: widget.blur,
                   filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                   child: Material(
                     type: MaterialType.transparency,
