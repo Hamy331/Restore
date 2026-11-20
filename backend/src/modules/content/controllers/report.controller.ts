@@ -4,6 +4,7 @@ import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
 import type { AdminReportQuery, PageQuery, ReportInput, ResolveReportInput } from '../content.dto.js';
 import * as reportService from '../services/report.service.js';
+import * as reasons from '../services/report-reason.service.js';
 
 /** Trả 200 (không phải 201) như API cũ */
 export async function create(req: AuthRequest, res: Response) {
@@ -19,6 +20,13 @@ export async function listMine(req: AuthRequest, res: Response) {
 export async function listForAdmin(_req: AuthRequest, res: Response) {
   ok(res, await reportService.listForAdmin(getInput<ValidatedInput<AdminReportQuery>>(res).query));
 }
+
+export async function groups(_req: AuthRequest, res: Response) {
+  ok(res, await reportService.groups(getInput<ValidatedInput<AdminReportQuery>>(res).query));
+}
+
+export async function listReasons(_req: AuthRequest, res: Response) { ok(res, await reasons.list()); }
+export async function adminReasons(_req: AuthRequest, res: Response) { ok(res, await reasons.list(true)); }
 
 export async function resolve(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, { id: string }, ResolveReportInput>>(res);

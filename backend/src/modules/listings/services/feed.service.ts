@@ -5,9 +5,11 @@ import * as feedRepository from '../repositories/feed.repository.js';
  * Danh sách tin cho trang chủ / gần bạn / trao đổi.
  * Mỗi item = Listing + areaLabel, distanceKm, isFeatured, isFavorite (theo người xem).
  */
-export async function listFeed(viewerId: string | undefined, { filters, pagination }: FeedQuery, now = new Date()) {
+export async function listFeed(viewerId: string | undefined, { filter, filters, pagination }: FeedQuery, now = new Date()) {
   const { page, limit, skip } = pagination;
-  const { rows, totalItems } = await feedRepository.findRankedPage(filters, now, limit, skip);
+  const { rows, totalItems } = await feedRepository.findRankedPage({
+    ...filters, chronological: filter === 'recent', interestUserId: filter === 'forYou' ? viewerId : undefined,
+  }, now, limit, skip);
   const ids = rows.map((row) => row.id);
   const [listings, favoriteIds] = await Promise.all([
     feedRepository.findVisibleByIds(ids),

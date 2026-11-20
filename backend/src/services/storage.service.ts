@@ -13,12 +13,12 @@ import path from 'node:path';
 
 /** Thư mục logic: listings = ảnh tin, admin = ảnh nội dung (bìa bài viết),
  *  feeds = ảnh bài viết bảng tin, avatars = ảnh đại diện, posters = poster shop, shops = logo / ảnh bìa shop */
-export type StorageArea = 'listings' | 'admin' | 'feeds' | 'avatars' | 'posters' | 'shops';
+export type StorageArea = 'listings' | 'admin' | 'feeds' | 'avatars' | 'posters' | 'shops' | 'chat';
 
 export const STORAGE_DRIVERS = ['disk', 'supabase'] as const;
 export type StorageDriver = (typeof STORAGE_DRIVERS)[number];
 
-const CONTENT_TYPES: Record<string, string> = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
+const CONTENT_TYPES: Record<string, string> = { '.mp4': 'video/mp4', '.mov': 'video/quicktime', '.webm': 'video/webm', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
 
 /** Content-Type theo đuôi file */
 export const contentTypeOf = (name: string) => CONTENT_TYPES[path.extname(name).toLowerCase()] ?? 'application/octet-stream';

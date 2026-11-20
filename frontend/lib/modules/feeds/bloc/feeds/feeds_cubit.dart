@@ -46,8 +46,8 @@ class FeedsCubit extends Cubit<FeedsState> {
     return null;
   }
 
-  Future<void> loadMe() async {
-    if (state.me != null) return;
+  Future<void> loadMe({bool refresh = false}) async {
+    if (!refresh && state.me != null) return;
     try {
       final me = await repository.me();
       _emit(state.copyWith(me: me));

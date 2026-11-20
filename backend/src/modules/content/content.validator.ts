@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
 import { boolean, choice, object, page, text, version } from '../../common/validation/admin-input.js';
 import { MEDIA_NAME, MEDIA_PREFIX, POST_STATUSES, REPORT_ACTIONS, REPORT_STATUSES, REPORT_TARGETS, TICKET_STATUSES } from './content.type.js';
+import { ADMIN_PAGE_SIZE } from '../../common/validation/admin-input.js';
 
 /*
  * Schema đầu vào của module content. Bọc các hàm kiểm tra kiểu cũ trong common/validation/admin-input
@@ -32,10 +33,33 @@ export const knowledgeUploadBody = z.unknown().transform((body) => {
 
 /** Body POST /reports */
 export const reportBody = z.unknown().transform((value) => {
-  const body = object(value, ['targetType', 'targetId', 'reason', 'evidence']);
+  const body = object(value, ['targetType', 'targetId', 'reason', 'evidence', 'reasonCode', 'contactPhone', 'contactEmail']);
+  const targetType = choice(body.targetType, REPORT_TARGETS);
+  const targetId = text(body.targetId, 'targetId', 1, 100);
+  if (body.reasonCode !== undefined) {
+    if (targetType !== 'LISTING') throw new AppError(400, 'INVALID_REPORT', 'Lý do này chỉ dùng cho tin đăng.', 'reasonCode');
+    const reasonCode = text(body.reasonCode, 'reasonCode', 1, 80);
+    const contactEmail = text(body.contactEmail, 'contactEmail', 3, 254).toLowerCase();
+    if (!z.email().safeParse(contactEmail).success) {
+      throw new AppError(400, 'INVALID_REPORT_EMAIL', 'Email liên hệ không hợp lệ.', 'contactEmail');
+    }
+    const phone = text(body.contactPhone, 'contactPhone', 8, 30);
+    if (!/^\+?[0-9\s().-]+$/.test(phone)) {
+      throw new AppError(400, 'INVALID_REPORT_PHONE', 'Số điện thoại liên hệ không hợp lệ.', 'contactPhone');
+    }
+    const contactPhone = phone.replace(/[\s().-]/g, '');
+    if (!/^\+?[0-9]{8,15}$/.test(contactPhone)) {
+      throw new AppError(400, 'INVALID_REPORT_PHONE', 'Số điện thoại cần 8–15 chữ số.', 'contactPhone');
+    }
+    const evidence = text(body.evidence ?? '', 'evidence', 0, 4000);
+    return { targetType, targetId, reason: undefined, evidence, reasonCode, contactPhone, contactEmail };
+  }
+  if (body.contactPhone !== undefined || body.contactEmail !== undefined) {
+    throw new AppError(400, 'INVALID_REPORT', 'Thông tin liên hệ cần đi kèm mã lý do.', 'reasonCode');
+  }
   return {
-    targetType: choice(body.targetType, REPORT_TARGETS),
-    targetId: text(body.targetId, 'targetId', 1, 100),
+    targetType,
+    targetId,
     reason: text(body.reason, 'reason', 5, 300),
     evidence: text(body.evidence, 'evidence', 5, 4000),
   };
@@ -107,7 +131,47 @@ export const versionBody = z.unknown().transform((value) => ({ updatedAt: object
 /** Query GET /admin/reports: page, status? */
 export const adminReportQuery = z.record(z.string(), z.unknown()).transform((query) => {
   const current = page(query.page);
-  return { page: current, status: query.status ? choice(query.status, REPORT_STATUSES) : undefined };
+  const status = query.status ? choice(query.status, REPORT_STATUSES) : undefined;
+  const hours = (key: string) => {
+    if (query[key] === undefined || query[key] === '') return undefined;
+    const raw = query[key];
+    const value = typeof raw === 'string' && /^\d+(\.\d+)?$/.test(raw) ? Number(raw) : NaN;
+    if (!Number.isFinite(value) || value < 0 || value * 3_600_000 > 8.64e15) {
+      throw new AppError(400, 'INVALID_QUERY', 'Số giờ chờ không hợp lệ.', key);
+    }
+    return value;
+  };
+  const minWaitHours = hours('minWaitHours'), maxWaitHours = hours('maxWaitHours');
+  let asOf: Date | undefined;
+  if (query.asOf !== undefined) {
+    if (typeof query.asOf !== 'string' || !z.iso.datetime().safeParse(query.asOf).success) {
+      throw new AppError(400, 'INVALID_QUERY', 'Mốc thời gian không hợp lệ.', 'asOf');
+    }
+    asOf = new Date(query.asOf);
+    if (asOf.getTime() > Date.now()) throw new AppError(400, 'INVALID_QUERY', 'Không dùng mốc thời gian trong tương lai.', 'asOf');
+  }
+  if (query.uncategorized !== undefined && query.uncategorized !== 'true' && query.uncategorized !== 'false') {
+    throw new AppError(400, 'INVALID_QUERY', 'Bộ lọc báo cáo cũ không hợp lệ.');
+  }
+  if (query.uncategorized === 'true' && query.reasonCode) {
+    throw new AppError(400, 'INVALID_QUERY', 'Không kết hợp mã lý do và báo cáo chưa phân loại.');
+  }
+  if ((minWaitHours !== undefined || maxWaitHours !== undefined) && status !== 'OPEN') {
+    throw new AppError(400, 'INVALID_QUERY', 'Thời gian chờ chỉ áp dụng cho báo cáo đang mở.');
+  }
+  if (minWaitHours !== undefined && maxWaitHours !== undefined && minWaitHours > maxWaitHours) {
+    throw new AppError(400, 'INVALID_QUERY', 'Số giờ chờ tối thiểu phải nhỏ hơn hoặc bằng tối đa.');
+  }
+  const limit = query.limit === undefined ? ADMIN_PAGE_SIZE : Number(query.limit);
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new AppError(400, 'INVALID_QUERY', 'Kích thước trang từ 1 đến 100.');
+  return {
+    page: current, status, limit, minWaitHours, maxWaitHours, asOf,
+    reasonCode: query.reasonCode ? text(query.reasonCode, 'reasonCode', 1, 80) : undefined,
+    uncategorized: query.uncategorized === 'true',
+    targetType: query.targetType ? choice(query.targetType, REPORT_TARGETS) : undefined,
+    targetId: query.targetId ? text(query.targetId, 'targetId', 1, 100) : undefined,
+    sort: query.sort ? choice(query.sort, ['oldest', 'newest', 'most_reports'] as const) : 'oldest' as const,
+  };
 });
 
 /**

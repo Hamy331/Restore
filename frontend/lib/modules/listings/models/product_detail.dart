@@ -21,6 +21,9 @@ class ProductDetail extends Equatable {
 
   /// Số tin người bán đang hiển thị
   final int sellerActiveListings;
+  final int? sellerSoldCount;
+  final DateTime? sellerLastActive;
+  final String? sellerPlanTier;
 
   final bool isFavorite;
 
@@ -34,6 +37,9 @@ class ProductDetail extends Equatable {
     this.category,
     this.exchangeWish,
     this.sellerActiveListings = 0,
+    this.sellerSoldCount,
+    this.sellerLastActive,
+    this.sellerPlanTier,
     this.isFavorite = false,
     this.isOwner = false,
   });
@@ -56,6 +62,9 @@ class ProductDetail extends Equatable {
           ? CategoryModel.fromJson(Map<String, dynamic>.from(category))
           : null,
       areaLabel: json['areaLabel'] as String? ?? '',
+      sellerSoldCount: (json['sellerSoldCount'] as num?)?.toInt(),
+      sellerLastActive: DateTime.tryParse('${(seller)['lastActiveAt']}'),
+      sellerPlanTier: json['sellerPlanTier'] as String?,
       exchangeWish: wish == null || wish.isEmpty ? null : wish,
       sellerActiveListings:
           (json['sellerActiveListings'] as num?)?.toInt() ?? 0,
@@ -71,6 +80,9 @@ class ProductDetail extends Equatable {
     areaLabel: areaLabel,
     exchangeWish: exchangeWish,
     sellerActiveListings: sellerActiveListings,
+    sellerSoldCount: sellerSoldCount,
+    sellerLastActive: sellerLastActive,
+    sellerPlanTier: sellerPlanTier,
     isFavorite: isFavorite ?? this.isFavorite,
     isOwner: isOwner,
   );
@@ -83,6 +95,9 @@ class ProductDetail extends Equatable {
     areaLabel,
     exchangeWish,
     sellerActiveListings,
+    sellerSoldCount,
+    sellerLastActive,
+    sellerPlanTier,
     isFavorite,
     isOwner,
   ];

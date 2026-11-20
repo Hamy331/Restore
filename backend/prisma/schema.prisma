@@ -26,6 +26,8 @@ enum OtpPurpose {
 }
 
 model User {
+  aiConversations AiConversation[]
+  aiUsage AiUsage?
   feedPosts FeedPost[]
   feedComments FeedComment[]
   feedLikes FeedPostLike[]
@@ -43,6 +45,10 @@ model User {
   status         AccountStatus @default(UNVERIFIED)
   suspendedUntil DateTime?
   authVersion    Int           @default(0)
+  legacyRatingCount Int @default(0)
+  legacyRatingAverage Float @default(0)
+  reviewsGiven TradeReview[] @relation("Author")
+  reviewsReceived TradeReview[] @relation("Recipient")
   ratingAverage  Float         @default(0.0)
   ratingCount    Int           @default(0)
   otpCode        String?
@@ -75,6 +81,93 @@ model User {
   @@index([status, suspendedUntil])
 }
 
+model AiConversation {
+  id String @id
+  state Json @default("{}")
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lease String?
+  busyUntil DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  turns AiTurn[]
+  actions AiAction[]
+  @@index([userId, updatedAt])
+}
+
+model AiTurn {
+  id String @id @default(uuid())
+  conversationId String
+  conversation AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  requestId String
+  input String
+  response Json
+  contents Json
+  createdAt DateTime @default(now())
+  @@unique([conversationId, requestId])
+  @@index([conversationId, createdAt])
+}
+
+model AiAction {
+  id String @id
+  conversationId String
+  conversation AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  payload Json
+  result Json?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([conversationId])
+}
+
+model AiUsage {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  windowStart DateTime
+  windowCount Int
+  dayStart DateTime
+  dayCount Int
+}
+
+model AiKnowledgeChunk {
+  id String @id @default(uuid())
+  documentId String
+  document KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentVersion DateTime
+  ordinal Int
+  text String
+  // Legacy vectors retained for an additive migration; new writes store vectors only in Qdrant.
+  embedding Float[] @default([])
+  collection String @default("")
+  generation String @default("")
+  model String
+  @@unique([documentId, ordinal])
+  @@index([model])
+  @@index([collection, model])
+}
+
+model AiKnowledgeIndex {
+  documentId String @id
+  document KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  status String @default("IDLE")
+  lease String?
+  busyUntil DateTime?
+  generation String?
+  documentVersion DateTime?
+  model String?
+  collection String?
+  indexedAt DateTime?
+  errorCode String?
+}
+
+// Durable outbox: database deletion (including document cascade) queues Qdrant removal.
+model AiVectorDeletion {
+  pointId String
+  collection String
+  createdAt DateTime @default(now())
+  @@id([pointId, collection])
+  @@index([collection, createdAt])
+}
+
 model UserFollow {
   followerId String
   followingId String
@@ -87,17 +180,57 @@ model UserFollow {
 }
 
 model Conversation {
+  threadId String?
+  thread Conversation? @relation("ThreadContexts", fields: [threadId], references: [id], onDelete: Cascade)
+  contexts Conversation[] @relation("ThreadContexts")
+  @@index([threadId, updatedAt])
+  listingId String?
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  trade ListingTrade?
   id        String @id @default(uuid())
   pairKey   String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   members   ConversationMember[]
   messages  Message[]
+  @@index([listingId])
+}
+
+model ListingTrade {
+  conversationId String @id
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  listingId String @unique
+  sellerId String
+  buyerId String
+  title String
+  price Decimal
+  image String?
+  confirmedAt DateTime?
+  reviews TradeReview[]
+}
+
+model TradeReview {
+  id String @id @default(uuid())
+  conversationId String
+  trade ListingTrade @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
+  authorId String
+  author User @relation("Author", fields: [authorId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient User @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  fromSeller Boolean
+  stars Int
+  comment String @default("") @db.VarChar(500)
+  tags String[] @default([])
+  createdAt DateTime @default(now())
+  @@unique([conversationId, authorId])
+  @@index([recipientId, createdAt])
 }
 
 model ConversationMember {
   conversationId String
   userId String
+  blocked Boolean @default(false)
+  hidden Boolean @default(false)
   lastReadSequence Int @default(0)
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -113,6 +246,8 @@ model Message {
   senderId String
   clientId String
   text String @db.VarChar(2000)
+  listingPreview Json?
+  mediaName String?
   createdAt DateTime @default(now())
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
@@ -186,6 +321,8 @@ enum ListingStatus {
 }
 
 model Listing {
+  conversations Conversation[]
+  aiIndex AiListingIndex?
   feedPosts FeedPost[]
   id            String           @id @default(uuid())
   ownerId       String
@@ -249,6 +386,17 @@ model ListingViewDaily {
 
   @@id([listingId, day])
   @@index([day])
+}
+
+model AiListingIndex {
+  listingId String @id
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  pointId String @unique
+  sourceHash String
+  model String
+  collection String
+  indexedAt DateTime @default(now())
+  @@index([collection, model])
 }
 
 model ListingFavorite {
@@ -434,6 +582,19 @@ enum ReportStatus {
   RESOLVED
   DISMISSED
 }
+model ReportReason {
+  code String @id
+  labelVi String
+  labelEn String
+  requiresDescription Boolean @default(false)
+  guidanceVi String?
+  guidanceEn String?
+  active Boolean @default(true)
+  sortOrder Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model ViolationReport {
   id String @id @default(uuid())
   reporterId String
@@ -441,6 +602,9 @@ model ViolationReport {
   targetId String
   reason String
   evidence String
+  reasonCode String?
+  contactPhone String?
+  contactEmail String?
   status ReportStatus @default(OPEN)
   decision String?
   resolution String?
@@ -448,6 +612,8 @@ model ViolationReport {
   updatedAt DateTime @updatedAt
   @@index([status, createdAt])
   @@index([reporterId])
+  @@index([targetType, targetId, status, createdAt])
+  @@index([status, reasonCode, createdAt])
 }
 enum PostStatus {
   DRAFT
@@ -490,6 +656,8 @@ model SupportMessage {
   @@index([ticketId, createdAt])
 }
 model KnowledgeDocument {
+  aiChunks AiKnowledgeChunk[]
+  aiIndex AiKnowledgeIndex?
   id String @id @default(uuid())
   title String
   content String

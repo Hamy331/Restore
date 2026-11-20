@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/data/models/listing_model.dart';
 
@@ -46,7 +48,14 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
         ),
       );
       resumeLiveUpdates(refreshNow: false);
-    } catch (_) {
+    } catch (error, stack) {
+      if (kDebugMode) {
+        final reason = error is DioException
+            ? '${error.type.name} (HTTP ${error.response?.statusCode ?? '-'})'
+            : error.toString();
+        debugPrint('ProductDetail.load($listingId): $reason');
+        debugPrintStack(stackTrace: stack, maxFrames: 10);
+      }
       emit(state.copyWith(status: ProductDetailStatus.failure));
     }
   }

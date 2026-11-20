@@ -2,6 +2,8 @@ import { Response } from 'express';
 
 const listeners = new Map<string, Set<Response>>();
 
+export const connectedUserIds = () => [...listeners.keys()];
+
 export const subscribe = (userId: string, res: Response) => {
   const group = listeners.get(userId) ?? new Set<Response>();
   group.add(res);

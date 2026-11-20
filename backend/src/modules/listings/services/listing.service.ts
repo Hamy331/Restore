@@ -506,9 +506,15 @@ export async function viewListing(viewer: Viewer, id: string) {
   const [seller, category, sellerActiveListings, favorite] = await listingRepository.findDetailExtras(
     listing.ownerId, listing.categoryId, id, viewer?.userId);
   // Trang chi tiết (docs: listing-api-contract.md mục 5): người bán công khai, danh mục kèm thuộc tính
+  if (!seller) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy người bán của tin đăng.');
+  const { _count, ...publicSeller } = seller;
+  const subscription = listing.owner.storeSubscription;
+  const now = new Date();
   return {
     ...toListingDto(listing),
-    seller,
+    seller: publicSeller,
+    sellerSoldCount: _count.listings,
+    sellerPlanTier: subscription && subscription.startsAt <= now && now < subscription.endsAt ? subscription.package.tier : null,
     category: category ? toCategoryDto(category) : listing.category,
     sellerActiveListings,
     isFavorite: !!favorite,

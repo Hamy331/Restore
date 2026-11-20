@@ -37,6 +37,7 @@ class HomeSearchHeaderDelegate extends SliverPersistentHeaderDelegate {
   ) {
     final l10n = AppLocalizations.of(context)!;
     return AppPinnedHeaderSurface(
+      blurWhenPinned: false,
       pinned: overlapsContent || shrinkOffset > 0,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),

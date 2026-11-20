@@ -1,3 +1,4 @@
+import '../models/home_listing_filter.dart';
 import 'package:equatable/equatable.dart';
 import 'package:restore/data/models/category_model.dart';
 
@@ -8,6 +9,10 @@ enum HomeStatus { loading, ready, failure }
 
 class HomeState extends Equatable {
   final HomeStatus status;
+  final HomeListingFilter? _filter;
+  final bool? _feedFailed;
+  HomeListingFilter get filter => _filter ?? HomeListingFilter.forYou;
+  bool get feedFailed => _feedFailed ?? false;
   final List<HomeBanner> banners;
   final List<CategoryModel> categories;
   final List<ListingCardItem> recommended;
@@ -22,6 +27,8 @@ class HomeState extends Equatable {
   final bool isLoadingMore;
 
   const HomeState({
+    HomeListingFilter filter = HomeListingFilter.forYou,
+    bool feedFailed = false,
     this.status = HomeStatus.loading,
     this.banners = const [],
     this.categories = const [],
@@ -30,10 +37,13 @@ class HomeState extends Equatable {
     this.latestPage = 0,
     this.hasMoreLatest = false,
     this.isLoadingMore = false,
-  });
+  }) : _filter = filter,
+       _feedFailed = feedFailed;
 
   HomeState copyWith({
     HomeStatus? status,
+    HomeListingFilter? filter,
+    bool? feedFailed,
     List<HomeBanner>? banners,
     List<CategoryModel>? categories,
     List<ListingCardItem>? recommended,
@@ -42,6 +52,8 @@ class HomeState extends Equatable {
     bool? hasMoreLatest,
     bool? isLoadingMore,
   }) => HomeState(
+    filter: filter ?? this.filter,
+    feedFailed: feedFailed ?? this.feedFailed,
     status: status ?? this.status,
     banners: banners ?? this.banners,
     categories: categories ?? this.categories,
@@ -54,6 +66,8 @@ class HomeState extends Equatable {
 
   @override
   List<Object?> get props => [
+    filter,
+    feedFailed,
     status,
     banners,
     categories,

@@ -4,11 +4,37 @@ import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import * as chat from '../services/chat.service.js';
 import { publish, subscribe } from '../services/chat.events.js';
 
-const handle = (action: (req: AuthRequest) => Promise<unknown>, status = 200) =>
+import { changeTrade, submitReview } from '../services/trade.service.js';
+
+const handle =
+  (action: (req: AuthRequest) => Promise<unknown>, status = 200) =>
   async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try { res.status(status).json({ success: true, data: await action(req) }); }
-    catch (error) { next(error); }
+    try {
+      res.status(status).json({ success: true, data: await action(req) });
+    } catch (error) {
+      next(error);
+    }
   };
+
+export const products = handle((req) => chat.discussed(req.user!.userId, parseConversationId(req.params.id)));
+export const preferences = handle(async (req) => {
+  const id = parseConversationId(req.params.id);
+  const data = await chat.setPreference(req.user!.userId, id, req.body ?? {});
+  const members = await chat.conversationMembers(id);
+  publish(
+    members.map((m) => m.userId),
+    'message',
+    { conversationId: id },
+  );
+  return data;
+});
+
+export const tradeAction = handle((req) =>
+  changeTrade(req.user!.userId, parseConversationId(req.params.id), req.body?.action),
+);
+export const review = handle((req) =>
+  submitReview(req.user!.userId, parseConversationId(req.params.id), req.body),
+);
 
 export const unreadCount = handle((req) => chat.unreadCount(req.user!.userId));
 
@@ -18,7 +44,9 @@ export const heartbeat = async (req: AuthRequest, res: Response, next: NextFunct
     const presence = { userId: req.user!.userId, isOnline: true, lastActiveAt: result.lastActiveAt };
     publish(result.peers, 'presence', presence);
     res.json({ success: true, data: presence });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const events = (req: AuthRequest, res: Response) => {
@@ -34,11 +62,13 @@ export const listConversations = handle((req) => chat.listConversations(req.user
 
 export const startConversation = handle((req) => chat.startConversation(req.user!.userId, req.body), 201);
 
-export const getConversation = handle((req) => chat.getConversation(req.user!.userId, parseConversationId(req.params.id)));
+export const getConversation = handle((req) =>
+  chat.getConversation(req.user!.userId, parseConversationId(req.params.id)),
+);
 
-export const listMessages = handle((req) => chat.listMessages(
-  req.user!.userId, parseConversationId(req.params.id), req.query,
-));
+export const listMessages = handle((req) =>
+  chat.listMessages(req.user!.userId, parseConversationId(req.params.id), req.query),
+);
 
 export const sendMessage = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -46,17 +76,30 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
     const result = await chat.sendMessage(req.user!.userId, id, req.body);
     if (result.created) {
       const members = await chat.conversationMembers(id);
-      publish(members.map((member) => member.userId), 'message', result.message);
+      publish(
+        members.map((member) => member.userId),
+        'message',
+        result.message,
+      );
     }
     res.status(result.created ? 201 : 200).json({ success: true, data: result.message });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const markRead = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = parseConversationId(req.params.id);
-    const result = await chat.markRead(req.user!.userId, id);
+    const through = req.body?.through;
+    const result = await chat.markRead(
+      req.user!.userId,
+      id,
+      Number.isSafeInteger(through) && through >= 0 ? through : undefined,
+    );
     publish([req.user!.userId], 'read', { conversationId: id, ...result });
     res.json({ success: true, data: result });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };

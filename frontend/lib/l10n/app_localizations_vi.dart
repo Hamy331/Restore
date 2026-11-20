@@ -9,6 +9,102 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get sellerQuickChat => 'Chat nhanh';
+
+  @override
+  String get sellerDeal => 'Deal giá';
+
+  @override
+  String get sellerPartnerTitle => 'Đối tác ReStore';
+
+  @override
+  String get sellerPartnerInfo =>
+      'Người bán đang sử dụng gói Cửa hàng của ReStore. Bạn có thể hỏi shop về bảo hành và đổi trả cho tin đăng này.';
+
+  @override
+  String get sellerGotIt => 'Đã hiểu';
+
+  @override
+  String get sellerOfferNote => 'Để cho mình giá này nhé!';
+
+  @override
+  String get sellerActivity => 'Hoạt động';
+
+  @override
+  String get sellerSold => 'đã bán';
+
+  @override
+  String get aiWelcome =>
+      'Chào bạn, mình là ReStore, trợ lý mua sắm AI của bạn. Mình có thể giúp bạn tìm tin đăng, so sánh giá và chọn món phù hợp.';
+
+  @override
+  String get aiOpeningQuestion =>
+      'Hôm nay bạn đang tìm mua gì? Bạn có thể cho mình biết ngân sách hoặc khu vực muốn mua để mình tìm giúp nhé.';
+
+  @override
+  String get aiByline => 'Được tạo bởi AI';
+
+  @override
+  String get aiComposerHint => 'Bạn đang nghĩ gì vậy?';
+
+  @override
+  String get aiPhoneShortcut => 'Điện thoại';
+
+  @override
+  String get aiLaptopShortcut => 'Laptop';
+
+  @override
+  String get aiCameraShortcut => 'Máy ảnh';
+
+  @override
+  String get listingSavedLabel => 'Đã lưu';
+
+  @override
+  String get listingCall => 'Gọi';
+
+  @override
+  String get listingCallUnavailable => 'Bạn có thể gọi số';
+
+  @override
+  String get listingAsk => 'Cho mình hỏi';
+
+  @override
+  String get listingAskMore => 'Hỏi thêm';
+
+  @override
+  String get listingMessageHint => 'Nhập tin nhắn…';
+
+  @override
+  String get listingSend => 'Gửi';
+
+  @override
+  String get listingAccessories => 'Có kèm phụ kiện gì không bạn?';
+
+  @override
+  String get listingWarranty => 'Bạn cho mình hỏi thêm về bảo hành được không?';
+
+  @override
+  String get listingRepaired => 'Máy đã qua sửa chữa chưa bạn?';
+
+  @override
+  String get listingService => 'Xe được bảo dưỡng lần cuối khi nào?';
+
+  @override
+  String get listingVaccines => 'Mình xem sổ tiêm phòng của bé được không?';
+
+  @override
+  String get listingMeet => 'Mình có thể hẹn xem khi nào?';
+
+  @override
+  String get listingExchange => 'Bạn muốn đổi lấy món gì?';
+
+  @override
+  String get listingNegotiate => 'Bạn có thể bớt giá không?';
+
+  @override
+  String get listingPhotos => 'Bạn gửi thêm ảnh được không?';
+
+  @override
   String get feedForYou => 'Dành cho bạn';
 
   @override
@@ -344,7 +440,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accCoins => 'Xu ReStore';
 
   @override
-  String get accSaved => 'Đã lưu hồ sơ';
+  String get accSaved => 'Đã lưu';
 
   @override
   String get accSavedSearches => 'Tìm kiếm đã lưu';
@@ -788,6 +884,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get aiSampleStudentLaptopQuery => 'Tìm laptop cho sinh viên';
+
+  @override
+  String get aiRecentChats => 'Hội thoại gần đây';
+
+  @override
+  String get aiNoRecentChats => 'Chưa có hội thoại đã lưu';
 
   @override
   String get aiStartOver => 'Bắt đầu lại';
@@ -4565,6 +4667,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accBioHint => 'Vài dòng giới thiệu về bạn hoặc cửa hàng';
 
   @override
+  String get profileSaved => 'Đã lưu hồ sơ';
+
+  @override
   String get cropBackground => 'Nền';
 
   @override
@@ -4960,4 +5065,190 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accDiscardEditFailed => 'Chưa bỏ được bản sửa. Vui lòng thử lại.';
+
+  @override
+  String get aiSearchingListings => 'Đang tìm sản phẩm…';
+
+  @override
+  String get aiReadingListings => 'Đang đọc thông tin sản phẩm…';
+
+  @override
+  String get aiSearchingKnowledge => 'Đang tra tài liệu…';
+
+  @override
+  String get aiReadingQuota => 'Đang kiểm tra hạn mức…';
+
+  @override
+  String get aiPreparingDraft => 'Đang soạn bản nháp…';
+
+  @override
+  String get aiProcessing => 'Đang xử lý…';
+
+  @override
+  String get aiAnswering => 'Đang trả lời…';
+
+  @override
+  String get reportTitle => 'Báo cáo vi phạm';
+
+  @override
+  String get reportQuestion => 'Tin rao này có vấn đề gì';
+
+  @override
+  String get reportDescription => 'Mô tả bổ sung';
+
+  @override
+  String get reportDetailsHint =>
+      'Chia sẻ điều bạn gặp phải để Restore kiểm tra (không bắt buộc).';
+
+  @override
+  String get reportDescriptionRequired =>
+      'Vui lòng mô tả thêm, ít nhất 5 ký tự.';
+
+  @override
+  String get reportContactHeading =>
+      'Thông tin để Restore liên hệ với bạn khi cần thiết';
+
+  @override
+  String get reportPhoneHint => 'Điện thoại của bạn *';
+
+  @override
+  String get reportEmailHint => 'Email của bạn *';
+
+  @override
+  String get reportPhoneInvalid => 'Nhập số điện thoại hợp lệ gồm 8–15 chữ số.';
+
+  @override
+  String get reportEmailInvalid => 'Nhập địa chỉ email hợp lệ.';
+
+  @override
+  String get reportReasonRequired => 'Vui lòng chọn một lý do báo cáo.';
+
+  @override
+  String get reportSubmit => 'GỬI BÁO CÁO';
+
+  @override
+  String get reportSending => 'Đang gửi báo cáo';
+
+  @override
+  String get reportSuccess =>
+      'Restore đã nhận báo cáo và sẽ kiểm tra nội dung.';
+
+  @override
+  String get reportExists =>
+      'Bạn đã báo cáo tin này và đang chờ xử lý. Không cần gửi lại.';
+
+  @override
+  String get reportUnavailable =>
+      'Tin này không còn nhận báo cáo. Vui lòng tải lại trang sản phẩm.';
+
+  @override
+  String get reportSendFailed =>
+      'Chưa xác nhận được kết quả gửi. Nội dung vẫn được giữ lại; hãy kiểm tra kết nối và thử lại.';
+
+  @override
+  String get reportLoginRequired =>
+      'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại trước khi gửi.';
+
+  @override
+  String get reportServiceUnavailable =>
+      'Tính năng báo cáo đang được cập nhật. Vui lòng thử lại sau.';
+
+  @override
+  String get reportPrivacy =>
+      'Thông tin liên hệ chỉ dùng để hỗ trợ xử lý báo cáo, không hiển thị cho người bán và không cập nhật hồ sơ của bạn.';
+
+  @override
+  String get reportClose => 'Đóng báo cáo';
+
+  @override
+  String get reportDiscardTitle => 'Bỏ nội dung báo cáo?';
+
+  @override
+  String get reportDiscardBody =>
+      'Nội dung chưa gửi sẽ không được lưu khi đóng.';
+
+  @override
+  String get reportContinue => 'Tiếp tục viết';
+
+  @override
+  String get reportDiscard => 'Bỏ nội dung';
+
+  @override
+  String get reportReasonsLoadFailed =>
+      'Không tải được lý do báo cáo. Vui lòng thử lại.';
+
+  @override
+  String get reportReasonsEmpty =>
+      'Hiện chưa có lý do báo cáo được bật. Vui lòng thử lại sau.';
+
+  @override
+  String get reportRetry => 'Thử lại';
+
+  @override
+  String get tradeSellToBuyer => 'Đã bán cho người này';
+
+  @override
+  String get tradeReceive => 'Đã nhận hàng';
+
+  @override
+  String get tradeWait => 'Chờ người mua xác nhận đã nhận hàng';
+
+  @override
+  String get tradeCancel => 'Hủy yêu cầu';
+
+  @override
+  String get tradeBuyerReview => 'Đánh giá người mua';
+
+  @override
+  String get tradeSellerReview => 'Đánh giá người bán';
+
+  @override
+  String get tradeReviewed => 'Đã gửi đánh giá';
+
+  @override
+  String get tradeNote => 'Nhận xét (không bắt buộc)';
+
+  @override
+  String get tradeSubmit => 'Gửi đánh giá';
+
+  @override
+  String get tradeAll => 'Tất cả';
+
+  @override
+  String get tradeFromBuyer => 'Từ người mua';
+
+  @override
+  String get tradeFromSeller => 'Từ người bán';
+
+  @override
+  String get tradeMore => 'Xem thêm';
+
+  @override
+  String get tradeFriendly => 'Giao tiếp thân thiện';
+
+  @override
+  String get tradePunctual => 'Đúng hẹn';
+
+  @override
+  String get tradeReliable => 'Đáng tin cậy';
+
+  @override
+  String get tradeAccurate => 'Đúng mô tả';
+
+  @override
+  String get tradeQuality => 'Chất lượng tốt';
+
+  @override
+  String get tradeFairPrice => 'Trả giá hợp lý';
+
+  @override
+  String get tradeError =>
+      'Chưa thực hiện được. Vui lòng kiểm tra giao dịch và thử lại.';
+
+  @override
+  String get tradeConfirm => 'Xác nhận';
+
+  @override
+  String get reportReasonsChanged =>
+      'Danh sách lý do đã thay đổi. Vui lòng kiểm tra và chọn lại.';
 }

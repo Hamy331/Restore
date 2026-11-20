@@ -27,6 +27,19 @@ class LoggedOut extends AuthEvent {
   const LoggedOut();
 }
 
+class ProfileIdentityUpdated extends AuthEvent {
+  const ProfileIdentityUpdated({
+    required this.id,
+    required this.fullName,
+    required this.username,
+    required this.avatarUrl,
+  });
+  final String id, fullName, username;
+  final String? avatarUrl;
+  @override
+  List<Object?> get props => [id, fullName, username, avatarUrl];
+}
+
 /// ApiClient báo refresh token hết hạn hoặc bị thu hồi
 class SessionExpired extends AuthEvent {
   const SessionExpired();

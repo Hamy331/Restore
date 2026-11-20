@@ -1,6 +1,88 @@
 import '../../../core/network/media_url.dart';
 import 'package:equatable/equatable.dart';
 
+class SellerStorefront extends Equatable {
+  const SellerStorefront({
+    this.tier = 'PERSONAL',
+    this.shopId,
+    this.name,
+    this.logo,
+    this.cover,
+    this.address,
+    this.description,
+    this.phone,
+    this.verified = false,
+    this.shopFollowers = 0,
+    this.followsShop = false,
+    this.listings = 0,
+    this.sold = 0,
+  });
+  final String tier;
+  final String? shopId, name, logo, cover, address, description, phone;
+  final bool verified, followsShop;
+  final int shopFollowers, listings, sold;
+  bool get isShop => tier == 'PRO' || verified;
+  bool get isPro => tier == 'BASIC' && !isShop;
+
+  SellerStorefront withShopFollow(bool value) => SellerStorefront(
+    tier: tier,
+    shopId: shopId,
+    name: name,
+    logo: logo,
+    cover: cover,
+    address: address,
+    description: description,
+    phone: phone,
+    verified: verified,
+    listings: listings,
+    sold: sold,
+    followsShop: value,
+    shopFollowers:
+        shopFollowers +
+        (value == followsShop
+            ? 0
+            : value
+            ? 1
+            : -1),
+  );
+
+  factory SellerStorefront.fromJson(Map<String, dynamic> data) {
+    final shop = data['shop'] as Map?;
+    return SellerStorefront(
+      tier: data['tier'] as String? ?? 'PERSONAL',
+      phone: data['phone'] as String?,
+      listings: data['listingCount'] as int? ?? 0,
+      sold: data['soldCount'] as int? ?? 0,
+      shopId: shop?['id'] as String?,
+      name: shop?['name'] as String?,
+      logo: resolveMediaUrl(shop?['logoUrl'] as String?),
+      cover: resolveMediaUrl(shop?['coverUrl'] as String?),
+      address: shop?['address'] as String?,
+      description: shop?['description'] as String?,
+      verified: shop?['verified'] == true,
+      shopFollowers: shop?['followerCount'] as int? ?? 0,
+      followsShop: shop?['isFollowing'] == true,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    tier,
+    shopId,
+    name,
+    logo,
+    cover,
+    address,
+    description,
+    phone,
+    verified,
+    shopFollowers,
+    followsShop,
+    listings,
+    sold,
+  ];
+}
+
 class ProfileData extends Equatable {
   const ProfileData({
     required this.id,
@@ -14,7 +96,14 @@ class ProfileData extends Equatable {
     this.bio,
     this.isFollowing = false,
     this.followingShopCount = 0,
+    this.storefront = const SellerStorefront(),
+    this.joined,
+    this.lastActive,
+    this.online = false,
   });
+  final SellerStorefront storefront;
+  final DateTime? joined, lastActive;
+  final bool online;
   final String id;
   final String fullName;
   final String username;
@@ -30,6 +119,8 @@ class ProfileData extends Equatable {
 
   /// Người đang xem có theo dõi hồ sơ này không (chỉ có ở hồ sơ công khai).
   final bool isFollowing;
+  bool get followsSeller =>
+      storefront.verified ? storefront.followsShop : isFollowing;
 
   factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
     id: '${json['id'] ?? ''}',
@@ -41,6 +132,12 @@ class ProfileData extends Equatable {
     followingCount: (json['followingCount'] as num?)?.toInt() ?? 0,
     ratingAverage: (json['ratingAverage'] as num?)?.toDouble() ?? 0,
     ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
+    storefront: SellerStorefront.fromJson(
+      json['storefront'] as Map<String, dynamic>? ?? const {},
+    ),
+    joined: DateTime.tryParse('${json['createdAt']}'),
+    lastActive: DateTime.tryParse('${json['presence']?['lastActiveAt']}'),
+    online: json['presence']?['isOnline'] == true,
     isFollowing: json['isFollowing'] == true,
     followingShopCount: (json['followingShopCount'] as num?)?.toInt() ?? 0,
   );
@@ -51,9 +148,14 @@ class ProfileData extends Equatable {
     String? bio,
     String? avatarUrl,
     bool clearAvatar = false,
+    SellerStorefront? storefront,
     int? followerCount,
     bool? isFollowing,
   }) => ProfileData(
+    storefront: storefront ?? this.storefront,
+    joined: joined,
+    lastActive: lastActive,
+    online: online,
     id: id,
     fullName: fullName ?? this.fullName,
     username: username ?? this.username,
@@ -80,6 +182,10 @@ class ProfileData extends Equatable {
     ratingCount,
     isFollowing,
     followingShopCount,
+    storefront,
+    joined,
+    lastActive,
+    online,
   ];
 }
 

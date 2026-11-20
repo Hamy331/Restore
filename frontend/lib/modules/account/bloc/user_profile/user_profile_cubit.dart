@@ -17,15 +17,20 @@ class UserProfileCubit extends Cubit<UserProfileState> {
        super(UserProfileState(profile: initial, loading: initial == null));
   final ProfileRepository _repository;
   final ImageUploadService? _uploader;
+  int _revision = 0;
 
   /// Giữ hồ sơ đang hiển thị khi làm mới để không nháy "Đang tải…".
   Future<void> load() async {
+    if (isClosed || state.saving) return;
+    final revision = ++_revision;
     if (state.profile == null) emit(const UserProfileState());
     try {
       final profile = await _repository.getMe();
-      if (!isClosed) emit(UserProfileState(profile: profile, loading: false));
+      if (!isClosed && revision == _revision) {
+        emit(UserProfileState(profile: profile, loading: false));
+      }
     } catch (_) {
-      if (!isClosed) {
+      if (!isClosed && revision == _revision) {
         emit(
           UserProfileState(
             profile: state.profile,
@@ -38,6 +43,8 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   }
 
   Future<ProfileSaveResult> update(Map<String, dynamic> changes) async {
+    if (isClosed || state.saving) return ProfileSaveResult.failed;
+    _revision++;
     emit(
       UserProfileState(profile: state.profile, loading: false, saving: true),
     );

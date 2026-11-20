@@ -171,3 +171,47 @@ class _ButtonContent extends StatelessWidget {
     );
   }
 }
+
+class AppCompactActionButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+  final bool secondary;
+  final bool loading;
+  const AppCompactActionButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+    this.secondary = false,
+    this.loading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 44,
+    child: FilledButton(
+      onPressed: loading ? null : onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: secondary
+            ? const Color(0xFFF3F3F3)
+            : const Color(0xFFFFD21A),
+        foregroundColor: AppColors.textPrimary,
+        shape: const StadiumBorder(),
+        padding: EdgeInsets.zero,
+      ),
+      child: loading
+          ? Semantics(
+              label: label,
+              child: const AppLoadingIndicator(dotSize: 5),
+            )
+          : _ButtonContent(
+              label: label,
+              icon: icon,
+              color: onPressed == null
+                  ? AppColors.textSecondary
+                  : AppColors.textPrimary,
+            ),
+    ),
+  );
+}

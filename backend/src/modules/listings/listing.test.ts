@@ -135,6 +135,8 @@ test('feed filters map to listing filters', () => {
   const nearby = parseFeedQuery({ filter: 'nearby', latitude: '10.77', longitude: '106.7' });
   assert.deepEqual(nearby.filters.nearby, { latitude: 10.77, longitude: 106.7, radius: 5 });
   assert.equal(parseFeedQuery({ filter: 'exchange' }).filters.allowExchange, true);
+  assert.equal(parseFeedQuery({ filter: 'recent', ownerId: 'seller-1', page: 2 }).filters.ownerId, 'seller-1');
+  assert.throws(() => parseFeedQuery({ ownerId: ['seller-1', 'seller-2'] }), AppError);
   assert.equal(parseFeedQuery({ latitude: '10.77', longitude: '106.7' }).filters.nearby, undefined);
   assert.throws(() => parseFeedQuery({ filter: 'popular' }), AppError);
 });

@@ -1,0 +1,1 @@
+ALTER TABLE "AiConversation" ADD COLUMN "state" JSONB NOT NULL DEFAULT '{}';

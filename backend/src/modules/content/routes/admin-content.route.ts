@@ -131,6 +131,8 @@ adminContentRouter.delete('/knowledge/:id', manageContent, validate({ params: id
  *  - status?: 'OPEN' | 'RESOLVED' | 'DISMISSED'
  */
 adminContentRouter.get('/reports', manageUsers, validate({ query: adminReportQuery }), reportController.listForAdmin);
+adminContentRouter.get('/report-groups', manageUsers, validate({ query: adminReportQuery }), reportController.groups);
+adminContentRouter.get('/report-reasons', manageUsers, reportController.adminReasons);
 
 /**
  * Xử lý báo cáo đang mở

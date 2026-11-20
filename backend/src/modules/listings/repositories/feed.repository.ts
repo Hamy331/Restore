@@ -6,6 +6,7 @@ import { visible } from './listing.repository.js';
 
 /** Bộ lọc thêm của trang Shop uy tín */
 type ShopFilters = { verifiedShop?: boolean; onSale?: boolean };
+type FeedOptions = ListingFilters & ShopFilters & { ownerId?: string; chronological?: boolean; interestUserId?: string };
 
 export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boolean };
 
@@ -13,7 +14,7 @@ export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boo
 /**
  * SQL xếp hạng tin: gần nhất (nearby), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian.
  */
-function rankedQuery(filters: ListingFilters & ShopFilters, now: Date) {
+function rankedQuery(filters: FeedOptions, now: Date) {
  const distance = !filters.nearby ? Prisma.sql`NULL::double precision` : Prisma.sql`
  CASE WHEN l.location #>> '{ward,center,latitude}' IS NULL OR l.location #>> '{ward,center,longitude}' IS NULL THEN NULL
  ELSE 6371*acos(GREATEST(-1,LEAST(1,
@@ -25,6 +26,11 @@ function rankedQuery(filters: ListingFilters & ShopFilters, now: Date) {
           COALESCE(boosted."featuredPriority", 0) > 0 AS "isFeatured"
         FROM "Listing" l
         JOIN "User" u ON u.id = l."ownerId" AND u.status = 'ACTIVE'
+        ${filters.interestUserId ? Prisma.sql`LEFT JOIN (
+          SELECT saved."categoryId", COUNT(*) AS affinity
+          FROM "ListingFavorite" f JOIN "Listing" saved ON saved.id = f."listingId"
+          WHERE f."userId" = ${filters.interestUserId} GROUP BY saved."categoryId"
+        ) interest ON interest."categoryId" = l."categoryId"` : Prisma.empty}
         LEFT JOIN "StoreSubscription" ss ON ss."userId" = l."ownerId"
           AND ss."startsAt" <= ${now} AND ss."endsAt" > ${now}
         LEFT JOIN "StorePackage" sp ON sp.id = ss."packageId"
@@ -41,6 +47,7 @@ function rankedQuery(filters: ListingFilters & ShopFilters, now: Date) {
           WHERE p."listingId" = l.id AND p."startsAt" <= ${now}
         ) boosted ON TRUE
         WHERE l.status = 'AVAILABLE'
+          ${filters.ownerId ? Prisma.sql`AND l."ownerId" = ${filters.ownerId}` : Prisma.empty}
           AND (${filters.allowExchange ?? false} = false OR l."allowExchange"=true)
           AND (${filters.verifiedShop ?? false} = false OR EXISTS (
             SELECT 1 FROM "Shop" s WHERE s."ownerId" = l."ownerId" AND s."verificationType" IS NOT NULL))
@@ -51,7 +58,9 @@ function rankedQuery(filters: ListingFilters & ShopFilters, now: Date) {
           AND (${filters.condition}::text IS NULL OR l.condition = ${filters.condition}::"ListingCondition")
           AND (${filters.minPrice}::numeric IS NULL OR l.price >= ${filters.minPrice}::numeric)
           AND (${filters.maxPrice}::numeric IS NULL OR l.price <= ${filters.maxPrice}::numeric)
-        ORDER BY ${filters.nearby ? Prisma.sql`${distance} ASC,` : Prisma.empty} COALESCE(boosted."featuredPriority", 0) DESC,
+        ORDER BY ${filters.chronological ? Prisma.sql`COALESCE(l."publishedAt", l."createdAt") DESC, l.id DESC,` : Prisma.empty}
+          ${filters.interestUserId ? Prisma.sql`COALESCE(interest.affinity, 0) DESC,` : Prisma.empty}
+          ${filters.nearby ? Prisma.sql`${distance} ASC,` : Prisma.empty} COALESCE(boosted."featuredPriority", 0) DESC,
           CASE WHEN ss."categoryId" = l."categoryId" THEN COALESCE(sp."priorityLevel", 0) ELSE 0 END DESC,
           GREATEST(COALESCE(l."publishedAt", l."createdAt"),
             COALESCE(boosted."bumpedAt", l."createdAt")) DESC,
@@ -62,7 +71,7 @@ function rankedQuery(filters: ListingFilters & ShopFilters, now: Date) {
  * Lấy một trang id tin đã xếp hạng (đẩy tin, gói cửa hàng, khoảng cách, thời gian)
  * cùng tổng số tin khớp bộ lọc.
  */
-export async function findRankedPage(filters: ListingFilters & ShopFilters, now: Date, limit: number, skip: number) {
+export async function findRankedPage(filters: FeedOptions, now: Date, limit: number, skip: number) {
   const query = rankedQuery(filters, now);
   const [rows, totals] = await prisma.$transaction([
     prisma.$queryRaw<RankedRow[]>`${query} LIMIT ${limit} OFFSET ${skip}`,

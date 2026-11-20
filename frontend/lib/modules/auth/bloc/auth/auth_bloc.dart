@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:restore/data/models/user_model.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/auth_repository.dart';
@@ -17,6 +18,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     : super(const AuthChecking()) {
     on<AuthCheckRequested>(_onCheck);
     on<LoggedIn>((event, emit) => emit(AuthAuthenticated(event.user)));
+    on<ProfileIdentityUpdated>((event, emit) async {
+      final session = state;
+      if (session is! AuthAuthenticated || session.user.id != event.id) return;
+      final user = UserModel.fromJson({
+        ...session.user.toJson(),
+        'fullName': event.fullName,
+        'username': event.username,
+        'avatarUrl': event.avatarUrl,
+      });
+      emit(AuthAuthenticated(user));
+      try {
+        await _authRepository.cacheProfile(user);
+      } catch (error, trace) {
+        // The server has saved the profile. Session restoration can refill its local copy.
+        addError(error, trace);
+      }
+    });
     on<LoggedOut>(_onLoggedOut);
     on<SessionExpired>((event, emit) {
       emit(AuthUnauthenticated(sessionExpired: state is AuthAuthenticated));

@@ -1,3 +1,4 @@
+import 'package:restore/shared/models/geo_point.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/modules/listings/data/mock_favorite_store.dart';
 import 'package:restore/shared/models/paged_result.dart';
@@ -22,6 +23,7 @@ abstract class HomeRepository {
   Future<PagedResult<ListingCardItem>> getLatest(
     HomeListingFilter filter, {
     int page = 1,
+    GeoPoint? origin,
   });
   Future<void> setFavorite(String listingId, bool favorite);
 }
@@ -58,17 +60,25 @@ class MockHomeRepository implements HomeRepository {
   Future<PagedResult<ListingCardItem>> getLatest(
     HomeListingFilter filter, {
     int page = 1,
+    GeoPoint? origin,
   }) async {
     await Future<void>.delayed(latency);
     final matches = _items().where((item) {
       return switch (filter) {
-        HomeListingFilter.newest => true,
+        HomeListingFilter.forYou || HomeListingFilter.newest => true,
         HomeListingFilter.nearby => (item.distanceKm ?? double.infinity) <= 5,
         HomeListingFilter.exchange => item.listing.allowExchange,
       };
     }).toList();
     if (filter == HomeListingFilter.nearby) {
       matches.sort((a, b) => a.distanceKm!.compareTo(b.distanceKm!));
+    }
+    if (filter == HomeListingFilter.newest) {
+      matches.sort(
+        (a, b) => (b.listing.createdAt?.millisecondsSinceEpoch ?? 0).compareTo(
+          a.listing.createdAt?.millisecondsSinceEpoch ?? 0,
+        ),
+      );
     }
     const size = HomeRepository.pageSize;
     final start = (page - 1) * size;
@@ -93,6 +103,27 @@ class ApiHomeRepository implements HomeRepository {
 
   final ApiClient _apiClient;
 
+  Future<PagedResult<ListingCardItem>> sellerListings(
+    String ownerId,
+    int page,
+  ) async {
+    final json = await _get(
+      '/listings',
+      query: {
+        'ownerId': ownerId,
+        'filter': 'recent',
+        'page': page,
+        'limit': HomeRepository.pageSize,
+      },
+    );
+    return PagedResult.fromJson(
+      json,
+      ListingCardItem.fromJson,
+      page: page,
+      pageSize: HomeRepository.pageSize,
+    );
+  }
+
   @override
   Future<List<HomeBanner>> getBanners() async =>
       _list(await _get('/home/banners'), HomeBanner.fromJson);
@@ -110,11 +141,13 @@ class ApiHomeRepository implements HomeRepository {
   Future<PagedResult<ListingCardItem>> getLatest(
     HomeListingFilter filter, {
     int page = 1,
+    GeoPoint? origin,
   }) async {
     final json = await _get(
       '/listings',
       query: {
         'filter': filter.apiValue,
+        ...?origin?.toJson(),
         'page': page,
         'limit': HomeRepository.pageSize,
       },
