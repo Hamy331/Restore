@@ -17,9 +17,14 @@ import '../widgets/shell_bottom_nav.dart';
 import '../widgets/shell_nav_rail.dart';
 
 class MainShell extends StatelessWidget {
-  const MainShell({required this.navigationShell, super.key});
+  const MainShell({
+    required this.navigationShell,
+    this.hideNavigation = false,
+    super.key,
+  });
 
   final StatefulNavigationShell navigationShell;
+  final bool hideNavigation;
 
   static const String _aiAssistantPath = '/ai-assistant';
 
@@ -83,7 +88,7 @@ class MainShell extends StatelessWidget {
     final width = MediaQuery.sizeOf(context).width;
     // Web desktop: điều hướng nằm ở header, ReStore AI ở cửa sổ chat nổi
     // (DesktopFrame) nên không cần thanh bên / bong bóng AI ở đây
-    if (width >= AppDimesions.desktopWidth) {
+    if (hideNavigation || width >= AppDimesions.desktopWidth) {
       return Scaffold(body: navigationShell);
     }
     final isWide = width >= 840;

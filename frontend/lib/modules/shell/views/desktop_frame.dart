@@ -9,6 +9,7 @@ import 'package:restore/modules/account/views/account/account_desktop_shell.dart
 import 'package:restore/modules/ai/bloc/ai_assistant_cubit.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
+import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
 import 'package:restore/modules/plans/utils/plan_session.dart';
 import 'package:restore/shared/widgets/desktop/desktop_header.dart';
 
@@ -32,8 +33,6 @@ DesktopPageKind desktopPageKindOf(String path, {String? userId}) {
   if (path == '/home' ||
       path == '/feeds' ||
       path.startsWith('/categories/') ||
-      path == '/messages' ||
-      path.startsWith('/messages/') ||
       path.startsWith('/listings/')) {
     return DesktopPageKind.wide;
   }
@@ -54,11 +53,13 @@ class DesktopFrame extends StatefulWidget {
     required this.location,
     required this.child,
     this.listingSearchQuery,
+    this.selectedConversationId,
     this.assistant,
   });
 
   final String location;
   final String? listingSearchQuery;
+  final String? selectedConversationId;
   final Widget child;
   final AiAssistantCubit Function()? assistant;
 
@@ -67,24 +68,68 @@ class DesktopFrame extends StatefulWidget {
 }
 
 class _DesktopFrameState extends State<DesktopFrame> {
-  late final _chat = DesktopChatController(assistantFactory: widget.assistant);
+  late final _repository = AppEnvironment.useMockData
+      ? MockChatRepository()
+      : ApiChatRepository();
+  late final _chat = DesktopChatController(
+    assistantFactory: widget.assistant,
+    chatRepository: _repository,
+  );
   late final ShellBadgesCubit _badges;
+  late final AppLifecycleListener _lifecycle;
+  bool _desktop = false;
+  bool _inboxUpdateScheduled = false;
+  AppLifecycleState? _appState;
 
   @override
   void initState() {
     super.initState();
     // Gói thật của tài khoản cho menu nút giữa và lời chào trang chủ
     unawaited(PlanSession.refresh());
-    _badges = ShellBadgesCubit(
-      chatRepository: AppEnvironment.useMockData
-          ? MockChatRepository()
-          : ApiChatRepository(),
-    )..refresh();
-    _chat.addListener(_onChatChanged);
+    _badges = ShellBadgesCubit(chatRepository: _repository)..refresh();
+    _appState = WidgetsBinding.instance.lifecycleState;
+    _lifecycle = AppLifecycleListener(
+      onStateChange: (state) {
+        _appState = state;
+        if (_appVisible) {
+          _scheduleInboxUpdate();
+        } else {
+          _syncInbox();
+        }
+      },
+    );
+    _chat.addListener(_scheduleInboxUpdate);
   }
 
-  /// Mở / đổi cuộc trò chuyện thì cập nhật số tin chưa đọc trên header
-  void _onChatChanged() => _badges.refresh();
+  bool get _appVisible => switch (_appState) {
+    null || AppLifecycleState.resumed || AppLifecycleState.inactive => true,
+    _ => false,
+  };
+
+  void _syncInbox() {
+    final path = widget.location;
+    final onMessagesPage = path == LiveMessagesView.path;
+    final inMessages = onMessagesPage || path.startsWith('/messages/');
+    final onLegacyConversation = inMessages && path.split('/').length == 3;
+    final listVisible = onMessagesPage
+        ? _desktop || widget.selectedConversationId == null
+        : _desktop && (onLegacyConversation || (!inMessages && _chat.isOpen));
+    _chat.updateInboxVisibility(
+      context.currentUser?.id,
+      visible: _appVisible && listVisible,
+    );
+  }
+
+  // Navigation and the dock can both change in the same frame.
+  void _scheduleInboxUpdate() {
+    if (_inboxUpdateScheduled) return;
+    _inboxUpdateScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _inboxUpdateScheduled = false;
+      if (mounted) _syncInbox();
+    });
+    WidgetsBinding.instance.ensureVisualUpdate();
+  }
 
   @override
   void didUpdateWidget(DesktopFrame oldWidget) {
@@ -98,7 +143,8 @@ class _DesktopFrameState extends State<DesktopFrame> {
 
   @override
   void dispose() {
-    _chat.removeListener(_onChatChanged);
+    _lifecycle.dispose();
+    _chat.removeListener(_scheduleInboxUpdate);
     _chat.dispose();
     _badges.close();
     super.dispose();
@@ -106,27 +152,31 @@ class _DesktopFrameState extends State<DesktopFrame> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = context.watchUser()?.id;
     return BlocProvider.value(
       value: _badges,
       child: DesktopChatScope(
         controller: _chat,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            if (constraints.maxWidth < AppDimesions.desktopWidth) {
-              return widget.child;
-            }
+            _desktop = constraints.maxWidth >= AppDimesions.desktopWidth;
+            _scheduleInboxUpdate();
+            if (!_desktop) return widget.child;
             final location = widget.location;
-            final kind = desktopPageKindOf(
-              location,
-              userId: context.watchUser()?.id,
-            );
+            final kind = desktopPageKindOf(location, userId: userId);
             final body = switch (kind) {
               DesktopPageKind.wide => widget.child,
               DesktopPageKind.account => AccountDesktopShell(
                 location: location,
                 child: widget.child,
               ),
-              DesktopPageKind.narrow => _NarrowPage(child: widget.child),
+              DesktopPageKind.narrow => _NarrowPage(
+                maxWidth:
+                    location == '/messages' || location.startsWith('/messages/')
+                    ? AppDimesions.desktopContentWidth
+                    : AppDimesions.desktopNarrowWidth,
+                child: widget.child,
+              ),
             };
             return Material(
               color: AppColors.background,
@@ -172,17 +222,16 @@ class _DesktopFrameState extends State<DesktopFrame> {
 /// Trang chưa có bố cục desktop riêng: khối trắng rộng tối đa 960px ở giữa,
 /// hai bên để trống, trang tự cuộn bên trong.
 class _NarrowPage extends StatelessWidget {
-  const _NarrowPage({required this.child});
+  const _NarrowPage({required this.child, required this.maxWidth});
   final Widget child;
+  final double maxWidth;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
     color: AppColors.background,
     child: Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: AppDimesions.desktopNarrowWidth,
-        ),
+        constraints: BoxConstraints(maxWidth: maxWidth),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: DecoratedBox(

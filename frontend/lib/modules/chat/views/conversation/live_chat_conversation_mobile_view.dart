@@ -15,6 +15,7 @@ import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/shared/utils/app_image_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import '../../bloc/conversation/conversation_cubit.dart';
 import '../../bloc/conversation/conversation_state.dart';
@@ -240,23 +241,39 @@ class _LiveChatConversationMobileViewState
             final trade = state.conversation?.trade;
             return Column(
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      tooltip: 'Quay lại',
-                      onPressed: widget.onBack ?? () => context.pop(),
-                      icon: const Icon(AppIcons.back),
+                Material(
+                  color: AppColors.surface,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: kToolbarHeight,
                     ),
-                    if (person != null) _Header(person: person),
-                    if (state.conversation case final chat?)
-                      IconButton(
-                        tooltip: 'Thông tin hội thoại',
-                        icon: const Icon(Icons.format_list_bulleted),
-                        onPressed: () => manage(chat),
-                      ),
-                  ],
+                    child: Row(
+                      children: [
+                        IconButton(
+                          tooltip: 'Quay lại',
+                          onPressed:
+                              widget.onBack ??
+                              () {
+                                if (context.canPop()) {
+                                  context.pop();
+                                } else {
+                                  context.go('/messages');
+                                }
+                              },
+                          icon: const Icon(AppIcons.back),
+                        ),
+                        if (person != null) _Header(person: person),
+                        if (state.conversation case final chat?)
+                          IconButton(
+                            tooltip: 'Thông tin hội thoại',
+                            icon: const Icon(Icons.format_list_bulleted),
+                            onPressed: () => manage(chat),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
-                const Divider(height: 1),
+                const Divider(height: 1, color: AppColors.border),
                 if (trade?.product case final product?)
                   Padding(
                     padding: const EdgeInsets.symmetric(

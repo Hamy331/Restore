@@ -1,4 +1,3 @@
-import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 import 'live_chat_conversation_mobile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,8 +22,6 @@ class LiveChatConversationView extends StatelessWidget {
     create: (_) =>
         ConversationCubit(repository ?? ApiChatRepository(), conversationId)
           ..start(),
-    child: TResponsiveLayout(
-      mobile: LiveChatConversationMobileView(onBack: onBack),
-    ),
+    child: LiveChatConversationMobileView(onBack: onBack),
   );
 }

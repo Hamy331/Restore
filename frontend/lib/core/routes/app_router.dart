@@ -23,7 +23,6 @@ import 'package:restore/modules/following/views/following_hub/following_hub_view
 import 'package:restore/modules/trusted_shop/views/following_shops/following_shops_view.dart';
 import 'package:restore/modules/chat/views/messages/messages_view.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
-import 'package:restore/modules/chat/views/conversation/live_chat_conversation_view.dart';
 import 'package:restore/modules/home/views/home/home_view.dart';
 
 import 'package:restore/modules/feed/views/post_composer/post_composer_view.dart';
@@ -62,7 +61,6 @@ import 'package:restore/services/media_picker_service.dart';
 import 'package:restore/core/utils/animations/app_page_transitions.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
 import 'package:restore/modules/shell/views/desktop_frame.dart';
-import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -197,6 +195,7 @@ GoRouter createAppRouter(
       navigatorKey: _frameNavigatorKey,
       builder: (_, state, child) => DesktopFrame(
         location: state.uri.path,
+        selectedConversationId: LiveMessagesView.selectedConversation(state.uri),
         listingSearchQuery: state.uri.path == SearchResultsView.path
             ? state.uri.queryParameters['q'] ?? ''
             : null,
@@ -279,8 +278,10 @@ GoRouter createAppRouter(
     ),
     StatefulShellRoute.indexedStack(
       // ShellBadgesCubit (số tin chưa đọc) do DesktopFrame cấp
-      builder: (_, _, navigationShell) =>
-          MainShell(navigationShell: navigationShell),
+      builder: (_, state, navigationShell) => MainShell(
+        navigationShell: navigationShell,
+        hideNavigation: LiveMessagesView.selectedConversation(state.uri) != null,
+      ),
       branches: [
         StatefulShellBranch(
           routes: [GoRoute(path: '/home', builder: (_, _) => const HomeView())],
@@ -293,10 +294,12 @@ GoRouter createAppRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/messages',
-              builder: (_, _) => AppEnvironment.useMockData
+              path: LiveMessagesView.path,
+              builder: (_, state) => AppEnvironment.useMockData
                   ? const MessagesView()
-                  : const LiveMessagesView(),
+                  : LiveMessagesView(
+                      conversationId: LiveMessagesView.selectedConversation(state.uri),
+                    ),
             ),
           ],
         ),
@@ -321,16 +324,11 @@ GoRouter createAppRouter(
     GoRoute(
       path: '/messages/:id',
       parentNavigatorKey: _frameNavigatorKey,
-      // Desktop: trang Tin nhắn 2 cột, chọn sẵn cuộc trò chuyện này
       builder: (_, state) => AppEnvironment.useMockData
           ? const ChatConversationView()
-          : TResponsiveLayout(
-              mobile: LiveChatConversationView(
-                conversationId: state.pathParameters['id']!,
-              ),
-              desktop: LiveMessagesView(
-                selectedId: state.pathParameters['id'],
-              ),
+          : LiveMessagesView(
+              key: ValueKey(state.pathParameters['id']),
+              conversationId: state.pathParameters['id']!,
             ),
     ),
     GoRoute(

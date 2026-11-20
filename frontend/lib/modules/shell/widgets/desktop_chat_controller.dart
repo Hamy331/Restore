@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:restore/modules/ai/bloc/ai_assistant_cubit.dart';
+import 'package:restore/modules/chat/bloc/conversations/conversations_cubit.dart';
+import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 
 /// Cửa sổ chat nổi ở góc phải dưới trên web desktop.
@@ -8,17 +12,46 @@ enum DesktopChatPane { none, conversation, assistant }
 /// Trạng thái cửa sổ chat nổi: đóng / mở, đang xem cuộc trò chuyện nào
 /// hoặc ReStore AI. Mỗi lúc chỉ có một cửa sổ để góc màn hình gọn.
 class DesktopChatController extends ChangeNotifier {
-  DesktopChatController({this.assistantFactory});
+  DesktopChatController({this.assistantFactory, this.chatRepository});
 
   /// Cubit ReStore AI dùng chung với trang /ai-assistant (giữ hội thoại)
   final AiAssistantCubit Function()? assistantFactory;
   AiAssistantCubit? _ownAssistant;
+  final ChatRepository? chatRepository;
+  ConversationsCubit? _inbox;
+  String? _inboxOwner;
+
+  ConversationsCubit inboxFor(String userId) {
+    clearInboxUnless(userId);
+    _inboxOwner = userId;
+    return _inbox ??= ConversationsCubit(chatRepository ?? ApiChatRepository());
+  }
+
+  void clearInboxUnless(String? userId) {
+    if (_inboxOwner == userId) return;
+    final inbox = _inbox;
+    _inbox = null;
+    _inboxOwner = null;
+    if (inbox != null) unawaited(inbox.close());
+  }
+
+  void invalidateInbox() => _inbox?.invalidate();
+
+  void updateInboxVisibility(String? userId, {required bool visible}) {
+    clearInboxUnless(userId);
+    if (userId != null && visible) {
+      inboxFor(userId).start();
+    } else if (_inbox case final inbox?) {
+      unawaited(inbox.pause());
+    }
+  }
 
   AiAssistantCubit assistantCubit() =>
       assistantFactory?.call() ?? (_ownAssistant ??= AiAssistantCubit());
 
   @override
   void dispose() {
+    clearInboxUnless(null);
     _ownAssistant?.close();
     super.dispose();
   }
@@ -77,9 +110,8 @@ class DesktopChatScope extends InheritedNotifier<DesktopChatController> {
     required super.child,
   }) : super(notifier: controller);
 
-  static DesktopChatController? maybeOf(BuildContext context) => context
-      .getInheritedWidgetOfExactType<DesktopChatScope>()
-      ?.notifier;
+  static DesktopChatController? maybeOf(BuildContext context) =>
+      context.getInheritedWidgetOfExactType<DesktopChatScope>()?.notifier;
 }
 
 /// Trên desktop mở cuộc trò chuyện [conversationId] (hoặc ReStore AI khi

@@ -11,9 +11,9 @@ import 'package:restore/modules/ai/bloc/ai_assistant_cubit.dart';
 import 'package:restore/modules/ai/views/ai_assistant_view.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/auth/utils/auth_route_guard.dart';
-import 'package:restore/modules/chat/bloc/conversations/conversations_cubit.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/modules/chat/views/conversation/live_chat_conversation_view.dart';
+import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
 import 'package:restore/modules/chat/widgets/desktop_conversation_list.dart';
 
 import 'desktop_chat_controller.dart';
@@ -22,7 +22,7 @@ import 'desktop_chat_controller.dart';
 /// - Đóng: bong bóng ReStore AI ở trên, tab "Tin nhắn" dính mép dưới.
 /// - Mở: một cửa sổ chia đôi, trái là danh sách (ReStore AI ghim đầu),
 ///   phải là cuộc trò chuyện đang chọn hoặc ReStore AI.
-class DesktopChatDock extends StatefulWidget {
+class DesktopChatDock extends StatelessWidget {
   const DesktopChatDock({
     super.key,
     required this.controller,
@@ -37,41 +37,13 @@ class DesktopChatDock extends StatefulWidget {
   static const double windowWidth = 720;
   static const double windowHeight = 580;
 
-  @override
-  State<DesktopChatDock> createState() => _DesktopChatDockState();
-}
-
-class _DesktopChatDockState extends State<DesktopChatDock> {
-  ConversationsCubit? _conversations;
-  String? _owner;
-
-  ChatRepository get _repository =>
-      AppEnvironment.useMockData ? MockChatRepository() : ApiChatRepository();
-
-  DesktopChatController get _chat => widget.controller;
-
-  /// Danh sách hội thoại theo người đang đăng nhập; đổi tài khoản thì tạo lại
-  ConversationsCubit? _conversationsFor(String? userId) {
-    if (_owner != userId) {
-      _conversations?.close();
-      _conversations = null;
-      _owner = userId;
-    }
-    if (userId == null) return null;
-    return _conversations ??= ConversationsCubit(_repository)..start();
-  }
+  DesktopChatController get _chat => controller;
 
   AiAssistantCubit _assistant() => _chat.assistantCubit();
 
-  @override
-  void dispose() {
-    _conversations?.close();
-    super.dispose();
-  }
-
-  void _openMessages() {
+  void _openMessages(BuildContext context) {
     if (!context.isSignedIn) {
-      context.go(loginPath(from: widget.location));
+      context.go(loginPath(from: location));
       return;
     }
     _chat.openList();
@@ -80,10 +52,7 @@ class _DesktopChatDockState extends State<DesktopChatDock> {
   @override
   Widget build(BuildContext context) {
     final user = context.watchUser();
-    final conversations = _chat.isOpen ? _conversationsFor(user?.id) : null;
     if (!_chat.isOpen) {
-      // Đổi tài khoản lúc cửa sổ đóng: bỏ danh sách cũ
-      if (_owner != user?.id) _conversationsFor(user?.id);
       return Positioned(
         right: 24,
         bottom: 0,
@@ -92,12 +61,13 @@ class _DesktopChatDockState extends State<DesktopChatDock> {
           children: [
             _AiLauncher(onTap: _chat.openAssistant),
             const SizedBox(height: 14),
-            _MessagesTab(unread: widget.unread, onTap: _openMessages),
+            _MessagesTab(unread: unread, onTap: () => _openMessages(context)),
           ],
         ),
       );
     }
 
+    final conversations = user == null ? null : _chat.inboxFor(user.id);
     final height = (MediaQuery.sizeOf(context).height - 140).clamp(
       360.0,
       DesktopChatDock.windowHeight,
@@ -119,11 +89,11 @@ class _DesktopChatDockState extends State<DesktopChatDock> {
         child: Column(
           children: [
             _WindowHeader(
-              unread: widget.unread,
+              unread: unread,
               onExpand: () {
-                _chat.close();
                 final id = _chat.conversationId;
-                context.go(id == null ? '/messages' : '/messages/$id');
+                _chat.close();
+                context.go(LiveMessagesView.location(conversationId: id));
               },
               onClose: _chat.close,
             ),
@@ -262,7 +232,9 @@ class _Welcome extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               Text(
-                vi ? 'Chào mừng đến Tin nhắn Restore' : 'Welcome to Restore chat',
+                vi
+                    ? 'Chào mừng đến Tin nhắn Restore'
+                    : 'Welcome to Restore chat',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
