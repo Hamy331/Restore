@@ -37,7 +37,6 @@ class HomeCategoryStrip extends StatelessWidget {
             return _StripItem(
               label: AppLocalizations.of(context)!.hotSaleTitle,
               onTap: hot,
-              photo: hotSaleCategoryPhoto,
               icon: Image.asset(
                 AppImages.coreImages.hotSale,
                 width: 44,
@@ -51,7 +50,6 @@ class HomeCategoryStrip extends StatelessWidget {
           return _StripItem(
             label: category.name.of(context),
             onTap: () => onTap(category),
-            photo: categoryPhotoFor(category),
             icon: AppCategoryIcon(
               imageUrl: category.imageUrl,
               iconKey: category.iconKey,
@@ -70,14 +68,10 @@ class _StripItem extends StatelessWidget {
   final Widget icon;
   final VoidCallback onTap;
 
-  /// Ảnh thật của danh mục (nếu có), chưa có thì hiện [icon]
-  final String? photo;
-
   const _StripItem({
     required this.label,
     required this.icon,
     required this.onTap,
-    this.photo,
   });
 
   @override
@@ -95,7 +89,7 @@ class _StripItem extends StatelessWidget {
             children: [
               const SizedBox(height: 4),
               // Dùng chung với hàng danh mục web desktop
-              AppCategoryCircle(size: 52, photo: photo, fallback: icon),
+              AppCategoryCircle(size: 52, fallback: icon),
               const SizedBox(height: 6),
               Text(
                 label,

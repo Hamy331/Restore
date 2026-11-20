@@ -9,8 +9,7 @@ import 'package:restore/shared/widgets/app_category_icon.dart';
 
 /// Hàng danh mục trên web desktop: cùng kiểu với hàng danh mục điện thoại
 /// (ô tròn, tên bên dưới, ô Hot sale đứng đầu), dàn đều hết bề ngang.
-/// Vòng tròn dùng chung [AppCategoryCircle] nên ảnh thật / icon 3D giống
-/// hệt bản điện thoại.
+/// Dùng chung [AppCategoryCircle] và bộ icon với bản điện thoại.
 class HomeCategoryPhotoGrid extends StatelessWidget {
   const HomeCategoryPhotoGrid({
     super.key,
@@ -35,7 +34,6 @@ class HomeCategoryPhotoGrid extends StatelessWidget {
         onTap: onHotSaleTap,
         circle: AppCategoryCircle(
           size: 72,
-          photo: hotSaleCategoryPhoto,
           background: const Color(0xFFFFE9E4),
           fallback: Image.asset(
             AppImages.coreImages.hotSale,
@@ -52,7 +50,6 @@ class HomeCategoryPhotoGrid extends StatelessWidget {
           onTap: () => onTap(category),
           circle: AppCategoryCircle(
             size: 72,
-            photo: categoryPhotoFor(category),
             fallback: AppCategoryIcon(
               imageUrl: category.imageUrl,
               iconKey: category.iconKey,
