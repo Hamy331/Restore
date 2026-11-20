@@ -49,6 +49,7 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
       );
       resumeLiveUpdates(refreshNow: false);
     } catch (error, stack) {
+      if (isClosed) return;
       if (kDebugMode) {
         final reason = error is DioException
             ? '${error.type.name} (HTTP ${error.response?.statusCode ?? '-'})'
