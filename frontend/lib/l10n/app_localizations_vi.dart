@@ -5609,6 +5609,8 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get savedAddressMore => 'Tuỳ chọn địa chỉ';
+
+  @override
   String get aiSearchingListings => 'Đang tìm sản phẩm…';
 
   @override
@@ -5793,4 +5795,11 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get reportReasonsChanged =>
       'Danh sách lý do đã thay đổi. Vui lòng kiểm tra và chọn lại.';
+
+  @override
+  String get homeLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get categoryDetailLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
 }

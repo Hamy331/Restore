@@ -9811,6 +9811,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Address options'**
   String get savedAddressMore;
+
   /// No description provided for @aiSearchingListings.
   ///
   /// In en, this message translates to:
@@ -10152,6 +10153,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report reasons have changed. Please review your selection.'**
   String get reportReasonsChanged;
+
+  /// No description provided for @homeLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get homeLoadErrorBody;
+
+  /// No description provided for @categoryDetailLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get categoryDetailLoadErrorBody;
 }
 
 class _AppLocalizationsDelegate

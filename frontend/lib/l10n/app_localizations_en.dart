@@ -5715,6 +5715,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get savedAddressMore => 'Address options';
+
+  @override
   String get aiSearchingListings => 'Searching for products…';
 
   @override
@@ -5899,4 +5901,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reportReasonsChanged =>
       'Report reasons have changed. Please review your selection.';
+
+  @override
+  String get homeLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get categoryDetailLoadErrorBody =>
+      'Check your connection and try again.';
 }

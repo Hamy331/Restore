@@ -44,7 +44,8 @@ export const getProfile = async (id: string, viewerId?: string) => {
 export async function getPublicProfile(id: string, viewerId: string) {
   const result = await repository.findStorefront(id, viewerId);
   if (!result) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
-  return { ...formatProfile(result.user), isFollowing: result.user.followers.length > 0, storefront: result.storefront };
+  const followingShopCount = await repository.countFollowedShops(id);
+  return { ...formatProfile(result.user, followingShopCount), isFollowing: result.user.followers.length > 0, storefront: result.storefront };
 }
 
 const followPageSize = 20;

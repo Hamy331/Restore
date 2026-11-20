@@ -28,8 +28,7 @@ export async function findStorefront(id: string, viewerId: string) {
         storeSubscription: { select: { startsAt: true, endsAt: true, package: { select: { tier: true } } } },
         shop: { select: {
           id: true, name: true, address: true, logoUrl: true, coverUrl: true, description: true,
-          verificationType: true, _count: { select: { followers: true } },
-          followers: { where: { userId: viewerId }, select: { userId: true } },
+          verificationType: true,
         } },
       },
     }),
@@ -44,7 +43,8 @@ export async function findStorefront(id: string, viewerId: string) {
   const branding = shop && (tier === 'PRO' || shop.verificationType) ? {
     id: shop.id, name: shop.name, address: shop.address, logoUrl: shop.logoUrl,
     coverUrl: shop.coverUrl, description: shop.description, verified: !!shop.verificationType,
-    followerCount: shop._count.followers, isFollowing: shop.followers.length > 0,
+    // Theo dõi shop = theo dõi chủ shop: dùng chung số người theo dõi và trạng thái của chủ shop
+    followerCount: user._count.followers, isFollowing: user.followers.length > 0,
   } : null;
   const listingCount = count('AVAILABLE');
   return { user, storefront: { tier, shop: branding, listingCount, soldCount: count('SOLD'),

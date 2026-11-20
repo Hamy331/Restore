@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:restore/core/constants/app_scroll.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
@@ -11,9 +12,9 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
-    Widget list({double? cacheExtent}) => MaterialApp(
+    Widget list({ScrollCacheExtent? cacheExtent}) => MaterialApp(
       home: CustomScrollView(
-        cacheExtent: cacheExtent,
+        scrollCacheExtent: cacheExtent,
         slivers: [
           SliverList.builder(
             itemCount: 50,
@@ -29,7 +30,7 @@ void main() {
     expect(find.text('tin 4', skipOffstage: false), findsNothing);
 
     // Dựng thêm 1200 px (tới 2000 px): thẻ thứ 5 đến thứ 8 đã có sẵn
-    await tester.pumpWidget(list(cacheExtent: AppScroll.prefetchExtent));
+    await tester.pumpWidget(list(cacheExtent: AppScroll.prefetchCacheExtent));
     expect(find.text('tin 4', skipOffstage: false), findsOneWidget);
     expect(find.text('tin 7', skipOffstage: false), findsOneWidget);
     expect(find.text('tin 4'), findsNothing); // vẫn nằm ngoài màn hình

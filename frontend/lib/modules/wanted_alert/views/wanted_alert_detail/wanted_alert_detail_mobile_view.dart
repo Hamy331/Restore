@@ -103,7 +103,7 @@ class _WantedAlertDetailMobileViewState
                   onLoadMore: cubit.loadMore,
                   child: CustomScrollView(
                     // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
-                    cacheExtent: AppScroll.prefetchExtent,
+                    scrollCacheExtent: AppScroll.prefetchCacheExtent,
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
                       SliverToBoxAdapter(child: SizedBox(height: topInset)),

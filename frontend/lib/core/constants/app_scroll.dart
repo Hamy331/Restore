@@ -1,3 +1,5 @@
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
+
 /// Thông số cuộn dùng chung cho các trang danh sách tin.
 class AppScroll {
   AppScroll._();
@@ -13,4 +15,9 @@ class AppScroll {
   /// ~1,5 màn hình điện thoại, khoảng 4 hàng thẻ (8 tin); ảnh thumbnail
   /// 480 px nên phần dựng thêm chỉ tốn vài MB bộ nhớ.
   static const double prefetchExtent = 1200;
+
+  /// [prefetchExtent] dưới dạng `scrollCacheExtent` cho danh sách.
+  static const ScrollCacheExtent prefetchCacheExtent = ScrollCacheExtent.pixels(
+    prefetchExtent,
+  );
 }

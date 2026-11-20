@@ -63,7 +63,7 @@ void main() {
       final key = filters.first.backdropKey;
       expect(key, isNotNull);
       expect(filters.every((filter) => filter.backdropKey == key), isTrue);
-      expect(filters.first.filter, filters.last.filter);
+      expect(filters.first.filterConfig, filters.last.filterConfig);
     },
   );
 }

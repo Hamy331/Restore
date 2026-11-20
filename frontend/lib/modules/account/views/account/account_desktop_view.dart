@@ -196,7 +196,6 @@ class _AccountDesktopViewState extends State<AccountDesktopView> {
                         else
                           ProfileHeader(
                             profile: profile,
-                            countFollowedShops: true,
                             onRatingTap: () =>
                                 context.push(MyReviewsView.ratingsPath),
                             onAvatarTap: _openEditProfile,

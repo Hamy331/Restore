@@ -453,8 +453,11 @@ test('notifications: activity flows between users', async () => {
   try {
     const conversation = await api.post('/conversations', { token: tokens.seller, body: { recipientId: 'user-buyer' } });
     const conversationId = conversation.body.data.id;
-    // Nhắn từ trang tin (listingId): người nhận là người đăng, cùng cuộc trò chuyện
-    const fromListing = await api.post('/conversations', { token: tokens.buyer, body: { listingId: lamp.id } });
+    // Nhắn từ trang tin (listingId): người nhận là người đăng, cùng cuộc trò chuyện.
+    // Tin phải còn đang bán (đèn đã bán ở trên) nên dùng một tin mới đã duyệt
+    const stool = await submitListing('Ghế gỗ thông');
+    await api.post(`/listings/admin/${stool.id}/decision`, { token: tokens.admin, body: { decision: 'APPROVED', updatedAt: stool.updatedAt } });
+    const fromListing = await api.post('/conversations', { token: tokens.buyer, body: { listingId: stool.id } });
     assert.equal(fromListing.body.data?.id, conversationId);
     const missing = await api.post('/conversations', { token: tokens.buyer, body: { listingId: 'khong-co' } });
     assert.equal(missing.status, 404);
