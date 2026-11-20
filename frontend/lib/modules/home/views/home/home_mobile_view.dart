@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/config/dev_plan_override.dart';
@@ -183,6 +184,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                   builder: (context, refreshIndicator) => AppLoadMoreListener(
                     onLoadMore: cubit.loadMore,
                     child: CustomScrollView(
+                      // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                      cacheExtent: AppScroll.prefetchExtent,
                       controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [

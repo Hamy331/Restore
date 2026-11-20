@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -81,6 +82,8 @@ class FeedsMobileView extends StatelessWidget {
                               onNotification: (n) =>
                                   feedScrollListener(cubit, n),
                               child: CustomScrollView(
+                                // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                                cacheExtent: AppScroll.prefetchExtent,
                                 physics: const BouncingScrollPhysics(
                                   parent: AlwaysScrollableScrollPhysics(),
                                 ),

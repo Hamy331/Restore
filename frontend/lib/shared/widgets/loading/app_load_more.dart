@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 
 import 'app_loading_indicator.dart';
 
@@ -16,7 +17,7 @@ class AppLoadMoreListener extends StatelessWidget {
     super.key,
     required this.onLoadMore,
     required this.child,
-    this.threshold = 480,
+    this.threshold = AppScroll.prefetchExtent,
   });
 
   @override
