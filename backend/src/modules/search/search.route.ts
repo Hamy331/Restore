@@ -48,7 +48,7 @@ searchRouter.get('/shops', optionalAuth, validate({ query: accountSearchQuery })
  * Query params: q (tối đa 100 ký tự; rỗng → danh sách rỗng), page?, limit? (1-30, mặc định 10)
  *
  * Trả về: { id, fullName, username, avatarUrl, bio, ratingAverage, ratingCount, followerCount,
- *   listingCount (tin đang bán), isFollowing, shopId (shop uy tín của người này hoặc null) }[], pagination
+ *   listingCount (tin đang bán), isFollowing, shopId (luôn null: người có shop uy tín hiện ở /search/shops) }[], pagination
  */
 searchRouter.get('/users', optionalAuth, validate({ query: accountSearchQuery }), searchController.users);
 

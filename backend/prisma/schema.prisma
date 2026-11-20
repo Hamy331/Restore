@@ -70,7 +70,6 @@ model User {
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
   shop           Shop?
-  shopFollows    ShopFollow[]
   searchHistory  SearchHistory[]
   notifications  Notification[]
   pushDevices    PushDevice[]
@@ -855,21 +854,9 @@ model Shop {
   address          String?
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
-  followers        ShopFollow[]
   banners          ShopBanner[]
 
   @@index([verificationType, verifiedAt])
-}
-
-model ShopFollow {
-  userId    String
-  shopId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@id([userId, shopId])
-  @@index([shopId])
 }
 
 /// Banner sự kiện shop gửi lên (ảnh 1200 x 600), admin duyệt rồi mới hiện

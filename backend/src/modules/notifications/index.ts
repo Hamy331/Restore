@@ -7,7 +7,7 @@ import {
 } from './notification.listeners.js';
 import {
   notifyActivityOnModeration, notifyChatMessage, notifyCommentLiked, notifyFeedCommented, notifyFollowersOnPublish,
-  notifyListingFavorited, notifyListingSold, notifyPostLiked, notifyShopFollowed, notifyUserFollowed, notifyWantedAlertMatched,
+  notifyListingFavorited, notifyListingSold, notifyPostLiked, notifyUserFollowed, notifyWantedAlertMatched,
 } from './notification.activity.js';
 
 // Admin ra quyết định trên tin → báo người bán
@@ -35,7 +35,6 @@ on('poster.reviewed', notifyPosterReviewed);
 on('wantedAlert.matched', notifyWantedAlertMatched);
 on('chat.messageSent', notifyChatMessage);
 on('user.followed', notifyUserFollowed);
-on('shop.followed', notifyShopFollowed);
 on('listing.favorited', notifyListingFavorited);
 onListingModerated(notifyActivityOnModeration);
 on('listing.published', notifyFollowersOnPublish);

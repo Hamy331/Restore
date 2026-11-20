@@ -133,7 +133,6 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                 else
                                   ProfileHeader(
                                     profile: profile,
-                                    countFollowedShops: true,
                                     onAvatarTap: openEditProfile,
                                     onBioTap: openEditProfile,
                                     onFollowingTap: profile == null

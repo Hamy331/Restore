@@ -5,6 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
+import 'package:restore/modules/auth/repositories/auth_repository.dart';
+import 'package:restore/modules/trusted_shop/widgets/shop_follow_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/modules/search/bloc/search_accounts_cubit.dart';
@@ -166,7 +169,8 @@ void main() {
     await cubit.start();
     await Future<void>.delayed(const Duration(milliseconds: 300));
     expect(cubit.state.shops.map((item) => item.shop.id), ['shop_kodo']);
-    expect(cubit.state.users.map((user) => user.id), ['user_kodo']);
+    // Chủ shop chỉ hiện một lần, ở dạng shop
+    expect(cubit.state.users, isEmpty);
     cubit.queryChanged('');
     expect(cubit.state.shops, isEmpty);
     expect(cubit.state.users, isEmpty);
@@ -182,7 +186,7 @@ void main() {
       state = SearchState(
         query: 'kodo',
         shops: (await repository.searchShops('kodo')).items,
-        users: (await repository.searchUsers('kodo')).items,
+        users: (await repository.searchUsers('lan')).items,
         accountsQuery: 'kodo',
       );
     });
@@ -211,10 +215,11 @@ void main() {
       ),
     );
     expect(find.textContaining('tin đang bán'), findsNWidgets(2));
-    expect(find.textContaining('@kodo.camera'), findsOneWidget);
-    await tester.tap(find.textContaining('người theo dõi'));
+    // Dòng shop có @username chủ shop
+    expect(find.textContaining('@kodo.camera ·'), findsOneWidget);
     await tester.tap(find.textContaining('@kodo.camera'));
-    expect([openedShop, openedUser], ['shop_kodo', 'user_kodo']);
+    await tester.tap(find.textContaining('@lan.decor'));
+    expect([openedShop, openedUser], ['shop_kodo', 'user_lan']);
   });
 
   test('results page loads matching shops and users with paging', () async {
@@ -227,11 +232,38 @@ void main() {
     expect(cubit.state.shops.items, isNotEmpty);
     expect(
       cubit.state.users.items.map((user) => user.id),
-      contains('user_kodo'),
+      isNot(contains('user_kodo')),
+      reason: 'chủ shop hiện ở tab Cửa hàng',
     );
     final shop = cubit.state.shops.items.first;
     cubit.syncShopFollowing(shop.shop.id, !shop.isFollowing);
     expect(cubit.state.shops.items.first.isFollowing, !shop.isFollowing);
+    await cubit.close();
+  });
+
+  test('follow buttons toggle shops and users right away', () async {
+    final repository = MockSearchRepository(latency: Duration.zero);
+    final cubit = SearchAccountsCubit(searchRepository: repository, query: 'n');
+    await cubit.start();
+    final shop = cubit.state.shops.items.first;
+    final user = cubit.state.users.items.firstWhere((u) => !u.isFollowing);
+    await cubit.toggleShopFollowing(shop);
+    await cubit.toggleUserFollowing(user);
+    expect(cubit.state.shops.items.first.isFollowing, !shop.isFollowing);
+    expect(
+      cubit.state.users.items.firstWhere((u) => u.id == user.id).isFollowing,
+      isTrue,
+    );
+    // Mock giữ trạng thái khi tải lại
+    await cubit.reloadUsers();
+    expect(
+      cubit.state.users.items.firstWhere((u) => u.id == user.id).isFollowing,
+      isTrue,
+    );
+    await cubit.toggleUserFollowing(
+      cubit.state.users.items.firstWhere((u) => u.id == user.id),
+    );
+    await cubit.toggleShopFollowing(cubit.state.shops.items.first);
     await cubit.close();
   });
 
@@ -256,6 +288,10 @@ void main() {
           path: '/',
           builder: (_, _) => MultiBlocProvider(
             providers: [
+              BlocProvider(
+                create: (_) =>
+                    AuthBloc(MockAuthRepository(latency: Duration.zero)),
+              ),
               BlocProvider.value(value: results),
               BlocProvider.value(value: accounts),
             ],
@@ -290,11 +326,14 @@ void main() {
       findsNothing,
       reason: 'chỉ tab Tin đăng có bộ lọc',
     );
-    expect(find.textContaining('người theo dõi ·'), findsOneWidget);
+    expect(find.textContaining('@kodo.camera ·'), findsOneWidget);
+    expect(find.byType(ShopFollowButton), findsWidgets);
 
     await tester.tap(find.text('Người dùng'));
     await tester.pump();
-    expect(find.textContaining('@kodo.camera'), findsOneWidget);
+    // Chủ shop không hiện lại ở tab Người dùng
+    expect(find.textContaining('@kodo.camera'), findsNothing);
+    expect(find.textContaining('Không có người dùng nào khớp'), findsOneWidget);
     await results.close();
     await accounts.close();
   });

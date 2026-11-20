@@ -49,16 +49,12 @@ export const findListingBrief = (id: string) =>
 export const findShopOfOwner = (ownerId: string) =>
   prisma.shop.findUnique({ where: { ownerId }, select: { id: true, name: true, logoUrl: true } });
 
-export const findShop = (id: string) =>
-  prisma.shop.findUnique({ where: { id }, select: { id: true, ownerId: true, name: true } });
-
-/** Người theo dõi [ownerId] hoặc shop của người đó (tài khoản còn hoạt động, không gồm chính chủ) */
+/** Người theo dõi [ownerId] (theo dõi shop = theo dõi chủ shop; tài khoản còn hoạt động, không gồm chính chủ) */
 export async function findFollowerIds(ownerId: string) {
-  const [users, shops] = await Promise.all([
-    prisma.userFollow.findMany({ where: { followingId: ownerId, follower: { status: 'ACTIVE' } }, select: { followerId: true } }),
-    prisma.shopFollow.findMany({ where: { shop: { ownerId }, user: { status: 'ACTIVE' } }, select: { userId: true } }),
-  ]);
-  return [...new Set([...users.map((row) => row.followerId), ...shops.map((row) => row.userId)])].filter((id) => id !== ownerId);
+  const rows = await prisma.userFollow.findMany({
+    where: { followingId: ownerId, followerId: { not: ownerId }, follower: { status: 'ACTIVE' } }, select: { followerId: true },
+  });
+  return rows.map((row) => row.followerId);
 }
 
 /** Người đã lưu tin (tài khoản còn hoạt động, không gồm chủ tin) */

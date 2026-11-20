@@ -68,34 +68,23 @@ export async function notifyChatMessage(event: DomainEvents['chat.messageSent'])
 
 /* ---------- 3.4 Có người theo dõi ---------- */
 
+/** Theo dõi shop = theo dõi chủ shop: người có shop nhận lời báo theo tên shop */
 export async function notifyUserFollowed(event: DomainEvents['user.followed']) {
-  const follower = await repository.findActiveUser(event.followerId);
-  if (!follower) return;
+  const [follower, shop] = await Promise.all([
+    repository.findActiveUser(event.followerId),
+    repository.findShopOfOwner(event.followingId),
+  ]);
+  if (!follower || event.followerId === event.followingId) return;
   await notify({
     userId: event.followingId,
     type: 'NEW_FOLLOWER',
-    title: 'Có người theo dõi bạn',
-    body: `${follower.fullName} vừa theo dõi bạn.`,
+    title: shop ? 'Có người theo dõi shop' : 'Có người theo dõi bạn',
+    body: shop ? `${follower.fullName} vừa theo dõi shop ${shop.name}.` : `${follower.fullName} vừa theo dõi bạn.`,
     imageUrl: follower.avatarUrl,
     link: `/users/${follower.id}`,
-    data: { userId: follower.id, userName: follower.fullName },
+    data: { userId: follower.id, userName: follower.fullName, ...(shop ? { shopId: shop.id, shopName: shop.name } : {}) },
     // Bỏ theo dõi rồi theo dõi lại không báo lần nữa
     dedupeKey: `follow:${follower.id}`,
-  });
-}
-
-export async function notifyShopFollowed(event: DomainEvents['shop.followed']) {
-  const [follower, shop] = await Promise.all([repository.findActiveUser(event.userId), repository.findShop(event.shopId)]);
-  if (!follower || !shop || shop.ownerId === follower.id) return;
-  await notify({
-    userId: shop.ownerId,
-    type: 'NEW_FOLLOWER',
-    title: 'Có người theo dõi shop',
-    body: `${follower.fullName} vừa theo dõi shop ${shop.name}.`,
-    imageUrl: follower.avatarUrl,
-    link: `/users/${follower.id}`,
-    data: { userId: follower.id, userName: follower.fullName, shopId: shop.id, shopName: shop.name },
-    dedupeKey: `shopfollow:${shop.id}:${follower.id}`,
   });
 }
 

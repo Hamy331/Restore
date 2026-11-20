@@ -4,8 +4,14 @@ import { prisma } from '../../../lib/prisma.js';
 export const profileSelect = {
   id: true, fullName: true, username: true, avatarUrl: true, bio: true, status: true,
   ratingAverage: true, ratingCount: true, createdAt: true, lastActiveAt: true,
-  _count: { select: { followers: true, following: true, shopFollows: { where: { shop: { verificationType: { not: null } } } } } },
+  _count: { select: { followers: true, following: true } },
 } satisfies Prisma.UserSelect;
+
+/** Số shop uy tín [id] đang theo dõi (theo dõi shop = theo dõi chủ shop, nên nằm trong số "đang theo dõi") */
+export const countFollowedShops = (id: string) =>
+  prisma.userFollow.count({
+    where: { followerId: id, following: { status: 'ACTIVE', shop: { is: { verificationType: { not: null } } } } },
+  });
 
 
 export const findProfile = (id: string) =>

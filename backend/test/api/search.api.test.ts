@@ -74,9 +74,15 @@ test('search: shops and users by name or username', async () => {
   const shops = await api.get('/search/shops?q=noi%20that', { token: tokens.buyer });
   assert.equal(shops.status, 200, JSON.stringify(shops.body));
   assert.deepEqual(ids(shops), ['shop-seller']);
-  assert.equal(shops.body.data[0].listingCount, 3);
+  // Theo dõi chủ shop = theo dõi shop: cùng trạng thái và số người theo dõi
+  assert.deepEqual(
+    [shops.body.data[0].listingCount, shops.body.data[0].isFollowing, shops.body.data[0].followerCount, shops.body.data[0].ownerUsername],
+    [3, true, 1, 'bich.shop'],
+  );
   assert.equal(shops.body.pagination.totalItems, 1);
   assert.deepEqual(ids(await api.get('/search/shops?q=bich')), ['shop-seller']);
+  // Tên chủ shop cũng ra shop
+  assert.deepEqual(ids(await api.get('/search/shops?q=tran%20thi')), ['shop-seller']);
   // Trùng username chủ shop cũng ra shop
   assert.deepEqual(ids(await api.get('/search/shops?q=bich.shop')), ['shop-seller']);
   assert.deepEqual(ids(await api.get('/search/shops?q=%40bichsh')), ['shop-seller']);
@@ -86,11 +92,15 @@ test('search: shops and users by name or username', async () => {
   const binh = await api.get('/search/users?q=b%C3%ACnh', { token: tokens.seller });
   assert.deepEqual(ids(binh), ['user-buyer']);
   assert.equal(binh.body.data[0].isFollowing, false);
+  // Chủ shop uy tín chỉ hiện một lần, ở kết quả shop
+  assert.deepEqual(ids(await api.get('/search/users?q=bich', { token: tokens.buyer })), []);
+  // Shop chưa xác minh thì chủ shop vẫn là người dùng bình thường
+  await prisma.shop.update({ where: { id: 'shop-seller' }, data: { verificationType: null } });
   const bich = await api.get('/search/users?q=bich', { token: tokens.buyer });
   assert.deepEqual(ids(bich), ['user-seller']);
   assert.deepEqual(
     [bich.body.data[0].isFollowing, bich.body.data[0].followerCount, bich.body.data[0].listingCount, bich.body.data[0].shopId],
-    [true, 1, 3, 'shop-seller'],
+    [true, 1, 3, null],
   );
   assert.equal(bich.body.data[0].email, undefined, 'không lộ email');
   assert.deepEqual(ids(await api.get('/search/users?q=binh_ng')), ['user-buyer']);

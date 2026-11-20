@@ -364,10 +364,13 @@ test('notifications: activity flows between users', async () => {
   await profile.unfollow('user-buyer', 'user-seller');
   await profile.follow('user-buyer', 'user-seller');
   await shops.setFollowing('user-third', shop.id, true);
+  // theo dõi shop = theo dõi chủ shop: theo dõi lại qua trang shop không báo thêm
+  await shops.setFollowing('user-buyer', shop.id, true);
   const followers = await of('user-seller', 'NEW_FOLLOWER');
   assert.equal(followers.length, 2);
+  // người có shop nhận lời báo theo tên shop
   assert.deepEqual([followers[0].body, followers[0].link, followers[0].pushedAt !== null],
-    [`${buyer.fullName} vừa theo dõi bạn.`, '/users/user-buyer', true]);
+    [`${buyer.fullName} vừa theo dõi shop ${shop.name}.`, '/users/user-buyer', true]);
   assert.equal(data(followers[1]).shopName, shop.name);
 
   // 3.1 + 3.6: tin mới khớp "Báo khi có hàng" của buyer; người theo dõi người bán / shop được báo một lần mỗi ngày

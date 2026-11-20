@@ -37,7 +37,7 @@ export async function getMyShop(userId: string, now = new Date()) {
     shop: toShopDto(shop, { listingCount, isFollowing: false }),
     canCreate: false,
     nameLocked: shop.verificationType !== null,
-    stats: { followerCount: shop._count.followers, listingCount, runningPosters, pendingPosters },
+    stats: { followerCount: shop.owner._count.followers, listingCount, runningPosters, pendingPosters },
   };
 }
 

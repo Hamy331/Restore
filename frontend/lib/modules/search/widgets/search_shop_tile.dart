@@ -6,7 +6,8 @@ import 'package:restore/modules/trusted_shop/widgets/shop_verification_badge.dar
 import 'package:restore/shared/widgets/search/app_search_account_tile.dart';
 
 /// Cửa hàng trong kết quả / gợi ý tìm kiếm: logo, tên kèm nhãn xác minh,
-/// số người theo dõi và số tin đang bán
+/// @username chủ shop, số người theo dõi và số tin đang bán. Shop và chủ shop
+/// là một mục: theo dõi shop = theo dõi chủ shop.
 class SearchShopTile extends StatelessWidget {
   final TrustedShopItem item;
   final String? highlight;
@@ -33,7 +34,11 @@ class SearchShopTile extends StatelessWidget {
       badge: type == null
           ? null
           : ShopVerificationBadge(type: type, iconOnly: true),
-      subtitle: l10n.searchShopSubtitle(shop.followerCount, shop.listingCount),
+      subtitle: [
+        if (shop.ownerUsername case final username? when username.isNotEmpty)
+          '@$username',
+        l10n.searchShopSubtitle(shop.followerCount, shop.listingCount),
+      ].join(' · '),
       trailing: trailing,
       onTap: onTap,
     );

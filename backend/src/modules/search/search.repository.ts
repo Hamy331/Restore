@@ -90,23 +90,24 @@ const usernameKey = (column: Prisma.Sql) => Prisma.sql`regexp_replace(lower(${co
 type Page = { limit: number; skip: number };
 
 /**
- * Shop uy tín (đã xác minh, chủ shop còn hoạt động) có tên chứa đủ mọi từ đã gõ, hoặc username chủ shop
- * chứa [handle]. Xếp: trùng tên → tên bắt đầu bằng từ khoá → nhiều người theo dõi → tên.
- * Trả về id theo thứ tự, kèm tổng số.
+ * Shop uy tín (đã xác minh, chủ shop còn hoạt động) có tên shop hoặc tên chủ shop chứa đủ mọi từ đã gõ, hoặc
+ * username chủ shop chứa [handle]; [usernameOnly] (gõ "@...") thì chỉ xét username. Chủ shop không hiện lại
+ * trong kết quả người dùng: shop và chủ shop là một mục. Xếp: trùng tên → tên bắt đầu bằng từ khoá →
+ * nhiều người theo dõi (chủ shop) → tên. Trả về id theo thứ tự, kèm tổng số.
  */
 export async function findShopIds(words: string[], handle: string, usernameOnly: boolean, { limit, skip }: Page) {
   const phrase = words.join(' ');
   const name = foldedText(Prisma.sql`s.name`);
-  const match = usernameOnly
-    ? Prisma.sql`POSITION(${handle} IN ${usernameKey(Prisma.sql`u.username`)}) > 0`
-    : Prisma.sql`(${containsAll(name, words)} OR ${usernameKey(Prisma.sql`u.username`)} = ${handle})`;
+  const byUsername = Prisma.sql`POSITION(${handle} IN ${usernameKey(Prisma.sql`u.username`)}) > 0`;
+  const match = usernameOnly ? byUsername
+    : Prisma.sql`(${containsAll(name, words)} OR ${containsAll(foldedText(Prisma.sql`u."fullName"`), words)} OR ${byUsername})`;
   const where = Prisma.sql`s."verificationType" IS NOT NULL AND u.status = 'ACTIVE' AND ${match}`;
   const [rows, total] = await Promise.all([
     prisma.$queryRaw<{ id: string }[]>`
       SELECT s.id FROM "Shop" s JOIN "User" u ON u.id = s."ownerId"
       WHERE ${where}
       ORDER BY (${name} = ${phrase}) DESC, (POSITION(${phrase} IN ${name}) = 1) DESC,
-        (SELECT COUNT(*) FROM "ShopFollow" f WHERE f."shopId" = s.id) DESC, s.name, s.id
+        (SELECT COUNT(*) FROM "UserFollow" f WHERE f."followingId" = s."ownerId") DESC, s.name, s.id
       LIMIT ${limit} OFFSET ${skip}`,
     prisma.$queryRaw<{ count: bigint }[]>`
       SELECT COUNT(*) AS count FROM "Shop" s JOIN "User" u ON u.id = s."ownerId" WHERE ${where}`,
@@ -115,7 +116,7 @@ export async function findShopIds(words: string[], handle: string, usernameOnly:
 }
 
 /**
- * Người dùng (đang hoạt động, không phải admin) có tên hiển thị chứa đủ mọi từ đã gõ, hoặc username chứa
+ * Người dùng (đang hoạt động, không phải admin, không có shop uy tín: người có shop hiện ở kết quả shop) có tên hiển thị chứa đủ mọi từ đã gõ, hoặc username chứa
  * [handle]; [usernameOnly] (gõ "@...") thì chỉ xét username. Xếp: trùng username → username bắt đầu bằng
  * từ khoá → tên bắt đầu bằng từ khoá → nhiều người theo dõi → tên. Trả về id theo thứ tự, kèm tổng số.
  */
@@ -125,7 +126,8 @@ export async function findUserIds(words: string[], handle: string, usernameOnly:
   const key = usernameKey(Prisma.sql`u.username`);
   const byUsername = Prisma.sql`POSITION(${handle} IN ${key}) > 0`;
   const match = usernameOnly ? byUsername : Prisma.sql`(${containsAll(name, words)} OR ${byUsername})`;
-  const where = Prisma.sql`u.status = 'ACTIVE' AND u.role = 'USER' AND ${match}`;
+  const where = Prisma.sql`u.status = 'ACTIVE' AND u.role = 'USER' AND ${match}
+    AND NOT EXISTS (SELECT 1 FROM "Shop" s WHERE s."ownerId" = u.id AND s."verificationType" IS NOT NULL)`;
   const [rows, total] = await Promise.all([
     prisma.$queryRaw<{ id: string }[]>`
       SELECT u.id FROM "User" u

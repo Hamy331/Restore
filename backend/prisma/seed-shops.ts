@@ -35,7 +35,7 @@ function areaOf(ward: string) {
 }
 
 async function removeAll() {
-  // Shop, ShopFollow, ShopBanner, StoreSubscription, ListingFavorite xóa theo cascade của User / Listing
+  // Shop, ShopBanner, StoreSubscription, ListingFavorite xóa theo cascade của User / Listing
   const listings = await prisma.listing.deleteMany({ where: { ownerId: { in: userIds } } });
   const users = await prisma.user.deleteMany({ where: { id: { in: userIds } } });
   console.log('Đã xóa shop và tài khoản Bán chuyên:', { users: users.count, listings: listings.count });
@@ -134,14 +134,17 @@ async function seedAll() {
     await upsertListings(`pro-seller-${seller.key}`, seller.key, seller.ward, 'BUSINESS', seller.listings, now, daysFor(basic.freeDaysPercent));
   }
 
-  // Người theo dõi: các tài khoản Bán chuyên rồi các shop khác, theo số followers của từng shop
-  await prisma.shopFollow.deleteMany({ where: { shopId: { in: SHOPS.map((shop) => shopUserId(shop.key)) } } });
+  // Người theo dõi (theo dõi shop = theo dõi chủ shop): các tài khoản Bán chuyên rồi các shop khác,
+  // theo số followers của từng shop
   const followers = [...PRO_SELLERS.map((seller) => proUserId(seller.key)), ...SHOPS.map((shop) => shopUserId(shop.key))];
+  await prisma.userFollow.deleteMany({
+    where: { followingId: { in: SHOPS.map((shop) => shopUserId(shop.key)) }, followerId: { in: followers } },
+  });
   const follows = SHOPS.flatMap((shop) => followers
     .filter((userId) => userId !== shopUserId(shop.key))
     .slice(0, shop.followers)
-    .map((userId) => ({ userId, shopId: shopUserId(shop.key) })));
-  await prisma.shopFollow.createMany({ data: follows, skipDuplicates: true });
+    .map((followerId) => ({ followerId, followingId: shopUserId(shop.key) })));
+  await prisma.userFollow.createMany({ data: follows, skipDuplicates: true });
 
   console.log('Seed shop xong:', {
     shops: SHOPS.length, shopListings: SHOPS.reduce((sum, shop) => sum + shop.listings.length, 0),

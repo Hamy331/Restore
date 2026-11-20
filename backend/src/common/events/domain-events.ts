@@ -46,7 +46,6 @@ export type DomainEvents = {
   'chat.messageSent': { conversationId: string; messageId: string; senderId: string; text: string };
   /** Có người theo dõi tôi / shop của tôi (3.4) */
   'user.followed': { followerId: string; followingId: string };
-  'shop.followed': { userId: string; shopId: string };
   /** Có người lưu tin (3.5) */
   'listing.favorited': { userId: string; listingId: string };
   /** Người bán đánh dấu đã bán / đã trao đổi (3.7) */

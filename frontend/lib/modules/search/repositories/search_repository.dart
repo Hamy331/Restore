@@ -229,14 +229,14 @@ class MockSearchRepository implements SearchRepository {
     await Future<void>.delayed(const Duration(milliseconds: 200));
     final q = _AccountQuery(query);
     if (q.isEmpty) return q.page(const [], page, limit);
-    final owners = {
-      for (final user in SearchMockData.users)
-        user['id']: _AccountQuery.usernameKey(user['username'] as String),
-    };
+    final owners = {for (final user in SearchMockData.users) user['id']: user};
     final matches = [
       for (final shop in TrustedShopMockData.shops)
         if (_shopMatches(q, shop, owners[shop['ownerId']]))
-          TrustedShopItem.fromJson(TrustedShopMockData.shopJson(shop)),
+          TrustedShopItem.fromJson({
+            ...TrustedShopMockData.shopJson(shop),
+            'ownerUsername': owners[shop['ownerId']]?['username'],
+          }),
     ];
     int rank(TrustedShopItem item) => q.nameStarts(item.shop.name) ? 0 : 1;
     matches.sort((a, b) {
@@ -248,13 +248,21 @@ class MockSearchRepository implements SearchRepository {
     return q.page(matches, page, limit);
   }
 
+  /// Như API: tên shop, tên chủ shop hoặc username chủ shop; gõ "@" thì chỉ
+  /// xét username
   static bool _shopMatches(
     _AccountQuery q,
     Map<String, dynamic> shop,
-    String? ownerKey,
+    Map<String, dynamic>? owner,
   ) {
-    if (q.usernameOnly) return ownerKey != null && ownerKey.contains(q.handle);
-    return q.nameMatches(shop['name'] as String) || ownerKey == q.handle;
+    final username = owner?['username'] as String?;
+    final byUsername =
+        username != null &&
+        _AccountQuery.usernameKey(username).contains(q.handle);
+    if (q.usernameOnly) return byUsername;
+    return byUsername ||
+        q.nameMatches(shop['name'] as String) ||
+        (owner != null && q.nameMatches(owner['fullName'] as String));
   }
 
   @override
@@ -277,10 +285,12 @@ class MockSearchRepository implements SearchRepository {
                     'isFollowing': following,
                 }),
             ]
+            // Người có shop hiện một lần ở kết quả shop (như API)
             .where(
               (user) =>
-                  byUsername(user) ||
-                  (!q.usernameOnly && q.nameMatches(user.fullName)),
+                  !user.hasShop &&
+                  (byUsername(user) ||
+                      (!q.usernameOnly && q.nameMatches(user.fullName))),
             )
             .toList();
     int rank(SearchUserItem user) {
