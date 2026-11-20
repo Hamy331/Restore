@@ -1,6 +1,6 @@
 import { AppError } from '../../../common/errors/app-error.js';
 import { audit } from '../../../common/audit/admin-audit.js';
-import { ADMIN_PAGE_SIZE, changed, integer, version } from '../../../common/validation/admin-input.js';
+import { changed, integer, version } from '../../../common/validation/admin-input.js';
 import { withQuotaTransaction } from '../../commerce/index.js';
 import { getAdminListing, moderate } from '../../listings/index.js';
 import { getAdminUser, sanctionUser } from '../../users/index.js';
@@ -17,9 +17,11 @@ import {
   USER_REPORT_ACTIONS,
 } from '../content.type.js';
 import * as reportRepository from '../repositories/report.repository.js';
+import { applyReportReason } from './report-policy.service.js';
 
 /** Báo cáo tin đang hiển thị hoặc thành viên; không tự báo cáo mình, mỗi đối tượng một báo cáo đang mở */
-export function create(reporterId: string, { targetType, targetId, reason, evidence }: ReportInput) {
+export function create(reporterId: string, input: ReportInput) {
+  const { targetType, targetId } = input;
   return withQuotaTransaction(async (tx) => {
     const target = targetType === 'USER'
       ? await reportRepository.findUserMember(tx, targetId)
@@ -37,7 +39,8 @@ export function create(reporterId: string, { targetType, targetId, reason, evide
     if (await reportRepository.findOpenReport(tx, reporterId, targetType, targetId)) {
       throw new AppError(409, 'REPORT_EXISTS', 'Bạn đã có báo cáo đang chờ xử lý.');
     }
-    return reportRepository.createReport(tx, { reporterId, targetType, targetId, reason, evidence });
+    const reason = input.reasonCode ? await reportRepository.findReason(tx, input.reasonCode) : null;
+    return reportRepository.createReport(tx, { reporterId, ...applyReportReason(input, reason) });
   });
 }
 
@@ -47,9 +50,14 @@ export const listMine = (reporterId: string, { page }: PageQuery) =>
 /* ---------- Quản trị (/admin/reports) ---------- */
 
 /** Báo cáo, mới trước, 25 mỗi trang */
-export async function listForAdmin({ page, status }: AdminReportQuery) {
-  const [items, total] = await reportRepository.findPage(status, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
-  return { items, total, page };
+export async function listForAdmin(query: AdminReportQuery) {
+  const [items, total] = await reportRepository.findPage(query, query.asOf ?? new Date());
+  return { items, total, page: query.page };
+}
+
+export async function groups(query: AdminReportQuery) {
+  const now = query.asOf ?? new Date();
+  return { ...await reportRepository.findGroups(query, now), page: query.page, limit: query.limit, asOf: now.toISOString() };
 }
 
 /**

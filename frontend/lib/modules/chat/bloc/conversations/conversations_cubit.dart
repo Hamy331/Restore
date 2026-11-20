@@ -15,21 +15,53 @@ class ConversationsCubit extends Cubit<ConversationsState> {
   final Duration refreshInterval;
   StreamSubscription<String>? _events;
   Timer? _timer;
+  Future<void>? _inFlight;
+  DateTime? _lastLoadedAt;
+  bool _dirty = true;
 
-  /// Tải lần đầu và bắt đầu lắng nghe thay đổi.
+  /// Chỉ chạy khi danh sách đang hiển thị. Giữ dữ liệu khi mở lại.
   void start() {
-    unawaited(load());
-    _events = _repository.events().listen(
-      (_) => unawaited(load()),
-      onError: (Object _) {},
-    );
+    if (isClosed || _timer != null) return;
     _timer = Timer.periodic(refreshInterval, (_) => unawaited(load()));
+    _events = _repository.events().listen((event) {
+      if (event == 'message' || event == 'read') invalidate();
+    }, onError: (Object _) {});
+    final lastLoaded = _lastLoadedAt;
+    if (_dirty ||
+        state.failed ||
+        lastLoaded == null ||
+        DateTime.now().difference(lastLoaded) >= refreshInterval) {
+      unawaited(load());
+    }
   }
 
-  Future<void> load() async {
+  Future<void> pause() async {
+    _timer?.cancel();
+    _timer = null;
+    final events = _events;
+    _events = null;
+    await events?.cancel();
+  }
+
+  void invalidate() {
+    _dirty = true;
+    if (_timer != null) unawaited(load());
+  }
+
+  Future<void> load() {
+    if (isClosed) return Future.value();
+    return _inFlight ??= _fetch().whenComplete(() {
+      _inFlight = null;
+      if (_dirty && _timer != null) unawaited(load());
+    });
+  }
+
+  Future<void> _fetch() async {
+    _dirty = false;
     try {
       final items = await _repository.listConversations();
       if (!isClosed) {
+        _lastLoadedAt = DateTime.now();
         emit(ConversationsState(conversations: items, loading: false));
       }
     } catch (_) {
@@ -47,8 +79,8 @@ class ConversationsCubit extends Cubit<ConversationsState> {
 
   @override
   Future<void> close() async {
-    _timer?.cancel();
-    await _events?.cancel();
-    return super.close();
+    final paused = pause();
+    await super.close();
+    await paused;
   }
 }

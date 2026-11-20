@@ -43,7 +43,12 @@ export const errorHandler = (
   if (typeof error==='object' && error!==null && 'type' in error && error.type==='entity.parse.failed') {
     return res.status(400).json({success:false,error:'JSON không hợp lệ.',code:'INVALID_JSON'});
   }
-  console.error('[API] Unhandled error:', error);
+  // Error objects can embed request bodies, SQL values or provider credentials.
+  // Keep diagnostic type/code without dumping the raw object or its cause.
+  console.error('[API] Unhandled error:', {
+    name: error instanceof Error ? error.name : 'UnknownError',
+    code: error instanceof Prisma.PrismaClientKnownRequestError ? error.code : undefined,
+  });
   return res.status(500).json({
     success: false,
     error: 'Hệ thống đang bận. Vui lòng thử lại sau.',

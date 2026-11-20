@@ -107,7 +107,8 @@ export async function readImage(viewer: AuthRequest['user'], filename: string) {
   const moderator = hasPermission(viewer?.role, PERMISSION.LISTING_MODERATE);
   if (listing) {
     if (!(moderator || viewer?.userId === listing.ownerId ||
-      (listing.status === ListingStatus.AVAILABLE && listing.owner.status === 'ACTIVE'))) throw notFound();
+      (listing.owner.status === 'ACTIVE' && (listing.status === ListingStatus.AVAILABLE ||
+        (listing.status === ListingStatus.SOLD && !!viewer && await listingRepository.isReviewedThumbnail(listing.ownerId, IMAGE_PREFIX + filename)))))) throw notFound();
   } else {
     // Ảnh mới của bản sửa chưa duyệt: chỉ chủ tin và người duyệt xem được
     const edited = await listingRepository.findByRevisionImage(IMAGE_PREFIX + filename);

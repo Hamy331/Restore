@@ -11,6 +11,40 @@ export const profileSelect = {
 export const findProfile = (id: string) =>
   prisma.user.findUnique({ where: { id }, select: profileSelect });
 
+export async function findStorefront(id: string, viewerId: string) {
+  const [user, counts] = await Promise.all([
+    prisma.user.findFirst({
+      where: { id, status: 'ACTIVE' },
+      select: {
+        ...profileSelect,
+        followers: { where: { followerId: viewerId }, select: { followerId: true } },
+        phone: true,
+        storeSubscription: { select: { startsAt: true, endsAt: true, package: { select: { tier: true } } } },
+        shop: { select: {
+          id: true, name: true, address: true, logoUrl: true, coverUrl: true, description: true,
+          verificationType: true, _count: { select: { followers: true } },
+          followers: { where: { userId: viewerId }, select: { userId: true } },
+        } },
+      },
+    }),
+    prisma.listing.groupBy({ by: ['status'], where: { ownerId: id, status: { in: ['AVAILABLE', 'SOLD'] } }, _count: true }),
+  ]);
+  if (!user) return null;
+  const count = (status: 'AVAILABLE' | 'SOLD') => counts.find(row => row.status === status)?._count ?? 0;
+  const now = new Date();
+  const sub = user.storeSubscription;
+  const tier = sub && sub.startsAt <= now && now < sub.endsAt ? sub.package.tier : 'PERSONAL';
+  const shop = user.shop;
+  const branding = shop && (tier === 'PRO' || shop.verificationType) ? {
+    id: shop.id, name: shop.name, address: shop.address, logoUrl: shop.logoUrl,
+    coverUrl: shop.coverUrl, description: shop.description, verified: !!shop.verificationType,
+    followerCount: shop._count.followers, isFollowing: shop.followers.length > 0,
+  } : null;
+  const listingCount = count('AVAILABLE');
+  return { user, storefront: { tier, shop: branding, listingCount, soldCount: count('SOLD'),
+    phone: listingCount > 0 ? user.phone : null } };
+}
+
 export const findFollow = (id: string, viewerId: string) =>
   prisma.userFollow.findUnique({
     where: { followerId_followingId: { followerId: viewerId, followingId: id } },

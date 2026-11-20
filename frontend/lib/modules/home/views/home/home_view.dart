@@ -8,6 +8,11 @@ import 'package:restore/modules/listings/repositories/category_repository.dart';
 import '../../bloc/home_cubit.dart';
 import '../../repositories/home_repository.dart';
 import 'home_mobile_view.dart';
+import 'home_desktop_view.dart';
+import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
+import '../../models/home_listing_filter.dart';
+import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
+import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key, this.homeRepository, this.categoryRepository});
@@ -36,7 +41,18 @@ class HomeView extends StatelessWidget {
             _userId(previous) != _userId(current),
         listener: (context, _) =>
             context.read<HomeCubit>().load(showLoading: false),
-        child: const HomeMobileView(),
+        child: BlocListener<UserAreaCubit, UserAreaState>(
+          listener: (context, area) {
+            final home = context.read<HomeCubit>();
+            if (home.state.filter == HomeListingFilter.nearby) {
+              home.selectFeed(HomeListingFilter.nearby, area.origin);
+            }
+          },
+          child: const TResponsiveLayout(
+            mobile: HomeMobileView(),
+            desktop: HomeDesktopView(),
+          ),
+        ),
       ),
     );
   }

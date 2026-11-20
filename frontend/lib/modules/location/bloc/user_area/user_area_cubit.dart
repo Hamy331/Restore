@@ -40,6 +40,7 @@ class UserAreaCubit extends Cubit<UserAreaState> with SafeEmit<UserAreaState> {
       emit(
         UserAreaState(
           status: UserAreaStatus.ready,
+          devicePoint: point,
           area: await _provinceArea(province, fallbackCenter: point),
         ),
       );

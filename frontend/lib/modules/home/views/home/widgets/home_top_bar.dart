@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
@@ -41,58 +42,62 @@ class HomeTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppHeaderPalette.gradient),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Flexible(
-                  child: _AreaButton(
-                    areaName: areaName,
-                    tooltip: l10n.homeChangeArea,
-                    onTap: onAreaTap,
+    // Nền xanh đậm: icon thanh trạng thái màu sáng
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(gradient: AppHeaderPalette.gradient),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: _AreaButton(
+                      areaName: areaName,
+                      tooltip: l10n.homeChangeArea,
+                      onTap: onAreaTap,
+                    ),
                   ),
-                ),
-                if (onPlanTap != null) ...[
-                  const SizedBox(width: 8),
-                  _DevPlanChip(
-                    tag: l10n.devPlanTag,
-                    label: plan.label(l10n),
-                    tooltip: l10n.devPlanSwitchTooltip,
-                    onTap: onPlanTap!,
-                  ),
+                  if (onPlanTap != null) ...[
+                    const SizedBox(width: 8),
+                    _DevPlanChip(
+                      tag: l10n.devPlanTag,
+                      label: plan.label(l10n),
+                      tooltip: l10n.devPlanSwitchTooltip,
+                      onTap: onPlanTap!,
+                    ),
+                  ],
                 ],
-              ],
-            ),
-            const SizedBox(height: 16),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 220),
-              child: Text(
-                _greeting(l10n),
-                key: ValueKey(plan),
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              ),
+              const SizedBox(height: 16),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child: Text(
+                  _greeting(l10n),
+                  key: ValueKey(plan),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppHeaderPalette.foregroundMuted,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              l10n.homeHeadline,
-              style: const TextStyle(
-                fontSize: 23,
-                height: 1.2,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.4,
-                color: AppColors.textPrimary,
+              const SizedBox(height: 2),
+              Text(
+                l10n.homeHeadline,
+                style: const TextStyle(
+                  fontSize: 23,
+                  height: 1.2,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.4,
+                  color: AppHeaderPalette.foreground,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

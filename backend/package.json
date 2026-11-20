@@ -25,7 +25,7 @@
     "typescript": "^7.0.2"
   },
   "scripts": {
-    "postinstall": "prisma skills sync || exit 0",
+    "postinstall": "prisma generate",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
@@ -37,7 +37,14 @@
     "db:seed:demo": "tsx prisma/seed-demo.ts",
     "db:seed:shops": "tsx prisma/seed-shops.ts",
     "storage:migrate": "tsx scripts/migrate-images.ts",
-    "test:api": "node --import tsx --test --test-concurrency=1 \"test/api/*.api.test.ts\""
+    "test:api": "node --import tsx --test --test-concurrency=1 \"test/api/*.api.test.ts\"",
+    "ai:eval": "tsx scripts/evaluate-ai.ts",
+    "ai:qdrant:check": "tsx scripts/check-qdrant.ts",
+    "ai:rag:eval": "tsx scripts/evaluate-rag.ts",
+    "ai:rag:benchmark": "tsx scripts/benchmark-knowledge.ts",
+    "ai:knowledge:bootstrap": "tsx scripts/bootstrap-ai-knowledge.ts",
+    "ai:listings:index": "tsx scripts/index-ai-listings.ts",
+    "ai:listings:check": "tsx scripts/check-listing-ai.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

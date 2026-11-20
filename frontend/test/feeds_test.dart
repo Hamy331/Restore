@@ -24,6 +24,100 @@ Widget host(Locale locale, Widget child) => MaterialApp(
 );
 
 void main() {
+  testWidgets('desktop feed uses the width of its content area', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final repository = FakeFeedsRepository();
+    final width = ValueNotifier<double>(508);
+    addTearDown(width.dispose);
+    await tester.pumpWidget(
+      host(
+        const Locale('en'),
+        Center(
+          child: ValueListenableBuilder<double>(
+            valueListenable: width,
+            builder: (_, value, child) => SizedBox(width: value, child: child),
+            child: FeedsView(repository: repository),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('For you'), findsOneWidget);
+    expect(find.text('Minh Anh'), findsOneWidget);
+    expect(find.text('Write a post'), findsNothing);
+    expect(tester.takeException(), isNull);
+
+    width.value = 1440;
+    await tester.pumpAndSettle();
+    expect(find.text('Write a post'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('search submits, follows the selected tab and clears', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(375, 812);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final repository = FakeFeedsRepository()..pageSize = 1;
+    repository.rows[0]['text'] = 'Old bicycle';
+    repository.rows[1]['text'] = 'Samsung phone';
+    repository.rows[1]['isFollowingAuthor'] = true;
+    await tester.pumpWidget(
+      host(const Locale('en'), FeedsView(repository: repository)),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), ' samsung ');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+    expect(find.text('Samsung phone'), findsOneWidget);
+    expect(find.text('Old bicycle'), findsNothing);
+    for (final width in [1366.0, 375.0]) {
+      tester.view.physicalSize = Size(width, 900);
+      await tester.pumpAndSettle();
+      final input = tester.widget<TextField>(find.byType(TextField));
+      expect(input.controller!.text.trim(), 'samsung');
+      expect(find.text('Samsung phone'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+    await tester.tap(find.text('Following'));
+    await tester.pumpAndSettle();
+    expect(find.text('Samsung phone'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'no match');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+    expect(find.text('No matching posts found.'), findsOneWidget);
+    await tester.tap(find.byIcon(AppIcons.close));
+    await tester.pumpAndSettle();
+    expect(find.text('Samsung phone'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  test(
+    'search pagination keeps its filter and refresh restarts the result set',
+    () async {
+      final repository = FakeFeedsRepository()..pageSize = 1;
+      repository.rows[0]['text'] = 'Samsung phone';
+      repository.rows[1]['text'] = 'Samsung tablet';
+      repository.rows.add({...fakePost('Other'), 'text': 'Bicycle'});
+      final cubit = FeedsCubit(repository: repository);
+      addTearDown(cubit.close);
+      await cubit.search(' samsung ');
+      await cubit.loadMore();
+      expect(cubit.state.posts.map((p) => p.text), [
+        'Samsung phone',
+        'Samsung tablet',
+      ]);
+      await cubit.load();
+      expect(cubit.state.searchQuery, 'samsung');
+      expect(cubit.state.posts.length, 1);
+    },
+  );
+
   for (final width in [360.0, 768.0]) {
     testWidgets('comment threads and hearts fit $width', (tester) async {
       tester.view.physicalSize = Size(width, 900);
@@ -36,14 +130,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Comments').first);
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField), 'First comment');
+      await tester.enterText(find.byType(TextField).last, 'First comment');
       await tester.pump();
       await tester.tap(find.byTooltip('Send comment'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Reply').first);
       await tester.pumpAndSettle();
       expect(find.text('Replying to Me'), findsOneWidget);
-      await tester.enterText(find.byType(TextField), 'A reply');
+      await tester.enterText(find.byType(TextField).last, 'A reply');
       await tester.pump();
       await tester.tap(find.byTooltip('Send comment'));
       await tester.pumpAndSettle();
@@ -214,13 +308,18 @@ void main() {
               matching: find.byType(IconButton),
             )
             .first;
-        final contentRight = width <= 680 ? width : (width + 680) / 2;
-        expect(
-          tester.getRect(menu).right,
-          inInclusiveRange(contentRight - 12, contentRight - 4),
-        );
+        if (width < 1024) {
+          expect(
+            tester.getRect(menu).right,
+            inInclusiveRange(width - 12, width - 4),
+          );
+          expect(tester.getCenter(find.text('Feeds')).dx, width / 2);
+        } else {
+          expect(tester.getRect(menu).right, lessThan(width));
+        }
+        // Desktop: menu trái cũng có mục "Đang theo dõi", tab nằm sau cùng
         await tester.tap(
-          find.text(code == 'vi' ? 'Đang theo dõi' : 'Following'),
+          find.text(code == 'vi' ? 'Đang theo dõi' : 'Following').last,
         );
         await tester.pumpAndSettle();
         expect(find.text('Minh Anh'), findsNothing);
@@ -264,7 +363,7 @@ void main() {
     expect(find.text('My pre-loved find'), findsOneWidget);
     await tester.tap(find.byTooltip('Comments').first);
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'Nice!');
+    await tester.enterText(find.byType(TextField).last, 'Nice!');
     tester.view.viewInsets = const FakeViewPadding(bottom: 260);
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Send comment'));
@@ -375,6 +474,7 @@ class FakeFeedsRepository implements FeedsRepository {
     bool following = false,
     String? authorId,
     String? cursor,
+    String? query,
   }) async {
     if (cursor != null && failNextPage) {
       failNextPage = false;
@@ -385,7 +485,11 @@ class FakeFeedsRepository implements FeedsRepository {
         .where(
           (p) =>
               (!following || p['isFollowingAuthor'] == true) &&
-              (authorId == null || p['author']['id'] == authorId),
+              (authorId == null || p['author']['id'] == authorId) &&
+              (query == null ||
+                  (p['text'] as String).toLowerCase().contains(
+                    query.toLowerCase(),
+                  )),
         )
         .toList();
     final start = cursor == null ? 0 : int.parse(cursor);

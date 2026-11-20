@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/listing/listing_partner_badge.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
@@ -106,10 +107,9 @@ class HomeListingCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      listing.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    ListingCardTitle(
+                      title: listing.title,
+                      isPartner: listing.isPartner,
                       style: const TextStyle(
                         fontSize: 13.5,
                         height: 1.3,
@@ -219,7 +219,7 @@ class _FavoriteButton extends StatelessWidget {
               transitionBuilder: (child, animation) =>
                   ScaleTransition(scale: animation, child: child),
               child: Icon(
-                active ? AppIcons.favoriteActive : AppIcons.favorite,
+                active ? AppIcons.savedListing : AppIcons.favorite,
                 key: ValueKey(active),
                 size: 16,
                 color: active ? AppColors.error : AppColors.textPrimary,

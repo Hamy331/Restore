@@ -136,12 +136,23 @@ class ApiCategoryListingsRepository implements CategoryListingsRepository {
 
   @override
   Future<CategoryModel> getCategory(String categoryId) async {
+    // Backend chỉ có API danh sách danh mục, nên lấy danh sách rồi tìm theo
+    // id (mở trang bằng đường dẫn / tải lại trang trên web)
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/catalog/categories/$categoryId',
+      '/catalog/categories',
     );
     final data = response.data?['data'];
-    if (data is! Map) throw const FormatException('Missing response data');
-    return CategoryModel.fromJson(Map<String, dynamic>.from(data));
+    final list = data is List
+        ? data
+        : data is Map
+        ? (data['items'] ?? data['categories']) as List? ?? const []
+        : const [];
+    for (final item in list) {
+      if (item is Map && '${item['id']}' == categoryId) {
+        return CategoryModel.fromJson(Map<String, dynamic>.from(item));
+      }
+    }
+    throw StateError('Category $categoryId not found');
   }
 
   @override

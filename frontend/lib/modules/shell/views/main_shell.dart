@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/config/dev_plan_override.dart';
+import 'package:restore/core/constants/app_dimesions.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/boost/views/promotion_hub/promotion_hub_view.dart';
@@ -16,9 +17,14 @@ import '../widgets/shell_bottom_nav.dart';
 import '../widgets/shell_nav_rail.dart';
 
 class MainShell extends StatelessWidget {
-  const MainShell({required this.navigationShell, super.key});
+  const MainShell({
+    required this.navigationShell,
+    this.hideNavigation = false,
+    super.key,
+  });
 
   final StatefulNavigationShell navigationShell;
+  final bool hideNavigation;
 
   static const String _aiAssistantPath = '/ai-assistant';
 
@@ -79,7 +85,13 @@ class MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.sizeOf(context).width >= 840;
+    final width = MediaQuery.sizeOf(context).width;
+    // Web desktop: điều hướng nằm ở header, ReStore AI ở cửa sổ chat nổi
+    // (DesktopFrame) nên không cần thanh bên / bong bóng AI ở đây
+    if (hideNavigation || width >= AppDimesions.desktopWidth) {
+      return Scaffold(body: navigationShell);
+    }
+    final isWide = width >= 840;
     final aiBubble = ShellAiBubble(onTap: () => context.push(_aiAssistantPath));
 
     if (isWide) {

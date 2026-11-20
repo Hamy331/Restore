@@ -27,12 +27,15 @@ import 'location_notice_card.dart';
 Future<AddressInfo?> showAddressPickerSheet(
   BuildContext context, {
   AddressInfo? initial,
+  LocationRepository? locationRepository,
+  DeviceLocationService? deviceLocationService,
   AddressSuggestRepository? suggestRepository,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final cubit = AddressPickerCubit(
-    repository: context.read<LocationRepository>(),
-    locationService: context.read<DeviceLocationService>(),
+    repository: locationRepository ?? context.read<LocationRepository>(),
+    locationService:
+        deviceLocationService ?? context.read<DeviceLocationService>(),
     suggestRepository:
         suggestRepository ??
         (AppEnvironment.useMockData

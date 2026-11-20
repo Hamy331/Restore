@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/listing/listing_partner_badge.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
@@ -56,6 +57,20 @@ class ProductDetailSummary extends StatelessWidget {
             ),
             const SizedBox(height: 12),
           ],
+          if (listing.isPartner) ...[
+            const ListingPartnerBadge(),
+            const SizedBox(height: 4),
+          ],
+          Text(
+            listing.title,
+            style: const TextStyle(
+              fontSize: 18,
+              height: 1.35,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
           Wrap(
             spacing: 10,
             crossAxisAlignment: WrapCrossAlignment.end,
@@ -107,16 +122,6 @@ class ProductDetailSummary extends StatelessWidget {
                   ),
                 ),
             ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            listing.title,
-            style: const TextStyle(
-              fontSize: 18,
-              height: 1.35,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
           ),
           if (tags.isNotEmpty) ...[
             const SizedBox(height: 12),

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -133,21 +131,15 @@ class _GlassCurvedBar extends StatelessWidget {
       foregroundPainter: _CurvedStrokePainter(clipper),
       child: ClipPath(
         clipper: clipper,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white.withValues(alpha: 0.80),
-                  Colors.white.withValues(alpha: 0.90),
-                ],
-              ),
+        child: const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFAFFFDF9), Colors.white],
             ),
-            child: const SizedBox.expand(),
           ),
+          child: SizedBox.expand(),
         ),
       ),
     );

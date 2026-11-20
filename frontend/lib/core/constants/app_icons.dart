@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart' show IconData, Icons;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Bộ icon duy nhất của app (Lucide Icons, nét bo tròn).
@@ -66,6 +66,7 @@ class AppIcons {
   static const IconData settings = LucideIcons.settings300;
   static const IconData notification = LucideIcons.bell300;
   static const IconData favorite = LucideIcons.heart300;
+  static const IconData savedListing = Icons.favorite;
   static const IconData favoriteActive = LucideIcons.heart500;
   static const IconData star = LucideIcons.star300;
   static const IconData visible = LucideIcons.eye300;

@@ -137,7 +137,8 @@ async function seedDemo() {
 
   const password = await bcrypt.hash(DEMO_PASSWORD, 12);
   for (const seller of DEMO_SELLERS) {
-    const data = { ...seller, password, status: 'ACTIVE' as const, role: 'USER' as const };
+    const { ratingAverage: legacyRatingAverage, ratingCount: legacyRatingCount, ...identity } = seller;
+    const data = { ...identity, legacyRatingAverage, legacyRatingCount, password, status: 'ACTIVE' as const, role: 'USER' as const };
     await prisma.user.upsert({ where: { id: seller.id }, create: data, update: data });
   }
 

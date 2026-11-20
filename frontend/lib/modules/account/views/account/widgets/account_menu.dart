@@ -9,6 +9,7 @@ import '../../../../auth/bloc/auth/auth_event.dart';
 import '../../../../credits/views/credit_wallet/credit_wallet_view.dart';
 import '../../../../trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import '../../../widgets/profile_header.dart';
+import '../../my_reviews/my_reviews_view.dart';
 import '../../../../plans/views/plans/plans_view.dart';
 
 /// Báo tính năng chưa có màn hình; giữ nút theo thiết kế Figma.
@@ -70,7 +71,16 @@ void showAccountMenu(BuildContext context) {
                           l.accRecentlyViewed,
                           onTap: soon,
                         ),
-                        _MenuItem(AppIcons.star, l.accMyReviews, onTap: soon),
+                        _MenuItem(
+                          AppIcons.star,
+                          l.accMyReviews,
+                          onTap: () => open(MyReviewsView.path),
+                        ),
+                        _MenuItem(
+                          AppIcons.star,
+                          l.accReceivedRatings,
+                          onTap: () => open(MyReviewsView.ratingsPath),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -114,7 +124,7 @@ void showAccountMenu(BuildContext context) {
                           danger: true,
                           onTap: () async {
                             Navigator.of(dialogContext).pop();
-                            if (await _confirmLogout(context) &&
+                            if (await confirmLogout(context) &&
                                 context.mounted) {
                               context.read<AuthBloc>().add(LoggedOut());
                             }
@@ -140,7 +150,8 @@ void showAccountMenu(BuildContext context) {
   );
 }
 
-Future<bool> _confirmLogout(BuildContext context) async {
+/// Hỏi lại trước khi đăng xuất (menu Tài khoản, menu trái trên desktop)
+Future<bool> confirmLogout(BuildContext context) async {
   final l = AppLocalizations.of(context)!;
   return await showDialog<bool>(
         context: context,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/core/constants/app_dimesions.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -114,23 +115,27 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
   Widget build(BuildContext context) {
     final cubit = context.read<SearchResultsCubit>();
     final padding = MediaQuery.paddingOf(context);
+    final isDesktop =
+        MediaQuery.sizeOf(context).width >= AppDimesions.desktopWidth;
+    final headerColor = isDesktop ? AppColors.surface : AppHeaderPalette.bottom;
 
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: Column(
         children: [
           // Thanh trạng thái cùng màu phần đầu, chuyển trắng khi đã cuộn
-          ValueListenableBuilder<bool>(
-            valueListenable: _headerPinned,
-            builder: (context, pinned, _) => AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: padding.top,
-              width: double.infinity,
-              color: pinned
-                  ? AppPinnedHeaderSurface.pinnedColor
-                  : AppHeaderPalette.bottom,
+          if (!isDesktop)
+            ValueListenableBuilder<bool>(
+              valueListenable: _headerPinned,
+              builder: (context, pinned, _) => AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                height: padding.top,
+                width: double.infinity,
+                color: pinned
+                    ? AppPinnedHeaderSurface.pinnedColor
+                    : AppHeaderPalette.bottom,
+              ),
             ),
-          ),
           Expanded(
             child: MediaQuery.removePadding(
               context: context,
@@ -147,8 +152,12 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
                         SliverPersistentHeader(
                           pinned: true,
                           delegate: AppPinnedHeaderDelegate(
-                            height: SearchResultsHeader.height,
+                            height: isDesktop
+                                ? SearchResultsHeader.filtersHeight
+                                : SearchResultsHeader.height,
+                            color: headerColor,
                             child: SearchResultsHeader(
+                              showSearch: !isDesktop,
                               query: state.query,
                               filter: state.filter,
                               onBack: _back,
@@ -163,26 +172,27 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
                         // Viên loading kéo để làm mới mở ra ngay dưới phần ghim
                         SliverToBoxAdapter(
                           child: ColoredBox(
-                            color: AppHeaderPalette.bottom,
+                            color: headerColor,
                             child: refreshIndicator,
                           ),
                         ),
                         // Mép trên bo cong của phần nội dung trắng
-                        SliverToBoxAdapter(
-                          child: ColoredBox(
-                            color: AppHeaderPalette.bottom,
-                            child: Container(
-                              height: _contentRadius,
-                              decoration: const BoxDecoration(
-                                color: AppColors.surface,
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(_contentRadius),
+                        if (!isDesktop)
+                          SliverToBoxAdapter(
+                            child: ColoredBox(
+                              color: AppHeaderPalette.bottom,
+                              child: Container(
+                                height: _contentRadius,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.surface,
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(_contentRadius),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        ..._content(state),
+                        ..._content(state, isDesktop: isDesktop),
                         SliverToBoxAdapter(
                           child: SizedBox(height: padding.bottom + 16),
                         ),
@@ -198,7 +208,7 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
     );
   }
 
-  List<Widget> _content(SearchResultsState state) {
+  List<Widget> _content(SearchResultsState state, {required bool isDesktop}) {
     final l10n = AppLocalizations.of(context)!;
     final cubit = context.read<SearchResultsCubit>();
 
@@ -239,11 +249,13 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
                   icon: const Icon(AppIcons.wantedAlert, size: 18),
                   label: Text(l10n.homeQuickWanted),
                 ),
-                const SizedBox(height: 8),
-                OutlinedButton(
-                  onPressed: _editQuery,
-                  child: Text(l10n.searchTryAnother),
-                ),
+                if (!isDesktop) ...[
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: _editQuery,
+                    child: Text(l10n.searchTryAnother),
+                  ),
+                ],
               ],
             ),
           ),

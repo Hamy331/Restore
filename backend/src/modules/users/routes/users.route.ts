@@ -1,3 +1,4 @@
+import { listMyReviews, listReviews } from '../../chat/services/trade.service.js';
 import { Router, Response, NextFunction } from 'express';
 import { PERMISSION } from '../../../common/auth/permissions.js';
 import { ok } from '../../../common/http/response.js';
@@ -25,7 +26,9 @@ usersRouter.get('/me', requirePermission(PERMISSION.PROFILE_READ), handle(async 
 usersRouter.use(verifyToken);
 usersRouter.patch('/me', handle((req) => profile.updateProfile(req.user!.userId, req.body)));
 usersRouter.post('/me/heartbeat', handle((req) => profile.heartbeat(req.user!.userId)));
-usersRouter.get('/:id', handle((req) => profile.getProfile(req.params.id as string, req.user!.userId)));
+usersRouter.get('/me/reviews', handle(req => listMyReviews(req.user!.userId, req.query)));
+usersRouter.get('/:id', handle((req) => profile.getPublicProfile(req.params.id as string, req.user!.userId)));
+usersRouter.get('/:id/reviews', handle(req => listReviews(req.params.id as string, req.query)));
 usersRouter.get('/:id/followers', handle((req) =>
   profile.listFollows(req.params.id as string, req.user!.userId, 'followers', req.query.page)));
 usersRouter.get('/:id/following', handle((req) =>

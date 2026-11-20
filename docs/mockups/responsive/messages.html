@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Restore web — Tin nhắn</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<div data-header></div>
+
+<main class="wrap">
+  <section class="box chat">
+    <!-- Danh sách hội thoại -->
+    <div class="clist">
+      <div class="top"><h2>Tin nhắn</h2>
+        <div class="csearch"><i data-i="search"></i> Tìm theo tên hoặc tin đăng</div>
+        <div class="cfil"><span class="on">Tất cả</span><span>Đang mua</span><span>Đang bán</span><span>Chưa đọc</span></div></div>
+      <div id="convs"></div>
+    </div>
+
+    <!-- Hội thoại đang mở -->
+    <div class="cview">
+      <div class="chd"><span class="ava"><img src="../../../frontend/assets/images/shops/canon.png"></span>
+        <div class="nm"><b>Minh Tuấn Camera</b><span>● Đang hoạt động</span></div>
+        <span class="round"><i data-i="phone"></i></span><span class="round"><i data-i="more"></i></span></div>
+      <div class="ctx"><img src="../../../frontend/assets/images/marketplace/detail-canon.jpg">
+        <div class="mid"><div>Máy ảnh Canon EOS 700D kèm lens 18-55, đủ phụ kiện</div><b>5.200.000 ₫</b></div>
+        <a class="btn btn-soft"><i data-i="tag"></i> Trả giá</a><a class="btn btn-primary"><i data-i="bag"></i> Mua ngay</a></div>
+      <div class="msgs">
+        <span class="day">Hôm nay</span>
+        <div class="m out">Chào anh, máy còn không ạ? Số shot thực tế khoảng bao nhiêu vậy anh?<small>09:12 ✓✓</small></div>
+        <div class="m in">Còn em nhé. Số shot khoảng 12.000, anh có ảnh chụp màn hình kiểm tra, gửi em xem.<small>09:14</small></div>
+        <div class="m in">Máy kèm 2 pin, sạc, túi và thẻ 32GB luôn.<small>09:14</small></div>
+        <div class="offer"><div class="h"><i data-i="tag"></i> Bạn đã trả giá</div>
+          <div class="b"><b>4.800.000 ₫</b><s>5.200.000 ₫</s><div>Đang chờ người bán phản hồi</div></div></div>
+        <div class="m in">Anh để 5 triệu, em qua Quận 3 test máy được không?<small>09:20</small></div>
+      </div>
+      <div class="quickreply"><span>Hẹn chiều nay nhé</span><span>Gửi em địa chỉ ạ</span><span>Đồng ý 5 triệu</span></div>
+      <div class="cinput"><span class="round"><i data-i="image"></i></span><div class="box2">Nhập tin nhắn...</div><span class="send"><i data-i="send"></i></span></div>
+    </div>
+  </section>
+</main>
+
+<div data-footer></div>
+<script src="mockup.js"></script>
+<script>
+const SH = A + 'images/shops/';
+const convs = [
+  ['canon', 'Minh Tuấn Camera', 'Anh để 5 triệu, em qua Quận 3 test…', '09:20', 0, 'detail-canon.jpg', 1],
+  ['sony', 'Sony Center', 'Tai nghe còn bảo hành 6 tháng nhé', '08:41', 2, 'detail-headphones.jpg'],
+  ['ikea', 'Nhà Gỗ IKEA', 'Kệ này ship được Thủ Đức không ạ?', 'Hôm qua', 1, 'detail-bookshelf.jpg'],
+  ['apple', 'Apple Store cũ', 'Máy pin 92%, chưa qua sửa chữa', 'Thứ 3', 0, 'detail-macbook.jpg'],
+  ['retrohub', 'RetroHub', 'Bạn đã trả giá 1.500.000 ₫', 'Thứ 2', 0, 'listing-camera.png'],
+  ['uniqlo', 'Lan Phương', 'Cảm ơn bạn, mình nhận được hàng rồi', 'CN', 0, 'listing-lamp.png'],
+  ['pawhouse', 'PawHouse', 'Đánh giá để nhận 20 xu nhé!', '18/11', 0, 'listing-chair.png'],
+];
+document.getElementById('convs').innerHTML = convs.map(([l, n, m, t, u, img, on]) =>
+  `<a class="conv ${on ? 'on' : ''}"><span class="ava"><img src="${SH + l}.png"></span>
+   <div class="mid"><b>${n}</b><span>${m}</span></div>
+   <div class="r">${t}${u ? `<i>${u}</i>` : ''}</div><img class="th" src="${MP + img}"></a>`).join('');
+mount();
+document.title = String(document.documentElement.scrollHeight);
+</script>
+</body>
+</html>

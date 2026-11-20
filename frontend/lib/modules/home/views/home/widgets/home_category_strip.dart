@@ -4,6 +4,7 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/shared/widgets/app_category_circle.dart';
 import 'package:restore/shared/widgets/app_category_icon.dart';
 
 /// Hàng danh mục cuộn ngang: icon trong vòng tròn kem, tên bên dưới
@@ -87,16 +88,8 @@ class _StripItem extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 4),
-              Container(
-                width: 52,
-                height: 52,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.cream,
-                ),
-                child: icon,
-              ),
+              // Dùng chung với hàng danh mục web desktop
+              AppCategoryCircle(size: 52, fallback: icon),
               const SizedBox(height: 6),
               Text(
                 label,

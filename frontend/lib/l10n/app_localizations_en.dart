@@ -9,6 +9,105 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get sellerQuickChat => 'Quick chat';
+
+  @override
+  String get sellerDeal => 'Negotiate price';
+
+  @override
+  String get sellerPartnerTitle => 'ReStore partner';
+
+  @override
+  String get sellerPartnerInfo =>
+      'This seller has an active ReStore Shop plan. Ask the shop about warranty and returns for this listing.';
+
+  @override
+  String get sellerGotIt => 'Got it';
+
+  @override
+  String get sellerOfferNote => 'Would you accept this price?';
+
+  @override
+  String get sellerActivity => 'Last active';
+
+  @override
+  String get sellerSold => 'sold';
+
+  @override
+  String get aiWelcome =>
+      'Hi, I’m ReStore, your AI shopping assistant. I can help you find listings, compare prices and narrow down your choices.';
+
+  @override
+  String get aiOpeningQuestion =>
+      'What are you looking for today? Tell me your budget or preferred area and I’ll help you find it on ReStore.';
+
+  @override
+  String get aiByline => 'Powered by AI';
+
+  @override
+  String get aiComposerHint => 'What’s on your mind?';
+
+  @override
+  String get aiPhoneShortcut => 'Phones';
+
+  @override
+  String get aiLaptopShortcut => 'Laptops';
+
+  @override
+  String get aiCameraShortcut => 'Cameras';
+
+  @override
+  String get listingSavedLabel => 'Saved';
+
+  @override
+  String get listingCall => 'Call';
+
+  @override
+  String get listingShowPhone => 'Show phone number';
+
+  @override
+  String get listingCallUnavailable => 'Dial this number manually:';
+
+  @override
+  String get listingAsk => 'I\'d like to ask';
+
+  @override
+  String get listingAskMore => 'More questions';
+
+  @override
+  String get listingMessageHint => 'Write a message…';
+
+  @override
+  String get listingSend => 'Send';
+
+  @override
+  String get listingAccessories => 'Which accessories are included?';
+
+  @override
+  String get listingWarranty => 'Can you share the warranty details?';
+
+  @override
+  String get listingRepaired => 'Has it been repaired before?';
+
+  @override
+  String get listingService => 'When was the vehicle last serviced?';
+
+  @override
+  String get listingVaccines => 'Can I see the vaccination record?';
+
+  @override
+  String get listingMeet => 'When could we meet?';
+
+  @override
+  String get listingExchange => 'What would you like to trade for?';
+
+  @override
+  String get listingNegotiate => 'Is the price negotiable?';
+
+  @override
+  String get listingPhotos => 'Could you send more photos?';
+
+  @override
   String get feedForYou => 'For you';
 
   @override
@@ -16,6 +115,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedCompose => 'Share a find or a story…';
+
+  @override
+  String get feedSearchHint => 'Search posts…';
+
+  @override
+  String get feedSearchEmpty => 'No matching posts found.';
 
   @override
   String get feedFollow => 'Follow';
@@ -374,7 +479,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accCoins => 'ReStore Points';
 
   @override
-  String get accSaved => 'Profile saved';
+  String get accSaved => 'Saved';
 
   @override
   String get accSavedSearches => 'Saved searches';
@@ -384,6 +489,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accMyReviews => 'My reviews';
+
+  @override
+  String get accReceivedRatings => 'Ratings';
+
+  @override
+  String get accPendingReviews => 'Pending reviews';
+
+  @override
+  String get accSubmittedReviews => 'Submitted';
+
+  @override
+  String get accNoPendingReviews =>
+      'You have no transactions waiting for a review.';
+
+  @override
+  String get accNoSubmittedReviews => 'You haven\'t submitted any reviews yet.';
 
   @override
   String get accTransactions => 'Transaction history';
@@ -819,6 +940,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiSampleStudentLaptopQuery => 'Find a laptop for students';
+
+  @override
+  String get aiRecentChats => 'Recent conversations';
+
+  @override
+  String get aiNoRecentChats => 'No saved conversations yet';
 
   @override
   String get aiStartOver => 'Start over';
@@ -1287,6 +1414,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesTitle => 'Messages';
+
+  @override
+  String get messagesPickConversation => 'Pick a conversation';
 
   @override
   String get listingDetailTitle => 'Listing details';
@@ -4658,6 +4788,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accBioHint => 'A few lines about you or your shop';
 
   @override
+  String get profileSaved => 'Profile saved';
+
+  @override
   String get cropBackground => 'Background';
 
   @override
@@ -5056,4 +5189,190 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accDiscardEditFailed =>
       'Couldn\'t discard the edit. Please try again.';
+
+  @override
+  String get aiSearchingListings => 'Searching for products…';
+
+  @override
+  String get aiReadingListings => 'Reading product details…';
+
+  @override
+  String get aiSearchingKnowledge => 'Looking up documents…';
+
+  @override
+  String get aiReadingQuota => 'Checking your limits…';
+
+  @override
+  String get aiPreparingDraft => 'Preparing a draft…';
+
+  @override
+  String get aiProcessing => 'Working on your request…';
+
+  @override
+  String get aiAnswering => 'Writing the answer…';
+
+  @override
+  String get reportTitle => 'Report a violation';
+
+  @override
+  String get reportQuestion => 'What is wrong with this listing?';
+
+  @override
+  String get reportDescription => 'Additional details';
+
+  @override
+  String get reportDetailsHint => 'Tell Restore what happened (optional).';
+
+  @override
+  String get reportDescriptionRequired =>
+      'Please add a description using at least 5 characters.';
+
+  @override
+  String get reportContactHeading =>
+      'Contact details for Restore to reach you if needed';
+
+  @override
+  String get reportPhoneHint => 'Your phone number *';
+
+  @override
+  String get reportEmailHint => 'Your email address *';
+
+  @override
+  String get reportPhoneInvalid =>
+      'Enter a valid phone number with 8–15 digits.';
+
+  @override
+  String get reportEmailInvalid => 'Enter a valid email address.';
+
+  @override
+  String get reportReasonRequired => 'Please select a reason.';
+
+  @override
+  String get reportSubmit => 'SUBMIT REPORT';
+
+  @override
+  String get reportSending => 'Submitting report';
+
+  @override
+  String get reportSuccess =>
+      'Restore has received your report and will review it.';
+
+  @override
+  String get reportExists =>
+      'You already have a pending report for this listing. No need to send another.';
+
+  @override
+  String get reportUnavailable =>
+      'This listing no longer accepts reports. Please refresh the product page.';
+
+  @override
+  String get reportSendFailed =>
+      'We could not confirm submission. Your entries are kept; check your connection and try again.';
+
+  @override
+  String get reportLoginRequired =>
+      'Your session has expired. Please sign in again before submitting.';
+
+  @override
+  String get reportServiceUnavailable =>
+      'Reporting is being updated. Please try again later.';
+
+  @override
+  String get reportPrivacy =>
+      'Your contact details are used to handle this report. They are not shown to the seller or saved to your profile.';
+
+  @override
+  String get reportClose => 'Close report';
+
+  @override
+  String get reportDiscardTitle => 'Discard this report?';
+
+  @override
+  String get reportDiscardBody =>
+      'Your unsent entries will be lost when you close.';
+
+  @override
+  String get reportContinue => 'Keep editing';
+
+  @override
+  String get reportDiscard => 'Discard';
+
+  @override
+  String get reportReasonsLoadFailed =>
+      'Could not load report reasons. Please try again.';
+
+  @override
+  String get reportReasonsEmpty =>
+      'No report reasons are currently available. Please try again later.';
+
+  @override
+  String get reportRetry => 'Retry';
+
+  @override
+  String get tradeSellToBuyer => 'Sold to this buyer';
+
+  @override
+  String get tradeReceive => 'I received the item';
+
+  @override
+  String get tradeWait => 'Waiting for the buyer to confirm receipt';
+
+  @override
+  String get tradeCancel => 'Cancel request';
+
+  @override
+  String get tradeBuyerReview => 'Rate buyer';
+
+  @override
+  String get tradeSellerReview => 'Rate seller';
+
+  @override
+  String get tradeReviewed => 'Review submitted';
+
+  @override
+  String get tradeNote => 'Comment (optional)';
+
+  @override
+  String get tradeSubmit => 'Submit review';
+
+  @override
+  String get tradeAll => 'All';
+
+  @override
+  String get tradeFromBuyer => 'From buyers';
+
+  @override
+  String get tradeFromSeller => 'From sellers';
+
+  @override
+  String get tradeMore => 'Show more';
+
+  @override
+  String get tradeFriendly => 'Friendly communication';
+
+  @override
+  String get tradePunctual => 'On time';
+
+  @override
+  String get tradeReliable => 'Trustworthy';
+
+  @override
+  String get tradeAccurate => 'As described';
+
+  @override
+  String get tradeQuality => 'Good product quality';
+
+  @override
+  String get tradeFairPrice => 'Fair offer';
+
+  @override
+  String get tradeError =>
+      'Couldn’t complete this action. Check the transaction and try again.';
+
+  @override
+  String get tradeConfirm => 'Confirm';
+
+  @override
+  String get reportReasonsChanged =>
+      'Report reasons have changed. Please review your selection.';
 }

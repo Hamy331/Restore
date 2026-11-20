@@ -6,6 +6,7 @@ import 'package:restore/data/models/listing_model.dart';
 import '../../bloc/product_detail/product_detail_cubit.dart';
 import '../../repositories/product_detail_repository.dart';
 import 'product_detail_mobile_view.dart';
+import 'product_detail_desktop_view.dart';
 
 /// Route `/listings/:id`. [preview] là tin từ thẻ vừa bấm (truyền qua
 /// `extra`) để hiện ngay ảnh bìa trong lúc tải chi tiết.
@@ -23,7 +24,10 @@ class ProductDetailView extends StatelessWidget {
         preview: preview,
         repository: ApiProductDetailRepository(),
       )..load(),
-      child: const TResponsiveLayout(mobile: ProductDetailMobileView()),
+      child: const TResponsiveLayout(
+        mobile: ProductDetailMobileView(),
+        desktop: ProductDetailDesktopView(),
+      ),
     );
   }
 }

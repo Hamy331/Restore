@@ -101,6 +101,10 @@ export async function updateImagesIfUnchanged(id: string, ownerId: string, curre
 }
 
 /** Tin chứa ảnh [url], để kiểm tra ai được xem ảnh */
+export const isReviewedThumbnail = async (ownerId: string, image: string) =>
+  !!await prisma.listingTrade.findFirst({ where: { sellerId: ownerId, image, confirmedAt: { not: null }, reviews: { some: {} } },
+    select: { conversationId: true } });
+
 export const findByImage = (url: string) =>
   prisma.listing.findFirst({ where: { images: { has: url } }, select: { ownerId: true, status: true, owner: { select: { status: true } } } });
 
@@ -116,8 +120,9 @@ export const findDetailExtras = (ownerId: string, categoryId: string | null, lis
     prisma.user.findUnique({
       where: { id: ownerId },
       select: {
-        id: true, fullName: true, username: true, avatarUrl: true, status: true,
-        ratingAverage: true, ratingCount: true, createdAt: true,
+        id: true, fullName: true, username: true, avatarUrl: true, status: true, phone: true,
+        ratingAverage: true, ratingCount: true, createdAt: true, lastActiveAt: true,
+        _count: { select: { listings: { where: { status: 'SOLD' } } } },
       },
     }),
     categoryId ? prisma.category.findUnique({ where: { id: categoryId } }) : Promise.resolve(null),

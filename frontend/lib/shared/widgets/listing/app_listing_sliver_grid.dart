@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 
 import 'app_listing_card.dart';
@@ -21,24 +22,37 @@ class AppListingSliverGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverLayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.crossAxisExtent;
-        final columns = ((width + spacing) / (maxCardWidth + spacing))
-            .ceil()
-            .clamp(2, 6);
-        final cardWidth = (width - spacing * (columns - 1)) / columns;
-        return SliverGrid.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: columns,
-            mainAxisSpacing: spacing,
-            crossAxisSpacing: spacing,
-            mainAxisExtent: AppListingCard.heightFor(cardWidth),
-          ),
-          itemCount: items.length,
-          itemBuilder: (context, index) => itemBuilder(context, items[index]),
-        );
-      },
+    return SliverGrid.builder(
+      gridDelegate: _ListingGridDelegate(maxCardWidth, spacing),
+      itemCount: items.length,
+      itemBuilder: (context, index) => itemBuilder(context, items[index]),
     );
   }
+}
+
+class _ListingGridDelegate extends SliverGridDelegate {
+  const _ListingGridDelegate(this.maxCardWidth, this.spacing);
+  final double maxCardWidth;
+  final double spacing;
+
+  @override
+  SliverGridLayout getLayout(SliverConstraints constraints) {
+    final width = constraints.crossAxisExtent;
+    final columns = ((width + spacing) / (maxCardWidth + spacing)).ceil().clamp(
+      2,
+      6,
+    );
+    final cardWidth = (width - spacing * (columns - 1)) / columns;
+    return SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: columns,
+      mainAxisSpacing: spacing,
+      crossAxisSpacing: spacing,
+      mainAxisExtent: AppListingCard.heightFor(cardWidth),
+    ).getLayout(constraints);
+  }
+
+  @override
+  bool shouldRelayout(_ListingGridDelegate oldDelegate) =>
+      maxCardWidth != oldDelegate.maxCardWidth ||
+      spacing != oldDelegate.spacing;
 }

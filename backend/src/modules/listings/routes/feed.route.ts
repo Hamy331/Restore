@@ -21,7 +21,8 @@ const feedRouter = Router();
  *
  * Trả về: Listing[] + areaLabel, distanceKm, isFeatured, isFavorite; pagination, meta
  */
-feedRouter.get('/', optionalAuth, validate({ query: feedQuery }), feedController.listFeed);
+// /search phải được bắt ở đây trước route /:id của listingRouter.
+feedRouter.get(['/', '/search'], optionalAuth, validate({ query: feedQuery }), feedController.listFeed);
 
 /**
  * Tin Hot sale (đang có tin ưu tiên FEATURED) cho trang chủ và đầu trang chuyên mục

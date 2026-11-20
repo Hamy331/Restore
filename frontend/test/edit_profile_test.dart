@@ -1,14 +1,26 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/core/network/media_url.dart';
 import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dart';
 import 'package:restore/modules/account/models/profile_models.dart';
+import 'package:restore/modules/account/views/account/account_mobile_view.dart';
+import 'package:restore/modules/account/bloc/account_listings/account_listings_cubit.dart';
+import 'package:restore/modules/account/repositories/account_listings_repository.dart';
+import 'package:restore/modules/account/widgets/profile_header.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_state.dart';
+import 'package:restore/data/models/user_model.dart';
+import 'package:restore/modules/auth/repositories/auth_repository.dart';
 import 'package:restore/modules/account/repositories/profile_repository.dart';
 import 'package:restore/modules/account/views/edit_profile/edit_profile_view.dart';
 import 'package:restore/services/image_upload_service.dart';
@@ -29,15 +41,29 @@ const _profile = ProfileData(
 class _FakeRepository implements ProfileRepository {
   Map<String, dynamic>? saved;
   String? error;
+  ProfileData profile = _profile;
+  Completer<ProfileData>? pendingRead;
 
   @override
-  Future<ProfileData> getMe() async => _profile;
+  Future<ProfileData> getMe() async =>
+      pendingRead == null ? profile : await pendingRead!.future;
+
+  @override
+  Future<ProfileData> getUser(String id) async => profile;
 
   @override
   Future<ProfileData> update(Map<String, dynamic> changes) async {
     if (error != null) throw ProfileUpdateException(error!);
     saved = changes;
-    return _profile;
+    profile = profile.copyWith(
+      fullName: changes['fullName'] as String?,
+      username: changes['username'] as String?,
+      bio: changes['bio'] as String?,
+      avatarUrl: resolveMediaUrl(changes['avatarUrl'] as String?),
+      clearAvatar:
+          changes.containsKey('avatarUrl') && changes['avatarUrl'] == null,
+    );
+    return profile;
   }
 
   @override
@@ -60,6 +86,14 @@ class _FakeUploader extends ImageUploadService {
   }
 }
 
+class _SessionRepository extends Fake implements AuthRepository {
+  UserModel? saved;
+  @override
+  Future<void> cacheProfile(UserModel user) async {
+    saved = user;
+  }
+}
+
 Future<void> _pumpPage(
   WidgetTester tester,
   UserProfileCubit cubit,
@@ -75,11 +109,29 @@ Future<void> _pumpPage(
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, _) => Scaffold(
-          body: TextButton(
-            onPressed: () => context.push(EditProfileView.path),
-            child: const Text('account'),
-          ),
+        builder: (context, _) => MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: cubit),
+            BlocProvider(
+              create: (_) =>
+                  AccountListingsCubit(ApiAccountListingsRepository()),
+            ),
+            BlocProvider(
+              create: (_) => AuthBloc(_SessionRepository())
+                ..add(
+                  LoggedIn(
+                    UserModel(
+                      id: _profile.id,
+                      fullName: _profile.fullName,
+                      email: 'seller@example.test',
+                      username: _profile.username,
+                      avatarUrl: _profile.avatarUrl,
+                    ),
+                  ),
+                ),
+            ),
+          ],
+          child: const Scaffold(body: AccountMobileView()),
         ),
       ),
       GoRoute(
@@ -104,7 +156,7 @@ Future<void> _pumpPage(
       ),
     ),
   );
-  await tester.tap(find.text('account'));
+  await tester.tap(find.byType(ProfileAvatar));
   for (var i = 0; i < 6; i++) {
     await tester.pump(const Duration(milliseconds: 100));
   }
@@ -117,6 +169,20 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 void main() {
+  test(
+    'an older profile read cannot restore the previous avatar after saving',
+    () async {
+      final repo = _FakeRepository()..pendingRead = Completer<ProfileData>();
+      final cubit = UserProfileCubit(repo, initial: _profile);
+      final read = cubit.load();
+      await cubit.update({'avatarUrl': null});
+      repo.pendingRead!.complete(_profile);
+      await read;
+      expect(cubit.state.profile!.avatarUrl, isNull);
+      expect((await repo.getUser(_profile.id)).avatarUrl, isNull);
+      await cubit.close();
+    },
+  );
   testWidgets('re-crops the current avatar and saves it as a new upload', (
     tester,
   ) async {
@@ -173,13 +239,23 @@ void main() {
     expect(uploader.uploadedBytes, greaterThan(0));
     expect(repository.saved, {
       'fullName': 'Samsung Official',
-      'username': 'samsung',
-      'bio': 'Galaxy chính hãng',
       'avatarUrl': '/api/v1/media/avatars/shop-samsung_new.png',
     });
+    expect(cubit.state.profile!.avatarUrl, repository.profile.avatarUrl);
     // lưu xong thì quay về trang trước
-    expect(find.text('account'), findsOneWidget);
+    expect(find.byType(AccountMobileView), findsOneWidget);
+    final auth = tester
+        .element(find.byType(AccountMobileView))
+        .read<AuthBloc>();
+    expect(
+      (auth.state as AuthAuthenticated).user.avatarUrl,
+      repository.profile.avatarUrl,
+    );
+    expect(find.text('Đã lưu hồ sơ'), findsOneWidget);
+    expect(tester.getSize(find.byType(SnackBar)).height, lessThan(100));
     await tester.pump(const Duration(seconds: 5));
+    await _settle(tester);
+    expect(find.byType(SnackBar), findsNothing);
   });
 
   testWidgets('validates fields, shows a taken username and removes photo', (
@@ -218,6 +294,7 @@ void main() {
     await _settle(tester);
     expect(repository.saved?['avatarUrl'], isNull);
     expect(repository.saved!.containsKey('avatarUrl'), isTrue);
+    expect(cubit.state.profile!.avatarUrl, isNull);
     await tester.pump(const Duration(seconds: 5));
   });
 }

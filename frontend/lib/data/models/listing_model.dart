@@ -27,6 +27,8 @@ class ListingModel extends Equatable {
   /// (lớn hơn [price])
   final int? originalPrice;
   final bool isNegotiable;
+  final bool? _isPartner;
+  bool get isPartner => _isPartner ?? false;
   final ListingCondition? condition;
   final ListingStatus status;
   final bool allowSale;
@@ -78,6 +80,7 @@ class ListingModel extends Equatable {
     this.price,
     this.originalPrice,
     this.isNegotiable = true,
+    bool isPartner = false,
     this.condition,
     this.status = ListingStatus.available,
     this.allowSale = true,
@@ -104,7 +107,7 @@ class ListingModel extends Equatable {
     this.sellerType = 'PERSONAL',
     this.isFavorite = false,
     this.pendingEdit,
-  });
+  }) : _isPartner = isPartner;
 
   String? get coverImage => images.isEmpty ? null : images.first;
 
@@ -135,6 +138,7 @@ class ListingModel extends Equatable {
       price: _parseMoney(json['price']),
       originalPrice: _parseMoney(json['originalPrice']),
       isNegotiable: json['isNegotiable'] as bool? ?? true,
+      isPartner: json['isPartner'] == true,
       condition: ListingCondition.fromApi(json['condition'] as String?),
       status:
           ListingStatus.fromApi(json['status'] as String?) ??
@@ -205,6 +209,7 @@ class ListingModel extends Equatable {
     price,
     originalPrice,
     isNegotiable,
+    isPartner,
     condition,
     status,
     allowSale,

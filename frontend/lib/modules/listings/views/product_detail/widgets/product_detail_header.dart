@@ -94,7 +94,7 @@ class ProductDetailHeader extends StatelessWidget {
         if (favorite != null)
           slot(
             ProductDetailCircleButton(
-              icon: favorite ? AppIcons.favoriteActive : AppIcons.favorite,
+              icon: favorite ? AppIcons.savedListing : AppIcons.favorite,
               color: favorite ? AppColors.error : AppColors.textPrimary,
               tooltip: favorite ? l10n.homeUnsaveListing : l10n.homeSaveListing,
               onPressed: onFavorite,

@@ -12,7 +12,16 @@ import '../../../models/home_quick_action.dart';
 class HomeQuickActions extends StatelessWidget {
   final ValueChanged<HomeQuickAction> onTap;
 
-  const HomeQuickActions({super.key, required this.onTap});
+  /// Số ô mỗi hàng: điện thoại 2 × 2, web desktop 4 ô một hàng
+  final int perRow;
+  final EdgeInsetsGeometry padding;
+
+  const HomeQuickActions({
+    super.key,
+    required this.onTap,
+    this.perRow = 2,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16),
+  });
 
   static _QuickActionStyle _styleOf(
     HomeQuickAction action,
@@ -63,19 +72,24 @@ class HomeQuickActions extends StatelessWidget {
       ),
     );
 
+    final gap = perRow > 2 ? 14.0 : 10.0;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: padding,
       child: Column(
         children: [
-          for (var row = 0; row < actions.length; row += 2) ...[
-            if (row > 0) const SizedBox(height: 10),
+          for (var row = 0; row < actions.length; row += perRow) ...[
+            if (row > 0) SizedBox(height: gap),
             IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  tile(actions[row]),
-                  const SizedBox(width: 10),
-                  tile(actions[row + 1]),
+                  for (var i = row; i < row + perRow; i++) ...[
+                    if (i > row) SizedBox(width: gap),
+                    if (i < actions.length)
+                      tile(actions[i])
+                    else
+                      const Expanded(child: SizedBox()),
+                  ],
                 ],
               ),
             ),
@@ -126,11 +140,8 @@ class _QuickActionTile extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Ink(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [style.tint, Color.lerp(style.tint, Colors.white, 0.6)!],
-            ),
+            // Màu trơn cố định cho từng ô (không gradient)
+            color: style.tint,
           ),
           child: InkWell(
             onTap: onTap,

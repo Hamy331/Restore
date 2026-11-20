@@ -20,11 +20,15 @@ import '../edit_listing/edit_listing_view.dart';
 import 'widgets/product_detail_attributes.dart';
 import 'widgets/product_detail_bottom_bar.dart';
 import 'widgets/product_detail_description.dart';
-import 'widgets/product_detail_header.dart';
 import 'widgets/product_detail_offer_sheet.dart';
-import 'widgets/product_detail_purchase_sheet.dart';
+import 'widgets/product_detail_header.dart';
+import 'widgets/product_chat_sheet.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
+import 'package:restore/modules/auth/utils/auth_route_guard.dart';
 import 'widgets/product_detail_safety_tips.dart';
 import 'widgets/product_detail_seller_card.dart';
+import 'widgets/product_similar_listings.dart';
 import 'widgets/product_detail_skeleton.dart';
 import 'widgets/product_detail_summary.dart';
 
@@ -105,54 +109,39 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
     if (mounted) await _cubit.refresh();
   }
 
-  void _comingSoon() =>
-      TSnackBarHelper.showInfo(context, message: _l10n.featureComingSoon);
-
-  void _openChat(String conversationId) =>
-      context.push('/messages/$conversationId');
-
-  Future<void> _onChat() async {
-    final id = await _cubit.openConversation();
-    if (!mounted) return;
-    id == null
-        ? TSnackBarHelper.showError(context, message: _l10n.productActionFailed)
-        : _openChat(id);
+  bool _signedIn() {
+    if (context.isSignedIn) return true;
+    context.go(loginPath(from: '/listings/${_cubit.listingId}'));
+    return false;
   }
 
-  Future<void> _onOffer(ProductDetail detail) async {
-    final amount = await showProductOfferSheet(
-      context,
-      price: detail.listing.price!,
-    );
-    if (amount == null || !mounted) return;
-    _afterSubmit(await _cubit.sendOffer(amount), _l10n.productOfferSent);
+  Future<void> _onChat(ProductDetail detail) async {
+    if (!_signedIn()) return;
+    final id = await showProductChatSheet(context, detail);
+    if (mounted && id != null) openListingConversation(context, id);
   }
 
-  Future<void> _onBuy(ProductDetail detail) async {
-    final note = await showProductPurchaseSheet(context, detail: detail);
-    if (note == null || !mounted) return;
-    _afterSubmit(
-      await _cubit.requestPurchase(note: note.isEmpty ? null : note),
-      _l10n.productBuySent,
-    );
-  }
-
-  void _afterSubmit(ProductActionResult result, String successMessage) {
-    if (!mounted) return;
-    switch (result) {
-      case ProductActionSent(:final conversationId):
-        TSnackBarHelper.showSuccess(context, message: successMessage);
-        _openChat(conversationId);
-      // Đã báo thay đổi qua _onChanged, người mua xem lại rồi thao tác tiếp
-      case ProductActionOutdated():
-        break;
-      case ProductActionFailed():
-        TSnackBarHelper.showError(context, message: _l10n.productActionFailed);
+  Future<void> _call(String number) async {
+    try {
+      if (await launchUrl(
+        Uri(scheme: 'tel', path: number),
+        mode: LaunchMode.externalApplication,
+      )) {
+        return;
+      }
+    } catch (_) {}
+    if (mounted) {
+      TSnackBarHelper.showInfo(
+        context,
+        message: '${_l10n.listingCallUnavailable} $number',
+      );
     }
   }
 
-  /// Báo thay đổi vừa phát hiện. Giá đổi hoặc hết hàng thì đóng sheet trả
-  /// giá / mua ngay đang mở để người mua không gửi theo thông tin cũ.
+  void _save() {
+    if (_signedIn()) _cubit.toggleFavorite();
+  }
+
   void _onChanged(BuildContext context, ProductDetailState state) {
     final change = state.lastChange;
     final listing = state.detail?.listing;
@@ -176,12 +165,6 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
       ProductDetailChangeKind.info => _l10n.productLiveInfo,
     };
 
-    if (change.kind == ProductDetailChangeKind.unavailable ||
-        change.kind == ProductDetailChangeKind.price) {
-      final page = ModalRoute.of(context);
-      Navigator.of(context).popUntil((route) => route == page);
-    }
-
     final title = _l10n.productLiveTitle;
     change.kind == ProductDetailChangeKind.unavailable
         ? TSnackBarHelper.showWarning(context, title: title, message: message)
@@ -196,6 +179,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
       listener: _onChanged,
       builder: (context, state) {
         final detail = state.detail;
+        final phone = detail?.seller.phone?.replaceAll(RegExp(r'[\s().-]'), '');
         return PopScope(
           // Trạng thái lưu tin đã đổi thì tự đóng trang để trả kết quả về
           canPop: !state.favoriteChanged,
@@ -222,11 +206,9 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
                         heroTag: 'product-${_cubit.listingId}',
                         title: state.listing?.title ?? '',
                         collapsed: collapsed,
-                        isFavorite: detail == null || detail.isOwner
-                            ? null
-                            : detail.isFavorite,
+                        isFavorite: null,
                         onBack: _close,
-                        onFavorite: _cubit.toggleFavorite,
+                        onFavorite: _save,
                       ),
                     ),
                     ...switch (state.status) {
@@ -269,9 +251,13 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
                 : ProductDetailBottomBar(
                     detail: detail,
                     isSubmitting: state.isSubmitting,
-                    onChat: _onChat,
-                    onOffer: () => _onOffer(detail),
-                    onBuy: () => _onBuy(detail),
+                    onChat: () => _onChat(detail),
+                    onSave: _save,
+                    onCall:
+                        phone != null &&
+                            RegExp(r'^\+?[0-9]{7,15}$').hasMatch(phone)
+                        ? () => _call(phone)
+                        : null,
                     onEdit: () => _onEdit(detail),
                     onBoost: () => _onPromote(detail),
                     onFeature: () => _onPromote(detail),
@@ -288,14 +274,20 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
     required double bottomInset,
   }) {
     final category = detail.category;
+    final categoryId = detail.listing.categoryId ?? category?.id;
     final sections = <Widget>[
       ProductDetailSummary(detail: detail, previousPrice: previousPrice),
+      if (!detail.isOwner && detail.isAvailable && detail.canMakeOffer)
+        ProductDealSection(
+          key: ValueKey(detail.listing.id),
+          detail: detail,
+          signedIn: _signedIn,
+        ),
       if (!detail.isOwner)
         ProductDetailSellerCard(
-          seller: detail.seller,
-          activeListings: detail.sellerActiveListings,
-          // TODO: mở trang người bán khi có route hồ sơ công khai
-          onTap: _comingSoon,
+          key: ValueKey(detail.seller.id),
+          detail: detail,
+          signedIn: _signedIn,
         ),
       ProductDetailDescription(description: detail.listing.description),
       if (category != null && category.attributes.isNotEmpty)
@@ -308,15 +300,30 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
       ),
     ];
 
-    return SliverPadding(
-      // Chừa chỗ cho thanh hành động phía dưới (body vẽ tràn dưới thanh)
-      padding: EdgeInsets.fromLTRB(12, 12, 12, 16 + bottomInset),
-      sliver: SliverList.separated(
-        itemCount: sections.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 12),
-        itemBuilder: (_, index) =>
-            FadeSlideIn(index: index, child: sections[index]),
-      ),
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverPadding(
+          // Chừa chỗ cho thanh hành động phía dưới (body vẽ tràn dưới thanh)
+          padding: const EdgeInsets.all(12),
+          sliver: SliverList.separated(
+            itemCount: sections.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            itemBuilder: (_, index) =>
+                FadeSlideIn(index: index, child: sections[index]),
+          ),
+        ),
+        if (categoryId != null && categoryId.isNotEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: ProductSimilarListings(
+              scrollController: _scrollController,
+              key: ValueKey((detail.listing.id, categoryId)),
+              listingId: detail.listing.id,
+              categoryId: categoryId,
+            ),
+          ),
+        SliverToBoxAdapter(child: SizedBox(height: 16 + bottomInset)),
+      ],
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/shared/widgets/app_page_header.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/ui/responsive/responsive_content.dart';
@@ -89,21 +91,12 @@ class _MessagesMobileViewState extends State<MessagesMobileView> {
         padding: EdgeInsets.zero,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
-              child: Row(
-                children: [
-                  const Text(
-                    'Tin nhắn',
-                    style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    tooltip: 'Tìm cuộc trò chuyện',
-                    onPressed: () {},
-                    icon: const Icon(AppIcons.search, size: 23),
-                  ),
-                ],
+            AppTabHeader(
+              title: AppLocalizations.of(context)!.messagesTitle,
+              trailing: IconButton(
+                tooltip: 'Tìm cuộc trò chuyện',
+                onPressed: () {},
+                icon: const Icon(AppIcons.search, size: 23),
               ),
             ),
             SizedBox(
