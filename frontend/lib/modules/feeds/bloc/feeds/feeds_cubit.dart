@@ -58,13 +58,20 @@ class FeedsCubit extends Cubit<FeedsState> {
 
   /// Đổi tab thì xoá danh sách cũ để hiện spinner; làm mới cùng tab thì giữ
   /// danh sách đang có cho tới khi dữ liệu mới về.
-  Future<void> load({bool? following}) async {
+  Future<void> search(String query) => load(query: query.trim());
+
+  Future<void> load({bool? following, String? query}) async {
     final tab = following ?? state.onlyFollowing, version = ++_generation;
-    final keep = tab == state.onlyFollowing && !state.failed;
+    final searchQuery = query ?? state.searchQuery;
+    final keep =
+        tab == state.onlyFollowing &&
+        searchQuery == state.searchQuery &&
+        !state.failed;
     _emit(
       state.copyWith(
         posts: keep ? state.posts : const [],
         onlyFollowing: tab,
+        searchQuery: searchQuery,
         loading: true,
         failed: false,
         loadingMore: false,
@@ -72,7 +79,11 @@ class FeedsCubit extends Cubit<FeedsState> {
       ),
     );
     try {
-      final page = await repository.posts(following: tab, authorId: authorId);
+      final page = await repository.posts(
+        following: tab,
+        authorId: authorId,
+        query: searchQuery,
+      );
       if (isClosed || version != _generation) return;
       _cursor = page.nextCursor;
       _emit(state.copyWith(posts: page.items, loading: false));
@@ -98,6 +109,7 @@ class FeedsCubit extends Cubit<FeedsState> {
         following: state.onlyFollowing,
         authorId: authorId,
         cursor: _cursor,
+        query: state.searchQuery,
       );
       if (isClosed || version != _generation) return;
       _cursor = page.nextCursor;
@@ -324,6 +336,7 @@ class FeedsCubit extends Cubit<FeedsState> {
       // Bài của mình không thuộc tab "Đang theo dõi" nên chỉ chèn vào
       // "Dành cho bạn" hoặc trang hồ sơ của chính mình.
       if (!state.onlyFollowing &&
+          post.text.toLowerCase().contains(state.searchQuery.toLowerCase()) &&
           (authorId == null || authorId == post.authorId)) {
         _emit(state.copyWith(posts: [post, ...state.posts]));
       }

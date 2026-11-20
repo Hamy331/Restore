@@ -13,6 +13,7 @@ import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import '../../bloc/feeds/feeds_cubit.dart';
 import '../../bloc/feeds/feeds_state.dart';
 import '../../widgets/feed_post_list.dart';
+import '../../widgets/feed_search_bar.dart';
 import '../../widgets/feed_shared.dart';
 import 'widgets/feed_composer.dart';
 
@@ -29,7 +30,6 @@ class FeedsDesktopView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final cubit = context.read<FeedsCubit>();
-    final showRight = MediaQuery.sizeOf(context).width >= 1280;
     return BlocConsumer<FeedsCubit, FeedsState>(
       listener: (context, state) {
         if (state.error != null) feedNotice(context, l.feedActionError);
@@ -38,84 +38,99 @@ class FeedsDesktopView extends StatelessWidget {
         onNotification: (n) => feedScrollListener(cubit, n),
         child: DesktopPage(
           slivers: [
-            SliverCrossAxisGroup(
-              slivers: [
-                SliverConstrainedCrossAxis(
-                  maxExtent: _side,
-                  sliver: SliverToBoxAdapter(child: _LeftMenu(state: state)),
-                ),
-                const SliverConstrainedCrossAxis(
-                  maxExtent: _gap,
-                  sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
-                ),
-                SliverCrossAxisExpanded(
-                  flex: 1,
-                  sliver: DecoratedSliver(
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    sliver: SliverMainAxisGroup(
-                      slivers: [
-                        SliverToBoxAdapter(
-                          child: _FeedTop(cubit: cubit, state: state),
+            SliverLayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.crossAxisExtent;
+                final showLeft = width >= 680;
+                final showRight = width >= 1200;
+                return SliverCrossAxisGroup(
+                  slivers: [
+                    if (showLeft) ...[
+                      SliverConstrainedCrossAxis(
+                        maxExtent: _side,
+                        sliver: SliverToBoxAdapter(
+                          child: _LeftMenu(state: state),
                         ),
-                        if (state.loading && state.posts.isEmpty)
-                          const SliverToBoxAdapter(
-                            child: Padding(
-                              padding: EdgeInsets.all(48),
-                              child: Center(child: AppLoadingIndicator()),
+                      ),
+                      const SliverConstrainedCrossAxis(
+                        maxExtent: _gap,
+                        sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+                      ),
+                    ],
+                    SliverCrossAxisExpanded(
+                      flex: 1,
+                      sliver: DecoratedSliver(
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        sliver: SliverMainAxisGroup(
+                          slivers: [
+                            SliverToBoxAdapter(
+                              child: _FeedTop(cubit: cubit, state: state),
                             ),
-                          )
-                        else if (state.failed)
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.all(40),
-                              child: Column(
-                                children: [
-                                  Text(l.feedLoadError),
-                                  TextButton(
-                                    onPressed: cubit.load,
-                                    child: Text(l.retry),
+                            if (state.loading && state.posts.isEmpty)
+                              const SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: EdgeInsets.all(48),
+                                  child: Center(child: AppLoadingIndicator()),
+                                ),
+                              )
+                            else if (state.failed)
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(40),
+                                  child: Column(
+                                    children: [
+                                      Text(l.feedLoadError),
+                                      TextButton(
+                                        onPressed: cubit.load,
+                                        child: Text(l.retry),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              )
+                            else if (state.posts.isEmpty)
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(40),
+                                  child: Text(
+                                    state.searchQuery.isNotEmpty
+                                        ? l.feedSearchEmpty
+                                        : state.onlyFollowing
+                                        ? l.feedFollowingEmpty
+                                        : l.feedEmpty,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              )
+                            else
+                              ...feedPostSlivers(cubit, state),
+                            const SliverToBoxAdapter(
+                              child: SizedBox(height: 16),
                             ),
-                          )
-                        else if (state.posts.isEmpty)
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.all(40),
-                              child: Text(
-                                state.onlyFollowing
-                                    ? l.feedFollowingEmpty
-                                    : l.feedEmpty,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          )
-                        else
-                          ...feedPostSlivers(cubit, state),
-                        const SliverToBoxAdapter(child: SizedBox(height: 16)),
-                      ],
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                // Cột gợi ý chỉ hiện khi màn đủ rộng, cột giữa không bị hẹp
-                if (showRight) ...[
-                const SliverConstrainedCrossAxis(
-                  maxExtent: _gap,
-                  sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
-                ),
-                SliverConstrainedCrossAxis(
-                  maxExtent: _side,
-                  sliver: SliverToBoxAdapter(
-                    child: _RightPanel(cubit: cubit),
-                  ),
-                ),
-                ],
-              ],
+                    // Cột gợi ý chỉ hiện khi màn đủ rộng, cột giữa không bị hẹp
+                    if (showRight) ...[
+                      const SliverConstrainedCrossAxis(
+                        maxExtent: _gap,
+                        sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+                      ),
+                      SliverConstrainedCrossAxis(
+                        maxExtent: _side,
+                        sliver: SliverToBoxAdapter(
+                          child: _RightPanel(cubit: cubit),
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -161,6 +176,10 @@ class _FeedTop extends StatelessWidget {
 
     return Column(
       children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 12),
+          child: FeedSearchBar(),
+        ),
         Row(
           children: [
             tab(l.feedForYou, !state.onlyFollowing, () => cubit.select(false)),
@@ -303,44 +322,48 @@ class _RightPanel extends StatelessWidget {
     final vi = Localizations.localeOf(context).languageCode == 'vi';
     String t(String vn, String en) => vi ? vn : en;
 
-    Widget shortcut(String image, IconData fallback, String title,
-            String subtitle, VoidCallback onTap) =>
-        InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              children: [
-                AppImageIcon(image, size: 36, fallback: fallback),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        subtitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+    Widget shortcut(
+      String image,
+      IconData fallback,
+      String title,
+      String subtitle,
+      VoidCallback onTap,
+    ) => InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            AppImageIcon(image, size: 36, fallback: fallback),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
+          ],
+        ),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -372,8 +395,7 @@ class _RightPanel extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               OutlinedButton.icon(
-                onPressed: () =>
-                    context.push(CreateListingStep.category.path),
+                onPressed: () => context.push(CreateListingStep.category.path),
                 icon: const Icon(AppIcons.add, size: 18),
                 label: Text(t('Đăng tin bán', 'Post a listing')),
                 style: OutlinedButton.styleFrom(

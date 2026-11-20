@@ -40,11 +40,12 @@ class DesktopPage extends StatelessWidget {
   final VoidCallback? onEndReached;
 
   @override
-  Widget build(BuildContext context) {
-    final gutter = desktopGutter(
-      MediaQuery.sizeOf(context).width,
-      content: contentWidth,
-    );
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => _buildPage(constraints.maxWidth),
+  );
+
+  Widget _buildPage(double width) {
+    final gutter = desktopGutter(width, content: contentWidth);
     final scroll = CustomScrollView(
       controller: controller,
       slivers: [
@@ -52,7 +53,8 @@ class DesktopPage extends StatelessWidget {
           padding: padding.copyWith(left: gutter, right: gutter),
           sliver: SliverMainAxisGroup(slivers: slivers),
         ),
-        if (showFooter) const SliverToBoxAdapter(child: DesktopFooter()),
+        if (showFooter && width >= AppDimesions.desktopWidth)
+          const SliverToBoxAdapter(child: DesktopFooter()),
       ],
     );
     final end = onEndReached;

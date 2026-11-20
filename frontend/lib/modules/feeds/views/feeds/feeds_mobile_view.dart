@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/app_page_header.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
-import '../../../../core/theme/app_header_palette.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../home/views/home/widgets/home_header_icon_button.dart';
 import '../../bloc/feeds/feeds_cubit.dart';
 import '../../bloc/feeds/feeds_state.dart';
 import '../../models/feed_models.dart';
 import './widgets/feed_composer.dart';
 import '../../widgets/feed_post_list.dart';
+import '../../widgets/feed_search_bar.dart';
 import '../../widgets/feed_shared.dart';
 
 class FeedsMobileView extends StatelessWidget {
@@ -19,132 +20,122 @@ class FeedsMobileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppHeaderPalette.gradient),
+    return ColoredBox(
+      color: AppColors.surface,
       child: SafeArea(
         bottom: false,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 680),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 2, 16, 4),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          l.feedsTitle,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: AppHeaderPalette.foreground,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AppTabHeader(
+              title: 'Feeds',
+              leading: IconButton(
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                icon: const Icon(AppIcons.back),
+                onPressed: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go('/home');
+                  }
+                },
+              ),
+              trailing: IconButton(
+                icon: const Icon(AppIcons.notification),
+                tooltip: l.notifications,
+                onPressed: () => feedNotice(context, l.feedNotifications),
+              ),
+            ),
+            const FeedSearchBar(),
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.zero,
+                child: ColoredBox(
+                  color: AppColors.surface,
+                  child: BlocConsumer<FeedsCubit, FeedsState>(
+                    listener: (context, state) {
+                      if (state.error != null) {
+                        feedNotice(
+                          context,
+                          AppLocalizations.of(context)!.feedActionError,
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      final cubit = context.read<FeedsCubit>();
+                      if (state.loading && state.posts.isEmpty) {
+                        return const Center(child: AppLoadingIndicator());
+                      }
+                      if (state.failed) {
+                        return Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(l.feedLoadError),
+                              TextButton(
+                                onPressed: cubit.load,
+                                child: Text(l.retry),
                               ),
-                        ),
-                      ),
-                      HomeHeaderIconButton(
-                        icon: AppIcons.notification,
-                        tooltip: l.notifications,
-                        onTap: () => feedNotice(context, l.feedNotifications),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                    child: ColoredBox(
-                      color: AppColors.surface,
-                      child: BlocConsumer<FeedsCubit, FeedsState>(
-                        listener: (context, state) {
-                          if (state.error != null) {
-                            feedNotice(
-                              context,
-                              AppLocalizations.of(context)!.feedActionError,
-                            );
-                          }
-                        },
-                        builder: (context, state) {
-                          final cubit = context.read<FeedsCubit>();
-                          if (state.loading && state.posts.isEmpty) {
-                            return const Center(child: AppLoadingIndicator());
-                          }
-                          if (state.failed) {
-                            return Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(l.feedLoadError),
-                                  TextButton(
-                                    onPressed: cubit.load,
-                                    child: Text(l.retry),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                          return AppPullToRefresh(
-                            onRefresh: () => cubit.load(),
-                            child: NotificationListener<ScrollNotification>(
-                              onNotification: (n) =>
-                                  feedScrollListener(cubit, n),
-                              child: CustomScrollView(
-                                physics: const BouncingScrollPhysics(
-                                  parent: AlwaysScrollableScrollPhysics(),
-                                ),
-                                slivers: [
-                                  SliverToBoxAdapter(
-                                    child: Column(
+                            ],
+                          ),
+                        );
+                      }
+                      return AppPullToRefresh(
+                        onRefresh: () => cubit.load(),
+                        child: NotificationListener<ScrollNotification>(
+                          onNotification: (n) => feedScrollListener(cubit, n),
+                          child: CustomScrollView(
+                            physics: const BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics(),
+                            ),
+                            slivers: [
+                              SliverToBoxAdapter(
+                                child: Column(
+                                  children: [
+                                    Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            _Tab(
-                                              label: l.feedForYou,
-                                              selected: !state.onlyFollowing,
-                                              onTap: () => cubit.select(false),
-                                            ),
-                                            _Tab(
-                                              label: l.feedFollowing,
-                                              selected: state.onlyFollowing,
-                                              onTap: () => cubit.select(true),
-                                            ),
-                                          ],
+                                        _Tab(
+                                          label: l.feedForYou,
+                                          selected: !state.onlyFollowing,
+                                          onTap: () => cubit.select(false),
                                         ),
-                                        _ComposePrompt(
-                                          cubit: cubit,
-                                          me: state.me,
+                                        _Tab(
+                                          label: l.feedFollowing,
+                                          selected: state.onlyFollowing,
+                                          onTap: () => cubit.select(true),
                                         ),
-                                        if (state.posts.isEmpty)
-                                          Padding(
-                                            padding: const EdgeInsets.all(32),
-                                            child: Text(
-                                              state.onlyFollowing
-                                                  ? l.feedFollowingEmpty
-                                                  : l.feedEmpty,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
                                       ],
                                     ),
-                                  ),
-                                  ...feedPostSlivers(cubit, state),
-                                  const SliverToBoxAdapter(
-                                    child: SizedBox(height: 180),
-                                  ),
-                                ],
+                                    _ComposePrompt(cubit: cubit, me: state.me),
+                                    if (state.posts.isEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.all(32),
+                                        child: Text(
+                                          state.searchQuery.isNotEmpty
+                                              ? l.feedSearchEmpty
+                                              : state.onlyFollowing
+                                              ? l.feedFollowingEmpty
+                                              : l.feedEmpty,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                              ...feedPostSlivers(cubit, state),
+                              const SliverToBoxAdapter(
+                                child: SizedBox(height: 180),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -229,12 +220,12 @@ class _Tab extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Container(
-          constraints: const BoxConstraints(minHeight: 38),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: selected ? AppColors.primary : AppColors.border,
+                color: selected ? AppColors.textPrimary : AppColors.border,
                 width: selected ? 2 : 1,
               ),
             ),
@@ -243,9 +234,9 @@ class _Tab extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 15,
               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-              color: selected ? AppColors.primaryDark : AppColors.textSecondary,
+              color: selected ? AppColors.textPrimary : AppColors.textSecondary,
             ),
           ),
         ),

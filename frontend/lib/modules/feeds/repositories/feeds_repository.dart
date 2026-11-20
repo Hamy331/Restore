@@ -14,6 +14,7 @@ abstract class FeedsRepository {
     bool following = false,
     String? authorId,
     String? cursor,
+    String? query,
   });
   Future<FeedPost> publish(String text, String? imageUrl);
   Future<void> delete(String postId);
@@ -54,11 +55,13 @@ class ApiFeedsRepository implements FeedsRepository {
     bool following = false,
     String? authorId,
     String? cursor,
+    String? query,
   }) async {
     final data = await _get('/feeds', {
       'tab': following ? 'following' : 'for-you',
       'authorId': ?authorId,
       'cursor': ?cursor,
+      if (query != null && query.isNotEmpty) 'q': query,
     });
     return FeedPage([
       for (final j in data['items'] as List)

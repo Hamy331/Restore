@@ -13,6 +13,7 @@ class FeedsState extends Equatable {
     this.commentCursors = const {},
     this.pending = const {},
     this.onlyFollowing = false,
+    this.searchQuery = '',
     this.loading = false,
     this.failed = false,
     this.loadingMore = false,
@@ -21,6 +22,7 @@ class FeedsState extends Equatable {
     this.error,
   });
   final List<FeedPost> posts;
+  final String searchQuery;
 
   /// Bình luận đã tải và con trỏ trang tiếp theo, theo id bài viết.
   final Map<String, List<FeedComment>> comments;
@@ -46,6 +48,7 @@ class FeedsState extends Equatable {
     Map<String, String?>? commentCursors,
     Set<String>? pending,
     bool? onlyFollowing,
+    String? searchQuery,
     bool? loading,
     bool? failed,
     bool? loadingMore,
@@ -58,6 +61,7 @@ class FeedsState extends Equatable {
     commentCursors: commentCursors ?? this.commentCursors,
     pending: pending ?? this.pending,
     onlyFollowing: onlyFollowing ?? this.onlyFollowing,
+    searchQuery: searchQuery ?? this.searchQuery,
     loading: loading ?? this.loading,
     failed: failed ?? this.failed,
     loadingMore: loadingMore ?? this.loadingMore,
@@ -73,6 +77,7 @@ class FeedsState extends Equatable {
     commentCursors,
     pending,
     onlyFollowing,
+    searchQuery,
     loading,
     failed,
     loadingMore,
