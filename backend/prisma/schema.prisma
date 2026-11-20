@@ -73,6 +73,7 @@ model User {
   searchHistory  SearchHistory[]
   notifications  Notification[]
   pushDevices    PushDevice[]
+  savedAddresses SavedAddress[]
 
   @@index([status, suspendedUntil])
 }
@@ -882,4 +883,28 @@ model ShopBanner {
 
   @@index([shopId, status])
   @@index([status, createdAt])
+}
+
+/// Địa chỉ đã lưu để chọn lại khi đăng tin (tối đa 5 mỗi người, tự lưu khi đăng / sửa tin)
+model SavedAddress {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Tên tự đặt, VD "Nhà", "Cửa hàng"; null = chưa đặt
+  label         String?  @db.VarChar(40)
+  provinceCode  String   @db.VarChar(10)
+  wardCode      String   @db.VarChar(10)
+  streetAddress String   @default("") @db.VarChar(200)
+  /// Số nhà/đường đã bỏ dấu, chữ thường, gộp khoảng trắng: để không lưu trùng
+  streetKey     String   @default("") @db.VarChar(200)
+  latitude      Float
+  longitude     Float
+  /// device | ward_center
+  geoSource     String   @default("ward_center") @db.VarChar(16)
+  lastUsedAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, wardCode, streetKey])
+  @@index([userId, lastUsedAt])
 }

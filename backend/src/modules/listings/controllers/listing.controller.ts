@@ -5,6 +5,7 @@ import { getInput, ValidatedInput } from '../../../middlewares/validate.middlewa
 import type { AutoExtendInput, ExtendInput, FeatureInput, ListingIdParams, ListingInput, MineQuery, StatusInput } from '../listing.dto.js';
 import { getInsights } from '../services/insights.service.js';
 import * as listingService from '../services/listing.service.js';
+import { rememberListingAddress } from '../../users/index.js';
 
 /** Body có payWithCredits: true khi người dùng đồng ý trả xu cho tin vượt hạn mức */
 export const wantsToPay = (req: AuthRequest) => (req.body as { payWithCredits?: unknown } | undefined)?.payWithCredits === true;
@@ -14,12 +15,17 @@ export const allowsDuplicate = (req: AuthRequest) => (req.body as { allowDuplica
 
 export async function create(req: AuthRequest, res: Response) {
   const { body } = getInput<ValidatedInput<undefined, undefined, ListingInput>>(res);
-  created(res, await listingService.createListing(req.user!.userId, body, wantsToPay(req), allowsDuplicate(req)));
+  const listing = await listingService.createListing(req.user!.userId, body, wantsToPay(req), allowsDuplicate(req));
+  // Đăng xong thì lưu địa chỉ vào sổ địa chỉ để lần sau chọn lại
+  await rememberListingAddress(req.user!.userId, body.location);
+  created(res, listing);
 }
 
 export async function update(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, ListingInput>>(res);
-  ok(res, await listingService.updateListing(req.user!.userId, params.id, body, wantsToPay(req)));
+  const listing = await listingService.updateListing(req.user!.userId, params.id, body, wantsToPay(req));
+  await rememberListingAddress(req.user!.userId, body.location);
+  ok(res, listing);
 }
 
 /** Bỏ bản sửa đang chờ duyệt / bị từ chối của tin đã duyệt */

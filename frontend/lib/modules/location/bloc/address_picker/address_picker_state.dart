@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:restore/services/device_location_service.dart';
 import '../../models/address_info.dart';
 import 'package:restore/data/models/administrative_unit_model.dart';
+import 'package:restore/data/models/saved_address_model.dart';
 import 'package:restore/shared/models/geo_point.dart';
 
 enum LoadStatus { idle, loading, success, failure }
@@ -38,6 +39,10 @@ class AddressPickerState extends Equatable {
   /// Định vị được nhưng không ra địa chỉ; null khi không có gì cần báo
   final LocationNotice? notice;
 
+  /// Sổ địa chỉ đã dùng khi đăng tin (tối đa 5), mới dùng gần nhất trước
+  final List<SavedAddressModel> savedAddresses;
+  final LoadStatus savedStatus;
+
   const AddressPickerState({
     this.provinces = const [],
     this.wards = const [],
@@ -52,6 +57,8 @@ class AddressPickerState extends Equatable {
     this.locateError,
     this.locateErrorCount = 0,
     this.notice,
+    this.savedAddresses = const [],
+    this.savedStatus = LoadStatus.idle,
   });
 
   bool get canConfirm => province != null && ward != null;
@@ -85,6 +92,8 @@ class AddressPickerState extends Equatable {
     DeviceLocationError? locateError,
     int? locateErrorCount,
     LocationNotice? Function()? notice,
+    List<SavedAddressModel>? savedAddresses,
+    LoadStatus? savedStatus,
   }) {
     return AddressPickerState(
       provinces: provinces ?? this.provinces,
@@ -104,6 +113,8 @@ class AddressPickerState extends Equatable {
       locateError: locateError ?? this.locateError,
       locateErrorCount: locateErrorCount ?? this.locateErrorCount,
       notice: notice != null ? notice() : this.notice,
+      savedAddresses: savedAddresses ?? this.savedAddresses,
+      savedStatus: savedStatus ?? this.savedStatus,
     );
   }
 
@@ -122,5 +133,7 @@ class AddressPickerState extends Equatable {
     locateError,
     locateErrorCount,
     notice,
+    savedAddresses,
+    savedStatus,
   ];
 }

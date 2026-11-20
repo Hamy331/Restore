@@ -3443,5 +3443,14 @@
       "count": {"type": "int"}
     }
   },
-  "feedPostUnavailable": "This post is no longer available."
+  "feedPostUnavailable": "This post is no longer available.",
+  "savedAddressesTitle": "Saved addresses",
+  "savedAddressRename": "Rename address",
+  "savedAddressDelete": "Delete address",
+  "savedAddressLabelHint": "Give it a name so it is easy to spot next time you post",
+  "savedAddressLabelPlaceholder": "e.g. Home, Shop",
+  "savedAddressSaveLabel": "Save name",
+  "savedAddressDeleted": "Address deleted.",
+  "savedAddressActionFailed": "Something went wrong. Please try again.",
+  "savedAddressMore": "Address options"
 }

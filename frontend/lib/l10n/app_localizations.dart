@@ -9499,6 +9499,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This post is no longer available.'**
   String get feedPostUnavailable;
+
+  /// No description provided for @savedAddressesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved addresses'**
+  String get savedAddressesTitle;
+
+  /// No description provided for @savedAddressRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename address'**
+  String get savedAddressRename;
+
+  /// No description provided for @savedAddressDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete address'**
+  String get savedAddressDelete;
+
+  /// No description provided for @savedAddressLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Give it a name so it is easy to spot next time you post'**
+  String get savedAddressLabelHint;
+
+  /// No description provided for @savedAddressLabelPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Home, Shop'**
+  String get savedAddressLabelPlaceholder;
+
+  /// No description provided for @savedAddressSaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save name'**
+  String get savedAddressSaveLabel;
+
+  /// No description provided for @savedAddressDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Address deleted.'**
+  String get savedAddressDeleted;
+
+  /// No description provided for @savedAddressActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get savedAddressActionFailed;
+
+  /// No description provided for @savedAddressMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Address options'**
+  String get savedAddressMore;
 }
 
 class _AppLocalizationsDelegate

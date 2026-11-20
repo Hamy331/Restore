@@ -5,6 +5,7 @@ import { getInput, ValidatedInput } from '../../../middlewares/validate.middlewa
 import type { DraftInput, ListingIdParams } from '../listing.dto.js';
 import { allowsDuplicate, wantsToPay } from './listing.controller.js';
 import * as draftService from '../services/draft.service.js';
+import { rememberListingAddress } from '../../users/index.js';
 
 export async function create(req: AuthRequest, res: Response) {
   const { body } = getInput<ValidatedInput<undefined, undefined, DraftInput>>(res);
@@ -18,7 +19,10 @@ export async function update(req: AuthRequest, res: Response) {
 
 export async function publish(req: AuthRequest, res: Response) {
   const { params } = getInput<ValidatedInput<undefined, ListingIdParams>>(res);
-  ok(res, await draftService.publishDraft(req.user!.userId, params.id, wantsToPay(req), allowsDuplicate(req)));
+  const listing = await draftService.publishDraft(req.user!.userId, params.id, wantsToPay(req), allowsDuplicate(req));
+  // Đăng nháp xong thì lưu địa chỉ của tin vào sổ địa chỉ
+  await rememberListingAddress(req.user!.userId, listing.location);
+  ok(res, listing);
 }
 
 export async function remove(req: AuthRequest, res: Response) {

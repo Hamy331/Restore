@@ -4,3 +4,4 @@ export type { SanctionAction } from './services/users.service.js';
 export { adminUserSelect } from './repositories/users.repository.js';
 export type { AdminUser } from './repositories/users.repository.js';
 export type { UserProfileDto } from './users.dto.js';
+export { rememberListingAddress } from './services/saved-address.service.js';

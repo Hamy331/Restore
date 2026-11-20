@@ -4,6 +4,8 @@ import '../../data/vietnam_bounds.dart';
 import '../../models/address_info.dart';
 import '../../models/address_suggestion.dart';
 import '../../repositories/address_suggest_repository.dart';
+import '../../repositories/saved_address_repository.dart';
+import 'package:restore/data/models/saved_address_model.dart';
 import 'package:restore/data/models/administrative_unit_model.dart';
 import '../../repositories/location_repository.dart';
 import 'address_picker_state.dart';
@@ -13,10 +15,12 @@ class AddressPickerCubit extends Cubit<AddressPickerState> {
     required LocationRepository repository,
     required DeviceLocationService locationService,
     AddressSuggestRepository? suggestRepository,
+    SavedAddressRepository? savedRepository,
     AddressInfo? initial,
   }) : _repository = repository,
        _locationService = locationService,
        _suggestRepository = suggestRepository,
+       _savedRepository = savedRepository,
        super(
          AddressPickerState(
            province: initial?.province,
@@ -37,6 +41,7 @@ class AddressPickerCubit extends Cubit<AddressPickerState> {
   final LocationRepository _repository;
   final DeviceLocationService _locationService;
   final AddressSuggestRepository? _suggestRepository;
+  final SavedAddressRepository? _savedRepository;
 
   /// Sheet địa chỉ đóng cubit ngay khi người dùng đóng sheet, trong khi các
   /// việc bất đồng bộ (lấy GPS, tải phường/xã) có thể xong sau đó. Bỏ qua các
@@ -61,6 +66,72 @@ class AddressPickerCubit extends Cubit<AddressPickerState> {
       if (province != null) await _loadWards(province.code);
     } catch (_) {
       emit(state.copyWith(provincesStatus: LoadStatus.failure));
+    }
+  }
+
+  /// Tải sổ địa chỉ; lỗi (VD chưa đăng nhập) thì chỉ ẩn mục này
+  Future<void> loadSavedAddresses() async {
+    final repository = _savedRepository;
+    if (repository == null) return;
+    emit(state.copyWith(savedStatus: LoadStatus.loading));
+    try {
+      final items = await repository.getAll();
+      emit(
+        state.copyWith(savedAddresses: items, savedStatus: LoadStatus.success),
+      );
+    } catch (_) {
+      emit(state.copyWith(savedStatus: LoadStatus.failure));
+    }
+  }
+
+  /// Địa chỉ trả về khi chọn một địa chỉ đã lưu
+  AddressInfo addressFromSaved(SavedAddressModel saved) => AddressInfo(
+    province: saved.province,
+    ward: saved.ward,
+    streetAddress: saved.streetAddress,
+    geoPoint: saved.geoPoint,
+    isGeoPointFromDevice: saved.isGeoPointFromDevice,
+  );
+
+  /// Đặt / bỏ tên địa chỉ đã lưu; false khi lỗi
+  Future<bool> renameSaved(SavedAddressModel saved, String? label) async {
+    final repository = _savedRepository;
+    if (repository == null) return false;
+    try {
+      final updated = await repository.rename(saved.id, label);
+      emit(
+        state.copyWith(
+          savedAddresses: [
+            for (final item in state.savedAddresses)
+              item.id == updated.id ? updated : item,
+          ],
+        ),
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Xoá địa chỉ đã lưu (ẩn ngay, lỗi thì hiện lại); false khi lỗi
+  Future<bool> deleteSaved(SavedAddressModel saved) async {
+    final repository = _savedRepository;
+    if (repository == null) return false;
+    final before = state.savedAddresses;
+    emit(
+      state.copyWith(
+        savedAddresses: [
+          for (final item in before)
+            if (item.id != saved.id) item,
+        ],
+      ),
+    );
+    try {
+      await repository.delete(saved.id);
+      return true;
+    } catch (_) {
+      emit(state.copyWith(savedAddresses: before));
+      return false;
     }
   }
 

@@ -3229,5 +3229,14 @@
       "count": {"type": "int"}
     }
   },
-  "feedPostUnavailable": "Bài viết không còn hiển thị."
+  "feedPostUnavailable": "Bài viết không còn hiển thị.",
+  "savedAddressesTitle": "Địa chỉ đã lưu",
+  "savedAddressRename": "Đặt tên địa chỉ",
+  "savedAddressDelete": "Xoá địa chỉ",
+  "savedAddressLabelHint": "Đặt tên để dễ nhận ra khi đăng tin lần sau",
+  "savedAddressLabelPlaceholder": "VD: Nhà, Cửa hàng",
+  "savedAddressSaveLabel": "Lưu tên",
+  "savedAddressDeleted": "Đã xoá địa chỉ.",
+  "savedAddressActionFailed": "Chưa thực hiện được. Vui lòng thử lại.",
+  "savedAddressMore": "Tuỳ chọn địa chỉ"
 }

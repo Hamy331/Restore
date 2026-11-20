@@ -4,6 +4,7 @@ import { ok } from '../../../common/http/response.js';
 import { AuthRequest, requirePermission, verifyToken } from '../../../middlewares/auth.middleware.js';
 import * as profile from '../services/profile.service.js';
 import * as usersService from '../services/users.service.js';
+import * as savedAddresses from '../services/saved-address.service.js';
 
 /** /api/v1/users */
 const usersRouter = Router();
@@ -25,6 +26,14 @@ usersRouter.get('/me', requirePermission(PERMISSION.PROFILE_READ), handle(async 
 usersRouter.use(verifyToken);
 usersRouter.patch('/me', handle((req) => profile.updateProfile(req.user!.userId, req.body)));
 usersRouter.post('/me/heartbeat', handle((req) => profile.heartbeat(req.user!.userId)));
+/** Sổ địa chỉ để chọn lại khi đăng tin: tối đa 5, mới dùng gần nhất trước */
+usersRouter.get('/me/addresses', handle((req) => savedAddresses.listSavedAddresses(req.user!.userId)));
+usersRouter.post('/me/addresses', handle((req) => savedAddresses.saveAddress(req.user!.userId, req.body)));
+usersRouter.patch('/me/addresses/:addressId', handle((req) =>
+  savedAddresses.renameAddress(req.user!.userId, req.params.addressId as string, req.body)));
+usersRouter.delete('/me/addresses/:addressId', async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try { await savedAddresses.deleteAddress(req.user!.userId, req.params.addressId as string); res.status(204).end(); } catch (error) { next(error); }
+});
 usersRouter.get('/:id', handle((req) => profile.getProfile(req.params.id as string, req.user!.userId)));
 usersRouter.get('/:id/followers', handle((req) =>
   profile.listFollows(req.params.id as string, req.user!.userId, 'followers', req.query.page)));

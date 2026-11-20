@@ -5553,4 +5553,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedPostUnavailable => 'This post is no longer available.';
+
+  @override
+  String get savedAddressesTitle => 'Saved addresses';
+
+  @override
+  String get savedAddressRename => 'Rename address';
+
+  @override
+  String get savedAddressDelete => 'Delete address';
+
+  @override
+  String get savedAddressLabelHint =>
+      'Give it a name so it is easy to spot next time you post';
+
+  @override
+  String get savedAddressLabelPlaceholder => 'e.g. Home, Shop';
+
+  @override
+  String get savedAddressSaveLabel => 'Save name';
+
+  @override
+  String get savedAddressDeleted => 'Address deleted.';
+
+  @override
+  String get savedAddressActionFailed =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get savedAddressMore => 'Address options';
 }

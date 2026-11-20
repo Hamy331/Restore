@@ -5448,4 +5448,33 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feedPostUnavailable => 'Bài viết không còn hiển thị.';
+
+  @override
+  String get savedAddressesTitle => 'Địa chỉ đã lưu';
+
+  @override
+  String get savedAddressRename => 'Đặt tên địa chỉ';
+
+  @override
+  String get savedAddressDelete => 'Xoá địa chỉ';
+
+  @override
+  String get savedAddressLabelHint =>
+      'Đặt tên để dễ nhận ra khi đăng tin lần sau';
+
+  @override
+  String get savedAddressLabelPlaceholder => 'VD: Nhà, Cửa hàng';
+
+  @override
+  String get savedAddressSaveLabel => 'Lưu tên';
+
+  @override
+  String get savedAddressDeleted => 'Đã xoá địa chỉ.';
+
+  @override
+  String get savedAddressActionFailed =>
+      'Chưa thực hiện được. Vui lòng thử lại.';
+
+  @override
+  String get savedAddressMore => 'Tuỳ chọn địa chỉ';
 }
