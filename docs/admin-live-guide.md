@@ -10,19 +10,7 @@ npx prisma generate
 npm run dev
 ```
 
-Trong `frontend`:
-
-```powershell
-flutter pub get
-copy env\env.example.json env\dev.json   # lần đầu
-flutter run -d chrome --dart-define-from-file=env/dev.json
-```
-
-`env/dev.json` phải có `"USE_MOCK_DATA": false` (mặc định). Trong VS Code chọn cấu hình chạy "ReStore (dev)".
-
-Đăng nhập bằng tài khoản đã xác minh, có `role = ADMIN`. Sau đăng nhập mở `/admin`; tài khoản admin cũng có lối vào từ trang Tài khoản. Chỉ người quản trị database được cấp vai trò ban đầu; ứng dụng không có API tự nâng quyền.
-
-`main_admin_preview.dart` và `/admin-preview` vẫn là bản mẫu độc lập, không thay dữ liệu thật. Workspace thật tại `/admin` gọi API bất kể cờ dữ liệu mẫu của các module khác.
+Trong `admin-web`, chạy `npm ci` rồi `npm run dev`. Mở địa chỉ local Vite in ra và đăng nhập bằng tài khoản ADMIN đã xác minh. Xem [hướng dẫn admin web](../admin-web/README.md).
 
 ## Hành vi
 
@@ -51,14 +39,12 @@ Người dùng/public: `/api/v1/content/{posts,media,knowledge/search,reports,re
 ```powershell
 # backend
 npm run build
-npx tsx --test src/modules/listings/listing.route.test.ts src/modules/promotions/promotion.route.test.ts
-# Cài PostgreSQL tạm ngoài repo, không dùng DB thật:
-npm install --prefix "$env:TEMP/restore-admin-verification" --no-save @electric-sql/pglite@0.5.8 @electric-sql/pglite-socket@0.2.11
-npx tsx scripts/verify-admin.ts "$env:TEMP/restore-admin-verification/node_modules"
+# Chỉ chạy khi TEST_DATABASE_URL trỏ đến database thử riêng có thể tạo lại.
+node --import tsx --test --test-concurrency=1 test/api/admin.api.test.ts test/api/commerce.api.test.ts test/api/content.api.test.ts
 # frontend
 flutter test --no-pub
 ```
 
-Migration đã được kiểm thử trên PostgreSQL tạm, không tự triển khai lên Supabase. Ảnh hiện lưu ở `backend/uploads/admin`; khi deploy cần volume bền vững. Các bản xem trước vẫn có test riêng và giữ nguyên dữ liệu mẫu.
+Ảnh bài viết được lưu bởi backend. Các kiểm thử local dùng database riêng.
 
 Tham khảo thiết lập quyền: [Supabase Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security).

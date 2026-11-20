@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/listing/listing_partner_badge.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
@@ -175,7 +176,7 @@ class _NewReleaseCard extends StatelessWidget {
                               dimension: 32,
                               child: Icon(
                                 item.isFavorite
-                                    ? AppIcons.favoriteActive
+                                    ? AppIcons.savedListing
                                     : AppIcons.favorite,
                                 size: 17,
                                 color: item.isFavorite
@@ -219,10 +220,9 @@ class _NewReleaseCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Text(
-                        listing.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      ListingCardTitle(
+                        title: listing.title,
+                        isPartner: listing.isPartner,
                         style: const TextStyle(
                           fontSize: 14,
                           height: 1.3,

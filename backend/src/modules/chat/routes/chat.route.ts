@@ -1,9 +1,15 @@
-import { Router } from 'express';
+import * as media from '../controllers/chat-media.controller.js';
+import { Router, raw } from 'express';
 import { verifyToken } from '../../../middlewares/auth.middleware.js';
 import * as controller from '../controllers/chat.controller.js';
 
 const router = Router();
+router.get('/media/file', media.readMedia);
 router.use(verifyToken);
+router.get('/:id/products', controller.products);
+router.patch('/:id/preferences', controller.preferences);
+router.post('/:id/media', raw({ type: 'application/octet-stream', limit: '25mb' }), media.sendMedia);
+router.get('/:id/media/:messageId/link', media.mediaLink);
 router.get('/unread-count', controller.unreadCount);
 router.post('/heartbeat', controller.heartbeat);
 router.get('/events', controller.events);
@@ -12,5 +18,7 @@ router.post('/', controller.startConversation);
 router.get('/:id', controller.getConversation);
 router.get('/:id/messages', controller.listMessages);
 router.post('/:id/messages', controller.sendMessage);
+router.post('/:id/trade', controller.tradeAction);
+router.post('/:id/review', controller.review);
 router.post('/:id/read', controller.markRead);
 export default router;

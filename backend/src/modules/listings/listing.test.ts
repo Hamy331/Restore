@@ -1,5 +1,23 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+
+test('listing search is routed as a feed query rather than a listing ID', async () => {
+  const { createServer } = await import('node:http');
+  const { createApp } = await import('../../app.js');
+  const server = createServer(createApp());
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  const address = server.address() as { port: number };
+  try {
+    // Invalid pagination must reach feed validation without making a database query.
+    const response = await fetch(`http://127.0.0.1:${address.port}/api/v1/listings/search?q=phone&limit=0`);
+    assert.equal(response.status, 400);
+    const body = await response.json() as { code: string };
+    assert.notEqual(body.code, 'LISTING_NOT_FOUND');
+  } finally {
+    server.closeAllConnections();
+    await new Promise<void>(resolve => server.close(() => resolve()));
+  }
+});
 import { ListingStatus, Prisma } from '@prisma/client';
 import { createInput, draftInput, feedQuery, listingFilters, orderedImages, recommendedQuery, validateAttributes } from './listing.validator.js';
 import { canChangeListingStatus, requireOwnedListing, updateOwnedListing } from './services/listing.service.js';
@@ -140,6 +158,8 @@ test('feed filters map to listing filters', () => {
   const nearby = parseFeedQuery({ filter: 'nearby', latitude: '10.77', longitude: '106.7' });
   assert.deepEqual(nearby.filters.nearby, { latitude: 10.77, longitude: 106.7, radius: 5 });
   assert.equal(parseFeedQuery({ filter: 'exchange' }).filters.allowExchange, true);
+  assert.equal(parseFeedQuery({ filter: 'recent', ownerId: 'seller-1', page: 2 }).filters.ownerId, 'seller-1');
+  assert.throws(() => parseFeedQuery({ ownerId: ['seller-1', 'seller-2'] }), AppError);
   assert.equal(parseFeedQuery({ latitude: '10.77', longitude: '106.7' }).filters.nearby, undefined);
   assert.throws(() => parseFeedQuery({ filter: 'popular' }), AppError);
 });

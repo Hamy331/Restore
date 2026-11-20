@@ -2,7 +2,7 @@ import { ListingStatus } from '@prisma/client';
 import type { listingFilters } from './listing.validator.js';
 
 /** Bộ lọc danh sách tin trang chủ */
-export const FEED_FILTERS = ['newest', 'nearby', 'exchange'] as const;
+export const FEED_FILTERS = ['newest', 'nearby', 'exchange', 'forYou', 'recent'] as const;
 export type FeedFilter = (typeof FEED_FILTERS)[number];
 
 /** Bộ lọc tìm kiếm đã làm sạch */

@@ -10,6 +10,7 @@ class ConversationState extends Equatable {
     this.failed = false,
     this.sending = false,
     this.sendFailed = false,
+    this.hasOlder = false,
   });
   final ChatConversation? conversation;
   final List<ChatMessage> messages;
@@ -19,7 +20,7 @@ class ConversationState extends Equatable {
   final bool loading, failed, sending;
 
   /// Lần gửi gần nhất bị lỗi; không giữ qua các lần emit sau.
-  final bool sendFailed;
+  final bool sendFailed, hasOlder;
 
   bool isMine(ChatMessage message) => message.senderId == selfId;
 
@@ -31,6 +32,7 @@ class ConversationState extends Equatable {
     bool? failed,
     bool? sending,
     bool sendFailed = false,
+    bool? hasOlder,
   }) => ConversationState(
     conversation: conversation ?? this.conversation,
     messages: messages ?? this.messages,
@@ -39,6 +41,7 @@ class ConversationState extends Equatable {
     failed: failed ?? this.failed,
     sending: sending ?? this.sending,
     sendFailed: sendFailed,
+    hasOlder: hasOlder ?? this.hasOlder,
   );
 
   @override
@@ -50,5 +53,6 @@ class ConversationState extends Equatable {
     failed,
     sending,
     sendFailed,
+    hasOlder,
   ];
 }

@@ -47,7 +47,10 @@ export const listingSelect = {
   paidCredits: true,
   paidDays: true,
   autoExtend: true,
-  owner: { select: { id: true, fullName: true, ratingAverage: true, ratingCount: true } },
+  owner: { select: {
+    id: true, fullName: true, ratingAverage: true, ratingCount: true,
+    storeSubscription: { select: { startsAt: true, endsAt: true, package: { select: { tier: true } } } },
+  } },
 } as const;
 
 export type ListingRecord = Prisma.ListingGetPayload<{ select: typeof listingSelect }>;
@@ -82,10 +85,13 @@ export const toRevisionDto = (revision: RevisionRecord) => ({
  * areaLabel: "Phường, Tỉnh" để hiện trên thẻ tin.
  */
 export function toListingDto(listing: ListingRecord, owner = false) {
-  const { paidCredits, paidDays, autoExtend, ...rest } = listing;
+  const { paidCredits, paidDays, autoExtend, owner: { storeSubscription, ...publicOwner }, ...rest } = listing;
+  const now = new Date();
+  const isPartner = storeSubscription?.package.tier === 'PRO' &&
+    storeSubscription.startsAt <= now && now < storeSubscription.endsAt;
   const location = owner ? listing.location : publicLocation(listing.location);
   const address = listing.location as { province?: { name?: string }; ward?: { name?: string } } | null;
-  return { ...rest, ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
+  return { ...rest, owner: publicOwner, isPartner, ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
     originalPrice: listing.originalPrice?.toString() ?? null, location,
     areaLabel: address ? [address.ward?.name, address.province?.name].filter(Boolean).join(', ') : '' };
 }

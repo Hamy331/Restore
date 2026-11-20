@@ -1,12 +1,12 @@
 import { ListingStatus } from '@prisma/client';
 import { AppError } from '../../../common/errors/app-error.js';
-import { assertDraftQuota, draftQuota, withQuotaTransaction } from '../../commerce/index.js';
+import { assertDraftQuota, draftQuota } from '../../commerce/index.js';
 import { DraftInput, toOwnerListingDto } from '../listing.dto.js';
 import { DRAFT_EDITABLE } from '../listing.type.js';
 import { createInput, validateAttributes } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
-import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing } from './listing.service.js';
+import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing, withListingWriteTransaction } from './listing.service.js';
 import { assertNotDuplicate } from './listing-lifecycle.service.js';
 import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
 
@@ -19,7 +19,7 @@ export async function createDraft(ownerId: string, data: DraftInput) {
   if (data.categoryId && !await listingRepository.findCategory(data.categoryId)) {
     throw new AppError(400, 'INVALID_DRAFT', 'Danh mục không tồn tại.', 'categoryId');
   }
-  const listing = await withQuotaTransaction(async (tx) => {
+  const listing = await withListingWriteTransaction(async (tx) => {
     await assertDraftQuota(tx, ownerId, new Date());
     return listingRepository.createListing({ ...data, ownerId, status: ListingStatus.DRAFT, images: [] }, tx);
   });
@@ -28,7 +28,7 @@ export async function createDraft(ownerId: string, data: DraftInput) {
 
 /** Sửa nháp, hoặc đưa tin đã đăng về nháp để sửa tiếp */
 export async function updateDraft(ownerId: string, id: string, data: DraftInput) {
-  const listing = await withQuotaTransaction(async (tx) => {
+  const listing = await withListingWriteTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (!DRAFT_EDITABLE.includes(current.status)) throw new AppError(409, 'DRAFT_CHANGED', 'Tin này không còn sửa được.');
     // Đưa tin đã đăng về nháp cũng chiếm một chỗ nháp
@@ -48,7 +48,7 @@ export async function updateDraft(ownerId: string, id: string, data: DraftInput)
 
 /** Đăng nháp: kiểm tra đủ nội dung như tin mới, cần ít nhất một ảnh, trừ lượt đăng */
 export async function publishDraft(ownerId: string, id: string, payWithCredits = false, allowDuplicate = false) {
-  const listing = await withQuotaTransaction(async (tx) => {
+  const listing = await withListingWriteTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (current.status === ListingStatus.PENDING) return listingRepository.findSelected(tx, id);
     if (current.status !== ListingStatus.DRAFT) throw new AppError(409, 'DRAFT_CHANGED', 'Tin này không còn là bản nháp.');

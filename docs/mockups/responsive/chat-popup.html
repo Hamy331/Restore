@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>900</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
+<link rel="stylesheet" href="mockup.css">
+<style>
+  html, body { height: 100%; overflow: hidden; }
+  .bgframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* ---- Nút nổi khi cửa sổ đóng ---- */
+  .launch-ai { position: fixed; right: 28px; bottom: 74px; width: 60px; height: 60px; border-radius: 50%; background: #fff;
+    display: grid; place-items: center; border: 2px solid var(--primary-soft); box-shadow: 0 8px 24px rgba(166,91,0,.28); }
+  .launch-ai img { width: 40px; height: 40px; }
+  .launch-ai .tip { position: absolute; right: 72px; top: 50%; transform: translateY(-50%); white-space: nowrap; background: var(--text); color: #fff;
+    font-size: 12.5px; padding: 6px 10px; border-radius: 8px; }
+  .launch-chat { position: fixed; right: 24px; bottom: 0; height: 48px; padding: 0 18px; border-radius: 12px 12px 0 0; background: var(--primary);
+    color: #fff; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px; box-shadow: 0 -2px 16px rgba(166,91,0,.3); }
+  .launch-chat svg.i { width: 20px; height: 20px; }
+  .launch-chat .n { background: #fff; color: var(--error); font-size: 12px; min-width: 20px; height: 20px; border-radius: 10px; display: grid; place-items: center; padding: 0 6px; }
+
+  /* ---- Cửa sổ chat ---- */
+  .win { position: fixed; right: 24px; bottom: 0; width: 700px; height: 560px; background: #fff; border-radius: 14px 14px 0 0;
+    box-shadow: 0 -4px 36px rgba(41,35,27,.22); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+  .win-hd { height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 12px 0 16px; border-bottom: 1px solid var(--border); }
+  .win-hd h3 { font-size: 17px; color: var(--primary-dark); font-weight: 800; }
+  .win-hd .cnt { font-size: 12px; color: var(--text2); }
+  .win-hd .sp { flex: 1; }
+  .win-hd .tb { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: var(--text2); }
+  .win-hd .tb svg.i { width: 17px; height: 17px; }
+  .win-body { flex: 1; display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 0; }
+  .wr .ctx .mid { min-width: 0; }
+  .wr .ctx .mid div { max-width: 100% !important; }
+  .wr .quickreply span { white-space: nowrap; }
+  .wr .quickreply { overflow: hidden; }
+  .wr .msgs > * { flex: none; }
+  .win { height: 600px !important; }
+  .wl { border-right: 1px solid var(--border); display: flex; flex-direction: column; min-height: 0; }
+  .wl .top { padding: 10px; display: flex; gap: 6px; border-bottom: 1px solid #F3EFE8; }
+  .wl .csearch { flex: 1; height: 32px; font-size: 12.5px; }
+  .wl .all { font-size: 12.5px; display: flex; align-items: center; gap: 2px; color: var(--text2); padding: 0 4px; }
+  .wl .all svg.i { width: 14px; height: 14px; }
+  .wc { display: flex; gap: 10px; padding: 9px 10px; align-items: center; border-bottom: 1px solid #F5F1EA; }
+  .wc .ava { width: 38px; height: 38px; border-width: 1px; }
+  .wc .mid { flex: 1; min-width: 0; }
+  .wc .mid b { font-size: 13px; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; }
+  .wc .mid span { font-size: 12px; color: var(--text2); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wc .r { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; font-size: 10.5px; color: var(--text2); }
+  .wc .r i { font-style: normal; background: var(--error); color: #fff; font-size: 10.5px; font-weight: 700; min-width: 17px; height: 17px; border-radius: 9px; display: grid; place-items: center; }
+  .wc.on { background: var(--cream); box-shadow: inset 3px 0 0 var(--primary); }
+  .wc.ai { background: linear-gradient(90deg, #FFF4E0, #FFFDF8); }
+  .wc.ai.on { background: linear-gradient(90deg, #FFE8C2, #FFF6E6); }
+  .wc.ai .ava { background: #fff; display: grid; place-items: center; border: 1px solid #F3D9A6; }
+  .wc.ai .ava img { width: 28px; height: 28px; object-fit: contain; }
+  .aitag { font-size: 9.5px; font-weight: 800; color: #fff; background: linear-gradient(90deg, #E9A529, #C2410C); padding: 1px 5px; border-radius: 4px; }
+  .pin { font-size: 10px; color: var(--primary-dark); display: flex; align-items: center; gap: 3px; }
+  .wr { display: flex; flex-direction: column; background: var(--bg); min-height: 0; }
+  .wr .chd { padding: 9px 14px; }
+  .wr .chd .ava { width: 34px; height: 34px; }
+  .wr .chd .nm b { font-size: 14px; }
+  .wr .ctx { margin: 10px 12px 0; padding: 8px 10px; }
+  .wr .ctx img { width: 42px; height: 42px; }
+  .wr .ctx .mid div { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .wr .ctx .btn { height: 30px; padding: 0 10px; font-size: 12.5px; }
+  .wr .msgs { padding: 12px 14px; gap: 8px; }
+  .wr .m { font-size: 13px; max-width: 80%; padding: 8px 11px; }
+  .wr .offer { width: 240px; }
+  .wr .offer .b b { font-size: 17px; }
+  .wr .cinput { padding: 10px 12px; }
+  .wr .cinput .box2 { height: 38px; font-size: 13px; }
+  .wr .cinput .send { width: 38px; height: 38px; }
+  .wr .quickreply { padding: 0 14px 8px; }
+  .wr .quickreply span { font-size: 12px; padding: 4px 10px; }
+  /* AI */
+  .ai-hd .ava { background: #fff; display: grid; place-items: center; }
+  .ai-hd .ava img { width: 26px; height: 26px; }
+  .ai-hd .nm span { color: var(--text2) !important; }
+  .m.ai { background: #fff; border: 1px solid #F3D9A6; border-bottom-left-radius: 4px; align-self: flex-start; }
+  .results { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 86%; }
+  .rc { background: #fff; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; gap: 8px; padding: 6px; }
+  .rc img { width: 54px; height: 54px; border-radius: 8px; object-fit: cover; }
+  .rc .t { font-size: 12px; line-height: 1.3; height: 31px; overflow: hidden; }
+  .rc b { font-size: 13px; color: var(--primary-dark); }
+  .rc .mt { font-size: 10.5px; color: var(--text2); }
+  .byline { font-size: 10.5px; color: var(--text2); display: flex; align-items: center; gap: 4px; margin-top: -2px; }
+  .shortcuts span { display: inline-flex; align-items: center; gap: 4px; }
+  .note { position: fixed; left: 24px; bottom: 20px; background: var(--text); color: #fff; font-size: 13px; padding: 10px 14px; border-radius: 10px; max-width: 520px; line-height: 1.5; opacity: .92; }
+</style>
+</head>
+<body>
+<iframe class="bgframe" src="home.html#embed"></iframe>
+<div id="ui"></div>
+
+<script src="mockup.js"></script>
+<script>
+const state = new URLSearchParams(location.search).get('s') || 'closed';
+const SH = A + 'images/shops/';
+const AI_IMG = A + 'icons/ui/ai.png';
+
+const sellers = [
+  ['canon', 'Minh Tuấn Camera', 'Anh để 5 triệu, em qua Quận 3 test…', '09:20', 0],
+  ['sony', 'Sony Center', 'Tai nghe còn bảo hành 6 tháng nhé', '08:41', 2],
+  ['ikea', 'Nhà Gỗ IKEA', 'Kệ này ship được Thủ Đức không ạ?', 'Hôm qua', 1],
+  ['apple', 'Apple Store cũ', 'Máy pin 92%, chưa qua sửa chữa', 'Thứ 3', 0],
+  ['retrohub', 'RetroHub', 'Bạn đã trả giá 1.500.000 ₫', 'Thứ 2', 0],
+  ['uniqlo', 'Lan Phương', 'Cảm ơn bạn, mình nhận được hàng rồi', 'CN', 0],
+  ['pawhouse', 'PawHouse', 'Đánh giá để nhận 20 xu nhé!', '18/11', 0],
+];
+
+function list(active) {
+  const ai = `<a class="wc ai ${active === 'ai' ? 'on' : ''}"><span class="ava"><img src="${AI_IMG}"></span>
+    <div class="mid"><b>ReStore AI <span class="aitag">AI</span></b><span>Hôm nay bạn đang tìm mua gì?</span></div>
+    <div class="r"><span class="pin">📌</span></div></a>`;
+  return ai + sellers.map(([l, n, m, t, u], i) =>
+    `<a class="wc ${active === 'chat' && i === 0 ? 'on' : ''}"><span class="ava"><img src="${SH + l}.png"></span>
+     <div class="mid"><b>${n}</b><span>${m}</span></div><div class="r">${t}${u ? `<i>${u}</i>` : ''}</div></a>`).join('');
+}
+
+const sellerPane = `
+  <div class="chd"><span class="ava"><img src="${SH}canon.png"></span>
+    <div class="nm"><b>Minh Tuấn Camera</b><span>● Đang hoạt động</span></div>
+    <span class="round">${ic('phone')}</span></div>
+  <div class="ctx"><img src="${MP}detail-canon.jpg"><div class="mid"><div>Máy ảnh Canon EOS 700D kèm lens 18-55</div><b>5.200.000 ₫</b></div>
+    <a class="btn btn-soft">${ic('tag')} Trả giá</a><a class="btn btn-primary">Mua ngay</a></div>
+  <div class="msgs">
+    <div class="m out">Chào anh, máy còn không ạ? Số shot khoảng bao nhiêu vậy anh?<small>09:12 ✓✓</small></div>
+    <div class="m in">Còn em nhé. Số shot khoảng 12.000, máy kèm 2 pin, sạc, túi và thẻ 32GB.<small>09:14</small></div>
+    <div class="offer"><div class="h">${ic('tag')} Bạn đã trả giá</div><div class="b"><b>4.800.000 ₫</b><s>5.200.000 ₫</s><div>Đang chờ người bán phản hồi</div></div></div>
+    <div class="m in">Anh để 5 triệu, em qua Quận 3 test máy được không?<small>09:20</small></div>
+  </div>
+  <div class="quickreply"><span>Hẹn chiều nay nhé</span><span>Đồng ý 5 triệu</span></div>
+  <div class="cinput"><span class="round">${ic('image')}</span><div class="box2">Nhập tin nhắn...</div><span class="send">${ic('send')}</span></div>`;
+
+const aiPane = `
+  <div class="chd ai-hd"><span class="ava"><img src="${AI_IMG}"></span>
+    <div class="nm"><b>ReStore AI</b><span>Trợ lý mua sắm · Được tạo bởi AI</span></div>
+    <a class="btn btn-ghost" style="height:30px;padding:0 10px;font-size:12.5px">Bắt đầu lại</a></div>
+  <div class="msgs">
+    <div class="m ai">Chào bạn, mình là ReStore, trợ lý mua sắm AI của bạn. Mình có thể giúp bạn tìm tin đăng, so sánh giá và chọn món phù hợp.</div>
+    <div class="m out">Tìm máy ảnh film dưới 4 triệu ở TP.HCM</div>
+    <div class="m ai">Mình tìm thấy 2 tin máy ảnh film phù hợp. Bạn có thể mở từng tin để xem thêm.</div>
+    <div class="results">
+      <a class="rc"><img src="${MP}listing-camera.png"><div><div class="t">Máy ảnh film cổ, còn chụp tốt</div><b>1.650.000 ₫</b><div class="mt">Quận 3 · 2,4 km</div></div></a>
+      <a class="rc"><img src="${MP}detail-fujifilm.jpg"><div><div class="t">Máy film Fujica compact, kèm bao da</div><b>2.300.000 ₫</b><div class="mt">Bình Thạnh · 4 km</div></div></a>
+    </div>
+    <div class="byline">✦ Được tạo bởi AI · có thể chưa chính xác</div>
+  </div>
+  <div class="quickreply shortcuts"><span>📱 Điện thoại</span><span>💻 Laptop</span><span>📷 Máy ảnh</span><span>Tìm laptop cho sinh viên</span></div>
+  <div class="cinput"><div class="box2">Hỏi về sản phẩm, giá, khu vực...</div><span class="send">${ic('send')}</span></div>`;
+
+const ui = document.getElementById('ui');
+if (state === 'closed') {
+  ui.innerHTML = `
+    <a class="launch-ai"><img src="${AI_IMG}"><span class="tip">Chat với ReStore AI</span></a>
+    <a class="launch-chat">${ic('msg')} Tin nhắn <span class="n">3</span></a>`;
+} else {
+  ui.innerHTML = `<div class="win">
+    <div class="win-hd"><h3>Tin nhắn</h3><span class="cnt">(3 chưa đọc)</span><span class="sp"></span>
+      <span class="tb" title="Mở trang tin nhắn đầy đủ">${ic('expand')}</span><span class="tb" title="Thu nhỏ">${ic('down')}</span></div>
+    <div class="win-body">
+      <div class="wl"><div class="top"><div class="csearch">${ic('search')} Tìm theo tên</div><span class="all">Tất cả ${ic('down')}</span></div>
+        <div>${list(state)}</div></div>
+      <div class="wr">${state === 'ai' ? aiPane : sellerPane}</div>
+    </div></div>`;
+}
+</script>
+</body>
+</html>

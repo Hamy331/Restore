@@ -286,9 +286,7 @@ class _ListingDetailViewState extends State<ListingDetailView> {
                                           ? Icons.favorite
                                           : Icons.favorite_border,
                                       size: 17,
-                                      color: _saved
-                                          ? const Color(0xFFD9480F)
-                                          : _ink,
+                                      color: _saved ? AppColors.error : _ink,
                                     ),
                                     label: Text(_saved ? 'Đã lưu' : 'Lưu'),
                                     style: OutlinedButton.styleFrom(

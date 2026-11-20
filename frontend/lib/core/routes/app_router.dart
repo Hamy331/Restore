@@ -1,20 +1,18 @@
-import 'dart:async';
 import 'package:restore/modules/content/views/community_content_view.dart';
 import 'package:restore/modules/credits/views/credit_bonus/credit_bonus_view.dart';
 import 'package:restore/modules/credits/views/credit_history/credit_history_view.dart';
 import 'package:restore/modules/notifications/views/notifications/notifications_view.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
 import 'package:restore/modules/credits/views/credit_wallet/credit_wallet_view.dart';
-import 'package:restore/modules/admin/presentation/admin_live_workspace.dart';
+
 import 'package:flutter/material.dart';
-import 'package:restore/modules/admin/presentation/admin_workspace.dart';
-import 'package:restore/modules/admin/presentation/admin_commerce.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/modules/feeds/views/feeds/feeds_view.dart';
 import 'package:restore/modules/account/models/profile_models.dart';
 import 'package:restore/modules/account/views/follow_list/follow_list_view.dart';
 import 'package:restore/modules/account/views/language_settings/language_settings_view.dart';
+import 'package:restore/modules/account/views/my_reviews/my_reviews_view.dart';
 import 'package:restore/modules/account/views/public_profile/public_profile_view.dart';
 import 'package:restore/modules/account/views/account/account_view.dart';
 import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dart';
@@ -25,7 +23,6 @@ import 'package:restore/modules/following/views/following_hub/following_hub_view
 import 'package:restore/modules/trusted_shop/views/following_shops/following_shops_view.dart';
 import 'package:restore/modules/chat/views/messages/messages_view.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
-import 'package:restore/modules/chat/views/conversation/live_chat_conversation_view.dart';
 import 'package:restore/modules/home/views/home/home_view.dart';
 
 import 'package:restore/modules/feed/views/post_composer/post_composer_view.dart';
@@ -63,8 +60,7 @@ import 'package:restore/services/device_location_service.dart';
 import 'package:restore/services/media_picker_service.dart';
 import 'package:restore/core/utils/animations/app_page_transitions.dart';
 import 'package:restore/modules/shell/views/main_shell.dart';
-import 'package:restore/modules/shell/bloc/shell_badges_cubit.dart';
-import 'package:restore/modules/chat/repositories/chat_repository.dart';
+import 'package:restore/modules/shell/views/desktop_frame.dart';
 import '../../modules/ai/bloc/ai_assistant_cubit.dart';
 import '../../modules/ai/views/ai_assistant_view.dart';
 import '../../modules/auth/bloc/login/login_bloc.dart';
@@ -87,11 +83,14 @@ import '../../modules/shop_posters/views/shop_posters/shop_posters_view.dart';
 import '../../modules/auth/bloc/auth/auth_bloc.dart';
 import '../../modules/auth/utils/auth_route_guard.dart';
 import '../../modules/auth/views/splash/splash_view.dart';
-import '../../modules/plans/utils/plan_session.dart';
 import '../../modules/plans/views/plans/plans_view.dart';
 import 'router_refresh_stream.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+/// Navigator của các trang sau khi vào app, nằm trong [DesktopFrame]
+/// (web desktop có header + cửa sổ chat nổi; điện thoại giữ nguyên).
+final _frameNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Router của app. Chạy lại `redirect` mỗi khi [authBloc] đổi trạng thái,
 /// nên mọi chuyển trang theo đăng nhập / đăng xuất / hết phiên nằm ở
@@ -112,6 +111,7 @@ class CreateListingRepositories {
 
 GoRouter createAppRouter(
   AuthBloc authBloc, {
+  AiAssistantCubit Function()? assistant,
   CreateListingRepositories createListing = const CreateListingRepositories(),
 }) => GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -132,22 +132,6 @@ GoRouter createAppRouter(
       path: '/support',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (_, _) => const CommunityContentView(),
-    ),
-    if (AppEnvironment.enableAdminPreview)
-      GoRoute(
-        path: '/admin-preview',
-        builder: (context, _) =>
-            AdminWorkspace(onExit: () => context.go('/welcome')),
-      ),
-    GoRoute(
-      path: '/admin',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const AdminLiveWorkspace(),
-    ),
-    GoRoute(
-      path: '/admin/commerce',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => const AdminCommerceView(),
     ),
     GoRoute(path: '/welcome', builder: (_, _) => const WelcomeView()),
     GoRoute(
@@ -207,6 +191,18 @@ GoRouter createAppRouter(
         destination: '/login',
       ),
     ),
+    ShellRoute(
+      navigatorKey: _frameNavigatorKey,
+      builder: (_, state, child) => DesktopFrame(
+        location: state.uri.path,
+        selectedConversationId: LiveMessagesView.selectedConversation(state.uri),
+        listingSearchQuery: state.uri.path == SearchResultsView.path
+            ? state.uri.queryParameters['q'] ?? ''
+            : null,
+        assistant: assistant,
+        child: child,
+      ),
+      routes: [
     // Luồng đăng tin: các bước dùng chung một CreateListingBloc
     ShellRoute(
       builder: (context, state, child) => MultiRepositoryProvider(
@@ -281,17 +277,10 @@ GoRouter createAppRouter(
       ],
     ),
     StatefulShellRoute.indexedStack(
-      builder: (_, _, navigationShell) => BlocProvider(
-        create: (_) {
-          // Gói thật của tài khoản cho menu nút giữa và lời chào trang chủ
-          unawaited(PlanSession.refresh());
-          return ShellBadgesCubit(
-            chatRepository: AppEnvironment.useMockData
-                ? MockChatRepository()
-                : ApiChatRepository(),
-          )..refresh();
-        },
-        child: MainShell(navigationShell: navigationShell),
+      // ShellBadgesCubit (số tin chưa đọc) do DesktopFrame cấp
+      builder: (_, state, navigationShell) => MainShell(
+        navigationShell: navigationShell,
+        hideNavigation: LiveMessagesView.selectedConversation(state.uri) != null,
       ),
       branches: [
         StatefulShellBranch(
@@ -310,10 +299,12 @@ GoRouter createAppRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/messages',
-              builder: (_, _) => AppEnvironment.useMockData
+              path: LiveMessagesView.path,
+              builder: (_, state) => AppEnvironment.useMockData
                   ? const MessagesView()
-                  : const LiveMessagesView(),
+                  : LiveMessagesView(
+                      conversationId: LiveMessagesView.selectedConversation(state.uri),
+                    ),
             ),
           ],
         ),
@@ -327,7 +318,7 @@ GoRouter createAppRouter(
     // Viết bài lên Bảng tin; panel=photos mở sẵn lưới ảnh
     GoRoute(
       path: PostComposerView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide<String>(
         state: state,
         child: PostComposerView(
@@ -337,16 +328,17 @@ GoRouter createAppRouter(
     ),
     GoRoute(
       path: '/messages/:id',
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       builder: (_, state) => AppEnvironment.useMockData
           ? const ChatConversationView()
-          : LiveChatConversationView(
+          : LiveMessagesView(
+              key: ValueKey(state.pathParameters['id']),
               conversationId: state.pathParameters['id']!,
             ),
     ),
     GoRoute(
       path: '/messages/:id/offer/:stage',
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       builder: (_, state) => ChatConversationView(
         stage: switch (state.pathParameters['stage']) {
           'seller-review' => ChatOfferStage.sellerReview,
@@ -358,8 +350,10 @@ GoRouter createAppRouter(
     ),
     GoRoute(
       path: '/ai-assistant',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (_, _) => BlocProvider(
+      parentNavigatorKey: _frameNavigatorKey,
+      builder: (_, _) => assistant != null
+          ? BlocProvider.value(value: assistant(), child: const AiAssistantView())
+          : BlocProvider(
         create: (_) => AiAssistantCubit(),
         child: const AiAssistantView(),
       ),
@@ -367,17 +361,27 @@ GoRouter createAppRouter(
     // Chi tiết sản phẩm; extra là ListingModel của thẻ vừa bấm (tuỳ chọn)
     GoRoute(
       path: '/settings',
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       builder: (_, _) => const LanguageSettingsView(),
+    ),
+    GoRoute(
+      path: MyReviewsView.path,
+      parentNavigatorKey: _frameNavigatorKey,
+      builder: (_, _) => const MyReviewsView(),
+    ),
+    GoRoute(
+      path: MyReviewsView.ratingsPath,
+      parentNavigatorKey: _frameNavigatorKey,
+      builder: (_, _) => const MyReviewsView(received: true),
     ),
     // Chỉnh sửa hồ sơ, mở từ tab Tài khoản (extra = UserProfileCubit);
     // thiếu extra (VD mở lại từ link) thì về tab Tài khoản
     GoRoute(
       path: EditProfileView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       redirect: (_, state) =>
           state.extra is UserProfileCubit ? null : '/account',
-      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
         state: state,
         child: EditProfileView(cubit: state.extra! as UserProfileCubit),
       ),
@@ -385,15 +389,15 @@ GoRouter createAppRouter(
     // Hồ sơ công khai và danh sách theo dõi (?tab=followers|following|shops)
     GoRoute(
       path: '/users/:id',
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
-        child: PublicProfileView(userId: state.pathParameters['id']!),
+        child: PublicProfileView(userId: state.pathParameters['id']!, openReviews: state.uri.queryParameters['tab'] == 'reviews'),
       ),
       routes: [
         GoRoute(
           path: 'follows',
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: _frameNavigatorKey,
           pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
             state: state,
             child: FollowListView(
@@ -413,7 +417,7 @@ GoRouter createAppRouter(
     ),
     GoRoute(
       path: '/listings/:id',
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
         state: state,
         child: ProductDetailView(
@@ -427,14 +431,14 @@ GoRouter createAppRouter(
     // Tin đăng quanh vị trí người dùng (lối tắt "Gần bạn" ở trang chủ)
     GoRoute(
       path: '/nearby',
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) =>
           AppPageTransitions.fadeSlide(state: state, child: const NearbyView()),
     ),
     // Tất cả tin Hot sale (tin ưu tiên), mở từ dải danh mục và mục Hot sale
     GoRoute(
       path: HotSaleView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const HotSaleView(),
@@ -443,7 +447,7 @@ GoRouter createAppRouter(
     // Tin của một danh mục; extra là CategoryModel vừa bấm (tuỳ chọn)
     GoRoute(
       path: CategoryDetailView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: CategoryDetailView(
@@ -457,7 +461,7 @@ GoRouter createAppRouter(
     // Chọn khu vực (Gần bạn, thông báo Báo khi có hàng), trả về AreaPickResult
     GoRoute(
       path: AreaSearchView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: AreaSearchView(
@@ -468,7 +472,7 @@ GoRouter createAppRouter(
     // Tìm kiếm tin; q là từ khoá điền sẵn (tuỳ chọn)
     GoRoute(
       path: '/search',
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: SearchView(initialQuery: state.uri.queryParameters['q'] ?? ''),
@@ -477,7 +481,7 @@ GoRouter createAppRouter(
     // Kết quả tìm kiếm; from=search khi mở từ trang tìm kiếm
     GoRoute(
       path: SearchResultsView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: SearchResultsView(
@@ -489,7 +493,7 @@ GoRouter createAppRouter(
     // Báo khi có hàng: quản lý thông báo của người dùng
     GoRoute(
       path: WantedAlertsView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const WantedAlertsView(),
@@ -497,13 +501,13 @@ GoRouter createAppRouter(
     ),
     GoRoute(
       path: PlansView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) =>
           AppPageTransitions.fadeSlide(state: state, child: const PlansView()),
     ),
     GoRoute(
       path: CreditWalletView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const CreditWalletView(),
@@ -511,7 +515,7 @@ GoRouter createAppRouter(
     ),
     GoRoute(
       path: CreditTopupView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: CreditTopupView(
@@ -522,7 +526,7 @@ GoRouter createAppRouter(
     ),
     GoRoute(
       path: CreditBonusView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const CreditBonusView(),
@@ -530,7 +534,7 @@ GoRouter createAppRouter(
     ),
     GoRoute(
       path: CreditHistoryView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const CreditHistoryView(),
@@ -539,7 +543,7 @@ GoRouter createAppRouter(
     // Thông báo trong app (chuông ở trang chủ)
     GoRoute(
       path: NotificationsView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const NotificationsView(),
@@ -549,7 +553,7 @@ GoRouter createAppRouter(
     // quản lý (tạo xong thì trả về WantedAlertItem)
     GoRoute(
       path: WantedAlertCreateView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: WantedAlertCreateView(
@@ -561,7 +565,7 @@ GoRouter createAppRouter(
     // Tin đã khớp một thông báo; extra là WantedAlertItem vừa bấm (tuỳ chọn)
     GoRoute(
       path: WantedAlertDetailView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
         state: state,
         child: WantedAlertDetailView(
@@ -575,7 +579,7 @@ GoRouter createAppRouter(
     // Shop uy tín: shop đã xác minh và sản phẩm của các shop đó
     GoRoute(
       path: TrustedShopsView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         // ?shop=<id>: mở trang rồi vào thẳng shop đó (VD bấm banner trang chủ)
@@ -586,10 +590,11 @@ GoRouter createAppRouter(
     // đóng trang trả về trạng thái theo dõi mới nếu đã đổi
     GoRoute(
       path: ShopDetailView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
         state: state,
         child: ShopDetailView(
+          catalog: state.uri.queryParameters['catalog'] == '1',
           shopId: state.pathParameters['id']!,
           shop: state.extra is TrustedShopItem
               ? state.extra! as TrustedShopItem
@@ -600,7 +605,7 @@ GoRouter createAppRouter(
     // Quản lý poster shop (nút Shop poster ở menu xoè, gói Cửa hàng)
     GoRoute(
       path: ShopPostersView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const ShopPostersView(),
@@ -609,7 +614,7 @@ GoRouter createAppRouter(
     // Tạo / sửa poster; thiếu extra (VD mở lại từ link) thì về trang quản lý
     GoRoute(
       path: PosterEditorView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       redirect: (_, state) =>
           state.extra is PosterEditorArgs ? null : ShopPostersView.path,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
@@ -620,14 +625,14 @@ GoRouter createAppRouter(
     // Quản lý shop (nút Quản lý shop ở menu xoè của gói Cửa hàng)
     GoRoute(
       path: MyShopView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) =>
           AppPageTransitions.fadeSlide(state: state, child: const MyShopView()),
     ),
     // Người theo dõi shop của mình (ô Người theo dõi ở Quản lý shop)
     GoRoute(
       path: ShopFollowersView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const ShopFollowersView(),
@@ -636,7 +641,7 @@ GoRouter createAppRouter(
     // Trang Đang theo dõi (lối tắt ở trang chủ)
     GoRoute(
       path: FollowingHubView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const FollowingHubView(),
@@ -645,7 +650,7 @@ GoRouter createAppRouter(
     // Shop uy tín đang theo dõi và tin mới của họ
     GoRoute(
       path: FollowingShopsView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const FollowingShopsView(),
@@ -654,7 +659,7 @@ GoRouter createAppRouter(
     // Thống kê của người bán (nút Thống kê ở menu xoè)
     GoRoute(
       path: InsightsView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const InsightsView(),
@@ -663,7 +668,7 @@ GoRouter createAppRouter(
     // Trang Boost của tôi: tin đang quảng bá, sắp hết hạn, chưa quảng bá
     GoRoute(
       path: PromotionHubView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const PromotionHubView(),
@@ -673,11 +678,13 @@ GoRouter createAppRouter(
     // Đóng trang trả về true khi đã đẩy / mua.
     GoRoute(
       path: BoostListingView.path,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide<bool>(
         state: state,
         child: BoostListingView(listingId: state.pathParameters['id']!),
       ),
+    ),
+      ],
     ),
   ],
 );

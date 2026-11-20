@@ -15,6 +15,7 @@ import { chatRouter } from './modules/chat/index.js';
 import { feedRouter } from './modules/feeds/index.js';
 import { mediaRouter } from './modules/media/media.route.js';
 import { shopRouter } from './modules/shops/index.js';
+import { assistantRouter, ragRouter } from './modules/ai/index.js';
 
 /** Toàn bộ API, gắn dưới tiền tố /api/v1 trong app.ts. */
 export const apiRouter = Router();
@@ -42,4 +43,6 @@ apiRouter.use('/catalog', catalogRouter);
 // router của nó yêu cầu đăng nhập cho mọi đường dẫn đi qua.
 apiRouter.use('/media', mediaRouter);
 apiRouter.use('/conversations', chatRouter);
+apiRouter.use('/ai/assistant', assistantRouter);
+apiRouter.use('/ai/rag', ragRouter);
 apiRouter.use(feedRouter);

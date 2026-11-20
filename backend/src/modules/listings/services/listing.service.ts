@@ -114,12 +114,26 @@ export async function resolveDisplay(tx: Db, ownerId: string, now: Date, categor
 
 /* ---------- Tin đăng ---------- */
 
+/** Các thao tác lưu tin cần đủ thời gian cho nhiều truy vấn quota qua pooler. */
+export async function withListingWriteTransaction<T>(work: (tx: Db) => Promise<T>): Promise<T> {
+  try {
+    return await withQuotaTransaction(work, { timeout: 12_000 });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2028' &&
+        /expired transaction|unable to start a transaction in the given time/i.test(error.message)) {
+      throw new AppError(503, 'LISTING_WRITE_TIMEOUT', 'Lưu tin mất nhiều thời gian hơn dự kiến. Vui lòng thử lại.');
+    }
+    throw error;
+  }
+}
+
 /**
  * Đăng tin mới, chờ duyệt (PENDING). Hết suất miễn phí thì cần [payWithCredits]:
  * xu được giữ ngay, duyệt thì trừ hẳn, từ chối thì hoàn.
  */
 export async function createListing(ownerId: string, data: ListingInput, payWithCredits = false, allowDuplicate = false) {
-  const listing = await withQuotaTransaction(async (tx) => {
+  const listing = await withListingWriteTransaction(async (tx) => {
     const now = new Date();
     const category = await assertPublishable(tx, data);
     await assertNotDuplicate(tx, ownerId, data, { allowDuplicate, now });
@@ -148,7 +162,7 @@ export const REVISABLE: readonly ListingStatus[] = [ListingStatus.AVAILABLE, Lis
  *   Tin đã trả xu giữ nguyên suất nhưng không được đổi chuyên mục (giá mỗi chuyên mục khác nhau).
  */
 export async function updateListing(ownerId: string, id: string, data: ListingInput, payWithCredits = false) {
-  const listing = await withQuotaTransaction(async (tx) => {
+  const listing = await withListingWriteTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (!LISTING_EDITABLE.includes(current.status)) {
       throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị, đã ẩn, chờ duyệt hoặc bị từ chối.');
@@ -521,9 +535,15 @@ export async function viewListing(viewer: Viewer, id: string) {
   const [seller, category, sellerActiveListings, favorite] = await listingRepository.findDetailExtras(
     listing.ownerId, listing.categoryId, id, viewer?.userId);
   // Trang chi tiết (docs: listing-api-contract.md mục 5): người bán công khai, danh mục kèm thuộc tính
+  if (!seller) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy người bán của tin đăng.');
+  const { _count, ...publicSeller } = seller;
+  const subscription = listing.owner.storeSubscription;
+  const now = new Date();
   return {
     ...toListingDto(listing),
-    seller,
+    seller: publicSeller,
+    sellerSoldCount: _count.listings,
+    sellerPlanTier: subscription && subscription.startsAt <= now && now < subscription.endsAt ? subscription.package.tier : null,
     category: category ? toCategoryDto(category) : listing.category,
     sellerActiveListings,
     isFavorite: !!favorite,

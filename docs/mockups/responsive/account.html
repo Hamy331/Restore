@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Restore web — Tài khoản</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<div data-header></div>
+
+<main class="wrap" style="padding-top:28px">
+  <div class="acc">
+    <!-- Menu bên trái -->
+    <aside>
+      <div class="side-me"><span class="ava ini">P</span><div><b>Phát Nguyễn</b><span><i data-i="settings"></i> Sửa hồ sơ</span></div></div>
+      <nav class="menu">
+        <a><i data-i="user"></i> Tài khoản của tôi</a>
+        <a class="sub on">Hồ sơ</a>
+        <a class="sub">Địa chỉ</a>
+        <a class="sub">Đổi mật khẩu</a>
+        <a class="sub">Ngôn ngữ</a>
+        <a class="sub">Cài đặt thông báo</a>
+        <hr>
+        <a><i data-i="file"></i> Tin đăng của tôi</a>
+        <a><i data-i="heart"></i> Tin đã lưu</a>
+        <a><i data-i="users"></i> Đang theo dõi</a>
+        <a><i data-i="bell2"></i> Báo khi có hàng</a>
+        <a><i data-i="store"></i> Cửa hàng của tôi</a>
+        <hr>
+        <a><i data-i="coin"></i> Ví xu</a>
+        <a><i data-i="crown"></i> Gói thành viên</a>
+        <a><i data-i="pkg"></i> Đơn mua / bán</a>
+        <hr>
+        <a style="color:var(--error)"><i data-i="logout"></i> Đăng xuất</a>
+      </nav>
+    </aside>
+
+    <div>
+      <!-- Tóm tắt ví / gói -->
+      <div class="wallet">
+        <div class="box wcard"><img src="../../../frontend/assets/icons/ui/coin.png"><div><span>Xu Restore</span><b>1.250 xu</b></div><a class="btn btn-soft">Nạp xu</a></div>
+        <div class="box wcard"><img src="../../../frontend/assets/icons/ui/crown.png"><div><span>Gói thành viên</span><b>Pro</b></div><a class="btn btn-ghost">Nâng cấp</a></div>
+        <div class="box wcard"><img src="../../../frontend/assets/icons/ui/post.png"><div><span>Tin đang bán</span><b>8 tin</b></div><a class="btn btn-primary"><i data-i="plus"></i> Đăng tin</a></div>
+      </div>
+
+      <!-- Hồ sơ -->
+      <section class="box">
+        <div class="form-hd"><h1>Hồ sơ của tôi</h1><p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p></div>
+        <div class="form">
+          <div class="fl">
+            <label>Tên đăng nhập</label><div>phatnguyen</div>
+            <label>Tên hiển thị</label><div class="inp">Phát Nguyễn</div>
+            <label>Giới thiệu</label><div class="inp" style="height:72px;align-items:flex-start;padding-top:11px;color:var(--text2)">Chuyên đồ điện tử cũ, máy ảnh. Giao dịch nhanh gọn ở TP.HCM.</div>
+            <label>Email</label><div>ph*********@gmail.com <a class="link">Thay đổi</a></div>
+            <label>Số điện thoại</label><div>*********23 <a class="link">Thay đổi</a></div>
+            <label>Giới tính</label><div class="radios"><span><i class="on"></i> Nam</span><span><i></i> Nữ</span><span><i></i> Khác</span></div>
+            <label>Ngày sinh</label><div>**/**/2004 <a class="link">Thay đổi</a></div>
+            <label></label><div><a class="btn btn-primary" style="width:120px">Lưu</a></div>
+          </div>
+          <div class="avatar-pick">
+            <span class="ava ini" style="font-size:40px">P</span>
+            <a class="btn btn-ghost">Chọn ảnh</a>
+            <p>Dung lượng tối đa 1 MB<br>Định dạng: .JPEG, .PNG</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<div data-footer></div>
+<script src="mockup.js"></script>
+<script>mount(); document.title = String(document.documentElement.scrollHeight);</script>
+</body>
+</html>

@@ -1,25 +1,27 @@
-import { Tabs } from 'antd';
-import { FlagOutlined } from '@ant-design/icons';
-import { EmptyState } from '../../shared/ui/Panel';
+import { GroupedReports } from './GroupedReports';
+import type { ReasonConfig } from './reportTypes';
 import { History } from '../audit/History';
-import { Alert, Button, Image, Modal, Spin, Table } from 'antd';
+import { Alert, Image, Modal, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { Session } from '../../shared/api/session';
-import { useResource, type Page } from '../../shared/api/useResource';
+import { useResource } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { DecisionForm, type Action } from '../moderation/DecisionForm';
 import { ListingDetails, type Listing } from '../listings/ListingDetails';
 
-type Report = {
+export type Report = {
   id: string;
   reporterId: string;
   targetId: string;
   targetType: 'USER' | 'LISTING' | 'FEED_POST';
   reason: string;
   evidence: string;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
   status: string;
   resolution?: string;
   updatedAt: string;
+  createdAt: string;
 };
 type ReportedUser = { fullName: string; email: string; status: string; updatedAt: string };
 type ReportedFeedPost = {
@@ -31,11 +33,6 @@ type ReportedFeedPost = {
   author: { id: string; fullName: string; status: string };
 };
 type Target = Listing | ReportedUser | ReportedFeedPost;
-const statuses: Record<string, string> = {
-  OPEN: 'Chờ xử lý',
-  RESOLVED: 'Đã xử lý',
-  DISMISSED: 'Đã bác',
-};
 
 function FeedPostImage({ session, url }: { session: Session; url: string }) {
   const [src, setSrc] = useState('');
@@ -102,6 +99,13 @@ function Review({
         </p>
       )}
       <p>Người báo cáo · {report.reporterId}</p>
+      {(report.contactPhone || report.contactEmail) && (
+        <div>
+          <strong>Thông tin liên hệ của người báo cáo</strong>
+          {report.contactPhone && <p>Điện thoại · {report.contactPhone}</p>}
+          {report.contactEmail && <p>Email · {report.contactEmail}</p>}
+        </div>
+      )}
       <p>Đối tượng · {report.targetId}</p>
       {report.resolution && <p>Kết quả xử lý · {report.resolution}</p>}
       {target.error ? (
@@ -155,94 +159,14 @@ function Review({
   );
 }
 export function Reports({ session }: { session: Session }) {
-  const [historyVersion, setHistoryVersion] = useState(0);
-  const [page, setPage] = useState(1),
-    [status, setStatus] = useState('OPEN'),
-    [report, select] = useState<Report>();
-  const { data, error, reload } = useResource<Page<Report>>(
-    session,
-    '/admin/reports?' + new URLSearchParams({ page: String(page), status }),
-  );
-  return (
-    <>
-      <section className="panel">
-        <Tabs
-          className="report-tabs"
-          activeKey={status}
-          onChange={(v) => {
-            setStatus(v);
-            setPage(1);
-          }}
-          items={Object.entries({ ...statuses, OPEN: 'Đang mở', '': 'Tất cả' }).map(
-            ([key, label]) => ({
-              key,
-              label: label + (status === key && data ? ' · ' + data.total : ''),
-            }),
-          )}
-        />
-        {error ? (
-          <Failure error={error} reload={reload} />
-        ) : data?.total === 0 ? (
-          <EmptyState
-            cleared={status === 'OPEN'}
-            icon={<FlagOutlined />}
-            title={
-              status === 'OPEN'
-                ? 'Không có báo cáo nào đang mở'
-                : 'Chưa có báo cáo ở trạng thái này'
-            }
-            detail={
-              status === 'OPEN'
-                ? 'Báo cáo vi phạm mới từ người dùng sẽ xuất hiện tại đây để bạn xem xét.'
-                : 'Các quyết định xử lý sẽ được lưu tại đây.'
-            }
-          />
-        ) : (
-          <Table<Report>
-            rowKey="id"
-            loading={!data}
-            dataSource={data?.items}
-            scroll={{ x: 650 }}
-            columns={[
-              { title: 'Lý do', dataIndex: 'reason' },
-              {
-                title: 'Đối tượng',
-                render: (_, r) =>
-                  r.targetType === 'USER'
-                    ? 'Thành viên'
-                    : r.targetType === 'FEED_POST'
-                      ? 'Bài viết bảng tin'
-                      : 'Tin đăng',
-              },
-              { title: 'Trạng thái', dataIndex: 'status', render: (s: string) => statuses[s] ?? s },
-              {
-                title: 'Chi tiết',
-                render: (_, r) => <Button onClick={() => select(r)}>Xem báo cáo</Button>,
-              },
-            ]}
-            pagination={{
-              current: page,
-              total: data?.total,
-              pageSize: 25,
-              showSizeChanger: false,
-              onChange: setPage,
-            }}
-          />
-        )}
-      </section>
-      <History key={historyVersion} session={session} type="REPORT" />
-      {report && (
-        <Review
-          key={report.id}
-          report={report}
-          session={session}
-          close={() => select(undefined)}
-          reload={() => {
-            reload();
-            setHistoryVersion((n) => n + 1);
-          }}
-        />
-      )}
-    </>
-  );
+  const [revision, setRevision] = useState(0);
+  const [report, select] = useState<Report>();
+  const reasons = useResource<{ items: ReasonConfig[] }>(session, '/admin/report-reasons');
+  return <>
+    {reasons.error && <Failure error={reasons.error} reload={reasons.reload} />}
+    <GroupedReports session={session} reasons={reasons.data?.items} revision={revision} review={select} />
+    <History key={revision} session={session} type="REPORT" />
+    {report && <Review key={report.id} report={report} session={session} close={() => select(undefined)}
+      reload={() => { select(undefined); setRevision(value => value + 1); }} />}
+  </>;
 }

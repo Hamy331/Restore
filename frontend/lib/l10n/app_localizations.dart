@@ -98,6 +98,198 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @sellerQuickChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick chat'**
+  String get sellerQuickChat;
+
+  /// No description provided for @sellerDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Negotiate price'**
+  String get sellerDeal;
+
+  /// No description provided for @sellerPartnerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore partner'**
+  String get sellerPartnerTitle;
+
+  /// No description provided for @sellerPartnerInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'This seller has an active ReStore Shop plan. Ask the shop about warranty and returns for this listing.'**
+  String get sellerPartnerInfo;
+
+  /// No description provided for @sellerGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get sellerGotIt;
+
+  /// No description provided for @sellerOfferNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you accept this price?'**
+  String get sellerOfferNote;
+
+  /// No description provided for @sellerActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Last active'**
+  String get sellerActivity;
+
+  /// No description provided for @sellerSold.
+  ///
+  /// In en, this message translates to:
+  /// **'sold'**
+  String get sellerSold;
+
+  /// No description provided for @aiWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi, I’m ReStore, your AI shopping assistant. I can help you find listings, compare prices and narrow down your choices.'**
+  String get aiWelcome;
+
+  /// No description provided for @aiOpeningQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you looking for today? Tell me your budget or preferred area and I’ll help you find it on ReStore.'**
+  String get aiOpeningQuestion;
+
+  /// No description provided for @aiByline.
+  ///
+  /// In en, this message translates to:
+  /// **'Powered by AI'**
+  String get aiByline;
+
+  /// No description provided for @aiComposerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What’s on your mind?'**
+  String get aiComposerHint;
+
+  /// No description provided for @aiPhoneShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Phones'**
+  String get aiPhoneShortcut;
+
+  /// No description provided for @aiLaptopShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Laptops'**
+  String get aiLaptopShortcut;
+
+  /// No description provided for @aiCameraShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Cameras'**
+  String get aiCameraShortcut;
+
+  /// No description provided for @listingSavedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get listingSavedLabel;
+
+  /// No description provided for @listingCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get listingCall;
+
+  /// No description provided for @listingShowPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Show phone number'**
+  String get listingShowPhone;
+
+  /// No description provided for @listingCallUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Dial this number manually:'**
+  String get listingCallUnavailable;
+
+  /// No description provided for @listingAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'d like to ask'**
+  String get listingAsk;
+
+  /// No description provided for @listingAskMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More questions'**
+  String get listingAskMore;
+
+  /// No description provided for @listingMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message…'**
+  String get listingMessageHint;
+
+  /// No description provided for @listingSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get listingSend;
+
+  /// No description provided for @listingAccessories.
+  ///
+  /// In en, this message translates to:
+  /// **'Which accessories are included?'**
+  String get listingAccessories;
+
+  /// No description provided for @listingWarranty.
+  ///
+  /// In en, this message translates to:
+  /// **'Can you share the warranty details?'**
+  String get listingWarranty;
+
+  /// No description provided for @listingRepaired.
+  ///
+  /// In en, this message translates to:
+  /// **'Has it been repaired before?'**
+  String get listingRepaired;
+
+  /// No description provided for @listingService.
+  ///
+  /// In en, this message translates to:
+  /// **'When was the vehicle last serviced?'**
+  String get listingService;
+
+  /// No description provided for @listingVaccines.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I see the vaccination record?'**
+  String get listingVaccines;
+
+  /// No description provided for @listingMeet.
+  ///
+  /// In en, this message translates to:
+  /// **'When could we meet?'**
+  String get listingMeet;
+
+  /// No description provided for @listingExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to trade for?'**
+  String get listingExchange;
+
+  /// No description provided for @listingNegotiate.
+  ///
+  /// In en, this message translates to:
+  /// **'Is the price negotiable?'**
+  String get listingNegotiate;
+
+  /// No description provided for @listingPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Could you send more photos?'**
+  String get listingPhotos;
+
   /// No description provided for @feedForYou.
   ///
   /// In en, this message translates to:
@@ -115,6 +307,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share a find or a story…'**
   String get feedCompose;
+
+  /// No description provided for @feedSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search posts…'**
+  String get feedSearchHint;
+
+  /// No description provided for @feedSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching posts found.'**
+  String get feedSearchEmpty;
 
   /// No description provided for @feedFollow.
   ///
@@ -713,7 +917,7 @@ abstract class AppLocalizations {
   /// No description provided for @accSaved.
   ///
   /// In en, this message translates to:
-  /// **'Profile saved'**
+  /// **'Saved'**
   String get accSaved;
 
   /// No description provided for @accSavedSearches.
@@ -733,6 +937,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My reviews'**
   String get accMyReviews;
+
+  /// No description provided for @accReceivedRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings'**
+  String get accReceivedRatings;
+
+  /// No description provided for @accPendingReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending reviews'**
+  String get accPendingReviews;
+
+  /// No description provided for @accSubmittedReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get accSubmittedReviews;
+
+  /// No description provided for @accNoPendingReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no transactions waiting for a review.'**
+  String get accNoPendingReviews;
+
+  /// No description provided for @accNoSubmittedReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t submitted any reviews yet.'**
+  String get accNoSubmittedReviews;
 
   /// No description provided for @accTransactions.
   ///
@@ -1543,6 +1777,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Find a laptop for students'**
   String get aiSampleStudentLaptopQuery;
+
+  /// No description provided for @aiRecentChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent conversations'**
+  String get aiRecentChats;
+
+  /// No description provided for @aiNoRecentChats.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved conversations yet'**
+  String get aiNoRecentChats;
 
   /// No description provided for @aiStartOver.
   ///
@@ -2425,6 +2671,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Messages'**
   String get messagesTitle;
+
+  /// No description provided for @messagesPickConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a conversation'**
+  String get messagesPickConversation;
 
   /// No description provided for @listingDetailTitle.
   ///
@@ -8132,6 +8384,12 @@ abstract class AppLocalizations {
   /// **'A few lines about you or your shop'**
   String get accBioHint;
 
+  /// No description provided for @profileSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved'**
+  String get profileSaved;
+
   /// No description provided for @cropBackground.
   ///
   /// In en, this message translates to:
@@ -9553,6 +9811,347 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Address options'**
   String get savedAddressMore;
+  /// No description provided for @aiSearchingListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for products…'**
+  String get aiSearchingListings;
+
+  /// No description provided for @aiReadingListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading product details…'**
+  String get aiReadingListings;
+
+  /// No description provided for @aiSearchingKnowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking up documents…'**
+  String get aiSearchingKnowledge;
+
+  /// No description provided for @aiReadingQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your limits…'**
+  String get aiReadingQuota;
+
+  /// No description provided for @aiPreparingDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing a draft…'**
+  String get aiPreparingDraft;
+
+  /// No description provided for @aiProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Working on your request…'**
+  String get aiProcessing;
+
+  /// No description provided for @aiAnswering.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing the answer…'**
+  String get aiAnswering;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a violation'**
+  String get reportTitle;
+
+  /// No description provided for @reportQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What is wrong with this listing?'**
+  String get reportQuestion;
+
+  /// No description provided for @reportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional details'**
+  String get reportDescription;
+
+  /// No description provided for @reportDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell Restore what happened (optional).'**
+  String get reportDetailsHint;
+
+  /// No description provided for @reportDescriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add a description using at least 5 characters.'**
+  String get reportDescriptionRequired;
+
+  /// No description provided for @reportContactHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details for Restore to reach you if needed'**
+  String get reportContactHeading;
+
+  /// No description provided for @reportPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone number *'**
+  String get reportPhoneHint;
+
+  /// No description provided for @reportEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email address *'**
+  String get reportEmailHint;
+
+  /// No description provided for @reportPhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid phone number with 8–15 digits.'**
+  String get reportPhoneInvalid;
+
+  /// No description provided for @reportEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get reportEmailInvalid;
+
+  /// No description provided for @reportReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a reason.'**
+  String get reportReasonRequired;
+
+  /// No description provided for @reportSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'SUBMIT REPORT'**
+  String get reportSubmit;
+
+  /// No description provided for @reportSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting report'**
+  String get reportSending;
+
+  /// No description provided for @reportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore has received your report and will review it.'**
+  String get reportSuccess;
+
+  /// No description provided for @reportExists.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a pending report for this listing. No need to send another.'**
+  String get reportExists;
+
+  /// No description provided for @reportUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing no longer accepts reports. Please refresh the product page.'**
+  String get reportUnavailable;
+
+  /// No description provided for @reportSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not confirm submission. Your entries are kept; check your connection and try again.'**
+  String get reportSendFailed;
+
+  /// No description provided for @reportLoginRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again before submitting.'**
+  String get reportLoginRequired;
+
+  /// No description provided for @reportServiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporting is being updated. Please try again later.'**
+  String get reportServiceUnavailable;
+
+  /// No description provided for @reportPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your contact details are used to handle this report. They are not shown to the seller or saved to your profile.'**
+  String get reportPrivacy;
+
+  /// No description provided for @reportClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close report'**
+  String get reportClose;
+
+  /// No description provided for @reportDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard this report?'**
+  String get reportDiscardTitle;
+
+  /// No description provided for @reportDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your unsent entries will be lost when you close.'**
+  String get reportDiscardBody;
+
+  /// No description provided for @reportContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get reportContinue;
+
+  /// No description provided for @reportDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get reportDiscard;
+
+  /// No description provided for @reportReasonsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load report reasons. Please try again.'**
+  String get reportReasonsLoadFailed;
+
+  /// No description provided for @reportReasonsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No report reasons are currently available. Please try again later.'**
+  String get reportReasonsEmpty;
+
+  /// No description provided for @reportRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get reportRetry;
+
+  /// No description provided for @tradeSellToBuyer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold to this buyer'**
+  String get tradeSellToBuyer;
+
+  /// No description provided for @tradeReceive.
+  ///
+  /// In en, this message translates to:
+  /// **'I received the item'**
+  String get tradeReceive;
+
+  /// No description provided for @tradeWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the buyer to confirm receipt'**
+  String get tradeWait;
+
+  /// No description provided for @tradeCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get tradeCancel;
+
+  /// No description provided for @tradeBuyerReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate buyer'**
+  String get tradeBuyerReview;
+
+  /// No description provided for @tradeSellerReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate seller'**
+  String get tradeSellerReview;
+
+  /// No description provided for @tradeReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted'**
+  String get tradeReviewed;
+
+  /// No description provided for @tradeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment (optional)'**
+  String get tradeNote;
+
+  /// No description provided for @tradeSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit review'**
+  String get tradeSubmit;
+
+  /// No description provided for @tradeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get tradeAll;
+
+  /// No description provided for @tradeFromBuyer.
+  ///
+  /// In en, this message translates to:
+  /// **'From buyers'**
+  String get tradeFromBuyer;
+
+  /// No description provided for @tradeFromSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'From sellers'**
+  String get tradeFromSeller;
+
+  /// No description provided for @tradeMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get tradeMore;
+
+  /// No description provided for @tradeFriendly.
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly communication'**
+  String get tradeFriendly;
+
+  /// No description provided for @tradePunctual.
+  ///
+  /// In en, this message translates to:
+  /// **'On time'**
+  String get tradePunctual;
+
+  /// No description provided for @tradeReliable.
+  ///
+  /// In en, this message translates to:
+  /// **'Trustworthy'**
+  String get tradeReliable;
+
+  /// No description provided for @tradeAccurate.
+  ///
+  /// In en, this message translates to:
+  /// **'As described'**
+  String get tradeAccurate;
+
+  /// No description provided for @tradeQuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Good product quality'**
+  String get tradeQuality;
+
+  /// No description provided for @tradeFairPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair offer'**
+  String get tradeFairPrice;
+
+  /// No description provided for @tradeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t complete this action. Check the transaction and try again.'**
+  String get tradeError;
+
+  /// No description provided for @tradeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get tradeConfirm;
+
+  /// No description provided for @reportReasonsChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Report reasons have changed. Please review your selection.'**
+  String get reportReasonsChanged;
 }
 
 class _AppLocalizationsDelegate

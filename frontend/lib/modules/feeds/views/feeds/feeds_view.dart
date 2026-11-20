@@ -1,5 +1,6 @@
 import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 import 'feeds_mobile_view.dart';
+import 'feeds_desktop_view.dart';
 import '../../repositories/feeds_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +27,10 @@ class FeedsView extends StatelessWidget {
       ..loadMe(),
     child: FeedPostOpener(
       postId: openPostId,
-      child: const TResponsiveLayout(mobile: FeedsMobileView()),
+      child: const TResponsiveLayout(
+        mobile: FeedsMobileView(),
+        desktop: FeedsDesktopView(),
+      ),
     ),
   );
 }

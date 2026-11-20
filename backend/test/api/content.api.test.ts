@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import assert from 'node:assert/strict';
 import { useApi } from './support/context.js';
 import { PNG } from './support/fixtures.js';
 
@@ -51,6 +52,23 @@ test('content: reports and tickets', async () => {
   expect('admin report target', await api.get(`/admin/reports/${report.body.data.id}/target`, { token: tokens.admin }));
   expect('resolve report wrong action', await api.post(`/admin/reports/${report.body.data.id}/resolve`, { token: tokens.admin, body: { action: 'BAN', reason: 'Không phù hợp', updatedAt: report.body.data.updatedAt } }));
   expect('resolve report', await api.post(`/admin/reports/${report.body.data.id}/resolve`, { token: tokens.admin, body: { action: 'DISMISS', reason: 'Ảnh là của người bán', updatedAt: report.body.data.updatedAt } }));
+
+  const structured = {
+    targetType: 'LISTING', targetId: 'listing-1', reasonCode: 'SCAM',
+    contactPhone: '0912 345 678', contactEmail: ' Buyer@example.com ',
+  };
+  const submitted = await api.post('/content/reports', { token: tokens.buyer, body: structured });
+  assert.equal(submitted.status, 200);
+  assert.equal(submitted.body.data.reasonCode, 'SCAM');
+  assert.equal(submitted.body.data.contactPhone, '0912345678');
+  assert.equal(submitted.body.data.contactEmail, 'buyer@example.com');
+  assert.equal(submitted.body.data.evidence, '');
+  const duplicate = await api.post('/content/reports', { token: tokens.buyer, body: structured });
+  assert.equal(duplicate.status, 409);
+  assert.equal(duplicate.body.code, 'REPORT_EXISTS');
+  const mine = await api.get('/content/reports/mine', { token: tokens.seller });
+  assert.equal(mine.status, 200);
+  assert.equal(mine.body.data.some((item: { id: string }) => item.id === submitted.body.data.id), false);
 
   const ticket = expect('create ticket', await api.post('/content/tickets', { token: tokens.buyer, body: { subject: 'Không đăng được tin', content: 'Ứng dụng báo lỗi khi đăng.' } }));
   expect('reply ticket', await api.post(`/content/tickets/${ticket.body.data.id}/reply`, { token: tokens.buyer, body: { content: 'Mình gửi thêm ảnh chụp.' } }));

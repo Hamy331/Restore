@@ -28,6 +28,7 @@ class _NoFeeds implements FeedsRepository {
     bool following = false,
     String? authorId,
     String? cursor,
+    String? query,
   }) async => const FeedPage([], null);
 
   @override

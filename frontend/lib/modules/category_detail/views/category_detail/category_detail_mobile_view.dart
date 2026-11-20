@@ -1,31 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_scroll.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
+import 'package:restore/modules/location/models/area_option.dart';
+import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
+import 'package:restore/shared/models/listing_filter.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
-import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
+import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
 import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
+import 'package:restore/shared/widgets/listing/app_listing_row_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/category_detail_cubit.dart';
 import '../../bloc/category_detail_state.dart';
-import 'widgets/category_detail_header.dart';
 
+/// Trang tin của một danh mục, cùng một bố cục cho điện thoại và web
+/// desktop ([wide]): đầu trang trắng gồm ô tìm kiếm mang tên danh mục,
+/// khu vực, hàng nút lọc, chọn nhanh tỉnh/thành, hàng sắp xếp; bên dưới
+/// là danh sách tin dạng hàng ngang (có thể đổi sang lưới).
 class CategoryDetailMobileView extends StatefulWidget {
-  const CategoryDetailMobileView({super.key});
+  const CategoryDetailMobileView({super.key, this.wide = false});
+
+  /// Web desktop: đặt trong khung giữa màn hình (header site ở trên)
+  final bool wide;
 
   @override
   State<CategoryDetailMobileView> createState() =>
@@ -33,59 +45,50 @@ class CategoryDetailMobileView extends StatefulWidget {
 }
 
 class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
-  static const double _sidePadding = 16;
-  static const double _contentRadius = 24;
+  /// Tỉnh / thành chọn nhanh. API danh mục chưa lọc theo tỉnh nên tạm lọc
+  /// trên các tin đã tải về theo khu vực hiển thị của tin.
+  static const _quickProvinces = ['TP Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng'];
 
-  final _scrollController = ScrollController();
+  String? _province;
+  bool _grid = false;
 
-  /// Phần đầu đã ghim (đã cuộn), để dải thanh trạng thái đổi màu theo
-  final _headerPinned = ValueNotifier(false);
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_updateHeaderPinned);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    _headerPinned.dispose();
-    super.dispose();
-  }
-
-  void _updateHeaderPinned() =>
-      _headerPinned.value = _scrollController.offset > 0;
+  CategoryDetailCubit get _cubit => context.read<CategoryDetailCubit>();
 
   void _back() => context.canPop() ? context.pop() : context.go('/home');
 
-  void _openSearch() => context.push('/search');
-
-  void _createListing() => context.push(CreateListingStep.category.path);
-
-  /// Sheet Bộ lọc đầy đủ, ẩn nhóm Danh mục vì trang đã cố định danh mục
   Future<void> _openFilters() async {
-    final cubit = context.read<CategoryDetailCubit>();
     final filter = await showListingFilterSheet(
       context,
-      filter: cubit.state.filter,
-      defaults: cubit.state.defaultFilter,
+      filter: _cubit.state.filter,
+      defaults: _cubit.state.defaultFilter,
       showCategories: false,
     );
-    if (filter != null) cubit.applyFilter(filter);
+    if (filter != null) _cubit.applyFilter(filter);
   }
 
   Future<void> _pickSort() async {
-    final cubit = context.read<CategoryDetailCubit>();
     final sort = await showListingSortSheet(
       context,
-      selected: cubit.state.filter.sort,
+      selected: _cubit.state.filter.sort,
       options: CategoryDetailState.sortOptions,
     );
-    if (sort != null) cubit.setSort(sort);
+    if (sort != null) _cubit.setSort(sort);
   }
 
-  /// Mở trang chi tiết; quay lại mà trạng thái lưu tin đã đổi thì cập nhật thẻ
+  Future<void> _pickArea() async {
+    final result = await context.push<AreaPickResult>(
+      AreaSearchView.location(allowNationwide: true),
+    );
+    if (result == null || !mounted) return;
+    setState(() {
+      if (result.nationwide) {
+        _province = null;
+      } else if (result.area case final area?) {
+        _province = area.displayName;
+      }
+    });
+  }
+
   Future<void> _openDetail(ListingCardItem item) async {
     final id = item.listing.id;
     final favorite = await context.push<bool>(
@@ -93,114 +96,122 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
       extra: item.listing,
     );
     if (favorite == null || !mounted) return;
-    context.read<CategoryDetailCubit>().syncFavorite(id, favorite);
+    _cubit.syncFavorite(id, favorite);
+  }
+
+  /// "TP. Hồ Chí Minh", "Thành phố Hà Nội"... → phần tên chính để so khớp
+  static String _core(String name) => name
+      .replaceAll(RegExp(r'^(TP\.?|Tp\.?|Thành phố|Tỉnh)\s*'), '')
+      .trim()
+      .toLowerCase();
+
+  List<ListingCardItem> _visible(List<ListingCardItem> items) {
+    final province = _province;
+    if (province == null) return items;
+    final core = _core(province);
+    return [
+      for (final item in items)
+        if (item.areaLabel.toLowerCase().contains(core)) item,
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<CategoryDetailCubit>();
-    final padding = MediaQuery.paddingOf(context);
-
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: Column(
-        children: [
-          // Thanh trạng thái cùng màu phần đầu, chuyển trắng khi đã cuộn
-          ValueListenableBuilder<bool>(
-            valueListenable: _headerPinned,
-            builder: (context, pinned, _) => AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: padding.top,
-              width: double.infinity,
-              color: pinned
-                  ? AppPinnedHeaderSurface.pinnedColor
-                  : AppHeaderPalette.bottom,
+    return BlocBuilder<CategoryDetailCubit, CategoryDetailState>(
+      builder: (context, state) {
+        final header = _Header(
+          state: state,
+          province: _province,
+          provinces: _quickProvinces,
+          grid: _grid,
+          wide: widget.wide,
+          onBack: _back,
+          onSearch: () => context.push('/search'),
+          onSaveSearch: () => context.push(
+            WantedAlertCreateView.location(
+              keywords: state.category?.name.of(context) ?? '',
             ),
           ),
-          Expanded(
-            child: MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: BlocBuilder<CategoryDetailCubit, CategoryDetailState>(
-                builder: (context, state) => AppPullToRefresh.inline(
-                  onRefresh: cubit.refresh,
-                  builder: (context, refreshIndicator) => AppLoadMoreListener(
-                    onLoadMore: cubit.loadMore,
-                    child: CustomScrollView(
-                      // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
-                      cacheExtent: AppScroll.prefetchExtent,
-                      controller: _scrollController,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: AppPinnedHeaderDelegate(
-                            height: CategoryDetailHeader.height,
-                            child: CategoryDetailHeader(
-                              category: state.category,
-                              filter: state.filter,
-                              defaults: state.defaultFilter,
-                              onBack: _back,
-                              onSearchTap: _openSearch,
-                              onFiltersTap: _openFilters,
-                              onDealToggle: cubit.toggleDeal,
-                              onSortTap: _pickSort,
-                              onClearTap: cubit.clearFilters,
-                            ),
-                          ),
-                        ),
-                        // Viên loading kéo để làm mới mở ra ngay dưới phần ghim
-                        SliverToBoxAdapter(
-                          child: ColoredBox(
-                            color: AppHeaderPalette.bottom,
-                            child: refreshIndicator,
-                          ),
-                        ),
-                        // Mép trên bo cong của phần nội dung trắng
-                        SliverToBoxAdapter(
-                          child: ColoredBox(
-                            color: AppHeaderPalette.bottom,
-                            child: Container(
-                              height: _contentRadius,
-                              decoration: const BoxDecoration(
-                                color: AppColors.surface,
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(_contentRadius),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        ..._content(state),
-                        SliverToBoxAdapter(
-                          child: SizedBox(height: padding.bottom + 16),
-                        ),
-                      ],
-                    ),
+          onArea: _pickArea,
+          onProvince: (value) => setState(
+            () => _province = _province == value ? null : value,
+          ),
+          onFilters: _openFilters,
+          onSort: _pickSort,
+          onGridToggle: () => setState(() => _grid = !_grid),
+        );
+
+        if (widget.wide) {
+          return DesktopPage(
+            contentWidth: 1000,
+            onEndReached: _cubit.loadMore,
+            slivers: [
+              DecoratedSliver(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border),
+                ),
+                sliver: SliverMainAxisGroup(
+                  slivers: [
+                    SliverToBoxAdapter(child: header),
+                    ..._content(state, wide: true),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }
+
+        final padding = MediaQuery.paddingOf(context);
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark,
+          child: Scaffold(
+            backgroundColor: AppColors.surface,
+            body: SafeArea(
+              bottom: false,
+              child: AppPullToRefresh(
+                onRefresh: _cubit.refresh,
+                child: AppLoadMoreListener(
+                  onLoadMore: _cubit.loadMore,
+                  child: CustomScrollView(
+                    // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                    scrollCacheExtent: AppScroll.prefetchCacheExtent,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverToBoxAdapter(child: header),
+                      ..._content(state, wide: false),
+                      SliverToBoxAdapter(
+                        child: SizedBox(height: padding.bottom + 16),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  List<Widget> _content(CategoryDetailState state) {
+  List<Widget> _content(CategoryDetailState state, {required bool wide}) {
     final l10n = AppLocalizations.of(context)!;
-    final cubit = context.read<CategoryDetailCubit>();
+    const side = 16.0;
 
     switch (state.status) {
       case CategoryDetailStatus.loading:
         return [const SliverToBoxAdapter(child: AppListingGridSkeleton())];
       case CategoryDetailStatus.failure:
         return [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: AppLoadErrorView(
-              title: l10n.categoryDetailLoadErrorTitle,
-              onRetry: cubit.retry,
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 380,
+              child: AppLoadErrorView(
+                title: l10n.categoryDetailLoadErrorTitle,
+                message: l10n.categoryDetailLoadErrorBody,
+                onRetry: _cubit.retry,
+              ),
             ),
           ),
         ];
@@ -208,57 +219,79 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
         break;
     }
 
-    if (state.items.isEmpty) {
-      // Đang lọc thì gợi ý xoá bộ lọc, không thì mời đăng tin đầu tiên
-      final filtered = state.hasActiveFilters;
+    final items = _visible(state.items);
+    if (items.isEmpty) {
+      final filtered = state.hasActiveFilters || _province != null;
       return [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: FeedbackView(
-            icon: filtered ? AppIcons.searchEmpty : AppIcons.category,
-            title: filtered
-                ? l10n.categoryDetailFilteredEmptyTitle
-                : l10n.categoryDetailEmptyTitle,
-            message: filtered
-                ? l10n.categoryDetailFilteredEmptyBody
-                : l10n.categoryDetailEmptyBody,
-            action: filtered
-                ? OutlinedButton(
-                    onPressed: cubit.clearFilters,
-                    child: Text(l10n.listingFilterReset),
-                  )
-                : FilledButton(
-                    onPressed: _createListing,
-                    child: Text(l10n.categoryDetailPostListing),
-                  ),
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 380,
+            child: FeedbackView(
+              icon: filtered ? AppIcons.searchEmpty : AppIcons.category,
+              title: filtered
+                  ? l10n.categoryDetailFilteredEmptyTitle
+                  : l10n.categoryDetailEmptyTitle,
+              message: filtered
+                  ? l10n.categoryDetailFilteredEmptyBody
+                  : l10n.categoryDetailEmptyBody,
+              action: filtered
+                  ? OutlinedButton(
+                      onPressed: () {
+                        setState(() => _province = null);
+                        _cubit.clearFilters();
+                      },
+                      child: Text(l10n.listingFilterReset),
+                    )
+                  : FilledButton(
+                      onPressed: () =>
+                          context.push(CreateListingStep.category.path),
+                      child: Text(l10n.categoryDetailPostListing),
+                    ),
+            ),
           ),
         ),
       ];
     }
 
     return [
-      if (!state.hasActiveFilters && state.hotItems.isNotEmpty) ...[
+      if (!state.hasActiveFilters &&
+          _province == null &&
+          state.hotItems.isNotEmpty) ...[
+        const SliverToBoxAdapter(child: SizedBox(height: 14)),
         SliverToBoxAdapter(
           child: AppHotSaleSection(
             items: state.hotItems,
             onTap: _openDetail,
-            onFavoriteTap: cubit.toggleFavorite,
-            sidePadding: _sidePadding,
+            onFavoriteTap: _cubit.toggleFavorite,
+            sidePadding: side,
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 18)),
+        const SliverToBoxAdapter(
+          child: Divider(height: 24, color: AppColors.border),
+        ),
       ],
-      SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
-        sliver: AppListingSliverGrid(
-          items: state.items,
-          itemBuilder: (_, item) => AppListingCard(
-            item: item,
-            onTap: () => _openDetail(item),
-            onFavoriteTap: () => cubit.toggleFavorite(item),
+      if (_grid)
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(side, 12, side, 0),
+          sliver: AppListingSliverGrid(
+            items: items,
+            itemBuilder: (_, item) => AppListingCard(
+              item: item,
+              onTap: () => _openDetail(item),
+              onFavoriteTap: () => _cubit.toggleFavorite(item),
+            ),
+          ),
+        )
+      else
+        SliverList.builder(
+          itemCount: items.length,
+          itemBuilder: (_, index) => AppListingRowCard(
+            item: items[index],
+            imageSize: wide ? 170 : 120,
+            onTap: () => _openDetail(items[index]),
+            onFavoriteTap: () => _cubit.toggleFavorite(items[index]),
           ),
         ),
-      ),
       SliverToBoxAdapter(
         child: AppLoadMoreFooter(
           isLoading: state.isLoadingMore,
@@ -267,5 +300,357 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
         ),
       ),
     ];
+  }
+}
+
+/// Đầu trang trắng của trang danh mục
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.state,
+    required this.province,
+    required this.provinces,
+    required this.grid,
+    required this.wide,
+    required this.onBack,
+    required this.onSearch,
+    required this.onSaveSearch,
+    required this.onArea,
+    required this.onProvince,
+    required this.onFilters,
+    required this.onSort,
+    required this.onGridToggle,
+  });
+
+  final CategoryDetailState state;
+  final String? province;
+  final List<String> provinces;
+  final bool grid;
+  final bool wide;
+  final VoidCallback onBack;
+  final VoidCallback onSearch;
+  final VoidCallback onSaveSearch;
+  final VoidCallback onArea;
+  final ValueChanged<String> onProvince;
+  final VoidCallback onFilters;
+  final VoidCallback onSort;
+  final VoidCallback onGridToggle;
+
+  static const _chipFill = Color(0xFFF2F3F5);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final vi = Localizations.localeOf(context).languageCode == 'vi';
+    String t(String vn, String en) => vi ? vn : en;
+    final filter = state.filter;
+    final defaults = state.defaultFilter;
+    final categoryName = state.category?.name.of(context);
+    final active = filter.activeCount(defaults);
+
+    Widget chip({
+      required String label,
+      required VoidCallback onTap,
+      bool selected = false,
+      IconData? leading,
+      bool dropdown = false,
+      VoidCallback? onClear,
+    }) => Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: selected ? AppColors.textPrimary : _chipFill,
+        shape: const StadiumBorder(),
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (leading != null) ...[
+                  Icon(
+                    leading,
+                    size: 17,
+                    color: selected ? Colors.white : AppColors.textPrimary,
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 160),
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: selected ? Colors.white : AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                if (dropdown) ...[
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    size: 20,
+                    color: selected ? Colors.white : AppColors.textPrimary,
+                  ),
+                ],
+                if (onClear != null) ...[
+                  const SizedBox(width: 6),
+                  GestureDetector(
+                    onTap: onClear,
+                    child: const Icon(
+                      AppIcons.close,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Widget scrollRow(List<Widget> children) => SizedBox(
+      height: 40,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: children,
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Quay lại + ô tìm kiếm mang tên danh mục + lưu tìm kiếm
+        Padding(
+          padding: EdgeInsets.fromLTRB(wide ? 12 : 4, wide ? 14 : 6, 12, 6),
+          child: Row(
+            children: [
+              IconButton(
+                tooltip: l10n.back,
+                onPressed: onBack,
+                icon: const Icon(AppIcons.back, size: 24),
+              ),
+              Expanded(
+                child: Material(
+                  color: _chipFill,
+                  borderRadius: BorderRadius.circular(24),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(24),
+                    onTap: onSearch,
+                    child: SizedBox(
+                      height: 46,
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 14),
+                          const Icon(
+                            AppIcons.search,
+                            size: 20,
+                            color: AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              categoryName ?? l10n.categoryDetailSearch,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 1,
+                            height: 22,
+                            color: AppColors.border,
+                          ),
+                          IconButton(
+                            tooltip: t('Lưu tìm kiếm, báo khi có hàng',
+                                'Save search'),
+                            onPressed: onSaveSearch,
+                            icon: const Icon(
+                              Icons.bookmark_border,
+                              size: 22,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Khu vực
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+          child: InkWell(
+            onTap: onArea,
+            child: Row(
+              children: [
+                const Icon(
+                  AppIcons.location,
+                  size: 20,
+                  color: AppColors.primary,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  t('Khu vực: ', 'Area: '),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    province ?? l10n.areaNationwide,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryDark,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(
+                  AppIcons.chevronDown,
+                  size: 18,
+                  color: AppColors.primaryDark,
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Bộ lọc
+        scrollRow([
+          chip(
+            label: active > 0
+                ? '${l10n.listingFilterTitle} ($active)'
+                : l10n.listingFilterTitle,
+            leading: AppIcons.filter,
+            onTap: onFilters,
+          ),
+          if (categoryName != null)
+            chip(
+              label: categoryName,
+              selected: true,
+              onTap: onFilters,
+              onClear: onBack,
+            ),
+          chip(
+            label: t('Giá', 'Price'),
+            dropdown: true,
+            selected: filter.hasPriceRange,
+            onTap: onFilters,
+          ),
+          chip(
+            label: t('Tình trạng', 'Condition'),
+            dropdown: true,
+            selected: filter.conditions.isNotEmpty,
+            onTap: onFilters,
+          ),
+          for (final type in ListingDealType.values)
+            chip(
+              label: type.label(l10n),
+              selected: filter.dealTypes.contains(type),
+              onTap: () => context.read<CategoryDetailCubit>().toggleDeal(type),
+            ),
+        ]),
+        const SizedBox(height: 10),
+        // Chọn nhanh tỉnh / thành
+        SizedBox(
+          height: 38,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            children: [
+              Center(
+                child: Text(
+                  t('Khu vực:', 'Area:'),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              for (final name in provinces)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: OutlinedButton(
+                    onPressed: () => onProvince(name),
+                    style: OutlinedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      backgroundColor: province == name
+                          ? AppColors.textPrimary
+                          : Colors.transparent,
+                      foregroundColor: province == name
+                          ? Colors.white
+                          : AppColors.textPrimary,
+                      side: const BorderSide(color: AppColors.border),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      textStyle: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    child: Text(name),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Divider(height: 1, thickness: 6, color: Color(0xFFF4F4F5)),
+        // Sắp xếp + đổi dạng hiển thị
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+          child: Row(
+            children: [
+              InkWell(
+                onTap: onSort,
+                child: Row(
+                  children: [
+                    Text(
+                      filter.sort.label(l10n),
+                      style: const TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Icon(AppIcons.chevronDown, size: 18),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              IconButton.outlined(
+                tooltip: grid
+                    ? t('Xem dạng danh sách', 'List view')
+                    : t('Xem dạng lưới', 'Grid view'),
+                onPressed: onGridToggle,
+                style: IconButton.styleFrom(
+                  side: const BorderSide(color: AppColors.border),
+                ),
+                icon: Icon(
+                  grid ? Icons.view_agenda_outlined : Icons.grid_view,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1, color: AppColors.border),
+      ],
+    );
   }
 }

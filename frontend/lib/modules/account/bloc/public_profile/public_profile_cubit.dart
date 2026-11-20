@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/profile_repository.dart';
 import 'public_profile_state.dart';
+import '../../../trusted_shop/repositories/trusted_shop_repository.dart';
 
 /// Trang hồ sơ của người khác (`/users/:id`).
 class PublicProfileCubit extends Cubit<PublicProfileState> {
@@ -8,14 +9,19 @@ class PublicProfileCubit extends Cubit<PublicProfileState> {
     : super(const PublicProfileState());
   final ProfileRepository _repository;
   final String userId;
+  int _request = 0;
 
   Future<void> load() async {
+    if (state.following || isClosed) return;
+    final request = ++_request;
     if (state.profile == null) emit(const PublicProfileState());
     try {
       final profile = await _repository.getUser(userId);
-      if (!isClosed) emit(PublicProfileState(profile: profile, loading: false));
+      if (!isClosed && request == _request) {
+        emit(PublicProfileState(profile: profile, loading: false));
+      }
     } catch (_) {
-      if (!isClosed) {
+      if (!isClosed && request == _request) {
         emit(
           PublicProfileState(
             profile: state.profile,
@@ -29,21 +35,29 @@ class PublicProfileCubit extends Cubit<PublicProfileState> {
 
   Future<void> toggleFollow() async {
     final profile = state.profile;
-    if (profile == null || state.following) return;
+    if (isClosed || profile == null || state.following) return;
+    _request++;
     emit(PublicProfileState(profile: profile, loading: false, following: true));
-    final value = !profile.isFollowing;
+    final value = !profile.followsSeller;
+    final shop = profile.storefront;
     try {
-      value
-          ? await _repository.follow(userId)
-          : await _repository.unfollow(userId);
+      if (shop.verified) {
+        await ApiTrustedShopRepository().setFollowing(shop.shopId!, value);
+      } else if (value) {
+        await _repository.follow(userId);
+      } else {
+        await _repository.unfollow(userId);
+      }
       if (isClosed) return;
       emit(
         PublicProfileState(
           loading: false,
-          profile: profile.copyWith(
-            isFollowing: value,
-            followerCount: profile.followerCount + (value ? 1 : -1),
-          ),
+          profile: shop.verified
+              ? profile.copyWith(storefront: shop.withShopFollow(value))
+              : profile.copyWith(
+                  isFollowing: value,
+                  followerCount: profile.followerCount + (value ? 1 : -1),
+                ),
         ),
       );
     } catch (_) {

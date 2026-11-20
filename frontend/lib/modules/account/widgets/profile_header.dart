@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../l10n/app_localizations.dart';
@@ -6,6 +7,42 @@ import '../../../shared/utils/app_image_provider.dart';
 import '../models/profile_models.dart';
 
 const profileFontFamily = 'DM Sans';
+
+class ProfileAvatar extends StatelessWidget {
+  const ProfileAvatar({
+    super.key,
+    required this.radius,
+    required this.url,
+    required this.initials,
+  });
+
+  final double radius;
+  final String? url;
+  final String initials;
+
+  @override
+  Widget build(BuildContext context) {
+    final path = url?.trim();
+    // Ảnh mạng có cache đĩa (appImageProvider), ảnh assets dùng thẳng
+    final ImageProvider? image = path == null || path.isEmpty
+        ? null
+        : appImageProvider(path);
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: AppColors.background,
+      foregroundImage: image,
+      onForegroundImageError: image == null ? null : (_, _) {},
+      child: Text(
+        initials,
+        style: TextStyle(
+          fontFamily: profileFontFamily,
+          fontSize: radius * 0.6,
+          color: AppColors.textSecondary,
+        ),
+      ),
+    );
+  }
+}
 
 /// Tên, ảnh, đánh giá, số liệu và giới thiệu; dùng cho cả hồ sơ của mình
 /// và hồ sơ người khác.
@@ -17,6 +54,7 @@ class ProfileHeader extends StatelessWidget {
     this.onBioTap,
     this.onFollowingTap,
     this.onFollowersTap,
+    this.onRatingTap,
     this.extraStat,
     this.action,
   });
@@ -24,6 +62,7 @@ class ProfileHeader extends StatelessWidget {
   /// `null` khi đang tải lần đầu.
   final ProfileData? profile;
   final VoidCallback? onAvatarTap, onBioTap, onFollowingTap, onFollowersTap;
+  final VoidCallback? onRatingTap;
 
   /// Ô số liệu thứ ba (ví dụ số tin đăng).
   final Widget? extraStat;
@@ -77,7 +116,16 @@ class ProfileHeader extends StatelessWidget {
                   ),
                   if (profile != null) ...[
                     const SizedBox(height: 6),
-                    _Rating(profile: profile),
+                    InkWell(
+                      onTap:
+                          onRatingTap ??
+                          () =>
+                              context.push('/users/${profile.id}?tab=reviews'),
+                      child: _Rating(
+                        profile: profile,
+                        showChevron: onRatingTap != null,
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -146,8 +194,9 @@ class ProfileHeader extends StatelessWidget {
 }
 
 class _Rating extends StatelessWidget {
-  const _Rating({required this.profile});
+  const _Rating({required this.profile, required this.showChevron});
   final ProfileData profile;
+  final bool showChevron;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -177,6 +226,7 @@ class _Rating extends StatelessWidget {
             ),
           ),
         ),
+        if (showChevron) const Icon(AppIcons.chevronRight, size: 14),
       ],
     );
   }
@@ -195,19 +245,7 @@ class _Avatar extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          CircleAvatar(
-            radius: 45,
-            backgroundColor: AppColors.background,
-            foregroundImage: url != null ? appImageProvider(url) : null,
-            child: Text(
-              initials,
-              style: const TextStyle(
-                fontFamily: profileFontFamily,
-                fontSize: 27,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
+          ProfileAvatar(radius: 45, url: url, initials: initials),
           if (onTap != null)
             Positioned(
               right: -3,

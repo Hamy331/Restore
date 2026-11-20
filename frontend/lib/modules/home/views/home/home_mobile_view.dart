@@ -24,7 +24,7 @@ import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
 import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
-import 'package:restore/core/constants/app_images.dart' show AppImages;
+import '../../models/home_listing_filter.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/home_cubit.dart';
@@ -35,7 +35,6 @@ import 'widgets/home_banner_carousel.dart';
 import 'widgets/home_category_strip.dart';
 import 'widgets/home_quick_actions.dart';
 import 'widgets/home_search_header.dart';
-import 'widgets/home_section_header.dart';
 import 'widgets/home_skeleton.dart';
 import 'widgets/home_top_bar.dart';
 
@@ -112,6 +111,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       userArea.selectNationwide();
     } else if (result.area case final area?) {
       userArea.select(area);
+    } else if (result.useMyLocation) {
+      await userArea.locate();
     }
   }
 
@@ -272,9 +273,13 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
   List<Widget> _content(HomeState state) {
     final l10n = AppLocalizations.of(context)!;
+    final cubit = context.read<HomeCubit>();
+    final area = context.watch<UserAreaCubit>().state;
+    final nearby = state.filter == HomeListingFilter.nearby;
 
     Widget card(ListingCardItem item) => AppListingCard(
       item: item,
+      showDistance: nearby,
       onTap: () => _openDetail(item),
       onFavoriteTap: () => _toggleFavorite(item),
     );
@@ -313,32 +318,86 @@ class _HomeMobileViewState extends State<HomeMobileView> {
           ),
         ),
       ],
-      const SliverToBoxAdapter(child: SizedBox(height: 18)),
+      const SliverToBoxAdapter(child: SizedBox(height: 8)),
       SliverToBoxAdapter(
-        child: HomeSectionHeader(
-          title: l10n.homeLatestTitle,
-          image: AppImages.coreImages.newArrivals,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
+          child: Wrap(
+            spacing: 18,
+            children: [
+              for (final (filter, label) in [
+                (HomeListingFilter.forYou, l10n.feedForYou),
+                (HomeListingFilter.nearby, l10n.homeQuickNearby),
+                (HomeListingFilter.newest, l10n.listingSortNewest),
+              ])
+                Semantics(
+                  selected: state.filter == filter,
+                  child: TextButton(
+                    onPressed: () => cubit.selectFeed(filter, area.origin),
+                    style: TextButton.styleFrom(
+                      foregroundColor: state.filter == filter
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 36),
+                    ),
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: state.filter == filter
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
-      const SliverToBoxAdapter(child: SizedBox(height: 10)),
-      if (state.latest.isEmpty)
+      const SliverToBoxAdapter(child: SizedBox(height: 4)),
+      if (nearby && area.origin == null)
+        SliverToBoxAdapter(
+          child: Center(
+            child: TextButton(
+              onPressed: area.isLocating ? null : _pickArea,
+              child: Text(
+                area.isLocating ? l10n.nearbyLocating : l10n.selectAddressHint,
+              ),
+            ),
+          ),
+        )
+      else if (state.latest.isEmpty &&
+          !state.isLoadingMore &&
+          !state.feedFailed)
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 32),
             child: Text(
-              l10n.homeLatestEmpty,
+              nearby ? l10n.nearbyEmptyTitle : l10n.homeLatestEmpty,
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
         )
-      else
+      else if (state.latest.isNotEmpty)
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
           sliver: AppListingSliverGrid(
             items: state.latest,
             spacing: _gridSpacing,
             itemBuilder: (_, item) => card(item),
+          ),
+        ),
+      if (state.feedFailed)
+        SliverToBoxAdapter(
+          child: Center(
+            child: TextButton(
+              onPressed: () => cubit.loadMore(retry: true),
+              child: Text(l10n.retry),
+            ),
           ),
         ),
       SliverToBoxAdapter(

@@ -333,7 +333,10 @@
         "decision": null,
         "resolution": null,
         "createdAt": "<date>",
-        "updatedAt": "<date>"
+        "updatedAt": "<date>",
+        "reasonCode": null,
+        "contactPhone": null,
+        "contactEmail": null
       }
     }
   },
@@ -361,7 +364,10 @@
           "decision": null,
           "resolution": null,
           "createdAt": "<date>",
-          "updatedAt": "<date>"
+          "updatedAt": "<date>",
+          "reasonCode": null,
+          "contactPhone": null,
+          "contactEmail": null
         }
       ]
     }
@@ -383,7 +389,10 @@
             "decision": null,
             "resolution": null,
             "createdAt": "<date>",
-            "updatedAt": "<date>"
+            "updatedAt": "<date>",
+            "reasonCode": null,
+            "contactPhone": null,
+            "contactEmail": null
           }
         ],
         "total": 1,

@@ -9,6 +9,7 @@ import 'package:restore/core/theme/app_header_palette.dart';
 /// Trang có màu riêng (VD trang shop theo màu thương hiệu) truyền [color].
 class AppPinnedHeaderSurface extends StatelessWidget {
   final bool pinned;
+  final bool blurWhenPinned;
   final Widget child;
 
   /// Màu khi chưa ghim
@@ -17,6 +18,7 @@ class AppPinnedHeaderSurface extends StatelessWidget {
   const AppPinnedHeaderSurface({
     super.key,
     required this.pinned,
+    this.blurWhenPinned = true,
     required this.child,
     this.color = AppHeaderPalette.bottom,
   });
@@ -31,11 +33,13 @@ class AppPinnedHeaderSurface extends StatelessWidget {
       // grouped: dùng chung lượt blur với thanh điều hướng (BackdropGroup
       // ở MainShell); trang ngoài shell thì blur riêng như cũ
       child: BackdropFilter.grouped(
-        enabled: pinned,
+        enabled: pinned && blurWhenPinned,
         filter: AppGlass.blur,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: pinned ? pinnedColor : color,
+            color: pinned
+                ? (blurWhenPinned ? pinnedColor : Colors.white)
+                : color,
             border: Border(
               bottom: BorderSide(
                 color: pinned ? AppColors.border.withValues(alpha: 0.8) : color,

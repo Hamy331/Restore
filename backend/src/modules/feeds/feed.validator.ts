@@ -4,6 +4,13 @@ export const id = (v: unknown): string => {
   if (typeof v !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)) throw new AppError(400, 'INVALID_ID', 'Invalid ID');
   return v;
 };
+export function searchQuery(value: unknown): string {
+  if (value === undefined) return '';
+  if (typeof value !== 'string' || value.trim().length > 200) {
+    throw new AppError(400, 'INVALID_SEARCH', 'Search must contain at most 200 characters');
+  }
+  return value.trim();
+}
 export function page(q: Record<string, unknown>) {
   const limit = q.limit === undefined ? 20 : Number(q.limit);
   if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw new AppError(400, 'INVALID_LIMIT', 'Limit must be 1–50');

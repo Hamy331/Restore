@@ -50,6 +50,7 @@ abstract class AuthRepository {
   /// Người dùng lưu sẵn trên máy từ lần đăng nhập trước, đọc ngay lúc mở app
   /// (không gọi mạng). `null` nếu chưa đăng nhập.
   Future<UserModel?> cachedUser();
+  Future<void> cacheProfile(UserModel user);
 
   /// Hỏi máy chủ phiên đã lưu còn dùng được không và lấy thông tin người dùng mới nhất.
   /// Mất mạng thì trả về [cachedUser] (vẫn coi là đăng nhập); `null` nếu chưa
@@ -67,6 +68,9 @@ class ApiAuthRepository implements AuthRepository {
   final ApiClient _apiClient;
 
   TokenStorage get _tokens => _apiClient.tokenStorage;
+
+  @override
+  Future<void> cacheProfile(UserModel user) => _tokens.writeUser(user.toJson());
 
   @override
   Future<UserModel> login(String email, String password) =>
@@ -259,6 +263,9 @@ class MockAuthRepository implements AuthRepository {
 
   final TokenStorage _tokens;
   final Duration latency;
+
+  @override
+  Future<void> cacheProfile(UserModel user) => _tokens.writeUser(user.toJson());
 
   /// Tài khoản đăng ký mới trong phiên chạy app: email → user
   static final Map<String, Map<String, dynamic>> _registered = {};

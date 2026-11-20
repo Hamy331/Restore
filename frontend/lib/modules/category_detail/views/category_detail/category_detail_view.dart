@@ -35,7 +35,10 @@ class CategoryDetailView extends StatelessWidget {
         categoryId: categoryId,
         category: category,
       )..start(),
-      child: const TResponsiveLayout(mobile: CategoryDetailMobileView()),
+      child: const TResponsiveLayout(
+        mobile: CategoryDetailMobileView(),
+        desktop: CategoryDetailMobileView(wide: true),
+      ),
     );
   }
 }

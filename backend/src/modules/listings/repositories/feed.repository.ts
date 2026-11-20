@@ -7,6 +7,7 @@ import { visible } from './listing.repository.js';
 
 /** Bộ lọc thêm của trang Shop uy tín */
 type ShopFilters = { verifiedShop?: boolean; onSale?: boolean };
+type FeedOptions = ListingFilters & ShopFilters & { ownerId?: string; chronological?: boolean; interestUserId?: string };
 
 export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boolean };
 
@@ -14,7 +15,7 @@ export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boo
 /**
  * SQL xếp hạng tin: gần nhất (nearby), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian.
  */
-function rankedQuery(filters: ListingFilters & ShopFilters, now: Date, sort?: SearchSort) {
+function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
  const distance = !filters.nearby ? Prisma.sql`NULL::double precision` : Prisma.sql`
  CASE WHEN l.location #>> '{ward,center,latitude}' IS NULL OR l.location #>> '{ward,center,longitude}' IS NULL THEN NULL
  ELSE 6371*acos(GREATEST(-1,LEAST(1,
@@ -27,6 +28,11 @@ function rankedQuery(filters: ListingFilters & ShopFilters, now: Date, sort?: Se
         FROM "Listing" l
         JOIN "User" u ON u.id = l."ownerId" AND u.status = 'ACTIVE'
         LEFT JOIN "Category" c ON c.id = l."categoryId"
+        ${filters.interestUserId ? Prisma.sql`LEFT JOIN (
+          SELECT saved."categoryId", COUNT(*) AS affinity
+          FROM "ListingFavorite" f JOIN "Listing" saved ON saved.id = f."listingId"
+          WHERE f."userId" = ${filters.interestUserId} GROUP BY saved."categoryId"
+        ) interest ON interest."categoryId" = l."categoryId"` : Prisma.empty}
         LEFT JOIN "StoreSubscription" ss ON ss."userId" = l."ownerId"
           AND ss."startsAt" <= ${now} AND ss."endsAt" > ${now}
         LEFT JOIN "StorePackage" sp ON sp.id = ss."packageId"
@@ -43,6 +49,7 @@ function rankedQuery(filters: ListingFilters & ShopFilters, now: Date, sort?: Se
           WHERE p."listingId" = l.id AND p."startsAt" <= ${now}
         ) boosted ON TRUE
         WHERE l.status = 'AVAILABLE'
+          ${filters.ownerId ? Prisma.sql`AND l."ownerId" = ${filters.ownerId}` : Prisma.empty}
           AND (${filters.allowExchange ?? false} = false OR l."allowExchange"=true)
           AND (${filters.verifiedShop ?? false} = false OR EXISTS (
             SELECT 1 FROM "Shop" s WHERE s."ownerId" = l."ownerId" AND s."verificationType" IS NOT NULL))
@@ -100,11 +107,14 @@ const rankOrder = Prisma.sql`COALESCE(boosted."featuredPriority", 0) DESC,
  * - newest: mới đăng trước; nearest: gần nhất trước
  * - price_asc / price_desc: theo giá, tin chỉ trao đổi (không bán) xếp cuối
  */
-function orderBy(filters: ListingFilters, distance: Prisma.Sql, sort?: SearchSort) {
+function orderBy(filters: FeedOptions, distance: Prisma.Sql, sort?: SearchSort) {
   const newest = Prisma.sql`COALESCE(l."publishedAt", l."createdAt") DESC, l.id DESC`;
   switch (sort) {
     case undefined:
-      return filters.nearby ? Prisma.sql`${distance} ASC, ${rankOrder}` : rankOrder;
+      // Feed: "Mới nhất" xếp theo thời gian trước, "Dành cho bạn" ưu tiên chuyên mục người xem hay lưu
+      return Prisma.sql`${filters.chronological ? Prisma.sql`${newest},` : Prisma.empty}
+        ${filters.interestUserId ? Prisma.sql`COALESCE(interest.affinity, 0) DESC,` : Prisma.empty}
+        ${filters.nearby ? Prisma.sql`${distance} ASC,` : Prisma.empty} ${rankOrder}`;
     case 'relevance': {
       if (!filters.words.length) return rankOrder;
       const phrase = filters.words.join(' ');
@@ -126,7 +136,7 @@ function orderBy(filters: ListingFilters, distance: Prisma.Sql, sort?: SearchSor
  * Lấy một trang id tin đã xếp hạng (đẩy tin, gói cửa hàng, khoảng cách, thời gian)
  * cùng tổng số tin khớp bộ lọc.
  */
-export async function findRankedPage(filters: ListingFilters & ShopFilters, now: Date, limit: number, skip: number,
+export async function findRankedPage(filters: FeedOptions, now: Date, limit: number, skip: number,
   sort?: SearchSort) {
   const query = rankedQuery(filters, now, sort);
   const [rows, totals] = await prisma.$transaction([

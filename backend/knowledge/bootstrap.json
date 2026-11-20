@@ -1,0 +1,23 @@
+[
+  {
+    "id": "restore-bootstrap-drafts-v1",
+    "title": "Hướng dẫn khởi tạo: lưu nháp và gửi tin để duyệt",
+    "content": "Hướng dẫn dựa trên chức năng ReStore ngày 08/11/2026, cần rà soát khi nghiệp vụ thay đổi.\nBạn có thể lưu tin nháp khi thông tin chưa đầy đủ, trong hạn mức nháp của gói đang sử dụng. Muốn gửi một tin nháp để duyệt, cần ít nhất một ảnh sản phẩm và điền đủ thông tin bắt buộc như tiêu đề, mô tả, giá, danh mục, tình trạng và thông tin theo danh mục. Hệ thống kiểm tra hạn mức trước khi chuyển tin nháp sang trạng thái chờ duyệt; gửi thành công không có nghĩa tin đã được hiển thị công khai.\nTrợ lý AI có thể đề xuất tiêu đề, mô tả và giá để bạn xem lại. Bạn phải xác nhận trước khi bản nháp được lưu. Sau khi lưu, hãy mở bản nháp để bổ sung ảnh và thông tin còn thiếu. AI không tự đăng tin hay tự duyệt tin. Nếu đề xuất hết hạn, hãy yêu cầu soạn lại. Không tự bổ sung thông số, tình trạng hoặc cam kết sản phẩm khi bạn chưa cung cấp.",
+    "codeSources": ["backend/src/modules/listings/services/draft.service.ts", "backend/src/modules/ai/assistant/services/tools.service.ts"],
+    "checkQuery": "Chưa có ảnh món hàng thì lưu nháp được không, khi nào gửi để duyệt được?"
+  },
+  {
+    "id": "restore-bootstrap-quota-v1",
+    "title": "Hướng dẫn khởi tạo: xem hạn mức và phạm vi hỗ trợ credit",
+    "content": "Hướng dẫn dựa trên chức năng ReStore ngày 08/11/2026, không phải bảng giá hay chính sách credit.\nHạn mức đăng tin và số bản nháp được giữ phụ thuộc gói của tài khoản. Khi hỏi còn bao nhiêu lượt, đang dùng gói nào hoặc còn bao nhiêu chỗ nháp, trợ lý cần tra cứu dữ liệu hiện tại của chính người đang đăng nhập. Không suy ra số lượt từ tài liệu hướng dẫn, từ tài khoản khác hay từ một câu trả lời cũ.\nKhi lưu nháp hoặc gửi nháp để duyệt, backend kiểm tra hạn mức tại thời điểm thực hiện. Đã xem còn lượt trước đó không đảm bảo thao tác sau vẫn còn lượt nếu bạn có thêm hoạt động khác.\nTrợ lý hiện chưa có công cụ nạp, trừ, chuyển credit hoặc thực hiện thanh toán. Không xác nhận đã giao dịch, không tự đặt tỷ lệ quy đổi credit và không bịa giá gói. Những nội dung tài chính chưa có chính sách được duyệt cần được chủ dự án cung cấp trước khi dùng để tư vấn.",
+    "codeSources": ["backend/src/modules/ai/assistant/services/tools.service.ts", "backend/src/modules/listings/services/draft.service.ts"],
+    "checkQuery": "Trợ lý có tự trừ credit giúp tôi được không?"
+  },
+  {
+    "id": "restore-bootstrap-search-v1",
+    "title": "Hướng dẫn khởi tạo: tìm và so sánh sản phẩm bằng trợ lý",
+    "content": "Hướng dẫn dựa trên chức năng ReStore ngày 08/11/2026, không phải danh sách hàng đang bán.\nBạn có thể mô tả sản phẩm cần tìm và ngân sách bằng tiếng Việt. Hãy nêu tên loại hàng hoặc dòng sản phẩm và khoảng giá; nếu kết quả chưa phù hợp, bổ sung yêu cầu trong cùng hội thoại. Trợ lý có thể dùng ngữ cảnh để hiểu câu tiếp nối như chỉ lấy Samsung hoặc rẻ hơn chút.\nSản phẩm trả về phải được tra cứu từ dữ liệu hiện tại và còn hiển thị công khai. Trợ lý có thể đọc chi tiết tối đa ba sản phẩm để hỗ trợ so sánh mô tả, tình trạng, thuộc tính, giá và khu vực công khai. Không suy đoán độ bền, bảo hành hoặc chất lượng nếu tin đăng không có thông tin.\nNếu không tìm thấy sản phẩm, hãy thử tên ngắn hơn hoặc điều chỉnh ngân sách. Không có kết quả tìm kiếm không có nghĩa toàn hệ thống không có hàng. Trợ lý không tự tạo sản phẩm mẫu để lấp chỗ trống. Hiện việc vào lại trang có thể mở hội thoại mới; hãy nêu lại yêu cầu nếu ngữ cảnh trước không còn.",
+    "codeSources": ["backend/src/modules/ai/assistant/services/tools.service.ts", "backend/src/modules/listings/repositories/feed.repository.ts"],
+    "checkQuery": "Tôi muốn tìm và so sánh điện thoại theo ngân sách bằng trợ lý như thế nào?"
+  }
+]

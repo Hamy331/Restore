@@ -94,7 +94,7 @@ async function seedAll() {
     const user = {
       email: `${shop.key}@shop.restore.vn`, fullName: shop.name, username: shop.username, phone: shop.phone,
       avatarUrl: `assets/images/shops/${shop.key}.png`, bio: shop.tagline,
-      ratingAverage: shop.ratingAverage, ratingCount: shop.ratingCount,
+      legacyRatingAverage: shop.ratingAverage, legacyRatingCount: shop.ratingCount,
       password, status: 'ACTIVE' as const, role: 'USER' as const,
     };
     await prisma.user.upsert({ where: { id }, create: { id, ...user }, update: user });
@@ -126,7 +126,7 @@ async function seedAll() {
     const id = proUserId(seller.key);
     const user = {
       email: `${seller.key}@pro.restore.vn`, fullName: seller.fullName, username: seller.username, phone: seller.phone,
-      ratingAverage: seller.ratingAverage, ratingCount: seller.ratingCount,
+      legacyRatingAverage: seller.ratingAverage, legacyRatingCount: seller.ratingCount,
       password, status: 'ACTIVE' as const, role: 'USER' as const,
     };
     await prisma.user.upsert({ where: { id }, create: { id, ...user }, update: user });

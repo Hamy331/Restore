@@ -2,8 +2,17 @@ import http from 'node:http';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
-import { input, page } from './feed.validator.js';
+import { input, page, searchQuery } from './feed.validator.js';
 import { feedRouter } from './routes/feed.route.js';
+
+test('feed search trims keywords and rejects malformed or oversized input', () => {
+  assert.equal(searchQuery(undefined), '');
+  assert.equal(searchQuery(' Samsung '), 'Samsung');
+  assert.equal(searchQuery('   '), '');
+  for (const value of [['a', 'b'], {}, 12, 'a'.repeat(201)]) {
+    assert.throws(() => searchQuery(value), { code: 'INVALID_SEARCH' });
+  }
+});
 
 test('feed auth protects registered routes and leaves unknown paths to 404', async () => {
   const app = express();

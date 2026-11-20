@@ -36,6 +36,7 @@ class SearchResultsView extends StatelessWidget {
         ? MockSearchRepository()
         : ApiSearchRepository();
     return MultiBlocProvider(
+      key: ValueKey(query),
       providers: [
         BlocProvider(
           create: (_) =>

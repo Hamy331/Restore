@@ -16,10 +16,13 @@ import '../../models/profile_models.dart';
 import './widgets/account_listings.dart';
 import './widgets/account_menu.dart';
 import '../edit_profile/edit_profile_view.dart';
+import '../my_reviews/my_reviews_view.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/profile_posts.dart';
 import '../../../plans/views/plans/plans_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
+import '../../../auth/bloc/auth/auth_bloc.dart';
+import '../../../auth/bloc/auth/auth_event.dart';
 
 enum _Section { listings, posts }
 
@@ -68,10 +71,30 @@ class _AccountMobileViewState extends State<AccountMobileView> {
   }
 
   /// Trang chỉnh sửa hồ sơ dùng chung cubit nên lưu xong hồ sơ cập nhật ngay
-  void openEditProfile() {
+  Future<void> openEditProfile() async {
     final cubit = context.read<UserProfileCubit>();
     if (cubit.state.profile == null) return;
-    context.push(EditProfileView.path, extra: cubit);
+    final saved = await context.push<bool>(EditProfileView.path, extra: cubit);
+    if (!mounted || saved != true) return;
+    final profile = cubit.state.profile!;
+    context.read<AuthBloc>().add(
+      ProfileIdentityUpdated(
+        id: profile.id,
+        fullName: profile.fullName,
+        username: profile.username,
+        avatarUrl: profile.avatarUrl,
+      ),
+    );
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.profileSaved),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    posts?.load();
+    posts?.loadMe(refresh: true);
   }
 
   bool onScroll(ScrollNotification n) {
@@ -133,6 +156,8 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                 else
                                   ProfileHeader(
                                     profile: profile,
+                                    onRatingTap: () =>
+                                        context.push(MyReviewsView.ratingsPath),
                                     onAvatarTap: openEditProfile,
                                     onBioTap: openEditProfile,
                                     onFollowingTap: profile == null

@@ -1,3 +1,4 @@
+import 'package:restore/shared/models/geo_point.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/modules/listings/repositories/category_repository.dart';
 
@@ -17,9 +18,9 @@ class HomeCubit extends Cubit<HomeState> {
   final HomeRepository _homeRepository;
   final CategoryRepository _categoryRepository;
 
-  /// "Tin đăng mới" luôn xếp theo mới nhất; lọc gần bạn/trao đổi nằm ở
-  /// trang riêng
-  static const _latestFilter = HomeListingFilter.newest;
+  GeoPoint? _origin;
+  int _feedRequest = 0;
+  int _homeRequest = 0;
 
   @override
   void emit(HomeState state) {
@@ -32,48 +33,71 @@ class HomeCubit extends Cubit<HomeState> {
   ///
   /// [showLoading] false khi kéo để làm mới: giữ nội dung cũ tới khi có dữ liệu
   Future<void> load({bool showLoading = true}) async {
+    final request = ++_homeRequest;
     if (showLoading) emit(state.copyWith(status: HomeStatus.loading));
     try {
-      // Gọi song song, chờ đủ cả trang rồi mới hiển thị
-      final (banners, categories, recommended, latest) = await (
+      final (banners, categories, recommended, _) = await (
         _homeRepository.getBanners(),
         _categoryRepository.getCategories(),
         _homeRepository.getRecommended(),
-        _homeRepository.getLatest(_latestFilter),
+        _reloadFeed(state.filter),
       ).wait;
+      if (request != _homeRequest) return;
       emit(
         state.copyWith(
           status: HomeStatus.ready,
           banners: banners,
           categories: categories,
           recommended: recommended,
-          latest: latest.items,
-          latestPage: latest.page,
-          hasMoreLatest: latest.hasMore,
-          isLoadingMore: false,
         ),
       );
     } catch (_) {
-      // Làm mới thất bại thì giữ nội dung đang có
-      if (showLoading || state.status != HomeStatus.ready) {
+      if (request == _homeRequest &&
+          (showLoading || state.status != HomeStatus.ready)) {
         emit(state.copyWith(status: HomeStatus.failure));
       }
     }
   }
 
-  /// Tải trang tiếp theo; tự bỏ qua khi đang tải hoặc đã hết
-  Future<void> loadMore() async {
-    if (state.status != HomeStatus.ready ||
-        !state.hasMoreLatest ||
-        state.isLoadingMore) {
+  Future<void> selectFeed(HomeListingFilter filter, GeoPoint? origin) async {
+    if (filter == state.filter &&
+        (filter != HomeListingFilter.nearby || origin == _origin)) {
       return;
     }
-    emit(state.copyWith(isLoadingMore: true));
+    _origin = origin;
+    await _reloadFeed(filter);
+  }
+
+  Future<void> _reloadFeed(HomeListingFilter filter) async {
+    ++_feedRequest;
+    emit(
+      state.copyWith(
+        filter: filter,
+        latest: [],
+        latestPage: 0,
+        isLoadingMore: false,
+        feedFailed: false,
+        hasMoreLatest: filter != HomeListingFilter.nearby || _origin != null,
+      ),
+    );
+    await loadMore();
+  }
+
+  Future<void> loadMore({bool retry = false}) async {
+    if (!state.hasMoreLatest ||
+        state.isLoadingMore ||
+        (state.feedFailed && !retry)) {
+      return;
+    }
+    final request = _feedRequest;
+    emit(state.copyWith(isLoadingMore: true, feedFailed: false));
     try {
       final result = await _homeRepository.getLatest(
-        _latestFilter,
+        state.filter,
+        origin: state.filter == HomeListingFilter.nearby ? _origin : null,
         page: state.latestPage + 1,
       );
+      if (request != _feedRequest) return;
       emit(
         state.copyWith(
           latest: [...state.latest, ...result.items],
@@ -83,7 +107,9 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     } catch (_) {
-      emit(state.copyWith(isLoadingMore: false));
+      if (request == _feedRequest) {
+        emit(state.copyWith(isLoadingMore: false, feedFailed: true));
+      }
     }
   }
 

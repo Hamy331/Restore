@@ -13,12 +13,13 @@ import 'l10n/app_localizations.dart';
 import 'core/theme/theme.dart';
 import 'core/routes/app_router.dart';
 import 'modules/auth/bloc/auth/auth_bloc.dart';
+import 'modules/auth/bloc/auth/auth_state.dart';
+import 'modules/ai/bloc/ai_assistant_cubit.dart';
 import 'modules/auth/bloc/auth/auth_event.dart';
 import 'modules/auth/repositories/auth_repository.dart';
 import 'modules/chat/widgets/presence_reporter.dart';
 import 'modules/location/bloc/user_area/user_area_cubit.dart';
 import 'modules/location/repositories/location_repository.dart';
-import 'modules/auth/bloc/auth/auth_state.dart';
 import 'modules/notifications/bloc/notification_badge/notification_badge_cubit.dart';
 import 'modules/notifications/repositories/notification_repository.dart';
 import 'modules/notifications/services/push_messaging_service.dart';
@@ -82,7 +83,10 @@ class _MyAppState extends State<MyApp> {
     AuthRepository(),
     sessionExpired: ApiClient().sessionExpired,
   )..add(const AuthCheckRequested());
-  late final GoRouter _router = createAppRouter(_authBloc);
+  AiAssistantCubit? _assistant;
+  String? _assistantOwner;
+  late final StreamSubscription<AuthState> _authChanges;
+  late final GoRouter _router = createAppRouter(_authBloc, assistant: _openAssistant);
   final NotificationRepository _notificationRepository =
       NotificationsView.createRepository();
   late final PushMessagingService _push = PushMessagingService(
@@ -91,8 +95,33 @@ class _MyAppState extends State<MyApp> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    _authChanges = _authBloc.stream.listen(_syncAssistantOwner);
+  }
+
+  void _syncAssistantOwner(AuthState state) {
+    final owner = state is AuthAuthenticated ? state.user.id : null;
+    if (_assistantOwner == owner) return;
+    _assistant?.close();
+    _assistant = null;
+    _assistantOwner = owner;
+  }
+
+  AiAssistantCubit _openAssistant() {
+    _syncAssistantOwner(_authBloc.state);
+    if (_assistant != null) return _assistant!;
+    final assistant = AiAssistantCubit();
+    _assistant = assistant;
+    if (_assistantOwner != null) unawaited(assistant.restoreLatest());
+    return assistant;
+  }
+
+  @override
   void dispose() {
     _push.dispose();
+    _authChanges.cancel();
+    _assistant?.close();
     _router.dispose();
     _authBloc.close();
     super.dispose();

@@ -24,6 +24,9 @@ class SearchResultsHeader extends StatelessWidget {
   final VoidCallback onSortTap;
   final VoidCallback onClearTap;
 
+  /// false: ẩn nút quay lại + ô từ khoá (màn rộng đã có ô tìm kiếm ở trên)
+  final bool showSearch;
+
   const SearchResultsHeader({
     super.key,
     required this.query,
@@ -36,13 +39,13 @@ class SearchResultsHeader extends StatelessWidget {
     required this.onDealToggle,
     required this.onSortTap,
     required this.onClearTap,
+    this.showSearch = true,
   });
 
   /// Ô tìm kiếm (48) + hàng tab + hàng chip lọc (tab Tin đăng) + lề trên dưới
-  static double heightFor(SearchResultsTab tab) =>
+  static double heightFor(SearchResultsTab tab, {bool showSearch = true}) =>
       8 +
-      48 +
-      4 +
+      (showSearch ? 48 + 4 : 0) +
       AppUnderlineTabs.height +
       (tab == SearchResultsTab.listings ? 10 + AppFilterChip.height : 0) +
       12;
@@ -54,27 +57,29 @@ class SearchResultsHeader extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8, bottom: 12),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
-            child: Row(
-              children: [
-                AppCircleIconButton(
-                  icon: AppIcons.back,
-                  tooltip: l10n.back,
-                  onTap: onBack,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: AppSearchPill(
-                    text: query,
-                    isPlaceholder: false,
-                    onTap: onEditQuery,
+          if (showSearch) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
+              child: Row(
+                children: [
+                  AppCircleIconButton(
+                    icon: AppIcons.back,
+                    tooltip: l10n.back,
+                    onTap: onBack,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: AppSearchPill(
+                      text: query,
+                      isPlaceholder: false,
+                      onTap: onEditQuery,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
+            const SizedBox(height: 4),
+          ],
           AppUnderlineTabs(
             labels: [
               l10n.searchTabListings,

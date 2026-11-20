@@ -1,10 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
+import 'dart:typed_data';
+import 'package:restore/core/network/media_url.dart';
 import 'package:dio/dio.dart';
 import 'package:restore/core/network/api_client.dart';
 import '../models/chat_models.dart';
 
 /// Nguồn dữ liệu tin nhắn
+String newChatClientId() =>
+    '${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1 << 30)}';
+
 abstract class ChatRepository {
   /// Tổng số tin nhắn chưa đọc của người dùng, hiện trên thanh điều hướng
   Future<int> getUnreadCount();
@@ -14,9 +20,14 @@ abstract class ChatRepository {
   Future<String> startConversation(String recipientId);
   Future<List<ChatConversation>> listConversations();
   Future<ChatConversation> getConversation(String id);
-  Future<List<ChatMessage>> getMessages(String id);
-  Future<ChatMessage> sendMessage(String id, String clientId, String text);
-  Future<void> markRead(String id);
+  Future<List<ChatMessage>> getMessages(String id, {int? before});
+  Future<ChatMessage> sendMessage(
+    String id,
+    String clientId,
+    String text, {
+    String? listingId,
+  });
+  Future<void> markRead(String id, {int? through});
 
   /// Tên sự kiện realtime (`message`, `presence`…); huỷ lắng nghe sẽ đóng
   /// kết nối.
@@ -65,14 +76,16 @@ class MockChatRepository implements ChatRepository {
   Future<ChatConversation> getConversation(String id) async => _conversation;
 
   @override
-  Future<List<ChatMessage>> getMessages(String id) async => List.of(_messages);
+  Future<List<ChatMessage>> getMessages(String id, {int? before}) async =>
+      before == null ? List.of(_messages) : [];
 
   @override
   Future<ChatMessage> sendMessage(
     String id,
     String clientId,
-    String text,
-  ) async {
+    String text, {
+    String? listingId,
+  }) async {
     final message = ChatMessage(
       id: clientId,
       senderId: _selfId,
@@ -84,7 +97,7 @@ class MockChatRepository implements ChatRepository {
   }
 
   @override
-  Future<void> markRead(String id) async {}
+  Future<void> markRead(String id, {int? through}) async {}
 
   @override
   Stream<String> events() => const Stream.empty();
@@ -107,12 +120,23 @@ class ApiChatRepository implements ChatRepository {
   }
 
   @override
-  Future<String> startConversation(String recipientId) async {
+  Future<String> startConversation(
+    String recipientId, {
+    String? listingId,
+  }) async {
     final response = await _apiClient.dio.post<Map<String, dynamic>>(
       '/conversations',
-      data: {'recipientId': recipientId},
+      data: {
+        'recipientId': recipientId,
+        if (listingId != null) 'listingId': listingId,
+      },
     );
-    return (response.data!['data'] as Map)['id'] as String;
+    final data = response.data?['data'];
+    final id = data is Map ? data['id'] : null;
+    if (id is! String || id.isEmpty) {
+      throw const FormatException('Missing conversation id');
+    }
+    return id;
   }
 
   @override
@@ -189,9 +213,17 @@ class ApiChatRepository implements ChatRepository {
   }
 
   @override
-  Future<List<ChatMessage>> getMessages(String id) async {
+  Future<List<ChatMessage>> getMessages(
+    String id, {
+    int? before,
+    bool mediaOnly = false,
+  }) async {
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
       '/conversations/$id/messages',
+      queryParameters: {
+        if (before != null) 'before': before,
+        if (mediaOnly) 'media': '1',
+      },
     );
     final rows = (response.data!['data'] as Map)['items'] as List<dynamic>;
     return rows
@@ -205,11 +237,16 @@ class ApiChatRepository implements ChatRepository {
   Future<ChatMessage> sendMessage(
     String id,
     String clientId,
-    String text,
-  ) async {
+    String text, {
+    String? listingId,
+  }) async {
     final response = await _apiClient.dio.post<Map<String, dynamic>>(
       '/conversations/$id/messages',
-      data: {'clientId': clientId, 'text': text},
+      data: {
+        'clientId': clientId,
+        'text': text,
+        if (listingId != null) 'listingId': listingId,
+      },
     );
     return ChatMessage.fromJson(
       Map<String, dynamic>.from(response.data!['data'] as Map),
@@ -217,6 +254,51 @@ class ApiChatRepository implements ChatRepository {
   }
 
   @override
-  Future<void> markRead(String id) async =>
-      _apiClient.dio.post<void>('/conversations/$id/read');
+  Future<void> markRead(String id, {int? through}) async =>
+      _apiClient.dio.post<void>(
+        '/conversations/$id/read',
+        data: {if (through != null) 'through': through},
+      );
+
+  Future<void> upload(String id, String clientId, Uint8List bytes) async {
+    await _apiClient.dio.post(
+      '/conversations/$id/media',
+      queryParameters: {'clientId': clientId},
+      data: bytes,
+      options: Options(
+        contentType: 'application/octet-stream',
+        sendTimeout: const Duration(minutes: 2),
+      ),
+    );
+  }
+
+  Future<Uri> mediaLink(String id, String messageId) async {
+    final response = await _apiClient.dio.get(
+      '/conversations/$id/media/$messageId/link',
+    );
+    return Uri.parse(resolveMediaUrl(response.data['data']['url'] as String)!);
+  }
+
+  Future<List<({String contextId, ChatProduct product})>> discussed(
+    String id,
+  ) async {
+    final response = await _apiClient.dio.get('/conversations/$id/products');
+    return [
+      for (final row in response.data['data'] as List)
+        (
+          contextId: row['contextId'] as String,
+          product: ChatProduct.fromJson(row)!,
+        ),
+    ];
+  }
+
+  Future<void> preferences(String id, {bool? hidden, bool? blocked}) async {
+    await _apiClient.dio.patch(
+      '/conversations/$id/preferences',
+      data: {
+        if (hidden != null) 'hidden': hidden,
+        if (blocked != null) 'blocked': blocked,
+      },
+    );
+  }
 }

@@ -1,6 +1,6 @@
 import * as repository from '../repositories/feed.repository.js';
 import { AppError } from '../../../common/errors/app-error.js';
-import { id, input, page } from '../feed.validator.js';
+import { id, input, page, searchQuery } from '../feed.validator.js';
 import { setPostLike } from '../repositories/feed.repository.js';
 import { serialize, slice } from '../feed.dto.js';
 import { emit } from '../../../common/events/domain-events.js';
@@ -16,7 +16,7 @@ export async function listPosts(userId: string, query: Record<string, unknown>) 
   if (query.tab !== undefined && !['for-you', 'following'].includes(String(query.tab))) throw new AppError(400, 'INVALID_TAB', 'Invalid tab');
   const { limit, after } = page(query);
   const authorId = query.authorId === undefined ? undefined : id(query.authorId);
-  const rows = await repository.findPosts(userId, limit, after, authorId, query.tab);
+  const rows = await repository.findPosts(userId, limit, after, authorId, query.tab, searchQuery(query.q));
   const result = slice(rows, limit);
   return { ...result, items: result.items.map(item => serialize(item, userId)) };
 }

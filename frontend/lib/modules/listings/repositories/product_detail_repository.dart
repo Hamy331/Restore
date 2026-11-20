@@ -1,6 +1,7 @@
 import 'package:restore/core/network/api_client.dart';
 
 import '../models/product_detail.dart';
+import '../../chat/repositories/chat_repository.dart';
 
 /// Nguồn dữ liệu trang chi tiết sản phẩm và các hành động của người mua
 abstract class ProductDetailRepository {
@@ -42,11 +43,10 @@ class ApiProductDetailRepository implements ProductDetailRepository {
 
   @override
   Future<String> openConversation(String listingId) async {
-    final response = await _apiClient.dio.post<Map<String, dynamic>>(
-      '/conversations',
-      data: {'listingId': listingId},
-    );
-    return '${_data(response.data)['id']}';
+    final detail = await getDetail(listingId);
+    return ApiChatRepository(
+      apiClient: _apiClient,
+    ).startConversation(detail.seller.id, listingId: listingId);
   }
 
   @override

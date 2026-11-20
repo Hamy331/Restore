@@ -47,10 +47,11 @@ export const findAdminReportTarget = (postId: string) =>
     },
   });
 
-export const findPosts = (userId: string, limit: number, after: {createdAt: Date; id: string} | undefined, authorId: string | undefined, tab: unknown) =>
+export const findPosts = (userId: string, limit: number, after: {createdAt: Date; id: string} | undefined, authorId: string | undefined, tab: unknown, query = '') =>
   prisma.feedPost.findMany({ where: { ...available,
     ...(tab === 'following' ? followingFilter(userId) : {}),
     ...(authorId ? { authorId } : {}),
+    ...(query ? { text: { contains: query, mode: 'insensitive' as const } } : {}),
     ...(after ? { OR: [{ createdAt: { lt: after.createdAt } }, { createdAt: after.createdAt, id: { lt: after.id } }] } : {}) },
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: limit + 1,
     include: postInclude(userId) });

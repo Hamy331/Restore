@@ -13,14 +13,18 @@ class PublicProfileView extends StatelessWidget {
     super.key,
     required this.userId,
     this.repository,
+    this.returnShopFollow = false,
+    this.openReviews = false,
     this.feedsRepository,
   });
   final String userId;
+  final bool returnShopFollow, openReviews;
   final ProfileRepository? repository;
   final FeedsRepository? feedsRepository;
 
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
+    key: ValueKey(userId),
     providers: [
       BlocProvider(
         create: (_) =>
@@ -32,6 +36,11 @@ class PublicProfileView extends StatelessWidget {
             FeedsCubit(repository: feedsRepository, authorId: userId)..load(),
       ),
     ],
-    child: const TResponsiveLayout(mobile: PublicProfileMobileView()),
+    child: TResponsiveLayout(
+      mobile: PublicProfileMobileView(
+        returnShopFollow: returnShopFollow,
+        openReviews: openReviews,
+      ),
+    ),
   );
 }

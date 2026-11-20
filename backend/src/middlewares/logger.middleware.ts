@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { redact } from '../common/security/redaction.js';
 
 export const apiLogger = (req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
@@ -22,10 +23,11 @@ export const apiLogger = (req: Request, res: Response, next: NextFunction) => {
     const color = status >= 400 ? '\x1b[31m' : '\x1b[32m';
     const reset = '\x1b[0m';
 
-    let logMessage = `[${timestamp}] ${req.method} ${req.originalUrl} ${color}${status}${reset} - ${duration}ms`;
+    // Query strings can contain tokens or private search terms; never log them.
+    let logMessage = `[${timestamp}] ${req.method} ${redact(req.originalUrl.split('?')[0])} ${color}${status}${reset} - ${duration}ms`;
     
     if (errorDetail) {
-      logMessage += `\n   ↳ ❌ Error: ${color}${errorDetail}${reset}`;
+      logMessage += `\n   ↳ ❌ Error: ${color}${redact(errorDetail)}${reset}`;
     }
     
     console.log(logMessage);

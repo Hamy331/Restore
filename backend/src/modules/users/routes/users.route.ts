@@ -1,3 +1,4 @@
+import { listMyReviews, listReviews } from '../../chat/services/trade.service.js';
 import { Router, Response, NextFunction } from 'express';
 import { PERMISSION } from '../../../common/auth/permissions.js';
 import { ok } from '../../../common/http/response.js';
@@ -34,7 +35,9 @@ usersRouter.patch('/me/addresses/:addressId', handle((req) =>
 usersRouter.delete('/me/addresses/:addressId', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try { await savedAddresses.deleteAddress(req.user!.userId, req.params.addressId as string); res.status(204).end(); } catch (error) { next(error); }
 });
-usersRouter.get('/:id', handle((req) => profile.getProfile(req.params.id as string, req.user!.userId)));
+usersRouter.get('/me/reviews', handle(req => listMyReviews(req.user!.userId, req.query)));
+usersRouter.get('/:id', handle((req) => profile.getPublicProfile(req.params.id as string, req.user!.userId)));
+usersRouter.get('/:id/reviews', handle(req => listReviews(req.params.id as string, req.query)));
 usersRouter.get('/:id/followers', handle((req) =>
   profile.listFollows(req.params.id as string, req.user!.userId, 'followers', req.query.page)));
 usersRouter.get('/:id/following', handle((req) =>

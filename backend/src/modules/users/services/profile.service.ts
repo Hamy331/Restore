@@ -3,6 +3,7 @@ import * as repository from '../repositories/profile.repository.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { fullName as parseFullName, username as parseUsername } from '../../auth/auth.validator.js';
 import { publish } from '../../chat/services/chat.events.js';
+import { heartbeat as chatHeartbeat } from '../../chat/services/chat.service.js';
 import { isMediaUrl } from '../../media/media.service.js';
 
 import { profileSelect } from '../repositories/profile.repository.js';
@@ -39,6 +40,12 @@ export const getProfile = async (id: string, viewerId?: string) => {
   const follow = await repository.findFollow(id, viewerId);
   return { ...formatProfile(user, followingShopCount), isFollowing: !!follow };
 };
+
+export async function getPublicProfile(id: string, viewerId: string) {
+  const result = await repository.findStorefront(id, viewerId);
+  if (!result) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
+  return { ...formatProfile(result.user), isFollowing: result.user.followers.length > 0, storefront: result.storefront };
+}
 
 const followPageSize = 20;
 export function followPage(value: unknown) {
@@ -109,9 +116,8 @@ export const updateProfile = async (id: string, body: unknown) => {
 };
 
 export const heartbeat = async (id: string) => {
-  const user = await repository.touchPresence(id);
-  const peers = await repository.findPeers(id);
-  publish(peers.map((peer) => peer.userId), 'presence', {
+  const user = await chatHeartbeat(id);
+  publish(user.peers, 'presence', {
     userId: id, isOnline: true, lastActiveAt: user.lastActiveAt,
   });
   return { isOnline: true, lastActiveAt: user.lastActiveAt };

@@ -1,3 +1,4 @@
+import 'package:restore/shared/models/geo_point.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../models/area_option.dart';
@@ -23,19 +24,23 @@ class UserAreaState extends Equatable {
 
   /// true khi khu vực do người dùng tự chọn (không tự đổi theo GPS nữa)
   final bool isManual;
+  final GeoPoint? devicePoint;
+  GeoPoint? get origin => devicePoint ?? area?.center;
 
   const UserAreaState({
     this.status = UserAreaStatus.locating,
     this.area,
+    this.devicePoint,
     this.isManual = false,
   });
 
   const UserAreaState.nationwide({this.isManual = false})
     : status = UserAreaStatus.nationwide,
-      area = null;
+      area = null,
+      devicePoint = null;
 
   bool get isLocating => status == UserAreaStatus.locating;
 
   @override
-  List<Object?> get props => [status, area, isManual];
+  List<Object?> get props => [status, area, isManual, devicePoint];
 }

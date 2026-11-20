@@ -624,10 +624,15 @@ class ApiListingsRepository implements ListingsRepository {
       // Lần đầu: tạo tin mới. Thử lại sau khi tải ảnh lỗi giữa chừng: tin đã
       // tạo rồi nên chỉ cập nhật nội dung (không tạo trùng, không trừ thêm lượt)
       final response = draft.id == null
-          ? await _dio.post<Map<String, dynamic>>('/listings', data: payload)
+          ? await _dio.post<Map<String, dynamic>>(
+              '/listings',
+              data: payload,
+              options: _listingWriteOptions(),
+            )
           : await _dio.put<Map<String, dynamic>>(
               '/listings/${Uri.encodeComponent(draft.id!)}',
               data: payload,
+              options: _listingWriteOptions(),
             );
       working = _merge(draft, _data(response), images: draft.images);
       return await _syncImages(working, (next) => working = next);
@@ -658,10 +663,12 @@ class ApiListingsRepository implements ListingsRepository {
           ? await _dio.post<Map<String, dynamic>>(
               '/listings/drafts',
               data: payload,
+              options: _listingWriteOptions(),
             )
           : await _dio.put<Map<String, dynamic>>(
               '/listings/drafts/${Uri.encodeComponent(draft.id!)}',
               data: payload,
+              options: _listingWriteOptions(),
             );
       working = _merge(draft, _data(response), images: draft.images);
       working = await _syncImages(working, (next) => working = next);
@@ -670,6 +677,7 @@ class ApiListingsRepository implements ListingsRepository {
       final result = _data(
         await _dio.post<Map<String, dynamic>>(
           '/listings/drafts/$id/publish',
+          options: _listingWriteOptions(),
           data: {
             if (payWithCredits) 'payWithCredits': true,
             if (allowDuplicate) 'allowDuplicate': true,
@@ -681,6 +689,10 @@ class ApiListingsRepository implements ListingsRepository {
       throw ListingSaveException(working, error);
     }
   }
+
+  // Backend có thể thử lại transaction khi PostgreSQL báo xung đột.
+  Options _listingWriteOptions() =>
+      Options(receiveTimeout: const Duration(seconds: 45));
 
   /// Đưa danh sách ảnh trên máy chủ về đúng [working.images]: bỏ ảnh đã xóa,
   /// tải ảnh mới (ảnh trên máy) theo thứ tự rồi sắp xếp lại.

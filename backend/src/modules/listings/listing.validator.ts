@@ -290,6 +290,7 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
   }
   const filters = {
     ...search,
+    ...(raw.ownerId !== undefined ? { ownerId: parse(z.string().trim().min(1).max(100), raw.ownerId) } : {}),
     ...(filter === 'nearby' || (filter !== 'newest' && nearby) ? { nearby } : {}),
     ...(filter === 'exchange' || allowExchange ? { allowExchange: true } : {}),
     // Trang Shop uy tín: chỉ tin của shop đã xác minh, onSale = đang giảm giá

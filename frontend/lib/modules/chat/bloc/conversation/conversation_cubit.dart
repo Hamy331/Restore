@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/chat_models.dart';
 import '../../repositories/chat_repository.dart';
@@ -19,6 +19,38 @@ class ConversationCubit extends Cubit<ConversationState> {
   final Duration refreshInterval;
   StreamSubscription<String>? _events;
   Timer? _timer;
+  String? _contextId;
+  int _revision = 0;
+  bool _paging = false;
+  (String, String?)? _pending;
+  String? _clientId;
+
+  Future<void> selectProduct(String contextId) {
+    _contextId = contextId;
+    return load();
+  }
+
+  Future<void> older() async {
+    if (_paging || !state.hasOlder || state.messages.isEmpty) return;
+    _paging = true;
+    try {
+      final before = state.messages.first.sequence;
+      final page = await _repository.getMessages(
+        conversationId,
+        before: before,
+      );
+      if (!isClosed && before == state.messages.firstOrNull?.sequence) {
+        emit(
+          state.copyWith(
+            messages: [...page, ...state.messages],
+            hasOlder: page.length == 30,
+          ),
+        );
+      }
+    } finally {
+      _paging = false;
+    }
+  }
 
   void start() {
     unawaited(load());
@@ -35,19 +67,35 @@ class ConversationCubit extends Cubit<ConversationState> {
 
   /// [silent]: làm mới ngầm, lỗi thì giữ nguyên nội dung đang hiển thị.
   Future<void> load({bool silent = false}) async {
+    final revision = ++_revision;
     try {
       final selfId = state.selfId ?? await _repository.currentUserId();
       final results = await Future.wait<Object>([
-        _repository.getConversation(conversationId),
+        _repository.getConversation(_contextId ?? conversationId),
         _repository.getMessages(conversationId),
       ]);
-      await _repository.markRead(conversationId);
-      if (isClosed) return;
+      final page = results[1] as List<ChatMessage>;
+      if (isClosed || revision != _revision) return;
+      if (state.conversation == null ||
+          state.messages.lastOrNull?.id != page.lastOrNull?.id) {
+        await _repository.markRead(
+          conversationId,
+          through: page.lastOrNull?.sequence ?? 0,
+        );
+      }
+      if (isClosed || revision != _revision) return;
+      final overlap = page.isEmpty
+          ? -1
+          : state.messages.indexWhere((m) => m.id == page.first.id);
+      final retained = overlap > 0
+          ? state.messages.take(overlap)
+          : const <ChatMessage>[];
       emit(
         state.copyWith(
           selfId: selfId,
           conversation: results[0] as ChatConversation,
-          messages: results[1] as List<ChatMessage>,
+          messages: [...retained, ...page],
+          hasOlder: retained.isEmpty ? page.length == 30 : state.hasOlder,
           loading: false,
           failed: false,
         ),
@@ -60,14 +108,22 @@ class ConversationCubit extends Cubit<ConversationState> {
   }
 
   /// Trả `true` khi gửi thành công để view xoá ô soạn tin.
-  Future<bool> send(String text) async {
+  Future<bool> send(String text, {String? listingId}) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty || state.sending) return false;
     emit(state.copyWith(sending: true));
-    final clientId =
-        '${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1 << 30)}';
+    if (_pending != (trimmed, listingId)) {
+      _pending = (trimmed, listingId);
+      _clientId = newChatClientId();
+    }
     try {
-      await _repository.sendMessage(conversationId, clientId, trimmed);
+      await _repository.sendMessage(
+        conversationId,
+        _clientId!,
+        trimmed,
+        listingId: listingId,
+      );
+      _pending = null;
       if (isClosed) return true;
       emit(state.copyWith(sending: false));
       await load();

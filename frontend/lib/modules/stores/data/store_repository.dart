@@ -119,37 +119,6 @@ class StoreRepository {
   StoreRepository({Dio? dio}) : _dio = dio ?? ApiClient().dio;
   final Dio _dio;
 
-  Future<List<StorePackage>> adminStorePackages() async {
-    final response = await _dio.get<Map<String, dynamic>>(
-      '/admin/store-packages',
-    );
-    return (response.data!['data'] as List)
-        .map(
-          (item) =>
-              StorePackage.fromJson(Map<String, dynamic>.from(item as Map)),
-        )
-        .toList();
-  }
-
-  Future<void> saveStorePackage(String id, Map<String, dynamic> data) =>
-      _dio.put<void>(
-        '/admin/store-packages/${Uri.encodeComponent(id)}',
-        data: data,
-      );
-  Future<Map<String, dynamic>> orderHistory(
-    String type,
-    int page,
-    String status,
-  ) async => Map<String, dynamic>.from(
-    (await _dio.get<Map<String, dynamic>>(
-          '/admin/${type == 'stores' ? 'store-orders' : 'promotion-orders'}',
-          queryParameters: {
-            'page': page,
-            if (status.isNotEmpty) 'status': status,
-          },
-        )).data!['data']
-        as Map,
-  );
   Future<List<StoreCategory>> categories() async {
     final response = await _dio.get<Map<String, dynamic>>('/stores/categories');
     return (response.data!['data'] as List)
@@ -181,41 +150,6 @@ class StoreRepository {
         .toList();
   }
 
-  Future<List<PromotionPackage>> allPromotionPackages() async {
-    final response = await _dio.get<Map<String, dynamic>>(
-      '/promotions/packages',
-    );
-    return (response.data!['data'] as List)
-        .map((item) => PromotionPackage.fromJson(item as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<void> savePromotionPackage({
-    String? id,
-    required String name,
-    required String kind,
-    required int durationDays,
-    required String price,
-    required int priority,
-    required bool active,
-  }) async {
-    final data = {
-      'name': name,
-      'kind': kind,
-      'durationDays': durationDays,
-      'price': price,
-      'priority': priority,
-      'active': active,
-    };
-    if (id == null) {
-      await _dio.post<Map<String, dynamic>>('/promotions/packages', data: data);
-    } else {
-      await _dio.put<Map<String, dynamic>>(
-        '/promotions/packages/${Uri.encodeComponent(id)}',
-        data: data,
-      );
-    }
-  }
 
   Future<void> redeem({
     required String listingId,
@@ -249,20 +183,4 @@ class StoreRepository {
     return (response.data!['data'] as Map<String, dynamic>)['id'] as String;
   }
 
-  Future<List<Map<String, dynamic>>> pendingOrders(String type) async {
-    final response = await _dio.get<Map<String, dynamic>>(
-      '/$type/admin/orders',
-    );
-    return (response.data!['data'] as List).cast<Map<String, dynamic>>();
-  }
-
-  Future<void> decideOrder(
-    String type,
-    String id, {
-    required bool confirm,
-  }) async {
-    await _dio.post<Map<String, dynamic>>(
-      '/$type/admin/orders/${Uri.encodeComponent(id)}/${confirm ? 'confirm' : 'reject'}',
-    );
-  }
 }
