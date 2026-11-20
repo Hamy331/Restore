@@ -1,14 +1,13 @@
-
 import 'package:restore/modules/content/views/community_content_view.dart';
+import 'package:restore/modules/credits/views/credit_bonus/credit_bonus_view.dart';
 import 'package:restore/modules/credits/views/credit_history/credit_history_view.dart';
+import 'package:restore/modules/notifications/views/notifications/notifications_view.dart';
 import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dart';
 import 'package:restore/modules/credits/views/credit_wallet/credit_wallet_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-// Tab Bảng tin dùng module feeds (danh sách + đăng bài có API); màn soạn bài
-// nhiều tuỳ chọn của module feed vẫn ở /feeds/compose.
 import 'package:restore/modules/feeds/views/feeds/feeds_view.dart';
 import 'package:restore/modules/account/models/profile_models.dart';
 import 'package:restore/modules/account/views/follow_list/follow_list_view.dart';
@@ -289,7 +288,12 @@ GoRouter createAppRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/feeds', builder: (_, _) => const FeedsView()),
+            // ?post=<id>: mở sẵn bình luận của bài (bấm từ thông báo)
+            GoRoute(
+              path: FeedsView.path,
+              builder: (_, state) =>
+                  FeedsView(openPostId: state.uri.queryParameters['post']),
+            ),
           ],
         ),
         StatefulShellBranch(
@@ -521,11 +525,28 @@ GoRouter createAppRouter(
       ),
     ),
     GoRoute(
+      path: CreditBonusView.path,
+      parentNavigatorKey: _frameNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const CreditBonusView(),
+      ),
+    ),
+    GoRoute(
       path: CreditHistoryView.path,
       parentNavigatorKey: _frameNavigatorKey,
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const CreditHistoryView(),
+      ),
+    ),
+    // Thông báo trong app (chuông ở trang chủ)
+    GoRoute(
+      path: NotificationsView.path,
+      parentNavigatorKey: _frameNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const NotificationsView(),
       ),
     ),
     // Tạo thông báo; q là món cần tìm điền sẵn, from=alerts khi mở từ trang

@@ -1,5 +1,6 @@
 import { audit } from '../../common/audit/admin-audit.js';
 import { AppError } from '../../common/errors/app-error.js';
+import { emit } from '../../common/events/domain-events.js';
 import { prisma } from '../../lib/prisma.js';
 import { storePackageForUser, utcMonthStart } from '../commerce/index.js';
 import { isMediaUrl } from '../media/media.service.js';
@@ -197,7 +198,7 @@ export async function adminListPosters(query: AdminPosterQuery, now = new Date()
 }
 
 async function decide(adminId: string, id: string, now: Date, decision: { status: 'APPROVED' } | { status: 'REJECTED'; body: PosterRejectBody }) {
-  return prisma.$transaction(async (tx) => {
+  const reviewed = await prisma.$transaction(async (tx) => {
     const poster = await posterRepository.findPosterForAdmin(tx, id);
     if (!poster) throw new AppError(404, 'POSTER_NOT_FOUND', 'Không tìm thấy poster.');
     if (poster.status !== 'PENDING') throw new AppError(409, 'POSTER_NOT_PENDING', 'Poster không còn ở trạng thái chờ duyệt.');
@@ -217,6 +218,12 @@ async function decide(adminId: string, id: string, now: Date, decision: { status
       { status: poster.status }, { status: decision.status, rejectReason: reject?.reason ?? null });
     return toAdminPosterDto((await posterRepository.findPosterForAdmin(tx, id))!, now);
   });
+  // Sau khi commit: báo chủ shop poster được duyệt / bị từ chối (2.10)
+  await emit('poster.reviewed', {
+    ownerId: reviewed.shop.ownerId, posterId: id, title: reviewed.title, imageUrl: reviewed.imageUrl,
+    approved: decision.status === 'APPROVED', reason: reviewed.rejectReason ?? null, note: reviewed.rejectNote ?? null,
+  });
+  return reviewed;
 }
 
 /** Duyệt poster. Lỗi 404 POSTER_NOT_FOUND, 409 POSTER_NOT_PENDING, 409 POSTER_EXPIRED */

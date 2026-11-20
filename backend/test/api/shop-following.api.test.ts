@@ -38,6 +38,10 @@ test('shop following: followed shops, their listings, my shop followers, profile
 
   const profile = await api.get('/users/me', { token: tokens.buyer });
   assert.equal(profile.body.data.followingShopCount, 1, JSON.stringify(profile.body.data));
+  // Theo dõi shop = theo dõi chủ shop: trang cá nhân chủ shop cũng đang theo dõi, và nằm trong số đang theo dõi
+  const owner = await api.get('/users/user-seller', { token: tokens.buyer });
+  assert.deepEqual([owner.body.data.isFollowing, owner.body.data.followerCount], [true, 1]);
+  assert.ok(profile.body.data.followingCount >= 1);
 
   // chủ shop xem người theo dõi
   const mine = await api.get('/shops/me/followers', { token: tokens.seller });
@@ -45,9 +49,15 @@ test('shop following: followed shops, their listings, my shop followers, profile
   assert.deepEqual(mine.body.data.map((user: { id: string }) => user.id), ['user-buyer']);
   assert.ok(mine.body.data[0].followedAt);
 
-  await api.delete('/shops/shop-seller/follow', { token: tokens.buyer });
+  // Bỏ theo dõi ở trang cá nhân chủ shop thì shop cũng hết theo dõi
+  assert.equal((await api.delete('/users/user-seller/follow', { token: tokens.buyer })).status < 300, true);
   assert.deepEqual((await api.get('/shops/following', { token: tokens.buyer })).body.data, []);
+  assert.equal((await api.get('/shops/shop-seller', { token: tokens.buyer })).body.data.isFollowing, false);
   assert.deepEqual((await api.get('/shops/me/followers', { token: tokens.seller })).body.data, []);
+  // Theo dõi ở trang cá nhân thì shop cũng đang theo dõi
+  await api.post('/users/user-seller/follow', { token: tokens.buyer });
+  assert.deepEqual((await api.get('/shops/following', { token: tokens.buyer })).body.data.map((s: { id: string }) => s.id), ['shop-seller']);
+  await api.delete('/shops/shop-seller/follow', { token: tokens.buyer });
 });
 
 /** Gợi ý shop: shop chưa theo dõi, hợp danh mục tin đã lưu xếp trước, kèm tin xem trước */

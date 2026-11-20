@@ -9,6 +9,7 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
 import 'package:restore/shared/widgets/app_circle_icon_button.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/wanted_alerts/wanted_alerts_cubit.dart';
@@ -119,14 +120,9 @@ class _WantedAlertsMobileViewState extends State<WantedAlertsMobileView> {
       case WantedAlertsStatus.failure:
         return _below(
           topInset,
-          FeedbackView(
-            icon: AppIcons.offline,
+          AppLoadErrorView(
             title: l10n.wantedAlertLoadErrorTitle,
-            message: l10n.wantedAlertLoadErrorBody,
-            action: FilledButton(
-              onPressed: cubit.load,
-              child: Text(l10n.retry),
-            ),
+            onRetry: cubit.load,
           ),
         );
       case WantedAlertsStatus.ready:

@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/shared/widgets/app_action_buttons.dart';
 import 'package:restore/shared/widgets/glass/app_glass_background.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import '../../bloc/create_listing/create_listing_bloc.dart';
 import '../../bloc/create_listing/create_listing_event.dart';
 import '../../bloc/create_listing/create_listing_state.dart';
 import '../../models/create_listing_step.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 
 /// Tải tin cần sửa; xong thì thay trang này bằng bước 2 (chuyên mục giữ
 /// nguyên nên bỏ qua bước 1), lỗi thì cho thử lại
@@ -67,33 +67,7 @@ class _EditListingMobileViewState extends State<EditListingMobileView> {
           ),
           body: Center(
             child: state.openEditStatus == RequestStatus.failure
-                ? Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          AppIcons.error,
-                          size: 40,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          l10n.editLoadFailed,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        AppPrimaryActionButton(
-                          label: l10n.retry,
-                          icon: AppIcons.refresh,
-                          onPressed: _open,
-                        ),
-                      ],
-                    ),
-                  )
+                ? AppLoadErrorView(title: l10n.editLoadFailed, onRetry: _open)
                 : const AppLoadingIndicator(),
           ),
         ),

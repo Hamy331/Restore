@@ -5,6 +5,7 @@ import { listingLocation } from '../src/modules/catalog/catalog.validator.js';
 import { matchApprovedListing } from '../src/modules/wanted-alerts/wanted-alert.service.js';
 import { DEMO_BANNERS, DEMO_LISTINGS, DEMO_PASSWORD, DEMO_SELLERS, DemoListing, demoImages } from './seed/demo.js';
 import { DEMO_PENDING_LISTINGS, DEMO_WANTED_ALERTS } from './seed/demo-wanted-alerts.js';
+import { seedUuid } from './seed/seed-id.js';
 
 /**
  * Dữ liệu demo: 4 người bán, 30 tin đang bán (6 tin ưu tiên), 3 banner trang chủ,
@@ -31,18 +32,23 @@ const viewerEmail = args.find((arg) => arg.startsWith('--viewer='))?.slice('--vi
 const DAY = 24 * 60 * 60 * 1000;
 const FEATURED_PACKAGE = 'featured-7';
 const HOUR = 60 * 60 * 1000;
-const ALERT_OWNER_FALLBACK = 'demo-seller-khoa';
-const listingId = (key: string) => `demo-listing-${key}`;
-const pendingId = (key: string) => `demo-pending-${key}`;
-const alertId = (key: string) => `demo-alert-${key}`;
-const sellerIds = DEMO_SELLERS.map((seller) => seller.id);
+// Id trong DB là UUID sinh cố định từ tên seed (seedUuid), tên vẫn đọc được trong file dữ liệu
+const ALERT_OWNER_NAME = 'demo-seller-khoa';
+const ALERT_OWNER_FALLBACK = seedUuid(ALERT_OWNER_NAME);
+const listingId = (key: string) => seedUuid(`demo-listing-${key}`);
+const pendingId = (key: string) => seedUuid(`demo-pending-${key}`);
+const alertId = (key: string) => seedUuid(`demo-alert-${key}`);
+const promotionIdOf = (key: string) => seedUuid(`demo-promo-${key}`);
+const sellerId = (name: string) => seedUuid(name);
+const bannerId = (name: string) => seedUuid(name);
+const sellerIds = DEMO_SELLERS.map((seller) => sellerId(seller.id));
 
 /** Dữ liệu một tin demo (đang bán hoặc chờ duyệt) */
 function listingData(item: DemoListing, status: 'AVAILABLE' | 'PENDING', createdAt: Date) {
   const provinceCode = findWard(item.ward)?.parentCode;
   const location = listingLocation({ provinceCode, wardCode: item.ward, streetAddress: '' });
   return {
-    ownerId: item.seller,
+    ownerId: sellerId(item.seller),
     categoryId: item.categoryId,
     title: item.title,
     description: item.description,
@@ -68,7 +74,7 @@ async function removeDemo() {
   const alerts = await prisma.wantedAlert.deleteMany({ where: { id: { in: DEMO_WANTED_ALERTS.map((alert) => alertId(alert.key)) } } });
   const listings = await prisma.listing.deleteMany({ where: { ownerId: { in: sellerIds } } });
   const users = await prisma.user.deleteMany({ where: { id: { in: sellerIds } } });
-  const banners = await prisma.homeBanner.deleteMany({ where: { id: { in: DEMO_BANNERS.map((banner) => banner.id) } } });
+  const banners = await prisma.homeBanner.deleteMany({ where: { id: { in: DEMO_BANNERS.map((banner) => bannerId(banner.id)) } } });
   console.log('Đã xóa dữ liệu demo:', { users: users.count, listings: listings.count, banners: banners.count, alerts: alerts.count });
 }
 
@@ -123,7 +129,8 @@ async function approvePending() {
       await matchApprovedListing(tx, id, approvedAt);
     });
     const matches = await prisma.wantedAlertMatch.findMany({ where: { listingId: id }, select: { alertId: true, score: true } });
-    const got = matches.map((match) => `${match.alertId.replace('demo-alert-', '')} (${match.score.toFixed(2)})`).join(', ') || 'không khớp';
+    const alertKey = new Map(DEMO_WANTED_ALERTS.map((alert) => [alertId(alert.key), alert.key]));
+    const got = matches.map((match) => `${alertKey.get(match.alertId) ?? match.alertId} (${match.score.toFixed(2)})`).join(', ') || 'không khớp';
     console.log(`  ${item.key.padEnd(16)} → ${got.padEnd(28)} mong đợi: ${item.expect}`);
   }
 }
@@ -138,8 +145,8 @@ async function seedDemo() {
   const password = await bcrypt.hash(DEMO_PASSWORD, 12);
   for (const seller of DEMO_SELLERS) {
     const { ratingAverage: legacyRatingAverage, ratingCount: legacyRatingCount, ...identity } = seller;
-    const data = { ...identity, legacyRatingAverage, legacyRatingCount, password, status: 'ACTIVE' as const, role: 'USER' as const };
-    await prisma.user.upsert({ where: { id: seller.id }, create: data, update: data });
+    const data = { ...identity, id: sellerId(seller.id), legacyRatingAverage, legacyRatingCount, password, status: 'ACTIVE' as const, role: 'USER' as const };
+    await prisma.user.upsert({ where: { id: data.id }, create: data, update: data });
   }
 
   const now = Date.now();
@@ -152,10 +159,10 @@ async function seedDemo() {
     const data = listingData(item, 'AVAILABLE', publishedAt);
     await prisma.listing.upsert({ where: { id }, create: { id, ...data }, update: data });
 
-    const promotionId = `demo-promo-${item.key}`;
+    const promotionId = promotionIdOf(item.key);
     if (item.featured) {
       const promotion = {
-        userId: item.seller, listingId: id, packageId: FEATURED_PACKAGE,
+        userId: sellerId(item.seller), listingId: id, packageId: FEATURED_PACKAGE,
         startsAt: new Date(now - DAY), endsAt: new Date(now + 7 * DAY),
       };
       await prisma.promotion.upsert({ where: { id: promotionId }, create: { id: promotionId, ...promotion }, update: promotion });
@@ -166,7 +173,8 @@ async function seedDemo() {
   }
 
   for (const banner of DEMO_BANNERS) {
-    await prisma.homeBanner.upsert({ where: { id: banner.id }, create: { ...banner, active: true }, update: { ...banner, active: true } });
+    const data = { ...banner, id: bannerId(banner.id), active: true };
+    await prisma.homeBanner.upsert({ where: { id: data.id }, create: data, update: data });
   }
 
   let favorites = 0;
@@ -193,13 +201,13 @@ async function seedDemo() {
     wantedAlerts: DEMO_WANTED_ALERTS.length, pending: DEMO_PENDING_LISTINGS.length,
   });
   console.log(`Đăng nhập người bán demo: ${DEMO_SELLERS[0].email} / ${DEMO_PASSWORD}`);
-  console.log(`Thông báo Báo khi có hàng thuộc: ${viewerEmail ?? `${ALERT_OWNER_FALLBACK.replace('demo-seller-', '')}@demo.restore.vn`}`);
+  console.log(`Thông báo Báo khi có hàng thuộc: ${viewerEmail ?? `${ALERT_OWNER_NAME.replace('demo-seller-', '')}@demo.restore.vn`}`);
 
   if (approve) {
     console.log('Duyệt tin chờ và chấm điểm khớp:');
     await approvePending();
   } else {
-    console.log('Duyệt 7 tin "demo-pending-*" trong trang admin (hoặc chạy lại với -- --approve) để xem tin khớp.');
+    console.log('Duyệt 7 tin chờ demo trong trang admin (hoặc chạy lại với -- --approve) để xem tin khớp.');
   }
 }
 

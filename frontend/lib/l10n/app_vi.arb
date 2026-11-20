@@ -132,7 +132,7 @@
   "feedCloseImage": "Đóng ảnh",
   "accEditPage": "Chỉnh sửa trang",
   "accMenu": "Menu và cài đặt",
-  "accLoadError": "Không tải được hồ sơ. Bấm để thử lại",
+  "accLoadError": "Không tải được hồ sơ",
   "accLoading": "Đang tải…",
   "accFollowing": "Đang theo dõi",
   "accFollowers": "Người theo dõi",
@@ -473,6 +473,8 @@
   "aiErrorTitle": "Chưa thể trả lời lúc này",
   "aiErrorDescription": "Nội dung cuộc trò chuyện vẫn được giữ. Bạn có thể thử lại mà không cần nhập lại từ đầu.",
   "retry": "Thử lại",
+  "loadErrorTitle": "Chưa tải được dữ liệu",
+  "loadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "featureApiPending": "{action} sẽ được kết nối ở bước API.",
   "@featureApiPending": {
     "placeholders": {
@@ -775,7 +777,6 @@
   "yes": "Có",
   "no": "Không",
   "loadCategoriesFailedTitle": "Không tải được danh mục",
-  "loadCategoriesFailedMessage": "Kiểm tra kết nối mạng rồi thử lại",
   "negotiableHint": "Người mua có thể trả giá khi nhắn tin",
   "addressNearbyHint": "Giúp người mua gần bạn tìm thấy tin",
   "privateStreetAddress": "{street} (không công khai)",
@@ -831,7 +832,6 @@
   "homeSaveListing": "Lưu tin",
   "homeUnsaveListing": "Bỏ lưu tin",
   "homeLoadErrorTitle": "Chưa tải được trang chủ",
-  "homeLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "timeJustNow": "Vừa xong",
   "timeMinutesAgo": "{count} phút trước",
   "@timeMinutesAgo": {
@@ -1045,7 +1045,6 @@
     }
   },
   "nearbyLoadErrorTitle": "Chưa tải được tin gần bạn",
-  "nearbyLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "nearbyEndOfList": "Bạn đã xem hết tin quanh đây",
   "distanceMeters": "{meters} m",
   "@distanceMeters": {
@@ -1091,8 +1090,39 @@
   "searchEmptyBody": "Thử từ khoá ngắn hơn, từ khoá khác hoặc bỏ bớt bộ lọc nhé.",
   "searchTryAnother": "Đổi từ khoá",
   "searchLoadErrorTitle": "Chưa tải được kết quả",
-  "searchLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "searchEndOfList": "Bạn đã xem hết kết quả",
+  "searchShopsSection": "Cửa hàng",
+  "searchUsersSection": "Người dùng",
+  "searchShopSubtitle": "{followers} người theo dõi · {listings} tin đang bán",
+  "@searchShopSubtitle": {
+    "placeholders": {
+      "followers": {"type": "int"},
+      "listings": {"type": "int"}
+    }
+  },
+  "searchUserSubtitle": "@{username} · {listings} tin đang bán",
+  "@searchUserSubtitle": {
+    "placeholders": {
+      "username": {"type": "String"},
+      "listings": {"type": "int"}
+    }
+  },
+  "searchUserHasShop": "Có cửa hàng uy tín",
+  "searchTabListings": "Tin đăng",
+  "searchShopStripTitle": "Cửa hàng phù hợp",
+  "searchShopsEmpty": "Không có cửa hàng nào khớp “{query}”",
+  "@searchShopsEmpty": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchUsersEmpty": "Không có người dùng nào khớp “{query}”",
+  "@searchUsersEmpty": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchAccountsEmptyBody": "Thử gõ đúng tên, hoặc gõ @ trước username nhé.",
   "areaSearchHint": "Tìm phường/xã, tỉnh/thành...",
   "areaMyLocationSubtitle": "Dùng vị trí GPS hiện tại của bạn",
   "areaRecentTitle": "Khu vực đã chọn gần đây",
@@ -1173,7 +1203,6 @@
   "categoryDetailFilteredEmptyTitle": "Không có tin khớp bộ lọc",
   "categoryDetailFilteredEmptyBody": "Thử bỏ bớt bộ lọc để xem thêm tin nhé.",
   "categoryDetailLoadErrorTitle": "Chưa tải được danh mục",
-  "categoryDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "categoryDetailEndOfList": "Bạn đã xem hết tin trong danh mục này",
   "wantedAlertTitle": "Báo khi có hàng",
   "wantedAlertSubtitle": "Đặt trước món bạn cần, có tin giống là báo ngay",
@@ -1190,7 +1219,6 @@
   "wantedAlertEmptyTitle": "Chưa có thông báo nào",
   "wantedAlertEmptyBody": "Đặt trước món bạn đang tìm, ReStore sẽ báo ngay khi có người đăng món gần giống.",
   "wantedAlertLoadErrorTitle": "Chưa tải được thông báo",
-  "wantedAlertLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "wantedAlertNewMatches": "{count} tin mới",
   "@wantedAlertNewMatches": {
     "placeholders": {
@@ -1368,7 +1396,6 @@
   "trustedShopsEmptyTitle": "Chưa có shop uy tín trong mục này",
   "trustedShopsEmptyBody": "Khi có shop được xác minh bán mặt hàng này, shop sẽ hiện ở đây.",
   "trustedShopsLoadErrorTitle": "Chưa tải được shop uy tín",
-  "trustedShopsLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "trustedShopsFamousTitle": "Thương hiệu nổi tiếng",
   "trustedShopsFamousSubtitle": "Gian hàng chính hãng của các thương hiệu lớn",
   "trustedShopsDealsTitle": "Trải nghiệm hàng hiệu",
@@ -1423,6 +1450,8 @@
     }
   },
   "shopFollow": "Theo dõi",
+  "shopMessage": "Nhắn tin với shop",
+  "shopMessageFailed": "Chưa mở được cuộc trò chuyện, vui lòng thử lại.",
   "shopFollowing": "Đang theo dõi",
   "shopFollowerCount": "{count} theo dõi",
   "@shopFollowerCount": {
@@ -1457,7 +1486,6 @@
   "shopDetailEmptyBody": "Theo dõi shop để biết ngay khi có sản phẩm mới.",
   "shopDetailEndOfList": "Bạn đã xem hết sản phẩm của shop",
   "shopDetailLoadErrorTitle": "Chưa tải được trang shop",
-  "shopDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
   "postingQuotaPersonalTitle": "Tài khoản cá nhân",
   "postingQuotaBannerMessage": "Mỗi chuyên mục được {min} đến {max} tin miễn phí đang hiển thị. Mỗi tin hiển thị {days} ngày.",
   "@postingQuotaBannerMessage": {
@@ -1640,7 +1668,6 @@
   "draftsEmptyTitle": "Chưa có tin nháp",
   "draftsEmptyMessage": "Khi đăng tin, bấm Lưu nháp để soạn tiếp lúc khác.",
   "draftsLoadFailedTitle": "Không tải được tin nháp",
-  "draftsLoadFailedMessage": "Kiểm tra kết nối mạng rồi thử lại.",
   "draftOpenFailed": "Không mở được tin nháp, có thể tin đã được đăng hoặc đã xóa",
   "draftDeleteTitle": "Xóa tin nháp?",
   "draftDeleteMessage": "Tin nháp và ảnh đã tải lên sẽ bị xóa, không khôi phục được.",
@@ -1737,6 +1764,11 @@
   "creditOrderCode": "Mã đơn",
   "creditGatewayNotConnected": "Đang bỏ qua cổng ZaloPay (chế độ debug hoặc máy chủ chưa có khoá). Dùng các nút bên dưới để giả lập kết quả.",
   "creditOpenGateway": "Mở trang thanh toán ZaloPay",
+  "creditGatewayOpenFailed": "Không mở được ZaloPay. Hãy cài app ZaloPay hoặc trình duyệt rồi bấm nút để thử lại.",
+  "creditGatewayOpening": "Đang chuyển sang ZaloPay...",
+  "creditZaloPayNotInstalled": "Máy chưa cài app ZaloPay (bản thử: ZaloPay sandbox). Cài app rồi bấm Mở ZaloPay, hoặc trả trên trang web của ZaloPay.",
+  "creditOpenZaloPayApp": "Mở app ZaloPay",
+  "creditOpenGatewayWeb": "Trả trên trang web ZaloPay",
   "creditWaitingGateway": "Thanh toán xong trên trang ZaloPay rồi quay lại đây, xu sẽ tự cập nhật.",
   "creditSimulateTitle": "Giả lập kết quả thanh toán (chỉ ở chế độ thử)",
   "creditSimulateSuccess": "Đã trả tiền",
@@ -2861,6 +2893,394 @@
   "accDiscardEdit": "Bỏ bản sửa",
   "accEditDiscarded": "Đã bỏ bản sửa, tin giữ nguyên bản đang hiển thị",
   "accDiscardEditFailed": "Chưa bỏ được bản sửa. Vui lòng thử lại.",
+  "notificationsMarkAllRead": "Đọc tất cả",
+  "notificationsFilterAll": "Tất cả",
+  "notificationsFilterUnread": "Chưa đọc",
+  "notificationsFilterListing": "Tin đăng",
+  "notificationsFilterWallet": "Ví Xu",
+  "notificationsFilterActivity": "Hoạt động",
+  "notificationsToday": "Hôm nay",
+  "notificationsEarlier": "Trước đó",
+  "notificationsEmptyTitle": "Chưa có thông báo nào",
+  "notificationsEmptyMessage": "Khi tin của bạn được duyệt, có người quan tâm hay Xu thay đổi, thông báo sẽ hiện ở đây.",
+  "notificationsEmptyFiltered": "Không có thông báo nào trong mục này",
+  "notificationsLoadError": "Không tải được thông báo",
+  "notificationsDelete": "Xoá",
+  "notificationsDeleted": "Đã xoá thông báo",
+  "notificationsDeleteFailed": "Chưa xoá được thông báo. Vui lòng thử lại.",
+  "notificationsUnreadCount": "{count} chưa đọc",
+  "@notificationsUnreadCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifReason": "Lý do: {reason}",
+  "@notifReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "notifListingApprovedTitle": "Tin đã được duyệt",
+  "notifListingApprovedBody": "Tin \"{title}\" đã hiển thị với người mua.",
+  "@notifListingApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingScheduledBody": "Tin \"{title}\" sẽ tự hiển thị vào ngày hẹn đăng.",
+  "@notifListingScheduledBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingRejectedTitle": "Tin bị từ chối",
+  "notifListingRejectedBody": "Tin \"{title}\" không được duyệt.",
+  "@notifListingRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingChangesTitle": "Tin cần chỉnh sửa",
+  "notifListingChangesBody": "Sửa lại tin \"{title}\" để được duyệt.",
+  "@notifListingChangesBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingRemovedTitle": "Tin đã bị gỡ",
+  "notifListingRemovedBody": "Tin \"{title}\" đã bị gỡ khỏi ReStore.",
+  "@notifListingRemovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifEditApprovedTitle": "Bản sửa tin đã được duyệt",
+  "notifEditApprovedBody": "Nội dung mới của tin \"{title}\" đã được hiển thị.",
+  "@notifEditApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifEditRejectedTitle": "Bản sửa tin chưa được duyệt",
+  "notifEditRejectedBody": "Tin \"{title}\" vẫn hiển thị nội dung cũ.",
+  "@notifEditRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingExpiringTitle": "Tin sắp hết hạn",
+  "notifListingExpiringBody": "Tin \"{title}\" còn {days} ngày hiển thị.",
+  "@notifListingExpiringBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifListingExpiredTitle": "Tin đã hết hạn",
+  "notifListingExpiredBody": "Tin \"{title}\" đã hết thời gian hiển thị. Gia hạn để tiếp tục bán.",
+  "@notifListingExpiredBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifTopupSuccessTitle": "Nạp Xu thành công",
+  "notifTopupSuccessBody": "Bạn đã nhận {amount} Xu.",
+  "@notifTopupSuccessBody": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifTopupSuccessBonusBody": "Bạn đã nhận {amount} Xu (tặng thêm {bonus} Xu).",
+  "@notifTopupSuccessBonusBody": {
+    "placeholders": {
+      "amount": {"type": "int"},
+      "bonus": {"type": "int"}
+    }
+  },
+  "notifTopupFailedTitle": "Nạp Xu không thành công",
+  "notifTopupFailedBody": "Đơn nạp {code} chưa được thanh toán. Xu của bạn không thay đổi.",
+  "@notifTopupFailedBody": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "notifRefundTitle": "Đã hoàn Xu",
+  "notifRefundBody": "{amount} Xu đã được hoàn vào ví.",
+  "@notifRefundBody": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifBonusExpiringTitle": "Xu tặng sắp hết hạn",
+  "notifBonusExpiringBody": "{amount} Xu tặng sẽ hết hạn sau {days} ngày.",
+  "@notifBonusExpiringBody": {
+    "placeholders": {
+      "amount": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifBoostStartedTitle": "Tin đang được đẩy",
+  "notifBoostStartedBody": "Tin \"{title}\" được đẩy lên đầu trong {days} ngày.",
+  "@notifBoostStartedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifBoostEndedTitle": "Đã hết thời gian đẩy tin",
+  "notifBoostEndedBody": "Tin \"{title}\" đã hết thời gian đẩy.",
+  "@notifBoostEndedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifWantedMatchTitle": "Có tin mới khớp \"Báo khi có hàng\"",
+  "notifWantedMatchBody": "Tin \"{title}\" khớp với \"{keywords}\".",
+  "@notifWantedMatchBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "keywords": {"type": "String"}
+    }
+  },
+  "notifNewFollowerTitle": "Có người theo dõi bạn",
+  "notifNewFollowerBody": "{name} vừa theo dõi bạn.",
+  "@notifNewFollowerBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifFavoritedTitle": "Tin của bạn được quan tâm",
+  "notifFavoritedBody": "{name} đã lưu tin \"{title}\".",
+  "@notifFavoritedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingPublishedTitle": "Tin đã bắt đầu hiển thị",
+  "notifListingPublishedBody": "Tin \"{title}\" tới ngày hẹn đăng và đã hiển thị với người mua.",
+  "@notifListingPublishedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifAutoExtendedTitle": "Tin đã được tự gia hạn",
+  "notifAutoExtendedBody": "Tin \"{title}\" được gia hạn thêm {days} ngày, trừ {amount} Xu.",
+  "@notifAutoExtendedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"},
+      "amount": {"type": "int"}
+    }
+  },
+  "notifAutoExtendFailedTitle": "Không đủ Xu để tự gia hạn",
+  "notifAutoExtendFailedBody": "Tin \"{title}\" sắp hết hạn nhưng ví không đủ Xu để tự gia hạn. Nạp thêm Xu để giữ tin hiển thị.",
+  "@notifAutoExtendFailedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifFeatureStartedTitle": "Tin đã lên Hot sale",
+  "notifFeatureStartedBody": "Tin \"{title}\" nằm trong mục Hot sale {days} ngày.",
+  "@notifFeatureStartedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifFeatureEndedTitle": "Tin đã hết thời gian Hot sale",
+  "notifFeatureEndedBody": "Tin \"{title}\" đã rời mục Hot sale.",
+  "@notifFeatureEndedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifRefundIncluded": "Đã hoàn {amount} Xu vào ví.",
+  "@notifRefundIncluded": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifOrderRejectedTitle": "Đơn bị từ chối",
+  "notifPlanOrderRejectedBody": "Đơn mua gói {plan} không được xác nhận.",
+  "@notifPlanOrderRejectedBody": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "notifPromotionOrderRejectedBody": "Đơn {name} cho tin \"{title}\" không được xác nhận.",
+  "@notifPromotionOrderRejectedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifPlanActivatedTitle": "Gói đã kích hoạt",
+  "notifPlanActivatedBody": "Gói {plan} đã kích hoạt, dùng đến ngày {date}.",
+  "@notifPlanActivatedBody": {
+    "placeholders": {
+      "plan": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "notifPlanExpiringTitle": "Gói sắp hết hạn",
+  "notifPlanExpiringBody": "Gói {plan} hết hạn ngày {date}. Gia hạn để giữ hạn mức đăng tin.",
+  "@notifPlanExpiringBody": {
+    "placeholders": {
+      "plan": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "notifPlanExpiredTitle": "Gói đã hết hạn",
+  "notifPlanExpiredBody": "Gói {plan} đã hết hạn, tài khoản chuyển về gói Cá nhân. Gia hạn để dùng lại hạn mức của gói.",
+  "@notifPlanExpiredBody": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "notifPosterApprovedTitle": "Poster đã được duyệt",
+  "notifPosterApprovedBody": "Poster \"{title}\" đã được duyệt và sẽ lên trang chủ theo lịch chạy.",
+  "@notifPosterApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPosterRejectedTitle": "Poster bị từ chối",
+  "notifPosterRejectedBody": "Poster \"{title}\" không được duyệt.",
+  "@notifPosterRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "creditBonusSheetTitle": "Xu tặng và hạn dùng",
+  "creditBonusSheetHint": "Xu tặng được dùng trước xu nạp, phần hết hạn sớm nhất dùng trước. Xu tặng chưa dùng sẽ bị trừ khi hết hạn.",
+  "creditBonusFromTopup": "Tặng kèm khi nạp",
+  "creditBonusFromRefund": "Xu được hoàn",
+  "creditBonusReceived": "Nhận ngày {date}",
+  "@creditBonusReceived": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "creditBonusExpiresOn": "Hết hạn {date}",
+  "@creditBonusExpiresOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "creditBonusDaysLeft": "{days, plural, =0{hết hạn hôm nay} other{còn {days} ngày}}",
+  "@creditBonusDaysLeft": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "creditBonusNoExpiry": "Không hết hạn",
+  "creditBonusEmpty": "Bạn chưa có xu tặng nào.",
+  "creditBonusLoadError": "Chưa tải được xu tặng. Vui lòng thử lại.",
+  "creditBonusTapHint": "Bấm để xem hạn dùng",
+  "notifShopFollowerTitle": "Có người theo dõi shop",
+  "notifShopFollowerBody": "{name} vừa theo dõi shop {shop}.",
+  "@notifShopFollowerBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "shop": {"type": "String"}
+    }
+  },
+  "notifFavoritedManyBody": "{name} và {others} người khác đã lưu tin \"{title}\".",
+  "@notifFavoritedManyBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifFollowedListingTitle": "Có tin mới từ người bạn theo dõi",
+  "notifFollowedListingBody": "{name} vừa đăng \"{title}\".",
+  "@notifFollowedListingBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifFollowedShopListingBody": "Shop {name} vừa đăng \"{title}\".",
+  "@notifFollowedShopListingBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifPriceDropTitle": "Tin bạn lưu vừa giảm giá",
+  "notifPriceDropBody": "Tin \"{title}\" giảm từ {from} còn {to}.",
+  "@notifPriceDropBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "notifSavedSoldTitle": "Tin bạn lưu đã bán",
+  "notifSavedSoldBody": "Tin \"{title}\" đã bán.",
+  "@notifSavedSoldBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifSavedExchangedTitle": "Tin bạn lưu đã trao đổi",
+  "notifSavedExchangedBody": "Tin \"{title}\" đã được trao đổi.",
+  "@notifSavedExchangedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPostLikedTitle": "Bài viết của bạn được thích",
+  "notifPostLikedBody": "{others, plural, =0{{name} đã thích bài viết của bạn.} other{{name} và {others} người khác đã thích bài viết của bạn.}}",
+  "@notifPostLikedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"}
+    }
+  },
+  "notifCommentLikedTitle": "Bình luận của bạn được thích",
+  "notifCommentLikedBody": "{others, plural, =0{{name} đã thích bình luận của bạn.} other{{name} và {others} người khác đã thích bình luận của bạn.}}",
+  "@notifCommentLikedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"}
+    }
+  },
+  "notifPostCommentedTitle": "Bài viết của bạn có bình luận mới",
+  "notifPostCommentedBody": "{name} đã bình luận: \"{text}\"",
+  "@notifPostCommentedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "notifCommentRepliedTitle": "Có người trả lời bình luận của bạn",
+  "notifCommentRepliedBody": "{name} đã trả lời: \"{text}\"",
+  "@notifCommentRepliedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "notifChatManyTitle": "{name} ({count} tin nhắn mới)",
+  "@notifChatManyTitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "feedPostUnavailable": "Bài viết không còn hiển thị.",
+  "savedAddressesTitle": "Địa chỉ đã lưu",
+  "savedAddressRename": "Đặt tên địa chỉ",
+  "savedAddressDelete": "Xoá địa chỉ",
+  "savedAddressLabelHint": "Đặt tên để dễ nhận ra khi đăng tin lần sau",
+  "savedAddressLabelPlaceholder": "VD: Nhà, Cửa hàng",
+  "savedAddressSaveLabel": "Lưu tên",
+  "savedAddressDeleted": "Đã xoá địa chỉ.",
+  "savedAddressActionFailed": "Chưa thực hiện được. Vui lòng thử lại.",
+  "savedAddressMore": "Tuỳ chọn địa chỉ",
   "aiSearchingListings": "Đang tìm sản phẩm…",
   "aiReadingListings": "Đang đọc thông tin sản phẩm…",
   "aiSearchingKnowledge": "Đang tra tài liệu…",
@@ -2917,5 +3337,7 @@
   "tradeFairPrice": "Trả giá hợp lý",
   "tradeError": "Chưa thực hiện được. Vui lòng kiểm tra giao dịch và thử lại.",
   "tradeConfirm": "Xác nhận",
-  "reportReasonsChanged": "Danh sách lý do đã thay đổi. Vui lòng kiểm tra và chọn lại."
+  "reportReasonsChanged": "Danh sách lý do đã thay đổi. Vui lòng kiểm tra và chọn lại.",
+  "homeLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "categoryDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé."
 }

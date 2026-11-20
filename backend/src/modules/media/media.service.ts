@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { AppError } from '../../common/errors/app-error.js';
+import { readThumbnail, type ThumbWidth } from '../../services/image-thumbnail.service.js';
 import { contentTypeOf, getObject, putObject, type StorageArea } from '../../services/storage.service.js';
 
 /** Ảnh người dùng tải lên ngoài tin đăng: ảnh bài viết bảng tin, ảnh đại diện, poster shop. */
@@ -45,9 +46,14 @@ export function isMediaUrl(url: unknown, purpose: MediaPurpose): boolean {
   return NAME.test(url.slice(`${MEDIA_PREFIX}${MEDIA_AREAS[purpose]}/`.length));
 }
 
-export async function readMedia(area: string, name: string) {
+/** File ảnh; có [width] thì trả thumbnail WebP (không tạo được thì trả ảnh gốc) */
+export async function readMedia(area: string, name: string, width: ThumbWidth | null = null) {
   if (!(Object.values(MEDIA_AREAS) as string[]).includes(area) || !NAME.test(name)) {
     throw new AppError(404, 'MEDIA_NOT_FOUND', 'Không tìm thấy ảnh.');
+  }
+  if (width) {
+    const thumb = await readThumbnail(area as MediaArea, name, width, () => getObject(area as MediaArea, name));
+    if (thumb) return { bytes: thumb, contentType: 'image/webp' };
   }
   const bytes = await getObject(area as MediaArea, name);
   if (!bytes) throw new AppError(404, 'MEDIA_NOT_FOUND', 'Không tìm thấy ảnh.');

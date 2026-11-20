@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Image, Space, Typography } from 'antd';
 import { Session } from '../../shared/api/session';
+import type { ListingContent, PendingEdit } from './RevisionCompare';
 export type Listing = {
   id: string;
   title: string;
@@ -11,6 +12,10 @@ export type Listing = {
   owner?: { fullName: string };
   category?: { name: string };
   reviewReason?: string;
+  /** Bản sửa của tin đã duyệt (PENDING: chờ duyệt, REJECTED: đã từ chối) */
+  pendingEdit?: PendingEdit;
+  /** Nội dung đang hiển thị, có khi tin có bản sửa */
+  current?: ListingContent;
 };
 export const listingStatus: Record<string, string> = {
   DRAFT: 'Bản nháp',
@@ -23,7 +28,7 @@ export const listingStatus: Record<string, string> = {
   EXCHANGED: 'Đã trao đổi',
 };
 
-function ListingPhoto({ session, path, index }: { session: Session; path: string; index: number }) {
+export function ListingPhoto({ session, path, index }: { session: Session; path: string; index: number }) {
   const [src, setSrc] = useState<string>(),
     [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -63,7 +68,8 @@ function ListingPhoto({ session, path, index }: { session: Session; path: string
     <span>Đang tải ảnh…</span>
   );
 }
-export function ListingDetails({ item, session }: { item: Listing; session: Session }) {
+/** Chi tiết tin; summary: chỉ tiêu đề và người đăng / danh mục / trạng thái (dùng trên bảng so sánh bản sửa) */
+export function ListingDetails({ item, session, summary }: { item: Listing; session: Session; summary?: boolean }) {
   return (
     <>
       <Typography.Title level={4}>{item.title}</Typography.Title>
@@ -72,17 +78,21 @@ export function ListingDetails({ item, session }: { item: Listing; session: Sess
           .filter(Boolean)
           .join(' · ')}
       </p>
-      <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>
-        {item.description}
-      </Typography.Paragraph>
-      {item.reviewReason && <p>Lý do kiểm duyệt trước đó: {item.reviewReason}</p>}
-      <Space wrap className="notice">
-        <Image.PreviewGroup>
-          {item.images.map((path, i) => (
-            <ListingPhoto key={path + i} session={session} path={path} index={i} />
-          ))}
-        </Image.PreviewGroup>
-      </Space>
+      {!summary && (
+        <>
+          <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>
+            {item.description}
+          </Typography.Paragraph>
+          {item.reviewReason && <p>Lý do kiểm duyệt trước đó: {item.reviewReason}</p>}
+          <Space wrap className="notice">
+            <Image.PreviewGroup>
+              {item.images.map((path, i) => (
+                <ListingPhoto key={path + i} session={session} path={path} index={i} />
+              ))}
+            </Image.PreviewGroup>
+          </Space>
+        </>
+      )}
     </>
   );
 }

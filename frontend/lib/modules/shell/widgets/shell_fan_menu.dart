@@ -41,11 +41,19 @@ class _ShellFanMenuState extends State<ShellFanMenu>
 
   final _link = LayerLink();
   final _portal = OverlayPortalController();
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 460),
-    reverseDuration: const Duration(milliseconds: 260),
-  );
+  // Tạo trong initState: để lazy thì menu chưa mở lần nào sẽ tạo controller
+  // ngay trong dispose() và báo lỗi "deactivated widget's ancestor".
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 460),
+      reverseDuration: const Duration(milliseconds: 260),
+    );
+  }
 
   bool get _hasMenu => widget.actions.isNotEmpty;
 
@@ -97,6 +105,8 @@ class _ShellFanMenuState extends State<ShellFanMenu>
           icon: _hasMenu ? AppIcons.quickMenu : AppIcons.add,
           label: _hasMenu ? l10n.quickMenuOpen : l10n.createListing,
           size: widget.size,
+          // Nằm trên mặt kính của thanh điều hướng, nền đã được blur
+          blur: false,
           onTap: _hasMenu ? _open : widget.onPostTap,
         ),
       ),

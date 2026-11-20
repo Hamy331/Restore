@@ -30,6 +30,8 @@ export const PERMISSION = {
   SUPPORT_TICKET: 'support:ticket',
   /** Thông báo "Báo khi có hàng" của mình: /wanted-alerts */
   WANTED_ALERT_MANAGE: 'wanted-alert:manage',
+  /** Thông báo trong app của mình: /notifications */
+  NOTIFICATION_READ: 'notification:read',
 
   /** Vào khu quản trị /admin/*: /admin/me, /admin/dashboard, /admin/audit */
   ADMIN_ACCESS: 'admin:access',
@@ -67,6 +69,7 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     PERMISSION.REPORT_SUBMIT,
     PERMISSION.SUPPORT_TICKET,
     PERMISSION.WANTED_ALERT_MANAGE,
+    PERMISSION.NOTIFICATION_READ,
   ],
   [Role.ADMIN]: [
     PERMISSION.PROFILE_READ,

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/constants/app_colors.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
-import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/auth/utils/auth_route_guard.dart';
@@ -16,9 +15,10 @@ import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
 import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/modules/following/views/following_hub/following_hub_view.dart';
+import 'package:restore/modules/notifications/views/notifications/notifications_view.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
 import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
@@ -116,11 +116,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     }
   }
 
-  /// Tính năng chưa có trang riêng (thông báo...)
-  void _comingSoon() => TSnackBarHelper.showInfo(
-    context,
-    message: AppLocalizations.of(context)!.featureComingSoon,
-  );
+  /// Khách bấm chuông thì router chuyển sang đăng nhập, xong quay lại đây
+  void _openNotifications() => context.push(NotificationsView.path);
 
   /// Mở trang chi tiết; quay lại mà trạng thái lưu tin đã đổi thì cập nhật thẻ
   Future<void> _openDetail(ListingCardItem item) async {
@@ -188,6 +185,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                   builder: (context, refreshIndicator) => AppLoadMoreListener(
                     onLoadMore: cubit.loadMore,
                     child: CustomScrollView(
+                      // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                      scrollCacheExtent: AppScroll.prefetchCacheExtent,
                       controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
@@ -215,7 +214,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                             hintText: l10n.homeSearchHint,
                             onTap: _openSearch,
                             onMessagesTap: _openMessages,
-                            onNotificationsTap: _comingSoon,
+                            onNotificationsTap: _openNotifications,
                           ),
                         ),
                         // Kéo xuống để làm mới: viên loading mở ra ngay dưới
@@ -248,14 +247,9 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                           HomeStatus.failure => [
                             SliverFillRemaining(
                               hasScrollBody: false,
-                              child: FeedbackView(
-                                icon: AppIcons.offline,
+                              child: AppLoadErrorView(
                                 title: l10n.homeLoadErrorTitle,
-                                message: l10n.homeLoadErrorBody,
-                                action: FilledButton(
-                                  onPressed: cubit.load,
-                                  child: Text(l10n.retry),
-                                ),
+                                onRetry: cubit.load,
                               ),
                             ),
                           ],

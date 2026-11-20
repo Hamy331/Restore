@@ -25,7 +25,13 @@ export function createApp() {
 
   app.use(requestId);
   app.use(cors(corsOptions()));
-  app.use(express.json({ limit: '256kb' }));
+  // Giữ body gốc cho webhook cổng thanh toán (SePay ký HMAC trên đúng các byte nhận được)
+  app.use(express.json({
+    limit: '256kb',
+    verify: (req, _res, buf) => {
+      if (req.url?.startsWith('/api/v1/payments/')) (req as typeof req & { rawBody?: Buffer }).rawBody = buf;
+    },
+  }));
   app.use(apiLogger);
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -24,6 +24,13 @@ creditRouter.get('/packages', creditController.listPackages);
 creditRouter.get('/wallet', buyer, creditController.getWallet);
 
 /**
+ * Xu tặng còn trong ví theo từng lần tặng, gần hết hạn trước (bấm "Xu tặng" ở ví)
+ *
+ * Trả về: [{ id, type: BONUS | REFUND, note, amount, grantedAt, expiresAt }]
+ */
+creditRouter.get('/bonus', buyer, creditController.getBonusBatches);
+
+/**
  * Lịch sử xu, mới trước. Query: page, limit (≤50), type? topup | spend | refund
  */
 creditRouter.get('/transactions', buyer, validate({ query: historyQuery }), creditController.listTransactions);

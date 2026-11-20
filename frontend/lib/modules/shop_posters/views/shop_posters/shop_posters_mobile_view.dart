@@ -8,6 +8,7 @@ import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
@@ -112,12 +113,7 @@ class ShopPostersMobileView extends StatelessWidget {
     final overview = state.overview;
     if (overview == null) {
       if (state.status == ShopPostersStatus.failure) {
-        return FeedbackView(
-          icon: AppIcons.offline,
-          title: l.spLoadError,
-          message: l.categoryDetailLoadErrorBody,
-          action: FilledButton(onPressed: cubit.load, child: Text(l.retry)),
-        );
+        return AppLoadErrorView(title: l.spLoadError, onRetry: cubit.load);
       }
       return const Center(child: AppLoadingIndicator());
     }

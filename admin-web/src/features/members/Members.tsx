@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Button, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd';
+import { Alert, Button, Form, Input, InputNumber, Modal, Segmented, Select, Space, Table, Tag, Tooltip } from 'antd';
 import { Session, ApiError, errorText } from '../../shared/api/session';
 import { useResource, type Page } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
@@ -15,6 +15,25 @@ type Member = {
   email: string;
   status: string;
   updatedAt: string;
+  /** Gói đang dùng (hết hạn tính là PERSONAL) */
+  planTier: 'PERSONAL' | 'BASIC' | 'PRO';
+  planEndsAt: string | null;
+  shop: { name: string; verified: boolean } | null;
+};
+type MemberType = 'PERSONAL' | 'BASIC' | 'PRO' | 'ADMIN';
+type MemberPage = Page<Member> & { counts?: Record<MemberType, number> };
+/** Phân loại tài khoản: theo gói đang dùng, hoặc quản trị viên (chỉ xem) */
+const types: { value: MemberType | ''; label: string }[] = [
+  { value: '', label: 'Tất cả thành viên' },
+  { value: 'PERSONAL', label: 'Cá nhân' },
+  { value: 'BASIC', label: 'Bán chuyên' },
+  { value: 'PRO', label: 'Cửa hàng' },
+  { value: 'ADMIN', label: 'Quản trị viên' },
+];
+const tiers: Record<Member['planTier'], { label: string; color: string }> = {
+  PERSONAL: { label: 'Cá nhân', color: 'default' },
+  BASIC: { label: 'Bán chuyên', color: 'blue' },
+  PRO: { label: 'Cửa hàng', color: 'purple' },
 };
 const statuses: Record<string, string> = {
   ACTIVE: 'Hoạt động',
@@ -136,14 +155,30 @@ export function Members({ session }: { session: Session }) {
   const [page, setPage] = useState(1),
     [query, setQuery] = useState(''),
     [status, setStatus] = useState(filter),
+    [type, setType] = useState<MemberType | ''>(''),
     [member, setMember] = useState<Member>();
-  const { data, error, reload } = useResource<Page<Member>>(
+  const { data, error, reload } = useResource<MemberPage>(
     session,
-    '/admin/users?' + new URLSearchParams({ page: String(page), q: query, status, details: '1' }),
+    '/admin/users?' +
+      new URLSearchParams({ page: String(page), q: query, status, details: '1', ...(type ? { type } : {}) }),
   );
+  const counts = data?.counts;
+  const memberTotal = counts ? counts.PERSONAL + counts.BASIC + counts.PRO : undefined;
   return (
     <>
       <section className="panel">
+        <Segmented
+          className="notice"
+          value={type}
+          onChange={(value) => {
+            setType(value as MemberType | '');
+            setPage(1);
+          }}
+          options={types.map(({ value, label }) => {
+            const count = value ? counts?.[value] : memberTotal;
+            return { value, label: count === undefined ? label : `${label} (${count})` };
+          })}
+        />
         <div className="toolbar">
           <Input.Search
             className="filter-search"
@@ -193,8 +228,24 @@ export function Members({ session }: { session: Session }) {
                 ),
               },
               {
-                title: 'Vai trò',
-                render: (_, r) => <Tag>{r.role === 'USER' ? 'Thành viên' : r.role}</Tag>,
+                title: 'Phân loại',
+                render: (_, r) =>
+                  r.role === 'ADMIN' ? (
+                    <Tag color="red">Quản trị viên</Tag>
+                  ) : (
+                    <div className="cell-stack">
+                      <span>
+                        <Tag color={tiers[r.planTier]?.color}>{tiers[r.planTier]?.label ?? r.planTier}</Tag>
+                      </span>
+                      {r.shop && (
+                        <small>
+                          {r.shop.name}
+                          {r.shop.verified ? ' · đã xác minh' : ''}
+                        </small>
+                      )}
+                      {r.planEndsAt && <small>Hết hạn {new Date(r.planEndsAt).toLocaleDateString('vi-VN')}</small>}
+                    </div>
+                  ),
               },
               {
                 title: 'Tham gia',
@@ -221,11 +272,16 @@ export function Members({ session }: { session: Session }) {
               },
               {
                 title: 'Thao tác',
-                render: (_, row) => (
-                  <Button disabled={row.status === 'UNVERIFIED'} onClick={() => setMember(row)}>
-                    Xử lý
-                  </Button>
-                ),
+                render: (_, row) =>
+                  row.role === 'ADMIN' ? (
+                    <Tooltip title="Tài khoản quản trị không xử lý ở đây.">
+                      <Tag>Chỉ xem</Tag>
+                    </Tooltip>
+                  ) : (
+                    <Button disabled={row.status === 'UNVERIFIED'} onClick={() => setMember(row)}>
+                      Xử lý
+                    </Button>
+                  ),
               },
             ]}
             pagination={{

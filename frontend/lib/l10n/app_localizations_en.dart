@@ -330,7 +330,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accMenu => 'Menu and settings';
 
   @override
-  String get accLoadError => 'Couldn\'t load your profile. Tap to retry';
+  String get accLoadError => 'Couldn\'t load your profile';
 
   @override
   String get accLoading => 'Loading…';
@@ -1090,6 +1090,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get loadErrorTitle => 'Couldn\'t load data';
+
+  @override
+  String get loadErrorBody => 'Check your connection and try again.';
+
+  @override
   String featureApiPending(String action) {
     return '$action will be connected in the API phase.';
   }
@@ -1732,10 +1738,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadCategoriesFailedTitle => 'Couldn\'t load categories';
 
   @override
-  String get loadCategoriesFailedMessage =>
-      'Check your connection and try again';
-
-  @override
   String get negotiableHint => 'Buyers can make offers in chat';
 
   @override
@@ -1888,9 +1890,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeLoadErrorTitle => 'Couldn\'t load the home page';
-
-  @override
-  String get homeLoadErrorBody => 'Check your connection and try again.';
 
   @override
   String get timeJustNow => 'Just now';
@@ -2228,9 +2227,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nearbyLoadErrorTitle => 'Couldn\'t load nearby listings';
 
   @override
-  String get nearbyLoadErrorBody => 'Check your connection and try again.';
-
-  @override
   String get nearbyEndOfList => 'You\'ve seen everything nearby';
 
   @override
@@ -2291,10 +2287,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchLoadErrorTitle => 'Couldn\'t load results';
 
   @override
-  String get searchLoadErrorBody => 'Check your connection and try again.';
+  String get searchEndOfList => 'You\'ve seen all results';
 
   @override
-  String get searchEndOfList => 'You\'ve seen all results';
+  String get searchShopsSection => 'Shops';
+
+  @override
+  String get searchUsersSection => 'People';
+
+  @override
+  String searchShopSubtitle(int followers, int listings) {
+    return '$followers followers · $listings listings';
+  }
+
+  @override
+  String searchUserSubtitle(String username, int listings) {
+    return '@$username · $listings listings';
+  }
+
+  @override
+  String get searchUserHasShop => 'Has a trusted shop';
+
+  @override
+  String get searchTabListings => 'Listings';
+
+  @override
+  String get searchShopStripTitle => 'Matching shops';
+
+  @override
+  String searchShopsEmpty(String query) {
+    return 'No shops match “$query”';
+  }
+
+  @override
+  String searchUsersEmpty(String query) {
+    return 'No people match “$query”';
+  }
+
+  @override
+  String get searchAccountsEmptyBody =>
+      'Try the exact name, or type @ before a username.';
 
   @override
   String get areaSearchHint => 'Search ward or province...';
@@ -2418,10 +2450,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryDetailLoadErrorTitle => 'Couldn\'t load this category';
 
   @override
-  String get categoryDetailLoadErrorBody =>
-      'Check your connection and try again.';
-
-  @override
   String get categoryDetailEndOfList =>
       'You\'ve seen every listing in this category';
 
@@ -2458,9 +2486,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wantedAlertLoadErrorTitle => 'Couldn\'t load your alerts';
-
-  @override
-  String get wantedAlertLoadErrorBody => 'Check your connection and try again.';
 
   @override
   String wantedAlertNewMatches(int count) {
@@ -2770,10 +2795,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trustedShopsLoadErrorTitle => 'Couldn\'t load trusted shops';
 
   @override
-  String get trustedShopsLoadErrorBody =>
-      'Check your connection and try again.';
-
-  @override
   String get trustedShopsFamousTitle => 'Famous brands';
 
   @override
@@ -2891,6 +2912,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopFollow => 'Follow';
 
   @override
+  String get shopMessage => 'Message the shop';
+
+  @override
+  String get shopMessageFailed => 'Couldn\'t open the chat. Please try again.';
+
+  @override
   String get shopFollowing => 'Following';
 
   @override
@@ -2941,9 +2968,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopDetailLoadErrorTitle => 'Couldn\'t load this shop';
-
-  @override
-  String get shopDetailLoadErrorBody => 'Check your connection and try again.';
 
   @override
   String get postingQuotaPersonalTitle => 'Personal account';
@@ -3305,9 +3329,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get draftsLoadFailedTitle => 'Couldn\'t load drafts';
 
   @override
-  String get draftsLoadFailedMessage => 'Check your connection and try again.';
-
-  @override
   String get draftOpenFailed =>
       'Couldn\'t open this draft. It may have been published or deleted';
 
@@ -3608,6 +3629,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get creditOpenGateway => 'Open ZaloPay checkout';
+
+  @override
+  String get creditGatewayOpenFailed =>
+      'Could not open ZaloPay. Install the ZaloPay app or a web browser, then tap the button to try again.';
+
+  @override
+  String get creditGatewayOpening => 'Opening ZaloPay...';
+
+  @override
+  String get creditZaloPayNotInstalled =>
+      'The ZaloPay app is not installed (test mode: ZaloPay sandbox). Install it and tap Open ZaloPay, or pay on the ZaloPay web page.';
+
+  @override
+  String get creditOpenZaloPayApp => 'Open ZaloPay app';
+
+  @override
+  String get creditOpenGatewayWeb => 'Pay on the ZaloPay web page';
 
   @override
   String get creditWaitingGateway =>
@@ -5191,6 +5229,494 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t discard the edit. Please try again.';
 
   @override
+  String get notificationsMarkAllRead => 'Mark all read';
+
+  @override
+  String get notificationsFilterAll => 'All';
+
+  @override
+  String get notificationsFilterUnread => 'Unread';
+
+  @override
+  String get notificationsFilterListing => 'Listings';
+
+  @override
+  String get notificationsFilterWallet => 'Point wallet';
+
+  @override
+  String get notificationsFilterActivity => 'Activity';
+
+  @override
+  String get notificationsToday => 'Today';
+
+  @override
+  String get notificationsEarlier => 'Earlier';
+
+  @override
+  String get notificationsEmptyTitle => 'No notifications yet';
+
+  @override
+  String get notificationsEmptyMessage =>
+      'When your listings are reviewed, someone shows interest or your Points change, you\'ll see it here.';
+
+  @override
+  String get notificationsEmptyFiltered => 'Nothing in this section';
+
+  @override
+  String get notificationsLoadError => 'Couldn\'t load notifications';
+
+  @override
+  String get notificationsDelete => 'Delete';
+
+  @override
+  String get notificationsDeleted => 'Notification deleted';
+
+  @override
+  String get notificationsDeleteFailed =>
+      'Couldn\'t delete the notification. Please try again.';
+
+  @override
+  String notificationsUnreadCount(int count) {
+    return '$count unread';
+  }
+
+  @override
+  String notifReason(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get notifListingApprovedTitle => 'Listing approved';
+
+  @override
+  String notifListingApprovedBody(String title) {
+    return '\"$title\" is now visible to buyers.';
+  }
+
+  @override
+  String notifListingScheduledBody(String title) {
+    return '\"$title\" will go live on its scheduled date.';
+  }
+
+  @override
+  String get notifListingRejectedTitle => 'Listing rejected';
+
+  @override
+  String notifListingRejectedBody(String title) {
+    return '\"$title\" was not approved.';
+  }
+
+  @override
+  String get notifListingChangesTitle => 'Listing needs changes';
+
+  @override
+  String notifListingChangesBody(String title) {
+    return 'Update \"$title\" to get it approved.';
+  }
+
+  @override
+  String get notifListingRemovedTitle => 'Listing removed';
+
+  @override
+  String notifListingRemovedBody(String title) {
+    return '\"$title\" was removed from ReStore.';
+  }
+
+  @override
+  String get notifEditApprovedTitle => 'Edit approved';
+
+  @override
+  String notifEditApprovedBody(String title) {
+    return 'The new version of \"$title\" is now live.';
+  }
+
+  @override
+  String get notifEditRejectedTitle => 'Edit not approved';
+
+  @override
+  String notifEditRejectedBody(String title) {
+    return '\"$title\" keeps showing its previous version.';
+  }
+
+  @override
+  String get notifListingExpiringTitle => 'Listing expiring soon';
+
+  @override
+  String notifListingExpiringBody(String title, int days) {
+    return '\"$title\" has $days days left.';
+  }
+
+  @override
+  String get notifListingExpiredTitle => 'Listing expired';
+
+  @override
+  String notifListingExpiredBody(String title) {
+    return '\"$title\" is no longer shown. Renew it to keep selling.';
+  }
+
+  @override
+  String get notifTopupSuccessTitle => 'Top-up successful';
+
+  @override
+  String notifTopupSuccessBody(int amount) {
+    return 'You received $amount Points.';
+  }
+
+  @override
+  String notifTopupSuccessBonusBody(int amount, int bonus) {
+    return 'You received $amount Points (+$bonus bonus Points).';
+  }
+
+  @override
+  String get notifTopupFailedTitle => 'Top-up not completed';
+
+  @override
+  String notifTopupFailedBody(String code) {
+    return 'Order $code was not paid. Your Points are unchanged.';
+  }
+
+  @override
+  String get notifRefundTitle => 'Points refunded';
+
+  @override
+  String notifRefundBody(int amount) {
+    return '$amount Points were refunded to your wallet.';
+  }
+
+  @override
+  String get notifBonusExpiringTitle => 'Bonus Points expiring';
+
+  @override
+  String notifBonusExpiringBody(int amount, int days) {
+    return '$amount bonus Points expire in $days days.';
+  }
+
+  @override
+  String get notifBoostStartedTitle => 'Listing boosted';
+
+  @override
+  String notifBoostStartedBody(String title, int days) {
+    return '\"$title\" is pinned to the top for $days days.';
+  }
+
+  @override
+  String get notifBoostEndedTitle => 'Boost ended';
+
+  @override
+  String notifBoostEndedBody(String title) {
+    return 'The boost for \"$title\" has ended.';
+  }
+
+  @override
+  String get notifWantedMatchTitle => 'New match for your wanted alert';
+
+  @override
+  String notifWantedMatchBody(String title, String keywords) {
+    return '\"$title\" matches \"$keywords\".';
+  }
+
+  @override
+  String get notifNewFollowerTitle => 'New follower';
+
+  @override
+  String notifNewFollowerBody(String name) {
+    return '$name started following you.';
+  }
+
+  @override
+  String get notifFavoritedTitle => 'Someone likes your listing';
+
+  @override
+  String notifFavoritedBody(String name, String title) {
+    return '$name saved \"$title\".';
+  }
+
+  @override
+  String get notifListingPublishedTitle => 'Listing is now live';
+
+  @override
+  String notifListingPublishedBody(String title) {
+    return '\"$title\" reached its scheduled date and is now visible to buyers.';
+  }
+
+  @override
+  String get notifAutoExtendedTitle => 'Listing auto-renewed';
+
+  @override
+  String notifAutoExtendedBody(String title, int days, int amount) {
+    return '\"$title\" was renewed for $days more days, $amount Points deducted.';
+  }
+
+  @override
+  String get notifAutoExtendFailedTitle => 'Not enough Points to auto-renew';
+
+  @override
+  String notifAutoExtendFailedBody(String title) {
+    return '\"$title\" is about to expire but your wallet doesn\'t have enough Points to renew it. Top up to keep it visible.';
+  }
+
+  @override
+  String get notifFeatureStartedTitle => 'Listing is in Hot sale';
+
+  @override
+  String notifFeatureStartedBody(String title, int days) {
+    return '\"$title\" is in the Hot sale section for $days days.';
+  }
+
+  @override
+  String get notifFeatureEndedTitle => 'Hot sale has ended';
+
+  @override
+  String notifFeatureEndedBody(String title) {
+    return '\"$title\" has left the Hot sale section.';
+  }
+
+  @override
+  String notifRefundIncluded(int amount) {
+    return '$amount Points were refunded to your wallet.';
+  }
+
+  @override
+  String get notifOrderRejectedTitle => 'Order rejected';
+
+  @override
+  String notifPlanOrderRejectedBody(String plan) {
+    return 'Your order for the $plan plan was not confirmed.';
+  }
+
+  @override
+  String notifPromotionOrderRejectedBody(String name, String title) {
+    return 'Your $name order for \"$title\" was not confirmed.';
+  }
+
+  @override
+  String get notifPlanActivatedTitle => 'Plan activated';
+
+  @override
+  String notifPlanActivatedBody(String plan, String date) {
+    return 'The $plan plan is active until $date.';
+  }
+
+  @override
+  String get notifPlanExpiringTitle => 'Plan expiring soon';
+
+  @override
+  String notifPlanExpiringBody(String plan, String date) {
+    return 'The $plan plan expires on $date. Renew to keep your posting limits.';
+  }
+
+  @override
+  String get notifPlanExpiredTitle => 'Plan expired';
+
+  @override
+  String notifPlanExpiredBody(String plan) {
+    return 'The $plan plan has expired and your account is back on the Personal plan. Renew to get its limits back.';
+  }
+
+  @override
+  String get notifPosterApprovedTitle => 'Poster approved';
+
+  @override
+  String notifPosterApprovedBody(String title) {
+    return 'Poster \"$title\" was approved and will appear on the home page as scheduled.';
+  }
+
+  @override
+  String get notifPosterRejectedTitle => 'Poster rejected';
+
+  @override
+  String notifPosterRejectedBody(String title) {
+    return 'Poster \"$title\" was not approved.';
+  }
+
+  @override
+  String get creditBonusSheetTitle => 'Bonus points and expiry';
+
+  @override
+  String get creditBonusSheetHint =>
+      'Bonus points are spent before paid points, the ones expiring soonest first. Unused bonus points are removed when they expire.';
+
+  @override
+  String get creditBonusFromTopup => 'Top-up bonus';
+
+  @override
+  String get creditBonusFromRefund => 'Refunded points';
+
+  @override
+  String creditBonusReceived(String date) {
+    return 'Received $date';
+  }
+
+  @override
+  String creditBonusExpiresOn(String date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String creditBonusDaysLeft(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days left',
+      one: '1 day left',
+      zero: 'expires today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get creditBonusNoExpiry => 'No expiry';
+
+  @override
+  String get creditBonusEmpty => 'You have no bonus points right now.';
+
+  @override
+  String get creditBonusLoadError =>
+      'Could not load your bonus points. Please try again.';
+
+  @override
+  String get creditBonusTapHint => 'Tap to see expiry dates';
+
+  @override
+  String get notifShopFollowerTitle => 'New shop follower';
+
+  @override
+  String notifShopFollowerBody(String name, String shop) {
+    return '$name started following $shop.';
+  }
+
+  @override
+  String notifFavoritedManyBody(String name, int others, String title) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$others others',
+      one: '1 other',
+    );
+    return '$name and $_temp0 saved \"$title\".';
+  }
+
+  @override
+  String get notifFollowedListingTitle => 'New listing from someone you follow';
+
+  @override
+  String notifFollowedListingBody(String name, String title) {
+    return '$name just posted \"$title\".';
+  }
+
+  @override
+  String notifFollowedShopListingBody(String name, String title) {
+    return 'Shop $name just posted \"$title\".';
+  }
+
+  @override
+  String get notifPriceDropTitle => 'A saved listing dropped in price';
+
+  @override
+  String notifPriceDropBody(String title, String from, String to) {
+    return '\"$title\" dropped from $from to $to.';
+  }
+
+  @override
+  String get notifSavedSoldTitle => 'A saved listing was sold';
+
+  @override
+  String notifSavedSoldBody(String title) {
+    return '\"$title\" has been sold.';
+  }
+
+  @override
+  String get notifSavedExchangedTitle => 'A saved listing was exchanged';
+
+  @override
+  String notifSavedExchangedBody(String title) {
+    return '\"$title\" has been exchanged.';
+  }
+
+  @override
+  String get notifPostLikedTitle => 'Your post got likes';
+
+  @override
+  String notifPostLikedBody(String name, int others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$name and $others others liked your post.',
+      one: '$name and 1 other liked your post.',
+      zero: '$name liked your post.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifCommentLikedTitle => 'Your comment got likes';
+
+  @override
+  String notifCommentLikedBody(String name, int others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$name and $others others liked your comment.',
+      one: '$name and 1 other liked your comment.',
+      zero: '$name liked your comment.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifPostCommentedTitle => 'New comment on your post';
+
+  @override
+  String notifPostCommentedBody(String name, String text) {
+    return '$name commented: \"$text\"';
+  }
+
+  @override
+  String get notifCommentRepliedTitle => 'New reply to your comment';
+
+  @override
+  String notifCommentRepliedBody(String name, String text) {
+    return '$name replied: \"$text\"';
+  }
+
+  @override
+  String notifChatManyTitle(String name, int count) {
+    return '$name ($count new messages)';
+  }
+
+  @override
+  String get feedPostUnavailable => 'This post is no longer available.';
+
+  @override
+  String get savedAddressesTitle => 'Saved addresses';
+
+  @override
+  String get savedAddressRename => 'Rename address';
+
+  @override
+  String get savedAddressDelete => 'Delete address';
+
+  @override
+  String get savedAddressLabelHint =>
+      'Give it a name so it is easy to spot next time you post';
+
+  @override
+  String get savedAddressLabelPlaceholder => 'e.g. Home, Shop';
+
+  @override
+  String get savedAddressSaveLabel => 'Save name';
+
+  @override
+  String get savedAddressDeleted => 'Address deleted.';
+
+  @override
+  String get savedAddressActionFailed =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get savedAddressMore => 'Address options';
+
+  @override
   String get aiSearchingListings => 'Searching for products…';
 
   @override
@@ -5375,4 +5901,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reportReasonsChanged =>
       'Report reasons have changed. Please review your selection.';
+
+  @override
+  String get homeLoadErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get categoryDetailLoadErrorBody =>
+      'Check your connection and try again.';
 }

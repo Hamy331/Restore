@@ -10,6 +10,7 @@ import '../../account/models/account_listing.dart';
 import '../../account/repositories/account_listings_repository.dart';
 import '../../credits/utils/credit_format.dart';
 import '../../listings/repositories/listings_repository.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 
 /// Kết quả chọn tin: [listingId] để mở trang quảng bá, hoặc [post] = người
 /// dùng chưa có tin đang hiển thị và bấm Đăng tin
@@ -70,10 +71,10 @@ class _PickerState extends State<_Picker> {
           );
         }
         if (snapshot.hasError) {
-          return _Message(
-            text: l.promoLoadError,
-            action: l.retry,
-            onAction: () => setState(() => _items = _load()),
+          return AppLoadErrorView(
+            title: l.promoLoadError,
+            onRetry: () => setState(() => _items = _load()),
+            compact: true,
           );
         }
         final items = snapshot.data ?? const [];

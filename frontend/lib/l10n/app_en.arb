@@ -132,7 +132,7 @@
   "feedCloseImage": "Close image",
   "accEditPage": "Edit profile",
   "accMenu": "Menu and settings",
-  "accLoadError": "Couldn't load your profile. Tap to retry",
+  "accLoadError": "Couldn't load your profile",
   "accLoading": "Loading…",
   "accFollowing": "Following",
   "accFollowers": "Followers",
@@ -480,6 +480,8 @@
   "aiErrorTitle": "Unable to answer right now",
   "aiErrorDescription": "Your conversation is preserved. You can retry without entering it again.",
   "retry": "Retry",
+  "loadErrorTitle": "Couldn't load data",
+  "loadErrorBody": "Check your connection and try again.",
   "featureApiPending": "{action} will be connected in the API phase.",
   "@featureApiPending": {
     "placeholders": {
@@ -809,7 +811,6 @@
   "yes": "Yes",
   "no": "No",
   "loadCategoriesFailedTitle": "Couldn't load categories",
-  "loadCategoriesFailedMessage": "Check your connection and try again",
   "negotiableHint": "Buyers can make offers in chat",
   "addressNearbyHint": "Helps nearby buyers find your listing",
   "privateStreetAddress": "{street} (private)",
@@ -872,7 +873,6 @@
   "homeSaveListing": "Save listing",
   "homeUnsaveListing": "Remove from saved",
   "homeLoadErrorTitle": "Couldn't load the home page",
-  "homeLoadErrorBody": "Check your connection and try again.",
   "timeJustNow": "Just now",
   "timeMinutesAgo": "{count} min ago",
   "@timeMinutesAgo": {
@@ -1086,7 +1086,6 @@
     }
   },
   "nearbyLoadErrorTitle": "Couldn't load nearby listings",
-  "nearbyLoadErrorBody": "Check your connection and try again.",
   "nearbyEndOfList": "You've seen everything nearby",
   "distanceMeters": "{meters} m",
   "@distanceMeters": {
@@ -1132,8 +1131,39 @@
   "searchEmptyBody": "Try a shorter or different keyword, or remove some filters.",
   "searchTryAnother": "Change keyword",
   "searchLoadErrorTitle": "Couldn't load results",
-  "searchLoadErrorBody": "Check your connection and try again.",
   "searchEndOfList": "You've seen all results",
+  "searchShopsSection": "Shops",
+  "searchUsersSection": "People",
+  "searchShopSubtitle": "{followers} followers · {listings} listings",
+  "@searchShopSubtitle": {
+    "placeholders": {
+      "followers": {"type": "int"},
+      "listings": {"type": "int"}
+    }
+  },
+  "searchUserSubtitle": "@{username} · {listings} listings",
+  "@searchUserSubtitle": {
+    "placeholders": {
+      "username": {"type": "String"},
+      "listings": {"type": "int"}
+    }
+  },
+  "searchUserHasShop": "Has a trusted shop",
+  "searchTabListings": "Listings",
+  "searchShopStripTitle": "Matching shops",
+  "searchShopsEmpty": "No shops match “{query}”",
+  "@searchShopsEmpty": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchUsersEmpty": "No people match “{query}”",
+  "@searchUsersEmpty": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchAccountsEmptyBody": "Try the exact name, or type @ before a username.",
   "areaSearchHint": "Search ward or province...",
   "areaMyLocationSubtitle": "Use your current GPS location",
   "areaRecentTitle": "Recently chosen areas",
@@ -1214,7 +1244,6 @@
   "categoryDetailFilteredEmptyTitle": "No listings match your filters",
   "categoryDetailFilteredEmptyBody": "Try removing some filters to see more listings.",
   "categoryDetailLoadErrorTitle": "Couldn't load this category",
-  "categoryDetailLoadErrorBody": "Check your connection and try again.",
   "categoryDetailEndOfList": "You've seen every listing in this category",
   "wantedAlertTitle": "Wanted alerts",
   "wantedAlertSubtitle": "Reserve what you need, get notified when it is posted",
@@ -1231,7 +1260,6 @@
   "wantedAlertEmptyTitle": "No alerts yet",
   "wantedAlertEmptyBody": "Tell us what you are looking for and ReStore will notify you as soon as something similar is posted.",
   "wantedAlertLoadErrorTitle": "Couldn't load your alerts",
-  "wantedAlertLoadErrorBody": "Check your connection and try again.",
   "wantedAlertNewMatches": "{count} new",
   "@wantedAlertNewMatches": {
     "placeholders": {
@@ -1409,7 +1437,6 @@
   "trustedShopsEmptyTitle": "No trusted shops here yet",
   "trustedShopsEmptyBody": "Verified shops in this category will show up here.",
   "trustedShopsLoadErrorTitle": "Couldn't load trusted shops",
-  "trustedShopsLoadErrorBody": "Check your connection and try again.",
   "trustedShopsFamousTitle": "Famous brands",
   "trustedShopsFamousSubtitle": "Official stores of big-name brands",
   "trustedShopsDealsTitle": "Luxury for less",
@@ -1464,6 +1491,8 @@
     }
   },
   "shopFollow": "Follow",
+  "shopMessage": "Message the shop",
+  "shopMessageFailed": "Couldn't open the chat. Please try again.",
   "shopFollowing": "Following",
   "shopFollowerCount": "{count} followers",
   "@shopFollowerCount": {
@@ -1498,7 +1527,6 @@
   "shopDetailEmptyBody": "Follow this shop to hear about new products first.",
   "shopDetailEndOfList": "You've seen every product from this shop",
   "shopDetailLoadErrorTitle": "Couldn't load this shop",
-  "shopDetailLoadErrorBody": "Check your connection and try again.",
   "postingQuotaPersonalTitle": "Personal account",
   "postingQuotaBannerMessage": "Free listings per category: {min} to {max} active at a time. Each listing stays up for {days} days.",
   "@postingQuotaBannerMessage": {
@@ -1747,7 +1775,6 @@
   "draftsEmptyTitle": "No drafts yet",
   "draftsEmptyMessage": "While posting, tap Save draft to finish it later.",
   "draftsLoadFailedTitle": "Couldn't load drafts",
-  "draftsLoadFailedMessage": "Check your connection and try again.",
   "draftOpenFailed": "Couldn't open this draft. It may have been published or deleted",
   "draftDeleteTitle": "Delete draft?",
   "draftDeleteMessage": "The draft and its uploaded photos will be deleted permanently.",
@@ -1937,6 +1964,11 @@
   "creditOrderCode": "Order code",
   "creditGatewayNotConnected": "ZaloPay is skipped (debug mode or no server keys). Use the buttons below to simulate the result.",
   "creditOpenGateway": "Open ZaloPay checkout",
+  "creditGatewayOpenFailed": "Could not open ZaloPay. Install the ZaloPay app or a web browser, then tap the button to try again.",
+  "creditGatewayOpening": "Opening ZaloPay...",
+  "creditZaloPayNotInstalled": "The ZaloPay app is not installed (test mode: ZaloPay sandbox). Install it and tap Open ZaloPay, or pay on the ZaloPay web page.",
+  "creditOpenZaloPayApp": "Open ZaloPay app",
+  "creditOpenGatewayWeb": "Pay on the ZaloPay web page",
   "creditWaitingGateway": "Finish paying on the ZaloPay page, then come back here. Your points update automatically.",
   "creditSimulateTitle": "Simulate the payment result (test mode only)",
   "creditSimulateSuccess": "Paid",
@@ -3075,6 +3107,394 @@
   "accDiscardEdit": "Discard edit",
   "accEditDiscarded": "Edit discarded, the listing keeps its current version",
   "accDiscardEditFailed": "Couldn't discard the edit. Please try again.",
+  "notificationsMarkAllRead": "Mark all read",
+  "notificationsFilterAll": "All",
+  "notificationsFilterUnread": "Unread",
+  "notificationsFilterListing": "Listings",
+  "notificationsFilterWallet": "Point wallet",
+  "notificationsFilterActivity": "Activity",
+  "notificationsToday": "Today",
+  "notificationsEarlier": "Earlier",
+  "notificationsEmptyTitle": "No notifications yet",
+  "notificationsEmptyMessage": "When your listings are reviewed, someone shows interest or your Points change, you'll see it here.",
+  "notificationsEmptyFiltered": "Nothing in this section",
+  "notificationsLoadError": "Couldn't load notifications",
+  "notificationsDelete": "Delete",
+  "notificationsDeleted": "Notification deleted",
+  "notificationsDeleteFailed": "Couldn't delete the notification. Please try again.",
+  "notificationsUnreadCount": "{count} unread",
+  "@notificationsUnreadCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifReason": "Reason: {reason}",
+  "@notifReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "notifListingApprovedTitle": "Listing approved",
+  "notifListingApprovedBody": "\"{title}\" is now visible to buyers.",
+  "@notifListingApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingScheduledBody": "\"{title}\" will go live on its scheduled date.",
+  "@notifListingScheduledBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingRejectedTitle": "Listing rejected",
+  "notifListingRejectedBody": "\"{title}\" was not approved.",
+  "@notifListingRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingChangesTitle": "Listing needs changes",
+  "notifListingChangesBody": "Update \"{title}\" to get it approved.",
+  "@notifListingChangesBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingRemovedTitle": "Listing removed",
+  "notifListingRemovedBody": "\"{title}\" was removed from ReStore.",
+  "@notifListingRemovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifEditApprovedTitle": "Edit approved",
+  "notifEditApprovedBody": "The new version of \"{title}\" is now live.",
+  "@notifEditApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifEditRejectedTitle": "Edit not approved",
+  "notifEditRejectedBody": "\"{title}\" keeps showing its previous version.",
+  "@notifEditRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingExpiringTitle": "Listing expiring soon",
+  "notifListingExpiringBody": "\"{title}\" has {days} days left.",
+  "@notifListingExpiringBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifListingExpiredTitle": "Listing expired",
+  "notifListingExpiredBody": "\"{title}\" is no longer shown. Renew it to keep selling.",
+  "@notifListingExpiredBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifTopupSuccessTitle": "Top-up successful",
+  "notifTopupSuccessBody": "You received {amount} Points.",
+  "@notifTopupSuccessBody": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifTopupSuccessBonusBody": "You received {amount} Points (+{bonus} bonus Points).",
+  "@notifTopupSuccessBonusBody": {
+    "placeholders": {
+      "amount": {"type": "int"},
+      "bonus": {"type": "int"}
+    }
+  },
+  "notifTopupFailedTitle": "Top-up not completed",
+  "notifTopupFailedBody": "Order {code} was not paid. Your Points are unchanged.",
+  "@notifTopupFailedBody": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "notifRefundTitle": "Points refunded",
+  "notifRefundBody": "{amount} Points were refunded to your wallet.",
+  "@notifRefundBody": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifBonusExpiringTitle": "Bonus Points expiring",
+  "notifBonusExpiringBody": "{amount} bonus Points expire in {days} days.",
+  "@notifBonusExpiringBody": {
+    "placeholders": {
+      "amount": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifBoostStartedTitle": "Listing boosted",
+  "notifBoostStartedBody": "\"{title}\" is pinned to the top for {days} days.",
+  "@notifBoostStartedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifBoostEndedTitle": "Boost ended",
+  "notifBoostEndedBody": "The boost for \"{title}\" has ended.",
+  "@notifBoostEndedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifWantedMatchTitle": "New match for your wanted alert",
+  "notifWantedMatchBody": "\"{title}\" matches \"{keywords}\".",
+  "@notifWantedMatchBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "keywords": {"type": "String"}
+    }
+  },
+  "notifNewFollowerTitle": "New follower",
+  "notifNewFollowerBody": "{name} started following you.",
+  "@notifNewFollowerBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifFavoritedTitle": "Someone likes your listing",
+  "notifFavoritedBody": "{name} saved \"{title}\".",
+  "@notifFavoritedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifListingPublishedTitle": "Listing is now live",
+  "notifListingPublishedBody": "\"{title}\" reached its scheduled date and is now visible to buyers.",
+  "@notifListingPublishedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifAutoExtendedTitle": "Listing auto-renewed",
+  "notifAutoExtendedBody": "\"{title}\" was renewed for {days} more days, {amount} Points deducted.",
+  "@notifAutoExtendedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"},
+      "amount": {"type": "int"}
+    }
+  },
+  "notifAutoExtendFailedTitle": "Not enough Points to auto-renew",
+  "notifAutoExtendFailedBody": "\"{title}\" is about to expire but your wallet doesn't have enough Points to renew it. Top up to keep it visible.",
+  "@notifAutoExtendFailedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifFeatureStartedTitle": "Listing is in Hot sale",
+  "notifFeatureStartedBody": "\"{title}\" is in the Hot sale section for {days} days.",
+  "@notifFeatureStartedBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "notifFeatureEndedTitle": "Hot sale has ended",
+  "notifFeatureEndedBody": "\"{title}\" has left the Hot sale section.",
+  "@notifFeatureEndedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifRefundIncluded": "{amount} Points were refunded to your wallet.",
+  "@notifRefundIncluded": {
+    "placeholders": {
+      "amount": {"type": "int"}
+    }
+  },
+  "notifOrderRejectedTitle": "Order rejected",
+  "notifPlanOrderRejectedBody": "Your order for the {plan} plan was not confirmed.",
+  "@notifPlanOrderRejectedBody": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "notifPromotionOrderRejectedBody": "Your {name} order for \"{title}\" was not confirmed.",
+  "@notifPromotionOrderRejectedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifPlanActivatedTitle": "Plan activated",
+  "notifPlanActivatedBody": "The {plan} plan is active until {date}.",
+  "@notifPlanActivatedBody": {
+    "placeholders": {
+      "plan": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "notifPlanExpiringTitle": "Plan expiring soon",
+  "notifPlanExpiringBody": "The {plan} plan expires on {date}. Renew to keep your posting limits.",
+  "@notifPlanExpiringBody": {
+    "placeholders": {
+      "plan": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "notifPlanExpiredTitle": "Plan expired",
+  "notifPlanExpiredBody": "The {plan} plan has expired and your account is back on the Personal plan. Renew to get its limits back.",
+  "@notifPlanExpiredBody": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "notifPosterApprovedTitle": "Poster approved",
+  "notifPosterApprovedBody": "Poster \"{title}\" was approved and will appear on the home page as scheduled.",
+  "@notifPosterApprovedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPosterRejectedTitle": "Poster rejected",
+  "notifPosterRejectedBody": "Poster \"{title}\" was not approved.",
+  "@notifPosterRejectedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "creditBonusSheetTitle": "Bonus points and expiry",
+  "creditBonusSheetHint": "Bonus points are spent before paid points, the ones expiring soonest first. Unused bonus points are removed when they expire.",
+  "creditBonusFromTopup": "Top-up bonus",
+  "creditBonusFromRefund": "Refunded points",
+  "creditBonusReceived": "Received {date}",
+  "@creditBonusReceived": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "creditBonusExpiresOn": "Expires {date}",
+  "@creditBonusExpiresOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "creditBonusDaysLeft": "{days, plural, =0{expires today} =1{1 day left} other{{days} days left}}",
+  "@creditBonusDaysLeft": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "creditBonusNoExpiry": "No expiry",
+  "creditBonusEmpty": "You have no bonus points right now.",
+  "creditBonusLoadError": "Could not load your bonus points. Please try again.",
+  "creditBonusTapHint": "Tap to see expiry dates",
+  "notifShopFollowerTitle": "New shop follower",
+  "notifShopFollowerBody": "{name} started following {shop}.",
+  "@notifShopFollowerBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "shop": {"type": "String"}
+    }
+  },
+  "notifFavoritedManyBody": "{name} and {others, plural, =1{1 other} other{{others} others}} saved \"{title}\".",
+  "@notifFavoritedManyBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifFollowedListingTitle": "New listing from someone you follow",
+  "notifFollowedListingBody": "{name} just posted \"{title}\".",
+  "@notifFollowedListingBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifFollowedShopListingBody": "Shop {name} just posted \"{title}\".",
+  "@notifFollowedShopListingBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "title": {"type": "String"}
+    }
+  },
+  "notifPriceDropTitle": "A saved listing dropped in price",
+  "notifPriceDropBody": "\"{title}\" dropped from {from} to {to}.",
+  "@notifPriceDropBody": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "notifSavedSoldTitle": "A saved listing was sold",
+  "notifSavedSoldBody": "\"{title}\" has been sold.",
+  "@notifSavedSoldBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifSavedExchangedTitle": "A saved listing was exchanged",
+  "notifSavedExchangedBody": "\"{title}\" has been exchanged.",
+  "@notifSavedExchangedBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPostLikedTitle": "Your post got likes",
+  "notifPostLikedBody": "{others, plural, =0{{name} liked your post.} =1{{name} and 1 other liked your post.} other{{name} and {others} others liked your post.}}",
+  "@notifPostLikedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"}
+    }
+  },
+  "notifCommentLikedTitle": "Your comment got likes",
+  "notifCommentLikedBody": "{others, plural, =0{{name} liked your comment.} =1{{name} and 1 other liked your comment.} other{{name} and {others} others liked your comment.}}",
+  "@notifCommentLikedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "others": {"type": "int"}
+    }
+  },
+  "notifPostCommentedTitle": "New comment on your post",
+  "notifPostCommentedBody": "{name} commented: \"{text}\"",
+  "@notifPostCommentedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "notifCommentRepliedTitle": "New reply to your comment",
+  "notifCommentRepliedBody": "{name} replied: \"{text}\"",
+  "@notifCommentRepliedBody": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "notifChatManyTitle": "{name} ({count} new messages)",
+  "@notifChatManyTitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "feedPostUnavailable": "This post is no longer available.",
+  "savedAddressesTitle": "Saved addresses",
+  "savedAddressRename": "Rename address",
+  "savedAddressDelete": "Delete address",
+  "savedAddressLabelHint": "Give it a name so it is easy to spot next time you post",
+  "savedAddressLabelPlaceholder": "e.g. Home, Shop",
+  "savedAddressSaveLabel": "Save name",
+  "savedAddressDeleted": "Address deleted.",
+  "savedAddressActionFailed": "Something went wrong. Please try again.",
+  "savedAddressMore": "Address options",
   "aiSearchingListings": "Searching for products…",
   "aiReadingListings": "Reading product details…",
   "aiSearchingKnowledge": "Looking up documents…",
@@ -3131,5 +3551,7 @@
   "tradeFairPrice": "Fair offer",
   "tradeError": "Couldn’t complete this action. Check the transaction and try again.",
   "tradeConfirm": "Confirm",
-  "reportReasonsChanged": "Report reasons have changed. Please review your selection."
+  "reportReasonsChanged": "Report reasons have changed. Please review your selection.",
+  "homeLoadErrorBody": "Check your connection and try again.",
+  "categoryDetailLoadErrorBody": "Check your connection and try again."
 }

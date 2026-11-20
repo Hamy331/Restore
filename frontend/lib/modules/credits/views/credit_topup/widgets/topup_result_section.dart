@@ -17,7 +17,10 @@ class TopupResultSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final state = context.watch<CreditTopupCubit>().state;
-    final order = state.order!;
+    // Khi bấm "Nạp thêm"/"Thử lại", đơn bị xoá trong lúc màn này còn đang
+    // chạy hiệu ứng chuyển cảnh: không vẽ gì thay vì lỗi null
+    final order = state.order;
+    if (order == null) return const SizedBox.shrink();
     final (icon, color, background, title, body) = switch (state.outcome) {
       TopupOutcome.success => (
         AppIcons.check,

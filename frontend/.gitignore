@@ -59,3 +59,10 @@ android/app/google-services.json
 
 # Dữ liệu tỉnh/phường đóng gói trong app (chế độ mock)
 !assets/data/vn_locations.json
+
+# Cấu hình build (flutter run --dart-define-from-file=env/dev.json).
+# env/dev.json, env/prod.json là file của từng máy, chép từ env/env.example.json.
+!env/env.example.json
+
+# Ảnh so sánh do golden test lỗi sinh ra
+**/failures/

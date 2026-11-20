@@ -300,7 +300,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accMenu => 'Menu và cài đặt';
 
   @override
-  String get accLoadError => 'Không tải được hồ sơ. Bấm để thử lại';
+  String get accLoadError => 'Không tải được hồ sơ';
 
   @override
   String get accLoading => 'Đang tải…';
@@ -1057,6 +1057,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get retry => 'Thử lại';
 
   @override
+  String get loadErrorTitle => 'Chưa tải được dữ liệu';
+
+  @override
+  String get loadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
   String featureApiPending(String action) {
     return '$action sẽ được kết nối ở bước API.';
   }
@@ -1697,9 +1703,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loadCategoriesFailedTitle => 'Không tải được danh mục';
 
   @override
-  String get loadCategoriesFailedMessage => 'Kiểm tra kết nối mạng rồi thử lại';
-
-  @override
   String get negotiableHint => 'Người mua có thể trả giá khi nhắn tin';
 
   @override
@@ -1850,9 +1853,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get homeLoadErrorTitle => 'Chưa tải được trang chủ';
-
-  @override
-  String get homeLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
 
   @override
   String get timeJustNow => 'Vừa xong';
@@ -2189,9 +2189,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get nearbyLoadErrorTitle => 'Chưa tải được tin gần bạn';
 
   @override
-  String get nearbyLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
-
-  @override
   String get nearbyEndOfList => 'Bạn đã xem hết tin quanh đây';
 
   @override
@@ -2252,10 +2249,46 @@ class AppLocalizationsVi extends AppLocalizations {
   String get searchLoadErrorTitle => 'Chưa tải được kết quả';
 
   @override
-  String get searchLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+  String get searchEndOfList => 'Bạn đã xem hết kết quả';
 
   @override
-  String get searchEndOfList => 'Bạn đã xem hết kết quả';
+  String get searchShopsSection => 'Cửa hàng';
+
+  @override
+  String get searchUsersSection => 'Người dùng';
+
+  @override
+  String searchShopSubtitle(int followers, int listings) {
+    return '$followers người theo dõi · $listings tin đang bán';
+  }
+
+  @override
+  String searchUserSubtitle(String username, int listings) {
+    return '@$username · $listings tin đang bán';
+  }
+
+  @override
+  String get searchUserHasShop => 'Có cửa hàng uy tín';
+
+  @override
+  String get searchTabListings => 'Tin đăng';
+
+  @override
+  String get searchShopStripTitle => 'Cửa hàng phù hợp';
+
+  @override
+  String searchShopsEmpty(String query) {
+    return 'Không có cửa hàng nào khớp “$query”';
+  }
+
+  @override
+  String searchUsersEmpty(String query) {
+    return 'Không có người dùng nào khớp “$query”';
+  }
+
+  @override
+  String get searchAccountsEmptyBody =>
+      'Thử gõ đúng tên, hoặc gõ @ trước username nhé.';
 
   @override
   String get areaSearchHint => 'Tìm phường/xã, tỉnh/thành...';
@@ -2380,10 +2413,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get categoryDetailLoadErrorTitle => 'Chưa tải được danh mục';
 
   @override
-  String get categoryDetailLoadErrorBody =>
-      'Kiểm tra kết nối mạng rồi thử lại nhé.';
-
-  @override
   String get categoryDetailEndOfList => 'Bạn đã xem hết tin trong danh mục này';
 
   @override
@@ -2413,10 +2442,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get wantedAlertLoadErrorTitle => 'Chưa tải được thông báo';
-
-  @override
-  String get wantedAlertLoadErrorBody =>
-      'Kiểm tra kết nối mạng rồi thử lại nhé.';
 
   @override
   String wantedAlertNewMatches(int count) {
@@ -2712,10 +2737,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get trustedShopsLoadErrorTitle => 'Chưa tải được shop uy tín';
 
   @override
-  String get trustedShopsLoadErrorBody =>
-      'Kiểm tra kết nối mạng rồi thử lại nhé.';
-
-  @override
   String get trustedShopsFamousTitle => 'Thương hiệu nổi tiếng';
 
   @override
@@ -2833,6 +2854,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get shopFollow => 'Theo dõi';
 
   @override
+  String get shopMessage => 'Nhắn tin với shop';
+
+  @override
+  String get shopMessageFailed =>
+      'Chưa mở được cuộc trò chuyện, vui lòng thử lại.';
+
+  @override
   String get shopFollowing => 'Đang theo dõi';
 
   @override
@@ -2877,10 +2905,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get shopDetailLoadErrorTitle => 'Chưa tải được trang shop';
-
-  @override
-  String get shopDetailLoadErrorBody =>
-      'Kiểm tra kết nối mạng rồi thử lại nhé.';
 
   @override
   String get postingQuotaPersonalTitle => 'Tài khoản cá nhân';
@@ -3236,9 +3260,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get draftsLoadFailedTitle => 'Không tải được tin nháp';
 
   @override
-  String get draftsLoadFailedMessage => 'Kiểm tra kết nối mạng rồi thử lại.';
-
-  @override
   String get draftOpenFailed =>
       'Không mở được tin nháp, có thể tin đã được đăng hoặc đã xóa';
 
@@ -3529,6 +3550,23 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get creditOpenGateway => 'Mở trang thanh toán ZaloPay';
+
+  @override
+  String get creditGatewayOpenFailed =>
+      'Không mở được ZaloPay. Hãy cài app ZaloPay hoặc trình duyệt rồi bấm nút để thử lại.';
+
+  @override
+  String get creditGatewayOpening => 'Đang chuyển sang ZaloPay...';
+
+  @override
+  String get creditZaloPayNotInstalled =>
+      'Máy chưa cài app ZaloPay (bản thử: ZaloPay sandbox). Cài app rồi bấm Mở ZaloPay, hoặc trả trên trang web của ZaloPay.';
+
+  @override
+  String get creditOpenZaloPayApp => 'Mở app ZaloPay';
+
+  @override
+  String get creditOpenGatewayWeb => 'Trả trên trang web ZaloPay';
 
   @override
   String get creditWaitingGateway =>
@@ -5094,6 +5132,485 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accDiscardEditFailed => 'Chưa bỏ được bản sửa. Vui lòng thử lại.';
 
   @override
+  String get notificationsMarkAllRead => 'Đọc tất cả';
+
+  @override
+  String get notificationsFilterAll => 'Tất cả';
+
+  @override
+  String get notificationsFilterUnread => 'Chưa đọc';
+
+  @override
+  String get notificationsFilterListing => 'Tin đăng';
+
+  @override
+  String get notificationsFilterWallet => 'Ví Xu';
+
+  @override
+  String get notificationsFilterActivity => 'Hoạt động';
+
+  @override
+  String get notificationsToday => 'Hôm nay';
+
+  @override
+  String get notificationsEarlier => 'Trước đó';
+
+  @override
+  String get notificationsEmptyTitle => 'Chưa có thông báo nào';
+
+  @override
+  String get notificationsEmptyMessage =>
+      'Khi tin của bạn được duyệt, có người quan tâm hay Xu thay đổi, thông báo sẽ hiện ở đây.';
+
+  @override
+  String get notificationsEmptyFiltered =>
+      'Không có thông báo nào trong mục này';
+
+  @override
+  String get notificationsLoadError => 'Không tải được thông báo';
+
+  @override
+  String get notificationsDelete => 'Xoá';
+
+  @override
+  String get notificationsDeleted => 'Đã xoá thông báo';
+
+  @override
+  String get notificationsDeleteFailed =>
+      'Chưa xoá được thông báo. Vui lòng thử lại.';
+
+  @override
+  String notificationsUnreadCount(int count) {
+    return '$count chưa đọc';
+  }
+
+  @override
+  String notifReason(String reason) {
+    return 'Lý do: $reason';
+  }
+
+  @override
+  String get notifListingApprovedTitle => 'Tin đã được duyệt';
+
+  @override
+  String notifListingApprovedBody(String title) {
+    return 'Tin \"$title\" đã hiển thị với người mua.';
+  }
+
+  @override
+  String notifListingScheduledBody(String title) {
+    return 'Tin \"$title\" sẽ tự hiển thị vào ngày hẹn đăng.';
+  }
+
+  @override
+  String get notifListingRejectedTitle => 'Tin bị từ chối';
+
+  @override
+  String notifListingRejectedBody(String title) {
+    return 'Tin \"$title\" không được duyệt.';
+  }
+
+  @override
+  String get notifListingChangesTitle => 'Tin cần chỉnh sửa';
+
+  @override
+  String notifListingChangesBody(String title) {
+    return 'Sửa lại tin \"$title\" để được duyệt.';
+  }
+
+  @override
+  String get notifListingRemovedTitle => 'Tin đã bị gỡ';
+
+  @override
+  String notifListingRemovedBody(String title) {
+    return 'Tin \"$title\" đã bị gỡ khỏi ReStore.';
+  }
+
+  @override
+  String get notifEditApprovedTitle => 'Bản sửa tin đã được duyệt';
+
+  @override
+  String notifEditApprovedBody(String title) {
+    return 'Nội dung mới của tin \"$title\" đã được hiển thị.';
+  }
+
+  @override
+  String get notifEditRejectedTitle => 'Bản sửa tin chưa được duyệt';
+
+  @override
+  String notifEditRejectedBody(String title) {
+    return 'Tin \"$title\" vẫn hiển thị nội dung cũ.';
+  }
+
+  @override
+  String get notifListingExpiringTitle => 'Tin sắp hết hạn';
+
+  @override
+  String notifListingExpiringBody(String title, int days) {
+    return 'Tin \"$title\" còn $days ngày hiển thị.';
+  }
+
+  @override
+  String get notifListingExpiredTitle => 'Tin đã hết hạn';
+
+  @override
+  String notifListingExpiredBody(String title) {
+    return 'Tin \"$title\" đã hết thời gian hiển thị. Gia hạn để tiếp tục bán.';
+  }
+
+  @override
+  String get notifTopupSuccessTitle => 'Nạp Xu thành công';
+
+  @override
+  String notifTopupSuccessBody(int amount) {
+    return 'Bạn đã nhận $amount Xu.';
+  }
+
+  @override
+  String notifTopupSuccessBonusBody(int amount, int bonus) {
+    return 'Bạn đã nhận $amount Xu (tặng thêm $bonus Xu).';
+  }
+
+  @override
+  String get notifTopupFailedTitle => 'Nạp Xu không thành công';
+
+  @override
+  String notifTopupFailedBody(String code) {
+    return 'Đơn nạp $code chưa được thanh toán. Xu của bạn không thay đổi.';
+  }
+
+  @override
+  String get notifRefundTitle => 'Đã hoàn Xu';
+
+  @override
+  String notifRefundBody(int amount) {
+    return '$amount Xu đã được hoàn vào ví.';
+  }
+
+  @override
+  String get notifBonusExpiringTitle => 'Xu tặng sắp hết hạn';
+
+  @override
+  String notifBonusExpiringBody(int amount, int days) {
+    return '$amount Xu tặng sẽ hết hạn sau $days ngày.';
+  }
+
+  @override
+  String get notifBoostStartedTitle => 'Tin đang được đẩy';
+
+  @override
+  String notifBoostStartedBody(String title, int days) {
+    return 'Tin \"$title\" được đẩy lên đầu trong $days ngày.';
+  }
+
+  @override
+  String get notifBoostEndedTitle => 'Đã hết thời gian đẩy tin';
+
+  @override
+  String notifBoostEndedBody(String title) {
+    return 'Tin \"$title\" đã hết thời gian đẩy.';
+  }
+
+  @override
+  String get notifWantedMatchTitle => 'Có tin mới khớp \"Báo khi có hàng\"';
+
+  @override
+  String notifWantedMatchBody(String title, String keywords) {
+    return 'Tin \"$title\" khớp với \"$keywords\".';
+  }
+
+  @override
+  String get notifNewFollowerTitle => 'Có người theo dõi bạn';
+
+  @override
+  String notifNewFollowerBody(String name) {
+    return '$name vừa theo dõi bạn.';
+  }
+
+  @override
+  String get notifFavoritedTitle => 'Tin của bạn được quan tâm';
+
+  @override
+  String notifFavoritedBody(String name, String title) {
+    return '$name đã lưu tin \"$title\".';
+  }
+
+  @override
+  String get notifListingPublishedTitle => 'Tin đã bắt đầu hiển thị';
+
+  @override
+  String notifListingPublishedBody(String title) {
+    return 'Tin \"$title\" tới ngày hẹn đăng và đã hiển thị với người mua.';
+  }
+
+  @override
+  String get notifAutoExtendedTitle => 'Tin đã được tự gia hạn';
+
+  @override
+  String notifAutoExtendedBody(String title, int days, int amount) {
+    return 'Tin \"$title\" được gia hạn thêm $days ngày, trừ $amount Xu.';
+  }
+
+  @override
+  String get notifAutoExtendFailedTitle => 'Không đủ Xu để tự gia hạn';
+
+  @override
+  String notifAutoExtendFailedBody(String title) {
+    return 'Tin \"$title\" sắp hết hạn nhưng ví không đủ Xu để tự gia hạn. Nạp thêm Xu để giữ tin hiển thị.';
+  }
+
+  @override
+  String get notifFeatureStartedTitle => 'Tin đã lên Hot sale';
+
+  @override
+  String notifFeatureStartedBody(String title, int days) {
+    return 'Tin \"$title\" nằm trong mục Hot sale $days ngày.';
+  }
+
+  @override
+  String get notifFeatureEndedTitle => 'Tin đã hết thời gian Hot sale';
+
+  @override
+  String notifFeatureEndedBody(String title) {
+    return 'Tin \"$title\" đã rời mục Hot sale.';
+  }
+
+  @override
+  String notifRefundIncluded(int amount) {
+    return 'Đã hoàn $amount Xu vào ví.';
+  }
+
+  @override
+  String get notifOrderRejectedTitle => 'Đơn bị từ chối';
+
+  @override
+  String notifPlanOrderRejectedBody(String plan) {
+    return 'Đơn mua gói $plan không được xác nhận.';
+  }
+
+  @override
+  String notifPromotionOrderRejectedBody(String name, String title) {
+    return 'Đơn $name cho tin \"$title\" không được xác nhận.';
+  }
+
+  @override
+  String get notifPlanActivatedTitle => 'Gói đã kích hoạt';
+
+  @override
+  String notifPlanActivatedBody(String plan, String date) {
+    return 'Gói $plan đã kích hoạt, dùng đến ngày $date.';
+  }
+
+  @override
+  String get notifPlanExpiringTitle => 'Gói sắp hết hạn';
+
+  @override
+  String notifPlanExpiringBody(String plan, String date) {
+    return 'Gói $plan hết hạn ngày $date. Gia hạn để giữ hạn mức đăng tin.';
+  }
+
+  @override
+  String get notifPlanExpiredTitle => 'Gói đã hết hạn';
+
+  @override
+  String notifPlanExpiredBody(String plan) {
+    return 'Gói $plan đã hết hạn, tài khoản chuyển về gói Cá nhân. Gia hạn để dùng lại hạn mức của gói.';
+  }
+
+  @override
+  String get notifPosterApprovedTitle => 'Poster đã được duyệt';
+
+  @override
+  String notifPosterApprovedBody(String title) {
+    return 'Poster \"$title\" đã được duyệt và sẽ lên trang chủ theo lịch chạy.';
+  }
+
+  @override
+  String get notifPosterRejectedTitle => 'Poster bị từ chối';
+
+  @override
+  String notifPosterRejectedBody(String title) {
+    return 'Poster \"$title\" không được duyệt.';
+  }
+
+  @override
+  String get creditBonusSheetTitle => 'Xu tặng và hạn dùng';
+
+  @override
+  String get creditBonusSheetHint =>
+      'Xu tặng được dùng trước xu nạp, phần hết hạn sớm nhất dùng trước. Xu tặng chưa dùng sẽ bị trừ khi hết hạn.';
+
+  @override
+  String get creditBonusFromTopup => 'Tặng kèm khi nạp';
+
+  @override
+  String get creditBonusFromRefund => 'Xu được hoàn';
+
+  @override
+  String creditBonusReceived(String date) {
+    return 'Nhận ngày $date';
+  }
+
+  @override
+  String creditBonusExpiresOn(String date) {
+    return 'Hết hạn $date';
+  }
+
+  @override
+  String creditBonusDaysLeft(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'còn $days ngày',
+      zero: 'hết hạn hôm nay',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get creditBonusNoExpiry => 'Không hết hạn';
+
+  @override
+  String get creditBonusEmpty => 'Bạn chưa có xu tặng nào.';
+
+  @override
+  String get creditBonusLoadError => 'Chưa tải được xu tặng. Vui lòng thử lại.';
+
+  @override
+  String get creditBonusTapHint => 'Bấm để xem hạn dùng';
+
+  @override
+  String get notifShopFollowerTitle => 'Có người theo dõi shop';
+
+  @override
+  String notifShopFollowerBody(String name, String shop) {
+    return '$name vừa theo dõi shop $shop.';
+  }
+
+  @override
+  String notifFavoritedManyBody(String name, int others, String title) {
+    return '$name và $others người khác đã lưu tin \"$title\".';
+  }
+
+  @override
+  String get notifFollowedListingTitle => 'Có tin mới từ người bạn theo dõi';
+
+  @override
+  String notifFollowedListingBody(String name, String title) {
+    return '$name vừa đăng \"$title\".';
+  }
+
+  @override
+  String notifFollowedShopListingBody(String name, String title) {
+    return 'Shop $name vừa đăng \"$title\".';
+  }
+
+  @override
+  String get notifPriceDropTitle => 'Tin bạn lưu vừa giảm giá';
+
+  @override
+  String notifPriceDropBody(String title, String from, String to) {
+    return 'Tin \"$title\" giảm từ $from còn $to.';
+  }
+
+  @override
+  String get notifSavedSoldTitle => 'Tin bạn lưu đã bán';
+
+  @override
+  String notifSavedSoldBody(String title) {
+    return 'Tin \"$title\" đã bán.';
+  }
+
+  @override
+  String get notifSavedExchangedTitle => 'Tin bạn lưu đã trao đổi';
+
+  @override
+  String notifSavedExchangedBody(String title) {
+    return 'Tin \"$title\" đã được trao đổi.';
+  }
+
+  @override
+  String get notifPostLikedTitle => 'Bài viết của bạn được thích';
+
+  @override
+  String notifPostLikedBody(String name, int others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$name và $others người khác đã thích bài viết của bạn.',
+      zero: '$name đã thích bài viết của bạn.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifCommentLikedTitle => 'Bình luận của bạn được thích';
+
+  @override
+  String notifCommentLikedBody(String name, int others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      others,
+      locale: localeName,
+      other: '$name và $others người khác đã thích bình luận của bạn.',
+      zero: '$name đã thích bình luận của bạn.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifPostCommentedTitle => 'Bài viết của bạn có bình luận mới';
+
+  @override
+  String notifPostCommentedBody(String name, String text) {
+    return '$name đã bình luận: \"$text\"';
+  }
+
+  @override
+  String get notifCommentRepliedTitle => 'Có người trả lời bình luận của bạn';
+
+  @override
+  String notifCommentRepliedBody(String name, String text) {
+    return '$name đã trả lời: \"$text\"';
+  }
+
+  @override
+  String notifChatManyTitle(String name, int count) {
+    return '$name ($count tin nhắn mới)';
+  }
+
+  @override
+  String get feedPostUnavailable => 'Bài viết không còn hiển thị.';
+
+  @override
+  String get savedAddressesTitle => 'Địa chỉ đã lưu';
+
+  @override
+  String get savedAddressRename => 'Đặt tên địa chỉ';
+
+  @override
+  String get savedAddressDelete => 'Xoá địa chỉ';
+
+  @override
+  String get savedAddressLabelHint =>
+      'Đặt tên để dễ nhận ra khi đăng tin lần sau';
+
+  @override
+  String get savedAddressLabelPlaceholder => 'VD: Nhà, Cửa hàng';
+
+  @override
+  String get savedAddressSaveLabel => 'Lưu tên';
+
+  @override
+  String get savedAddressDeleted => 'Đã xoá địa chỉ.';
+
+  @override
+  String get savedAddressActionFailed =>
+      'Chưa thực hiện được. Vui lòng thử lại.';
+
+  @override
+  String get savedAddressMore => 'Tuỳ chọn địa chỉ';
+
+  @override
   String get aiSearchingListings => 'Đang tìm sản phẩm…';
 
   @override
@@ -5278,4 +5795,11 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get reportReasonsChanged =>
       'Danh sách lý do đã thay đổi. Vui lòng kiểm tra và chọn lại.';
+
+  @override
+  String get homeLoadErrorBody => 'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get categoryDetailLoadErrorBody =>
+      'Kiểm tra kết nối mạng rồi thử lại nhé.';
 }

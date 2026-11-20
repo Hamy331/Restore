@@ -4,6 +4,7 @@ import type { ListingLocation } from '../catalog/index.js';
 import {
   AlertIdParams, DraftInput, MatchesQuery, PreviewQuery, toMatchDto, toPreviewMatchDto, toWantedAlertDto, WantedAlertRecord,
 } from './wanted-alert.dto.js';
+import { emit, ListingRef } from '../../common/events/domain-events.js';
 import { MatchableAlert, MatchableListing, matchListing } from './wanted-alert.matcher.js';
 import * as wantedAlertRepository from './wanted-alert.repository.js';
 import { MAX_ALERTS_PER_USER, PREVIEW_CANDIDATES } from './wanted-alert.type.js';
@@ -148,4 +149,24 @@ export async function matchApprovedListing(tx: Prisma.TransactionClient, listing
     return score == null ? [] : [{ alertId: alert.id, score }];
   });
   await wantedAlertRepository.saveMatches(tx, listing.id, matches, approvedAt);
+  // Tin hẹn ngày đăng chưa hiển thị: báo khi job hiện tin (notifyScheduledMatches)
+  if (listing.status !== 'AVAILABLE' || !matches.length) return;
+  const byId = new Map(alerts.map((alert) => [alert.id, alert]));
+  const ranked = [...matches].sort((a, b) => b.score - a.score)
+    .map(({ alertId }) => ({ alertId, userId: byId.get(alertId)!.userId, keywords: byId.get(alertId)!.keywords }));
+  await emitMatched({ listingId: listing.id, ownerId: listing.ownerId, title: listing.title, image: listing.images[0] ?? null }, ranked, tx);
+}
+
+/** Tin hẹn ngày đăng vừa hiển thị: báo những người đã khớp lúc duyệt (3.1) */
+export async function notifyScheduledMatches(event: ListingRef) {
+  const rows = await wantedAlertRepository.findMatchesOfListing(event.listingId);
+  await emitMatched(event, rows.map(({ alert }) => ({ alertId: alert.id, userId: alert.userId, keywords: alert.keywords })));
+}
+
+/** Mỗi người nhận một thông báo cho một tin, theo thông báo khớp điểm cao nhất ([matches] đã xếp điểm giảm dần) */
+async function emitMatched(listing: ListingRef, matches: { alertId: string; userId: string; keywords: string }[],
+  tx?: Prisma.TransactionClient) {
+  const seen = new Set<string>();
+  const unique = matches.filter(({ userId }) => !seen.has(userId) && seen.add(userId));
+  if (unique.length) await emit('wantedAlert.matched', { ...listing, matches: unique }, tx);
 }

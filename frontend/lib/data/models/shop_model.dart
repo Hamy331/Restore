@@ -7,8 +7,11 @@ import 'package:restore/data/models/enums/shop_verification_type.dart';
 class ShopModel extends Equatable {
   final String id;
 
-  /// Tài khoản (User) quản lý shop
+  /// Tài khoản (User) quản lý shop. Theo dõi shop = theo dõi tài khoản này.
   final String ownerId;
+
+  /// Username của chủ shop (shop và chủ shop là một mục khi tìm kiếm)
+  final String? ownerUsername;
   final String name;
 
   /// Câu giới thiệu ngắn hiện trên thẻ shop
@@ -46,6 +49,7 @@ class ShopModel extends Equatable {
     required this.id,
     required this.name,
     this.ownerId = '',
+    this.ownerUsername,
     this.tagline = '',
     this.description = '',
     this.logoUrl,
@@ -68,6 +72,7 @@ class ShopModel extends Equatable {
   factory ShopModel.fromJson(Map<String, dynamic> json) => ShopModel(
     id: '${json['id']}',
     ownerId: '${json['ownerId'] ?? ''}',
+    ownerUsername: json['ownerUsername'] as String?,
     name: json['name'] as String? ?? '',
     tagline: json['tagline'] as String? ?? '',
     description: json['description'] as String? ?? '',
@@ -93,6 +98,7 @@ class ShopModel extends Equatable {
   ShopModel copyWith({int? followerCount}) => ShopModel(
     id: id,
     ownerId: ownerId,
+    ownerUsername: ownerUsername,
     name: name,
     tagline: tagline,
     description: description,
@@ -115,6 +121,7 @@ class ShopModel extends Equatable {
   List<Object?> get props => [
     id,
     ownerId,
+    ownerUsername,
     name,
     tagline,
     description,

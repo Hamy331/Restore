@@ -4,13 +4,14 @@ import type { ShopRecord } from './shop.repository.js';
 /**
  * Shop cho app (khớp ShopModel): { id, ownerId, name, tagline, description, logoUrl, coverUrl, accentColor,
  *   verificationType (OFFICIAL_BRAND | CERTIFIED), verifiedAt, certificateCode, categoryIds, address,
- *   ratingAverage, ratingCount (của chủ shop), followerCount, listingCount (tin đang bán), createdAt, isFollowing }
+ *   ratingAverage, ratingCount, ownerUsername, followerCount (của chủ shop), listingCount (tin đang bán), createdAt,
+ *   isFollowing (đang theo dõi chủ shop) }
  */
 export function toShopDto(shop: ShopRecord, extra: { listingCount: number; isFollowing: boolean }) {
-  const { owner, _count, ...rest } = shop;
+  const { owner, ...rest } = shop;
   return {
-    ...rest, ratingAverage: owner.ratingAverage, ratingCount: owner.ratingCount,
-    followerCount: _count.followers, ...extra,
+    ...rest, ratingAverage: owner.ratingAverage, ratingCount: owner.ratingCount, ownerUsername: owner.username,
+    followerCount: owner._count.followers, ...extra,
   };
 }
 

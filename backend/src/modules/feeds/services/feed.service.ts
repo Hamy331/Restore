@@ -3,6 +3,7 @@ import { AppError } from '../../../common/errors/app-error.js';
 import { id, input, page, searchQuery } from '../feed.validator.js';
 import { setPostLike } from '../repositories/feed.repository.js';
 import { serialize, slice } from '../feed.dto.js';
+import { emit } from '../../../common/events/domain-events.js';
 export { slice } from '../feed.dto.js';
 export { followingFilter, setPostLike } from '../repositories/feed.repository.js';
 
@@ -18,6 +19,13 @@ export async function listPosts(userId: string, query: Record<string, unknown>) 
   const rows = await repository.findPosts(userId, limit, after, authorId, query.tab, searchQuery(query.q));
   const result = slice(rows, limit);
   return { ...result, items: result.items.map(item => serialize(item, userId)) };
+}
+
+/** Một bài (mở từ thông báo bình luận / thích) */
+export async function getPost(userId: string, postId: string) {
+  const row = await repository.findPostDetail(id(postId), userId);
+  if (!row) throw new AppError(404, 'POST_NOT_FOUND', 'Post unavailable');
+  return serialize(row, userId);
 }
 
 export async function createPost(userId: string, body: unknown) {
@@ -69,18 +77,24 @@ export async function createComment(userId: string, postId: string, body: unknow
     }
   }
   const comment = await repository.createComment(postId, userId, data, parentId);
+  await emit('feed.commented', { userId, postId: comment.postId, commentId: comment.id, parentId, text: comment.text });
   return { ...comment, likedByMe: false, likeCount: 0 };
 }
 
 export async function likePost(userId: string, postId: string, like: boolean) {
   const existing = await post(postId);
-  return setPostLike(existing.id, userId, like);
+  const result = await setPostLike(existing.id, userId, like);
+  if (like) await emit('feed.postLiked', { userId, postId: existing.id });
+  return result;
 }
 
 export async function likeComment(userId: string, commentId: string, like: boolean) {
   const comment = await repository.findComment(id(commentId));
   if (!comment) throw new AppError(404, 'COMMENT_NOT_FOUND', 'Comment unavailable');
-  if (like) await repository.addCommentLike(comment.id, userId);
+  if (like) {
+    await repository.addCommentLike(comment.id, userId);
+    await emit('feed.commentLiked', { userId, commentId: comment.id });
+  }
   else await repository.removeCommentLike(comment.id, userId);
   return { likedByMe: like, likeCount: await repository.countCommentLikes(comment.id) };
 }

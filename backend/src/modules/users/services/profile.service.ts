@@ -7,9 +7,10 @@ import { heartbeat as chatHeartbeat } from '../../chat/services/chat.service.js'
 import { isMediaUrl } from '../../media/media.service.js';
 
 import { profileSelect } from '../repositories/profile.repository.js';
+import { emit } from '../../../common/events/domain-events.js';
 const onlineThresholdMs = 2 * 60 * 1000;
 type ProfileRow = Prisma.UserGetPayload<{ select: typeof profileSelect }>;
-const formatProfile = (user: ProfileRow) => ({
+const formatProfile = (user: ProfileRow, followingShopCount: number) => ({
   id: user.id,
   fullName: user.fullName,
   username: user.username,
@@ -20,8 +21,8 @@ const formatProfile = (user: ProfileRow) => ({
   createdAt: user.createdAt,
   followerCount: user._count.followers,
   followingCount: user._count.following,
-  /** Số shop uy tín đang theo dõi (tab Shop của trang Đang theo dõi) */
-  followingShopCount: user._count.shopFollows,
+  /** Số shop uy tín đang theo dõi (tab Shop của trang Đang theo dõi), đã nằm trong followingCount */
+  followingShopCount,
   presence: {
     isOnline: !!user.lastActiveAt && Date.now() - new Date(user.lastActiveAt).getTime() < onlineThresholdMs,
     lastActiveAt: user.lastActiveAt,
@@ -34,15 +35,17 @@ export const getProfile = async (id: string, viewerId?: string) => {
   if (!user || user.status !== 'ACTIVE') {
     throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
   }
-  if (!viewerId || viewerId === id) return formatProfile(user);
+  const followingShopCount = await repository.countFollowedShops(id);
+  if (!viewerId || viewerId === id) return formatProfile(user, followingShopCount);
   const follow = await repository.findFollow(id, viewerId);
-  return { ...formatProfile(user), isFollowing: !!follow };
+  return { ...formatProfile(user, followingShopCount), isFollowing: !!follow };
 };
 
 export async function getPublicProfile(id: string, viewerId: string) {
   const result = await repository.findStorefront(id, viewerId);
   if (!result) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
-  return { ...formatProfile(result.user), isFollowing: result.user.followers.length > 0, storefront: result.storefront };
+  const followingShopCount = await repository.countFollowedShops(id);
+  return { ...formatProfile(result.user, followingShopCount), isFollowing: result.user.followers.length > 0, storefront: result.storefront };
 }
 
 const followPageSize = 20;
@@ -104,7 +107,7 @@ export const updateProfile = async (id: string, body: unknown) => {
   }
   try {
     const user = await repository.updateProfile(id, data);
-    return formatProfile(user);
+    return formatProfile(user, await repository.countFollowedShops(id));
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       throw new AppError(409, 'USERNAME_TAKEN', 'Tên người dùng đã được sử dụng.', 'username');
@@ -126,6 +129,7 @@ export const follow = async (selfId: string, targetId: string) => {
   const target = await repository.findTarget(targetId);
   if (!target || target.status !== 'ACTIVE') throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
   await repository.upsertFollow(selfId, targetId);
+  await emit('user.followed', { followerId: selfId, followingId: targetId });
   return { following: true };
 };
 

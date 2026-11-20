@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import type { z } from 'zod';
 import { publicLocation } from '../catalog/index.js';
 import type {
-  adminDecisionBody, autoExtendBody, extendBody, adminListingQuery, createListingBody, decisionBody, draftBody, favoritesQuery, featureBody, feedQuery, mineQuery, recommendedQuery, statusBody,
+  adminDecisionBody, autoExtendBody, extendBody, adminListingQuery, createListingBody, decisionBody, draftBody, favoritesQuery, featureBody, feedQuery, mineQuery, recommendedQuery, searchQuery, statusBody,
 } from './listing.validator.js';
 
 /* ---------- Vào (suy ra từ schema) ---------- */
@@ -17,6 +17,7 @@ export type MineQuery = z.output<typeof mineQuery>;
 export type DecisionInput = z.output<typeof decisionBody>;
 export type FeedQuery = z.output<typeof feedQuery>;
 export type RecommendedQuery = z.output<typeof recommendedQuery>;
+export type SearchQuery = z.output<typeof searchQuery>;
 export type FavoritesQuery = z.output<typeof favoritesQuery>;
 export type ListingIdParams = { id: string };
 export type AdminListingQuery = z.output<typeof adminListingQuery>;

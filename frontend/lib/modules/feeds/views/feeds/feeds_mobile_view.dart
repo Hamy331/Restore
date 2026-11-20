@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 import 'package:restore/shared/widgets/app_page_header.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
@@ -14,6 +15,7 @@ import './widgets/feed_composer.dart';
 import '../../widgets/feed_post_list.dart';
 import '../../widgets/feed_search_bar.dart';
 import '../../widgets/feed_shared.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 
 class FeedsMobileView extends StatelessWidget {
   const FeedsMobileView({super.key});
@@ -67,17 +69,9 @@ class FeedsMobileView extends StatelessWidget {
                         return const Center(child: AppLoadingIndicator());
                       }
                       if (state.failed) {
-                        return Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(l.feedLoadError),
-                              TextButton(
-                                onPressed: cubit.load,
-                                child: Text(l.retry),
-                              ),
-                            ],
-                          ),
+                        return AppLoadErrorView(
+                          title: l.feedLoadError,
+                          onRetry: cubit.load,
                         );
                       }
                       return AppPullToRefresh(
@@ -85,6 +79,8 @@ class FeedsMobileView extends StatelessWidget {
                         child: NotificationListener<ScrollNotification>(
                           onNotification: (n) => feedScrollListener(cubit, n),
                           child: CustomScrollView(
+                            // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                            scrollCacheExtent: AppScroll.prefetchCacheExtent,
                             physics: const BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics(),
                             ),

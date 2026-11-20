@@ -19,10 +19,15 @@ listingsRouter.use(moderationRouter);
 listingsRouter.use(listingRouter);
 
 export { imageExtension } from './services/image.service.js';
+export { searchListings } from './services/feed.service.js';
+export { foldedText } from './repositories/feed.repository.js';
+export { normalizeTitle } from './listing-lifecycle.js';
+export { searchQuery, searchWords } from './listing.validator.js';
+export type { SearchQuery } from './listing.dto.js';
 export { listingSelect, toFeedItemDto } from './listing.dto.js';
 export type { ListingDto, ListingRecord } from './listing.dto.js';
-export { onListingApproved } from './services/approval-hooks.js';
-export type { ListingApprovedHook } from './services/approval-hooks.js';
+export { onListingApproved, onListingModerated } from './services/approval-hooks.js';
+export type { ListingApprovedHook, ListingModeratedHook, ListingModeration } from './services/approval-hooks.js';
 export { default as listingsAdminRouter } from './routes/admin-listing.route.js';
 export { getAdminListing, moderate } from './services/moderation.service.js';
-export { autoExtendDueListings, expireDueListings, publishScheduledListings } from './services/listing-lifecycle.service.js';
+export { autoExtendDueListings, expireDueListings, publishScheduledListings, remindExpiringListings } from './services/listing-lifecycle.service.js';

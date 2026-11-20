@@ -5,3 +5,6 @@ export { assertDraftQuota, draftQuota, storePackageForUser, storeUsage, utcMonth
   withQuotaTransaction } from './services/quota.service.js';
 export { createPromotion, findActivePackage, findActivePackagesOfKind, findListingPromotions, findPromotionKindsSince, findRunningPromotion,
   findRunningPromotionsOf } from './repositories/promotion.repository.js';
+export { promotionEvent } from './services/promotion-events.js';
+export { notifyEndedPromotions } from './services/promotion.service.js';
+export { remindStorePlans } from './services/store.service.js';

@@ -19,12 +19,13 @@ export function zaloPayConfig(env: NodeJS.ProcessEnv = process.env): ZaloPayConf
   const key1 = env.ZALOPAY_KEY1?.trim();
   const key2 = env.ZALOPAY_KEY2?.trim();
   if (!appId || !key1 || !key2) return null;
-  const apiBase = env.PUBLIC_API_URL?.trim().replace(/\/+$/, '');
+  // Chuỗi rỗng ("" trong .env) coi như chưa đặt
+  const apiBase = env.PUBLIC_API_URL?.trim().replace(/\/+$/, '') || undefined;
   return {
     appId,
     key1,
     key2,
-    endpoint: (env.ZALOPAY_ENDPOINT?.trim() || ZALOPAY_SANDBOX_ENDPOINT).replace(/\/+$/, ''),
+    endpoint: zaloPayEndpoint(env),
     // ZaloPay chỉ gọi được callback tới địa chỉ public (VD ngrok). Chạy localhost thì app tự hỏi trạng thái.
     callbackUrl: apiBase ? `${apiBase}/api/v1/payments/zalopay/callback` : undefined,
     // Trang ZaloPay chuyển khách về sau khi trả; mặc định là trang báo kết quả của backend
@@ -36,13 +37,48 @@ export function zaloPayConfig(env: NodeJS.ProcessEnv = process.env): ZaloPayConf
   };
 }
 
+/**
+ * Chưa bật PAYMENT_MODE=live thì luôn dùng cổng sandbox, kể cả khi ZALOPAY_ENDPOINT trỏ đi nơi khác,
+ * để không có tiền thật đi qua khi đang thử.
+ */
+export function zaloPayEndpoint(env: NodeJS.ProcessEnv = process.env) {
+  const configured = env.ZALOPAY_ENDPOINT?.trim().replace(/\/+$/, '');
+  if (!configured) return ZALOPAY_SANDBOX_ENDPOINT;
+  if (env.PAYMENT_MODE?.trim() !== 'live' && configured !== ZALOPAY_SANDBOX_ENDPOINT) {
+    console.warn('[credits] ZALOPAY_ENDPOINT bị bỏ qua vì PAYMENT_MODE khác "live", dùng cổng sandbox');
+    return ZALOPAY_SANDBOX_ENDPOINT;
+  }
+  return configured;
+}
+
 function zaloPayMethods(raw: string | undefined) {
   const value = raw?.trim();
   if (value === 'all') return [];
   return value ? value.split(',').map((m) => m.trim()).filter(Boolean) : ['domestic_card'];
 }
 
-export const hmac = (key: string, data: string) => createHmac('sha256', key).update(data).digest('hex');
+export type AppToApp = { appId: number; zpTransToken: string; sandbox: boolean };
+
+/**
+ * Thông tin để app mở thẳng app ZaloPay (app-to-app), lấy từ order_url mà ZaloPay trả về:
+ * tham số order là base64 của { zptranstoken, appid }. sandbox = đơn tạo trên cổng sandbox,
+ * app phải mở app ZaloPay sandbox. Đọc không được thì null (app dùng trang web).
+ */
+export function appToApp(payUrl: string | null | undefined, env: NodeJS.ProcessEnv = process.env): AppToApp | null {
+  if (!payUrl) return null;
+  try {
+    const order = new URL(payUrl).searchParams.get('order');
+    if (!order) return null;
+    const parsed = JSON.parse(Buffer.from(order, 'base64').toString('utf8')) as { zptranstoken?: unknown; appid?: unknown };
+    const appId = Number(parsed.appid);
+    if (typeof parsed.zptranstoken !== 'string' || !parsed.zptranstoken || !Number.isInteger(appId)) return null;
+    return { appId, zpTransToken: parsed.zptranstoken, sandbox: zaloPayEndpoint(env) === ZALOPAY_SANDBOX_ENDPOINT };
+  } catch {
+    return null;
+  }
+}
+
+export const hmac =(key: string, data: string) => createHmac('sha256', key).update(data).digest('hex');
 
 /** app_trans_id = yymmdd (giờ Việt Nam) + "_" + mã đơn, VD 261109_RS8F2K1X */
 export function appTransId(code: string, now: Date = new Date()) {

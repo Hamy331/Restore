@@ -8,11 +8,17 @@ import 'search_state.dart';
 
 /// Trang tìm kiếm: gợi ý tìm nhanh, lịch sử và gợi ý theo nội dung đang gõ
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit({required SearchRepository searchRepository, String query = ''})
-    : _repository = searchRepository,
-      super(SearchState(query: query.trim()));
+  SearchCubit({
+    required SearchRepository searchRepository,
+    String query = '',
+    this.showHistory = true,
+  }) : _repository = searchRepository,
+       super(SearchState(query: query.trim()));
 
   final SearchRepository _repository;
+
+  /// Lịch sử tìm kiếm lưu theo tài khoản: khách không có lịch sử
+  final bool showHistory;
 
   /// Chờ người dùng ngừng gõ một chút rồi mới hỏi gợi ý
   static const Duration _debounce = Duration(milliseconds: 250);
@@ -33,11 +39,12 @@ class SearchCubit extends Cubit<SearchState> {
   /// Mở trang: tải gợi ý tìm nhanh và lịch sử. Lỗi thì để trống phần đó,
   /// ô tìm kiếm vẫn dùng được.
   Future<void> start() async {
-    if (state.isTyping) _loadSuggestions(state.query);
+    if (state.isTyping) _loadAll(state.query);
     await Future.wait([_loadTrending(), loadHistory()]);
   }
 
   Future<void> loadHistory() async {
+    if (!showHistory) return;
     try {
       final history = await _repository.getHistory();
       emit(state.copyWith(history: history));
@@ -52,10 +59,18 @@ class SearchCubit extends Cubit<SearchState> {
     emit(state.copyWith(query: query));
     _debounceTimer?.cancel();
     if (query.isEmpty) {
-      emit(state.copyWith(suggestions: const [], suggestionsQuery: ''));
+      emit(
+        state.copyWith(
+          suggestions: const [],
+          suggestionsQuery: '',
+          shops: const [],
+          users: const [],
+          accountsQuery: '',
+        ),
+      );
       return;
     }
-    _debounceTimer = Timer(_debounce, () => _loadSuggestions(query));
+    _debounceTimer = Timer(_debounce, () => _loadAll(query));
   }
 
   /// Xoá ngay trên UI, lỗi API thì trả lại như cũ
@@ -85,6 +100,35 @@ class SearchCubit extends Cubit<SearchState> {
       emit(state.copyWith(trending: trending));
     } catch (_) {
       // Không có gợi ý thì ẩn phần này
+    }
+  }
+
+  void _loadAll(String query) {
+    _loadSuggestions(query);
+    _loadAccounts(query);
+  }
+
+  /// Vài cửa hàng và người dùng khớp nội dung đang gõ. Lỗi thì ẩn phần này
+  Future<void> _loadAccounts(String query) async {
+    const limit = SearchRepository.accountSuggestionLimit;
+    try {
+      final (shops, users) = await (
+        _repository.searchShops(query, limit: limit),
+        _repository.searchUsers(query, limit: limit),
+      ).wait;
+      if (query != state.query) return;
+      emit(
+        state.copyWith(
+          shops: shops.items,
+          users: users.items,
+          accountsQuery: query,
+        ),
+      );
+    } catch (_) {
+      if (query != state.query) return;
+      emit(
+        state.copyWith(shops: const [], users: const [], accountsQuery: query),
+      );
     }
   }
 

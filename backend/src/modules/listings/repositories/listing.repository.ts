@@ -162,7 +162,7 @@ export const findPendingRevisions = () =>
 /** Tin cần đọc khi admin ra quyết định */
 export const findForModeration = (tx: Db, id: string) =>
   tx.listing.findUnique({ where: { id }, select: { id: true, ownerId: true, status: true, images: true, updatedAt: true, categoryId: true, condition: true, title: true,
-    expiresAt: true, startsAt: true, displayDays: true, revision: { select: revisionSelect } } });
+    price: true, expiresAt: true, startsAt: true, displayDays: true, revision: { select: revisionSelect } } });
 
 /** Áp bản sửa vào tin khi tin vẫn đúng trạng thái và bản sửa vẫn đúng updatedAt lúc admin mở; trả về số dòng đổi */
 export async function applyRevision(tx: Db, id: string, status: ListingStatus, revisionUpdatedAt: Date,
@@ -185,12 +185,23 @@ export async function updateWhereVersion(tx: Db, id: string, status: ListingStat
   return changed.count;
 }
 
-/** Danh sách quản trị: lọc trạng thái, tìm trong tiêu đề; cập nhật gần nhất trước */
-export function findAdminPage({ status, q }: { status?: ListingStatus; q?: string }, skip: number, take: number) {
-  const where: Prisma.ListingWhereInput = { ...(status ? { status } : {}), ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}) };
+/** Cột đang hiển thị để so với bản sửa (ngoài adminListingSelect) */
+export const adminCompareSelect = {
+  originalPrice: true, isNegotiable: true, allowSale: true, allowExchange: true, exchangeWish: true, attributes: true, location: true,
+} as const satisfies Prisma.ListingSelect;
+
+/**
+ * Danh sách quản trị: lọc trạng thái, tìm trong tiêu đề; cập nhật gần nhất trước.
+ * edit = PENDING: chỉ tin có bản sửa chờ duyệt, gửi sớm trước.
+ */
+export function findAdminPage({ status, q, edit }: { status?: ListingStatus; q?: string; edit?: 'PENDING' }, skip: number, take: number) {
+  const where: Prisma.ListingWhereInput = { ...(status ? { status } : {}), ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
+    ...(edit ? { revision: { status: edit } } : {}) };
+  const orderBy: Prisma.ListingOrderByWithRelationInput[] = edit
+    ? [{ revision: { submittedAt: 'asc' } }, { id: 'asc' }] : [{ updatedAt: 'desc' }, { id: 'desc' }];
   return prisma.$transaction([
-    prisma.listing.findMany({ where, select: { ...adminListingSelect, revision: { select: revisionSelect } },
-      orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], skip, take }),
+    prisma.listing.findMany({ where, select: { ...adminListingSelect, ...adminCompareSelect, revision: { select: revisionSelect } },
+      orderBy, skip, take }),
     prisma.listing.count({ where }),
   ]);
 }

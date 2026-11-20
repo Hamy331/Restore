@@ -11,7 +11,18 @@ const online = (lastActiveAt: Date | null) =>
 
 export const startConversation = async (selfId: string, body: unknown) => {
   const input = body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
-  const recipientId = parseId(input.recipientId, 'recipientId');
+  // Nhắn từ trang tin mà app chỉ gửi listingId: người nhận là người đăng tin; còn lại gửi recipientId
+  let recipientId: string;
+  if (input.recipientId === undefined && input.listingId !== undefined) {
+    const owner = await prisma.listing.findUnique({
+      where: { id: parseId(input.listingId, 'listingId') },
+      select: { ownerId: true },
+    });
+    if (!owner) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy tin đăng.');
+    recipientId = owner.ownerId;
+  } else {
+    recipientId = parseId(input.recipientId, 'recipientId');
+  }
   if (recipientId === selfId) throw new AppError(422, 'SELF_CHAT', 'Không thể nhắn tin cho chính mình.');
   const recipient = await repository.findRecipient(recipientId);
   if (!recipient || recipient.status !== 'ACTIVE') {

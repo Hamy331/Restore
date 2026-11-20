@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,7 @@ import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
@@ -173,6 +175,8 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
                 child: AppLoadMoreListener(
                   onLoadMore: _cubit.loadMore,
                   child: CustomScrollView(
+                    // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                    scrollCacheExtent: AppScroll.prefetchCacheExtent,
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
                       SliverToBoxAdapter(child: header),
@@ -203,14 +207,10 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
           SliverToBoxAdapter(
             child: SizedBox(
               height: 380,
-              child: FeedbackView(
-                icon: AppIcons.offline,
+              child: AppLoadErrorView(
                 title: l10n.categoryDetailLoadErrorTitle,
                 message: l10n.categoryDetailLoadErrorBody,
-                action: FilledButton(
-                  onPressed: _cubit.retry,
-                  child: Text(l10n.retry),
-                ),
+                onRetry: _cubit.retry,
               ),
             ),
           ),

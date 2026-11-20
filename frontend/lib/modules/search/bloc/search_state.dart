@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:restore/core/utils/helpers/vietnamese_text.dart';
+import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
 
 import '../models/search_history_entry.dart';
+import '../models/search_user_item.dart';
 
 class SearchState extends Equatable {
   /// Nội dung đang gõ (đã bỏ khoảng trắng hai đầu)
@@ -13,12 +15,21 @@ class SearchState extends Equatable {
   final List<String> suggestions;
   final String suggestionsQuery;
 
+  /// Cửa hàng, người dùng khớp [accountsQuery] (vài kết quả đầu, mở thẳng
+  /// trang shop / trang cá nhân)
+  final List<TrustedShopItem> shops;
+  final List<SearchUserItem> users;
+  final String accountsQuery;
+
   const SearchState({
     this.query = '',
     this.trending = const [],
     this.history = const [],
     this.suggestions = const [],
     this.suggestionsQuery = '',
+    this.shops = const [],
+    this.users = const [],
+    this.accountsQuery = '',
   });
 
   bool get isTyping => query.isNotEmpty;
@@ -49,12 +60,18 @@ class SearchState extends Equatable {
     List<SearchHistoryEntry>? history,
     List<String>? suggestions,
     String? suggestionsQuery,
+    List<TrustedShopItem>? shops,
+    List<SearchUserItem>? users,
+    String? accountsQuery,
   }) => SearchState(
     query: query ?? this.query,
     trending: trending ?? this.trending,
     history: history ?? this.history,
     suggestions: suggestions ?? this.suggestions,
     suggestionsQuery: suggestionsQuery ?? this.suggestionsQuery,
+    shops: shops ?? this.shops,
+    users: users ?? this.users,
+    accountsQuery: accountsQuery ?? this.accountsQuery,
   );
 
   @override
@@ -64,5 +81,8 @@ class SearchState extends Equatable {
     history,
     suggestions,
     suggestionsQuery,
+    shops,
+    users,
+    accountsQuery,
   ];
 }

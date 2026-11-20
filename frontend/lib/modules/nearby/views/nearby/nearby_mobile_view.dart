@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -11,6 +12,7 @@ import 'package:restore/modules/location/views/area_search/area_search_view.dart
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
@@ -164,6 +166,8 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
                   builder: (context, refreshIndicator) => AppLoadMoreListener(
                     onLoadMore: cubit.loadMore,
                     child: CustomScrollView(
+                      // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                      scrollCacheExtent: AppScroll.prefetchCacheExtent,
                       controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
@@ -284,14 +288,9 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
         return [
           SliverFillRemaining(
             hasScrollBody: false,
-            child: FeedbackView(
-              icon: AppIcons.offline,
+            child: AppLoadErrorView(
               title: l10n.nearbyLoadErrorTitle,
-              message: l10n.nearbyLoadErrorBody,
-              action: FilledButton(
-                onPressed: cubit.retry,
-                child: Text(l10n.retry),
-              ),
+              onRetry: cubit.retry,
             ),
           ),
         ];

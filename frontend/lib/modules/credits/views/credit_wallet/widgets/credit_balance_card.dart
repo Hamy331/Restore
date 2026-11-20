@@ -15,10 +15,14 @@ class CreditBalanceCard extends StatelessWidget {
   final CreditWallet wallet;
   final VoidCallback onTopup;
 
+  /// Bấm ô "Xu tặng": xem từng lần tặng và hạn dùng
+  final VoidCallback? onBonusTap;
+
   const CreditBalanceCard({
     super.key,
     required this.wallet,
     required this.onTopup,
+    this.onBonusTap,
   });
 
   @override
@@ -87,6 +91,8 @@ class CreditBalanceCard extends StatelessWidget {
               _Part(
                 label: l10n.creditBonusLabel,
                 value: CreditFormat.number(context, wallet.bonus),
+                onTap: onBonusTap,
+                tooltip: l10n.creditBonusTapHint,
               ),
               const SizedBox(width: 8),
               _Part(
@@ -125,45 +131,81 @@ class _Part extends StatelessWidget {
   final String label;
   final String value;
   final bool warning;
+  final VoidCallback? onTap;
+  final String? tooltip;
 
-  const _Part({required this.label, required this.value, this.warning = false});
+  const _Part({
+    required this.label,
+    required this.value,
+    this.warning = false,
+    this.onTap,
+    this.tooltip,
+  });
 
   @override
   Widget build(BuildContext context) {
     final color = warning ? AppColors.warning : AppColors.textPrimary;
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: warning
-              ? AppColors.warningBg
-              : Colors.white.withValues(alpha: 0.7),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 12,
-                color: warning ? AppColors.warning : AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
-            ),
-          ],
-        ),
+    final box = Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: warning
+            ? AppColors.warningBg
+            : Colors.white.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(14),
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: warning
+                        ? AppColors.warning
+                        : AppColors.textSecondary,
+                  ),
+                ),
+              ),
+              if (onTap != null)
+                const Icon(
+                  AppIcons.chevronRight,
+                  size: 14,
+                  color: AppColors.textSecondary,
+                ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+    final tap = onTap;
+    return Expanded(
+      child: tap == null
+          ? box
+          : Tooltip(
+              message: tooltip ?? label,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: tap,
+                  child: box,
+                ),
+              ),
+            ),
     );
   }
 }

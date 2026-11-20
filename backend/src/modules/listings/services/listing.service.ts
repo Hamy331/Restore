@@ -2,8 +2,9 @@ import { ListingStatus, Prisma } from '@prisma/client';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { createPromotion, findActivePackage, findActivePackagesOfKind, findListingPromotions, findPromotionKindsSince, findRunningPromotion,
-  findRunningPromotionsOf, utcMonthStart, storePackageForUser, storeUsage,
+  findRunningPromotionsOf, promotionEvent, utcMonthStart, storePackageForUser, storeUsage,
   withQuotaTransaction } from '../../commerce/index.js';
+import { emit } from '../../../common/events/domain-events.js';
 import { availableCredits } from '../../credits/index.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { toCategoryDto } from '../../catalog/catalog.dto.js';
@@ -221,6 +222,7 @@ export async function discardRevision(ownerId: string, id: string) {
 /** Ẩn, hiện lại, đánh dấu đã bán / đã trao đổi */
 export async function changeStatus(ownerId: string, id: string, target: ListingStatus, payWithCredits = false) {
   let dropped: string[] = [];
+  let sold: { title: string; image: string | null } | null = null;
   const listing = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const current = await requireOwnedListing(tx, id, ownerId);
@@ -262,10 +264,15 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
     if (target === ListingStatus.SOLD || target === ListingStatus.EXCHANGED) {
       const revision = await listingRepository.deleteRevision(tx, id);
       dropped = revisionOnlyImages(revision?.images ?? [], current.images);
+      sold = { title: current.title, image: current.images[0] ?? null };
     }
     return listingRepository.findSelected(tx, id);
   });
   await removeStoredImages(dropped);
+  // 3.7: báo người đã lưu tin
+  // Gán trong callback của transaction nên TS không thu hẹp được kiểu
+  const soldInfo = sold as { title: string; image: string | null } | null;
+  if (soldInfo) await emit('listing.sold', { listingId: id, ownerId, ...soldInfo, exchanged: target === ListingStatus.EXCHANGED });
   return toOwnerListingDto(listing);
 }
 
@@ -323,7 +330,7 @@ const BOOST_PACKAGE_ID = 'bump-1';
  * đang trong lượt đẩy thì 409 BOOST_TOO_SOON (details.availableAt); thiếu xu thì 409 NOT_ENOUGH_CREDITS.
  */
 export async function boostListing(ownerId: string, id: string) {
-  return withQuotaTransaction(async (tx) => {
+  const { result, event } = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const current = await requireOwnedListing(tx, id, ownerId);
     if (current.status !== ListingStatus.AVAILABLE) {
@@ -344,9 +351,13 @@ export async function boostListing(ownerId: string, id: string) {
       userId: ownerId, listingId: id, packageId: BOOST_PACKAGE_ID, source: free ? 'INCLUDED' : 'PURCHASED',
       startsAt: now, endsAt: addDays(now, 1),
     });
-    return { listingId: id, free, credits, startsAt: promotion.startsAt, endsAt: promotion.endsAt,
+    const result = { listingId: id, free, credits, startsAt: promotion.startsAt, endsAt: promotion.endsAt,
       freeLeft: Math.max(0, plan.package.monthlyPromotionQuota - usage.promotionsThisMonth - (free ? 1 : 0)) };
+    return { result, event: promotionEvent(current, promotion) };
   });
+  // Sau khi commit: báo tin bắt đầu được đẩy (2.5)
+  await emit('promotion.started', event);
+  return result;
 }
 
 /** Tin của chủ đang hiển thị, kèm chuyên mục còn dùng; dùng cho tin ưu tiên */
@@ -462,7 +473,7 @@ export async function getPromotionOverview(ownerId: string, id: string) {
  * Đang có tin ưu tiên chạy thì 409 FEATURE_ALREADY_ACTIVE (details.availableAt), thiếu xu thì 409 NOT_ENOUGH_CREDITS.
  */
 export async function featureListing(ownerId: string, id: string, packageId: string) {
-  return withQuotaTransaction(async (tx) => {
+  const { result, event } = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const { current, category } = await requireFeaturable(tx, id, ownerId);
     const promotionPackage = await findActivePackage(tx, packageId);
@@ -481,8 +492,12 @@ export async function featureListing(ownerId: string, id: string, packageId: str
       userId: ownerId, listingId: id, packageId, source: 'PURCHASED',
       startsAt: now, endsAt: addDays(now, promotionPackage.durationDays),
     });
-    return { listingId: id, packageId, credits, startsAt: promotion.startsAt, endsAt: promotion.endsAt };
+    const result = { listingId: id, packageId, credits, startsAt: promotion.startsAt, endsAt: promotion.endsAt };
+    return { result, event: promotionEvent(current, promotion) };
   });
+  // Sau khi commit: báo tin lên Hot sale (2.5)
+  await emit('promotion.started', event);
+  return result;
 }
 
 /** Hạn mức đăng tin cho màn đăng tin */

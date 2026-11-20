@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/utils/app_image_provider.dart';
 import '../models/profile_models.dart';
 
 const profileFontFamily = 'DM Sans';
@@ -22,11 +23,10 @@ class ProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final path = url?.trim();
+    // Ảnh mạng có cache đĩa (appImageProvider), ảnh assets dùng thẳng
     final ImageProvider? image = path == null || path.isEmpty
         ? null
-        : path.startsWith('assets/')
-        ? AssetImage(path)
-        : NetworkImage(path);
+        : appImageProvider(path);
     return CircleAvatar(
       radius: radius,
       backgroundColor: AppColors.background,
@@ -57,7 +57,6 @@ class ProfileHeader extends StatelessWidget {
     this.onRatingTap,
     this.extraStat,
     this.action,
-    this.countFollowedShops = false,
   });
 
   /// `null` khi đang tải lần đầu.
@@ -70,9 +69,6 @@ class ProfileHeader extends StatelessWidget {
 
   /// Nút hành động dưới phần giới thiệu (ví dụ Theo dõi).
   final Widget? action;
-
-  /// Hồ sơ của mình: "Đang theo dõi" tính cả shop đang theo dõi
-  final bool countFollowedShops;
 
   static String initials(String name) => name
       .trim()
@@ -147,8 +143,8 @@ class ProfileHeader extends StatelessWidget {
           children: [
             Expanded(
               child: ProfileStat(
-                value:
-                    '${(profile?.followingCount ?? 0) + (countFollowedShops ? profile?.followingShopCount ?? 0 : 0)}',
+                // Theo dõi shop = theo dõi chủ shop, nên shop đã nằm trong số này
+                value: '${profile?.followingCount ?? 0}',
                 label: l.accFollowing,
                 onTap: onFollowingTap,
               ),

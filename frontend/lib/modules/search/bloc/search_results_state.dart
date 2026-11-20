@@ -2,6 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 
+/// Các tab của trang kết quả
+enum SearchResultsTab { listings, shops, users }
+
 enum SearchResultsStatus {
   /// Đang tải trang đầu (lần đầu hoặc vừa đổi bộ lọc)
   loading,

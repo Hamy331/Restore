@@ -10,20 +10,24 @@ const NEW_LISTING_DAYS = 7;
 
 type Page = { page: number; limit: number; skip: number };
 
+/** Lượt theo dõi của [userId] tới chủ một shop uy tín (theo dõi shop = theo dõi chủ shop) */
+const followsTrustedShop = (userId: string) =>
+  ({ followerId: userId, following: { status: 'ACTIVE', shop: { is: { verificationType: { not: null } } } } }) as const;
+
 /**
- * Shop uy tín [userId] đang theo dõi, theo dõi gần nhất trước:
+ * Shop uy tín [userId] đang theo dõi (chủ shop mình đang theo dõi), theo dõi gần nhất trước:
  * items [Shop + isFollowing (luôn true) + followedAt + newListingCount (tin đăng 7 ngày qua)], page info
  */
 export async function listFollowedShops(userId: string, { page, limit, skip }: Page, now = new Date()) {
-  const where = { userId, shop: trusted };
+  const where = followsTrustedShop(userId);
   const [rows, totalItems] = await Promise.all([
-    prisma.shopFollow.findMany({
-      where, orderBy: [{ createdAt: 'desc' }, { shopId: 'asc' }], skip, take: limit,
-      select: { createdAt: true, shop: { select: shopSelect } },
+    prisma.userFollow.findMany({
+      where, orderBy: [{ createdAt: 'desc' }, { followingId: 'asc' }], skip, take: limit,
+      select: { createdAt: true, following: { select: { shop: { select: shopSelect } } } },
     }),
-    prisma.shopFollow.count({ where }),
+    prisma.userFollow.count({ where }),
   ]);
-  const shops = rows.map((row) => row.shop);
+  const shops = rows.map((row) => row.following.shop!);
   const [dtos, fresh] = await Promise.all([
     shopDtos(userId, shops),
     prisma.listing.groupBy({
@@ -41,10 +45,8 @@ export async function listFollowedShops(userId: string, { page, limit, skip }: P
 
 /** Tin mới nhất của các shop uy tín [userId] đang theo dõi (thẻ tin như trang chủ) */
 export async function listFollowedListings(userId: string, { page, limit, skip }: Page) {
-  const follows = await prisma.shopFollow.findMany({
-    where: { userId, shop: trusted }, select: { shop: { select: { ownerId: true } } },
-  });
-  const where = { ...visible, ownerId: { in: follows.map((row) => row.shop.ownerId) } };
+  const follows = await prisma.userFollow.findMany({ where: followsTrustedShop(userId), select: { followingId: true } });
+  const where = { ...visible, ownerId: { in: follows.map((row) => row.followingId) } };
   const [listings, totalItems] = await Promise.all([
     shopRepository.findListings(where, limit, skip),
     shopRepository.countListings(where),
@@ -57,16 +59,17 @@ export async function listFollowedListings(userId: string, { page, limit, skip }
  * items [{ id, fullName, username, avatarUrl, followedAt }], page info. Chưa có shop thì danh sách rỗng.
  */
 export async function listMyShopFollowers(ownerId: string, { page, limit, skip }: Page) {
-  const where = { shop: { ownerId }, user: { status: 'ACTIVE' as const } };
+  // người theo dõi shop chính là người theo dõi chủ shop
+  const where = { followingId: ownerId, following: { shop: { isNot: null } }, follower: { status: 'ACTIVE' as const } };
   const [rows, totalItems] = await Promise.all([
-    prisma.shopFollow.findMany({
-      where, orderBy: [{ createdAt: 'desc' }, { userId: 'asc' }], skip, take: limit,
-      select: { createdAt: true, user: { select: { id: true, fullName: true, username: true, avatarUrl: true } } },
+    prisma.userFollow.findMany({
+      where, orderBy: [{ createdAt: 'desc' }, { followerId: 'asc' }], skip, take: limit,
+      select: { createdAt: true, follower: { select: { id: true, fullName: true, username: true, avatarUrl: true } } },
     }),
-    prisma.shopFollow.count({ where }),
+    prisma.userFollow.count({ where }),
   ]);
   return {
-    items: rows.map((row) => ({ ...row.user, followedAt: row.createdAt })),
+    items: rows.map((row) => ({ ...row.follower, followedAt: row.createdAt })),
     page: { page, limit, totalItems },
   };
 }
@@ -87,7 +90,10 @@ async function interestByCategory(userId: string) {
       where: { userId }, orderBy: { createdAt: 'desc' }, take: 100, select: { listing: { select: { categoryId: true } } },
     }),
     prisma.wantedAlert.findMany({ where: { userId, categoryId: { not: null } }, take: 50, select: { categoryId: true } }),
-    prisma.shopFollow.findMany({ where: { userId }, select: { shop: { select: { categoryIds: true } } } }),
+    prisma.userFollow.findMany({
+      where: { followerId: userId, following: { shop: { isNot: null } } },
+      select: { following: { select: { shop: { select: { categoryIds: true } } } } },
+    }),
   ]);
   const interest = new Map<string, number>();
   const add = (id: string | null, weight: number) => {
@@ -95,7 +101,7 @@ async function interestByCategory(userId: string) {
   };
   favorites.forEach((row) => add(row.listing.categoryId, INTEREST_WEIGHT.favorite));
   alerts.forEach((row) => add(row.categoryId, INTEREST_WEIGHT.wantedAlert));
-  followed.forEach((row) => row.shop.categoryIds.forEach((id) => add(id, INTEREST_WEIGHT.followedShop)));
+  followed.forEach((row) => row.following.shop?.categoryIds.forEach((id) => add(id, INTEREST_WEIGHT.followedShop)));
   return interest;
 }
 
@@ -108,7 +114,7 @@ async function interestByCategory(userId: string) {
 export async function listSuggestedShops(userId: string, limit: number, now = new Date()) {
   const [shops, interest] = await Promise.all([
     prisma.shop.findMany({
-      where: { ...trusted, ownerId: { not: userId }, followers: { none: { userId } } },
+      where: { ...trusted, ownerId: { not: userId }, owner: { status: 'ACTIVE', followers: { none: { followerId: userId } } } },
       select: {
         ...shopSelect,
         owner: { select: { ...shopSelect.owner.select, storeSubscription: { select: { endsAt: true, startsAt: true, package: { select: { tier: true } } } } } },
@@ -125,7 +131,7 @@ export async function listSuggestedShops(userId: string, limit: number, now = ne
       return { shop, partner, score };
     })
     .sort((a, b) => b.score - a.score || Number(b.partner) - Number(a.partner)
-      || b.shop._count.followers - a.shop._count.followers || a.shop.name.localeCompare(b.shop.name))
+      || b.shop.owner._count.followers - a.shop.owner._count.followers || a.shop.name.localeCompare(b.shop.name))
     .slice(0, limit);
   const dtos = await shopDtos(userId, ranked.map((row) => row.shop));
   return Promise.all(dtos.map(async (dto, index) => {

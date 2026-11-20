@@ -9,6 +9,7 @@ import { Knowledge } from '../features/knowledge/Knowledge';
 import { Catalog } from '../features/catalog/Catalog';
 import { Stores, Promotions } from '../features/commerce/Commerce';
 import { HomeBanners } from '../features/banners/HomeBanners';
+import { ShopPosters } from '../features/shop-posters/ShopPosters';
 
 import {
   AppstoreOutlined,
@@ -23,6 +24,7 @@ import {
   ReadOutlined,
   HistoryOutlined,
   PictureOutlined,
+  NotificationOutlined,
 } from '@ant-design/icons';
 
 export const sections = [
@@ -43,6 +45,15 @@ export const sections = [
     detail: 'Xem xét nội dung và xử lý tin đăng.',
     permission: 'listing:moderate',
     View: Listings,
+  },
+  {
+    key: 'shopPosters',
+    label: 'Duyệt banner shop',
+    group: 'Vận hành',
+    icon: NotificationOutlined,
+    detail: 'Duyệt poster quảng bá mà shop gói Cửa hàng gửi lên.',
+    permission: 'banner:manage',
+    View: ShopPosters,
   },
   {
     key: 'reports',

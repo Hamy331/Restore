@@ -4,6 +4,7 @@ import { AppError } from '../../common/errors/app-error.js';
 import { choice, object, page, text, version } from '../../common/validation/admin-input.js';
 import { idParam, int, oneOf, pageQuery, parse } from '../../common/validation/schemas.js';
 import { coordinates, listingLocation } from '../catalog/index.js';
+import { normalizeTitle } from './listing-lifecycle.js';
 import { FEED_FILTERS, MAX_IMAGES, MODERATION_ACTIONS, OWNER_STATUS_TARGETS } from './listing.type.js';
 
 /*
@@ -82,14 +83,29 @@ export const draftInput = (value: unknown) => listingInput(value, true);
 
 /* ---------- Bộ lọc tìm kiếm ---------- */
 
+/** Kiểu giao dịch của bộ lọc deal=buy,exchange */
+export const DEAL_TYPES = ['buy', 'exchange'] as const;
+export type DealType = (typeof DEAL_TYPES)[number];
+
+/** Từ khoá đã bỏ dấu, chữ thường, tối đa 10 từ (VD "Ghế  gỗ!" → ["ghe", "go"]) */
+export const searchWords = (q: string) => normalizeTitle(q).split(' ').filter(Boolean).slice(0, 10);
+
+/** Tách giá trị query dạng "a,b" (hoặc lặp ?a=..&a=..), bỏ trùng và rỗng; null khi không phải chuỗi */
+function csv(value: unknown): string[] | null {
+  const items = Array.isArray(value) ? value : [value];
+  if (items.some((item) => typeof item !== 'string' || item.length > 200)) return null;
+  return [...new Set((items as string[]).flatMap((item) => item.split(',')).map((item) => item.trim()).filter(Boolean))];
+}
+
 /**
  * Bộ lọc tìm kiếm tin đăng dùng chung cho GET /listings, tìm kiếm, gần bạn.
- * Query: q, categoryId, condition, minPrice, maxPrice, latitude + longitude (+ radiusKm), allowExchange
+ * Query: q, categoryId, condition (một hoặc nhiều, cách nhau dấu phẩy), deal (buy,exchange),
+ * minPrice, maxPrice, latitude + longitude (+ radiusKm), allowExchange.
+ * q được tách thành words (bỏ dấu, chữ thường): tin khớp khi tiêu đề chứa đủ mọi từ.
  */
 export function listingFilters(query: Record<string, unknown>) {
   const q = query.q;
   const categoryId = query.categoryId;
-  const condition = query.condition;
   const minPrice = query.minPrice;
   const maxPrice = query.maxPrice;
   if (q !== undefined && (typeof q !== 'string' || q.trim().length > 100)) {
@@ -98,8 +114,13 @@ export function listingFilters(query: Record<string, unknown>) {
   if (categoryId !== undefined && (typeof categoryId !== 'string' || categoryId.length > 100)) {
     throw new AppError(400, 'INVALID_QUERY', 'Danh mục không hợp lệ.');
   }
-  if (condition !== undefined && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) {
+  const conditions = query.condition === undefined ? [] : csv(query.condition);
+  if (!conditions || conditions.some((item) => !Object.values(ListingCondition).includes(item as ListingCondition))) {
     throw new AppError(400, 'INVALID_QUERY', 'Tình trạng sản phẩm không hợp lệ.');
+  }
+  const deals = query.deal === undefined ? [] : csv(query.deal);
+  if (!deals || deals.some((item) => !(DEAL_TYPES as readonly string[]).includes(item))) {
+    throw new AppError(400, 'INVALID_QUERY', 'Kiểu giao dịch không hợp lệ.');
   }
   for (const value of [minPrice, maxPrice]) {
     if (value !== undefined && (typeof value !== 'string' || !/^\d{1,12}$/.test(value))) {
@@ -121,8 +142,10 @@ export function listingFilters(query: Record<string, unknown>) {
   return {
     ...(nearby?{nearby}:{}), ...(query.allowExchange==='true'?{allowExchange:true}:{}),
     q: typeof q === 'string' ? q.trim() : '',
+    words: typeof q === 'string' ? searchWords(q) : [],
     categoryId: typeof categoryId === 'string' ? categoryId : '',
-    condition: typeof condition === 'string' ? condition as ListingCondition : null,
+    conditions: conditions as ListingCondition[],
+    deals: deals as DealType[],
     minPrice: typeof minPrice === 'string' ? minPrice : null,
     maxPrice: typeof maxPrice === 'string' ? maxPrice : null,
   };
@@ -277,6 +300,24 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
   return { filter, pagination, filters };
 });
 
+/** Cách sắp xếp của trang kết quả tìm kiếm */
+export const SEARCH_SORTS = ['relevance', 'newest', 'price_asc', 'price_desc', 'nearest'] as const;
+export type SearchSort = (typeof SEARCH_SORTS)[number];
+
+/**
+ * Query GET /listings/search: bộ lọc chung + sort (mặc định relevance), page, limit (1-50, mặc định 10).
+ * sort=nearest cần latitude + longitude; có tọa độ thì chỉ lấy tin trong radiusKm.
+ */
+export const searchQuery = z.record(z.string(), z.unknown()).transform((raw) => {
+  const sort = parse(oneOf('sort', SEARCH_SORTS, 'relevance'), raw.sort);
+  const pagination = parse(pageQuery({ defaultLimit: 10, maxLimit: 50 }), raw);
+  const filters = listingFilters(raw);
+  if (sort === 'nearest' && !filters.nearby) {
+    throw new AppError(400, 'LOCATION_REQUIRED', 'Cần latitude và longitude để xếp tin gần nhất.', 'location');
+  }
+  return { sort, pagination, filters };
+});
+
 /** Query GET /listings/recommended */
 export const recommendedQuery = z.object({
   limit: int('limit', { min: 1, max: 20, fallback: 10 }),
@@ -293,6 +334,8 @@ export const favoritesQuery = pageQuery({ defaultLimit: 20, maxLimit: 100 });
 export const adminListingQuery = z.record(z.string(), z.unknown()).transform((query) => ({
   status: query.status ? choice(query.status, Object.values(ListingStatus)) : undefined,
   q: query.q ? text(query.q, 'q', 1, 100) : undefined,
+  /** edit=PENDING: chỉ tin đã duyệt có bản sửa đang chờ duyệt */
+  edit: query.edit ? choice(query.edit, ['PENDING'] as const) : undefined,
   page: page(query.page),
 }));
 

@@ -5,6 +5,7 @@ import 'package:restore/shared/widgets/app_search_pill.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
 
 import 'home_header_icon_button.dart';
+import 'home_notification_button.dart';
 
 /// Ô tìm kiếm ghim ở đầu trang khi cuộn, bên phải là nút tin nhắn và thông
 /// báo. Nền đổi theo trạng thái ghim qua [AppPinnedHeaderSurface].
@@ -53,8 +54,7 @@ class HomeSearchHeaderDelegate extends SliverPersistentHeaderDelegate {
               onTap: onMessagesTap,
             ),
             const SizedBox(width: 8),
-            HomeHeaderIconButton(
-              icon: AppIcons.notification,
+            HomeNotificationButton(
               tooltip: l10n.notifications,
               onTap: onNotificationsTap,
             ),

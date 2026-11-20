@@ -1,10 +1,13 @@
 import { StoreTier } from '@prisma/client';
 import { audit } from '../../../common/audit/admin-audit.js';
+import { prisma } from '../../../lib/prisma.js';
 import { ADMIN_PAGE_SIZE } from '../../../common/validation/admin-input.js';
 import { AppError } from '../../../common/errors/app-error.js';
+import { emit } from '../../../common/events/domain-events.js';
 import type { AdminOrderQuery, PromotionPackageInput, PurchaseInput } from '../commerce.dto.js';
 import { DAY_MS } from '../commerce.type.js';
 import * as promotionRepository from '../repositories/promotion.repository.js';
+import { promotionEvent } from './promotion-events.js';
 import { assertBuyerActive, assertPending, auditDecision, markConfirmed, rejectOrder } from './order-approval.service.js';
 import { storePackageForUser, storeUsage, withQuotaTransaction } from './quota.service.js';
 
@@ -44,7 +47,7 @@ export const listMine = (userId: string) => promotionRepository.findMyPromotions
 
 /** Dùng lượt đẩy tin kèm gói cửa hàng (chỉ cho tin thuộc danh mục cửa hàng) */
 export async function redeem(userId: string, { listingId, packageId }: PurchaseInput) {
-  return withQuotaTransaction(async (tx) => {
+  const { promotion, listing } = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const [listing, promotionPackage, current, usage] = await Promise.all([
       promotionRepository.findAvailableListingOf(tx, listingId, userId),
@@ -63,11 +66,15 @@ export async function redeem(userId: string, { listingId, packageId }: PurchaseI
     if (await promotionRepository.findRunningPromotion(tx, listingId, promotionPackage.kind, now)) {
       throw new AppError(409, 'PROMOTION_ALREADY_ACTIVE', 'Tin đang có quảng cáo cùng loại.');
     }
-    return promotionRepository.createPromotion(tx, {
+    const promotion = await promotionRepository.createPromotion(tx, {
       userId, listingId, packageId, source: 'INCLUDED',
       startsAt: now, endsAt: new Date(now.getTime() + promotionPackage.durationDays * DAY_MS),
     });
+    return { promotion, listing };
   });
+  // Sau khi commit: báo tin bắt đầu được đẩy (2.5)
+  await emit('promotion.started', promotionEvent(listing, promotion));
+  return promotion;
 }
 
 /* ---------- Đơn mua đẩy tin ---------- */
@@ -91,7 +98,7 @@ export const listPendingOrders = () => promotionRepository.findPendingOrders();
 
 /** Xác nhận đơn đã thanh toán: tạo quảng cáo, nối tiếp sau quảng cáo cùng loại đang chạy (nếu có) */
 export async function confirmOrder(actorId: string, id: string, reason: unknown) {
-  return withQuotaTransaction(async (tx) => {
+  const { promotion, listing } = await withQuotaTransaction(async (tx) => {
     const now = new Date();
     const order = await promotionRepository.findOrderForApproval(tx, id);
     assertPending('PROMOTION_ORDER', order);
@@ -103,12 +110,34 @@ export async function confirmOrder(actorId: string, id: string, reason: unknown)
     const latest = await promotionRepository.findRunningPromotion(tx, order.listingId, order.package.kind, now);
     const startsAt = latest ? latest.endsAt : now;
     await auditDecision(tx, 'PROMOTION_ORDER', actorId, id, 'CONFIRM', reason, { status: 'PENDING' }, { status: 'CONFIRMED', amount: order.amount });
-    return promotionRepository.createPromotion(tx, {
+    const promotion = await promotionRepository.createPromotion(tx, {
       userId: order.userId, listingId: order.listingId, packageId: order.packageId,
       source: 'PURCHASED', orderId: id, startsAt,
       endsAt: new Date(startsAt.getTime() + order.package.durationDays * DAY_MS),
     });
+    return { promotion, listing: order.listing };
   });
+  // Sau khi commit: báo người mua tin bắt đầu được đẩy (2.5)
+  await emit('promotion.started', promotionEvent(listing, promotion));
+  return promotion;
+}
+
+/** Job chỉ xét lượt quảng bá kết thúc trong khoảng này (backend tắt lâu hơn thì bỏ, không báo muộn) */
+const ENDED_LOOKBACK_MS = 6 * 60 * 60 * 1000;
+
+/**
+ * Job báo hết thời gian đẩy tin / Hot sale (2.6): lượt kết thúc trong 6 giờ gần nhất, tin còn hiển thị,
+ * và không có lượt cùng loại nối tiếp (đơn mua thêm chạy liền sau). Mỗi lượt báo một lần (dedupeKey).
+ */
+export async function notifyEndedPromotions(now = new Date()) {
+  const ended = await promotionRepository.findEndedPromotions(new Date(now.getTime() - ENDED_LOOKBACK_MS), now);
+  let count = 0;
+  for (const promotion of ended) {
+    if (await promotionRepository.findRunningPromotion(prisma, promotion.listingId, promotion.package.kind, now)) continue;
+    await emit('promotion.ended', promotionEvent(promotion.listing, promotion));
+    count++;
+  }
+  return count;
 }
 
 export const rejectPromotionOrder = (actorId: string, id: string, reason: unknown) => rejectOrder('PROMOTION_ORDER', actorId, id, reason);

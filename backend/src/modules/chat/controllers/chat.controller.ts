@@ -3,6 +3,7 @@ import { Response, NextFunction } from 'express';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import * as chat from '../services/chat.service.js';
 import { publish, subscribe } from '../services/chat.events.js';
+import { emit } from '../../../common/events/domain-events.js';
 
 import { changeTrade, submitReview } from '../services/trade.service.js';
 
@@ -83,6 +84,11 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
       );
     }
     res.status(result.created ? 201 : 200).json({ success: true, data: result.message });
+    // 3.2: push cho người còn lại (sau khi đã trả lời, lỗi push không ảnh hưởng tin nhắn)
+    if (result.created) {
+      const { message } = result;
+      void emit('chat.messageSent', { conversationId: id, messageId: message.id, senderId: message.senderId, text: message.text });
+    }
   } catch (error) {
     next(error);
   }

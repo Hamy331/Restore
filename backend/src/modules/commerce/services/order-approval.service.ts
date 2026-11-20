@@ -2,6 +2,7 @@ import { Role } from '@prisma/client';
 import { audit } from '../../../common/audit/admin-audit.js';
 import { text as adminText } from '../../../common/validation/admin-input.js';
 import { AppError } from '../../../common/errors/app-error.js';
+import { emit } from '../../../common/events/domain-events.js';
 import * as promotionRepository from '../repositories/promotion.repository.js';
 import type { Db } from '../repositories/quota.repository.js';
 import * as storeRepository from '../repositories/store.repository.js';
@@ -44,12 +45,25 @@ export function auditDecision(tx: Db, kind: OrderKind, actorId: string, id: stri
   return audit(tx, actorId, action, kind, id, adminText(reason ?? DEFAULT_REASON[action], 'reason', 5, 300), before, after);
 }
 
-/** Từ chối đơn đang chờ */
+/** Người mua, tên gói và tin của đơn (để báo khi bị từ chối) */
+async function orderSummary(tx: Db, kind: OrderKind, id: string) {
+  if (kind === 'STORE_ORDER') {
+    const order = await storeRepository.findOrderSummary(tx, id);
+    return order && { userId: order.userId, packageName: order.package.name, listingId: null, listingTitle: null };
+  }
+  const order = await promotionRepository.findOrderSummary(tx, id);
+  return order && { userId: order.userId, packageName: order.package.name, listingId: order.listing.id, listingTitle: order.listing.title };
+}
+
+/** Từ chối đơn đang chờ, rồi báo người mua kèm lý do (2.7) */
 export async function rejectOrder(kind: OrderKind, actorId: string, id: string, reason: unknown) {
-  await withQuotaTransaction(async (tx) => {
+  const event = await withQuotaTransaction(async (tx) => {
     if (!await ORDERS[kind].decide(tx, id, 'REJECTED', new Date())) {
       throw new AppError(409, ORDERS[kind].notPending, 'Đơn không còn ở trạng thái chờ.');
     }
-    await auditDecision(tx, kind, actorId, id, 'REJECT', reason);
+    const audited = await auditDecision(tx, kind, actorId, id, 'REJECT', reason);
+    const summary = await orderSummary(tx, kind, id);
+    return summary && { ...summary, orderId: id, kind, reason: audited.reason ?? '' };
   });
+  if (event) await emit('order.rejected', event);
 }

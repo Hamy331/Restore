@@ -56,6 +56,9 @@ export const findPosts = (userId: string, limit: number, after: {createdAt: Date
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: limit + 1,
     include: postInclude(userId) });
 
+export const findPostDetail = (postId: string, userId: string) =>
+  prisma.feedPost.findFirst({ where: { id: postId, ...available }, include: postInclude(userId) });
+
 export const findVisibleListing = (listingId: string) =>
   prisma.listing.findFirst({ where: { id: listingId, status: 'AVAILABLE', owner: { status: 'ACTIVE' } } });
 

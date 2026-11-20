@@ -8,6 +8,7 @@ import { toBannerDto, toShopDto, type ShopDto } from './shop.dto.js';
 import * as shopRepository from './shop.repository.js';
 import type { ShopRecord } from './shop.repository.js';
 import type { ShopListingsQuery } from './shop.validator.js';
+import { emit } from '../../common/events/domain-events.js';
 
 /** Shop mới: xác minh trong 180 ngày gần đây */
 const NEW_SHOP_DAYS = 180;
@@ -18,9 +19,9 @@ const SHOWCASE_SIZE = 6;
 export async function shopDtos(viewerId: string | undefined, shops: ShopRecord[]) {
   const [counts, followed] = await Promise.all([
     shopRepository.countListingsByOwner(shops.map((shop) => shop.ownerId)),
-    shopRepository.findFollowedShopIds(viewerId, shops.map((shop) => shop.id)),
+    shopRepository.findFollowedOwnerIds(viewerId, shops.map((shop) => shop.ownerId)),
   ]);
-  return shops.map((shop) => toShopDto(shop, { listingCount: counts.get(shop.ownerId) ?? 0, isFollowing: followed.has(shop.id) }));
+  return shops.map((shop) => toShopDto(shop, { listingCount: counts.get(shop.ownerId) ?? 0, isFollowing: followed.has(shop.ownerId) }));
 }
 
 /** Thẻ tin (như trang chủ) cho danh sách tin, tính isFavorite theo người xem */
@@ -116,9 +117,12 @@ export async function listShopListings(viewerId: string | undefined, id: string,
   return { items: await cards(viewerId, listings), page: { page, limit, totalItems } };
 }
 
+/** Theo dõi shop = theo dõi chủ shop (cùng trạng thái, số người theo dõi và thông báo với trang cá nhân) */
 export async function setFollowing(userId: string, id: string, following: boolean) {
   const shop = await requireShop(userId, id);
   if (shop.ownerId === userId) throw new AppError(409, 'CANNOT_FOLLOW_OWN_SHOP', 'Không thể theo dõi shop của chính mình.');
-  if (following) await shopRepository.follow(userId, id);
-  else await shopRepository.unfollow(userId, id);
+  if (following) {
+    await shopRepository.follow(userId, shop.ownerId);
+    await emit('user.followed', { followerId: userId, followingId: shop.ownerId });
+  } else await shopRepository.unfollow(userId, shop.ownerId);
 }

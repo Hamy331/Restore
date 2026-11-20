@@ -4,6 +4,7 @@ import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 
@@ -47,11 +48,11 @@ class WantedAlertSuggestions extends StatelessWidget {
         );
       case WantedAlertPreviewStatus.failure:
         return _below(
-          FeedbackView(
-            icon: AppIcons.offline,
+          AppLoadErrorView(
             title: l10n.wantedAlertSuggestionsErrorTitle,
             message: l10n.wantedAlertSuggestionsErrorBody,
-            action: OutlinedButton(onPressed: onRetry, child: Text(l10n.retry)),
+            onRetry: onRetry,
+            compact: true,
           ),
         );
       case WantedAlertPreviewStatus.ready:

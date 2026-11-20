@@ -647,7 +647,7 @@ abstract class AppLocalizations {
   /// No description provided for @accLoadError.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t load your profile. Tap to retry'**
+  /// **'Couldn\'t load your profile'**
   String get accLoadError;
 
   /// No description provided for @accLoading.
@@ -2054,6 +2054,18 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
+  /// No description provided for @loadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load data'**
+  String get loadErrorTitle;
+
+  /// No description provided for @loadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get loadErrorBody;
+
   /// No description provided for @featureApiPending.
   ///
   /// In en, this message translates to:
@@ -3230,12 +3242,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load categories'**
   String get loadCategoriesFailedTitle;
 
-  /// No description provided for @loadCategoriesFailedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again'**
-  String get loadCategoriesFailedMessage;
-
   /// No description provided for @negotiableHint.
   ///
   /// In en, this message translates to:
@@ -3523,12 +3529,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load the home page'**
   String get homeLoadErrorTitle;
-
-  /// No description provided for @homeLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get homeLoadErrorBody;
 
   /// No description provided for @timeJustNow.
   ///
@@ -4124,12 +4124,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load nearby listings'**
   String get nearbyLoadErrorTitle;
 
-  /// No description provided for @nearbyLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get nearbyLoadErrorBody;
-
   /// No description provided for @nearbyEndOfList.
   ///
   /// In en, this message translates to:
@@ -4232,17 +4226,71 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load results'**
   String get searchLoadErrorTitle;
 
-  /// No description provided for @searchLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get searchLoadErrorBody;
-
   /// No description provided for @searchEndOfList.
   ///
   /// In en, this message translates to:
   /// **'You\'ve seen all results'**
   String get searchEndOfList;
+
+  /// No description provided for @searchShopsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops'**
+  String get searchShopsSection;
+
+  /// No description provided for @searchUsersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get searchUsersSection;
+
+  /// No description provided for @searchShopSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{followers} followers · {listings} listings'**
+  String searchShopSubtitle(int followers, int listings);
+
+  /// No description provided for @searchUserSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'@{username} · {listings} listings'**
+  String searchUserSubtitle(String username, int listings);
+
+  /// No description provided for @searchUserHasShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Has a trusted shop'**
+  String get searchUserHasShop;
+
+  /// No description provided for @searchTabListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get searchTabListings;
+
+  /// No description provided for @searchShopStripTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching shops'**
+  String get searchShopStripTitle;
+
+  /// No description provided for @searchShopsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No shops match “{query}”'**
+  String searchShopsEmpty(String query);
+
+  /// No description provided for @searchUsersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No people match “{query}”'**
+  String searchUsersEmpty(String query);
+
+  /// No description provided for @searchAccountsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try the exact name, or type @ before a username.'**
+  String get searchAccountsEmptyBody;
 
   /// No description provided for @areaSearchHint.
   ///
@@ -4454,12 +4502,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load this category'**
   String get categoryDetailLoadErrorTitle;
 
-  /// No description provided for @categoryDetailLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get categoryDetailLoadErrorBody;
-
   /// No description provided for @categoryDetailEndOfList.
   ///
   /// In en, this message translates to:
@@ -4513,12 +4555,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load your alerts'**
   String get wantedAlertLoadErrorTitle;
-
-  /// No description provided for @wantedAlertLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get wantedAlertLoadErrorBody;
 
   /// No description provided for @wantedAlertNewMatches.
   ///
@@ -5018,12 +5054,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load trusted shops'**
   String get trustedShopsLoadErrorTitle;
 
-  /// No description provided for @trustedShopsLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get trustedShopsLoadErrorBody;
-
   /// No description provided for @trustedShopsFamousTitle.
   ///
   /// In en, this message translates to:
@@ -5222,6 +5252,18 @@ abstract class AppLocalizations {
   /// **'Follow'**
   String get shopFollow;
 
+  /// No description provided for @shopMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message the shop'**
+  String get shopMessage;
+
+  /// No description provided for @shopMessageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the chat. Please try again.'**
+  String get shopMessageFailed;
+
   /// No description provided for @shopFollowing.
   ///
   /// In en, this message translates to:
@@ -5299,12 +5341,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load this shop'**
   String get shopDetailLoadErrorTitle;
-
-  /// No description provided for @shopDetailLoadErrorBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get shopDetailLoadErrorBody;
 
   /// No description provided for @postingQuotaPersonalTitle.
   ///
@@ -5912,12 +5948,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load drafts'**
   String get draftsLoadFailedTitle;
 
-  /// No description provided for @draftsLoadFailedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
-  String get draftsLoadFailedMessage;
-
   /// No description provided for @draftOpenFailed.
   ///
   /// In en, this message translates to:
@@ -6409,6 +6439,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open ZaloPay checkout'**
   String get creditOpenGateway;
+
+  /// No description provided for @creditGatewayOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open ZaloPay. Install the ZaloPay app or a web browser, then tap the button to try again.'**
+  String get creditGatewayOpenFailed;
+
+  /// No description provided for @creditGatewayOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening ZaloPay...'**
+  String get creditGatewayOpening;
+
+  /// No description provided for @creditZaloPayNotInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'The ZaloPay app is not installed (test mode: ZaloPay sandbox). Install it and tap Open ZaloPay, or pay on the ZaloPay web page.'**
+  String get creditZaloPayNotInstalled;
+
+  /// No description provided for @creditOpenZaloPayApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open ZaloPay app'**
+  String get creditOpenZaloPayApp;
+
+  /// No description provided for @creditOpenGatewayWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay on the ZaloPay web page'**
+  String get creditOpenGatewayWeb;
 
   /// No description provided for @creditWaitingGateway.
   ///
@@ -9038,6 +9098,720 @@ abstract class AppLocalizations {
   /// **'Couldn\'t discard the edit. Please try again.'**
   String get accDiscardEditFailed;
 
+  /// No description provided for @notificationsMarkAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read'**
+  String get notificationsMarkAllRead;
+
+  /// No description provided for @notificationsFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get notificationsFilterAll;
+
+  /// No description provided for @notificationsFilterUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notificationsFilterUnread;
+
+  /// No description provided for @notificationsFilterListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get notificationsFilterListing;
+
+  /// No description provided for @notificationsFilterWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Point wallet'**
+  String get notificationsFilterWallet;
+
+  /// No description provided for @notificationsFilterActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get notificationsFilterActivity;
+
+  /// No description provided for @notificationsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notificationsToday;
+
+  /// No description provided for @notificationsEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get notificationsEarlier;
+
+  /// No description provided for @notificationsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get notificationsEmptyTitle;
+
+  /// No description provided for @notificationsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'When your listings are reviewed, someone shows interest or your Points change, you\'ll see it here.'**
+  String get notificationsEmptyMessage;
+
+  /// No description provided for @notificationsEmptyFiltered.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this section'**
+  String get notificationsEmptyFiltered;
+
+  /// No description provided for @notificationsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load notifications'**
+  String get notificationsLoadError;
+
+  /// No description provided for @notificationsDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get notificationsDelete;
+
+  /// No description provided for @notificationsDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification deleted'**
+  String get notificationsDeleted;
+
+  /// No description provided for @notificationsDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete the notification. Please try again.'**
+  String get notificationsDeleteFailed;
+
+  /// No description provided for @notificationsUnreadCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unread'**
+  String notificationsUnreadCount(int count);
+
+  /// No description provided for @notifReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String notifReason(String reason);
+
+  /// No description provided for @notifListingApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing approved'**
+  String get notifListingApprovedTitle;
+
+  /// No description provided for @notifListingApprovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is now visible to buyers.'**
+  String notifListingApprovedBody(String title);
+
+  /// No description provided for @notifListingScheduledBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" will go live on its scheduled date.'**
+  String notifListingScheduledBody(String title);
+
+  /// No description provided for @notifListingRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing rejected'**
+  String get notifListingRejectedTitle;
+
+  /// No description provided for @notifListingRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" was not approved.'**
+  String notifListingRejectedBody(String title);
+
+  /// No description provided for @notifListingChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing needs changes'**
+  String get notifListingChangesTitle;
+
+  /// No description provided for @notifListingChangesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Update \"{title}\" to get it approved.'**
+  String notifListingChangesBody(String title);
+
+  /// No description provided for @notifListingRemovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing removed'**
+  String get notifListingRemovedTitle;
+
+  /// No description provided for @notifListingRemovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" was removed from ReStore.'**
+  String notifListingRemovedBody(String title);
+
+  /// No description provided for @notifEditApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit approved'**
+  String get notifEditApprovedTitle;
+
+  /// No description provided for @notifEditApprovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The new version of \"{title}\" is now live.'**
+  String notifEditApprovedBody(String title);
+
+  /// No description provided for @notifEditRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit not approved'**
+  String get notifEditRejectedTitle;
+
+  /// No description provided for @notifEditRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" keeps showing its previous version.'**
+  String notifEditRejectedBody(String title);
+
+  /// No description provided for @notifListingExpiringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing expiring soon'**
+  String get notifListingExpiringTitle;
+
+  /// No description provided for @notifListingExpiringBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" has {days} days left.'**
+  String notifListingExpiringBody(String title, int days);
+
+  /// No description provided for @notifListingExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing expired'**
+  String get notifListingExpiredTitle;
+
+  /// No description provided for @notifListingExpiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is no longer shown. Renew it to keep selling.'**
+  String notifListingExpiredBody(String title);
+
+  /// No description provided for @notifTopupSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top-up successful'**
+  String get notifTopupSuccessTitle;
+
+  /// No description provided for @notifTopupSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You received {amount} Points.'**
+  String notifTopupSuccessBody(int amount);
+
+  /// No description provided for @notifTopupSuccessBonusBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You received {amount} Points (+{bonus} bonus Points).'**
+  String notifTopupSuccessBonusBody(int amount, int bonus);
+
+  /// No description provided for @notifTopupFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top-up not completed'**
+  String get notifTopupFailedTitle;
+
+  /// No description provided for @notifTopupFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Order {code} was not paid. Your Points are unchanged.'**
+  String notifTopupFailedBody(String code);
+
+  /// No description provided for @notifRefundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Points refunded'**
+  String get notifRefundTitle;
+
+  /// No description provided for @notifRefundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} Points were refunded to your wallet.'**
+  String notifRefundBody(int amount);
+
+  /// No description provided for @notifBonusExpiringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus Points expiring'**
+  String get notifBonusExpiringTitle;
+
+  /// No description provided for @notifBonusExpiringBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} bonus Points expire in {days} days.'**
+  String notifBonusExpiringBody(int amount, int days);
+
+  /// No description provided for @notifBoostStartedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing boosted'**
+  String get notifBoostStartedTitle;
+
+  /// No description provided for @notifBoostStartedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is pinned to the top for {days} days.'**
+  String notifBoostStartedBody(String title, int days);
+
+  /// No description provided for @notifBoostEndedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost ended'**
+  String get notifBoostEndedTitle;
+
+  /// No description provided for @notifBoostEndedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The boost for \"{title}\" has ended.'**
+  String notifBoostEndedBody(String title);
+
+  /// No description provided for @notifWantedMatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New match for your wanted alert'**
+  String get notifWantedMatchTitle;
+
+  /// No description provided for @notifWantedMatchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" matches \"{keywords}\".'**
+  String notifWantedMatchBody(String title, String keywords);
+
+  /// No description provided for @notifNewFollowerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New follower'**
+  String get notifNewFollowerTitle;
+
+  /// No description provided for @notifNewFollowerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} started following you.'**
+  String notifNewFollowerBody(String name);
+
+  /// No description provided for @notifFavoritedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone likes your listing'**
+  String get notifFavoritedTitle;
+
+  /// No description provided for @notifFavoritedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} saved \"{title}\".'**
+  String notifFavoritedBody(String name, String title);
+
+  /// No description provided for @notifListingPublishedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing is now live'**
+  String get notifListingPublishedTitle;
+
+  /// No description provided for @notifListingPublishedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" reached its scheduled date and is now visible to buyers.'**
+  String notifListingPublishedBody(String title);
+
+  /// No description provided for @notifAutoExtendedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing auto-renewed'**
+  String get notifAutoExtendedTitle;
+
+  /// No description provided for @notifAutoExtendedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" was renewed for {days} more days, {amount} Points deducted.'**
+  String notifAutoExtendedBody(String title, int days, int amount);
+
+  /// No description provided for @notifAutoExtendFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough Points to auto-renew'**
+  String get notifAutoExtendFailedTitle;
+
+  /// No description provided for @notifAutoExtendFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is about to expire but your wallet doesn\'t have enough Points to renew it. Top up to keep it visible.'**
+  String notifAutoExtendFailedBody(String title);
+
+  /// No description provided for @notifFeatureStartedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing is in Hot sale'**
+  String get notifFeatureStartedTitle;
+
+  /// No description provided for @notifFeatureStartedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" is in the Hot sale section for {days} days.'**
+  String notifFeatureStartedBody(String title, int days);
+
+  /// No description provided for @notifFeatureEndedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot sale has ended'**
+  String get notifFeatureEndedTitle;
+
+  /// No description provided for @notifFeatureEndedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" has left the Hot sale section.'**
+  String notifFeatureEndedBody(String title);
+
+  /// No description provided for @notifRefundIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} Points were refunded to your wallet.'**
+  String notifRefundIncluded(int amount);
+
+  /// No description provided for @notifOrderRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order rejected'**
+  String get notifOrderRejectedTitle;
+
+  /// No description provided for @notifPlanOrderRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order for the {plan} plan was not confirmed.'**
+  String notifPlanOrderRejectedBody(String plan);
+
+  /// No description provided for @notifPromotionOrderRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {name} order for \"{title}\" was not confirmed.'**
+  String notifPromotionOrderRejectedBody(String name, String title);
+
+  /// No description provided for @notifPlanActivatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan activated'**
+  String get notifPlanActivatedTitle;
+
+  /// No description provided for @notifPlanActivatedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The {plan} plan is active until {date}.'**
+  String notifPlanActivatedBody(String plan, String date);
+
+  /// No description provided for @notifPlanExpiringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan expiring soon'**
+  String get notifPlanExpiringTitle;
+
+  /// No description provided for @notifPlanExpiringBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The {plan} plan expires on {date}. Renew to keep your posting limits.'**
+  String notifPlanExpiringBody(String plan, String date);
+
+  /// No description provided for @notifPlanExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan expired'**
+  String get notifPlanExpiredTitle;
+
+  /// No description provided for @notifPlanExpiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The {plan} plan has expired and your account is back on the Personal plan. Renew to get its limits back.'**
+  String notifPlanExpiredBody(String plan);
+
+  /// No description provided for @notifPosterApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster approved'**
+  String get notifPosterApprovedTitle;
+
+  /// No description provided for @notifPosterApprovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster \"{title}\" was approved and will appear on the home page as scheduled.'**
+  String notifPosterApprovedBody(String title);
+
+  /// No description provided for @notifPosterRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster rejected'**
+  String get notifPosterRejectedTitle;
+
+  /// No description provided for @notifPosterRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster \"{title}\" was not approved.'**
+  String notifPosterRejectedBody(String title);
+
+  /// No description provided for @creditBonusSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus points and expiry'**
+  String get creditBonusSheetTitle;
+
+  /// No description provided for @creditBonusSheetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus points are spent before paid points, the ones expiring soonest first. Unused bonus points are removed when they expire.'**
+  String get creditBonusSheetHint;
+
+  /// No description provided for @creditBonusFromTopup.
+  ///
+  /// In en, this message translates to:
+  /// **'Top-up bonus'**
+  String get creditBonusFromTopup;
+
+  /// No description provided for @creditBonusFromRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded points'**
+  String get creditBonusFromRefund;
+
+  /// No description provided for @creditBonusReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received {date}'**
+  String creditBonusReceived(String date);
+
+  /// No description provided for @creditBonusExpiresOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String creditBonusExpiresOn(String date);
+
+  /// No description provided for @creditBonusDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{expires today} =1{1 day left} other{{days} days left}}'**
+  String creditBonusDaysLeft(int days);
+
+  /// No description provided for @creditBonusNoExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'No expiry'**
+  String get creditBonusNoExpiry;
+
+  /// No description provided for @creditBonusEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no bonus points right now.'**
+  String get creditBonusEmpty;
+
+  /// No description provided for @creditBonusLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your bonus points. Please try again.'**
+  String get creditBonusLoadError;
+
+  /// No description provided for @creditBonusTapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to see expiry dates'**
+  String get creditBonusTapHint;
+
+  /// No description provided for @notifShopFollowerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New shop follower'**
+  String get notifShopFollowerTitle;
+
+  /// No description provided for @notifShopFollowerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} started following {shop}.'**
+  String notifShopFollowerBody(String name, String shop);
+
+  /// No description provided for @notifFavoritedManyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} and {others, plural, =1{1 other} other{{others} others}} saved \"{title}\".'**
+  String notifFavoritedManyBody(String name, int others, String title);
+
+  /// No description provided for @notifFollowedListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New listing from someone you follow'**
+  String get notifFollowedListingTitle;
+
+  /// No description provided for @notifFollowedListingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} just posted \"{title}\".'**
+  String notifFollowedListingBody(String name, String title);
+
+  /// No description provided for @notifFollowedShopListingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop {name} just posted \"{title}\".'**
+  String notifFollowedShopListingBody(String name, String title);
+
+  /// No description provided for @notifPriceDropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved listing dropped in price'**
+  String get notifPriceDropTitle;
+
+  /// No description provided for @notifPriceDropBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" dropped from {from} to {to}.'**
+  String notifPriceDropBody(String title, String from, String to);
+
+  /// No description provided for @notifSavedSoldTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved listing was sold'**
+  String get notifSavedSoldTitle;
+
+  /// No description provided for @notifSavedSoldBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" has been sold.'**
+  String notifSavedSoldBody(String title);
+
+  /// No description provided for @notifSavedExchangedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved listing was exchanged'**
+  String get notifSavedExchangedTitle;
+
+  /// No description provided for @notifSavedExchangedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" has been exchanged.'**
+  String notifSavedExchangedBody(String title);
+
+  /// No description provided for @notifPostLikedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your post got likes'**
+  String get notifPostLikedTitle;
+
+  /// No description provided for @notifPostLikedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{others, plural, =0{{name} liked your post.} =1{{name} and 1 other liked your post.} other{{name} and {others} others liked your post.}}'**
+  String notifPostLikedBody(String name, int others);
+
+  /// No description provided for @notifCommentLikedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your comment got likes'**
+  String get notifCommentLikedTitle;
+
+  /// No description provided for @notifCommentLikedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{others, plural, =0{{name} liked your comment.} =1{{name} and 1 other liked your comment.} other{{name} and {others} others liked your comment.}}'**
+  String notifCommentLikedBody(String name, int others);
+
+  /// No description provided for @notifPostCommentedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New comment on your post'**
+  String get notifPostCommentedTitle;
+
+  /// No description provided for @notifPostCommentedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} commented: \"{text}\"'**
+  String notifPostCommentedBody(String name, String text);
+
+  /// No description provided for @notifCommentRepliedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New reply to your comment'**
+  String get notifCommentRepliedTitle;
+
+  /// No description provided for @notifCommentRepliedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} replied: \"{text}\"'**
+  String notifCommentRepliedBody(String name, String text);
+
+  /// No description provided for @notifChatManyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({count} new messages)'**
+  String notifChatManyTitle(String name, int count);
+
+  /// No description provided for @feedPostUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This post is no longer available.'**
+  String get feedPostUnavailable;
+
+  /// No description provided for @savedAddressesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved addresses'**
+  String get savedAddressesTitle;
+
+  /// No description provided for @savedAddressRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename address'**
+  String get savedAddressRename;
+
+  /// No description provided for @savedAddressDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete address'**
+  String get savedAddressDelete;
+
+  /// No description provided for @savedAddressLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Give it a name so it is easy to spot next time you post'**
+  String get savedAddressLabelHint;
+
+  /// No description provided for @savedAddressLabelPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Home, Shop'**
+  String get savedAddressLabelPlaceholder;
+
+  /// No description provided for @savedAddressSaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save name'**
+  String get savedAddressSaveLabel;
+
+  /// No description provided for @savedAddressDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Address deleted.'**
+  String get savedAddressDeleted;
+
+  /// No description provided for @savedAddressActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get savedAddressActionFailed;
+
+  /// No description provided for @savedAddressMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Address options'**
+  String get savedAddressMore;
+
   /// No description provided for @aiSearchingListings.
   ///
   /// In en, this message translates to:
@@ -9379,6 +10153,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report reasons have changed. Please review your selection.'**
   String get reportReasonsChanged;
+
+  /// No description provided for @homeLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get homeLoadErrorBody;
+
+  /// No description provided for @categoryDetailLoadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get categoryDetailLoadErrorBody;
 }
 
 class _AppLocalizationsDelegate

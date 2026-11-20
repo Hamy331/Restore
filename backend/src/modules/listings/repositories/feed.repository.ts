@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../../../lib/prisma.js';
 import { listingSelect } from '../listing.dto.js';
 import type { ListingFilters } from '../listing.type.js';
+import type { DealType, SearchSort } from '../listing.validator.js';
 import { visible } from './listing.repository.js';
 
 /** Bộ lọc thêm của trang Shop uy tín */
@@ -14,7 +15,7 @@ export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boo
 /**
  * SQL xếp hạng tin: gần nhất (nearby), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian.
  */
-function rankedQuery(filters: FeedOptions, now: Date) {
+function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
  const distance = !filters.nearby ? Prisma.sql`NULL::double precision` : Prisma.sql`
  CASE WHEN l.location #>> '{ward,center,latitude}' IS NULL OR l.location #>> '{ward,center,longitude}' IS NULL THEN NULL
  ELSE 6371*acos(GREATEST(-1,LEAST(1,
@@ -26,6 +27,7 @@ function rankedQuery(filters: FeedOptions, now: Date) {
           COALESCE(boosted."featuredPriority", 0) > 0 AS "isFeatured"
         FROM "Listing" l
         JOIN "User" u ON u.id = l."ownerId" AND u.status = 'ACTIVE'
+        LEFT JOIN "Category" c ON c.id = l."categoryId"
         ${filters.interestUserId ? Prisma.sql`LEFT JOIN (
           SELECT saved."categoryId", COUNT(*) AS affinity
           FROM "ListingFavorite" f JOIN "Listing" saved ON saved.id = f."listingId"
@@ -53,26 +55,90 @@ function rankedQuery(filters: FeedOptions, now: Date) {
             SELECT 1 FROM "Shop" s WHERE s."ownerId" = l."ownerId" AND s."verificationType" IS NOT NULL))
           AND (${filters.onSale ?? false} = false OR l."originalPrice" > l.price)
           AND (${filters.nearby?.radius ?? null}::double precision IS NULL OR ${distance} <= ${filters.nearby?.radius ?? null})
-          AND (${filters.q} = '' OR POSITION(LOWER(${filters.q}) IN LOWER(l.title)) > 0)
+          AND ${wordsMatch(filters.words)}
           AND (${filters.categoryId} = '' OR l."categoryId" = ${filters.categoryId})
-          AND (${filters.condition}::text IS NULL OR l.condition = ${filters.condition}::"ListingCondition")
+          AND (cardinality(${filters.conditions}::text[]) = 0 OR l.condition::text = ANY(${filters.conditions}::text[]))
+          AND ${dealMatch(filters.deals)}
           AND (${filters.minPrice}::numeric IS NULL OR l.price >= ${filters.minPrice}::numeric)
           AND (${filters.maxPrice}::numeric IS NULL OR l.price <= ${filters.maxPrice}::numeric)
-        ORDER BY ${filters.chronological ? Prisma.sql`COALESCE(l."publishedAt", l."createdAt") DESC, l.id DESC,` : Prisma.empty}
-          ${filters.interestUserId ? Prisma.sql`COALESCE(interest.affinity, 0) DESC,` : Prisma.empty}
-          ${filters.nearby ? Prisma.sql`${distance} ASC,` : Prisma.empty} COALESCE(boosted."featuredPriority", 0) DESC,
+        ORDER BY ${orderBy(filters, distance, sort)}`;
+}
+
+/**
+ * Biểu thức SQL [column] chữ thường, bỏ dấu tiếng Việt (kể cả đ), để so với từ khoá đã qua normalizeTitle.
+ * Chưa có index: tính trên từng tin đang hiển thị, đủ nhanh với vài chục nghìn tin.
+ */
+export const foldedText = (column: Prisma.Sql) =>
+  Prisma.sql`replace(regexp_replace(normalize(lower(${column}), NFD), ${'[̀-ͯ]'}, '', 'g'), 'đ', 'd')`;
+
+const foldedTitle = foldedText(Prisma.sql`l.title`);
+
+/**
+ * Nội dung dùng để tìm: tiêu đề + tên chuyên mục + hãng + dòng máy (thuộc tính brand, model).
+ * Nhờ vậy "điện thoại" ra mọi tin chuyên mục Điện thoại, "apple" ra các tin iPhone.
+ * Không tìm trong mô tả vì mô tả hay nhắc chữ không liên quan ("liên hệ qua điện thoại").
+ */
+const foldedSearchText = foldedText(Prisma.sql`concat_ws(' ', l.title, c.name,
+  l.attributes ->> 'brand', l.attributes ->> 'model')`);
+
+const containsAll = (column: Prisma.Sql, words: string[]) =>
+  Prisma.join(words.map((word) => Prisma.sql`POSITION(${word} IN ${column}) > 0`), ' AND ', '(', ')');
+
+/** Nội dung tìm kiếm chứa đủ mọi từ đã gõ (không phân biệt dấu) */
+const wordsMatch = (words: string[]) => !words.length ? Prisma.sql`TRUE` : containsAll(foldedSearchText, words);
+
+/** Khớp một trong các kiểu giao dịch đã chọn: buy = có bán, exchange = cho đổi */
+function dealMatch(deals: DealType[]) {
+  if (!deals.length) return Prisma.sql`TRUE`;
+  return Prisma.sql`(${deals.includes('buy')} AND l."allowSale" OR ${deals.includes('exchange')} AND l."allowExchange")`;
+}
+
+/** Thứ tự mặc định của feed: gần nhất (nếu có), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian */
+const rankOrder = Prisma.sql`COALESCE(boosted."featuredPriority", 0) DESC,
           CASE WHEN ss."categoryId" = l."categoryId" THEN COALESCE(sp."priorityLevel", 0) ELSE 0 END DESC,
           GREATEST(COALESCE(l."publishedAt", l."createdAt"),
             COALESCE(boosted."bumpedAt", l."createdAt")) DESC,
           COALESCE(l."publishedAt", l."createdAt") DESC, l.id DESC`;
+
+/**
+ * Không có [sort]: thứ tự feed. Có [sort] (trang tìm kiếm):
+ * - relevance: tiêu đề bắt đầu bằng cụm từ khoá, rồi chứa nguyên cụm, rồi tiêu đề chứa đủ các từ
+ *   (trước các tin chỉ khớp nhờ chuyên mục / hãng), rồi thứ tự feed
+ * - newest: mới đăng trước; nearest: gần nhất trước
+ * - price_asc / price_desc: theo giá, tin chỉ trao đổi (không bán) xếp cuối
+ */
+function orderBy(filters: FeedOptions, distance: Prisma.Sql, sort?: SearchSort) {
+  const newest = Prisma.sql`COALESCE(l."publishedAt", l."createdAt") DESC, l.id DESC`;
+  switch (sort) {
+    case undefined:
+      // Feed: "Mới nhất" xếp theo thời gian trước, "Dành cho bạn" ưu tiên chuyên mục người xem hay lưu
+      return Prisma.sql`${filters.chronological ? Prisma.sql`${newest},` : Prisma.empty}
+        ${filters.interestUserId ? Prisma.sql`COALESCE(interest.affinity, 0) DESC,` : Prisma.empty}
+        ${filters.nearby ? Prisma.sql`${distance} ASC,` : Prisma.empty} ${rankOrder}`;
+    case 'relevance': {
+      if (!filters.words.length) return rankOrder;
+      const phrase = filters.words.join(' ');
+      return Prisma.sql`(POSITION(${phrase} IN ${foldedTitle}) = 1) DESC, (POSITION(${phrase} IN ${foldedTitle}) > 0) DESC,
+        ${containsAll(foldedTitle, filters.words)} DESC, ${rankOrder}`;
+    }
+    case 'newest':
+      return newest;
+    case 'nearest':
+      return Prisma.sql`${distance} ASC NULLS LAST, ${newest}`;
+    case 'price_asc':
+      return Prisma.sql`l."allowSale" DESC, l.price ASC, ${newest}`;
+    case 'price_desc':
+      return Prisma.sql`l."allowSale" DESC, l.price DESC, ${newest}`;
+  }
 }
 
 /**
  * Lấy một trang id tin đã xếp hạng (đẩy tin, gói cửa hàng, khoảng cách, thời gian)
  * cùng tổng số tin khớp bộ lọc.
  */
-export async function findRankedPage(filters: FeedOptions, now: Date, limit: number, skip: number) {
-  const query = rankedQuery(filters, now);
+export async function findRankedPage(filters: FeedOptions, now: Date, limit: number, skip: number,
+  sort?: SearchSort) {
+  const query = rankedQuery(filters, now, sort);
   const [rows, totals] = await prisma.$transaction([
     prisma.$queryRaw<RankedRow[]>`${query} LIMIT ${limit} OFFSET ${skip}`,
     prisma.$queryRaw<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM (${query}) ranked`,

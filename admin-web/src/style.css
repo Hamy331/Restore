@@ -359,7 +359,7 @@ h1 {
 }
 .queue-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .queue-item,
 .platform button {
@@ -593,10 +593,10 @@ h1 {
   .queue-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .queue-item:nth-child(2) {
+  .queue-item:nth-child(even) {
     border-right: 0;
   }
-  .queue-item:nth-child(-n + 2) {
+  .queue-item:nth-child(-n + 4) {
     border-bottom: 1px solid var(--line);
   }
   .date-chip,
@@ -684,4 +684,17 @@ h1 {
   .package-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+.revision-compare {
+  margin-bottom: 16px;
+}
+.revision-compare .changed-row > td {
+  background: #fff8f4;
+}
+.revision-compare .changed-row > td:first-child {
+  box-shadow: inset 3px 0 0 var(--orange);
+}
+.revision-compare .value-text {
+  white-space: pre-wrap;
+  word-break: break-word;
 }

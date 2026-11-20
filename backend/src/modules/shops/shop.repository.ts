@@ -3,13 +3,15 @@ import { prisma } from '../../lib/prisma.js';
 import { listingSelect } from '../listings/listing.dto.js';
 import { visible } from '../listings/repositories/listing.repository.js';
 
-/** Cột shop trả cho app, kèm điểm đánh giá của chủ shop và số người theo dõi */
+/**
+ * Cột shop trả cho app, kèm điểm đánh giá, username và số người theo dõi của chủ shop.
+ * Theo dõi shop = theo dõi chủ shop (bảng UserFollow), nên số người theo dõi là của chủ shop.
+ */
 export const shopSelect = {
   id: true, ownerId: true, name: true, tagline: true, description: true, logoUrl: true, coverUrl: true,
   accentColor: true, verificationType: true, verifiedAt: true, certificateCode: true, categoryIds: true,
   address: true, createdAt: true,
-  owner: { select: { ratingAverage: true, ratingCount: true, status: true } },
-  _count: { select: { followers: true } },
+  owner: { select: { ratingAverage: true, ratingCount: true, status: true, username: true, _count: { select: { followers: true } } } },
 } as const satisfies Prisma.ShopSelect;
 
 export type ShopRecord = Prisma.ShopGetPayload<{ select: typeof shopSelect }>;
@@ -34,10 +36,11 @@ export async function countListingsByOwner(ownerIds: string[]) {
   return new Map(rows.map((row) => [row.ownerId, row._count]));
 }
 
-export async function findFollowedShopIds(userId: string | undefined, shopIds: string[]) {
-  if (!userId || !shopIds.length) return new Set<string>();
-  const rows = await prisma.shopFollow.findMany({ where: { userId, shopId: { in: shopIds } }, select: { shopId: true } });
-  return new Set(rows.map((row) => row.shopId));
+/** Chủ shop (trong [ownerIds]) mà [userId] đang theo dõi */
+export async function findFollowedOwnerIds(userId: string | undefined, ownerIds: string[]) {
+  if (!userId || !ownerIds.length) return new Set<string>();
+  const rows = await prisma.userFollow.findMany({ where: { followerId: userId, followingId: { in: ownerIds } }, select: { followingId: true } });
+  return new Set(rows.map((row) => row.followingId));
 }
 
 /** Banner (poster) đã duyệt đang trong thời gian chạy của shop uy tín còn gói Cửa hàng, của shop [shopId] nếu có */
@@ -83,8 +86,12 @@ export async function findTrustedCategories() {
   return prisma.category.findMany({ where: { id: { in: ids }, active: true }, orderBy: { id: 'asc' } });
 }
 
-export const follow = (userId: string, shopId: string) =>
-  prisma.shopFollow.upsert({ where: { userId_shopId: { userId, shopId } }, create: { userId, shopId }, update: {} });
+/** Theo dõi shop = theo dõi chủ shop */
+export const follow = (userId: string, ownerId: string) =>
+  prisma.userFollow.upsert({
+    where: { followerId_followingId: { followerId: userId, followingId: ownerId } },
+    create: { followerId: userId, followingId: ownerId }, update: {},
+  });
 
-export const unfollow = (userId: string, shopId: string) =>
-  prisma.shopFollow.deleteMany({ where: { userId, shopId } });
+export const unfollow = (userId: string, ownerId: string) =>
+  prisma.userFollow.deleteMany({ where: { followerId: userId, followingId: ownerId } });

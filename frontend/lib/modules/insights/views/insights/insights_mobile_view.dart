@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
@@ -56,12 +56,7 @@ class InsightsMobileView extends StatelessWidget {
           final insights = state.insights;
           final current = insights != null && insights.days == state.days;
           if (state.status == InsightsStatus.failure && !current) {
-            return FeedbackView(
-              icon: AppIcons.offline,
-              title: l.insLoadError,
-              message: l.categoryDetailLoadErrorBody,
-              action: FilledButton(onPressed: cubit.load, child: Text(l.retry)),
-            );
+            return AppLoadErrorView(title: l.insLoadError, onRetry: cubit.load);
           }
           return AppPullToRefresh(
             onRefresh: cubit.refresh,

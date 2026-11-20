@@ -80,9 +80,72 @@ model User {
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
   shop           Shop?
-  shopFollows    ShopFollow[]
+  searchHistory  SearchHistory[]
+  notifications  Notification[]
+  pushDevices    PushDevice[]
+  savedAddresses SavedAddress[]
 
   @@index([status, suspendedUntil])
+}
+
+/// Thông báo trong app của một người dùng (trang Thông báo, chuông ở trang chủ).
+/// `type` là chuỗi (xem NOTIFICATION_TYPES trong modules/notifications/notification.type.ts) để thêm
+/// loại mới không cần migration. App dựng câu chữ theo `type` + `data` (đa ngôn ngữ);
+/// `title` / `body` là câu tiếng Việt dự phòng do server ghi. `link` là route trong app khi bấm vào.
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String    @db.VarChar(48)
+  title     String    @db.VarChar(160)
+  body      String    @db.VarChar(500)
+  /// Tham số cho câu chữ: listingId, listingTitle, reason, amount...
+  data      Json      @default("{}")
+  imageUrl  String?
+  link      String?   @db.VarChar(300)
+  readAt    DateTime?
+  /// Lúc đã xử lý gửi push (FCM); null = chưa gửi. Gửi sau khi transaction ghi thông báo đã commit
+  pushedAt  DateTime?
+  /// Khoá chống gửi trùng, mỗi người một khoá (VD nhắc tin sắp hết hạn)
+  dedupeKey String?   @db.VarChar(160)
+  createdAt DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@index([pushedAt, createdAt])
+  @@unique([userId, dedupeKey])
+}
+
+/// Thiết bị nhận push FCM của người dùng (app Android / trình duyệt). Một token chỉ thuộc một người:
+/// đăng nhập tài khoản khác trên cùng máy thì token chuyển sang người mới. Token hỏng (FCM báo) thì xoá.
+model PushDevice {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique @db.VarChar(512)
+  /// android | ios | web
+  platform   String   @db.VarChar(16)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+/// Từ khoá người dùng đã tìm (trang kết quả tìm kiếm). Mỗi người giữ tối đa 10 từ khoá mới nhất;
+/// cũng là nguồn tính "Tìm nhiều" (trending) và gợi ý khi gõ.
+model SearchHistory {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Từ khoá như người dùng gõ (đã bỏ khoảng trắng thừa)
+  keyword    String
+  /// Từ khoá bỏ dấu, chữ thường, để gộp bản trùng ("Ghế gỗ" = "ghe go")
+  normalized String
+  searchedAt DateTime @default(now())
+
+  @@unique([userId, normalized])
+  @@index([userId, searchedAt])
+  @@index([searchedAt])
 }
 
 model AiConversation {
@@ -997,21 +1060,9 @@ model Shop {
   address          String?
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
-  followers        ShopFollow[]
   banners          ShopBanner[]
 
   @@index([verificationType, verifiedAt])
-}
-
-model ShopFollow {
-  userId    String
-  shopId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@id([userId, shopId])
-  @@index([shopId])
 }
 
 /// Banner sự kiện shop gửi lên (ảnh 1200 x 600), admin duyệt rồi mới hiện
@@ -1037,4 +1088,28 @@ model ShopBanner {
 
   @@index([shopId, status])
   @@index([status, createdAt])
+}
+
+/// Địa chỉ đã lưu để chọn lại khi đăng tin (tối đa 5 mỗi người, tự lưu khi đăng / sửa tin)
+model SavedAddress {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Tên tự đặt, VD "Nhà", "Cửa hàng"; null = chưa đặt
+  label         String?  @db.VarChar(40)
+  provinceCode  String   @db.VarChar(10)
+  wardCode      String   @db.VarChar(10)
+  streetAddress String   @default("") @db.VarChar(200)
+  /// Số nhà/đường đã bỏ dấu, chữ thường, gộp khoảng trắng: để không lưu trùng
+  streetKey     String   @default("") @db.VarChar(200)
+  latitude      Float
+  longitude     Float
+  /// device | ward_center
+  geoSource     String   @default("ward_center") @db.VarChar(16)
+  lastUsedAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, wardCode, streetKey])
+  @@index([userId, lastUsedAt])
 }

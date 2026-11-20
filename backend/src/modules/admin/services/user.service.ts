@@ -12,9 +12,25 @@ export async function getSelf(id: string) {
 }
 
 /** Thành viên, 25 mỗi trang */
-export async function listMembers({ q, status, page, details }: UserListQuery) {
-  const [items, total] = await userRepository.findMemberPage(q, status, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE, details);
-  return { items, total, page };
+export async function listMembers({ q, status, page, details, type }: UserListQuery, now = new Date()) {
+  const [items, total] = await userRepository.findMemberPage(q, status, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE, details, type, now);
+  if (!details) return { items, total, page };
+  // details (bảng quản trị web): gói đang dùng planTier (hết hạn = PERSONAL), shop, số tài khoản mỗi phân loại
+  const counts = await userRepository.countMemberTypes(q, status, now);
+  return {
+    items: items.map(({ storeSubscription: subscription, shop: rawShop, ...member }) => {
+      const storeSubscription = subscription as { endsAt: Date; package: { tier: string } } | null | undefined;
+      const shop = rawShop as { name: string; verificationType: string | null } | null | undefined;
+      const active = !!storeSubscription && storeSubscription.endsAt > now;
+      return {
+        ...member,
+        planTier: active ? storeSubscription!.package.tier : 'PERSONAL',
+        planEndsAt: active ? storeSubscription!.endsAt : null,
+        shop: shop ? { name: shop.name, verified: shop.verificationType !== null } : null,
+      };
+    }),
+    total, page, counts,
+  };
 }
 
 /** Cảnh cáo / tạm khóa / cấm / mở lại thành viên (logic ở module users) */

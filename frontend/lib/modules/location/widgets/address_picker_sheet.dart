@@ -17,32 +17,46 @@ import '../models/address_info.dart';
 import 'package:restore/data/models/administrative_unit_model.dart';
 import '../repositories/address_suggest_repository.dart';
 import '../repositories/location_repository.dart';
+import '../repositories/saved_address_repository.dart';
+import 'package:restore/data/models/saved_address_model.dart';
 import 'address_street_field.dart';
 import 'current_location_button.dart';
 import 'location_notice_card.dart';
+import 'saved_address_label_sheet.dart';
+import 'saved_address_list.dart';
 
 /// Mở sheet chọn địa chỉ (tỉnh/thành → phường/xã → số nhà) hoặc lấy từ GPS.
 /// Cần [LocationRepository] và [DeviceLocationService] trong cây widget.
-/// [suggestRepository] để test; mặc định theo USE_MOCK_DATA.
+/// [suggestRepository], [savedRepository] để test; mặc định theo USE_MOCK_DATA.
+/// Đầu sheet có mục "Địa chỉ đã lưu" (tối đa 5) để chọn lại địa chỉ đã dùng.
 Future<AddressInfo?> showAddressPickerSheet(
   BuildContext context, {
   AddressInfo? initial,
   LocationRepository? locationRepository,
   DeviceLocationService? deviceLocationService,
   AddressSuggestRepository? suggestRepository,
+  SavedAddressRepository? savedRepository,
 }) {
   final l10n = AppLocalizations.of(context)!;
-  final cubit = AddressPickerCubit(
-    repository: locationRepository ?? context.read<LocationRepository>(),
-    locationService:
-        deviceLocationService ?? context.read<DeviceLocationService>(),
-    suggestRepository:
-        suggestRepository ??
-        (AppEnvironment.useMockData
-            ? MockAddressSuggestRepository()
-            : ApiAddressSuggestRepository()),
-    initial: initial,
-  )..loadProvinces();
+  final cubit =
+      AddressPickerCubit(
+          repository: locationRepository ?? context.read<LocationRepository>(),
+          locationService:
+              deviceLocationService ?? context.read<DeviceLocationService>(),
+          suggestRepository:
+              suggestRepository ??
+              (AppEnvironment.useMockData
+                  ? MockAddressSuggestRepository()
+                  : ApiAddressSuggestRepository()),
+          savedRepository:
+              savedRepository ??
+              (AppEnvironment.useMockData
+                  ? _mockSavedRepository
+                  : ApiSavedAddressRepository()),
+          initial: initial,
+        )
+        ..loadProvinces()
+        ..loadSavedAddresses();
 
   return showAppGlassSheet<AddressInfo>(
     context,
@@ -54,8 +68,58 @@ Future<AddressInfo?> showAddressPickerSheet(
   ).whenComplete(cubit.close);
 }
 
+/// Chế độ mock: giữ một sổ địa chỉ cho cả phiên để đặt tên / xoá thấy được
+final _mockSavedRepository = MockSavedAddressRepository();
+
 class _AddressPickerBody extends StatelessWidget {
   const _AddressPickerBody();
+
+  /// Địa chỉ đang chọn trùng phường và số nhà/đường với địa chỉ đã lưu
+  static bool _matches(AddressPickerState state, SavedAddressModel saved) =>
+      state.ward?.code == saved.ward.code &&
+      state.streetAddress.trim().toLowerCase() ==
+          saved.streetAddress.trim().toLowerCase();
+
+  Future<void> _onSavedMore(
+    BuildContext context,
+    SavedAddressModel saved,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final cubit = context.read<AddressPickerCubit>();
+    final action = await showAppOptionSheet<String>(
+      context,
+      title: saved.label ?? saved.fullLabel,
+      options: [
+        AppSheetOption('rename', l10n.savedAddressRename, icon: AppIcons.edit),
+        AppSheetOption(
+          'delete',
+          l10n.savedAddressDelete,
+          icon: AppIcons.delete,
+        ),
+      ],
+    );
+    if (!context.mounted || action == null) return;
+    final bool ok;
+    if (action == 'rename') {
+      final label = await showSavedAddressLabelSheet(
+        context,
+        initial: saved.label,
+      );
+      if (label == null) return;
+      ok = await cubit.renameSaved(saved, label);
+    } else {
+      ok = await cubit.deleteSaved(saved);
+      if (ok && context.mounted) {
+        TSnackBarHelper.showSuccess(context, message: l10n.savedAddressDeleted);
+      }
+    }
+    if (!ok && context.mounted) {
+      TSnackBarHelper.showError(
+        context,
+        message: l10n.savedAddressActionFailed,
+      );
+    }
+  }
 
   String _locateErrorMessage(AppLocalizations l10n, DeviceLocationError e) =>
       switch (e) {
@@ -157,6 +221,17 @@ class _AddressPickerBody extends StatelessWidget {
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   children: [
+                    if (state.savedAddresses.isNotEmpty) ...[
+                      SavedAddressList(
+                        addresses: state.savedAddresses,
+                        isSelected: (saved) => _matches(state, saved),
+                        onSelected: (saved) => Navigator.of(
+                          context,
+                        ).pop(cubit.addressFromSaved(saved)),
+                        onMore: (saved) => _onSavedMore(context, saved),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     CurrentLocationButton(
                       isLocating: state.isLocating,
                       isDetected: state.deviceGeoPoint != null,

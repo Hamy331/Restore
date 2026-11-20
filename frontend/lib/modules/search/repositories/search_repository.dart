@@ -2,6 +2,8 @@ import 'package:restore/core/network/api_client.dart';
 import 'package:restore/core/utils/helpers/vietnamese_text.dart';
 import 'package:restore/modules/home/data/home_mock_data.dart';
 import 'package:restore/modules/listings/data/mock_favorite_store.dart';
+import 'package:restore/modules/trusted_shop/data/trusted_shop_mock_data.dart';
+import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
 import 'package:restore/shared/data/listing_filter_mock_data.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/listing_filter.dart';
@@ -9,6 +11,7 @@ import 'package:restore/shared/models/paged_result.dart';
 
 import '../data/search_mock_data.dart';
 import '../models/search_history_entry.dart';
+import '../models/search_user_item.dart';
 
 /// Nguồn dữ liệu cho trang tìm kiếm và trang kết quả
 abstract class SearchRepository {
@@ -38,6 +41,74 @@ abstract class SearchRepository {
   });
 
   Future<void> setFavorite(String listingId, bool favorite);
+
+  /// Số cửa hàng / người dùng mỗi lượt tải ở trang kết quả
+  static const int accountPageSize = 20;
+
+  /// Số cửa hàng, số người dùng gợi ý khi đang gõ
+  static const int accountSuggestionLimit = 2;
+
+  /// Shop uy tín có tên khớp [query] (không phân biệt dấu) hoặc trùng
+  /// username chủ shop. Gõ "@abc" thì chỉ tìm theo username.
+  Future<PagedResult<TrustedShopItem>> searchShops(
+    String query, {
+    int page = 1,
+    int limit = accountPageSize,
+  });
+
+  /// Người dùng có tên hiển thị hoặc username khớp [query]
+  Future<PagedResult<SearchUserItem>> searchUsers(
+    String query, {
+    int page = 1,
+    int limit = accountPageSize,
+  });
+
+  /// Theo dõi / bỏ theo dõi ngay trên dòng kết quả
+  Future<void> setShopFollowing(String shopId, bool following);
+  Future<void> setUserFollowing(String userId, bool following);
+}
+
+/// Cách server so khớp tên / username, dùng lại cho dữ liệu mẫu
+class _AccountQuery {
+  _AccountQuery(String query)
+    : words = _words(query),
+      usernameOnly = query.trim().startsWith('@');
+
+  final List<String> words;
+  final bool usernameOnly;
+
+  String get phrase => words.join(' ');
+  String get handle => words.join();
+  bool get isEmpty => words.isEmpty;
+
+  static List<String> _words(String query) => VietnameseText.normalize(query)
+      .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
+      .trim()
+      .split(' ')
+      .where((word) => word.isNotEmpty)
+      .toList();
+
+  /// Username bỏ ký tự đặc biệt, VD "lan.decor" → "landecor"
+  static String usernameKey(String username) =>
+      username.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+  bool nameMatches(String name) {
+    final folded = VietnameseText.normalize(name);
+    return words.every(folded.contains);
+  }
+
+  bool nameStarts(String name) =>
+      VietnameseText.normalize(name).startsWith(phrase);
+
+  PagedResult<T> page<T>(List<T> matches, int page, int limit) {
+    final start = (page - 1) * limit;
+    return PagedResult(
+      items: matches.skip(start).take(limit).toList(),
+      page: page,
+      hasMore: start + limit < matches.length,
+      totalItems: matches.length,
+    );
+  }
 }
 
 /// Đọc dữ liệu mẫu, có độ trễ giả lập để UI xử lý trạng thái tải.
@@ -149,6 +220,109 @@ class MockSearchRepository implements SearchRepository {
     MockFavoriteStore.set(listingId, favorite);
   }
 
+  @override
+  Future<PagedResult<TrustedShopItem>> searchShops(
+    String query, {
+    int page = 1,
+    int limit = SearchRepository.accountPageSize,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final q = _AccountQuery(query);
+    if (q.isEmpty) return q.page(const [], page, limit);
+    final owners = {for (final user in SearchMockData.users) user['id']: user};
+    final matches = [
+      for (final shop in TrustedShopMockData.shops)
+        if (_shopMatches(q, shop, owners[shop['ownerId']]))
+          TrustedShopItem.fromJson({
+            ...TrustedShopMockData.shopJson(shop),
+            'ownerUsername': owners[shop['ownerId']]?['username'],
+          }),
+    ];
+    int rank(TrustedShopItem item) => q.nameStarts(item.shop.name) ? 0 : 1;
+    matches.sort((a, b) {
+      final diff = rank(a) - rank(b);
+      if (diff != 0) return diff;
+      final followers = b.shop.followerCount - a.shop.followerCount;
+      return followers != 0 ? followers : a.shop.name.compareTo(b.shop.name);
+    });
+    return q.page(matches, page, limit);
+  }
+
+  /// Như API: tên shop, tên chủ shop hoặc username chủ shop; gõ "@" thì chỉ
+  /// xét username
+  static bool _shopMatches(
+    _AccountQuery q,
+    Map<String, dynamic> shop,
+    Map<String, dynamic>? owner,
+  ) {
+    final username = owner?['username'] as String?;
+    final byUsername =
+        username != null &&
+        _AccountQuery.usernameKey(username).contains(q.handle);
+    if (q.usernameOnly) return byUsername;
+    return byUsername ||
+        q.nameMatches(shop['name'] as String) ||
+        (owner != null && q.nameMatches(owner['fullName'] as String));
+  }
+
+  @override
+  Future<PagedResult<SearchUserItem>> searchUsers(
+    String query, {
+    int page = 1,
+    int limit = SearchRepository.accountPageSize,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    final q = _AccountQuery(query);
+    if (q.isEmpty) return q.page(const [], page, limit);
+    bool byUsername(SearchUserItem user) =>
+        _AccountQuery.usernameKey(user.username).contains(q.handle);
+    final matches =
+        [
+              for (final json in SearchMockData.users)
+                SearchUserItem.fromJson({
+                  ...json,
+                  if (_userFollowing[json['id']] case final following?)
+                    'isFollowing': following,
+                }),
+            ]
+            // Người có shop hiện một lần ở kết quả shop (như API)
+            .where(
+              (user) =>
+                  !user.hasShop &&
+                  (byUsername(user) ||
+                      (!q.usernameOnly && q.nameMatches(user.fullName))),
+            )
+            .toList();
+    int rank(SearchUserItem user) {
+      final key = _AccountQuery.usernameKey(user.username);
+      if (key == q.handle) return 0;
+      if (key.startsWith(q.handle)) return 1;
+      return q.nameStarts(user.fullName) ? 2 : 3;
+    }
+
+    matches.sort((a, b) {
+      final diff = rank(a) - rank(b);
+      if (diff != 0) return diff;
+      final followers = b.followerCount - a.followerCount;
+      return followers != 0 ? followers : a.fullName.compareTo(b.fullName);
+    });
+    return q.page(matches, page, limit);
+  }
+
+  /// Người dùng mẫu đang được theo dõi (ghi đè `isFollowing` trong mock data)
+  static final Map<String, bool> _userFollowing = {};
+
+  @override
+  Future<void> setShopFollowing(String shopId, bool following) async {
+    following
+        ? TrustedShopMockData.followingShopIds.add(shopId)
+        : TrustedShopMockData.followingShopIds.remove(shopId);
+  }
+
+  @override
+  Future<void> setUserFollowing(String userId, bool following) async =>
+      _userFollowing[userId] = following;
+
   /// Đưa từ khoá lên đầu lịch sử, bỏ bản trùng (không phân biệt dấu)
   void _remember(String query) {
     final keyword = query.trim();
@@ -176,6 +350,9 @@ class MockSearchRepository implements SearchRepository {
 /// - `GET /listings/search?q=&deal=&sort=&categoryId=&minPrice=&maxPrice=
 ///   &condition=&page=&limit=`
 ///   → `{ data: [Listing + areaLabel, distanceKm, isFavorite], meta: { hasMore } }`
+/// - `GET /search/shops?q=&page=&limit=` → `{ data: [Shop + isFollowing], meta }`
+/// - `GET /search/users?q=&page=&limit=` → `{ data: [SearchUserItem], meta }`
+/// - `POST|DELETE /shops/:id/follow`, `POST|DELETE /users/:id/follow`
 class ApiSearchRepository implements SearchRepository {
   ApiSearchRepository({ApiClient? apiClient})
     : _apiClient = apiClient ?? ApiClient();
@@ -238,6 +415,50 @@ class ApiSearchRepository implements SearchRepository {
   Future<void> setFavorite(String listingId, bool favorite) async {
     final path = '/listings/$listingId/favorite';
     favorite
+        ? await _apiClient.dio.post<void>(path)
+        : await _apiClient.dio.delete<void>(path);
+  }
+
+  @override
+  Future<PagedResult<TrustedShopItem>> searchShops(
+    String query, {
+    int page = 1,
+    int limit = SearchRepository.accountPageSize,
+  }) async => PagedResult.fromJson(
+    await _get(
+      '/search/shops',
+      query: {'q': query, 'page': page, 'limit': limit},
+    ),
+    TrustedShopItem.fromJson,
+    page: page,
+    pageSize: limit,
+  );
+
+  @override
+  Future<PagedResult<SearchUserItem>> searchUsers(
+    String query, {
+    int page = 1,
+    int limit = SearchRepository.accountPageSize,
+  }) async => PagedResult.fromJson(
+    await _get(
+      '/search/users',
+      query: {'q': query, 'page': page, 'limit': limit},
+    ),
+    SearchUserItem.fromJson,
+    page: page,
+    pageSize: limit,
+  );
+
+  @override
+  Future<void> setShopFollowing(String shopId, bool following) =>
+      _setFollowing('/shops/$shopId/follow', following);
+
+  @override
+  Future<void> setUserFollowing(String userId, bool following) =>
+      _setFollowing('/users/$userId/follow', following);
+
+  Future<void> _setFollowing(String path, bool following) async {
+    following
         ? await _apiClient.dio.post<void>(path)
         : await _apiClient.dio.delete<void>(path);
   }

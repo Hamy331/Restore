@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
@@ -7,6 +8,7 @@ import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_circle_icon_button.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
@@ -100,6 +102,8 @@ class _WantedAlertDetailMobileViewState
                 child: AppLoadMoreListener(
                   onLoadMore: cubit.loadMore,
                   child: CustomScrollView(
+                    // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                    scrollCacheExtent: AppScroll.prefetchCacheExtent,
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
                       SliverToBoxAdapter(child: SizedBox(height: topInset)),
@@ -139,14 +143,9 @@ class _WantedAlertDetailMobileViewState
         return [
           SliverFillRemaining(
             hasScrollBody: false,
-            child: FeedbackView(
-              icon: AppIcons.offline,
+            child: AppLoadErrorView(
               title: l10n.wantedAlertLoadErrorTitle,
-              message: l10n.wantedAlertLoadErrorBody,
-              action: FilledButton(
-                onPressed: cubit.retry,
-                child: Text(l10n.retry),
-              ),
+              onRetry: cubit.retry,
             ),
           ),
         ];

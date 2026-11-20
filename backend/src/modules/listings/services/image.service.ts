@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
+import { readThumbnail, removeThumbnails, type ThumbWidth } from '../../../services/image-thumbnail.service.js';
 import { contentTypeOf, getObject, putObject, removeObject } from '../../../services/storage.service.js';
 import { IMAGE_EDITABLE, IMAGE_NAME, IMAGE_PREFIX, MAX_IMAGE_BYTES, MAX_IMAGES } from '../listing.type.js';
 import { orderedImages } from '../listing.validator.js';
@@ -27,7 +28,9 @@ export function imageExtension(contentType: unknown, bytes: unknown): string {
 export async function removeStoredImages(urls: string[]) {
   for (const url of urls) {
     if (url.startsWith(IMAGE_PREFIX) && IMAGE_NAME.test(url.slice(IMAGE_PREFIX.length))) {
-      await removeObject(AREA, url.slice(IMAGE_PREFIX.length)).catch(() => {});
+      const name = url.slice(IMAGE_PREFIX.length);
+      await removeObject(AREA, name).catch(() => {});
+      await removeThumbnails(AREA, name);
     }
   }
 }
@@ -99,8 +102,9 @@ export async function reorderImages(ownerId: string, id: string, body: unknown) 
 /**
  * Đọc file ảnh tin. Ai cũng xem được ảnh của tin đang hiển thị;
  * ảnh tin chưa hiển thị chỉ chủ tin và người kiểm duyệt xem được.
+ * Có [width] thì trả thumbnail WebP (không tạo được thì trả ảnh gốc).
  */
-export async function readImage(viewer: AuthRequest['user'], filename: string) {
+export async function readImage(viewer: AuthRequest['user'], filename: string, width: ThumbWidth | null = null) {
   const notFound = () => new AppError(404, 'IMAGE_NOT_FOUND', 'Không tìm thấy ảnh.');
   if (!IMAGE_NAME.test(filename)) throw notFound();
   const listing = await listingRepository.findByImage(IMAGE_PREFIX + filename);
@@ -113,6 +117,10 @@ export async function readImage(viewer: AuthRequest['user'], filename: string) {
     // Ảnh mới của bản sửa chưa duyệt: chỉ chủ tin và người duyệt xem được
     const edited = await listingRepository.findByRevisionImage(IMAGE_PREFIX + filename);
     if (!edited || !(moderator || viewer?.userId === edited.ownerId)) throw notFound();
+  }
+  if (width) {
+    const thumb = await readThumbnail(AREA, filename, width, () => getObject(AREA, filename));
+    if (thumb) return { bytes: thumb, contentType: 'image/webp' };
   }
   const bytes = await getObject(AREA, filename);
   if (!bytes) throw notFound();

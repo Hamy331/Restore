@@ -6,6 +6,7 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 
@@ -48,14 +49,9 @@ class CreditHistoryMobileView extends StatelessWidget {
                 CreditHistoryStatus.loading => const Center(
                   child: AppLoadingIndicator(),
                 ),
-                CreditHistoryStatus.failure => FeedbackView(
-                  icon: AppIcons.offline,
+                CreditHistoryStatus.failure => AppLoadErrorView(
                   title: l10n.creditLoadError,
-                  message: l10n.creditErrorGeneric,
-                  action: TextButton(
-                    onPressed: cubit.load,
-                    child: Text(l10n.retry),
-                  ),
+                  onRetry: cubit.load,
                 ),
                 CreditHistoryStatus.ready when state.items.isEmpty =>
                   FeedbackView(

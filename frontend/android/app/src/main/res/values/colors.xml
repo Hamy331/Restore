@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Màu nhấn của thông báo push (xanh logo ReStore) -->
+    <color name="notification_color">#203A97</color>
+</resources>

@@ -15,9 +15,11 @@ const moderate = authorizePermission(PERMISSION.LISTING_MODERATE);
  * Query params:
  *  - status?: ListingStatus
  *  - q?: string (1-100) - tìm trong tiêu đề, không phân biệt hoa thường
+ *  - edit?: 'PENDING' - chỉ tin có bản sửa chờ duyệt, gửi sớm trước
  *  - page?: number (mặc định 1)
  *
  * Trả về: { items: [tin kèm owner, category], total, page }
+ * Tin có bản sửa thêm pendingEdit (nội dung bản sửa, updatedAt của bản sửa) và current (nội dung đang hiển thị để so sánh).
  */
 adminListingRouter.get('/listings', moderate, validate({ query: adminListingQuery }), moderationController.listForAdmin);
 

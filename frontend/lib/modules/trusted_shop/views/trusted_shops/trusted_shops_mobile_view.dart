@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -7,6 +8,7 @@ import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
@@ -253,9 +255,7 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
                     child: CustomScrollView(
                       controller: _scrollController,
                       // Dựng sẵn các khu phía dưới để thanh mục cuộn tới được
-                      // Flutter 3.35 in CI still uses this cache API.
-                      // ignore: deprecated_member_use
-                      cacheExtent: 3000,
+                      scrollCacheExtent: const ScrollCacheExtent.pixels(3000),
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(
@@ -314,14 +314,9 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
         return [
           SliverFillRemaining(
             hasScrollBody: false,
-            child: FeedbackView(
-              icon: AppIcons.offline,
+            child: AppLoadErrorView(
               title: l10n.trustedShopsLoadErrorTitle,
-              message: l10n.trustedShopsLoadErrorBody,
-              action: FilledButton(
-                onPressed: cubit.retry,
-                child: Text(l10n.retry),
-              ),
+              onRetry: cubit.retry,
             ),
           ),
         ];

@@ -3,6 +3,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { findWard } from '../src/modules/catalog/catalog.service.js';
 import { listingLocation } from '../src/modules/catalog/catalog.validator.js';
 import { DEMO_PASSWORD, demoImages } from './seed/demo.js';
+import { seedUuid } from './seed/seed-id.js';
 import { PRO_SELLERS, SHOPS, type SeedListing } from './seed/shops.js';
 
 /**
@@ -20,8 +21,11 @@ const prisma = new PrismaClient();
 const remove = process.argv.slice(2).includes('--remove');
 
 const DAY = 24 * 60 * 60 * 1000;
-const shopUserId = (key: string) => `shop-${key}`;
-const proUserId = (key: string) => `pro-seller-${key}`;
+// Id trong DB là UUID sinh cố định từ tên seed (seedUuid); shop dùng chung id với tài khoản chủ shop
+const shopUserId = (key: string) => seedUuid(`shop-${key}`);
+const proUserId = (key: string) => seedUuid(`pro-seller-${key}`);
+/** [ownerName] là tên seed của chủ tin (VD shop-samsung), không phải UUID */
+const listingIdOf = (ownerName: string, index: number) => seedUuid(`${ownerName}-listing-${index + 1}`);
 const userIds = [...SHOPS.map((shop) => shopUserId(shop.key)), ...PRO_SELLERS.map((seller) => proUserId(seller.key))];
 
 /** "Phường, Tỉnh" của mã phường */
@@ -31,17 +35,18 @@ function areaOf(ward: string) {
 }
 
 async function removeAll() {
-  // Shop, ShopFollow, ShopBanner, StoreSubscription, ListingFavorite xóa theo cascade của User / Listing
+  // Shop, ShopBanner, StoreSubscription, ListingFavorite xóa theo cascade của User / Listing
   const listings = await prisma.listing.deleteMany({ where: { ownerId: { in: userIds } } });
   const users = await prisma.user.deleteMany({ where: { id: { in: userIds } } });
   console.log('Đã xóa shop và tài khoản Bán chuyên:', { users: users.count, listings: listings.count });
 }
 
-async function upsertListings(ownerId: string, key: string, ward: string, sellerType: string, listings: SeedListing[], now: number,
+async function upsertListings(ownerName: string, key: string, ward: string, sellerType: string, listings: SeedListing[], now: number,
   displayDays: (categoryId: string) => number) {
+  const ownerId = seedUuid(ownerName);
   const { location } = areaOf(ward);
   for (const [index, item] of listings.entries()) {
-    const id = `${ownerId}-listing-${index + 1}`;
+    const id = listingIdOf(ownerName, index);
     const publishedAt = new Date(now - item.daysAgo * DAY - index * 11 * 60 * 1000);
     const data = {
       ownerId, categoryId: item.categoryId, title: item.title, description: item.description,
@@ -58,7 +63,7 @@ async function upsertListings(ownerId: string, key: string, ward: string, seller
     await prisma.listing.upsert({ where: { id }, create: { id, ...data }, update: data });
   }
   // Bớt tin trong dữ liệu thì xóa tin thừa của lần chạy trước
-  await prisma.listing.deleteMany({ where: { ownerId, id: { notIn: listings.map((_, index) => `${ownerId}-listing-${index + 1}`) } } });
+  await prisma.listing.deleteMany({ where: { ownerId, id: { notIn: listings.map((_, index) => listingIdOf(ownerName, index)) } } });
 }
 
 async function seedAll() {
@@ -103,9 +108,9 @@ async function seedAll() {
       categoryIds: shop.categoryIds, address: areaOf(shop.ward).label, createdAt: new Date(verifiedAt.getTime() - 7 * DAY),
     };
     await prisma.shop.upsert({ where: { id }, create: { id, ...data }, update: data });
-    await upsertListings(id, shop.key, shop.ward, 'BUSINESS', shop.listings, now, daysFor(pro.freeDaysPercent));
+    await upsertListings(`shop-${shop.key}`, shop.key, shop.ward, 'BUSINESS', shop.listings, now, daysFor(pro.freeDaysPercent));
 
-    const bannerId = `${id}-banner`;
+    const bannerId = seedUuid(`shop-${shop.key}-banner`);
     if (shop.banner) {
       const banner = {
         shopId: id, title: shop.banner.title, imageUrl: shop.banner.image, status: 'APPROVED' as const,
@@ -126,17 +131,20 @@ async function seedAll() {
     };
     await prisma.user.upsert({ where: { id }, create: { id, ...user }, update: user });
     await subscription(id, basic.id, seller.categoryId);
-    await upsertListings(id, seller.key, seller.ward, 'BUSINESS', seller.listings, now, daysFor(basic.freeDaysPercent));
+    await upsertListings(`pro-seller-${seller.key}`, seller.key, seller.ward, 'BUSINESS', seller.listings, now, daysFor(basic.freeDaysPercent));
   }
 
-  // Người theo dõi: các tài khoản Bán chuyên rồi các shop khác, theo số followers của từng shop
-  await prisma.shopFollow.deleteMany({ where: { shopId: { in: SHOPS.map((shop) => shopUserId(shop.key)) } } });
+  // Người theo dõi (theo dõi shop = theo dõi chủ shop): các tài khoản Bán chuyên rồi các shop khác,
+  // theo số followers của từng shop
   const followers = [...PRO_SELLERS.map((seller) => proUserId(seller.key)), ...SHOPS.map((shop) => shopUserId(shop.key))];
+  await prisma.userFollow.deleteMany({
+    where: { followingId: { in: SHOPS.map((shop) => shopUserId(shop.key)) }, followerId: { in: followers } },
+  });
   const follows = SHOPS.flatMap((shop) => followers
     .filter((userId) => userId !== shopUserId(shop.key))
     .slice(0, shop.followers)
-    .map((userId) => ({ userId, shopId: shopUserId(shop.key) })));
-  await prisma.shopFollow.createMany({ data: follows, skipDuplicates: true });
+    .map((followerId) => ({ followerId, followingId: shopUserId(shop.key) })));
+  await prisma.userFollow.createMany({ data: follows, skipDuplicates: true });
 
   console.log('Seed shop xong:', {
     shops: SHOPS.length, shopListings: SHOPS.reduce((sum, shop) => sum + shop.listings.length, 0),

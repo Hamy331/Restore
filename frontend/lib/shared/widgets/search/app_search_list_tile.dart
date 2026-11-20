@@ -6,13 +6,14 @@ import 'package:restore/l10n/app_localizations.dart';
 
 /// Một dòng trong trang tìm kiếm: gợi ý, lịch sử, khu vực...
 ///
+/// - [icon]: null thì không có icon, chữ sát lề trái (gợi ý tìm nhanh).
 /// - [boxed]: icon nằm trong ô vuông bo góc (lịch sử, khu vực); false thì
 ///   chỉ hiện icon nhỏ (gợi ý từ khoá).
 /// - [highlight]: tô đậm phần khớp với từ khoá đang gõ (so không dấu).
 /// - [onRemove]: nút thùng rác bên phải (xoá khỏi lịch sử).
 /// - [onFill]: nút mũi tên đưa nội dung lên ô tìm kiếm để sửa tiếp.
 class AppSearchListTile extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
   final String title;
   final String? subtitle;
   final String? highlight;
@@ -24,7 +25,7 @@ class AppSearchListTile extends StatelessWidget {
 
   const AppSearchListTile({
     super.key,
-    required this.icon,
+    this.icon,
     required this.title,
     required this.onTap,
     this.subtitle,
@@ -50,7 +51,9 @@ class AppSearchListTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            if (boxed)
+            if (icon == null)
+              const SizedBox(height: 40)
+            else if (boxed)
               Container(
                 width: 44,
                 height: 44,
@@ -69,7 +72,7 @@ class AppSearchListTile extends StatelessWidget {
                 height: 40,
                 child: Icon(icon, size: 18, color: iconColor),
               ),
-            SizedBox(width: boxed ? 12 : 10),
+            if (icon != null) SizedBox(width: boxed ? 12 : 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,30 +124,34 @@ class AppSearchListTile extends StatelessWidget {
     );
   }
 
-  TextSpan _titleSpan() {
-    const base = TextStyle(
+  TextSpan _titleSpan() => highlightSpan(
+    title,
+    highlight,
+    const TextStyle(
       fontSize: 14.5,
       fontWeight: FontWeight.w500,
       color: AppColors.textPrimary,
-    );
-    final query = highlight;
-    final range = query == null
-        ? null
-        : VietnameseText.matchRange(title, query);
-    if (range == null) return TextSpan(text: title, style: base);
+    ),
+  );
+
+  /// [text] với phần khớp [query] (so không dấu) tô đậm, phần còn lại nhạt
+  /// hơn; không khớp thì giữ nguyên kiểu [base]
+  static TextSpan highlightSpan(String text, String? query, TextStyle base) {
+    final range = query == null ? null : VietnameseText.matchRange(text, query);
+    if (range == null) return TextSpan(text: text, style: base);
     final (start, end) = range;
     return TextSpan(
       style: base.copyWith(color: AppColors.textSecondary),
       children: [
-        TextSpan(text: title.substring(0, start)),
+        TextSpan(text: text.substring(0, start)),
         TextSpan(
-          text: title.substring(start, end),
+          text: text.substring(start, end),
           style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
         ),
-        TextSpan(text: title.substring(end)),
+        TextSpan(text: text.substring(end)),
       ],
     );
   }

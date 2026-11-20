@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/enums/credit_enums.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 
 import '../../bloc/credit_topup/credit_topup_cubit.dart';
@@ -104,11 +103,9 @@ class CreditTopupMobileView extends StatelessWidget {
         final cubit = context.read<CreditTopupCubit>();
         final Widget body = switch (state.loadStatus) {
           TopupLoadStatus.loading => const Center(child: AppLoadingIndicator()),
-          TopupLoadStatus.failure => FeedbackView(
-            icon: AppIcons.offline,
+          TopupLoadStatus.failure => AppLoadErrorView(
             title: l10n.creditPackagesError,
-            message: l10n.creditErrorGeneric,
-            action: TextButton(onPressed: cubit.load, child: Text(l10n.retry)),
+            onRetry: cubit.load,
           ),
           TopupLoadStatus.ready => AnimatedSwitcher(
             duration: const Duration(milliseconds: 220),

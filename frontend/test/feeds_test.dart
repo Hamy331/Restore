@@ -442,6 +442,31 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('a notification link opens the post comments', (tester) async {
+    await tester.pumpWidget(
+      host(
+        const Locale('en'),
+        FeedsView(repository: FakeFeedsRepository(), openPostId: 'Minh Anh'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(DraggableScrollableSheet), findsOneWidget);
+  });
+
+  testWidgets('a deleted post from a notification shows a notice', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        const Locale('en'),
+        FeedsView(repository: FakeFeedsRepository(), openPostId: 'gone'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(DraggableScrollableSheet), findsNothing);
+    expect(find.text('This post is no longer available.'), findsOneWidget);
+  });
 }
 
 Map<String, dynamic> fakePost(String name) => {
@@ -498,6 +523,10 @@ class FakeFeedsRepository implements FeedsRepository {
       for (final row in matching.sublist(start, end)) FeedPost.fromJson(row),
     ], end < matching.length ? '$end' : null);
   }
+
+  @override
+  Future<FeedPost> post(String id) async =>
+      FeedPost.fromJson(rows.firstWhere((r) => r['id'] == id));
 
   @override
   Future<FeedPost> publish(String text, String? imageUrl) async {

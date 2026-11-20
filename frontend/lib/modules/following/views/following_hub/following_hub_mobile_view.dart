@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -14,6 +15,7 @@ import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
 import 'package:restore/shared/widgets/app_circle_icon_button.dart';
 import 'package:restore/shared/widgets/app_page_header.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
@@ -70,6 +72,8 @@ class FollowingHubMobileView extends StatelessWidget {
                     child: AppLoadMoreListener(
                       onLoadMore: cubit.loadMore,
                       child: CustomScrollView(
+                        // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                        scrollCacheExtent: AppScroll.prefetchCacheExtent,
                         physics: const AlwaysScrollableScrollPhysics(),
                         slivers: [
                           SliverToBoxAdapter(child: _Header(state: state)),
@@ -105,11 +109,9 @@ class FollowingHubMobileView extends StatelessWidget {
         return [
           SliverFillRemaining(
             hasScrollBody: false,
-            child: FeedbackView(
-              icon: AppIcons.offline,
+            child: AppLoadErrorView(
               title: l.followShopsLoadError,
-              message: l.trustedShopsLoadErrorBody,
-              action: FilledButton(onPressed: cubit.load, child: Text(l.retry)),
+              onRetry: cubit.load,
             ),
           ),
         ];

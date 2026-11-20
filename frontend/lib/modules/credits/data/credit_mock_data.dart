@@ -59,6 +59,7 @@ class CreditMockData {
       'amount': 25,
       'note': 'Tin bị từ chối: sai chuyên mục',
       'createdAt': now.subtract(const Duration(days: 9)).toIso8601String(),
+      'expiresAt': now.add(const Duration(days: 81)).toIso8601String(),
     },
     {
       'id': 't1',

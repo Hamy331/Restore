@@ -10,7 +10,7 @@ import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
 import { freeDaysFor } from '../display-pricing.js';
 import type { ModerationAction } from '../listing.type.js';
 import * as listingRepository from '../repositories/listing.repository.js';
-import { runApprovalHooks } from './approval-hooks.js';
+import { runApprovalHooks, runModeratedHooks } from './approval-hooks.js';
 
 /**
  * Ra quyết định trên một tin trong transaction [tx], ghi AdminAudit.
@@ -19,6 +19,7 @@ import { runApprovalHooks } from './approval-hooks.js';
  * updatedAt phải khớp [expected] lúc admin mở tin (409 ADMIN_STALE nếu không).
  * Dùng ở /listings/admin, /admin/listings và khi xử lý báo cáo vi phạm.
  * Duyệt xong thì chạy các hook onListingApproved (VD chấm điểm thông báo "Báo khi có hàng").
+ * Mọi quyết định chạy các hook onListingModerated (VD gửi thông báo cho người bán).
  * Tin đã duyệt có bản sửa chờ duyệt: APPROVE / REJECT / REQUEST_CHANGES áp lên bản sửa (xem moderateRevision).
  * Trả về URL ảnh không còn dùng, để xóa file sau khi transaction xong (removeStoredImages).
  */
@@ -34,6 +35,7 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
   let expiresAt: Date | undefined;
   let scheduled = false;
   let startsAt: Date | null = null;
+  let refunded = 0;
   const now = new Date();
   if (action === 'APPROVE') {
     if (!item.images.length) throw new AppError(400, 'INVALID_LISTING', 'Tin cần ít nhất một ảnh.');
@@ -67,8 +69,10 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
     await runApprovalHooks(tx, id, new Date());
   } else {
     // Từ chối khi đang chờ duyệt: hoàn xu đang giữ (đã duyệt rồi bị gỡ thì không hoàn)
-    await releaseListingHold(tx, id, `Hoàn xu · tin bị từ chối: ${item.title}`.slice(0, 200));
+    refunded = await releaseListingHold(tx, id, `Hoàn xu · tin bị từ chối: ${item.title}`.slice(0, 200));
   }
+  await runModeratedHooks(tx, { listingId: id, ownerId: item.ownerId, title: item.title, image: item.images[0] ?? null,
+    action, reason, edit: false, scheduled, refunded });
   return removed;
 }
 
@@ -90,6 +94,8 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
   if (action !== 'APPROVE') {
     changed(await listingRepository.rejectRevision(tx, item.id, expected, reason));
     await audit(tx, actorId, `${action}_EDIT`, 'LISTING', item.id, reason, { edit: 'PENDING' }, { edit: 'REJECTED' });
+    await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
+      image: revision.images[0] ?? item.images[0] ?? null, action, reason, edit: true, scheduled: false });
     return [];
   }
   if (!revision.images.length) throw new AppError(400, 'INVALID_LISTING', 'Tin cần ít nhất một ảnh.');
@@ -109,6 +115,10 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
   }));
   await audit(tx, actorId, 'APPROVE_EDIT', 'LISTING', item.id, reason,
     { title: item.title, edit: 'PENDING' }, { title: revision.title, edit: 'APPROVED' });
+  const priceDrop = item.status === ListingStatus.AVAILABLE && revision.price.lessThan(item.price)
+    ? { from: item.price.toFixed(0), to: revision.price.toFixed(0) } : undefined;
+  await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
+    image: revision.images[0] ?? null, action, reason, edit: true, scheduled: false, priceDrop });
   // Ảnh cũ không còn trong bản mới
   return item.images.filter((url) => !revision.images.includes(url));
 }
@@ -146,12 +156,21 @@ export async function listPending() {
 /* ---------- /admin/listings ---------- */
 
 /**
- * Mọi tin, lọc trạng thái / tiêu đề, 25 tin mỗi trang. Tin đã duyệt có bản sửa thì thêm
- * pendingEdit { status, title, price, ..., updatedAt } (ra quyết định trên bản sửa thì gửi updatedAt của bản sửa).
+ * Mọi tin, lọc trạng thái / tiêu đề / có bản sửa chờ duyệt, 25 tin mỗi trang. Tin đã duyệt có bản sửa thì thêm
+ * pendingEdit { status, title, price, ..., updatedAt } (ra quyết định trên bản sửa thì gửi updatedAt của bản sửa)
+ * và current { title, description, price, ..., images }: nội dung đang hiển thị, để so với bản sửa.
  */
-export async function listForAdmin({ status, q, page }: AdminListingQuery) {
-  const [rows, total] = await listingRepository.findAdminPage({ status, q }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
-  const items = rows.map(({ revision, ...item }) => ({ ...item, ...(revision && { pendingEdit: toRevisionDto(revision) }) }));
+export async function listForAdmin({ status, q, edit, page }: AdminListingQuery) {
+  const [rows, total] = await listingRepository.findAdminPage({ status, q, edit }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+  const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
+    ...item,
+    ...(revision && {
+      pendingEdit: toRevisionDto(revision),
+      current: { title: item.title, description: item.description, price: item.price.toString(),
+        originalPrice: originalPrice?.toString() ?? null, isNegotiable, condition: item.condition, allowSale, allowExchange,
+        exchangeWish, attributes, location, images: item.images },
+    }),
+  }));
   return { items, total, page };
 }
 
