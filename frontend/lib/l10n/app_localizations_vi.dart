@@ -63,6 +63,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get listingCall => 'Gọi';
 
   @override
+  String get listingShowPhone => 'Hiện số điện thoại';
+
+  @override
   String get listingCallUnavailable => 'Bạn có thể gọi số';
 
   @override
@@ -112,6 +115,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feedCompose => 'Bạn muốn chia sẻ điều gì?';
+
+  @override
+  String get feedSearchHint => 'Tìm kiếm bài viết…';
+
+  @override
+  String get feedSearchEmpty => 'Không tìm thấy bài viết phù hợp.';
 
   @override
   String get feedFollow => 'Theo dõi';
@@ -1353,6 +1362,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get messagesTitle => 'Tin nhắn';
+
+  @override
+  String get messagesPickConversation => 'Chọn một cuộc trò chuyện';
 
   @override
   String get listingDetailTitle => 'Chi tiết tin đăng';

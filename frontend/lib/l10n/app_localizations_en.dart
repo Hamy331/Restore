@@ -63,6 +63,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listingCall => 'Call';
 
   @override
+  String get listingShowPhone => 'Show phone number';
+
+  @override
   String get listingCallUnavailable => 'Dial this number manually:';
 
   @override
@@ -112,6 +115,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedCompose => 'Share a find or a story…';
+
+  @override
+  String get feedSearchHint => 'Search posts…';
+
+  @override
+  String get feedSearchEmpty => 'No matching posts found.';
 
   @override
   String get feedFollow => 'Follow';
@@ -1389,6 +1398,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesTitle => 'Messages';
+
+  @override
+  String get messagesPickConversation => 'Pick a conversation';
 
   @override
   String get listingDetailTitle => 'Listing details';

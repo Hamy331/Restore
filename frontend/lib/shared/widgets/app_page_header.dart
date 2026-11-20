@@ -7,6 +7,45 @@ import 'package:restore/l10n/app_localizations.dart';
 
 import 'app_circle_icon_button.dart';
 
+/// Tiêu đề chung của các tab mobile. Mỗi tab tự chọn nút hai bên.
+class AppTabHeader extends StatelessWidget {
+  const AppTabHeader({
+    super.key,
+    required this.title,
+    this.leading,
+    this.trailing,
+  });
+
+  final String title;
+  final Widget? leading;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: AppColors.surface,
+    child: SizedBox(
+      height: kToolbarHeight,
+      child: NavigationToolbar(
+        leading: leading,
+        trailing: trailing,
+        middle: Semantics(
+          header: true,
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 /// Hàng tiêu đề chung của các trang con (Gần bạn, Báo khi có hàng, Shop uy
 /// tín...): nút quay lại, tiêu đề đậm kèm một dòng mô tả xám và nút bên
 /// phải [trailing] (tuỳ chọn). Không có nền, đặt trong [AppPageHeader] hoặc

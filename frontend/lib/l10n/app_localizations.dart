@@ -200,6 +200,12 @@ abstract class AppLocalizations {
   /// **'Call'**
   String get listingCall;
 
+  /// No description provided for @listingShowPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Show phone number'**
+  String get listingShowPhone;
+
   /// No description provided for @listingCallUnavailable.
   ///
   /// In en, this message translates to:
@@ -301,6 +307,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share a find or a story…'**
   String get feedCompose;
+
+  /// No description provided for @feedSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search posts…'**
+  String get feedSearchHint;
+
+  /// No description provided for @feedSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching posts found.'**
+  String get feedSearchEmpty;
 
   /// No description provided for @feedFollow.
   ///
@@ -2611,6 +2629,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Messages'**
   String get messagesTitle;
+
+  /// No description provided for @messagesPickConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a conversation'**
+  String get messagesPickConversation;
 
   /// No description provided for @listingDetailTitle.
   ///
