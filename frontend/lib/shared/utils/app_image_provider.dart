@@ -18,7 +18,7 @@ ImageProvider appImageProvider(String path, {int decodeWidth = 256}) {
     return ResizeImage(NetworkImage(url), width: decodeWidth);
   }
   return ResizeImage(
-    AppNetworkImage(url),
+    AppNetworkImage(thumbnailUrl(url, decodeWidth)),
     width: decodeWidth,
     policy: ResizeImagePolicy.fit,
   );

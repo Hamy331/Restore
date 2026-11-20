@@ -81,7 +81,8 @@ class AppLocalImage extends StatelessWidget {
     if (isHttp && (!kIsWeb || _isOwnServer(path))) {
       return Image(
         image: ResizeImage(
-          AppNetworkImage(path),
+          // Thumbnail nhỏ từ server cho ô danh sách, ảnh gốc khi xem lớn
+          AppNetworkImage(thumbnailUrl(path, cacheWidth)),
           width: cacheWidth ?? maxNetworkDecodeWidth,
           policy: ResizeImagePolicy.fit,
         ),

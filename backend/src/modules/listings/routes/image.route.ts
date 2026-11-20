@@ -15,7 +15,11 @@ const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
  * Path params:
  *  - filename: string - "<uuid>.jpg|png|webp"
  *
- * Trả về: file ảnh (Cache-Control: private, no-store)
+ * Query:
+ *  - w?: number - bề ngang cần hiển thị; trả thumbnail WebP cỡ 240 | 480 | 960 nhỏ nhất đủ rộng
+ *    (lớn hơn 960 hoặc không gửi: ảnh gốc)
+ *
+ * Trả về: file ảnh (Cache-Control: private, max-age=604800, immutable)
  */
 imageRouter.get('/media/:filename', optionalAuth, validate({ params: mediaParams }), imageController.read);
 

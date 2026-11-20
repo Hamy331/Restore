@@ -1,6 +1,7 @@
 import { Router, raw, Response, NextFunction } from 'express';
 import { created } from '../../common/http/response.js';
 import { AuthRequest, verifyToken } from '../../middlewares/auth.middleware.js';
+import { thumbWidth } from '../../services/image-thumbnail.service.js';
 import { mediaPurpose, readMedia, uploadMedia } from './media.service.js';
 
 /** /api/v1/media: ảnh bài viết bảng tin và ảnh đại diện (lưu qua storage.service) */
@@ -24,10 +25,13 @@ mediaRouter.post('/images', verifyToken, raw({ type: ['image/jpeg', 'image/png',
 /**
  * File ảnh. Ảnh bài viết và ảnh đại diện ai cũng xem được; tên file là UUID
  * nên không đoán được và có thể cache lâu.
+ *
+ * Query: w? = bề ngang cần hiển thị; trả thumbnail WebP cỡ 240 | 480 | 960 nhỏ nhất đủ rộng
+ * (lớn hơn 960 hoặc không gửi: ảnh gốc)
  */
 mediaRouter.get('/:area/:name', async (req, res, next) => {
   try {
-    const { bytes, contentType } = await readMedia(req.params.area, req.params.name);
+    const { bytes, contentType } = await readMedia(req.params.area, req.params.name, thumbWidth(req.query.w));
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     res.type(contentType).send(bytes);
   } catch (error) { next(error); }
