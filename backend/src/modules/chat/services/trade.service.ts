@@ -103,3 +103,52 @@ export async function listReviews(recipientId: string, query: Record<string, unk
   return {items:items.slice(0,20),hasMore:items.length>20,tags,count,sellers:groups.find(g=>g.fromSeller)?._count ?? 0,
     average:count ? groups.reduce((n,g)=>n+(g._sum.stars ?? 0),0)/count : 0};
 }
+
+export async function listMyReviews(userId: string, query: Record<string, unknown>) {
+  const params = z.object({
+    status: z.enum(['pending', 'submitted']).default('pending'),
+    page: z.coerce.number().int().min(1).max(100000).default(1),
+  }).safeParse(query);
+  if (!params.success) throw new AppError(422, 'INVALID_FILTER', 'Bộ lọc không hợp lệ.');
+
+  const { status, page } = params.data;
+  const author = { authorId: userId };
+  const pageSize = 20;
+  const trades = await prisma.listingTrade.findMany({
+    where: {
+      confirmedAt: { not: null },
+      OR: [{ sellerId: userId }, { buyerId: userId }],
+      reviews: status === 'pending' ? { none: author } : { some: author },
+    },
+    orderBy: [{ confirmedAt: 'desc' }, { conversationId: 'desc' }],
+    skip: (page - 1) * pageSize,
+    take: pageSize + 1,
+    select: {
+      conversationId: true, sellerId: true, buyerId: true,
+      title: true, price: true, image: true, confirmedAt: true,
+      reviews: { where: author, select: { stars: true, comment: true, tags: true, createdAt: true } },
+    },
+  });
+  const visibleTrades = trades.slice(0, pageSize);
+  const otherId = (trade: { sellerId: string; buyerId: string }) =>
+    trade.sellerId === userId ? trade.buyerId : trade.sellerId;
+  const ids = [...new Set(visibleTrades.map(otherId))];
+  const people = ids.length ? await prisma.user.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, fullName: true },
+  }) : [];
+  const names = new Map(people.map(person => [person.id, person.fullName]));
+  return {
+    items: visibleTrades.map(trade => ({
+      conversationId: trade.conversationId,
+      title: trade.title,
+      price: trade.price,
+      image: trade.image,
+      confirmedAt: trade.confirmedAt,
+      isSeller: trade.sellerId === userId,
+      recipientName: names.get(otherId(trade)) ?? null,
+      review: trade.reviews[0] ?? null,
+    })),
+    hasMore: trades.length > pageSize,
+  };
+}
