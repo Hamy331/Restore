@@ -886,3 +886,12 @@ h1 {
     --fade-end: 0px;
   }
 }
+
+/* Ô chọn tệp trong form (ảnh banner, ảnh bìa, tài liệu): nhãn ở trên, cách đều như Form.Item */
+.ant-modal-body form > label:has(> input[type='file']) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 24px;
+}
