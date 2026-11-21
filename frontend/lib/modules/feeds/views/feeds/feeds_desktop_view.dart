@@ -201,7 +201,7 @@ class _FeedTop extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     alignment: Alignment.centerLeft,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: AppColors.fill,
                       borderRadius: BorderRadius.circular(22),
                       border: Border.all(color: AppColors.border),
                     ),
@@ -389,7 +389,7 @@ class _RightPanel extends StatelessWidget {
                 icon: const Icon(AppIcons.post, size: 18),
                 label: Text(t('Viết bài', 'Write a post')),
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: AppColors.actionPrimary,
                   minimumSize: const Size(0, 42),
                 ),
               ),

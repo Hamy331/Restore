@@ -99,7 +99,7 @@ class _PickConversation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.background,
+    color: AppColors.surface,
     child: Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,

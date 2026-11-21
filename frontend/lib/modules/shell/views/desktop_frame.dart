@@ -179,7 +179,7 @@ class _DesktopFrameState extends State<DesktopFrame> {
               ),
             };
             return Material(
-              color: AppColors.background,
+              color: AppColors.fill,
               child: Column(
                 children: [
                   BlocBuilder<ShellBadgesCubit, int>(
@@ -228,7 +228,7 @@ class _NarrowPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.background,
+    color: AppColors.fill,
     child: Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth),

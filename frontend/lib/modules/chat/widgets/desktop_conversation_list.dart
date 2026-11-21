@@ -75,7 +75,7 @@ class _DesktopConversationListState extends State<DesktopConversationList> {
                       prefixIconConstraints: const BoxConstraints(
                         minWidth: 36,
                       ),
-                      fillColor: AppColors.background,
+                      fillColor: AppColors.fill,
                       contentPadding: EdgeInsets.zero,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -194,7 +194,7 @@ class _AssistantTile extends StatelessWidget {
               color: selected ? AppHeaderPalette.desktopBar : Colors.transparent,
               width: 3,
             ),
-            bottom: const BorderSide(color: Color(0xFFF5F1EA)),
+            bottom: const BorderSide(color: Color(0xFFF0F1F3)),
           ),
         ),
         child: InkWell(
@@ -323,7 +323,7 @@ class _ConversationTile extends StatelessWidget {
                 color: selected ? AppHeaderPalette.desktopBar : Colors.transparent,
                 width: 3,
               ),
-              bottom: const BorderSide(color: Color(0xFFF5F1EA)),
+              bottom: const BorderSide(color: Color(0xFFF0F1F3)),
             ),
           ),
           padding: EdgeInsets.symmetric(

@@ -59,7 +59,7 @@ class DesktopPage extends StatelessWidget {
     );
     final end = onEndReached;
     return ColoredBox(
-      color: AppColors.background,
+      color: AppColors.fill,
       child: end == null
           ? scroll
           : NotificationListener<ScrollNotification>(

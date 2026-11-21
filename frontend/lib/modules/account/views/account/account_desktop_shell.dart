@@ -69,7 +69,7 @@ class AccountDesktopShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.background,
+      color: AppColors.fill,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(

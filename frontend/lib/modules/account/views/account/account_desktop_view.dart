@@ -177,7 +177,7 @@ class _AccountDesktopViewState extends State<AccountDesktopView> {
                               icon: const Icon(AppIcons.edit, size: 17),
                               label: Text(l.accEditPage),
                               style: FilledButton.styleFrom(
-                                backgroundColor: AppColors.primary,
+                                backgroundColor: AppColors.actionPrimary,
                                 minimumSize: const Size(0, 40),
                               ),
                             ),
@@ -338,7 +338,7 @@ class _QuickCard extends StatelessWidget {
     color: AppColors.cream,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(14),
-      side: const BorderSide(color: Color(0xFFF6E2BC)),
+      side: const BorderSide(color: AppColors.border),
     ),
     clipBehavior: Clip.antiAlias,
     child: InkWell(
