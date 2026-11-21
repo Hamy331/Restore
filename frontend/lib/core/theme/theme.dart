@@ -5,15 +5,46 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get lightTheme {
+    const buttonLabelStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+    );
     return ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        primary: AppColors.primary,
-        surface: AppColors.surface,
-        error: AppColors.error,
-      ),
+      // fromSeed ám màu seed lên các bề mặt của Material (hộp thoại, bottom
+      // sheet, menu...), nên đặt lại toàn bộ bề mặt về trắng / xám nhạt
+      colorScheme:
+          ColorScheme.fromSeed(
+            seedColor: AppColors.actionPrimary,
+            primary: AppColors.actionPrimary,
+            onPrimary: AppColors.onAction,
+            surface: AppColors.surface,
+            error: AppColors.error,
+          ).copyWith(
+            surfaceTint: Colors.transparent,
+            surfaceContainerLowest: AppColors.surface,
+            surfaceContainerLow: AppColors.surface,
+            surfaceContainer: AppColors.surface,
+            surfaceContainerHigh: AppColors.surface,
+            surfaceContainerHighest: AppColors.fill,
+          ),
       scaffoldBackgroundColor: AppColors.background,
+      dialogTheme: const DialogThemeData(
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+      ),
+      popupMenuTheme: const PopupMenuThemeData(
+        color: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+      ),
+      cardTheme: const CardThemeData(
+        color: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+      ),
       fontFamily: 'Roboto',
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
@@ -87,12 +118,29 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.textPrimary,
+          textStyle: buttonLabelStyle,
+          iconSize: 18,
+          backgroundColor: AppColors.actionPrimary,
+          foregroundColor: AppColors.onAction,
           minimumSize: const Size(double.infinity, 48),
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          textStyle: buttonLabelStyle,
+          iconSize: 18,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          textStyle: buttonLabelStyle,
+          iconSize: 18,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(textStyle: buttonLabelStyle, iconSize: 18),
       ),
     );
   }

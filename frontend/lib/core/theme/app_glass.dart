@@ -26,11 +26,11 @@ class AppGlass {
   static final Color fillStrong = Colors.white.withValues(alpha: 0.78);
   static final Color fillSoft = Colors.white.withValues(alpha: 0.45);
   static final Color stroke = Colors.white.withValues(alpha: 0.85);
-  static final Color strokeSoft = AppColors.primary.withValues(alpha: 0.18);
+  static final Color strokeSoft = AppColors.border;
 
   static final List<BoxShadow> shadow = [
     BoxShadow(
-      color: AppColors.primaryDark.withValues(alpha: 0.08),
+      color: Colors.black.withValues(alpha: 0.06),
       blurRadius: 24,
       offset: const Offset(0, 8),
     ),
@@ -46,9 +46,10 @@ class AppGlass {
     ],
   );
 
+  /// Nền trang kính: trắng (không còn gradient kem)
   static const List<Color> backgroundGradient = [
-    Color(0xFFFFF6E4),
-    Color(0xFFFFFBF4),
-    Color(0xFFFDEFE3),
+    Color(0xFFFFFFFF),
+    Color(0xFFFFFFFF),
+    Color(0xFFFFFFFF),
   ];
 }
