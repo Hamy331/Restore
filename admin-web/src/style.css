@@ -145,6 +145,7 @@ nav[aria-label='Menu quản trị'] .ant-menu-item-group-title {
 .admin-header {
   height: 64px;
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 12px;
   padding: 0 clamp(12px, 2.5vw, 42px);
@@ -175,6 +176,9 @@ nav[aria-label='Menu quản trị'] .ant-menu-item-group-title {
 }
 .crumb b {
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .account-area {
   margin-left: auto;
@@ -225,6 +229,7 @@ nav[aria-label='Menu quản trị'] .ant-menu-item-group-title {
 .content {
   width: min(100%, 1200px);
   margin: 0 auto;
+  min-width: 0;
   padding: 36px clamp(16px, 3vw, 38px) 48px;
 }
 .page-heading {
@@ -575,8 +580,22 @@ h1 {
 .notice {
   margin-bottom: 14px;
 }
+.ant-modal {
+  max-width: calc(100vw - 32px);
+}
+.ant-modal-body {
+  max-height: calc(100dvh - 190px);
+  overflow: auto;
+}
 .toolbar .notice {
   margin: 0;
+}
+@media (max-width: 991px) {
+  .date-chip,
+  .account-name,
+  .logout-label {
+    display: none;
+  }
 }
 @media (max-width: 1100px) {
   .dashboard-split {
@@ -587,6 +606,43 @@ h1 {
   }
 }
 @media (max-width: 760px) {
+  .login {
+    padding: 16px;
+  }
+  .admin-header {
+    min-width: 0;
+    gap: 8px;
+    padding-inline: 12px;
+  }
+  .admin-header > .ant-btn {
+    flex: 0 0 auto;
+  }
+  .crumb {
+    flex: 1 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .account-area,
+  .account-chip {
+    flex: 0 0 auto;
+  }
+  .account-chip .ant-btn {
+    padding-inline: 6px;
+  }
+  .content {
+    width: 100%;
+    min-width: 0;
+  }
+  .panel,
+  .module-panel,
+  .page-sections,
+  .ant-tabs,
+  .ant-tabs-content-holder {
+    min-width: 0;
+  }
+  .ant-table-wrapper {
+    max-width: 100%;
+  }
   .dashboard-split {
     grid-template-columns: 1fr;
   }
@@ -598,11 +654,6 @@ h1 {
   }
   .queue-item:nth-child(-n + 4) {
     border-bottom: 1px solid var(--line);
-  }
-  .date-chip,
-  .account-name,
-  .logout-label {
-    display: none;
   }
   .content {
     padding-top: 24px;
@@ -631,11 +682,78 @@ h1 {
   .toolbar-end {
     margin-left: 0;
   }
-  .panel-head .ant-segmented {
+  .ant-segmented {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .report-tabs .ant-tabs-nav {
+    padding-inline: 12px;
+  }
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 10px 12px;
+  }
+  .ant-image,
+  .ant-image-img {
+    max-width: 100%;
+    height: auto;
+  }
+  .ant-space-wrap > .ant-space-item {
     max-width: 100%;
   }
   .admin-header {
     height: 55px;
+  }
+  .page-heading {
+    margin-bottom: 18px;
+  }
+  .panel {
+    border-radius: 12px;
+  }
+  .ant-tabs-nav {
+    margin-bottom: 12px;
+  }
+  .ant-modal {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px);
+    margin: 12px auto;
+  }
+  .ant-modal-body {
+    max-height: calc(100dvh - 160px);
+    padding: 16px;
+  }
+  .ant-modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .ant-modal-footer .ant-btn + .ant-btn {
+    margin-inline-start: 0;
+  }
+  .ant-form-inline .ant-form-item {
+    flex: 1 1 100%;
+    margin-inline-end: 0;
+  }
+  .ant-form-inline .ant-form-item-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ant-form-inline .ant-form-item-label {
+    text-align: left;
+    padding-bottom: 4px;
+  }
+  .queue-item:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .ant-form-inline .ant-select,
+  .ant-form-inline .ant-input-number {
+    width: 100% !important;
+  }
+  .ant-pagination {
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -683,6 +801,21 @@ h1 {
 @media (max-width: 520px) {
   .package-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .queue-item {
+    padding: 14px 12px;
+  }
+  .queue-item strong,
+  .revenue-summary strong {
+    font-size: 26px;
+  }
+  .page-heading h1 {
+    font-size: 24px;
+  }
+  .toolbar > *,
+  .toolbar .ant-select {
+    flex: 1 1 100%;
+    min-width: 0;
   }
 }
 .revision-compare {

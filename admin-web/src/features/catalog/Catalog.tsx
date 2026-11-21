@@ -62,6 +62,7 @@ export function Catalog({ session }: { session: Session }) {
                   rowKey="id"
                   loading={!data}
                   dataSource={data?.categories}
+                  scroll={{ x: 620 }}
                   columns={[
                     { title: 'Tên danh mục', dataIndex: 'name' },
                     { title: 'Mã', dataIndex: 'id' },
@@ -85,6 +86,7 @@ export function Catalog({ session }: { session: Session }) {
                 rowKey="condition"
                 loading={!data}
                 dataSource={data?.conditions}
+                scroll={{ x: 620 }}
                 columns={[
                   { title: 'Tên tình trạng', dataIndex: 'name' },
                   { title: 'Mã', dataIndex: 'condition' },
