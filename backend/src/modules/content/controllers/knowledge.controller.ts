@@ -20,6 +20,10 @@ export async function listForAdmin(_req: AuthRequest, res: Response) {
   ok(res, await knowledgeService.listForAdmin(getInput<ValidatedInput<PageQuery>>(res).query));
 }
 
+export async function getForAdmin(_req: AuthRequest, res: Response) {
+  ok(res, await knowledgeService.getForAdmin(getInput<ValidatedInput<undefined, { id: string }>>(res).params.id));
+}
+
 export async function syncCatalog(req: AuthRequest, res: Response) {
   ok(res, await knowledgeService.syncCatalog(req.user!.userId));
 }
