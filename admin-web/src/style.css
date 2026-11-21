@@ -721,6 +721,8 @@ h1 {
   }
   .ant-modal-body {
     max-height: calc(100dvh - 160px);
+  }
+  .ant-modal .ant-modal-container {
     padding: 16px;
   }
   .ant-modal-footer {
