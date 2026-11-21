@@ -35,7 +35,7 @@ class UiIcons {
   final String post = '$_dir/post.png';
   final String crown = '$_dir/crown.png';
   final String coin = '$_dir/coin.png';
-  final String ai = '$_dir/ai.png';
+  final String ai = '$_dir/ai-blue.png';
 }
 
 class CoreImages {

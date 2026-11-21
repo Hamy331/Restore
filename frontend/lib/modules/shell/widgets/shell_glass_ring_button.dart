@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/core/constants/app_colors.dart';
 
-/// Nút tròn kính mờ có vòng viền cam gradient, icon ở giữa.
+/// Nút tròn kính mờ có vòng viền xanh gradient, icon ở giữa.
 /// Dùng chung cho nút Đăng tin giữa thanh điều hướng và bong bóng AI
 /// để hai nút cùng một kiểu.
 class ShellGlassRingButton extends StatefulWidget {
@@ -74,16 +74,16 @@ class _ShellGlassRingButtonState extends State<ShellGlassRingButton> {
                 shape: BoxShape.circle,
                 gradient: const SweepGradient(
                   colors: [
-                    Color(0xFFFFD27A),
-                    AppColors.primary,
-                    Color(0xFFDC8A22),
-                    AppColors.primary,
-                    Color(0xFFFFD27A),
+                    Color(0xFF8AB9FF),
+                    AppColors.actionPrimary,
+                    AppColors.actionPrimaryDark,
+                    AppColors.actionPrimary,
+                    Color(0xFF8AB9FF),
                   ],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withValues(
+                    color: AppColors.actionPrimary.withValues(
                       alpha: _pressed ? 0.55 : 0.30,
                     ),
                     blurRadius: _pressed ? 20 : 14,
@@ -105,7 +105,7 @@ class _ShellGlassRingButtonState extends State<ShellGlassRingButton> {
                           end: Alignment.bottomRight,
                           colors: [
                             Colors.white.withValues(alpha: 0.92),
-                            AppColors.primarySoft.withValues(alpha: 0.80),
+                            AppColors.actionSoft.withValues(alpha: 0.80),
                           ],
                         ),
                       ),
@@ -132,13 +132,14 @@ class _ShellGlassRingButtonState extends State<ShellGlassRingButton> {
                                     widget.icon,
                                     key: ValueKey(widget.icon),
                                     size: size * 0.44,
-                                    color: AppColors.primaryDark,
+                                    color: AppColors.actionPrimaryDark,
                                   )
                                 : AppImageIcon(
                                     widget.image!,
                                     key: ValueKey(widget.image),
                                     size: size * 0.52,
                                     fallback: widget.icon,
+                                    fallbackColor: AppColors.actionPrimaryDark,
                                   ),
                           ),
                         ),

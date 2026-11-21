@@ -298,8 +298,8 @@ class _AddressPickerBody extends StatelessWidget {
                       ? () => Navigator.of(context).pop(state.result)
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textPrimary,
+                    backgroundColor: AppColors.actionPrimary,
+                    foregroundColor: AppColors.onAction,
                     disabledBackgroundColor: AppGlass.fillSoft,
                     minimumSize: const Size.fromHeight(52),
                     elevation: 0,

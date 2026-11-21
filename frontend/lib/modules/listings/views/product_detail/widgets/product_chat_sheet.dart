@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -225,8 +226,8 @@ class _ComposerState extends State<_Composer> {
                         IconButton.filled(
                           tooltip: l.listingSend,
                           style: IconButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFD21A),
-                            foregroundColor: Colors.black,
+                            backgroundColor: AppColors.actionPrimary,
+                            foregroundColor: AppColors.onAction,
                           ),
                           onPressed:
                               _busy ||
@@ -240,6 +241,7 @@ class _ComposerState extends State<_Composer> {
                                   dimension: 18,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
+                                    color: AppColors.onAction,
                                   ),
                                 )
                               : const Icon(Icons.send_outlined),

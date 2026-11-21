@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
@@ -25,7 +26,7 @@ class ChatProductPreview extends StatelessWidget {
       child: Row(
         children: [
           if (compact) ...[
-            Container(width: 3, height: 38, color: const Color(0xFFFFC72E)),
+            Container(width: 3, height: 38, color: AppColors.actionPrimary),
             const SizedBox(width: 7),
           ],
           ClipRRect(
@@ -35,7 +36,7 @@ class ChatProductPreview extends StatelessWidget {
               child: product.image != null
                   ? AppLocalImage(path: product.image!, cacheWidth: 144)
                   : const ColoredBox(
-                      color: Color(0xFFF1EFEB),
+                      color: Color(0xFFF3F4F6),
                       child: Icon(Icons.image_outlined, size: 18),
                     ),
             ),

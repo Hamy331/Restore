@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/core/theme/app_header_palette.dart';
 
 /// Nút tròn trắng ở đầu trang chủ (tin nhắn, thông báo)
 class HomeHeaderIconButton extends StatelessWidget {
@@ -15,7 +16,7 @@ class HomeHeaderIconButton extends StatelessWidget {
     required this.icon,
     required this.tooltip,
     required this.onTap,
-    this.size = 48,
+    this.size = 44,
   });
 
   @override
@@ -24,15 +25,13 @@ class HomeHeaderIconButton extends StatelessWidget {
       message: tooltip,
       child: Material(
         color: AppColors.surface,
-        shape: CircleBorder(
-          side: BorderSide(color: AppColors.border.withValues(alpha: 0.7)),
-        ),
+        shape: const CircleBorder(),
         child: InkWell(
           onTap: onTap,
           customBorder: const CircleBorder(),
           child: SizedBox.square(
             dimension: size,
-            child: Icon(icon, size: 20, color: AppColors.textPrimary),
+            child: Icon(icon, size: 20, color: AppHeaderPalette.top),
           ),
         ),
       ),

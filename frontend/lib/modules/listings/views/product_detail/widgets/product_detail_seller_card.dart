@@ -98,8 +98,8 @@ class _SellerState extends State<ProductDetailSellerCard> {
               const SizedBox(height: 20),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xffffd21a),
-                  foregroundColor: Colors.black,
+                  backgroundColor: AppColors.actionPrimary,
+                  foregroundColor: AppColors.onAction,
                 ),
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(l.sellerGotIt),
@@ -153,9 +153,10 @@ class _SellerState extends State<ProductDetailSellerCard> {
                                   ),
                                 ),
                             builder: (context, state) => Material(
-                              color: const Color(0xffffd21a),
+                              color: AppColors.actionPrimary,
                               shape: const CircleBorder(),
                               child: IconButton(
+                                color: AppColors.onAction,
                                 constraints: const BoxConstraints.tightFor(
                                   width: 25,
                                   height: 25,
@@ -299,8 +300,8 @@ class _SellerState extends State<ProductDetailSellerCard> {
                   FilledButton(
                     onPressed: _sending ? null : _send,
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xffffd21a),
-                      foregroundColor: Colors.black,
+                      backgroundColor: AppColors.actionPrimary,
+                      foregroundColor: AppColors.onAction,
                     ),
                     child: Text(l.listingSend),
                   ),
@@ -392,11 +393,7 @@ class _Avatar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primarySoft, Color(0xFFFFE0B0)],
-        ),
+        color: AppColors.fill,
         border: Border.all(color: AppColors.surface, width: 2),
         boxShadow: const [
           BoxShadow(

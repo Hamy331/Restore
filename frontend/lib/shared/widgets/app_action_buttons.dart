@@ -3,9 +3,9 @@ import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/core/constants/app_colors.dart';
 
 /// Bộ nút hành động dùng chung (thanh cuối trang, nút trong sheet) để mọi
-/// nút cùng chiều cao, bo góc, cỡ chữ và một tông cam:
-/// - [AppPrimaryActionButton]: nền gradient cam, hành động chính.
-/// - [AppSecondaryActionButton]: nền cam nhạt viền cam, hành động phụ;
+/// nút cùng chiều cao, bo góc, cỡ chữ và một tông xanh:
+/// - [AppPrimaryActionButton]: nền xanh trơn, hành động chính.
+/// - [AppSecondaryActionButton]: nền xanh nhạt viền xanh, hành động phụ;
 ///   bỏ [AppSecondaryActionButton.label] để thành nút vuông chỉ có icon.
 class AppActionButtonStyle {
   AppActionButtonStyle._();
@@ -13,11 +13,8 @@ class AppActionButtonStyle {
   static const double height = 52;
   static final BorderRadius radius = BorderRadius.circular(16);
   static const TextStyle labelStyle = TextStyle(
-    fontSize: 15,
-    fontWeight: FontWeight.w700,
-  );
-  static const LinearGradient primaryGradient = LinearGradient(
-    colors: [AppColors.primary, Color(0xFFF2B54A)],
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
   );
 }
 
@@ -44,14 +41,13 @@ class AppPrimaryActionButton extends StatelessWidget {
       height: AppActionButtonStyle.height,
       decoration: BoxDecoration(
         borderRadius: radius,
-        gradient: enabled || isLoading
-            ? AppActionButtonStyle.primaryGradient
-            : null,
-        color: enabled || isLoading ? null : AppColors.border,
+        color: enabled || isLoading
+            ? AppColors.actionPrimary
+            : AppColors.border,
         boxShadow: enabled
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.32),
+                  color: AppColors.actionPrimary.withValues(alpha: 0.16),
                   blurRadius: 14,
                   offset: const Offset(0, 5),
                 ),
@@ -67,13 +63,13 @@ class AppPrimaryActionButton extends StatelessWidget {
             child: isLoading
                 ? const AppLoadingIndicator(
                     dotSize: 5,
-                    color: AppColors.textPrimary,
+                    color: AppColors.onAction,
                   )
                 : _ButtonContent(
                     label: label,
                     icon: icon,
                     color: enabled
-                        ? AppColors.textPrimary
+                        ? AppColors.onAction
                         : AppColors.textSecondary,
                   ),
           ),
@@ -105,11 +101,13 @@ class AppSecondaryActionButton extends StatelessWidget {
     final enabled = onPressed != null;
     final iconOnly = label == null;
     Widget button = Material(
-      color: AppColors.primarySoft.withValues(alpha: enabled ? 1 : 0.5),
+      color: AppColors.actionSoft.withValues(alpha: enabled ? 1 : 0.5),
       shape: RoundedRectangleBorder(
         borderRadius: radius,
         side: BorderSide(
-          color: AppColors.primary.withValues(alpha: enabled ? 0.45 : 0.2),
+          color: AppColors.actionPrimary.withValues(
+            alpha: enabled ? 0.45 : 0.2,
+          ),
         ),
       ),
       child: InkWell(
@@ -120,11 +118,11 @@ class AppSecondaryActionButton extends StatelessWidget {
           height: AppActionButtonStyle.height,
           child: Center(
             child: iconOnly
-                ? Icon(icon, size: 22, color: AppColors.primaryDark)
+                ? Icon(icon, size: 18, color: AppColors.actionPrimaryDark)
                 : _ButtonContent(
                     label: label!,
                     icon: icon,
-                    color: AppColors.primaryDark,
+                    color: AppColors.actionPrimaryDark,
                   ),
           ),
         ),
@@ -157,8 +155,8 @@ class _ButtonContent extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 19, color: color),
-              const SizedBox(width: 7),
+              Icon(icon, size: 18, color: color),
+              const SizedBox(width: 6),
             ],
             Text(
               label,
@@ -194,23 +192,35 @@ class AppCompactActionButton extends StatelessWidget {
       onPressed: loading ? null : onPressed,
       style: FilledButton.styleFrom(
         backgroundColor: secondary
-            ? const Color(0xFFF3F3F3)
-            : const Color(0xFFFFD21A),
-        foregroundColor: AppColors.textPrimary,
+            ? AppColors.actionSoft
+            : AppColors.actionPrimary,
+        foregroundColor: secondary
+            ? AppColors.actionPrimaryDark
+            : AppColors.onAction,
+        disabledBackgroundColor: loading
+            ? (secondary ? AppColors.actionSoft : AppColors.actionPrimary)
+            : null,
         shape: const StadiumBorder(),
         padding: EdgeInsets.zero,
       ),
       child: loading
           ? Semantics(
               label: label,
-              child: const AppLoadingIndicator(dotSize: 5),
+              child: AppLoadingIndicator(
+                dotSize: 5,
+                color: secondary
+                    ? AppColors.actionPrimaryDark
+                    : AppColors.onAction,
+              ),
             )
           : _ButtonContent(
               label: label,
               icon: icon,
               color: onPressed == null
                   ? AppColors.textSecondary
-                  : AppColors.textPrimary,
+                  : secondary
+                  ? AppColors.actionPrimaryDark
+                  : AppColors.onAction,
             ),
     ),
   );

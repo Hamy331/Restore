@@ -215,9 +215,9 @@ class _Action extends StatelessWidget {
       onPressed: onTap,
       style: TextButton.styleFrom(
         foregroundColor: primary
-            ? AppColors.primaryDark
+            ? AppColors.actionPrimaryDark
             : AppColors.textPrimary,
-        backgroundColor: primary ? AppColors.primarySoft : AppColors.cream,
+        backgroundColor: primary ? AppColors.actionSoft : AppColors.cream,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         minimumSize: const Size(0, 36),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
