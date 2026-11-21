@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { Button, Form, Input, Space, Switch, Table, Tag, Tooltip, message } from 'antd';
-import { Session } from '../../shared/api/session';
+import { Session, errorText } from '../../shared/api/session';
 import { usePage } from '../../shared/api/usePage';
-import { useResource } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { EditDialog } from '../../shared/ui/EditDialog';
 
 type Fields = { title: string; content: string; active: boolean };
-type Doc = Fields & { id: string; syncedAt: string | null; updatedAt: string };
 type Editor =
-  | { type: 'edit'; row?: Doc }
+  | { type: 'edit'; row?: Fields & { id: string; updatedAt: string } }
   | { type: 'index' | 'embed' | 'delete'; row: Doc }
   | { type: 'file' | 'catalog' | 'cleanup' };
 type EmbedIndex = {
@@ -19,19 +17,24 @@ type EmbedIndex = {
   documentVersion: string | null;
   errorCode: string | null;
 } | null;
+// Danh sách không kèm nội dung; nội dung chỉ tải khi mở Sửa
+type Doc = {
+  id: string;
+  title: string;
+  active: boolean;
+  syncedAt: string | null;
+  updatedAt: string;
+  aiIndex: EmbedIndex;
+};
 const ragPath = (id: string) => '/ai/rag/documents/' + encodeURIComponent(id) + '/index';
 
 // Trạng thái embedding AI của một tài liệu; READY nhưng tài liệu đã sửa sau đó thì cần tạo lại
-function EmbedStatus({ session, row }: { session: Session; row: Doc }) {
-  const { data, error } = useResource<EmbedIndex>(session, ragPath(row.id));
-  if (data === undefined && !error) return <span className="muted">Đang tải…</span>;
+function EmbedStatus({ data, updatedAt }: { data: EmbedIndex; updatedAt: string }) {
   const built = data?.indexedAt
     ? `${data.model} · ${new Date(data.indexedAt).toLocaleString('vi-VN')}`
     : undefined;
-  const current = !!data?.documentVersion && +new Date(data.documentVersion) === +new Date(row.updatedAt);
-  const [color, label, hint] = error
-    ? ['default', 'Không rõ', error]
-    : !data || data.status === 'IDLE'
+  const current = !!data?.documentVersion && +new Date(data.documentVersion) === +new Date(updatedAt);
+  const [color, label, hint] = !data || data.status === 'IDLE'
       ? ['default', 'Chưa tạo']
       : data.status === 'INDEXING'
         ? ['processing', 'Đang tạo']
@@ -50,12 +53,22 @@ export function Knowledge({ session }: { session: Session }) {
   const list = usePage<Doc>(session, '/admin/knowledge');
   const [editor, setEditor] = useState<Editor>(),
     [file, setFile] = useState<File>(),
-    [embedRun, setEmbedRun] = useState(0);
+    [opening, setOpening] = useState<string>();
   const close = () => {
     setEditor(undefined);
     setFile(undefined);
   };
   const row = editor && 'row' in editor ? editor.row : undefined;
+  async function openEdit(id: string) {
+    setOpening(id);
+    try {
+      setEditor({ type: 'edit', row: await session.call('/admin/knowledge/' + encodeURIComponent(id)) });
+    } catch (err) {
+      message.error(errorText(err));
+    } finally {
+      setOpening(undefined);
+    }
+  }
   async function save(v: Fields) {
     if (!editor) return;
     const path = '/admin/knowledge' + (row ? '/' + encodeURIComponent(row.id) : '');
@@ -73,8 +86,9 @@ export function Knowledge({ session }: { session: Session }) {
           message.success(
             `Đã tạo embedding ${chunks} đoạn.` + (cleanupPending ? ' Vector cũ sẽ được dọn sau.' : ''),
           );
-        } finally {
-          setEmbedRun((n) => n + 1); // Lỗi cũng đổi trạng thái (FAILED), nên luôn tải lại cột
+        } catch (err) {
+          list.reload(); // Lỗi được ghi thành trạng thái FAILED, tải lại để cột hiện đúng
+          throw err;
         }
         return;
       }
@@ -151,15 +165,19 @@ export function Knowledge({ session }: { session: Session }) {
             },
             {
               title: 'Embedding AI',
-              render: (_, r) => (
-                <EmbedStatus key={r.updatedAt + '/' + embedRun} session={session} row={r} />
-              ),
+              render: (_, r) => <EmbedStatus data={r.aiIndex} updatedAt={r.updatedAt} />,
             },
             {
               title: 'Thao tác',
               render: (_, row) => (
                 <Space>
-                  <Button onClick={() => setEditor({ type: 'edit', row })}>Sửa</Button>
+                  <Button
+                    loading={opening === row.id}
+                    disabled={!!opening}
+                    onClick={() => openEdit(row.id)}
+                  >
+                    Sửa
+                  </Button>
                   <Button onClick={() => setEditor({ type: 'index', row })}>Lập chỉ mục</Button>
                   <Button onClick={() => setEditor({ type: 'embed', row })}>Tạo embedding</Button>
                   <Button danger onClick={() => setEditor({ type: 'delete', row })}>

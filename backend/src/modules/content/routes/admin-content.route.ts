@@ -77,12 +77,21 @@ adminContentRouter.post('/tickets/:id/status', manageContent, validate({ params:
 /* ---------- Tài liệu kiến thức ---------- */
 
 /**
- * Mọi tài liệu, cập nhật gần nhất trước
+ * Mọi tài liệu, cập nhật gần nhất trước; không kèm nội dung
  *
  * Query params:
  *  - page?: number (mặc định 1)
+ *
+ * Trả về: { items: [{ id, title, active, syncedAt, updatedAt, aiIndex }], total, page }
  */
 adminContentRouter.get('/knowledge', manageContent, validate({ query: pageOnlyQuery }), knowledgeController.listForAdmin);
+
+/**
+ * Một tài liệu kèm nội dung để sửa
+ *
+ * Trả về: { id, title, content, active, syncedAt, updatedAt }
+ */
+adminContentRouter.get('/knowledge/:id', manageContent, validate({ params: idParams }), knowledgeController.getForAdmin);
 
 /**
  * Đồng bộ danh mục đang dùng vào tài liệu hệ thống 'system-catalog' và lập chỉ mục

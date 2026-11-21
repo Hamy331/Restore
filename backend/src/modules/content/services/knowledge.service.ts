@@ -34,6 +34,8 @@ export async function listForAdmin({ page }: PageQuery) {
   return { items, total, page };
 }
 
+export const getForAdmin = (id: string) => knowledgeRepository.findForAdmin(id);
+
 /** Ghi danh mục đang dùng vào tài liệu hệ thống và lập chỉ mục ngay */
 export function syncCatalog(actorId: string) {
   return withQuotaTransaction(async (tx) => {
