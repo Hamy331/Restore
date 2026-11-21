@@ -62,6 +62,7 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
           AND (cardinality(${filters.conditions}::text[]) = 0 OR l.condition::text = ANY(${filters.conditions}::text[]))
           AND ${dealMatch(filters.deals)}
           AND ${attributesMatch(filters.attributes)}
+          AND ${attributeRangesMatch(filters.attributeRanges)}
           AND (${filters.minPrice}::numeric IS NULL OR l.price >= ${filters.minPrice}::numeric)
           AND (${filters.maxPrice}::numeric IS NULL OR l.price <= ${filters.maxPrice}::numeric)
         ORDER BY ${orderBy(filters, distance, sort)}`;
@@ -102,6 +103,19 @@ const attributesMatch = (attributes: Record<string, string[]>) => {
   if (!entries.length) return Prisma.sql`TRUE`;
   return Prisma.join(entries.map(([key, values]) =>
     Prisma.sql`l.attributes ->> ${key} = ANY(${values}::text[])`), ' AND ', '(', ')');
+};
+
+/** Thuộc tính dạng số nằm trong khoảng đã chọn; tin không có số (hoặc lưu sai kiểu) không khớp */
+const attributeRangesMatch = (ranges: Record<string, { min: string | null; max: string | null }>) => {
+  const conditions = Object.entries(ranges).flatMap(([key, { min, max }]) => {
+    const value = Prisma.sql`(CASE WHEN jsonb_typeof(l.attributes -> ${key}) = 'number'
+      THEN (l.attributes ->> ${key})::numeric END)`;
+    return [
+      ...(min !== null ? [Prisma.sql`${value} >= ${min}::numeric`] : []),
+      ...(max !== null ? [Prisma.sql`${value} <= ${max}::numeric`] : []),
+    ];
+  });
+  return conditions.length ? Prisma.join(conditions, ' AND ', '(', ')') : Prisma.sql`TRUE`;
 };
 
 /** Thứ tự mặc định của feed: gần nhất (nếu có), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian */
