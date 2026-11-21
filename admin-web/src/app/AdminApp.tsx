@@ -6,6 +6,7 @@ import { CalendarOutlined, LogoutOutlined, SyncOutlined } from '@ant-design/icon
 import { MarketplaceLink } from './MarketplaceLink';
 import { WorkspaceContext } from './workspace';
 import { sections } from './navigation';
+import { readRoute, routeHash } from './route';
 
 type NavigationProps = {
   items: MenuProps['items'];
@@ -67,20 +68,10 @@ function MobileNavigation(props: NavigationProps) {
   );
 }
 
-function readRoute() {
-  const [key = '', filter = ''] = window.location.hash.slice(1).split('/');
-  try {
-    return { key, filter: decodeURIComponent(filter) };
-  } catch {
-    return { key, filter: '' };
-  }
-}
-
 export function AdminApp() {
   const { lg: desktop } = Grid.useBreakpoint();
   const [auth, setAuth] = useState<Awaited<ReturnType<typeof Session.login>>>();
-  // Mục đang xem nằm trên URL (#muc/boloc): Back/Forward, F5 và gửi link đều mở đúng mục
-  const [{ key, filter }, setRoute] = useState(readRoute);
+  const [{ key, filter }, setRoute] = useState(() => readRoute());
   useEffect(() => {
     const follow = () => {
       setRoute(readRoute());
@@ -167,7 +158,7 @@ export function AdminApp() {
   const View = active.View;
   function openSection(next: string, nextFilter = '') {
     if (!visible.some((item) => item.key === next)) return;
-    window.location.hash = next + (nextFilter ? '/' + encodeURIComponent(nextFilter) : '');
+    window.location.hash = routeHash(next, nextFilter);
   }
   const groups = [...new Set(visible.map((item) => item.group))];
   const items: MenuProps['items'] = groups.flatMap((group): NonNullable<MenuProps['items']> => {

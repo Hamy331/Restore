@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Button, Form, Input, Space, Switch, Table } from 'antd';
+import { Button, Form, Input, Space, Switch, Table, Tag, Tooltip, message } from 'antd';
 import { Session } from '../../shared/api/session';
 import { usePage } from '../../shared/api/usePage';
+import { useResource } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { EditDialog } from '../../shared/ui/EditDialog';
 
@@ -9,12 +10,47 @@ type Fields = { title: string; content: string; active: boolean };
 type Doc = Fields & { id: string; syncedAt: string | null; updatedAt: string };
 type Editor =
   | { type: 'edit'; row?: Doc }
-  | { type: 'index' | 'delete'; row: Doc }
-  | { type: 'file' | 'catalog' };
+  | { type: 'index' | 'embed' | 'delete'; row: Doc }
+  | { type: 'file' | 'catalog' | 'cleanup' };
+type EmbedIndex = {
+  status: string;
+  model: string | null;
+  indexedAt: string | null;
+  documentVersion: string | null;
+  errorCode: string | null;
+} | null;
+const ragPath = (id: string) => '/ai/rag/documents/' + encodeURIComponent(id) + '/index';
+
+// Trạng thái embedding AI của một tài liệu; READY nhưng tài liệu đã sửa sau đó thì cần tạo lại
+function EmbedStatus({ session, row }: { session: Session; row: Doc }) {
+  const { data, error } = useResource<EmbedIndex>(session, ragPath(row.id));
+  if (data === undefined && !error) return <span className="muted">Đang tải…</span>;
+  const built = data?.indexedAt
+    ? `${data.model} · ${new Date(data.indexedAt).toLocaleString('vi-VN')}`
+    : undefined;
+  const current = !!data?.documentVersion && +new Date(data.documentVersion) === +new Date(row.updatedAt);
+  const [color, label, hint] = error
+    ? ['default', 'Không rõ', error]
+    : !data || data.status === 'IDLE'
+      ? ['default', 'Chưa tạo']
+      : data.status === 'INDEXING'
+        ? ['processing', 'Đang tạo']
+        : data.status === 'FAILED'
+          ? ['error', 'Lỗi', 'Mã lỗi: ' + (data.errorCode ?? 'không rõ')]
+          : current
+            ? ['success', 'Sẵn sàng', built]
+            : ['warning', 'Cần tạo lại', 'Tài liệu đã sửa sau lần tạo embedding · ' + built];
+  return (
+    <Tooltip title={hint}>
+      <Tag color={color}>{label}</Tag>
+    </Tooltip>
+  );
+}
 export function Knowledge({ session }: { session: Session }) {
   const list = usePage<Doc>(session, '/admin/knowledge');
   const [editor, setEditor] = useState<Editor>(),
-    [file, setFile] = useState<File>();
+    [file, setFile] = useState<File>(),
+    [embedRun, setEmbedRun] = useState(0);
   const close = () => {
     setEditor(undefined);
     setFile(undefined);
@@ -28,6 +64,30 @@ export function Knowledge({ session }: { session: Session }) {
         return session.call('/admin/knowledge/catalog-sync', {});
       case 'index':
         return session.call(path + '/sync', { updatedAt: editor.row.updatedAt });
+      case 'embed': {
+        try {
+          const { chunks, cleanupPending } = await session.call<{
+            chunks: number;
+            cleanupPending: boolean;
+          }>(ragPath(editor.row.id), {});
+          message.success(
+            `Đã tạo embedding ${chunks} đoạn.` + (cleanupPending ? ' Vector cũ sẽ được dọn sau.' : ''),
+          );
+        } finally {
+          setEmbedRun((n) => n + 1); // Lỗi cũng đổi trạng thái (FAILED), nên luôn tải lại cột
+        }
+        return;
+      }
+      case 'cleanup': {
+        const { deleted, remaining } = await session.call<{ deleted: number; remaining: number }>(
+          '/ai/rag/cleanup',
+          {},
+        );
+        message.success(
+          `Đã xóa ${deleted} vector cũ.` + (remaining ? ` Còn ${remaining} chờ xóa.` : ''),
+        );
+        return;
+      }
       case 'delete':
         return session.remove(path, editor.row.updatedAt);
       case 'file': {
@@ -57,6 +117,8 @@ export function Knowledge({ session }: { session: Session }) {
     edit: row ? 'Sửa tài liệu' : 'Tạo tài liệu',
     file: 'Nhập từ tệp',
     index: 'Lập chỉ mục',
+    embed: 'Tạo embedding AI',
+    cleanup: 'Dọn vector cũ',
     delete: 'Xóa tài liệu',
     catalog: 'Đồng bộ danh mục',
   };
@@ -68,6 +130,7 @@ export function Knowledge({ session }: { session: Session }) {
         </Button>
         <Button onClick={() => setEditor({ type: 'file' })}>Nhập từ tệp</Button>
         <Button onClick={() => setEditor({ type: 'catalog' })}>Đồng bộ danh mục</Button>
+        <Button onClick={() => setEditor({ type: 'cleanup' })}>Dọn vector cũ</Button>
       </Space>
       {list.error ? (
         <Failure error={list.error} reload={list.reload} />
@@ -77,7 +140,7 @@ export function Knowledge({ session }: { session: Session }) {
           dataSource={list.data?.items}
           loading={!list.data}
           pagination={list.pagination}
-          scroll={{ x: 650 }}
+          scroll={{ x: 860 }}
           columns={[
             { title: 'Tài liệu', dataIndex: 'title' },
             { title: 'Sử dụng', render: (_, r) => (r.active ? 'Đang bật' : 'Đã tắt') },
@@ -87,11 +150,18 @@ export function Knowledge({ session }: { session: Session }) {
                 r.syncedAt ? new Date(r.syncedAt).toLocaleString('vi-VN') : 'Chưa lập',
             },
             {
+              title: 'Embedding AI',
+              render: (_, r) => (
+                <EmbedStatus key={r.updatedAt + '/' + embedRun} session={session} row={r} />
+              ),
+            },
+            {
               title: 'Thao tác',
               render: (_, row) => (
                 <Space>
                   <Button onClick={() => setEditor({ type: 'edit', row })}>Sửa</Button>
                   <Button onClick={() => setEditor({ type: 'index', row })}>Lập chỉ mục</Button>
+                  <Button onClick={() => setEditor({ type: 'embed', row })}>Tạo embedding</Button>
                   <Button danger onClick={() => setEditor({ type: 'delete', row })}>
                     Xóa
                   </Button>
@@ -142,6 +212,16 @@ export function Knowledge({ session }: { session: Session }) {
           )}
           {editor.type === 'index' && (
             <p>Lập chỉ mục để có thể tìm kiếm tài liệu “{row?.title}”.</p>
+          )}
+          {editor.type === 'embed' && (
+            <p>
+              Tạo embedding cho “{row?.title}” để trợ lý AI dùng tài liệu khi trả lời. Tài liệu cần
+              đang bật và đã lập chỉ mục; tài liệu dài hơn 40 đoạn cần được chia nhỏ. Có thể mất
+              đến 2–3 phút.
+            </p>
+          )}
+          {editor.type === 'cleanup' && (
+            <p>Xóa khỏi Qdrant các vector của tài liệu đã sửa, đã tắt hoặc đã xóa?</p>
           )}
           {editor.type === 'delete' && (
             <p>Xóa “{row?.title}” cùng chỉ mục tìm kiếm của tài liệu?</p>
