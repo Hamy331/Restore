@@ -833,3 +833,8 @@ h1 {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.view-loading {
+  display: block;
+  margin: 48px auto;
+}
