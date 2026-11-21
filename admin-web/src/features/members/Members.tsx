@@ -27,13 +27,13 @@ const types: { value: MemberType | ''; label: string }[] = [
   { value: '', label: 'Tất cả thành viên' },
   { value: 'PERSONAL', label: 'Cá nhân' },
   { value: 'BASIC', label: 'Bán chuyên' },
-  { value: 'PRO', label: 'Cửa hàng' },
+  { value: 'PRO', label: 'Cửa hàng Pro' },
   { value: 'ADMIN', label: 'Quản trị viên' },
 ];
 const tiers: Record<Member['planTier'], { label: string; color: string }> = {
   PERSONAL: { label: 'Cá nhân', color: 'default' },
   BASIC: { label: 'Bán chuyên', color: 'blue' },
-  PRO: { label: 'Cửa hàng', color: 'purple' },
+  PRO: { label: 'Cửa hàng Pro', color: 'purple' },
 };
 const statuses: Record<string, string> = {
   ACTIVE: 'Hoạt động',

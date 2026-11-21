@@ -57,7 +57,7 @@ const rejectReasons: Record<string, string> = {
   TOO_MUCH_TEXT: 'Quá nhiều chữ trên ảnh',
   OTHER: 'Lý do khác (ghi rõ)',
 };
-const tierLabels: Record<string, string> = { PRO: 'Cửa hàng', BASIC: 'Bán chuyên', PERSONAL: 'Cá nhân' };
+const tierLabels: Record<string, string> = { PRO: 'Cửa hàng Pro', BASIC: 'Bán chuyên', PERSONAL: 'Cá nhân' };
 
 const dateText = (value: string | null) => (value ? new Date(value).toLocaleDateString('vi-VN') : '—');
 

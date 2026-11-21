@@ -72,7 +72,7 @@ export async function assertOriginalPrice(tx: Db, ownerId: string, now: Date,
   if (data.originalPrice === null) return;
   const plan = await storePackageForUser(tx, ownerId, now);
   if (plan.package.tier !== 'PRO') {
-    throw new AppError(403, 'ORIGINAL_PRICE_NOT_ALLOWED', 'Chỉ gói Cửa hàng được đăng giá gốc để bán giảm giá.', 'originalPrice');
+    throw new AppError(403, 'ORIGINAL_PRICE_NOT_ALLOWED', 'Chỉ gói Cửa hàng Pro được đăng giá gốc để bán giảm giá.', 'originalPrice');
   }
   if (BigInt(data.originalPrice) <= BigInt(data.price)) {
     throw new AppError(400, 'INVALID_LISTING', 'Giá gốc phải cao hơn giá bán.', 'originalPrice');
@@ -313,7 +313,7 @@ export async function setAutoExtend(ownerId: string, id: string, enabled: boolea
   const listing = await withQuotaTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (enabled && !(await storePackageForUser(tx, ownerId, new Date())).package.autoExtend) {
-      throw new AppError(403, 'AUTO_EXTEND_NOT_AVAILABLE', 'Tự gia hạn chỉ có ở gói Cửa hàng.');
+      throw new AppError(403, 'AUTO_EXTEND_NOT_AVAILABLE', 'Tự gia hạn chỉ có ở gói Cửa hàng Pro.');
     }
     await updateOwnedListing(tx, id, ownerId, current.status, { autoExtend: enabled });
     return listingRepository.findSelected(tx, id);
