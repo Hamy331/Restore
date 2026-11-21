@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_dimesions.dart';
 
@@ -10,6 +11,41 @@ import 'desktop_footer.dart';
 /// 1200px ở giữa, hai bên để trống).
 bool isDesktopLayout(BuildContext context) =>
     MediaQuery.sizeOf(context).width >= AppDimesions.desktopWidth;
+
+/// Trang gốc của menu Tài khoản trên desktop: vào bằng menu trái nên không
+/// cần nút quay lại.
+const _desktopSectionRoots = {
+  '/account',
+  '/account/my-reviews',
+  '/account/ratings',
+  '/settings',
+  '/create-listing/drafts',
+  '/boost',
+  '/insights',
+  '/my-shop',
+  '/shop-posters',
+  '/following',
+  '/wanted-alerts',
+  '/credits',
+  '/plans',
+};
+
+/// Trang có cần nút quay lại không.
+///
+/// Điện thoại luôn cần. Trên desktop chỉ trang gốc của menu Tài khoản mở
+/// bằng menu trái (`go`, không có trang phía dưới) là không cần; trang con
+/// như Mua xu, Lịch sử, Tạo thông báo (mở chồng bằng `push`, hoặc không phải
+/// trang gốc của menu) vẫn có nút quay lại để người dùng trở về.
+bool needsBackButton(BuildContext context) {
+  if (!isDesktopLayout(context)) return true;
+  if (context.canPop()) return true;
+  try {
+    final path = GoRouterState.of(context).uri.path;
+    return !_desktopSectionRoots.contains(path);
+  } catch (_) {
+    return true;
+  }
+}
 
 /// Lề hai bên để nội dung rộng [content] nằm giữa màn hình
 double desktopGutter(

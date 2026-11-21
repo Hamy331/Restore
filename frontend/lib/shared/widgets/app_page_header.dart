@@ -6,6 +6,8 @@ import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 
 import 'app_circle_icon_button.dart';
+import 'desktop/desktop_layout.dart';
+import 'desktop/desktop_page_title.dart';
 
 /// Tiêu đề chung của các tab mobile. Mỗi tab tự chọn nút hai bên.
 class AppTabHeader extends StatelessWidget {
@@ -71,6 +73,17 @@ class AppPageTitleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Web desktop: tiêu đề kiểu trang desktop. Trang gốc của menu không có
+    // nút quay lại; trang con hiện breadcrumb (hoặc nút quay lại nếu trang
+    // không thuộc menu)
+    if (isDesktopLayout(context)) {
+      return DesktopPageTitle(
+        title: title,
+        subtitle: this.subtitle,
+        trailing: this.trailing,
+        onBack: needsBackButton(context) ? onBack : null,
+      );
+    }
     final l10n = AppLocalizations.of(context)!;
     final subtitle = this.subtitle;
     final trailing = this.trailing;
@@ -145,6 +158,18 @@ class AppPageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Web desktop: khối trắng với tiêu đề trang, không có nền xanh / nút ←
+    if (isDesktopLayout(context)) {
+      return ColoredBox(
+        color: AppColors.surface,
+        child: DesktopPageTitle(
+          title: title,
+          subtitle: subtitle,
+          trailing: trailing,
+          onBack: needsBackButton(context) ? onBack : null,
+        ),
+      );
+    }
     // Nền xanh đậm: icon thanh trạng thái màu sáng
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
