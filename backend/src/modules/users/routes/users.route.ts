@@ -6,6 +6,7 @@ import { AuthRequest, requirePermission, verifyToken } from '../../../middleware
 import * as profile from '../services/profile.service.js';
 import * as usersService from '../services/users.service.js';
 import * as savedAddresses from '../services/saved-address.service.js';
+import * as recentAreas from '../services/recent-area.service.js';
 
 /** /api/v1/users */
 const usersRouter = Router();
@@ -34,6 +35,15 @@ usersRouter.patch('/me/addresses/:addressId', handle((req) =>
   savedAddresses.renameAddress(req.user!.userId, req.params.addressId as string, req.body)));
 usersRouter.delete('/me/addresses/:addressId', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try { await savedAddresses.deleteAddress(req.user!.userId, req.params.addressId as string); res.status(204).end(); } catch (error) { next(error); }
+});
+/**
+ * Khu vực đã chọn gần đây ở trang chọn khu vực (tối đa 8, mới nhất trước), cùng dạng
+ * kết quả GET /catalog/locations/search. POST { code } đưa lên đầu, DELETE /:code bỏ khỏi danh sách.
+ */
+usersRouter.get('/me/recent-areas', handle((req) => recentAreas.listRecentAreas(req.user!.userId)));
+usersRouter.post('/me/recent-areas', handle((req) => recentAreas.saveRecentArea(req.user!.userId, req.body)));
+usersRouter.delete('/me/recent-areas/:code', async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try { await recentAreas.deleteRecentArea(req.user!.userId, req.params.code as string); res.status(204).end(); } catch (error) { next(error); }
 });
 usersRouter.get('/me/reviews', handle(req => listMyReviews(req.user!.userId, req.query)));
 usersRouter.get('/:id', handle((req) => profile.getPublicProfile(req.params.id as string, req.user!.userId)));

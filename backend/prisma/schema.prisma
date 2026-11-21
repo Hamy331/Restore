@@ -84,6 +84,7 @@ model User {
   notifications  Notification[]
   pushDevices    PushDevice[]
   savedAddresses SavedAddress[]
+  recentAreas    RecentArea[]
 
   @@index([status, suspendedUntil])
 }
@@ -1091,6 +1092,18 @@ model ShopBanner {
 }
 
 /// Địa chỉ đã lưu để chọn lại khi đăng tin (tối đa 5 mỗi người, tự lưu khi đăng / sửa tin)
+/// Khu vực (tỉnh/thành hoặc phường/xã) người dùng chọn gần đây ở trang chọn khu vực, tối đa 8 mỗi người
+model RecentArea {
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Mã tỉnh/thành hoặc phường/xã (catalog locations)
+  code   String   @db.VarChar(10)
+  usedAt DateTime @default(now())
+
+  @@id([userId, code])
+  @@index([userId, usedAt])
+}
+
 model SavedAddress {
   id            String   @id @default(uuid())
   userId        String
