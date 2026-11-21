@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Alert, Button, Card, Drawer, Form, Grid, Input, Menu, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { Alert, Button, Card, Drawer, Form, Grid, Input, Menu, Spin, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { Session, errorText } from '../shared/api/session';
 import { CalendarOutlined, LogoutOutlined, SyncOutlined } from '@ant-design/icons';
@@ -67,26 +67,48 @@ function MobileNavigation(props: NavigationProps) {
   );
 }
 
+function readRoute() {
+  const [key = '', filter = ''] = window.location.hash.slice(1).split('/');
+  try {
+    return { key, filter: decodeURIComponent(filter) };
+  } catch {
+    return { key, filter: '' };
+  }
+}
+
 export function AdminApp() {
   const { lg: desktop } = Grid.useBreakpoint();
   const [auth, setAuth] = useState<Awaited<ReturnType<typeof Session.login>>>();
-  const [filter, setFilter] = useState('');
-  const [key, select] = useState('dashboard'),
-    [busy, setBusy] = useState(false),
+  // Mục đang xem nằm trên URL (#muc/boloc): Back/Forward, F5 và gửi link đều mở đúng mục
+  const [{ key, filter }, setRoute] = useState(readRoute);
+  useEffect(() => {
+    const follow = () => {
+      setRoute(readRoute());
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('hashchange', follow);
+    return () => window.removeEventListener('hashchange', follow);
+  }, []);
+  const [busy, setBusy] = useState(false),
+    [restoring, setRestoring] = useState(Session.hasStored),
     [error, setError] = useState('');
+  function expired() {
+    setAuth(undefined);
+    setError('Phiên đăng nhập đã hết hạn.');
+  }
+  useEffect(() => {
+    if (!restoring) return;
+    Session.restore(expired)
+      .then(setAuth)
+      .catch((err) => setError(errorText(err)))
+      .finally(() => setRestoring(false));
+  }, []); // Chỉ chạy một lần khi mở trang
   async function login({ email, password }: { email: string; password: string }) {
     if (busy) return;
     setBusy(true);
     setError('');
     try {
-      setAuth(
-        await Session.login(email.trim(), password, () => {
-          setAuth(undefined);
-          setError('Phiên đăng nhập đã hết hạn.');
-        }),
-      );
-      select('dashboard');
-      setFilter('');
+      setAuth(await Session.login(email.trim(), password, expired));
     } catch (err) {
       setError(errorText(err));
     } finally {
@@ -105,6 +127,12 @@ export function AdminApp() {
       setBusy(false);
     }
   }
+  if (restoring)
+    return (
+      <main className="login">
+        <Spin size="large" aria-label="Đang mở lại phiên đăng nhập" />
+      </main>
+    );
   if (!auth)
     return (
       <main className="login">
@@ -139,9 +167,7 @@ export function AdminApp() {
   const View = active.View;
   function openSection(next: string, nextFilter = '') {
     if (!visible.some((item) => item.key === next)) return;
-    select(next);
-    setFilter(nextFilter);
-    window.scrollTo(0, 0);
+    window.location.hash = next + (nextFilter ? '/' + encodeURIComponent(nextFilter) : '');
   }
   const groups = [...new Set(visible.map((item) => item.group))];
   const items: MenuProps['items'] = groups.flatMap((group): NonNullable<MenuProps['items']> => {
@@ -200,7 +226,7 @@ export function AdminApp() {
               </div>
             </div>
           </header>
-          <main className="content" key={active.key}>
+          <main className="content" key={active.key + '/' + filter}>
             <div className="page-heading">
               {active.key === 'dashboard' && <div className="date-kicker">{date}</div>}
               <h1>{active.label}</h1>
