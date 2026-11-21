@@ -584,8 +584,11 @@ h1 {
   max-width: calc(100vw - 32px);
 }
 .ant-modal-body {
-  max-height: calc(100dvh - 190px);
+  /* top 100px của antd + tiêu đề + footer: nút Lưu/Huỷ luôn nằm trong màn hình */
+  max-height: calc(100dvh - 240px);
   overflow: auto;
+  /* UUID, email, link bằng chứng dài không được đẩy modal tràn ngang */
+  overflow-wrap: anywhere;
 }
 .toolbar .notice {
   margin: 0;
@@ -717,7 +720,9 @@ h1 {
   .ant-modal {
     width: calc(100vw - 24px) !important;
     max-width: calc(100vw - 24px);
-    margin: 12px auto;
+    /* antd đặt top: 100px, đẩy nút Lưu/Huỷ xuống dưới mép màn hình điện thoại */
+    top: 12px;
+    margin: 0 auto 12px;
   }
   .ant-modal-body {
     max-height: calc(100dvh - 160px);
