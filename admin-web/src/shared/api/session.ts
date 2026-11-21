@@ -37,6 +37,25 @@ export type Admin = { fullName: string; email: string; permissions: string[] };
 export const errorText = (err: unknown) =>
   err instanceof Error ? err.message : 'Không thể kết nối.';
 
+// sessionStorage: tải lại trang vẫn giữ phiên, đóng tab là mất
+const storageKey = 'restore-admin-session';
+function store(tokens?: Tokens) {
+  try {
+    if (tokens) sessionStorage.setItem(storageKey, JSON.stringify(tokens));
+    else sessionStorage.removeItem(storageKey);
+  } catch {
+    // Trình duyệt chặn storage: phiên chỉ sống trong bộ nhớ như trước
+  }
+}
+function stored(): Tokens | undefined {
+  try {
+    const tokens = JSON.parse(sessionStorage.getItem(storageKey) ?? 'null');
+    return tokens?.accessToken && tokens?.refreshToken ? tokens : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export class Session {
   private refresh?: Promise<void>;
   private closed = false;
@@ -44,18 +63,39 @@ export class Session {
     private tokens: Tokens,
     private expired: () => void,
   ) {}
+  static hasStored() {
+    return !!stored();
+  }
   static async login(email: string, password: string, expired: () => void) {
     const tokens = await request<Tokens>('/auth/login', undefined, { email, password });
     const session = new Session(tokens, expired);
     try {
-      const admin = await session.call<Admin>('/admin/me');
-      if (!admin.permissions?.includes('admin:access'))
-        throw new Error('Tài khoản chưa được cấp quyền quản trị web.');
+      const admin = await session.admin();
+      store(session.tokens);
       return { session, admin };
     } catch (err) {
       await session.logout().catch(() => undefined);
       throw err;
     }
+  }
+  /** Mở lại phiên đã lưu trong tab. Lỗi mạng giữ token để thử lại, token hết hạn thì xoá. */
+  static async restore(expired: () => void) {
+    const tokens = stored();
+    if (!tokens) return undefined;
+    const session = new Session(tokens, expired);
+    try {
+      return { session, admin: await session.admin() };
+    } catch (err) {
+      const offline = err instanceof TypeError || (err instanceof ApiError && err.status >= 500);
+      if (!offline) await session.logout().catch(() => undefined);
+      throw err;
+    }
+  }
+  private async admin() {
+    const admin = await this.call<Admin>('/admin/me');
+    if (!admin.permissions?.includes('admin:access'))
+      throw new Error('Tài khoản chưa được cấp quyền quản trị web.');
+    return admin;
   }
   async call<T>(path: string, body?: unknown): Promise<T> {
     return this.authorized((token) => request<T>(path, token, body));
@@ -108,10 +148,12 @@ export class Session {
         })
           .then((tokens) => {
             this.tokens = tokens;
+            if (!this.closed) store(tokens);
           })
           .catch((e) => {
             if (e instanceof ApiError && [401, 403].includes(e.status)) {
               this.closed = true;
+              store();
               this.expired();
             }
             throw e;
@@ -127,6 +169,7 @@ export class Session {
   }
   async logout() {
     this.closed = true;
+    store();
     await this.refresh?.catch(() => undefined);
     await request('/auth/logout', undefined, { refreshToken: this.tokens.refreshToken });
   }

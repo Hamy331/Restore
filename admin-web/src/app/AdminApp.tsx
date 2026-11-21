@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Alert, Button, Card, Drawer, Form, Grid, Input, Menu, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { Alert, Button, Card, Drawer, Form, Grid, Input, Menu, Spin, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { Session, errorText } from '../shared/api/session';
 import { CalendarOutlined, LogoutOutlined, SyncOutlined } from '@ant-design/icons';
@@ -73,18 +73,25 @@ export function AdminApp() {
   const [filter, setFilter] = useState('');
   const [key, select] = useState('dashboard'),
     [busy, setBusy] = useState(false),
+    [restoring, setRestoring] = useState(Session.hasStored),
     [error, setError] = useState('');
+  function expired() {
+    setAuth(undefined);
+    setError('Phiên đăng nhập đã hết hạn.');
+  }
+  useEffect(() => {
+    if (!restoring) return;
+    Session.restore(expired)
+      .then(setAuth)
+      .catch((err) => setError(errorText(err)))
+      .finally(() => setRestoring(false));
+  }, []); // Chỉ chạy một lần khi mở trang
   async function login({ email, password }: { email: string; password: string }) {
     if (busy) return;
     setBusy(true);
     setError('');
     try {
-      setAuth(
-        await Session.login(email.trim(), password, () => {
-          setAuth(undefined);
-          setError('Phiên đăng nhập đã hết hạn.');
-        }),
-      );
+      setAuth(await Session.login(email.trim(), password, expired));
       select('dashboard');
       setFilter('');
     } catch (err) {
@@ -105,6 +112,12 @@ export function AdminApp() {
       setBusy(false);
     }
   }
+  if (restoring)
+    return (
+      <main className="login">
+        <Spin size="large" aria-label="Đang mở lại phiên đăng nhập" />
+      </main>
+    );
   if (!auth)
     return (
       <main className="login">
