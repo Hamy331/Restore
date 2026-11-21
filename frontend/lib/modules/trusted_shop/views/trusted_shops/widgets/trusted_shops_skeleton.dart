@@ -16,7 +16,7 @@ class TrustedShopsSkeleton extends StatelessWidget {
           width: width,
           height: height,
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: AppColors.fill,
             borderRadius: BorderRadius.circular(radius),
           ),
         );

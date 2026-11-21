@@ -530,7 +530,7 @@ class _RoundButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final enabled = onTap != null;
     return Material(
-      color: enabled ? AppColors.primarySoft : AppColors.background,
+      color: enabled ? AppColors.primarySoft : AppColors.fill,
       shape: const CircleBorder(),
       child: InkWell(
         customBorder: const CircleBorder(),

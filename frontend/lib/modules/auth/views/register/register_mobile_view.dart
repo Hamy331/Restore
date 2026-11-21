@@ -48,7 +48,7 @@ class _RegisterMobileViewState extends State<RegisterMobileView> {
       },
       builder: (context, state) => Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: const Color(0xFFFFFCF7),
+        backgroundColor: AppColors.surface,
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {

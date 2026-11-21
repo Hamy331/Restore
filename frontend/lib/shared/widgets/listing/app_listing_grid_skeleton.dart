@@ -13,7 +13,7 @@ class AppListingGridSkeleton extends StatelessWidget {
       child: Container(
         height: 250,
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: AppColors.fill,
           borderRadius: BorderRadius.circular(16),
         ),
       ),

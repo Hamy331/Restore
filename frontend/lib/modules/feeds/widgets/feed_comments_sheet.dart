@@ -314,7 +314,7 @@ class _CommentsState extends State<_Comments> {
                               counterText: '',
                               isDense: true,
                               filled: true,
-                              fillColor: AppColors.background,
+                              fillColor: AppColors.fill,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 14,
                                 vertical: 12,

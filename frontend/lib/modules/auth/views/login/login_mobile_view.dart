@@ -46,7 +46,7 @@ class _LoginMobileViewState extends State<LoginMobileView> {
       builder: (context, state) => AuthScreen(
         title: 'Đăng nhập',
         onBack: () => context.go('/welcome'),
-        backgroundColor: const Color(0xFFFFFCF7),
+        backgroundColor: AppColors.surface,
         child: Form(
           key: _formKey,
           child: Column(

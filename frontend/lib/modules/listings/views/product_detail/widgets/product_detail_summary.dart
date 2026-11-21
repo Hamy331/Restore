@@ -231,7 +231,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: AppColors.fill,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppColors.border),
       ),

@@ -41,7 +41,7 @@ class HomeQuickActions extends StatelessWidget {
       title: l10n.homeQuickWanted,
       description: l10n.homeQuickWantedDesc,
       accent: AppColors.primaryDark,
-      tint: AppColors.primarySoft,
+      tint: const Color(0xFFFFF1D6),
     ),
     HomeQuickAction.trustedShops => _QuickActionStyle(
       icon: AppIcons.verified,

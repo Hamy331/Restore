@@ -14,7 +14,7 @@ class WantedAlertCriteriaChips extends StatelessWidget {
   const WantedAlertCriteriaChips({
     super.key,
     required this.criteria,
-    this.color = AppColors.background,
+    this.color = AppColors.fill,
   });
 
   @override
