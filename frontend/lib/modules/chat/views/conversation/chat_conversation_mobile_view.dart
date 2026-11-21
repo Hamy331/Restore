@@ -118,7 +118,7 @@ Future<void> showMakeOfferSheet(BuildContext context) async {
                 maxLines: 2,
                 decoration: InputDecoration(
                   hintText: 'Mình có thể xem máy tối nay không?',
-                  fillColor: AppColors.background,
+                  fillColor: AppColors.fill,
                 ),
               ),
               const SizedBox(height: 8),
@@ -744,7 +744,7 @@ class _MessageComposer extends StatelessWidget {
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Nhắn tin...',
-                fillColor: AppColors.background,
+                fillColor: AppColors.fill,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(21)),
                   borderSide: BorderSide.none,
@@ -761,8 +761,8 @@ class _MessageComposer extends StatelessWidget {
         TextButton(
           onPressed: onOffer,
           style: TextButton.styleFrom(
-            backgroundColor: AppColors.primarySoft,
-            foregroundColor: AppColors.primaryDark,
+            backgroundColor: AppColors.actionSoft,
+            foregroundColor: AppColors.actionPrimaryDark,
             minimumSize: const Size(68, 36),
             padding: const EdgeInsets.symmetric(horizontal: 7),
           ),

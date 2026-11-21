@@ -224,6 +224,7 @@ class _LiveChatConversationMobileViewState
   Widget build(BuildContext context) {
     final cubit = context.read<ConversationCubit>();
     return Scaffold(
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: BlocConsumer<ConversationCubit, ConversationState>(
           listenWhen: (previous, current) => current.sendFailed,
@@ -273,12 +274,25 @@ class _LiveChatConversationMobileViewState
                     ),
                   ),
                 ),
-                const Divider(height: 1, color: AppColors.border),
+                const Divider(height: 1, color: Color(0xFFF0F2F5)),
                 if (trade?.product case final product?)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
+                  Container(
+                    margin: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
+                    ),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x0A000000),
+                          blurRadius: 10,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
                     ),
                     child: Row(
                       children: [
@@ -326,66 +340,72 @@ class _LiveChatConversationMobileViewState
                   )
                 else
                   Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      padding: const EdgeInsets.all(14),
-                      reverse: true,
-                      itemCount:
-                          state.messages.length + (state.hasOlder ? 1 : 0),
-                      itemBuilder: (_, offset) {
-                        if (offset == state.messages.length) {
-                          return TextButton(
-                            onPressed: () async {
-                              try {
-                                await cubit.older();
-                              } catch (_) {
-                                if (mounted) {
-                                  notice('Không tải được tin nhắn cũ.');
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(14),
+                        reverse: true,
+                        itemCount:
+                            state.messages.length + (state.hasOlder ? 1 : 0),
+                        itemBuilder: (_, offset) {
+                          if (offset == state.messages.length) {
+                            return TextButton(
+                              onPressed: () async {
+                                try {
+                                  await cubit.older();
+                                } catch (_) {
+                                  if (mounted) {
+                                    notice('Không tải được tin nhắn cũ.');
+                                  }
                                 }
-                              }
-                            },
-                            child: const Text('Xem tin nhắn trước'),
-                          );
-                        }
-                        final index = state.messages.length - 1 - offset;
-                        final message = state.messages[index];
-                        final first =
-                            index == 0 ||
-                            !DateUtils.isSameDay(
-                              message.createdAt,
-                              state.messages[index - 1].createdAt,
+                              },
+                              child: const Text('Xem tin nhắn trước'),
                             );
-                        return Column(
-                          key: ValueKey(message.id),
-                          children: [
-                            if (first)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                child: Text(
-                                  DateFormat(
-                                    'EEEE, dd/MM/yyyy',
-                                    Localizations.localeOf(
+                          }
+                          final index = state.messages.length - 1 - offset;
+                          final message = state.messages[index];
+                          final first =
+                              index == 0 ||
+                              !DateUtils.isSameDay(
+                                message.createdAt,
+                                state.messages[index - 1].createdAt,
+                              );
+                          return Column(
+                            key: ValueKey(message.id),
+                            children: [
+                              if (first)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  child: Text(
+                                    DateFormat(
+                                      'EEEE, dd/MM/yyyy',
+                                      Localizations.localeOf(
+                                        context,
+                                      ).languageCode,
+                                    ).format(message.createdAt),
+                                    style: Theme.of(
                                       context,
-                                    ).languageCode,
-                                  ).format(message.createdAt),
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                    ).textTheme.bodySmall,
+                                  ),
                                 ),
+                              _MessageBubble(
+                                message: message,
+                                thread: cubit.conversationId,
+                                mine: state.isMine(message),
+                                onOpenProduct: message.product == null
+                                    ? null
+                                    : () => context.push(
+                                        '/listings/${message.product!.id}',
+                                      ),
                               ),
-                            _MessageBubble(
-                              message: message,
-                              thread: cubit.conversationId,
-                              mine: state.isMine(message),
-                              onOpenProduct: message.product == null
-                                  ? null
-                                  : () => context.push(
-                                      '/listings/${message.product!.id}',
-                                    ),
-                            ),
-                          ],
-                        );
-                      },
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
                 if (state.conversation?.blocked == true)
@@ -452,6 +472,23 @@ class _LiveChatConversationMobileViewState
                             onSubmitted: (_) => send(),
                             decoration: const InputDecoration(
                               hintText: 'Nhắn tin...',
+                              fillColor: AppColors.surface,
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                                borderSide: BorderSide(
+                                  color: Color(0xFFE5E7EB),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                                borderSide: BorderSide(
+                                  color: AppColors.actionPrimary,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -551,7 +588,7 @@ class _MessageBubble extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
         decoration: BoxDecoration(
-          color: mine ? const Color(0xFFFFF1D6) : const Color(0xFFF3F3F3),
+          color: mine ? AppColors.actionSoft : const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
