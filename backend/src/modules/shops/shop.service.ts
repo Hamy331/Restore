@@ -106,9 +106,11 @@ export async function listShopListings(viewerId: string | undefined, id: string,
     ...(query.categoryId ? { categoryId: query.categoryId } : {}),
     ...(query.conditions.length ? { condition: { in: query.conditions } } : {}),
     ...(Object.keys(price).length ? { price } : {}),
+    ...(query.deals.length ? { OR: query.deals.map((deal) => (deal === 'buy' ? { allowSale: true } : { allowExchange: true })) } : {}),
   };
-  const orderBy: Prisma.ListingOrderByWithRelationInput[] = query.sort === 'price_asc' ? [{ price: 'asc' }, { id: 'asc' }]
-    : query.sort === 'price_desc' ? [{ price: 'desc' }, { id: 'asc' }]
+  // Sắp theo giá: tin chỉ trao đổi (giá 0) xếp cuối như trang tìm kiếm
+  const orderBy: Prisma.ListingOrderByWithRelationInput[] = query.sort === 'price_asc' ? [{ allowSale: 'desc' }, { price: 'asc' }, { id: 'asc' }]
+    : query.sort === 'price_desc' ? [{ allowSale: 'desc' }, { price: 'desc' }, { id: 'asc' }]
     : [{ publishedAt: 'desc' }, { id: 'desc' }];
   const [listings, totalItems] = await Promise.all([
     shopRepository.findListings(where, limit, skip, orderBy),
