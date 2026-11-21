@@ -94,7 +94,7 @@ class MockAreaSearchRepository implements AreaSearchRepository {
 
 /// Gọi backend:
 /// - `GET /catalog/locations/search?q=&limit=` → `{ data: [{ code, name, shortName, level, parentName, center }] }`
-/// - `GET /users/me/recent-areas` → cùng cấu trúc, mới nhất trước (backend chưa có, lỗi thì ẩn phần gần đây)
+/// - `GET /users/me/recent-areas` → cùng cấu trúc, mới nhất trước, tối đa 8 (lỗi thì ẩn phần gần đây)
 /// - `POST /users/me/recent-areas` `{ code }`
 /// - `DELETE /users/me/recent-areas/:code`
 class ApiAreaSearchRepository implements AreaSearchRepository {
