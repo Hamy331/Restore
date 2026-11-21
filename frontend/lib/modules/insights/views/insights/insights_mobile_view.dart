@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -38,7 +40,9 @@ class InsightsMobileView extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
+      appBar: isDesktopLayout(context)
+          ? DesktopSectionBar(title: l.insTitle)
+          : AppBar(
         backgroundColor: AppColors.background,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(

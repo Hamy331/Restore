@@ -1,4 +1,6 @@
 import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
+import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -78,7 +80,9 @@ class ShopPostersMobileView extends StatelessWidget {
             limits.cooldownUntil == null;
         return Scaffold(
           backgroundColor: AppColors.background,
-          appBar: AppBar(
+          appBar: isDesktopLayout(context)
+          ? DesktopSectionBar(title: l.spTitle)
+          : AppBar(
             backgroundColor: AppColors.background,
             surfaceTintColor: Colors.transparent,
             leading: IconButton(
