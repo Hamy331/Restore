@@ -2,7 +2,7 @@
   "sellerQuickChat": "Quick chat",
   "sellerDeal": "Negotiate price",
   "sellerPartnerTitle": "ReStore partner",
-  "sellerPartnerInfo": "This seller has an active ReStore Shop plan. Ask the shop about warranty and returns for this listing.",
+  "sellerPartnerInfo": "This seller has an active ReStore Professional Shop plan. Ask the shop about warranty and returns for this listing.",
   "sellerGotIt": "Got it",
   "sellerOfferNote": "Would you accept this price?",
   "sellerActivity": "Last active",
@@ -1627,7 +1627,7 @@
   },
   "postingRuleFree": "Posting is free. Every listing is reviewed before it goes live.",
   "postingRulePersonalUse": "Personal accounts are for selling your own used items. If you post many items regularly like a business, ReStore may move you to a business account.",
-  "postingRuleBusiness": "Business plan (coming soon): up to {limit} listings per category. Shop plan: your own shop page.",
+  "postingRuleBusiness": "Basic plan: up to {limit} listings per category. Professional Shop plan: your own shop page.",
   "@postingRuleBusiness": {
     "placeholders": {
       "limit": {
@@ -1635,7 +1635,7 @@
       }
     }
   },
-  "homeGreetingPro": "Hi pro seller {name} 👋",
+  "homeGreetingPro": "Hi seller {name} 👋",
   "@homeGreetingPro": {
     "placeholders": {
       "name": {
@@ -1652,8 +1652,8 @@
     }
   },
   "planPersonal": "Personal",
-  "planPro": "Pro seller",
-  "planShop": "Shop",
+  "planBasic": "Basic",
+  "planShop": "Professional Shop",
   "devPlanTag": "TEST",
   "devPlanSwitchTooltip": "Switch plan to test the UI (in-app only)",
   "quickMenuOpen": "Open quick menu",
@@ -2271,7 +2271,12 @@
     }
   },
   "plansBenefitPriority": "Shown first in your main category",
-  "plansBenefitShopPage": "Your own shop page (coming soon)",
+  "plansBenefitShopPage": "Your own shop page with a cover photo, live after ReStore approval",
+  "plansTaglinePersonal": "Sell your own things, free of charge",
+  "plansTaglineBasic": "For regular sellers who post more",
+  "plansTaglineShop": "For shops and brands, with a page of their own",
+  "plansPriceUnit": "points / 30 days",
+  "plansFreeForever": "Free forever",
   "plansBuy": "Get this plan",
   "plansRenew": "Renew",
   "plansUpgrade": "Upgrade",
@@ -2777,8 +2782,8 @@
   "spLoadError": "Couldn't load posters",
   "spNoShopTitle": "You don't have a shop page yet",
   "spNoShopBody": "Posters appear on your shop page and on Trusted shops, so you need a shop page first.",
-  "spPlanTitle": "Posters are part of the Store plan",
-  "spPlanBody": "Upgrade to the Store plan to run posters on your shop page and on Trusted shops.",
+  "spPlanTitle": "Posters are part of the Professional Shop plan",
+  "spPlanBody": "Upgrade to the Professional Shop plan to run posters on your shop page and on Trusted shops.",
   "spSeePlans": "See plans",
   "spSlots": "Posters at once",
   "spMonthly": "Sent this month",
@@ -2912,7 +2917,7 @@
   "spErrSlotFull": "That time already has the most posters you can run at once. Pick another date or stop a poster.",
   "spErrMonthly": "You've sent all your posters for this month.",
   "spErrCooldown": "Sending posters is paused for your shop.",
-  "spErrPlan": "Only the Store plan can run posters.",
+  "spErrPlan": "Only the Professional Shop plan can run posters.",
   "spErrShop": "You need a shop page to run posters.",
   "spErrListing": "That listing isn't for sale anymore. Choose another.",
   "spErrStartLate": "The start date can be at most 14 days ahead.",
@@ -2952,8 +2957,8 @@
   "cropTrimOn": "Plain borders removed",
   "msTitle": "Manage shop",
   "msLoadError": "Couldn't load your shop",
-  "msPlanTitle": "Shop pages come with the Store plan",
-  "msPlanBody": "Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.",
+  "msPlanTitle": "Shop pages come with the Professional Shop plan",
+  "msPlanBody": "Upgrade to the Professional Shop plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.",
   "msCreateTitle": "Open your shop page",
   "msCreateBody": "Name your shop first, then add a logo, cover and description.",
   "msCreateAction": "Open shop",
@@ -2993,7 +2998,7 @@
   },
   "msUnverifiedTitle": "Not verified yet",
   "msUnverifiedBody": "Your shop isn't in Trusted shops yet and posters can't run. Contact ReStore to get verified.",
-  "msPlanExpiredTitle": "Store plan expired",
+  "msPlanExpiredTitle": "Professional Shop plan expired",
   "msPlanExpiredBody": "Your posters are hidden for now. Renew the plan to run them again.",
   "msViewPublic": "View shop page",
   "msPosters": "Shop posters",

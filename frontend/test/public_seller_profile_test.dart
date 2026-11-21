@@ -103,7 +103,7 @@ void main() {
           shop
               ? l.planShop
               : tier == 'BASIC'
-              ? l.planPro
+              ? l.planBasic
               : l.sellerPersonal,
         ),
         findsOneWidget,

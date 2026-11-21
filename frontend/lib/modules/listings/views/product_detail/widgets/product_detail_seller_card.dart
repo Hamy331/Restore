@@ -211,7 +211,7 @@ class _SellerState extends State<ProductDetailSellerCard> {
                           ),
                           if (shop || pro)
                             Tooltip(
-                              message: shop ? l.planShop : l.planPro,
+                              message: shop ? l.planShop : l.planBasic,
                               child: Icon(
                                 shop
                                     ? Icons.storefront

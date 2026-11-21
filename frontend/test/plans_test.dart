@@ -55,7 +55,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect((await repository.current()).package.id, 'basic');
-    expect(DevPlanOverride.plan.value, SubscriptionPlan.pro);
+    expect(DevPlanOverride.plan.value, SubscriptionPlan.basic);
     expect(find.text('Gia hạn'), findsOneWidget);
     expect(find.text('Nâng cấp'), findsOneWidget);
     await tester.pump(const Duration(seconds: 5));

@@ -3,7 +3,7 @@ import 'package:restore/data/models/enums/subscription_plan.dart';
 
 import 'app_environment.dart';
 
-/// Gói đang giả lập, để đổi nhanh giữa Cá nhân / Bán chuyên / Cửa hàng mà
+/// Gói đang giả lập, để đổi nhanh giữa Cá nhân / Bán chuyên / Cửa hàng Pro mà
 /// không cần đăng ký thật. Đang mở cho cả khi gọi API để demo giao diện;
 /// đổi gói ở đây chỉ đổi giao diện trong app, backend vẫn tính theo gói
 /// thật. Chỉ bật khi cần demo: đặt `"DEV_PLAN_SWITCH": true` trong file env.

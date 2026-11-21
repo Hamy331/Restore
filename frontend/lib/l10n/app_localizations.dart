@@ -119,7 +119,7 @@ abstract class AppLocalizations {
   /// No description provided for @sellerPartnerInfo.
   ///
   /// In en, this message translates to:
-  /// **'This seller has an active ReStore Shop plan. Ask the shop about warranty and returns for this listing.'**
+  /// **'This seller has an active ReStore Professional Shop plan. Ask the shop about warranty and returns for this listing.'**
   String get sellerPartnerInfo;
 
   /// No description provided for @sellerGotIt.
@@ -5501,13 +5501,13 @@ abstract class AppLocalizations {
   /// No description provided for @postingRuleBusiness.
   ///
   /// In en, this message translates to:
-  /// **'Business plan (coming soon): up to {limit} listings per category. Shop plan: your own shop page.'**
+  /// **'Basic plan: up to {limit} listings per category. Professional Shop plan: your own shop page.'**
   String postingRuleBusiness(int limit);
 
   /// No description provided for @homeGreetingPro.
   ///
   /// In en, this message translates to:
-  /// **'Hi pro seller {name} 👋'**
+  /// **'Hi seller {name} 👋'**
   String homeGreetingPro(String name);
 
   /// No description provided for @homeGreetingShop.
@@ -5522,16 +5522,16 @@ abstract class AppLocalizations {
   /// **'Personal'**
   String get planPersonal;
 
-  /// No description provided for @planPro.
+  /// No description provided for @planBasic.
   ///
   /// In en, this message translates to:
-  /// **'Pro seller'**
-  String get planPro;
+  /// **'Basic'**
+  String get planBasic;
 
   /// No description provided for @planShop.
   ///
   /// In en, this message translates to:
-  /// **'Shop'**
+  /// **'Professional Shop'**
   String get planShop;
 
   /// No description provided for @devPlanTag.
@@ -6995,8 +6995,38 @@ abstract class AppLocalizations {
   /// No description provided for @plansBenefitShopPage.
   ///
   /// In en, this message translates to:
-  /// **'Your own shop page (coming soon)'**
+  /// **'Your own shop page with a cover photo, live after ReStore approval'**
   String get plansBenefitShopPage;
+
+  /// No description provided for @plansTaglinePersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell your own things, free of charge'**
+  String get plansTaglinePersonal;
+
+  /// No description provided for @plansTaglineBasic.
+  ///
+  /// In en, this message translates to:
+  /// **'For regular sellers who post more'**
+  String get plansTaglineBasic;
+
+  /// No description provided for @plansTaglineShop.
+  ///
+  /// In en, this message translates to:
+  /// **'For shops and brands, with a page of their own'**
+  String get plansTaglineShop;
+
+  /// No description provided for @plansPriceUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'points / 30 days'**
+  String get plansPriceUnit;
+
+  /// No description provided for @plansFreeForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Free forever'**
+  String get plansFreeForever;
 
   /// No description provided for @plansBuy.
   ///
@@ -7841,13 +7871,13 @@ abstract class AppLocalizations {
   /// No description provided for @spPlanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Posters are part of the Store plan'**
+  /// **'Posters are part of the Professional Shop plan'**
   String get spPlanTitle;
 
   /// No description provided for @spPlanBody.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to the Store plan to run posters on your shop page and on Trusted shops.'**
+  /// **'Upgrade to the Professional Shop plan to run posters on your shop page and on Trusted shops.'**
   String get spPlanBody;
 
   /// No description provided for @spSeePlans.
@@ -8261,7 +8291,7 @@ abstract class AppLocalizations {
   /// No description provided for @spErrPlan.
   ///
   /// In en, this message translates to:
-  /// **'Only the Store plan can run posters.'**
+  /// **'Only the Professional Shop plan can run posters.'**
   String get spErrPlan;
 
   /// No description provided for @spErrShop.
@@ -8501,13 +8531,13 @@ abstract class AppLocalizations {
   /// No description provided for @msPlanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Shop pages come with the Store plan'**
+  /// **'Shop pages come with the Professional Shop plan'**
   String get msPlanTitle;
 
   /// No description provided for @msPlanBody.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.'**
+  /// **'Upgrade to the Professional Shop plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.'**
   String get msPlanBody;
 
   /// No description provided for @msCreateTitle.
@@ -8717,7 +8747,7 @@ abstract class AppLocalizations {
   /// No description provided for @msPlanExpiredTitle.
   ///
   /// In en, this message translates to:
-  /// **'Store plan expired'**
+  /// **'Professional Shop plan expired'**
   String get msPlanExpiredTitle;
 
   /// No description provided for @msPlanExpiredBody.

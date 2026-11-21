@@ -32,7 +32,7 @@ class PlanCard extends StatelessWidget {
 
   IconData get _icon => switch (plan) {
     SubscriptionPlan.personal => AppIcons.user,
-    SubscriptionPlan.pro => AppIcons.pro,
+    SubscriptionPlan.basic => AppIcons.pro,
     SubscriptionPlan.shop => AppIcons.store,
   };
 

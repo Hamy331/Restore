@@ -90,7 +90,7 @@ class SellerProfileSummary extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  s.isShop ? l.planShop : l.planPro,
+                                  s.isShop ? l.planShop : l.planBasic,
                                   style: theme.labelMedium?.copyWith(
                                     color: storefrontOrange,
                                   ),

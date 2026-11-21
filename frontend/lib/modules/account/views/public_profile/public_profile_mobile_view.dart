@@ -147,7 +147,7 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                           text: s!.isShop
                               ? l.planShop
                               : s.isPro
-                              ? l.planPro
+                              ? l.planBasic
                               : l.sellerPersonal,
                         ),
                         Tab(text: l.accActivity),

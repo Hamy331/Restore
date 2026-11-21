@@ -68,7 +68,7 @@ void main() {
   testWidgets('gói Bán chuyên: bấm nền tối thì đóng menu', (tester) async {
     await pumpNav(
       tester,
-      plan: SubscriptionPlan.pro,
+      plan: SubscriptionPlan.basic,
       onSelected: (_) {},
       onAction: (_) => fail('không chọn nút nào'),
     );

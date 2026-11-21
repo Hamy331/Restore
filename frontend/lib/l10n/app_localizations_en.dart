@@ -19,7 +19,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sellerPartnerInfo =>
-      'This seller has an active ReStore Shop plan. Ask the shop about warranty and returns for this listing.';
+      'This seller has an active ReStore Professional Shop plan. Ask the shop about warranty and returns for this listing.';
 
   @override
   String get sellerGotIt => 'Got it';
@@ -3068,12 +3068,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String postingRuleBusiness(int limit) {
-    return 'Business plan (coming soon): up to $limit listings per category. Shop plan: your own shop page.';
+    return 'Basic plan: up to $limit listings per category. Professional Shop plan: your own shop page.';
   }
 
   @override
   String homeGreetingPro(String name) {
-    return 'Hi pro seller $name 👋';
+    return 'Hi seller $name 👋';
   }
 
   @override
@@ -3085,10 +3085,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get planPersonal => 'Personal';
 
   @override
-  String get planPro => 'Pro seller';
+  String get planBasic => 'Basic';
 
   @override
-  String get planShop => 'Shop';
+  String get planShop => 'Professional Shop';
 
   @override
   String get devPlanTag => 'TEST';
@@ -3980,7 +3980,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansBenefitPriority => 'Shown first in your main category';
 
   @override
-  String get plansBenefitShopPage => 'Your own shop page (coming soon)';
+  String get plansBenefitShopPage =>
+      'Your own shop page with a cover photo, live after ReStore approval';
+
+  @override
+  String get plansTaglinePersonal => 'Sell your own things, free of charge';
+
+  @override
+  String get plansTaglineBasic => 'For regular sellers who post more';
+
+  @override
+  String get plansTaglineShop =>
+      'For shops and brands, with a page of their own';
+
+  @override
+  String get plansPriceUnit => 'points / 30 days';
+
+  @override
+  String get plansFreeForever => 'Free forever';
 
   @override
   String get plansBuy => 'Get this plan';
@@ -4523,11 +4540,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Posters appear on your shop page and on Trusted shops, so you need a shop page first.';
 
   @override
-  String get spPlanTitle => 'Posters are part of the Store plan';
+  String get spPlanTitle => 'Posters are part of the Professional Shop plan';
 
   @override
   String get spPlanBody =>
-      'Upgrade to the Store plan to run posters on your shop page and on Trusted shops.';
+      'Upgrade to the Professional Shop plan to run posters on your shop page and on Trusted shops.';
 
   @override
   String get spSeePlans => 'See plans';
@@ -4758,7 +4775,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spErrCooldown => 'Sending posters is paused for your shop.';
 
   @override
-  String get spErrPlan => 'Only the Store plan can run posters.';
+  String get spErrPlan => 'Only the Professional Shop plan can run posters.';
 
   @override
   String get spErrShop => 'You need a shop page to run posters.';
@@ -4883,11 +4900,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get msLoadError => 'Couldn\'t load your shop';
 
   @override
-  String get msPlanTitle => 'Shop pages come with the Store plan';
+  String get msPlanTitle => 'Shop pages come with the Professional Shop plan';
 
   @override
   String get msPlanBody =>
-      'Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.';
+      'Upgrade to the Professional Shop plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.';
 
   @override
   String get msCreateTitle => 'Open your shop page';
@@ -4999,7 +5016,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.';
 
   @override
-  String get msPlanExpiredTitle => 'Store plan expired';
+  String get msPlanExpiredTitle => 'Professional Shop plan expired';
 
   @override
   String get msPlanExpiredBody =>

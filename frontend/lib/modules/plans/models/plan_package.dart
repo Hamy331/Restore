@@ -19,7 +19,7 @@ class PlanPackage extends Equatable {
 
   final String id;
 
-  /// PERSONAL, BASIC (Bán chuyên) hoặc PRO (Cửa hàng)
+  /// PERSONAL, BASIC (Bán chuyên) hoặc PRO (Cửa hàng Pro)
   final String tier;
   final String name;
   final int priceCredits;
@@ -30,12 +30,8 @@ class PlanPackage extends Equatable {
   final int monthlyPromotionQuota;
   final int boostDiscountPercent;
 
-  /// Gói tương ứng trong app (Cá nhân / Bán chuyên / Cửa hàng)
-  SubscriptionPlan get plan => switch (tier) {
-    'BASIC' => SubscriptionPlan.pro,
-    'PRO' => SubscriptionPlan.shop,
-    _ => SubscriptionPlan.personal,
-  };
+  /// Gói tương ứng trong app (Cá nhân / Bán chuyên / Cửa hàng Pro)
+  SubscriptionPlan get plan => SubscriptionPlan.fromTier(tier);
 
   bool get isPersonal => plan == SubscriptionPlan.personal;
 

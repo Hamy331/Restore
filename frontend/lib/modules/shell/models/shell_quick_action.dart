@@ -45,7 +45,7 @@ enum ShellQuickAction {
   static List<ShellQuickAction> forPlan(SubscriptionPlan plan) =>
       switch (plan) {
         SubscriptionPlan.personal => const [],
-        SubscriptionPlan.pro => const [post, boost, stats],
+        SubscriptionPlan.basic => const [post, boost, stats],
         SubscriptionPlan.shop => const [post, poster, boost, shopManage],
       };
 }

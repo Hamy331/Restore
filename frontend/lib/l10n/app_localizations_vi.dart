@@ -19,7 +19,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get sellerPartnerInfo =>
-      'Người bán đang sử dụng gói Cửa hàng của ReStore. Bạn có thể hỏi shop về bảo hành và đổi trả cho tin đăng này.';
+      'Người bán đang sử dụng gói Cửa hàng Pro của ReStore. Bạn có thể hỏi shop về bảo hành và đổi trả cho tin đăng này.';
 
   @override
   String get sellerGotIt => 'Đã hiểu';
@@ -3005,7 +3005,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String postingRuleBusiness(int limit) {
-    return 'Gói Bán chuyên (sắp ra mắt): tối đa $limit tin mỗi chuyên mục. Gói Cửa hàng có thêm trang cửa hàng riêng.';
+    return 'Gói Bán chuyên: tối đa $limit tin mỗi chuyên mục. Gói Cửa hàng Pro có thêm trang cửa hàng riêng.';
   }
 
   @override
@@ -3022,10 +3022,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get planPersonal => 'Cá nhân';
 
   @override
-  String get planPro => 'Bán chuyên';
+  String get planBasic => 'Bán chuyên';
 
   @override
-  String get planShop => 'Cửa hàng';
+  String get planShop => 'Cửa hàng Pro';
 
   @override
   String get devPlanTag => 'TEST';
@@ -3901,7 +3901,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String get plansBenefitPriority => 'Ưu tiên hiển thị trong chuyên mục chính';
 
   @override
-  String get plansBenefitShopPage => 'Trang cửa hàng riêng (sắp có)';
+  String get plansBenefitShopPage =>
+      'Trang cửa hàng riêng có ảnh bìa, hiện sau khi ReStore duyệt';
+
+  @override
+  String get plansTaglinePersonal => 'Bán đồ của chính bạn, không mất phí';
+
+  @override
+  String get plansTaglineBasic =>
+      'Cho người bán thường xuyên, đăng nhiều tin hơn';
+
+  @override
+  String get plansTaglineShop => 'Cho cửa hàng và thương hiệu, có trang riêng';
+
+  @override
+  String get plansPriceUnit => 'xu / 30 ngày';
+
+  @override
+  String get plansFreeForever => 'Miễn phí mãi mãi';
 
   @override
   String get plansBuy => 'Mua gói';
@@ -4431,11 +4448,11 @@ class AppLocalizationsVi extends AppLocalizations {
       'Poster hiện ở trang shop và trang Shop uy tín, nên cần có trang shop trước.';
 
   @override
-  String get spPlanTitle => 'Poster dành cho gói Cửa hàng';
+  String get spPlanTitle => 'Poster dành cho gói Cửa hàng Pro';
 
   @override
   String get spPlanBody =>
-      'Nâng lên gói Cửa hàng để chạy poster ở trang shop và trang Shop uy tín.';
+      'Nâng lên gói Cửa hàng Pro để chạy poster ở trang shop và trang Shop uy tín.';
 
   @override
   String get spSeePlans => 'Xem gói';
@@ -4665,7 +4682,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get spErrCooldown => 'Bạn đang bị tạm khóa gửi poster.';
 
   @override
-  String get spErrPlan => 'Chỉ gói Cửa hàng mới đăng được poster.';
+  String get spErrPlan => 'Chỉ gói Cửa hàng Pro mới đăng được poster.';
 
   @override
   String get spErrShop => 'Bạn cần có trang shop để đăng poster.';
@@ -4789,11 +4806,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get msLoadError => 'Chưa tải được thông tin shop';
 
   @override
-  String get msPlanTitle => 'Trang shop dành cho gói Cửa hàng';
+  String get msPlanTitle => 'Trang shop dành cho gói Cửa hàng Pro';
 
   @override
   String get msPlanBody =>
-      'Nâng cấp gói Cửa hàng để mở trang shop riêng với logo, ảnh bìa và poster, và có thể được xác minh để lên mục Shop uy tín.';
+      'Nâng cấp gói Cửa hàng Pro để mở trang shop riêng với logo, ảnh bìa và poster, và có thể được xác minh để lên mục Shop uy tín.';
 
   @override
   String get msCreateTitle => 'Mở trang shop của bạn';
@@ -4905,7 +4922,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Liên hệ ReStore để được xác minh.';
 
   @override
-  String get msPlanExpiredTitle => 'Gói Cửa hàng đã hết hạn';
+  String get msPlanExpiredTitle => 'Gói Cửa hàng Pro đã hết hạn';
 
   @override
   String get msPlanExpiredBody =>
