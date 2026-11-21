@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -118,6 +119,51 @@ class _AccountDesktopViewState extends State<AccountDesktopView> {
         onNotification: _onScroll,
         child: CustomScrollView(
           slivers: [
+            // Tiêu đề trang: cùng widget với các mục khác trong menu
+            SliverToBoxAdapter(
+              child: BlocBuilder<UserProfileCubit, UserProfileState>(
+                builder: (context, userState) {
+                  final profile = userState.profile;
+                  return DesktopPageTitle(
+                    title: t('Hồ sơ của tôi', 'My profile'),
+                    subtitle: t(
+                      'Quản lý hồ sơ, tin đăng và bài viết của bạn',
+                      'Manage your profile, listings and posts',
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (profile != null) ...[
+                          OutlinedButton.icon(
+                            onPressed: () =>
+                                context.push('/users/${profile.id}'),
+                            icon: const Icon(AppIcons.visible, size: 17),
+                            label: Text(
+                              t('Xem trang công khai', 'View public page'),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.textPrimary,
+                              side: const BorderSide(color: AppColors.border),
+                              minimumSize: const Size(0, 40),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
+                        FilledButton.icon(
+                          onPressed: _openEditProfile,
+                          icon: const Icon(AppIcons.edit, size: 17),
+                          label: Text(l.accEditPage),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.actionPrimary,
+                            minimumSize: const Size(0, 40),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(28, 22, 28, 0),
               sliver: SliverToBoxAdapter(
@@ -127,65 +173,6 @@ class _AccountDesktopViewState extends State<AccountDesktopView> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Tiêu đề trang + nút thao tác
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    t('Hồ sơ của tôi', 'My profile'),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    t(
-                                      'Quản lý hồ sơ, tin đăng và bài viết của bạn',
-                                      'Manage your profile, listings and posts',
-                                    ),
-                                    style: const TextStyle(
-                                      fontSize: 13.5,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (profile != null)
-                              OutlinedButton.icon(
-                                onPressed: () =>
-                                    context.push('/users/${profile.id}'),
-                                icon: const Icon(AppIcons.visible, size: 17),
-                                label: Text(
-                                  t('Xem trang công khai', 'View public page'),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.textPrimary,
-                                  side: const BorderSide(
-                                    color: AppColors.border,
-                                  ),
-                                  minimumSize: const Size(0, 40),
-                                ),
-                              ),
-                            const SizedBox(width: 10),
-                            FilledButton.icon(
-                              onPressed: _openEditProfile,
-                              icon: const Icon(AppIcons.edit, size: 17),
-                              label: Text(l.accEditPage),
-                              style: FilledButton.styleFrom(
-                                backgroundColor: AppColors.actionPrimary,
-                                minimumSize: const Size(0, 40),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        const Divider(height: 1, color: AppColors.border),
-                        const SizedBox(height: 22),
                         if (userState.failed)
                           Center(
                             child: TextButton(
@@ -227,51 +214,55 @@ class _AccountDesktopViewState extends State<AccountDesktopView> {
                                 ),
                           ),
                         const SizedBox(height: 24),
-                        // Ví xu, gói tài khoản, đăng tin
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _QuickCard(
-                                image: AppImages.uiIcons.coin,
-                                fallback: AppIcons.wallet,
-                                title: l.accCoins,
-                                subtitle: t(
-                                  'Nạp xu, đẩy tin, Hot sale',
-                                  'Top up, boost, Hot sale',
-                                ),
-                                onTap: () =>
-                                    context.push(CreditWalletView.path),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _QuickCard(
-                                image: AppImages.uiIcons.crown,
-                                fallback: AppIcons.pro,
-                                title: l.accProPlan,
-                                subtitle: t(
-                                  'Nâng cấp để đăng nhiều tin hơn',
-                                  'Upgrade for more listings',
-                                ),
-                                onTap: () => context.push(PlansView.path),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _QuickCard(
-                                image: AppImages.uiIcons.post,
-                                fallback: AppIcons.post,
-                                title: t('Đăng tin mới', 'New listing'),
-                                subtitle: t(
-                                  'Bán hoặc trao đổi món đồ của bạn',
-                                  'Sell or swap an item',
-                                ),
-                                onTap: () => context.push(
-                                  CreateListingStep.category.path,
+                        // Ví xu, gói tài khoản, đăng tin: ba ô cao bằng nhau dù
+                        // chữ mô tả xuống một hay hai dòng
+                        IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(
+                                child: _QuickCard(
+                                  image: AppImages.uiIcons.coin,
+                                  fallback: AppIcons.wallet,
+                                  title: l.accCoins,
+                                  subtitle: t(
+                                    'Nạp xu, đẩy tin, Hot sale',
+                                    'Top up, boost, Hot sale',
+                                  ),
+                                  onTap: () =>
+                                      context.push(CreditWalletView.path),
                                 ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: _QuickCard(
+                                  image: AppImages.uiIcons.crown,
+                                  fallback: AppIcons.pro,
+                                  title: l.accProPlan,
+                                  subtitle: t(
+                                    'Nâng cấp để đăng nhiều tin hơn',
+                                    'Upgrade for more listings',
+                                  ),
+                                  onTap: () => context.push(PlansView.path),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: _QuickCard(
+                                  image: AppImages.uiIcons.post,
+                                  fallback: AppIcons.post,
+                                  title: t('Đăng tin mới', 'New listing'),
+                                  subtitle: t(
+                                    'Bán hoặc trao đổi món đồ của bạn',
+                                    'Sell or swap an item',
+                                  ),
+                                  onTap: () => context.push(
+                                    CreateListingStep.category.path,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 26),
                         Row(
@@ -301,8 +292,9 @@ class _AccountDesktopViewState extends State<AccountDesktopView> {
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 28),
                 sliver: BlocBuilder<AccountListingsCubit, AccountListingsState>(
-                  builder: (context, state) =>
-                      SliverMainAxisGroup(slivers: accountListingSlivers(state)),
+                  builder: (context, state) => SliverMainAxisGroup(
+                    slivers: accountListingSlivers(state),
+                  ),
                 ),
               )
             else if (_posts != null)
