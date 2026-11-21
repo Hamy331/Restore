@@ -85,7 +85,8 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
   void _toggleQuickProvince(String name) {
     final filter = _cubit.state.filter;
     _cubit.applyFilter(
-      filter.areaLabel == name
+      // So theo mã: nhãn từ trang chọn khu vực có thể khác ("Hồ Chí Minh")
+      filter.provinceCode == _quickProvinces[name]
           ? filter.withArea(null)
           : filter.withArea(_quickProvinces[name], label: name),
     );
@@ -108,7 +109,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
         final header = _Header(
           state: state,
           province: state.filter.areaLabel,
-          provinces: _quickProvinces.keys.toList(),
+          provinces: _quickProvinces,
           grid: _grid,
           wide: widget.wide,
           onBack: _back,
@@ -306,7 +307,9 @@ class _Header extends StatelessWidget {
 
   final CategoryDetailState state;
   final String? province;
-  final List<String> provinces;
+
+  /// Chip tỉnh nhanh: tên → mã tỉnh
+  final Map<String, String> provinces;
   final bool grid;
   final bool wide;
   final VoidCallback onBack;
@@ -567,17 +570,17 @@ class _Header extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              for (final name in provinces)
+              for (final MapEntry(key: name, value: code) in provinces.entries)
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: OutlinedButton(
                     onPressed: () => onProvince(name),
                     style: OutlinedButton.styleFrom(
                       shape: const StadiumBorder(),
-                      backgroundColor: province == name
+                      backgroundColor: state.filter.provinceCode == code
                           ? AppColors.textPrimary
                           : Colors.transparent,
-                      foregroundColor: province == name
+                      foregroundColor: state.filter.provinceCode == code
                           ? Colors.white
                           : AppColors.textPrimary,
                       side: const BorderSide(color: AppColors.border),
