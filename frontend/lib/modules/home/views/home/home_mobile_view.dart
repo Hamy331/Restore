@@ -157,8 +157,6 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     final l10n = AppLocalizations.of(context)!;
     final cubit = context.read<HomeCubit>();
     final padding = MediaQuery.paddingOf(context);
-    // Khách chưa đăng nhập: chuỗi rỗng, đầu trang hiện lời chào chung
-    final greetingName = context.watchUser()?.givenName ?? '';
 
     return ColoredBox(
       color: AppColors.surface,
@@ -198,7 +196,6 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                                   builder: (context, area) => HomeTopBar(
                                     key: _topBarKey,
                                     areaName: _areaLabel(l10n, area),
-                                    greetingName: greetingName,
                                     plan: plan,
                                     onAreaTap: _pickArea,
                                     onPlanTap: DevPlanOverride.enabled

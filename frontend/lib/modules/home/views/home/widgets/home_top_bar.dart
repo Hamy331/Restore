@@ -8,13 +8,9 @@ import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/data/models/enums/subscription_plan.dart';
 import 'package:restore/l10n/app_localizations.dart';
 
-/// Đầu trang chủ trên nền cam: chọn khu vực, bên dưới là lời chào kèm tên
-/// người dùng. Nút tin nhắn và thông báo nằm cạnh ô tìm kiếm ghim
-/// ([HomeSearchHeaderDelegate]) để luôn bấm được khi cuộn.
-/// Lời chào đổi theo gói của tài khoản để nhận ra đang ở gói nào.
+/// Hàng chọn khu vực trên nền xanh, phía trên ô tìm kiếm ghim.
 class HomeTopBar extends StatelessWidget {
   final String areaName;
-  final String greetingName;
   final SubscriptionPlan plan;
   final VoidCallback onAreaTap;
 
@@ -24,20 +20,10 @@ class HomeTopBar extends StatelessWidget {
   const HomeTopBar({
     super.key,
     required this.areaName,
-    required this.greetingName,
     this.plan = SubscriptionPlan.personal,
     required this.onAreaTap,
     this.onPlanTap,
   });
-
-  String _greeting(AppLocalizations l10n) {
-    if (greetingName.isEmpty) return l10n.homeGreeting;
-    return switch (plan) {
-      SubscriptionPlan.personal => l10n.homeGreetingName(greetingName),
-      SubscriptionPlan.pro => l10n.homeGreetingPro(greetingName),
-      SubscriptionPlan.shop => l10n.homeGreetingShop(greetingName),
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +32,7 @@ class HomeTopBar extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: DecoratedBox(
-        decoration: const BoxDecoration(gradient: AppHeaderPalette.gradient),
+        decoration: const BoxDecoration(color: AppHeaderPalette.top),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
           child: Column(
@@ -72,30 +58,6 @@ class HomeTopBar extends StatelessWidget {
                   ],
                 ],
               ),
-              const SizedBox(height: 16),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: Text(
-                  _greeting(l10n),
-                  key: ValueKey(plan),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppHeaderPalette.foregroundMuted,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                l10n.homeHeadline,
-                style: const TextStyle(
-                  fontSize: 23,
-                  height: 1.2,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.4,
-                  color: AppHeaderPalette.foreground,
-                ),
-              ),
             ],
           ),
         ),
@@ -104,7 +66,7 @@ class HomeTopBar extends StatelessWidget {
   }
 }
 
-/// Nút khu vực: viên thuốc trắng trên nền cam kem
+/// Nút khu vực dạng viên thuốc trắng trên nền xanh.
 class _AreaButton extends StatelessWidget {
   final String areaName;
   final String tooltip;

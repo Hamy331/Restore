@@ -155,35 +155,34 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets(
-    'khách xem trang chủ: lời chào chung, bấm lưu tin thì sang đăng nhập',
-    (tester) async {
-      final (_, router, _) = await _openApp(tester);
-      router.go('/home');
-      await _settle(tester);
-      expect(find.text('Chào bạn 👋'), findsOneWidget);
+  testWidgets('khách xem trang chủ gọn, bấm lưu tin thì sang đăng nhập', (
+    tester,
+  ) async {
+    final (_, router, _) = await _openApp(tester);
+    router.go('/home');
+    await _settle(tester);
+    expect(find.text('Chào bạn 👋'), findsNothing);
 
-      // Thẻ tin nằm dưới banner: cuộn tới nút lưu tin đầu tiên rồi bấm
-      final favorite = find
-          .byWidgetPredicate(
-            (w) =>
-                w is Icon &&
-                (w.icon == AppIcons.favorite ||
-                    w.icon == AppIcons.favoriteActive),
-            skipOffstage: false,
-          )
-          .first;
-      await tester.ensureVisible(favorite);
-      await tester.pump(const Duration(milliseconds: 300));
-      await tester.tap(favorite);
-      await _settle(tester);
-      expect(
-        router.routeInformationProvider.value.uri.toString(),
-        '/login?from=%2Fhome',
-      );
-      await tester.pump(const Duration(seconds: 2));
-    },
-  );
+    // Thẻ tin nằm dưới banner: cuộn tới nút lưu tin đầu tiên rồi bấm
+    final favorite = find
+        .byWidgetPredicate(
+          (w) =>
+              w is Icon &&
+              (w.icon == AppIcons.favorite ||
+                  w.icon == AppIcons.favoriteActive),
+          skipOffstage: false,
+        )
+        .first;
+    await tester.ensureVisible(favorite);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(favorite);
+    await _settle(tester);
+    expect(
+      router.routeInformationProvider.value.uri.toString(),
+      '/login?from=%2Fhome',
+    );
+    await tester.pump(const Duration(seconds: 2));
+  });
 
   testWidgets(
     'đăng nhập rồi đăng xuất: trang chủ và tài khoản theo người dùng của AuthBloc',
@@ -191,7 +190,7 @@ void main() {
       final (bloc, router, repo) = await _openApp(tester);
       router.go('/home');
       await _settle(tester);
-      expect(find.text('Chào bạn 👋'), findsOneWidget);
+      expect(find.text('Chào bạn 👋'), findsNothing);
 
       final user = (await tester.runAsync(
         () => repo.login('minhanh@example.com', AuthMockData.password),
@@ -199,7 +198,7 @@ void main() {
       bloc.add(LoggedIn(user));
       await _settle(tester);
       expect(router.routeInformationProvider.value.uri.path, '/home');
-      expect(find.textContaining('Anh 👋'), findsOneWidget);
+      expect(find.textContaining('Anh 👋'), findsNothing);
 
       // Trang tài khoản hiện đúng người đang đăng nhập
       router.go('/account');
@@ -214,7 +213,7 @@ void main() {
       await _settle(tester);
       router.go('/home');
       await _settle(tester);
-      expect(find.text('Chào bạn 👋'), findsOneWidget);
+      expect(find.text('Chào bạn 👋'), findsNothing);
       await tester.pump(const Duration(seconds: 2));
     },
   );

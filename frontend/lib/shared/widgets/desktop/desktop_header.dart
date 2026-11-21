@@ -337,7 +337,7 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                     ),
                     textStyle: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   icon: const Icon(AppIcons.add, size: 18),
