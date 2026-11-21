@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Alert, Button, Card, Drawer, Form, Grid, Input, Menu, Spin, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { Session, errorText } from '../shared/api/session';
@@ -239,7 +239,9 @@ export function AdminApp() {
                   : 'panel module-panel'
               }
             >
-              <View session={auth.session} />
+              <Suspense fallback={<Spin className="view-loading" aria-label="Đang tải mục quản trị" />}>
+                <View session={auth.session} />
+              </Suspense>
             </div>
           </main>
         </div>
