@@ -9,7 +9,7 @@ import 'listing_filter_labels.dart';
 
 /// Hàng lọc nhanh của các trang danh sách tin (gần bạn, kết quả tìm kiếm,
 /// danh mục...): Bộ lọc (kèm số tiêu chí đang bật), bán kính (khi có
-/// [onRadiusTap]), kiểu giao dịch, sắp xếp và nút xoá lọc khi đang lọc.
+/// [onRadiusTap]), khu vực (khi có [onAreaTap]), kiểu giao dịch, sắp xếp và nút xoá lọc khi đang lọc.
 /// Nút Bộ lọc thường mở [showListingFilterSheet].
 class AppListingFilterBar extends StatelessWidget {
   final ListingFilter filter;
@@ -23,6 +23,9 @@ class AppListingFilterBar extends StatelessWidget {
   /// null thì ẩn chip bán kính (trang không lọc theo vị trí)
   final VoidCallback? onRadiusTap;
 
+  /// null thì ẩn chip khu vực (tỉnh/thành, phường/xã của tin)
+  final VoidCallback? onAreaTap;
+
   /// null thì không hiện chip "Xoá bộ lọc"
   final VoidCallback? onClearTap;
 
@@ -34,6 +37,7 @@ class AppListingFilterBar extends StatelessWidget {
     required this.onSortTap,
     this.defaults = const ListingFilter(),
     this.onRadiusTap,
+    this.onAreaTap,
     this.onClearTap,
   });
 
@@ -43,6 +47,7 @@ class AppListingFilterBar extends StatelessWidget {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final radius = filter.radiusKm;
     final onRadiusTap = this.onRadiusTap;
+    final onAreaTap = this.onAreaTap;
     final onClearTap = this.onClearTap;
     final activeCount = filter.activeCount(defaults);
 
@@ -55,6 +60,14 @@ class AppListingFilterBar extends StatelessWidget {
           badgeCount: activeCount,
           onTap: onFiltersTap,
         ),
+        if (onAreaTap != null)
+          AppFilterChip(
+            label: filter.areaLabel ?? l10n.areaNationwide,
+            icon: AppIcons.location,
+            selected: filter.hasArea,
+            hasDropdown: true,
+            onTap: onAreaTap,
+          ),
         if (radius != null && onRadiusTap != null)
           AppFilterChip(
             label: l10n.nearbyRadiusChip(

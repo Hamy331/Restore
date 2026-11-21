@@ -10,8 +10,9 @@ class SearchResultsCubit extends Cubit<SearchResultsState> {
   SearchResultsCubit({
     required SearchRepository searchRepository,
     required String query,
+    ListingFilter filter = SearchResultsState.defaultFilter,
   }) : _repository = searchRepository,
-       super(SearchResultsState(query: query));
+       super(SearchResultsState(query: query, filter: filter));
 
   final SearchRepository _repository;
 

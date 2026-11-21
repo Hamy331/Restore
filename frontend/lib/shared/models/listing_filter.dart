@@ -53,6 +53,9 @@ class ListingFilter extends Equatable {
   final String? provinceCode;
   final String? wardCode;
 
+  /// Tên khu vực đang lọc để hiện trên chip, không gửi lên API
+  final String? areaLabel;
+
   const ListingFilter({
     this.dealTypes = const {},
     this.sort = ListingSort.newest,
@@ -63,7 +66,10 @@ class ListingFilter extends Equatable {
     this.conditions = const {},
     this.provinceCode,
     this.wardCode,
+    this.areaLabel,
   });
+
+  bool get hasArea => provinceCode != null || wardCode != null;
 
   bool get hasPriceRange => minPrice != null || maxPrice != null;
 
@@ -82,7 +88,16 @@ class ListingFilter extends Equatable {
     sort: sort,
     provinceCode: () => provinceCode,
     wardCode: () => wardCode,
+    areaLabel: () => areaLabel,
   );
+
+  /// Lọc theo một tỉnh/thành hoặc phường/xã ([isWard]), [code] null là toàn quốc
+  ListingFilter withArea(String? code, {bool isWard = false, String? label}) =>
+      copyWith(
+        provinceCode: () => code == null || isWard ? null : code,
+        wardCode: () => code != null && isWard ? code : null,
+        areaLabel: () => code == null ? null : label,
+      );
 
   /// Các trường có thể null nhận hàm trả giá trị để xoá được về null,
   /// VD `copyWith(categoryId: () => null)`.
@@ -96,6 +111,7 @@ class ListingFilter extends Equatable {
     Set<ListingCondition>? conditions,
     String? Function()? provinceCode,
     String? Function()? wardCode,
+    String? Function()? areaLabel,
   }) => ListingFilter(
     dealTypes: dealTypes ?? this.dealTypes,
     sort: sort ?? this.sort,
@@ -106,6 +122,7 @@ class ListingFilter extends Equatable {
     conditions: conditions ?? this.conditions,
     provinceCode: provinceCode == null ? this.provinceCode : provinceCode(),
     wardCode: wardCode == null ? this.wardCode : wardCode(),
+    areaLabel: areaLabel == null ? this.areaLabel : areaLabel(),
   );
 
   /// Bật / tắt một kiểu giao dịch
@@ -146,5 +163,6 @@ class ListingFilter extends Equatable {
     conditions,
     provinceCode,
     wardCode,
+    areaLabel,
   ];
 }
