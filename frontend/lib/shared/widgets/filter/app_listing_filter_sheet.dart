@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/formatters/distance_formatter.dart';
+import 'package:restore/data/models/category_attribute_model.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/bloc/listing_filter/listing_filter_cubit.dart';
@@ -20,7 +21,8 @@ import 'listing_filter_section.dart';
 
 /// Mở sheet Bộ lọc đầy đủ cho các trang danh sách tin (gần bạn, kết quả
 /// tìm kiếm, danh mục...): danh mục, khoảng giá, tình trạng, hình thức và
-/// khoảng cách. Trả về bộ lọc mới khi bấm Áp dụng, null nếu đóng sheet.
+/// khoảng cách, cùng các thuộc tính dạng chọn của danh mục đang lọc
+/// (Hãng, Dung lượng...). Trả về bộ lọc mới khi bấm Áp dụng, null nếu đóng sheet.
 ///
 /// - [defaults]: bộ lọc mặc định của trang, dùng cho nút "Xoá bộ lọc".
 /// - [radiusOptions]: các mức bán kính (km); null thì ẩn nhóm Khoảng cách
@@ -78,6 +80,14 @@ class _ListingFilterSheetBody extends StatelessWidget {
       builder: (context, state) {
         final draft = state.draft;
         final count = state.activeCount;
+        final attributes = [
+          for (final category in state.options.categories)
+            if (category.id == draft.categoryId)
+              for (final attribute in category.attributes)
+                if (attribute.type == AttributeType.select &&
+                    attribute.options.isNotEmpty)
+                  attribute,
+        ];
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -94,6 +104,27 @@ class _ListingFilterSheetBody extends StatelessWidget {
                       selectedId: draft.categoryId,
                       onSelected: cubit.selectCategory,
                       onRetry: cubit.loadOptions,
+                    ),
+                  for (final attribute in attributes)
+                    ListingFilterSection(
+                      title: attribute.label.of(context),
+                      child: ListingFilterChipWrap(
+                        children: [
+                          for (final option in attribute.options)
+                            AppFilterChip(
+                              label: option.label.of(context),
+                              selected:
+                                  draft.attributes[attribute.key]?.contains(
+                                    option.value,
+                                  ) ??
+                                  false,
+                              onTap: () => cubit.toggleAttribute(
+                                attribute.key,
+                                option.value,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ListingFilterPriceSection(
                     minPrice: draft.minPrice,

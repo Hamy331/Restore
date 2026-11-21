@@ -8,7 +8,6 @@ class ListingFilterMockData {
   ListingFilterMockData._();
 
   static Map<String, dynamic> get options => {
-    // Bỏ schema thuộc tính, sheet chỉ cần tên và icon danh mục
     'categories': [
       for (final category in ListingMockData.categories)
         {
@@ -16,6 +15,7 @@ class ListingFilterMockData {
           'name': category['name'],
           'description': category['description'],
           'icon': category['icon'],
+          'attributes': category['attributes'],
         },
     ],
     'priceRanges': const [
@@ -41,6 +41,10 @@ extension MockListingFilterMatch on ListingFilter {
       return false;
     }
     if (wardCode != null && listing.wardCode != wardCode) return false;
+    for (final entry in attributes.entries) {
+      final value = '${listing.attributes[entry.key]}';
+      if (!entry.value.contains(value)) return false;
+    }
     if (conditions.isNotEmpty && !conditions.contains(listing.condition)) {
       return false;
     }

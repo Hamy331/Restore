@@ -56,6 +56,10 @@ class ListingFilter extends Equatable {
   /// Tên khu vực đang lọc để hiện trên chip, không gửi lên API
   final String? areaLabel;
 
+  /// Thuộc tính dạng chọn của danh mục (key → các giá trị đã chọn), gửi lên
+  /// API dạng `attr.<key>=a,b`. Đổi danh mục thì phải xoá vì key theo danh mục.
+  final Map<String, Set<String>> attributes;
+
   const ListingFilter({
     this.dealTypes = const {},
     this.sort = ListingSort.newest,
@@ -67,6 +71,7 @@ class ListingFilter extends Equatable {
     this.provinceCode,
     this.wardCode,
     this.areaLabel,
+    this.attributes = const {},
   });
 
   bool get hasArea => provinceCode != null || wardCode != null;
@@ -74,14 +79,15 @@ class ListingFilter extends Equatable {
   bool get hasPriceRange => minPrice != null || maxPrice != null;
 
   /// Số tiêu chí đang bật so với bộ lọc mặc định [defaults] của trang
-  /// (danh mục, khoảng giá, tình trạng, kiểu giao dịch, bán kính), hiện trên
+  /// (danh mục, khoảng giá, tình trạng, kiểu giao dịch, bán kính, mỗi thuộc tính), hiện trên
   /// nút "Bộ lọc" và trong sheet. Sắp xếp có chip riêng nên không tính.
   int activeCount([ListingFilter defaults = const ListingFilter()]) =>
       (categoryId == defaults.categoryId ? 0 : 1) +
       (hasPriceRange ? 1 : 0) +
       (conditions.isEmpty ? 0 : 1) +
       (dealTypes.isEmpty ? 0 : 1) +
-      (radiusKm == defaults.radiusKm ? 0 : 1);
+      (radiusKm == defaults.radiusKm ? 0 : 1) +
+      attributes.length;
 
   /// Xoá mọi tiêu chí về [defaults] nhưng giữ cách sắp xếp và khu vực đang chọn
   ListingFilter resetTo(ListingFilter defaults) => defaults.copyWith(
@@ -112,6 +118,7 @@ class ListingFilter extends Equatable {
     String? Function()? provinceCode,
     String? Function()? wardCode,
     String? Function()? areaLabel,
+    Map<String, Set<String>>? attributes,
   }) => ListingFilter(
     dealTypes: dealTypes ?? this.dealTypes,
     sort: sort ?? this.sort,
@@ -123,6 +130,7 @@ class ListingFilter extends Equatable {
     provinceCode: provinceCode == null ? this.provinceCode : provinceCode(),
     wardCode: wardCode == null ? this.wardCode : wardCode(),
     areaLabel: areaLabel == null ? this.areaLabel : areaLabel(),
+    attributes: attributes ?? this.attributes,
   );
 
   /// Bật / tắt một kiểu giao dịch
@@ -132,6 +140,18 @@ class ListingFilter extends Equatable {
   /// Bật / tắt một tình trạng sản phẩm
   ListingFilter toggleCondition(ListingCondition condition) =>
       copyWith(conditions: _toggle(conditions, condition));
+
+  /// Bật / tắt một giá trị của thuộc tính [key]; bỏ hết thì xoá luôn key
+  ListingFilter toggleAttribute(String key, String value) {
+    final values = _toggle(attributes[key] ?? const <String>{}, value);
+    return copyWith(
+      attributes: {
+        for (final entry in attributes.entries)
+          if (entry.key != key) entry.key: entry.value,
+        if (values.isNotEmpty) key: values,
+      },
+    );
+  }
 
   static Set<T> _toggle<T>(Set<T> values, T value) => values.contains(value)
       ? ({...values}..remove(value))
@@ -150,6 +170,8 @@ class ListingFilter extends Equatable {
       'condition': [for (final item in conditions) item.apiValue].join(','),
     'provinceCode': ?provinceCode,
     'wardCode': ?wardCode,
+    for (final entry in attributes.entries)
+      'attr.${entry.key}': entry.value.join(','),
   };
 
   @override
@@ -164,5 +186,6 @@ class ListingFilter extends Equatable {
     provinceCode,
     wardCode,
     areaLabel,
+    attributes,
   ];
 }

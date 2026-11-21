@@ -6,6 +6,8 @@ import 'package:restore/modules/listings/data/listing_mock_data.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/models/paged_result.dart';
+import 'package:restore/shared/bloc/listing_filter/listing_filter_cubit.dart';
+import 'package:restore/shared/repositories/listing_filter_options_repository.dart';
 
 void main() {
   categoryAreaTests();
@@ -43,6 +45,33 @@ void main() {
     final nationwide = ward.withArea(null, label: 'ignored');
     expect(nationwide.hasArea, isFalse);
     expect(nationwide.areaLabel, isNull);
+  });
+
+  test('attributes go to the API as attr.<key> and count per key', () {
+    const defaults = ListingFilter(categoryId: 'phones');
+    final filter = defaults
+        .toggleAttribute('brand', 'Apple')
+        .toggleAttribute('brand', 'Samsung')
+        .toggleAttribute('storage', '128 GB')
+        .toggleAttribute('storage', '128 GB');
+    expect(filter.toQuery(), containsPair('attr.brand', 'Apple,Samsung'));
+    expect(filter.toQuery().containsKey('attr.storage'), isFalse);
+    expect(filter.activeCount(defaults), 1);
+    expect(filter.resetTo(defaults).attributes, isEmpty);
+  });
+
+  test('changing category in the sheet drops its attributes', () {
+    final cubit = ListingFilterCubit(
+      repository: MockListingFilterOptionsRepository(latency: Duration.zero),
+      initial: const ListingFilter(categoryId: 'phones'),
+      defaults: const ListingFilter(),
+    );
+    cubit.toggleAttribute('brand', 'Apple');
+    cubit.selectCategory('phones');
+    expect(cubit.state.draft.attributes, isNotEmpty);
+    cubit.selectCategory('laptops');
+    expect(cubit.state.draft.attributes, isEmpty);
+    cubit.close();
   });
 }
 
