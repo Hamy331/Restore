@@ -1,7 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:restore/modules/category_detail/bloc/category_detail_cubit.dart';
+import 'package:restore/modules/category_detail/bloc/category_detail_state.dart';
+import 'package:restore/modules/category_detail/repositories/category_listings_repository.dart';
+import 'package:restore/modules/listings/data/listing_mock_data.dart';
+import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/listing_filter.dart';
+import 'package:restore/shared/models/paged_result.dart';
 
 void main() {
+  categoryAreaTests();
+
   test('area goes to the API and survives the sheet reset', () {
     const defaults = ListingFilter(categoryId: 'phones');
     final filter = defaults.copyWith(
@@ -36,4 +44,46 @@ void main() {
     expect(nationwide.hasArea, isFalse);
     expect(nationwide.areaLabel, isNull);
   });
+}
+
+class _RecordingRepository extends MockCategoryListingsRepository {
+  _RecordingRepository() : super(latency: Duration.zero);
+
+  final queries = <Map<String, dynamic>>[];
+
+  @override
+  Future<PagedResult<ListingCardItem>> getListings(
+    ListingFilter filter, {
+    int page = 1,
+  }) {
+    queries.add(filter.toQuery());
+    return super.getListings(filter, page: page);
+  }
+}
+
+void categoryAreaTests() {
+  test(
+    'category page sends its area; clearFilters keeps it, clearAll drops it',
+    () async {
+      final repository = _RecordingRepository();
+      final first = ListingMockData.categories.first['id'] as String;
+      final cubit = CategoryDetailCubit(
+        repository: repository,
+        categoryId: first,
+        filter: CategoryDetailState.defaultFilterFor(
+          first,
+        ).withArea('01', label: 'Hà Nội'),
+      );
+      await cubit.start();
+      expect(repository.queries.last, containsPair('provinceCode', '01'));
+
+      cubit.applyFilter(cubit.state.filter.copyWith(minPrice: () => 1000));
+      cubit.clearFilters();
+      expect(cubit.state.filter.provinceCode, '01');
+
+      cubit.clearAll();
+      expect(cubit.state.filter.hasArea, isFalse);
+      await cubit.close();
+    },
+  );
 }

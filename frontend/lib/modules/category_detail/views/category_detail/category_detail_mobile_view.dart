@@ -5,11 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/data/models/administrative_unit_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
-import 'package:restore/modules/location/models/area_option.dart';
-import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/modules/location/utils/listing_area.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/listing_filter.dart';
@@ -52,9 +50,6 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
     'Hà Nội': '01',
     'Đà Nẵng': '48',
   };
-
-  /// Tên khu vực đang lọc hiện trên nút khu vực, null là toàn quốc
-  String? _province;
   bool _grid = false;
 
   CategoryDetailCubit get _cubit => context.read<CategoryDetailCubit>();
@@ -80,28 +75,20 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
     if (sort != null) _cubit.setSort(sort);
   }
 
+  /// Chọn khu vực (kể cả "Gần tôi"), đổi luôn khu vực của cả app
   Future<void> _pickArea() async {
-    final result = await context.push<AreaPickResult>(
-      AreaSearchView.location(allowNationwide: true),
-    );
-    if (result == null || !mounted) return;
-    if (result.nationwide) {
-      setState(() => _province = null);
-      _cubit.setArea();
-    } else if (result.area case final area?) {
-      setState(() => _province = area.displayName);
-      final ward = area.level == AdministrativeLevel.ward;
-      _cubit.setArea(
-        provinceCode: ward ? null : area.code,
-        wardCode: ward ? area.code : null,
-      );
-    }
+    final filter = await pickListingArea(context, _cubit.state.filter);
+    if (filter != null && mounted) _cubit.applyFilter(filter);
   }
 
+  /// Chip tỉnh nhanh: chỉ lọc trang này, bấm lại để bỏ
   void _toggleQuickProvince(String name) {
-    final selected = _province == name ? null : name;
-    setState(() => _province = selected);
-    _cubit.setArea(provinceCode: _quickProvinces[selected]);
+    final filter = _cubit.state.filter;
+    _cubit.applyFilter(
+      filter.areaLabel == name
+          ? filter.withArea(null)
+          : filter.withArea(_quickProvinces[name], label: name),
+    );
   }
 
   Future<void> _openDetail(ListingCardItem item) async {
@@ -120,7 +107,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
       builder: (context, state) {
         final header = _Header(
           state: state,
-          province: _province,
+          province: state.filter.areaLabel,
           provinces: _quickProvinces.keys.toList(),
           grid: _grid,
           wide: widget.wide,
@@ -218,7 +205,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
 
     final items = state.items;
     if (items.isEmpty) {
-      final filtered = state.hasActiveFilters || _province != null;
+      final filtered = state.hasActiveFilters || state.filter.hasArea;
       return [
         SliverToBoxAdapter(
           child: SizedBox(
@@ -234,7 +221,6 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
               action: filtered
                   ? OutlinedButton(
                       onPressed: () {
-                        setState(() => _province = null);
                         _cubit.clearAll();
                       },
                       child: Text(l10n.listingFilterReset),
@@ -252,7 +238,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
 
     return [
       if (!state.hasActiveFilters &&
-          _province == null &&
+          !state.filter.hasArea &&
           state.hotItems.isNotEmpty) ...[
         const SliverToBoxAdapter(child: SizedBox(height: 14)),
         SliverToBoxAdapter(
