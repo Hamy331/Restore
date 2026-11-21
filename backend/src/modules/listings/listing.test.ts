@@ -90,7 +90,14 @@ test('listing images accept real supported bytes and cannot attach foreign URLs 
 test('listing filters validate range and normalize search values', () => {
   assert.deepEqual(listingFilters({ q: '  Bàn  GỖ! ', categoryId: 'furniture', condition: 'USED_GOOD', minPrice: '100000', maxPrice: '200000' }), {
     q: 'Bàn  GỖ!', words: ['ban', 'go'], categoryId: 'furniture', conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000',
+    provinceCode: '', wardCode: '',
   });
+  assert.equal(listingFilters({ provinceCode: '79' }).provinceCode, '79');
+  assert.throws(() => listingFilters({ wardCode: "1' OR 1=1" }), { code: 'INVALID_QUERY' });
+  // GET /listings chỉ đổi thứ tự khi sắp theo giá; newest giữ thứ tự feed (ưu tiên tin được đẩy)
+  assert.equal(parse(feedQuery, { sort: 'price_asc' }).sort, 'price_asc');
+  assert.equal(parse(feedQuery, { sort: 'newest' }).sort, undefined);
+  assert.throws(() => parse(feedQuery, { sort: 'cheap' }));
   const multi = listingFilters({ condition: 'NEW, USED_GOOD,NEW', deal: 'buy,exchange' });
   assert.deepEqual(multi.conditions, ['NEW', 'USED_GOOD']);
   assert.deepEqual(multi.deals, ['buy', 'exchange']);

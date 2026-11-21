@@ -6,10 +6,10 @@ import * as feedRepository from '../repositories/feed.repository.js';
  * Danh sách tin cho trang chủ / gần bạn / trao đổi.
  * Mỗi item = Listing + areaLabel, distanceKm, isFeatured, isFavorite (theo người xem).
  */
-export const listFeed = (viewerId: string | undefined, { filter, filters, pagination }: FeedQuery, now = new Date()) =>
+export const listFeed = (viewerId: string | undefined, { filter, filters, pagination, sort }: FeedQuery, now = new Date()) =>
   rankedPage(viewerId, {
     ...filters, chronological: filter === 'recent', interestUserId: filter === 'forYou' ? viewerId : undefined,
-  }, pagination, now);
+  }, pagination, now, sort);
 
 /** Kết quả tìm kiếm: như feed nhưng xếp theo [sort] (mặc định phù hợp nhất) */
 export const searchListings = (viewerId: string | undefined, { filters, pagination, sort }: SearchQuery, now = new Date()) =>

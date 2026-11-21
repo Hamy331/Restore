@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/data/models/administrative_unit_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/location/models/area_option.dart';
@@ -45,10 +46,14 @@ class CategoryDetailMobileView extends StatefulWidget {
 }
 
 class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
-  /// Tỉnh / thành chọn nhanh. API danh mục chưa lọc theo tỉnh nên tạm lọc
-  /// trên các tin đã tải về theo khu vực hiển thị của tin.
-  static const _quickProvinces = ['TP Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng'];
+  /// Tỉnh / thành chọn nhanh: tên hiển thị → mã tỉnh, lọc ở server
+  static const _quickProvinces = {
+    'TP Hồ Chí Minh': '79',
+    'Hà Nội': '01',
+    'Đà Nẵng': '48',
+  };
 
+  /// Tên khu vực đang lọc hiện trên nút khu vực, null là toàn quốc
   String? _province;
   bool _grid = false;
 
@@ -80,13 +85,23 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
       AreaSearchView.location(allowNationwide: true),
     );
     if (result == null || !mounted) return;
-    setState(() {
-      if (result.nationwide) {
-        _province = null;
-      } else if (result.area case final area?) {
-        _province = area.displayName;
-      }
-    });
+    if (result.nationwide) {
+      setState(() => _province = null);
+      _cubit.setArea();
+    } else if (result.area case final area?) {
+      setState(() => _province = area.displayName);
+      final ward = area.level == AdministrativeLevel.ward;
+      _cubit.setArea(
+        provinceCode: ward ? null : area.code,
+        wardCode: ward ? area.code : null,
+      );
+    }
+  }
+
+  void _toggleQuickProvince(String name) {
+    final selected = _province == name ? null : name;
+    setState(() => _province = selected);
+    _cubit.setArea(provinceCode: _quickProvinces[selected]);
   }
 
   Future<void> _openDetail(ListingCardItem item) async {
@@ -99,22 +114,6 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
     _cubit.syncFavorite(id, favorite);
   }
 
-  /// "TP. Hồ Chí Minh", "Thành phố Hà Nội"... → phần tên chính để so khớp
-  static String _core(String name) => name
-      .replaceAll(RegExp(r'^(TP\.?|Tp\.?|Thành phố|Tỉnh)\s*'), '')
-      .trim()
-      .toLowerCase();
-
-  List<ListingCardItem> _visible(List<ListingCardItem> items) {
-    final province = _province;
-    if (province == null) return items;
-    final core = _core(province);
-    return [
-      for (final item in items)
-        if (item.areaLabel.toLowerCase().contains(core)) item,
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryDetailCubit, CategoryDetailState>(
@@ -122,7 +121,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
         final header = _Header(
           state: state,
           province: _province,
-          provinces: _quickProvinces,
+          provinces: _quickProvinces.keys.toList(),
           grid: _grid,
           wide: widget.wide,
           onBack: _back,
@@ -133,9 +132,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
             ),
           ),
           onArea: _pickArea,
-          onProvince: (value) => setState(
-            () => _province = _province == value ? null : value,
-          ),
+          onProvince: _toggleQuickProvince,
           onFilters: _openFilters,
           onSort: _pickSort,
           onGridToggle: () => setState(() => _grid = !_grid),
@@ -219,7 +216,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
         break;
     }
 
-    final items = _visible(state.items);
+    final items = state.items;
     if (items.isEmpty) {
       final filtered = state.hasActiveFilters || _province != null;
       return [
@@ -238,7 +235,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
                   ? OutlinedButton(
                       onPressed: () {
                         setState(() => _province = null);
-                        _cubit.clearFilters();
+                        _cubit.clearAll();
                       },
                       child: Text(l10n.listingFilterReset),
                     )

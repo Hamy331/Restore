@@ -9,7 +9,7 @@ export const shopIdParams = idParam(100);
 const SORTS = ['newest', 'price_asc', 'price_desc', 'relevance', 'nearest'] as const;
 
 /**
- * Query GET /shops/:id/listings: categoryId?, minPrice?, maxPrice?, condition? (nhiều giá trị cách nhau dấu phẩy),
+ * Query GET /shops/:id/listings: categoryId?, minPrice?, maxPrice?, condition? (nhiều giá trị cách nhau dấu phẩy), deal? (buy,exchange),
  * sort? (newest | price_asc | price_desc; giá trị khác coi như newest), page, limit (1-50, mặc định 10)
  */
 export const shopListingsQuery = z.record(z.string(), z.unknown()).transform((raw) => {
@@ -27,12 +27,18 @@ export const shopListingsQuery = z.record(z.string(), z.unknown()).transform((ra
     }
   }
   const sort = SORTS.find((item) => item === text('sort')) ?? 'newest';
+  // deal=buy,exchange: khớp một trong các kiểu đã chọn
+  const deals = (text('deal') ?? '').split(',').map((item) => item.trim()).filter(Boolean);
+  if (deals.some((item) => item !== 'buy' && item !== 'exchange')) {
+    throw new AppError(400, 'INVALID_QUERY', 'Kiểu giao dịch không hợp lệ.', 'deal');
+  }
   return {
     pagination,
     categoryId: text('categoryId'),
     minPrice: money('minPrice'),
     maxPrice: money('maxPrice'),
     conditions: conditions as ListingCondition[],
+    deals: deals as Array<'buy' | 'exchange'>,
     sort,
   };
 });

@@ -47,6 +47,12 @@ class ListingFilter extends Equatable {
   /// Rỗng là mọi tình trạng; chọn nhiều thì khớp một trong số đó
   final Set<ListingCondition> conditions;
 
+  /// Khu vực của tin: mã tỉnh/thành hoặc mã phường/xã (chọn một trong hai),
+  /// null là toàn quốc. Trang tự hiện chip khu vực nên không tính vào
+  /// [activeCount] và giữ nguyên khi "Xoá bộ lọc" trong sheet.
+  final String? provinceCode;
+  final String? wardCode;
+
   const ListingFilter({
     this.dealTypes = const {},
     this.sort = ListingSort.newest,
@@ -55,6 +61,8 @@ class ListingFilter extends Equatable {
     this.minPrice,
     this.maxPrice,
     this.conditions = const {},
+    this.provinceCode,
+    this.wardCode,
   });
 
   bool get hasPriceRange => minPrice != null || maxPrice != null;
@@ -69,9 +77,12 @@ class ListingFilter extends Equatable {
       (dealTypes.isEmpty ? 0 : 1) +
       (radiusKm == defaults.radiusKm ? 0 : 1);
 
-  /// Xoá mọi tiêu chí về [defaults] nhưng giữ cách sắp xếp đang chọn
-  ListingFilter resetTo(ListingFilter defaults) =>
-      defaults.copyWith(sort: sort);
+  /// Xoá mọi tiêu chí về [defaults] nhưng giữ cách sắp xếp và khu vực đang chọn
+  ListingFilter resetTo(ListingFilter defaults) => defaults.copyWith(
+    sort: sort,
+    provinceCode: () => provinceCode,
+    wardCode: () => wardCode,
+  );
 
   /// Các trường có thể null nhận hàm trả giá trị để xoá được về null,
   /// VD `copyWith(categoryId: () => null)`.
@@ -83,6 +94,8 @@ class ListingFilter extends Equatable {
     int? Function()? minPrice,
     int? Function()? maxPrice,
     Set<ListingCondition>? conditions,
+    String? Function()? provinceCode,
+    String? Function()? wardCode,
   }) => ListingFilter(
     dealTypes: dealTypes ?? this.dealTypes,
     sort: sort ?? this.sort,
@@ -91,6 +104,8 @@ class ListingFilter extends Equatable {
     minPrice: minPrice == null ? this.minPrice : minPrice(),
     maxPrice: maxPrice == null ? this.maxPrice : maxPrice(),
     conditions: conditions ?? this.conditions,
+    provinceCode: provinceCode == null ? this.provinceCode : provinceCode(),
+    wardCode: wardCode == null ? this.wardCode : wardCode(),
   );
 
   /// Bật / tắt một kiểu giao dịch
@@ -116,6 +131,8 @@ class ListingFilter extends Equatable {
     'maxPrice': ?maxPrice,
     if (conditions.isNotEmpty)
       'condition': [for (final item in conditions) item.apiValue].join(','),
+    'provinceCode': ?provinceCode,
+    'wardCode': ?wardCode,
   };
 
   @override
@@ -127,5 +144,7 @@ class ListingFilter extends Equatable {
     minPrice,
     maxPrice,
     conditions,
+    provinceCode,
+    wardCode,
   ];
 }

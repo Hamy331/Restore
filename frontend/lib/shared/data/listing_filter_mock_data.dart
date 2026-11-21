@@ -37,6 +37,10 @@ extension MockListingFilterMatch on ListingFilter {
         (dealTypes.contains(ListingDealType.exchange) && listing.allowExchange);
     if (!dealMatches) return false;
     if (categoryId != null && listing.categoryId != categoryId) return false;
+    if (provinceCode != null && listing.provinceCode != provinceCode) {
+      return false;
+    }
+    if (wardCode != null && listing.wardCode != wardCode) return false;
     if (conditions.isNotEmpty && !conditions.contains(listing.condition)) {
       return false;
     }
