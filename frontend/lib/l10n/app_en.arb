@@ -1181,6 +1181,9 @@
   "listingFilterPriceAny": "Any",
   "listingFilterPriceHelper": "Exchange-only listings (no price) are hidden when filtering by price.",
   "listingFilterPriceInvalid": "Min price is higher than max price.",
+  "listingFilterRangeFrom": "From",
+  "listingFilterRangeTo": "To",
+  "listingFilterRangeInvalid": "\"From\" is higher than \"To\".",
   "listingFilterPriceUnder": "Under {price}",
   "@listingFilterPriceUnder": {
     "placeholders": {

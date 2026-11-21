@@ -4394,6 +4394,24 @@ abstract class AppLocalizations {
   /// **'Min price is higher than max price.'**
   String get listingFilterPriceInvalid;
 
+  /// No description provided for @listingFilterRangeFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get listingFilterRangeFrom;
+
+  /// No description provided for @listingFilterRangeTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get listingFilterRangeTo;
+
+  /// No description provided for @listingFilterRangeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'\"From\" is higher than \"To\".'**
+  String get listingFilterRangeInvalid;
+
   /// No description provided for @listingFilterPriceUnder.
   ///
   /// In en, this message translates to:

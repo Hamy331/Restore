@@ -2381,6 +2381,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listingFilterPriceInvalid => 'Min price is higher than max price.';
 
   @override
+  String get listingFilterRangeFrom => 'From';
+
+  @override
+  String get listingFilterRangeTo => 'To';
+
+  @override
+  String get listingFilterRangeInvalid => '\"From\" is higher than \"To\".';
+
+  @override
   String listingFilterPriceUnder(String price) {
     return 'Under $price';
   }

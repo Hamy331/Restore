@@ -24,7 +24,9 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
   cos(radians((l.location #>> '{ward,center,longitude}')::double precision-${filters.nearby.longitude}::double precision))))) END`;
  return Prisma.sql`
         SELECT l.id, ${distance} AS "distanceKm",
-          COALESCE(boosted."featuredPriority", 0) > 0 AS "isFeatured"
+          COALESCE(boosted."featuredPriority", 0) > 0 AS "isFeatured",
+          -- Tổng số tin khớp, đếm trước LIMIT nên không cần câu COUNT riêng
+          COUNT(*) OVER()::int AS "totalItems"
         FROM "Listing" l
         JOIN "User" u ON u.id = l."ownerId" AND u.status = 'ACTIVE'
         LEFT JOIN "Category" c ON c.id = l."categoryId"
@@ -61,6 +63,8 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
           AND (${filters.wardCode} = '' OR l.location ->> 'wardCode' = ${filters.wardCode})
           AND (cardinality(${filters.conditions}::text[]) = 0 OR l.condition::text = ANY(${filters.conditions}::text[]))
           AND ${dealMatch(filters.deals)}
+          AND ${attributesMatch(filters.attributes)}
+          AND ${attributeRangesMatch(filters.attributeRanges)}
           AND (${filters.minPrice}::numeric IS NULL OR l.price >= ${filters.minPrice}::numeric)
           AND (${filters.maxPrice}::numeric IS NULL OR l.price <= ${filters.maxPrice}::numeric)
         ORDER BY ${orderBy(filters, distance, sort)}`;
@@ -70,6 +74,7 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
  * Biểu thức SQL [column] chữ thường, bỏ dấu tiếng Việt (kể cả đ), để so với từ khoá đã qua normalizeTitle.
  * Chưa có index: tính trên từng tin đang hiển thị, đủ nhanh với vài chục nghìn tin.
  */
+// ponytail: full scan on folded text; past ~50k listings add a stored folded column + pg_trgm GIN index and match with LIKE.
 export const foldedText = (column: Prisma.Sql) =>
   Prisma.sql`replace(regexp_replace(normalize(lower(${column}), NFD), ${'[̀-ͯ]'}, '', 'g'), 'đ', 'd')`;
 
@@ -94,6 +99,27 @@ function dealMatch(deals: DealType[]) {
   if (!deals.length) return Prisma.sql`TRUE`;
   return Prisma.sql`(${deals.includes('buy')} AND l."allowSale" OR ${deals.includes('exchange')} AND l."allowExchange")`;
 }
+
+/** Mỗi thuộc tính đã chọn: giá trị của tin là một trong các giá trị đó */
+const attributesMatch = (attributes: Record<string, string[]>) => {
+  const entries = Object.entries(attributes);
+  if (!entries.length) return Prisma.sql`TRUE`;
+  return Prisma.join(entries.map(([key, values]) =>
+    Prisma.sql`l.attributes ->> ${key} = ANY(${values}::text[])`), ' AND ', '(', ')');
+};
+
+/** Thuộc tính dạng số nằm trong khoảng đã chọn; tin không có số (hoặc lưu sai kiểu) không khớp */
+const attributeRangesMatch = (ranges: Record<string, { min: string | null; max: string | null }>) => {
+  const conditions = Object.entries(ranges).flatMap(([key, { min, max }]) => {
+    const value = Prisma.sql`(CASE WHEN jsonb_typeof(l.attributes -> ${key}) = 'number'
+      THEN (l.attributes ->> ${key})::numeric END)`;
+    return [
+      ...(min !== null ? [Prisma.sql`${value} >= ${min}::numeric`] : []),
+      ...(max !== null ? [Prisma.sql`${value} <= ${max}::numeric`] : []),
+    ];
+  });
+  return conditions.length ? Prisma.join(conditions, ' AND ', '(', ')') : Prisma.sql`TRUE`;
+};
 
 /** Thứ tự mặc định của feed: gần nhất (nếu có), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian */
 const rankOrder = Prisma.sql`COALESCE(boosted."featuredPriority", 0) DESC,
@@ -136,16 +162,16 @@ function orderBy(filters: FeedOptions, distance: Prisma.Sql, sort?: SearchSort) 
 
 /**
  * Lấy một trang id tin đã xếp hạng (đẩy tin, gói cửa hàng, khoảng cách, thời gian)
- * cùng tổng số tin khớp bộ lọc.
+ * cùng tổng số tin khớp bộ lọc. Một câu SQL (tổng đếm bằng window) để chỉ tốn một lượt
+ * đi về DB; chỉ khi trang vượt quá cuối danh sách mới đếm riêng.
  */
 export async function findRankedPage(filters: FeedOptions, now: Date, limit: number, skip: number,
   sort?: SearchSort) {
   const query = rankedQuery(filters, now, sort);
-  const [rows, totals] = await prisma.$transaction([
-    prisma.$queryRaw<RankedRow[]>`${query} LIMIT ${limit} OFFSET ${skip}`,
-    prisma.$queryRaw<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM (${query}) ranked`,
-  ]);
-  return { rows, totalItems: totals[0]?.n ?? 0 };
+  const rows = await prisma.$queryRaw<(RankedRow & { totalItems: number })[]>`${query} LIMIT ${limit} OFFSET ${skip}`;
+  const totalItems = rows[0]?.totalItems ?? (skip === 0 ? 0
+    : (await prisma.$queryRaw<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM (${query}) ranked`)[0]?.n ?? 0);
+  return { rows: rows.map(({ totalItems: _, ...row }) => row), totalItems };
 }
 
 export const findVisibleByIds = (ids: string[]) =>

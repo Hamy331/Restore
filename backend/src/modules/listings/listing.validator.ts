@@ -100,7 +100,9 @@ function csv(value: unknown): string[] | null {
 /**
  * Bộ lọc tìm kiếm tin đăng dùng chung cho GET /listings, tìm kiếm, gần bạn.
  * Query: q, categoryId, condition (một hoặc nhiều, cách nhau dấu phẩy), deal (buy,exchange),
- * minPrice, maxPrice, latitude + longitude (+ radiusKm), allowExchange, provinceCode, wardCode.
+ * minPrice, maxPrice, latitude + longitude (+ radiusKm), allowExchange, provinceCode, wardCode,
+ * attr.<key> = các giá trị thuộc tính cách nhau dấu phẩy (VD attr.brand=Apple,Samsung): tin khớp một trong số đó;
+ * thuộc tính có/không gửi attr.<key>=true. attrMin.<key> / attrMax.<key> = khoảng của thuộc tính dạng số.
  * q được tách thành words (bỏ dấu, chữ thường): tin khớp khi tiêu đề chứa đủ mọi từ.
  */
 export function listingFilters(query: Record<string, unknown>) {
@@ -145,6 +147,34 @@ export function listingFilters(query: Record<string, unknown>) {
       throw new AppError(400, 'INVALID_QUERY', 'Khu vực không hợp lệ.');
     }
   }
+  // Thuộc tính danh mục: attr.<key>, chỉ khớp đúng giá trị (thuộc tính dạng chọn)
+  const attributes: Record<string, string[]> = {};
+  for (const [name, value] of Object.entries(query)) {
+    if (!name.startsWith('attr.')) continue;
+    const key = name.slice(5);
+    const values = csv(value);
+    if (!/^[A-Za-z]\w{0,59}$/.test(key) || !values || values.length > 30 || Object.keys(attributes).length >= 10) {
+      throw new AppError(400, 'INVALID_QUERY', 'Thuộc tính lọc không hợp lệ.');
+    }
+    if (values.length) attributes[key] = values;
+  }
+  // Thuộc tính dạng số: attrMin.<key> / attrMax.<key>, mỗi đầu bỏ trống là không giới hạn
+  const attributeRanges: Record<string, { min: string | null; max: string | null }> = {};
+  for (const [name, value] of Object.entries(query)) {
+    const bound = name.startsWith('attrMin.') ? 'min' : name.startsWith('attrMax.') ? 'max' : null;
+    if (!bound) continue;
+    const key = name.slice(8);
+    if (!/^[A-Za-z]\w{0,59}$/.test(key) || typeof value !== 'string' || !/^-?\d{1,12}(\.\d{1,4})?$/.test(value) ||
+      (!attributeRanges[key] && Object.keys(attributeRanges).length >= 10)) {
+      throw new AppError(400, 'INVALID_QUERY', 'Khoảng giá trị thuộc tính không hợp lệ.');
+    }
+    (attributeRanges[key] ??= { min: null, max: null })[bound] = value;
+  }
+  for (const { min, max } of Object.values(attributeRanges)) {
+    if (min !== null && max !== null && Number(min) > Number(max)) {
+      throw new AppError(400, 'INVALID_QUERY', 'Giá trị nhỏ nhất phải nhỏ hơn giá trị lớn nhất.');
+    }
+  }
   return {
     ...(nearby?{nearby}:{}), ...(query.allowExchange==='true'?{allowExchange:true}:{}),
     q: typeof q === 'string' ? q.trim() : '',
@@ -156,6 +186,8 @@ export function listingFilters(query: Record<string, unknown>) {
     maxPrice: typeof maxPrice === 'string' ? maxPrice : null,
     provinceCode: typeof query.provinceCode === 'string' ? query.provinceCode : '',
     wardCode: typeof query.wardCode === 'string' ? query.wardCode : '',
+    attributes,
+    attributeRanges,
   };
 }
 
@@ -286,7 +318,7 @@ export const decisionBody = z.unknown().transform((body) => {
  * - newest:   mới nhất (tin được đẩy xếp trước). Bỏ qua tọa độ nếu có.
  * - nearby:   bắt buộc latitude + longitude, lọc trong radiusKm (mặc định 5) và xếp gần nhất trước.
  * - exchange: chỉ tin cho phép trao đổi.
- * Các bộ lọc tìm kiếm (q, categoryId, condition, deal, minPrice, maxPrice, provinceCode, wardCode) dùng được với mọi filter.
+ * Các bộ lọc tìm kiếm (q, categoryId, condition, deal, minPrice, maxPrice, provinceCode, wardCode, attr.<key>, attrMin.<key>, attrMax.<key>) dùng được với mọi filter.
  * sort=price_asc | price_desc xếp theo giá (tin chỉ trao đổi xếp cuối); giá trị khác giữ thứ tự feed
  * để tin được đẩy (FEATURED/BUMP) vẫn ưu tiên.
  */

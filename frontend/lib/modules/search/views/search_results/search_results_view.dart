@@ -4,7 +4,10 @@ import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 
 import '../../bloc/search_accounts_cubit.dart';
+import 'package:restore/modules/location/utils/listing_area.dart';
+
 import '../../bloc/search_results_cubit.dart';
+import '../../bloc/search_results_state.dart';
 import '../../repositories/search_repository.dart';
 import 'search_results_mobile_view.dart';
 
@@ -39,9 +42,11 @@ class SearchResultsView extends StatelessWidget {
       key: ValueKey(query),
       providers: [
         BlocProvider(
-          create: (_) =>
-              SearchResultsCubit(searchRepository: repository, query: query)
-                ..start(),
+          create: (context) => SearchResultsCubit(
+            searchRepository: repository,
+            query: query,
+            filter: SearchResultsState.defaultFilter.withUserArea(context),
+          )..start(),
         ),
         BlocProvider(
           create: (_) =>

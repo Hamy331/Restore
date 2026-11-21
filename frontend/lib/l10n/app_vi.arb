@@ -1140,6 +1140,9 @@
   "listingFilterPriceAny": "Không giới hạn",
   "listingFilterPriceHelper": "Tin chỉ nhận trao đổi (không có giá) sẽ bị ẩn khi lọc theo giá.",
   "listingFilterPriceInvalid": "Giá thấp nhất đang lớn hơn giá cao nhất.",
+  "listingFilterRangeFrom": "Từ",
+  "listingFilterRangeTo": "Đến",
+  "listingFilterRangeInvalid": "Giá trị \"Từ\" đang lớn hơn \"Đến\".",
   "listingFilterPriceUnder": "Dưới {price}",
   "@listingFilterPriceUnder": {
     "placeholders": {

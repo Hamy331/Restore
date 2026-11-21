@@ -12,8 +12,17 @@ class CategoryDetailCubit extends Cubit<CategoryDetailState> {
     required CategoryListingsRepository repository,
     required String categoryId,
     CategoryModel? category,
+
+    /// Bộ lọc ban đầu (VD đã gắn khu vực của app), null là mặc định của trang
+    ListingFilter? filter,
   }) : _repository = repository,
-       super(CategoryDetailState(categoryId: categoryId, category: category));
+       super(
+         CategoryDetailState(
+           categoryId: categoryId,
+           category: category,
+           filter: filter,
+         ),
+       );
 
   final CategoryListingsRepository _repository;
 
@@ -51,15 +60,6 @@ class CategoryDetailCubit extends Cubit<CategoryDetailState> {
 
   /// Xoá mọi tiêu chí về mặc định của trang, giữ cách sắp xếp và khu vực
   void clearFilters() => applyFilter(state.filter.resetTo(state.defaultFilter));
-
-  /// Lọc tin theo khu vực ở server: một tỉnh/thành hoặc một phường/xã,
-  /// cả hai null là toàn quốc
-  void setArea({String? provinceCode, String? wardCode}) => applyFilter(
-    state.filter.copyWith(
-      provinceCode: () => provinceCode,
-      wardCode: () => wardCode,
-    ),
-  );
 
   /// Xoá cả bộ lọc lẫn khu vực (nút ở trang trống khi lọc không ra tin)
   void clearAll() =>

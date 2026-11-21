@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { LEGACY_WARD_CODES, PROVINCES, WARDS } from './catalog.data.js';
 import { toCategoryDto } from './catalog.dto.js';
-import { findWard, listWards, locatePoint, reverseGeocode, searchAreas } from './catalog.service.js';
+import { findArea, findWard, listWards, locatePoint, reverseGeocode, searchAreas } from './catalog.service.js';
 import { listingLocation } from './catalog.validator.js';
 import { wardCodeAt } from './location.geo.js';
 
@@ -72,4 +72,11 @@ test('listingLocation falls back to the ward center and rejects a ward of anothe
 test('toCategoryDto fills name, description, attributes for admin-created categories', () => {
   const dto = toCategoryDto({ id: 'x', name: 'X', active: true, metadata: {} });
   assert.deepEqual(dto, { id: 'x', name: 'X', description: '', attributes: [] });
+});
+
+test('findArea looks up provinces and wards by code, same shape as search results', () => {
+  assert.deepEqual(findArea('79'), searchAreas('ho chi minh', 1)[0]);
+  const ward = searchAreas('ho chi minh', 5).find((area) => area.level !== findArea('79')?.level)!;
+  assert.deepEqual(findArea(ward.code), ward);
+  assert.equal(findArea('nope'), undefined);
 });
