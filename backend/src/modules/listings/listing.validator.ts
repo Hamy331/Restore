@@ -278,12 +278,15 @@ export const decisionBody = z.unknown().transform((body) => {
  * - newest:   mới nhất (tin được đẩy xếp trước). Bỏ qua tọa độ nếu có.
  * - nearby:   bắt buộc latitude + longitude, lọc trong radiusKm (mặc định 5) và xếp gần nhất trước.
  * - exchange: chỉ tin cho phép trao đổi.
- * Các bộ lọc tìm kiếm (q, categoryId, condition, minPrice, maxPrice) dùng được với mọi filter.
+ * Các bộ lọc tìm kiếm (q, categoryId, condition, deal, minPrice, maxPrice) dùng được với mọi filter.
+ * sort=price_asc | price_desc xếp theo giá (tin chỉ trao đổi xếp cuối); giá trị khác giữ thứ tự feed
+ * để tin được đẩy (FEATURED/BUMP) vẫn ưu tiên.
  */
 export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
   const filter = parse(oneOf('filter', FEED_FILTERS, 'newest'), raw.filter);
   const pagination = parse(pageQuery({ defaultLimit: 10, maxLimit: 50 }), raw);
   const { nearby, allowExchange, ...search } = listingFilters(raw);
+  const sort = parse(oneOf('sort', SEARCH_SORTS, 'newest'), raw.sort);
 
   if (filter === 'nearby' && !nearby) {
     throw new AppError(400, 'LOCATION_REQUIRED', 'Cần latitude và longitude để xem tin gần bạn.', 'location');
@@ -297,7 +300,7 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
     ...(raw.verifiedShop === 'true' ? { verifiedShop: true } : {}),
     ...(raw.onSale === 'true' ? { onSale: true } : {}),
   };
-  return { filter, pagination, filters };
+  return { filter, pagination, filters, sort: sort === 'price_asc' || sort === 'price_desc' ? sort : undefined };
 });
 
 /** Cách sắp xếp của trang kết quả tìm kiếm */
