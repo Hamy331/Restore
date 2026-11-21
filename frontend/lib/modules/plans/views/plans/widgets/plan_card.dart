@@ -92,22 +92,27 @@ class PlanCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (isCurrent) ...[
-                const SizedBox(width: 8),
-                _CurrentChip(label: l10n.plansInUse),
-              ],
             ],
           ),
           const SizedBox(height: 18),
-          Text(
-            priceAmount,
-            style: const TextStyle(
-              fontSize: 34,
-              height: 1.05,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.8,
-              color: AppColors.textPrimary,
-            ),
+          // Nhãn "Đang dùng" nằm cạnh giá để không chen vào tên gói khi thẻ hẹp
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  priceAmount,
+                  style: const TextStyle(
+                    fontSize: 34,
+                    height: 1.05,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.8,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              if (isCurrent) _CurrentChip(label: l10n.plansInUse),
+            ],
           ),
           const SizedBox(height: 2),
           Text(

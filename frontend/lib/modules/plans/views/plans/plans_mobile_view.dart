@@ -165,10 +165,22 @@ class _PlanList extends StatelessWidget {
   final PlansState state;
   final ValueChanged<PlanPackage> onChoose;
 
+  /// Vùng nội dung (đã trừ lề) phải rộng ít nhất chừng này mới xếp 3 gói
+  /// cạnh nhau; hẹp hơn (cửa sổ desktop nhỏ, mobile) thì xếp dọc.
+  static const double _rowMinWidth = 760;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => _build(context, constraints.maxWidth),
+  );
+
+  Widget _build(BuildContext context, double maxWidth) {
     final l10n = AppLocalizations.of(context)!;
     final desktop = isDesktopLayout(context);
+    final padding = desktop
+        ? const EdgeInsets.fromLTRB(28, 20, 28, 32)
+        : const EdgeInsets.fromLTRB(16, 4, 16, 32);
+    final row = maxWidth - padding.horizontal >= _rowMinWidth;
     final now = DateTime.now();
     final current = state.current;
     final active = current != null && current.isActiveAt(now) ? current : null;
@@ -178,16 +190,14 @@ class _PlanList extends StatelessWidget {
         priceAmount: '0',
         priceUnit: l10n.plansFreeForever,
         isCurrent: active == null,
-        fillHeight: desktop,
+        fillHeight: row,
         benefits: [l10n.plansPersonalBenefitFree, l10n.plansPersonalBenefitPay],
       ),
       for (final package in state.packages)
-        _paidCard(l10n, package, active, desktop),
+        _paidCard(l10n, package, active, row),
     ];
     return ListView(
-      padding: desktop
-          ? const EdgeInsets.fromLTRB(28, 20, 28, 32)
-          : const EdgeInsets.fromLTRB(16, 4, 16, 32),
+      padding: padding,
       children: [
         if (active != null) ...[
           Text(
@@ -201,9 +211,9 @@ class _PlanList extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-        // Desktop: 3 gói cạnh nhau, cao bằng nhau, nút thẳng hàng ở đáy.
-        // Mobile: xếp dọc.
-        if (desktop)
+        // Đủ rộng: 3 gói cạnh nhau, cao bằng nhau, nút thẳng hàng ở đáy.
+        // Hẹp: xếp dọc.
+        if (row)
           IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -237,7 +247,7 @@ class _PlanList extends StatelessWidget {
     AppLocalizations l10n,
     PlanPackage package,
     CurrentPlan? active,
-    bool desktop,
+    bool row,
   ) {
     final isCurrent = active?.package.id == package.id;
     final lower =
@@ -249,7 +259,7 @@ class _PlanList extends StatelessWidget {
       priceAmount: '${package.priceCredits}',
       priceUnit: l10n.plansPriceUnit,
       isCurrent: isCurrent,
-      fillHeight: desktop,
+      fillHeight: row,
       benefits: [
         l10n.plansBenefitActive(package.activeListingLimit),
         l10n.plansBenefitDaily(package.dailyListingLimit),
