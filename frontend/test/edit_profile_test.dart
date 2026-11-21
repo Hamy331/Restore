@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:restore/core/config/dev_plan_override.dart';
+import 'package:restore/data/models/enums/subscription_plan.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/core/network/media_url.dart';
@@ -36,6 +38,8 @@ const _profile = ProfileData(
   ratingAverage: 0,
   avatarUrl: 'http://localhost:3000/api/v1/media/avatars/a.png',
   bio: 'Galaxy chính hãng',
+  email: 'seller@example.test',
+  phone: '0900000000',
 );
 
 class _FakeRepository implements ProfileRepository {
@@ -169,6 +173,37 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 void main() {
+  setUp(() => DevPlanOverride.plan.value = SubscriptionPlan.personal);
+  tearDown(() => DevPlanOverride.plan.value = SubscriptionPlan.personal);
+
+  for (final plan in SubscriptionPlan.values) {
+    testWidgets('profile details and shop entry match plan ${plan.name}', (
+      tester,
+    ) async {
+      DevPlanOverride.plan.value = plan;
+      final cubit = UserProfileCubit(_FakeRepository(), initial: _profile);
+      addTearDown(cubit.close);
+      await _pumpPage(tester, cubit, (_) async => Uint8List(0));
+      final email = find.byKey(const ValueKey('edit-profile-email-row'));
+      await tester.ensureVisible(email);
+      await _settle(tester);
+      expect(find.text('seller@example.test'), findsOneWidget);
+      expect(find.text('Email đăng ký · chỉ xem'), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+      final planRow = find.byKey(const ValueKey('edit-profile-plan-row'));
+      await tester.ensureVisible(planRow);
+      await _settle(tester);
+      final l = AppLocalizations.of(tester.element(planRow))!;
+      expect(find.text(plan.label(l)), findsWidgets);
+      final shop = find.byKey(const ValueKey('edit-profile-shop-row'));
+      expect(
+        shop,
+        plan == SubscriptionPlan.shop ? findsOneWidget : findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   test(
     'an older profile read cannot restore the previous avatar after saving',
     () async {
@@ -202,6 +237,8 @@ void main() {
 
     expect(find.text('Chỉnh sửa hồ sơ'), findsOneWidget);
     expect(find.text('Samsung Store'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('edit-profile-avatar')));
+    await _settle(tester);
     expect(find.text('Căn chỉnh'), findsOneWidget);
 
     // Căn chỉnh ảnh đang dùng: tải ảnh về rồi mở khung tròn
@@ -225,16 +262,17 @@ void main() {
     await _settle(tester);
     expect(find.text('Căn chỉnh ảnh đại diện'), findsNothing);
 
+    await tester.tap(find.byKey(const ValueKey('edit-profile-name-row')));
+    await _settle(tester);
     await tester.enterText(
-      find.descendant(
-        of: find.byKey(const ValueKey('edit-profile-name')),
-        matching: find.byType(TextField),
-      ),
+      find.byKey(const ValueKey('edit-profile-name')),
       'Samsung Official',
     );
-    await tester.tap(find.text('Lưu'));
+    await tester.pump();
+    await tester.tap(find.text('Áp dụng'));
     await _settle(tester);
-
+    await tester.tap(find.byKey(const ValueKey('edit-profile-save')));
+    await _settle(tester);
     expect(uploader.purpose, ImagePurpose.avatar);
     expect(uploader.uploadedBytes, greaterThan(0));
     expect(repository.saved, {
@@ -269,28 +307,54 @@ void main() {
     );
     await _pumpPage(tester, cubit, (_) async => Uint8List(0));
 
-    Finder field(String key) => find.descendant(
-      of: find.byKey(ValueKey(key)),
-      matching: find.byType(TextField),
+    await tester.tap(find.byKey(const ValueKey('edit-profile-name-row')));
+    await _settle(tester);
+    await tester.enterText(
+      find.byKey(const ValueKey('edit-profile-name')),
+      '  ',
     );
-    await tester.enterText(field('edit-profile-name'), '  ');
-    await tester.enterText(field('edit-profile-username'), 'Bad Name');
-    await tester.tap(find.text('Lưu'));
     await tester.pump();
+    await tester.tap(find.text('Áp dụng'));
+    await tester.pumpAndSettle();
     expect(find.text('Nhập tên hiển thị.'), findsOneWidget);
     expect(repository.saved, isNull);
 
-    await tester.enterText(field('edit-profile-name'), 'Samsung');
-    await tester.enterText(field('edit-profile-username'), 'samsung.vn');
-    await tester.tap(find.byKey(const ValueKey('edit-profile-remove')));
+    await tester.enterText(
+      find.byKey(const ValueKey('edit-profile-name')),
+      'Samsung',
+    );
     await tester.pump();
-    expect(find.text('Căn chỉnh'), findsNothing);
-    await tester.tap(find.text('Lưu'));
+    await tester.tap(find.text('Áp dụng'));
+    await _settle(tester);
+    await tester.tap(find.byKey(const ValueKey('edit-profile-username-row')));
+    await _settle(tester);
+    await tester.enterText(
+      find.byKey(const ValueKey('edit-profile-username')),
+      'Bad Name',
+    );
+    await tester.pump();
+    await tester.tap(find.text('Áp dụng'));
+    await tester.pump();
+    expect(
+      find.text('3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.'),
+      findsOneWidget,
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('edit-profile-username')),
+      'samsung.vn',
+    );
+    await tester.pump();
+    await tester.tap(find.text('Áp dụng'));
+    await _settle(tester);
+    await tester.tap(find.byKey(const ValueKey('edit-profile-avatar')));
+    await _settle(tester);
+    await tester.tap(find.byKey(const ValueKey('edit-profile-remove')));
+    await _settle(tester);
+    await tester.tap(find.byKey(const ValueKey('edit-profile-save')));
     await _settle(tester);
     expect(find.text('Tên người dùng đã được sử dụng.'), findsOneWidget);
-
     repository.error = null;
-    await tester.tap(find.text('Lưu'));
+    await tester.tap(find.byKey(const ValueKey('edit-profile-save')));
     await _settle(tester);
     expect(repository.saved?['avatarUrl'], isNull);
     expect(repository.saved!.containsKey('avatarUrl'), isTrue);

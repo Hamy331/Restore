@@ -4,13 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:restore/core/config/dev_plan_override.dart';
+import 'package:restore/data/models/enums/subscription_plan.dart';
+import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../services/media_picker_service.dart';
-import '../../../../shared/widgets/app_bottom_action_bar.dart';
-import '../../../../shared/widgets/app_labeled_text_field.dart';
+import '../../../../shared/widgets/app_action_buttons.dart';
+
 import '../../../../shared/widgets/image_crop/image_crop.dart';
 import '../../../../shared/widgets/image_crop/image_crop_view.dart';
 import '../../bloc/user_profile/user_profile_cubit.dart';
@@ -19,7 +22,7 @@ import '../../models/profile_models.dart';
 import '../../widgets/profile_header.dart';
 import 'edit_profile_view.dart';
 import 'widgets/edit_profile_avatar.dart';
-import 'widgets/edit_profile_section.dart';
+import 'widgets/edit_profile_field_page.dart';
 
 /// Khớp `usernamePattern` ở backend (auth.validation.ts).
 final _usernamePattern = RegExp(r'^[a-z0-9._]{3,30}$');
@@ -191,6 +194,44 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     }
   }
 
+  Future<void> _editField({
+    required TextEditingController controller,
+    required String title,
+    required String fieldKey,
+    required int maxLength,
+    String? hint,
+    String? helper,
+    String? Function(String)? validator,
+    bool multiline = false,
+  }) async {
+    final value = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => EditProfileFieldPage(
+          title: title,
+          value: controller.text,
+          fieldKey: fieldKey,
+          maxLength: maxLength,
+          hint: hint,
+          helper: helper,
+          validator: validator,
+          multiline: multiline,
+        ),
+      ),
+    );
+    if (value == null || !mounted) return;
+    setState(() {
+      controller.text = value;
+      if (controller == _username) _usernameError = null;
+    });
+  }
+
+  bool get _hasChanges =>
+      _name.text.trim() != (_profile?.fullName ?? '') ||
+      _username.text.trim() != (_profile?.username ?? '') ||
+      _bio.text.trim() != (_profile?.bio ?? '') ||
+      _avatarBytes != null ||
+      _avatarUrl != _profile?.avatarUrl;
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -198,9 +239,9 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     return PopScope(
       canPop: !_saving,
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         appBar: AppBar(
-          backgroundColor: AppColors.background,
+          backgroundColor: AppColors.surface,
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
@@ -211,100 +252,262 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
           title: Text(
             l.accEditTitle,
             style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
           ),
         ),
-        bottomNavigationBar: AppBottomActionBar(
-          key: const ValueKey('edit-profile-save'),
-          primaryLabel: l.accSave,
-          primaryIcon: AppIcons.check,
-          isLoading: _saving,
-          onPrimary: _saving || _loadingAvatar ? null : _save,
+        bottomNavigationBar: ColoredBox(
+          color: AppColors.surface,
+          child: SafeArea(
+            top: false,
+            child: Align(
+              heightFactor: 1,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 680),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                  child: AppPrimaryActionButton(
+                    key: const ValueKey('edit-profile-save'),
+                    label: l.saveChanges,
+                    isLoading: _saving,
+                    onPressed: _saving || _loadingAvatar || !_hasChanges
+                        ? null
+                        : _save,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
-        // Màn rộng (web desktop): form gọn ở giữa thay vì kéo hết bề ngang
         body: ResponsiveContent(
           maxWidth: 680,
           padding: EdgeInsets.zero,
           child: AbsorbPointer(
-          absorbing: _saving,
-          child: ListView(
-            key: const ValueKey('edit-profile-list'),
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-            children: [
-              EditProfileSection(
-                title: l.accAvatarSection,
-                child: EditProfileAvatar(
-                  initials: ProfileHeader.initials(
-                    _name.text.isEmpty
-                        ? (_profile?.fullName ?? '')
-                        : _name.text,
+            absorbing: _saving,
+            child: ListView(
+              key: const ValueKey('edit-profile-list'),
+              padding: const EdgeInsets.only(bottom: 24),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+                  child: EditProfileAvatar(
+                    initials: ProfileHeader.initials(_name.text),
+                    bytes: _avatarBytes,
+                    url: _avatarUrl,
+                    busy: _loadingAvatar,
+                    onPick: _pick,
+                    onAdjust: hasAvatar ? _adjust : null,
+                    onRemove: hasAvatar ? _remove : null,
                   ),
-                  bytes: _avatarBytes,
-                  url: _avatarUrl,
-                  busy: _loadingAvatar,
-                  onPick: _pick,
-                  onAdjust: hasAvatar ? _adjust : null,
-                  onRemove: hasAvatar ? _remove : null,
                 ),
-              ),
-              EditProfileSection(
-                title: l.accInfoSection,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AppLabeledTextField(
-                      key: const ValueKey('edit-profile-name'),
-                      label: l.accDisplayName,
-                      isRequired: true,
-                      controller: _name,
-                      maxLength: 80,
-                      hintText: l.accDisplayNameHint,
-                      errorText: _showErrors && !_nameValid
-                          ? l.accNameRequired
-                          : null,
-                      onChanged: (_) => setState(() {}),
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 14),
-                    AppLabeledTextField(
-                      key: const ValueKey('edit-profile-username'),
-                      label: l.accUsername,
-                      isRequired: true,
-                      controller: _username,
-                      maxLength: 30,
-                      prefixText: '@',
-                      helperText: l.accUsernameHelper,
-                      errorText:
-                          _usernameError ??
-                          (_showErrors && !_usernameValid
-                              ? l.accUsernameInvalid
-                              : null),
-                      onChanged: (_) => setState(() => _usernameError = null),
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 14),
-                    AppLabeledTextField(
-                      key: const ValueKey('edit-profile-bio'),
-                      label: l.accBio,
-                      controller: _bio,
-                      maxLength: 300,
-                      minLines: 3,
-                      maxLines: 5,
-                      hintText: l.accBioHint,
-                      helperText: '${_bio.text.length}/300',
-                      onChanged: (_) => setState(() {}),
-                    ),
-                  ],
+                _ProfileInfoRow(
+                  fieldKey: 'edit-profile-name-row',
+                  icon: AppIcons.user,
+                  label: l.accDisplayName,
+                  value: _name.text,
+                  placeholder: l.accDisplayNameHint,
+                  error: _showErrors && !_nameValid ? l.accNameRequired : null,
+                  onTap: () => _editField(
+                    controller: _name,
+                    title: l.accDisplayName,
+                    fieldKey: 'edit-profile-name',
+                    maxLength: 80,
+                    hint: l.accDisplayNameHint,
+                    validator: (value) =>
+                        value.isEmpty ? l.accNameRequired : null,
+                  ),
                 ),
-              ),
-            ],
-          ),
+                _ProfileInfoRow(
+                  fieldKey: 'edit-profile-username-row',
+                  icon: AppIcons.followUser,
+                  label: l.accUsername,
+                  value: _username.text.isEmpty ? '' : '@${_username.text}',
+                  placeholder: l.accUsername,
+                  error:
+                      _usernameError ??
+                      (_showErrors && !_usernameValid
+                          ? l.accUsernameInvalid
+                          : null),
+                  onTap: () => _editField(
+                    controller: _username,
+                    title: l.accUsername,
+                    fieldKey: 'edit-profile-username',
+                    maxLength: 30,
+                    helper: l.accUsernameHelper,
+                    validator: (value) => _usernamePattern.hasMatch(value)
+                        ? null
+                        : l.accUsernameInvalid,
+                  ),
+                ),
+                _ProfileInfoRow(
+                  fieldKey: 'edit-profile-bio-row',
+                  icon: AppIcons.edit,
+                  label: l.accBio,
+                  value: _bio.text,
+                  placeholder: l.accBioHint,
+                  onTap: () => _editField(
+                    controller: _bio,
+                    title: l.accBio,
+                    fieldKey: 'edit-profile-bio',
+                    maxLength: 300,
+                    hint: l.accBioHint,
+                    multiline: true,
+                  ),
+                ),
+                _ProfileInfoRow(
+                  fieldKey: 'edit-profile-email-row',
+                  icon: AppIcons.mail,
+                  label: l.email,
+                  value: _profile?.email ?? '',
+                  placeholder: l.accNotProvided,
+                  caption: l.accRegisteredEmailHint,
+                ),
+                _ProfileInfoRow(
+                  fieldKey: 'edit-profile-phone-row',
+                  icon: AppIcons.categoryPhone,
+                  label: l.phone,
+                  value: _profile?.phone ?? '',
+                  placeholder: l.accNotProvided,
+                  caption: l.accContactReadOnly,
+                ),
+                ValueListenableBuilder<SubscriptionPlan>(
+                  valueListenable: DevPlanOverride.plan,
+                  builder: (context, plan, _) => Column(
+                    children: [
+                      _ProfileInfoRow(
+                        fieldKey: 'edit-profile-plan-row',
+                        icon: AppIcons.pro,
+                        label: l.plansCurrent,
+                        value: plan.label(l),
+                        placeholder: '',
+                      ),
+                      if (plan == SubscriptionPlan.shop)
+                        _ProfileInfoRow(
+                          fieldKey: 'edit-profile-shop-row',
+                          icon: AppIcons.shop,
+                          label: l.quickActionShopManage,
+                          value: _profile?.storefront.name ?? '',
+                          placeholder: l.accShopDetailsHint,
+                          onTap: () => context.push(MyShopView.path),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+class _ProfileInfoRow extends StatelessWidget {
+  const _ProfileInfoRow({
+    required this.fieldKey,
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.placeholder,
+    this.caption,
+    this.error,
+    this.onTap,
+  });
+
+  final String fieldKey;
+  final IconData icon;
+  final String label, value, placeholder;
+  final String? caption, error;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      const SizedBox(
+        height: 6,
+        width: double.infinity,
+        child: ColoredBox(color: Color(0xFFF6F7F9)),
+      ),
+      Material(
+        color: AppColors.surface,
+        child: InkWell(
+          key: ValueKey(fieldKey),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Icon(icon, size: 22, color: const Color(0xFF9CA3AF)),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        value.isEmpty ? placeholder : value,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.45,
+                          color: value.isEmpty
+                              ? const Color(0xFF9CA3AF)
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                      if (caption != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          caption!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                      if (error != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          error!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.error,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Icon(
+                    onTap == null ? AppIcons.lock : AppIcons.chevronRight,
+                    size: 18,
+                    color: const Color(0xFFB6BCC5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
 }

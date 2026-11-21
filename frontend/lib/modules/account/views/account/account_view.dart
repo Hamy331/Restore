@@ -43,6 +43,8 @@ class AccountView extends StatelessWidget {
                     id: user.id,
                     fullName: user.fullName,
                     username: user.username,
+                    email: user.email,
+                    phone: user.phone,
                     avatarUrl: user.avatarUrl,
                     ratingAverage: user.ratingAverage,
                     ratingCount: user.ratingCount,

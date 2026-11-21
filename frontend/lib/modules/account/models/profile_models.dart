@@ -94,6 +94,8 @@ class ProfileData extends Equatable {
     this.ratingCount = 0,
     this.avatarUrl,
     this.bio,
+    this.email,
+    this.phone,
     this.isFollowing = false,
     this.followingShopCount = 0,
     this.storefront = const SellerStorefront(),
@@ -109,6 +111,8 @@ class ProfileData extends Equatable {
   final String username;
   final String? avatarUrl;
   final String? bio;
+  final String? email;
+  final String? phone;
   final int followerCount;
   final int followingCount;
 
@@ -128,6 +132,8 @@ class ProfileData extends Equatable {
     username: json['username'] as String? ?? '',
     avatarUrl: resolveMediaUrl(json['avatarUrl'] as String?),
     bio: json['bio'] as String?,
+    email: json['email'] as String?,
+    phone: json['phone'] as String?,
     followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
     followingCount: (json['followingCount'] as num?)?.toInt() ?? 0,
     ratingAverage: (json['ratingAverage'] as num?)?.toDouble() ?? 0,
@@ -146,6 +152,8 @@ class ProfileData extends Equatable {
     String? fullName,
     String? username,
     String? bio,
+    String? email,
+    String? phone,
     String? avatarUrl,
     bool clearAvatar = false,
     SellerStorefront? storefront,
@@ -160,6 +168,8 @@ class ProfileData extends Equatable {
     fullName: fullName ?? this.fullName,
     username: username ?? this.username,
     bio: bio ?? this.bio,
+    email: email ?? this.email,
+    phone: phone ?? this.phone,
     avatarUrl: clearAvatar ? null : avatarUrl ?? this.avatarUrl,
     followerCount: followerCount ?? this.followerCount,
     followingCount: followingCount,
@@ -176,6 +186,8 @@ class ProfileData extends Equatable {
     username,
     avatarUrl,
     bio,
+    email,
+    phone,
     followerCount,
     followingCount,
     ratingAverage,

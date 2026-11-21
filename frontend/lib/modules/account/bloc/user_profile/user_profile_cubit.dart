@@ -49,7 +49,11 @@ class UserProfileCubit extends Cubit<UserProfileState> {
       UserProfileState(profile: state.profile, loading: false, saving: true),
     );
     try {
-      final profile = await _repository.update(changes);
+      final updated = await _repository.update(changes);
+      final profile = updated.copyWith(
+        email: updated.email ?? state.profile?.email,
+        phone: updated.phone ?? state.profile?.phone,
+      );
       if (!isClosed) emit(UserProfileState(profile: profile, loading: false));
       return ProfileSaveResult.saved;
     } catch (error) {
