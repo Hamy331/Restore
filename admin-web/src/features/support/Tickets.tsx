@@ -39,6 +39,7 @@ export function Tickets({ session }: { session: Session }) {
           rowKey="id"
           loading={!list.data}
           dataSource={list.data?.items}
+          scroll={{ x: 620 }}
           pagination={list.pagination}
           columns={[
             { title: 'Yêu cầu', dataIndex: 'subject' },
