@@ -2345,6 +2345,16 @@ class AppLocalizationsVi extends AppLocalizations {
       'Giá thấp nhất đang lớn hơn giá cao nhất.';
 
   @override
+  String get listingFilterRangeFrom => 'Từ';
+
+  @override
+  String get listingFilterRangeTo => 'Đến';
+
+  @override
+  String get listingFilterRangeInvalid =>
+      'Giá trị \"Từ\" đang lớn hơn \"Đến\".';
+
+  @override
   String listingFilterPriceUnder(String price) {
     return 'Dưới $price';
   }

@@ -41,7 +41,13 @@ class ListingFilterCubit extends Cubit<ListingFilterState> {
   /// null là "Tất cả danh mục". Thuộc tính đã chọn thuộc danh mục cũ nên xoá.
   void selectCategory(String? id) {
     if (id == state.draft.categoryId) return;
-    _update(state.draft.copyWith(categoryId: () => id, attributes: const {}));
+    _update(
+      state.draft.copyWith(
+        categoryId: () => id,
+        attributes: const {},
+        attributeRanges: const {},
+      ),
+    );
   }
 
   void toggleAttribute(String key, String value) =>
@@ -55,6 +61,9 @@ class ListingFilterCubit extends Cubit<ListingFilterState> {
 
   void toggleDeal(ListingDealType type) =>
       _update(state.draft.toggleDeal(type));
+
+  void setAttributeRange(String key, {int? min, int? max}) =>
+      _update(state.draft.setAttributeRange(key, min: min, max: max));
 
   void setRadius(double km) => _update(state.draft.copyWith(radiusKm: km));
 

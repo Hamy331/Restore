@@ -45,6 +45,13 @@ extension MockListingFilterMatch on ListingFilter {
       final value = '${listing.attributes[entry.key]}';
       if (!entry.value.contains(value)) return false;
     }
+    for (final entry in attributeRanges.entries) {
+      final value = listing.attributes[entry.key];
+      final range = entry.value;
+      if (value is! num) return false;
+      if (range.min != null && value < range.min!) return false;
+      if (range.max != null && value > range.max!) return false;
+    }
     if (conditions.isNotEmpty && !conditions.contains(listing.condition)) {
       return false;
     }

@@ -29,6 +29,9 @@ class ListingFilterState extends Equatable {
     return min != null && max != null && min > max;
   }
 
+  /// Chưa cho áp dụng khi khoảng giá hoặc khoảng thuộc tính bị ngược
+  bool get isInvalid => isPriceInvalid || draft.hasInvalidAttributeRange;
+
   ListingFilterState copyWith({
     ListingFilter? draft,
     ListingFilterOptionsStatus? optionsStatus,

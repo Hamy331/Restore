@@ -17,12 +17,14 @@ import 'app_filter_bar.dart';
 import 'listing_filter_category_section.dart';
 import 'listing_filter_labels.dart';
 import 'listing_filter_price_section.dart';
+import 'listing_filter_range_section.dart';
 import 'listing_filter_section.dart';
 
 /// Mở sheet Bộ lọc đầy đủ cho các trang danh sách tin (gần bạn, kết quả
 /// tìm kiếm, danh mục...): danh mục, khoảng giá, tình trạng, hình thức và
-/// khoảng cách, cùng các thuộc tính dạng chọn của danh mục đang lọc
-/// (Hãng, Dung lượng...). Trả về bộ lọc mới khi bấm Áp dụng, null nếu đóng sheet.
+/// khoảng cách, cùng các thuộc tính của danh mục đang lọc: dạng chọn
+/// (Hãng, Dung lượng...), có/không (Còn giấy tờ) và khoảng số (Năm sản xuất).
+/// Thuộc tính chữ tự do (Dòng máy) đã tìm được bằng ô tìm kiếm nên không lọc. Trả về bộ lọc mới khi bấm Áp dụng, null nếu đóng sheet.
 ///
 /// - [defaults]: bộ lọc mặc định của trang, dùng cho nút "Xoá bộ lọc".
 /// - [radiusOptions]: các mức bán kính (km); null thì ẩn nhóm Khoảng cách
@@ -84,8 +86,9 @@ class _ListingFilterSheetBody extends StatelessWidget {
           for (final category in state.options.categories)
             if (category.id == draft.categoryId)
               for (final attribute in category.attributes)
-                if (attribute.type == AttributeType.select &&
-                    attribute.options.isNotEmpty)
+                if (attribute.type != AttributeType.text &&
+                    (attribute.type != AttributeType.select ||
+                        attribute.options.isNotEmpty))
                   attribute,
         ];
         return Column(
@@ -106,26 +109,7 @@ class _ListingFilterSheetBody extends StatelessWidget {
                       onRetry: cubit.loadOptions,
                     ),
                   for (final attribute in attributes)
-                    ListingFilterSection(
-                      title: attribute.label.of(context),
-                      child: ListingFilterChipWrap(
-                        children: [
-                          for (final option in attribute.options)
-                            AppFilterChip(
-                              label: option.label.of(context),
-                              selected:
-                                  draft.attributes[attribute.key]?.contains(
-                                    option.value,
-                                  ) ??
-                                  false,
-                              onTap: () => cubit.toggleAttribute(
-                                attribute.key,
-                                option.value,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
+                    _attributeSection(context, cubit, draft, attribute),
                   ListingFilterPriceSection(
                     minPrice: draft.minPrice,
                     maxPrice: draft.maxPrice,
@@ -199,7 +183,7 @@ class _ListingFilterSheetBody extends StatelessWidget {
                       label: count == 0
                           ? l10n.listingFilterApply
                           : l10n.listingFilterApplyCount(count),
-                      onPressed: state.isPriceInvalid
+                      onPressed: state.isInvalid
                           ? null
                           : () => Navigator.of(context).pop(draft),
                     ),
@@ -210,6 +194,49 @@ class _ListingFilterSheetBody extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  /// Một nhóm lọc theo thuộc tính: chip cho dạng chọn và có/không, ô Từ/Đến
+  /// cho dạng số. Có/không chỉ có chip "Có" vì tin không khai thường để trống.
+  Widget _attributeSection(
+    BuildContext context,
+    ListingFilterCubit cubit,
+    ListingFilter draft,
+    CategoryAttributeModel attribute,
+  ) {
+    final key = attribute.key;
+    if (attribute.type == AttributeType.number) {
+      final range = draft.attributeRanges[key];
+      return ListingFilterRangeSection(
+        key: ValueKey('range-$key'),
+        title: attribute.label.of(context),
+        unit: attribute.unit?.of(context),
+        min: range?.min,
+        max: range?.max,
+        onChanged: ({required min, required max}) =>
+            cubit.setAttributeRange(key, min: min, max: max),
+      );
+    }
+    final selected = draft.attributes[key] ?? const <String>{};
+    final options = attribute.type == AttributeType.boolean
+        ? [(value: 'true', label: AppLocalizations.of(context)!.yes)]
+        : [
+            for (final option in attribute.options)
+              (value: option.value, label: option.label.of(context)),
+          ];
+    return ListingFilterSection(
+      title: attribute.label.of(context),
+      child: ListingFilterChipWrap(
+        children: [
+          for (final option in options)
+            AppFilterChip(
+              label: option.label,
+              selected: selected.contains(option.value),
+              onTap: () => cubit.toggleAttribute(key, option.value),
+            ),
+        ],
+      ),
     );
   }
 }

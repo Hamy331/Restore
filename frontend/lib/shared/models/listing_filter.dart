@@ -60,6 +60,10 @@ class ListingFilter extends Equatable {
   /// API dạng `attr.<key>=a,b`. Đổi danh mục thì phải xoá vì key theo danh mục.
   final Map<String, Set<String>> attributes;
 
+  /// Thuộc tính dạng số (key → khoảng, mỗi đầu null là không giới hạn), gửi
+  /// lên API dạng `attrMin.<key>` / `attrMax.<key>`
+  final Map<String, ({int? min, int? max})> attributeRanges;
+
   const ListingFilter({
     this.dealTypes = const {},
     this.sort = ListingSort.newest,
@@ -72,6 +76,7 @@ class ListingFilter extends Equatable {
     this.wardCode,
     this.areaLabel,
     this.attributes = const {},
+    this.attributeRanges = const {},
   });
 
   bool get hasArea => provinceCode != null || wardCode != null;
@@ -87,7 +92,8 @@ class ListingFilter extends Equatable {
       (conditions.isEmpty ? 0 : 1) +
       (dealTypes.isEmpty ? 0 : 1) +
       (radiusKm == defaults.radiusKm ? 0 : 1) +
-      attributes.length;
+      attributes.length +
+      attributeRanges.length;
 
   /// Xoá mọi tiêu chí về [defaults] nhưng giữ cách sắp xếp và khu vực đang chọn
   ListingFilter resetTo(ListingFilter defaults) => defaults.copyWith(
@@ -119,6 +125,7 @@ class ListingFilter extends Equatable {
     String? Function()? wardCode,
     String? Function()? areaLabel,
     Map<String, Set<String>>? attributes,
+    Map<String, ({int? min, int? max})>? attributeRanges,
   }) => ListingFilter(
     dealTypes: dealTypes ?? this.dealTypes,
     sort: sort ?? this.sort,
@@ -131,6 +138,7 @@ class ListingFilter extends Equatable {
     wardCode: wardCode == null ? this.wardCode : wardCode(),
     areaLabel: areaLabel == null ? this.areaLabel : areaLabel(),
     attributes: attributes ?? this.attributes,
+    attributeRanges: attributeRanges ?? this.attributeRanges,
   );
 
   /// Bật / tắt một kiểu giao dịch
@@ -153,6 +161,21 @@ class ListingFilter extends Equatable {
     );
   }
 
+  /// Đặt khoảng cho thuộc tính số [key]; cả hai đầu null thì bỏ lọc
+  ListingFilter setAttributeRange(String key, {int? min, int? max}) => copyWith(
+    attributeRanges: {
+      for (final entry in attributeRanges.entries)
+        if (entry.key != key) entry.key: entry.value,
+      if (min != null || max != null) key: (min: min, max: max),
+    },
+  );
+
+  /// Có khoảng thuộc tính nào đang để đầu dưới lớn hơn đầu trên
+  bool get hasInvalidAttributeRange => attributeRanges.values.any(
+    (range) =>
+        range.min != null && range.max != null && range.min! > range.max!,
+  );
+
   static Set<T> _toggle<T>(Set<T> values, T value) => values.contains(value)
       ? ({...values}..remove(value))
       : {...values, value};
@@ -172,6 +195,10 @@ class ListingFilter extends Equatable {
     'wardCode': ?wardCode,
     for (final entry in attributes.entries)
       'attr.${entry.key}': entry.value.join(','),
+    for (final entry in attributeRanges.entries) ...{
+      'attrMin.${entry.key}': ?entry.value.min,
+      'attrMax.${entry.key}': ?entry.value.max,
+    },
   };
 
   @override
@@ -187,5 +214,6 @@ class ListingFilter extends Equatable {
     wardCode,
     areaLabel,
     attributes,
+    attributeRanges,
   ];
 }

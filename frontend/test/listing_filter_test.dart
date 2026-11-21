@@ -1,4 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/shared/widgets/app_action_buttons.dart';
+import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/modules/category_detail/bloc/category_detail_cubit.dart';
 import 'package:restore/modules/category_detail/bloc/category_detail_state.dart';
 import 'package:restore/modules/category_detail/repositories/category_listings_repository.dart';
@@ -60,6 +65,83 @@ void main() {
     expect(filter.resetTo(defaults).attributes, isEmpty);
   });
 
+  test('number ranges go to the API as attrMin/attrMax', () {
+    const defaults = ListingFilter(categoryId: 'vehicles');
+    final filter = defaults
+        .setAttributeRange('year', min: 2018)
+        .setAttributeRange('mileage', max: 50000);
+    expect(filter.toQuery(), containsPair('attrMin.year', 2018));
+    expect(filter.toQuery().containsKey('attrMax.year'), isFalse);
+    expect(filter.toQuery(), containsPair('attrMax.mileage', 50000));
+    expect(filter.activeCount(defaults), 2);
+    expect(filter.hasInvalidAttributeRange, isFalse);
+    expect(
+      filter
+          .setAttributeRange('year', min: 2020, max: 2010)
+          .hasInvalidAttributeRange,
+      isTrue,
+    );
+    expect(filter.setAttributeRange('year').attributeRanges.keys, ['mileage']);
+  });
+
+  testWidgets('sheet filters by yes/no and number attributes', (tester) async {
+    tester.view.physicalSize = const Size(400, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    ListingFilter? result;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('vi'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () async => result = await showListingFilterSheet(
+              context,
+              filter: const ListingFilter(categoryId: 'vehicles'),
+              defaults: const ListingFilter(categoryId: 'vehicles'),
+              showCategories: false,
+              repository: MockListingFilterOptionsRepository(
+                latency: Duration.zero,
+              ),
+            ),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Loại xe'), findsOneWidget);
+    // Thuộc tính chữ tự do không có nhóm lọc
+    expect(find.text('Dòng xe'), findsNothing);
+    await tester.enterText(
+      find
+          .descendant(
+            of: find.byKey(const ValueKey('range-year')),
+            matching: find.byType(TextField),
+          )
+          .first,
+      '2018',
+    );
+    await tester.tap(find.text('Có'));
+    await tester.pump();
+    await tester.tap(find.byType(AppPrimaryActionButton));
+    await tester.pumpAndSettle();
+
+    expect(result?.attributeRanges['year'], (min: 2018, max: null));
+    expect(result?.attributes['has_papers'], {'true'});
+  });
+
   test('changing category in the sheet drops its attributes', () {
     final cubit = ListingFilterCubit(
       repository: MockListingFilterOptionsRepository(latency: Duration.zero),
@@ -67,10 +149,12 @@ void main() {
       defaults: const ListingFilter(),
     );
     cubit.toggleAttribute('brand', 'Apple');
+    cubit.setAttributeRange('battery_health', min: 80);
     cubit.selectCategory('phones');
     expect(cubit.state.draft.attributes, isNotEmpty);
     cubit.selectCategory('laptops');
     expect(cubit.state.draft.attributes, isEmpty);
+    expect(cubit.state.draft.attributeRanges, isEmpty);
     cubit.close();
   });
 }
