@@ -688,7 +688,23 @@ h1 {
   .ant-segmented {
     max-width: 100%;
     overflow-x: auto;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+  }
+  /* Mép còn lựa chọn bị khuất thì mờ dần; không tràn thì timeline không chạy, không mờ.
+     Trình duyệt chưa hỗ trợ scroll timeline vẫn thấy thanh cuộn mảnh. */
+  @supports (animation-timeline: scroll()) {
+    .ant-segmented {
+      scrollbar-width: none;
+      mask-image: linear-gradient(
+        to right,
+        transparent,
+        #000 var(--fade-start),
+        #000 calc(100% - var(--fade-end)),
+        transparent
+      );
+      animation: segmented-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
   }
   .report-tabs .ant-tabs-nav {
     padding-inline: 12px;
@@ -842,4 +858,31 @@ h1 {
 .view-loading {
   display: block;
   margin: 48px auto;
+}
+
+@property --fade-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --fade-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes segmented-fade {
+  0% {
+    --fade-start: 0px;
+    --fade-end: 28px;
+  }
+  15% {
+    --fade-start: 28px;
+  }
+  85% {
+    --fade-end: 28px;
+  }
+  100% {
+    --fade-start: 28px;
+    --fade-end: 0px;
+  }
 }
