@@ -123,6 +123,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedSearchEmpty => 'No matching posts found.';
 
   @override
+  String get messagesSearchHint => 'Search conversations…';
+
+  @override
+  String get messagesSearchEmpty => 'No matching conversations found.';
+
+  @override
+  String get messagesEmpty => 'No conversations yet.';
+
+  @override
+  String get messagesLoadError => 'Couldn\'t load messages. Try again';
+
+  @override
   String get feedFollow => 'Follow';
 
   @override
@@ -4814,6 +4826,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accInfoSection => 'Profile details';
+
+  @override
+  String get accApplyField => 'Apply';
+
+  @override
+  String get accNotProvided => 'Not provided';
+
+  @override
+  String get accRegisteredEmailHint => 'Registration email · read only';
+
+  @override
+  String get accContactReadOnly => 'Account contact information · read only';
+
+  @override
+  String get accShopDetailsHint => 'Shop name, logo and address';
 
   @override
   String get accDisplayNameHint => 'e.g. Jane Doe or your shop name';

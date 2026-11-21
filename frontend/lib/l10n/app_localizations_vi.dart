@@ -123,6 +123,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get feedSearchEmpty => 'Không tìm thấy bài viết phù hợp.';
 
   @override
+  String get messagesSearchHint => 'Tìm kiếm cuộc trò chuyện…';
+
+  @override
+  String get messagesSearchEmpty => 'Không tìm thấy cuộc trò chuyện phù hợp.';
+
+  @override
+  String get messagesEmpty => 'Chưa có cuộc trò chuyện nào.';
+
+  @override
+  String get messagesLoadError => 'Không tải được tin nhắn. Thử lại';
+
+  @override
   String get feedFollow => 'Theo dõi';
 
   @override
@@ -4720,6 +4732,21 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accInfoSection => 'Thông tin hồ sơ';
+
+  @override
+  String get accApplyField => 'Áp dụng';
+
+  @override
+  String get accNotProvided => 'Chưa cung cấp';
+
+  @override
+  String get accRegisteredEmailHint => 'Email đăng ký · chỉ xem';
+
+  @override
+  String get accContactReadOnly => 'Thông tin liên hệ tài khoản · chỉ xem';
+
+  @override
+  String get accShopDetailsHint => 'Tên shop, logo và địa chỉ cửa hàng';
 
   @override
   String get accDisplayNameHint => 'VD: Nguyễn Văn A hoặc tên cửa hàng';

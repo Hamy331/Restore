@@ -320,6 +320,30 @@ abstract class AppLocalizations {
   /// **'No matching posts found.'**
   String get feedSearchEmpty;
 
+  /// No description provided for @messagesSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search conversations…'**
+  String get messagesSearchHint;
+
+  /// No description provided for @messagesSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching conversations found.'**
+  String get messagesSearchEmpty;
+
+  /// No description provided for @messagesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet.'**
+  String get messagesEmpty;
+
+  /// No description provided for @messagesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load messages. Try again'**
+  String get messagesLoadError;
+
   /// No description provided for @feedFollow.
   ///
   /// In en, this message translates to:
@@ -8365,6 +8389,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile details'**
   String get accInfoSection;
+
+  /// No description provided for @accApplyField.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get accApplyField;
+
+  /// No description provided for @accNotProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get accNotProvided;
+
+  /// No description provided for @accRegisteredEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration email · read only'**
+  String get accRegisteredEmailHint;
+
+  /// No description provided for @accContactReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Account contact information · read only'**
+  String get accContactReadOnly;
+
+  /// No description provided for @accShopDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop name, logo and address'**
+  String get accShopDetailsHint;
 
   /// No description provided for @accDisplayNameHint.
   ///
