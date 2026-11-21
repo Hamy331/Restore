@@ -100,7 +100,7 @@ function csv(value: unknown): string[] | null {
 /**
  * Bộ lọc tìm kiếm tin đăng dùng chung cho GET /listings, tìm kiếm, gần bạn.
  * Query: q, categoryId, condition (một hoặc nhiều, cách nhau dấu phẩy), deal (buy,exchange),
- * minPrice, maxPrice, latitude + longitude (+ radiusKm), allowExchange.
+ * minPrice, maxPrice, latitude + longitude (+ radiusKm), allowExchange, provinceCode, wardCode.
  * q được tách thành words (bỏ dấu, chữ thường): tin khớp khi tiêu đề chứa đủ mọi từ.
  */
 export function listingFilters(query: Record<string, unknown>) {
@@ -139,6 +139,12 @@ export function listingFilters(query: Record<string, unknown>) {
     nearby={...point,radius};
   }
   if(query.allowExchange!=null && query.allowExchange!=='true' && query.allowExchange!=='false')throw new AppError(400,'INVALID_QUERY','Bộ lọc trao đổi không hợp lệ.');
+  // Khu vực của tin: mã tỉnh/thành hoặc phường/xã, so với location.provinceCode / wardCode
+  for (const value of [query.provinceCode, query.wardCode]) {
+    if (value !== undefined && (typeof value !== 'string' || !/^[\w-]{1,20}$/.test(value))) {
+      throw new AppError(400, 'INVALID_QUERY', 'Khu vực không hợp lệ.');
+    }
+  }
   return {
     ...(nearby?{nearby}:{}), ...(query.allowExchange==='true'?{allowExchange:true}:{}),
     q: typeof q === 'string' ? q.trim() : '',
@@ -148,6 +154,8 @@ export function listingFilters(query: Record<string, unknown>) {
     deals: deals as DealType[],
     minPrice: typeof minPrice === 'string' ? minPrice : null,
     maxPrice: typeof maxPrice === 'string' ? maxPrice : null,
+    provinceCode: typeof query.provinceCode === 'string' ? query.provinceCode : '',
+    wardCode: typeof query.wardCode === 'string' ? query.wardCode : '',
   };
 }
 
@@ -278,7 +286,7 @@ export const decisionBody = z.unknown().transform((body) => {
  * - newest:   mới nhất (tin được đẩy xếp trước). Bỏ qua tọa độ nếu có.
  * - nearby:   bắt buộc latitude + longitude, lọc trong radiusKm (mặc định 5) và xếp gần nhất trước.
  * - exchange: chỉ tin cho phép trao đổi.
- * Các bộ lọc tìm kiếm (q, categoryId, condition, deal, minPrice, maxPrice) dùng được với mọi filter.
+ * Các bộ lọc tìm kiếm (q, categoryId, condition, deal, minPrice, maxPrice, provinceCode, wardCode) dùng được với mọi filter.
  * sort=price_asc | price_desc xếp theo giá (tin chỉ trao đổi xếp cuối); giá trị khác giữ thứ tự feed
  * để tin được đẩy (FEATURED/BUMP) vẫn ưu tiên.
  */

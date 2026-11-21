@@ -49,8 +49,21 @@ class CategoryDetailCubit extends Cubit<CategoryDetailState> {
     _applyFilter(locked);
   }
 
-  /// Xoá mọi tiêu chí về mặc định của trang, giữ cách sắp xếp
+  /// Xoá mọi tiêu chí về mặc định của trang, giữ cách sắp xếp và khu vực
   void clearFilters() => applyFilter(state.filter.resetTo(state.defaultFilter));
+
+  /// Lọc tin theo khu vực ở server: một tỉnh/thành hoặc một phường/xã,
+  /// cả hai null là toàn quốc
+  void setArea({String? provinceCode, String? wardCode}) => applyFilter(
+    state.filter.copyWith(
+      provinceCode: () => provinceCode,
+      wardCode: () => wardCode,
+    ),
+  );
+
+  /// Xoá cả bộ lọc lẫn khu vực (nút ở trang trống khi lọc không ra tin)
+  void clearAll() =>
+      applyFilter(state.defaultFilter.copyWith(sort: state.filter.sort));
 
   /// Tải trang tiếp theo; tự bỏ qua khi đang tải hoặc đã hết
   Future<void> loadMore() async {

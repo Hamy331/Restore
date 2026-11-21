@@ -57,6 +57,8 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
           AND (${filters.nearby?.radius ?? null}::double precision IS NULL OR ${distance} <= ${filters.nearby?.radius ?? null})
           AND ${wordsMatch(filters.words)}
           AND (${filters.categoryId} = '' OR l."categoryId" = ${filters.categoryId})
+          AND (${filters.provinceCode} = '' OR l.location ->> 'provinceCode' = ${filters.provinceCode})
+          AND (${filters.wardCode} = '' OR l.location ->> 'wardCode' = ${filters.wardCode})
           AND (cardinality(${filters.conditions}::text[]) = 0 OR l.condition::text = ANY(${filters.conditions}::text[]))
           AND ${dealMatch(filters.deals)}
           AND (${filters.minPrice}::numeric IS NULL OR l.price >= ${filters.minPrice}::numeric)
