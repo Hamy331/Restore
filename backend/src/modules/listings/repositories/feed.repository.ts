@@ -61,6 +61,7 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
           AND (${filters.wardCode} = '' OR l.location ->> 'wardCode' = ${filters.wardCode})
           AND (cardinality(${filters.conditions}::text[]) = 0 OR l.condition::text = ANY(${filters.conditions}::text[]))
           AND ${dealMatch(filters.deals)}
+          AND ${attributesMatch(filters.attributes)}
           AND (${filters.minPrice}::numeric IS NULL OR l.price >= ${filters.minPrice}::numeric)
           AND (${filters.maxPrice}::numeric IS NULL OR l.price <= ${filters.maxPrice}::numeric)
         ORDER BY ${orderBy(filters, distance, sort)}`;
@@ -94,6 +95,14 @@ function dealMatch(deals: DealType[]) {
   if (!deals.length) return Prisma.sql`TRUE`;
   return Prisma.sql`(${deals.includes('buy')} AND l."allowSale" OR ${deals.includes('exchange')} AND l."allowExchange")`;
 }
+
+/** Mỗi thuộc tính đã chọn: giá trị của tin là một trong các giá trị đó */
+const attributesMatch = (attributes: Record<string, string[]>) => {
+  const entries = Object.entries(attributes);
+  if (!entries.length) return Prisma.sql`TRUE`;
+  return Prisma.join(entries.map(([key, values]) =>
+    Prisma.sql`l.attributes ->> ${key} = ANY(${values}::text[])`), ' AND ', '(', ')');
+};
 
 /** Thứ tự mặc định của feed: gần nhất (nếu có), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian */
 const rankOrder = Prisma.sql`COALESCE(boosted."featuredPriority", 0) DESC,
