@@ -3,6 +3,7 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { requirePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as moderationController from '../controllers/moderation.controller.js';
+import { notifyViewers } from '../services/listing.events.js';
 import { decisionBody, listingIdParams } from '../listing.validator.js';
 
 /** Duyệt tin, gắn tại /api/v1/listings/admin */
@@ -24,7 +25,7 @@ const moderate = requirePermission(PERMISSION.LISTING_MODERATE);
  *
  * Trả về: { success: true } (không có data)
  */
-moderationRouter.post('/admin/:id/decision', moderate, validate({ params: listingIdParams, body: decisionBody }), moderationController.decide);
+moderationRouter.post('/admin/:id/decision', moderate, validate({ params: listingIdParams, body: decisionBody }), notifyViewers, moderationController.decide);
 
 /**
  * Tối đa 100 tin chờ duyệt, gửi sớm trước, rồi tối đa 100 bản sửa của tin đã duyệt

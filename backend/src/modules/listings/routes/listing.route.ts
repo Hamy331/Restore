@@ -3,6 +3,7 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { optionalAuth, requirePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as listingController from '../controllers/listing.controller.js';
+import { notifyViewers, watchListing } from '../services/listing.events.js';
 import { autoExtendBody, createListingBody, extendBody, featureBody, insightsQuery, listingIdParams, mineQuery, statusBody } from '../listing.validator.js';
 
 /** Tin đăng của chủ tin và chi tiết tin công khai, gắn tại /api/v1/listings (mount sau cùng vì có GET /:id) */
@@ -97,7 +98,7 @@ listingRouter.get('/mine/:id', manageOwn, validate({ params: listingIdParams }),
  * Body: như khi đăng tin (displayDays / startsAt bỏ qua)
  * Lỗi 409: LISTING_NOT_EDITABLE, CATEGORY_LOCKED
  */
-listingRouter.put('/:id', manageOwn, validate({ params: listingIdParams, body: createListingBody }), listingController.update);
+listingRouter.put('/:id', manageOwn, validate({ params: listingIdParams, body: createListingBody }), notifyViewers, listingController.update);
 
 /**
  * Bỏ bản sửa đang chờ duyệt hoặc bị từ chối của tin đã duyệt; tin giữ nguyên bản đang hiển thị
@@ -105,7 +106,7 @@ listingRouter.put('/:id', manageOwn, validate({ params: listingIdParams, body: c
  * Trả về: Listing (không còn pendingEdit)
  * Lỗi 404: EDIT_NOT_FOUND
  */
-listingRouter.delete('/:id/edit', manageOwn, validate({ params: listingIdParams }), listingController.discardEdit);
+listingRouter.delete('/:id/edit', manageOwn, validate({ params: listingIdParams }), notifyViewers, listingController.discardEdit);
 
 /**
  * Đổi trạng thái tin: AVAILABLE ↔ HIDDEN, hoặc SOLD / EXCHANGED (không mở lại được)
@@ -120,7 +121,7 @@ listingRouter.delete('/:id/edit', manageOwn, validate({ params: listingIdParams 
  *
  * Lỗi 409: POSTING_LIMIT_REACHED (hết suất, kèm giá xu), NOT_ENOUGH_CREDITS
  */
-listingRouter.patch('/:id/status', manageOwn, validate({ params: listingIdParams, body: statusBody }), listingController.changeStatus);
+listingRouter.patch('/:id/status', manageOwn, validate({ params: listingIdParams, body: statusBody }), notifyViewers, listingController.changeStatus);
 
 /**
  * Gia hạn tin đang hiển thị (hoặc đang chờ ngày hẹn) thêm số ngày tuỳ chọn, trả xu theo giá ngày của chuyên mục
@@ -134,7 +135,7 @@ listingRouter.patch('/:id/status', manageOwn, validate({ params: listingIdParams
  *
  * Lỗi 409: EXTEND_TOO_LONG (details.addableDays), LISTING_NOT_EXTENDABLE, NOT_ENOUGH_CREDITS
  */
-listingRouter.post('/:id/extend', manageOwn, validate({ params: listingIdParams, body: extendBody }), listingController.extend);
+listingRouter.post('/:id/extend', manageOwn, validate({ params: listingIdParams, body: extendBody }), notifyViewers, listingController.extend);
 
 /**
  * Bật / tắt tự gia hạn 30 ngày khi tin sắp hết hạn (đủ xu thì trừ, thiếu xu thì để tin hết hạn)
@@ -187,6 +188,15 @@ listingRouter.get('/:id/feature', manageOwn, validate({ params: listingIdParams 
  */
 listingRouter.post('/:id/feature', manageOwn, validate({ params: listingIdParams, body: featureBody }),
   listingController.feature);
+
+/**
+ * Luồng SSE cho trang chi tiết: `event: changed` khi tin vừa được sửa, đổi trạng thái, gia hạn,
+ * duyệt hoặc bán; app tải lại GET /:id. Không cần đăng nhập
+ *
+ * Path params:
+ *  - id: string - mã tin
+ */
+listingRouter.get('/:id/events', validate({ params: listingIdParams }), watchListing);
 
 /**
  * Chi tiết tin công khai, tăng lượt xem (không tính chủ tin và người kiểm duyệt)
