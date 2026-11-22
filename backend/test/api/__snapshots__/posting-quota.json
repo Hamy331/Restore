@@ -265,6 +265,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -336,6 +337,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -438,6 +440,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 5,
         "paidDays": 0,
         "autoExtend": false,
@@ -523,6 +526,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -609,6 +613,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -700,6 +705,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 5,
         "paidDays": 0,
         "autoExtend": false,
@@ -773,6 +779,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 5,
         "paidDays": 0,
         "autoExtend": false,
@@ -876,6 +883,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 5,
         "paidDays": 0,
         "autoExtend": false,

@@ -97,7 +97,7 @@
               "en": "Furniture & decor",
               "vi": "Nội thất, trang trí"
             },
-            "imageUrl": "assets/images/categories/furniture.png",
+            "imageUrl": "assets/images/marketplace/listing-lamp.png",
             "attributes": [
               {
                 "key": "home_type",
@@ -252,7 +252,7 @@
                 "en": "Furniture & decor",
                 "vi": "Nội thất, trang trí"
               },
-              "imageUrl": "assets/images/categories/furniture.png",
+              "imageUrl": "assets/images/marketplace/listing-lamp.png",
               "attributes": [
                 {
                   "key": "home_type",
@@ -387,7 +387,7 @@
                 "en": "Furniture & decor",
                 "vi": "Nội thất, trang trí"
               },
-              "imageUrl": "assets/images/categories/furniture.png",
+              "imageUrl": "assets/images/marketplace/listing-lamp.png",
               "attributes": [
                 {
                   "key": "home_type",
@@ -522,7 +522,7 @@
               "en": "Furniture & decor",
               "vi": "Nội thất, trang trí"
             },
-            "imageUrl": "assets/images/categories/furniture.png",
+            "imageUrl": "assets/images/marketplace/listing-lamp.png",
             "attributes": [
               {
                 "key": "home_type",
@@ -910,6 +910,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
@@ -972,6 +973,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
