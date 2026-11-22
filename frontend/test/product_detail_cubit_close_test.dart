@@ -22,6 +22,9 @@ class _SlowRepository implements ProductDetailRepository {
   Future<ProductDetail> getDetail(String listingId) => detail.future;
 
   @override
+  Stream<void> changes(String listingId) => const Stream.empty();
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 

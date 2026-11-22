@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:restore/core/network/api_client.dart';
 
 import '../models/product_detail.dart';
@@ -7,6 +11,9 @@ import '../../chat/repositories/chat_repository.dart';
 abstract class ProductDetailRepository {
   Future<ProductDetail> getDetail(String listingId);
   Future<void> setFavorite(String listingId, bool favorite);
+
+  /// Phát mỗi khi tin vừa được sửa, đổi trạng thái, duyệt hoặc bán
+  Stream<void> changes(String listingId);
 
   /// Mở (hoặc tạo) cuộc trò chuyện với người bán về tin này, trả về id
   Future<String> openConversation(String listingId);
@@ -31,6 +38,32 @@ class ApiProductDetailRepository implements ProductDetailRepository {
       '/listings/$listingId',
     );
     return ProductDetail.fromJson(_data(response.data));
+  }
+
+  /// `GET /listings/:id/events` (SSE). Trình duyệt (XHR của Dio) gom cả luồng nên web
+  /// không mở kết nối này; trang chi tiết vẫn tự tải lại theo chu kỳ
+  @override
+  Stream<void> changes(String listingId) async* {
+    if (kIsWeb) return;
+    final cancelToken = CancelToken();
+    try {
+      final response = await _apiClient.dio.get<ResponseBody>(
+        '/listings/$listingId/events',
+        cancelToken: cancelToken,
+        options: Options(
+          responseType: ResponseType.stream,
+          receiveTimeout: Duration.zero,
+        ),
+      );
+      yield* response.data!.stream
+          .cast<List<int>>()
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .where((line) => line.startsWith('event: changed'))
+          .map((_) {});
+    } finally {
+      cancelToken.cancel();
+    }
   }
 
   @override
