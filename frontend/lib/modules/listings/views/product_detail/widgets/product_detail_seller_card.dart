@@ -152,35 +152,43 @@ class _SellerState extends State<ProductDetailSellerCard> {
                                     content: Text(l.productActionFailed),
                                   ),
                                 ),
-                            builder: (context, state) => Material(
-                              color: AppColors.actionPrimary,
-                              shape: const CircleBorder(),
-                              child: IconButton(
-                                color: AppColors.onAction,
-                                constraints: const BoxConstraints.tightFor(
-                                  width: 25,
-                                  height: 25,
-                                ),
-                                padding: EdgeInsets.zero,
-                                tooltip: state.profile?.followsSeller == true
-                                    ? l.feedUnfollow
-                                    : l.feedFollow,
-                                onPressed: state.following
-                                    ? null
-                                    : () async {
-                                        if (!widget.signedIn()) return;
-                                        final c = context
-                                            .read<PublicProfileCubit>();
-                                        if (c.state.profile == null) {
-                                          await c.load();
-                                        }
-                                        if (!c.isClosed) await c.toggleFollow();
-                                      },
-                                icon: Icon(
-                                  state.profile?.followsSeller == true
-                                      ? Icons.check
-                                      : Icons.add,
-                                  size: 17,
+                            builder: (context, state) => Tooltip(
+                              message: state.profile?.followsSeller == true
+                                  ? l.feedUnfollow
+                                  : l.feedFollow,
+                              child: SizedBox.square(
+                                dimension: 26,
+                                child: Material(
+                                  color: AppColors.actionPrimary,
+                                  shape: const CircleBorder(
+                                    side: BorderSide(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: InkWell(
+                                    onTap: state.following
+                                        ? null
+                                        : () async {
+                                            if (!widget.signedIn()) return;
+                                            final c = context
+                                                .read<PublicProfileCubit>();
+                                            if (c.state.profile == null) {
+                                              await c.load();
+                                            }
+                                            if (!c.isClosed) {
+                                              await c.toggleFollow();
+                                            }
+                                          },
+                                    child: Icon(
+                                      state.profile?.followsSeller == true
+                                          ? Icons.check
+                                          : Icons.add,
+                                      size: 15,
+                                      color: AppColors.onAction,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
