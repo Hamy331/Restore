@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button, Form, Input, Radio, Segmented, Space, Table, Tag } from 'antd';
 import { useWorkspace } from '../../app/workspace';
+import { pickFilter } from '../../app/route';
 import { Session } from '../../shared/api/session';
 import { usePage } from '../../shared/api/usePage';
 import { EditDialog } from '../../shared/ui/EditDialog';
@@ -38,7 +39,7 @@ function ReplyInput() {
 export function Tickets({ session }: { session: Session }) {
   const { filter } = useWorkspace();
   // Mặc định chỉ xem yêu cầu đang mở; link từ Tổng quan cũng mở bộ lọc này
-  const [status, setStatus] = useState(filter && statuses.some((s) => s.value === filter) ? filter : 'OPEN');
+  const [status, setStatus] = useState(pickFilter(filter || 'OPEN', statuses.map((s) => s.value), 'OPEN'));
   const list = usePage<Ticket>(session, '/admin/tickets' + (status ? '?status=' + status : ''));
   const [row, select] = useState<Ticket>();
   return (

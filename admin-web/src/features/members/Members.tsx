@@ -4,6 +4,7 @@ import { Session, ApiError, errorText } from '../../shared/api/session';
 import { useResource, type Page } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { useWorkspace } from '../../app/workspace';
+import { pickFilter } from '../../app/route';
 type Member = {
   phone: string | null;
   _count: { listings: number };
@@ -154,7 +155,7 @@ export function Members({ session }: { session: Session }) {
   const { filter } = useWorkspace();
   const [page, setPage] = useState(1),
     [query, setQuery] = useState(''),
-    [status, setStatus] = useState(filter),
+    [status, setStatus] = useState(pickFilter(filter, Object.keys(statuses))),
     [type, setType] = useState<MemberType | ''>(''),
     [member, setMember] = useState<Member>();
   const { data, error, reload } = useResource<MemberPage>(

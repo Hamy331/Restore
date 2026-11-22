@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readRoute, routeHash } from './route';
+import { pickFilter, readRoute, routeHash } from './route';
 
 describe('route', () => {
   it('đọc mục và bộ lọc từ hash', () => {
@@ -16,5 +16,11 @@ describe('route', () => {
 
   it('hash hỏng không làm sập trang', () => {
     expect(readRoute('#listings/%E0')).toEqual({ key: 'listings', filter: '' });
+  });
+
+  it('bộ lọc gõ tay không hợp lệ thì về mặc định', () => {
+    expect(pickFilter('BANNED', ['ACTIVE', 'BANNED'])).toBe('BANNED');
+    expect(pickFilter('rac', ['ACTIVE', 'BANNED'])).toBe('');
+    expect(pickFilter('rac', ['PENDING'], 'PENDING')).toBe('PENDING');
   });
 });

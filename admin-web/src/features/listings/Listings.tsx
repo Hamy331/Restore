@@ -1,4 +1,5 @@
 import { useWorkspace } from '../../app/workspace';
+import { pickFilter } from '../../app/route';
 import { useState } from 'react';
 import { Button, Input, Modal, Select, Space, Table, Tag } from 'antd';
 import { Session } from '../../shared/api/session';
@@ -18,7 +19,7 @@ const pendingEdit = (item?: Listing) =>
 export function Listings({ session }: { session: Session }) {
   const { filter } = useWorkspace();
   const [page, setPage] = useState(1),
-    [status, setStatus] = useState(filter || 'PENDING'),
+    [status, setStatus] = useState(pickFilter(filter || 'PENDING', [...Object.keys(listingStatus), EDIT_FILTER], 'PENDING')),
     [q, setQuery] = useState('');
   const [item, select] = useState<Listing>(),
     [busy, setBusy] = useState(false);
