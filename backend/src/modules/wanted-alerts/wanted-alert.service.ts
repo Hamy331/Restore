@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { AppError } from '../../common/errors/app-error.js';
 import type { ListingLocation } from '../catalog/index.js';
+import { findSubcategory } from '../catalog/category-tree.js';
 import {
   AlertIdParams, DraftInput, MatchesQuery, PreviewQuery, toMatchDto, toPreviewMatchDto, toWantedAlertDto, WantedAlertRecord,
 } from './wanted-alert.dto.js';
@@ -29,19 +30,23 @@ async function findOwnedOrThrow(userId: string, id: string) {
   return alert;
 }
 
-/** Danh mục phải còn dùng */
-async function assertCategory(categoryId: string | null) {
-  if (categoryId && !(await wantedAlertRepository.findActiveCategory(categoryId))) {
-    throw new AppError(400, 'INVALID_INPUT', 'Danh mục không tồn tại hoặc đã ngừng sử dụng.', 'categoryId');
+/** Danh mục phải còn dùng, danh mục con (nếu có) phải thuộc danh mục đó */
+async function assertCategory({ categoryId, subcategoryId }: Pick<DraftInput, 'categoryId' | 'subcategoryId'>) {
+  if (!categoryId) return;
+  const category = await wantedAlertRepository.findActiveCategory(categoryId);
+  if (!category) throw new AppError(400, 'INVALID_INPUT', 'Danh mục không tồn tại hoặc đã ngừng sử dụng.', 'categoryId');
+  if (subcategoryId && !findSubcategory(category.metadata, subcategoryId)) {
+    throw new AppError(400, 'INVALID_INPUT', 'Danh mục con không thuộc danh mục đã chọn.', 'subcategoryId');
   }
 }
 
 /** Dạng MatchableAlert của bản nháp/thông báo để chấm điểm */
-const toMatchable = (alert: Omit<DraftInput, 'areaLabel'> | Pick<WantedAlertRecord, 'keywords' | 'categoryId' | 'conditions' |
+const toMatchable = (alert: Omit<DraftInput, 'areaLabel'> | Pick<WantedAlertRecord, 'keywords' | 'categoryId' | 'subcategoryId' | 'conditions' |
   'dealTypes' | 'areaCode' | 'areaLevel' | 'matchLevel' | 'minPrice' | 'maxPrice'>, createdAt: Date): MatchableAlert => ({
   keywords: alert.keywords,
   matchLevel: alert.matchLevel,
   categoryId: alert.categoryId,
+  subcategoryId: alert.subcategoryId,
   minPrice: alert.minPrice == null ? null : Number(alert.minPrice),
   maxPrice: alert.maxPrice == null ? null : Number(alert.maxPrice),
   conditions: alert.conditions,
@@ -54,7 +59,7 @@ const toMatchable = (alert: Omit<DraftInput, 'areaLabel'> | Pick<WantedAlertReco
 /** Dạng MatchableListing của một tin; [createdAt] là mốc so với lúc tạo thông báo */
 const toMatchableListing = (listing: {
   title: string; description: string; price: Prisma.Decimal; condition: string | null; allowSale: boolean; allowExchange: boolean;
-  categoryId: string | null; location: Prisma.JsonValue;
+  categoryId: string | null; subcategoryId: string | null; location: Prisma.JsonValue;
 }, createdAt: Date): MatchableListing => {
   const location = listing.location as Partial<ListingLocation> | null;
   return {
@@ -65,6 +70,7 @@ const toMatchableListing = (listing: {
     allowSale: listing.allowSale,
     allowExchange: listing.allowExchange,
     categoryId: listing.categoryId,
+    subcategoryId: listing.subcategoryId,
     provinceCode: location?.provinceCode ?? null,
     wardCode: location?.wardCode ?? null,
     createdAt,
@@ -84,7 +90,7 @@ export async function getAlert(userId: string, { id }: AlertIdParams) {
 
 /** Tạo thông báo; chỉ tin được duyệt sau lúc này mới được tính là khớp */
 export async function createAlert(userId: string, draft: DraftInput) {
-  await assertCategory(draft.categoryId);
+  await assertCategory(draft);
   if (await wantedAlertRepository.countByUser(userId) >= MAX_ALERTS_PER_USER) {
     throw new AppError(409, 'WANTED_ALERT_LIMIT', `Bạn chỉ có thể tạo tối đa ${MAX_ALERTS_PER_USER} thông báo.`);
   }
@@ -109,7 +115,7 @@ export async function markSeen(userId: string, { id }: AlertIdParams) {
  * qua bộ lọc). Không ghi gì vào DB.
  */
 export async function preview(userId: string, draft: DraftInput, { limit }: PreviewQuery) {
-  await assertCategory(draft.categoryId);
+  await assertCategory(draft);
   const alert = toMatchable(draft, new Date(0));
   const listings = await wantedAlertRepository.findPreviewCandidates(draft, userId, PREVIEW_CANDIDATES);
   const scored = listings.flatMap((listing) => {

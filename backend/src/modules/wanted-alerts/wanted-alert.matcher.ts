@@ -105,6 +105,7 @@ export type MatchableAlert = {
   keywords: string;
   matchLevel: WantedAlertMatchLevel;
   categoryId: string | null;
+  subcategoryId: string | null;
   minPrice: number | null;
   maxPrice: number | null;
   conditions: string[];
@@ -122,6 +123,7 @@ export type MatchableListing = {
   allowSale: boolean;
   allowExchange: boolean;
   categoryId: string | null;
+  subcategoryId: string | null;
   provinceCode: string | null;
   wardCode: string | null;
   createdAt: Date;
@@ -134,6 +136,7 @@ export const passesFilters = (
 ): boolean => {
   if (listing.createdAt < alert.createdAt) return false;
   if (alert.categoryId && alert.categoryId !== listing.categoryId) return false;
+  if (alert.subcategoryId && alert.subcategoryId !== listing.subcategoryId) return false;
   if (alert.dealTypes.length > 0) {
     const sale = alert.dealTypes.includes('buy') && listing.allowSale;
     const exchange = alert.dealTypes.includes('exchange') && listing.allowExchange;
