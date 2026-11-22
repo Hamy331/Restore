@@ -895,3 +895,11 @@ h1 {
   gap: 8px;
   margin-bottom: 24px;
 }
+
+/* Tên người trong chi tiết tin / báo cáo / ticket / đơn: bấm để mở hồ sơ thành viên */
+.ant-btn.member-link {
+  height: auto;
+  padding: 0;
+  white-space: normal;
+  text-align: start;
+}

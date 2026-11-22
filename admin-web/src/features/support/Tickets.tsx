@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Form, Input, Radio, Segmented, Space, Table, Tag } from 'antd';
 import { useWorkspace } from '../../app/workspace';
 import { pickFilter } from '../../app/route';
+import { MemberLink } from '../members/MemberLink';
 import { Session } from '../../shared/api/session';
 import { usePage } from '../../shared/api/usePage';
 import { EditDialog } from '../../shared/ui/EditDialog';
@@ -87,7 +88,7 @@ export function Tickets({ session }: { session: Session }) {
             )
           }
         >
-          <p className="muted">Người gửi: {senderText(row)}</p>
+          <p className="muted">Người gửi: {row.sender ? <MemberLink person={row.sender} /> : row.userId}</p>
           <Space orientation="vertical" className="notice">
             {row.messages.map((m) => (
               <div key={m.id}>

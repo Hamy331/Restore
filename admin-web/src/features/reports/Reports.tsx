@@ -8,6 +8,7 @@ import { useResource } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { DecisionForm, type Action } from '../moderation/DecisionForm';
 import { ListingDetails, type Listing } from '../listings/ListingDetails';
+import { MemberLink } from '../members/MemberLink';
 
 export type Report = {
   id: string;
@@ -101,7 +102,7 @@ function Review({
       )}
       <p>
         Người báo cáo ·{' '}
-        {report.reporter ? `${report.reporter.fullName} · ${report.reporter.email}` : report.reporterId}
+        {report.reporter ? <MemberLink person={report.reporter} /> : report.reporterId}
       </p>
       {(report.contactPhone || report.contactEmail) && (
         <div>

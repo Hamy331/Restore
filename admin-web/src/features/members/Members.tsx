@@ -154,7 +154,8 @@ function MemberAction({
 export function Members({ session }: { session: Session }) {
   const { filter } = useWorkspace();
   const [page, setPage] = useState(1),
-    [query, setQuery] = useState(''),
+    // Mở từ tin đăng / báo cáo / ticket / đơn: bộ lọc là email thì tìm thẳng người đó
+    [query, setQuery] = useState(filter.includes('@') ? filter.slice(0, 100) : ''),
     [status, setStatus] = useState(pickFilter(filter, Object.keys(statuses))),
     [type, setType] = useState<MemberType | ''>(''),
     [member, setMember] = useState<Member>();
@@ -184,6 +185,7 @@ export function Members({ session }: { session: Session }) {
           <Input.Search
             className="filter-search"
             aria-label="Tìm thành viên"
+            defaultValue={query}
             placeholder="Tìm tên, tài khoản, email hoặc số điện thoại"
             allowClear
             maxLength={100}
