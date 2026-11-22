@@ -30,7 +30,7 @@ export const createUserMessage = (tx: Db, ticketId: string, authorId: string, co
 
 /** Yêu cầu hỗ trợ kèm tin nhắn, cập nhật gần nhất trước; lọc theo trạng thái nếu có */
 export const findPage = (skip: number, take: number, status?: string) =>
-  prisma.$transaction([
+  Promise.all([
     prisma.supportTicket.findMany({ where: { status }, skip, take, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], include: { messages: { orderBy: { createdAt: 'asc' } } } }),
     prisma.supportTicket.count({ where: { status } }),
   ]);

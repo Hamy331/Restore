@@ -199,7 +199,7 @@ export function findAdminPage({ status, q, edit }: { status?: ListingStatus; q?:
     ...(edit ? { revision: { status: edit } } : {}) };
   const orderBy: Prisma.ListingOrderByWithRelationInput[] = edit
     ? [{ revision: { submittedAt: 'asc' } }, { id: 'asc' }] : [{ updatedAt: 'desc' }, { id: 'desc' }];
-  return prisma.$transaction([
+  return Promise.all([
     prisma.listing.findMany({ where, select: { ...adminListingSelect, ...adminCompareSelect, revision: { select: revisionSelect } },
       orderBy, skip, take }),
     prisma.listing.count({ where }),

@@ -30,7 +30,7 @@ type PostData = Pick<Prisma.BlogPostUncheckedCreateInput, 'title' | 'slug' | 'ca
 
 /** Mọi bài viết, cập nhật gần nhất trước */
 export const findPage = (skip: number, take: number) =>
-  prisma.$transaction([
+  Promise.all([
     prisma.blogPost.findMany({ skip, take, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }] }),
     prisma.blogPost.count(),
   ]);

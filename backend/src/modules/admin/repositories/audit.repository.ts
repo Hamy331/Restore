@@ -13,7 +13,7 @@ export async function findPage(skip: number, take: number, { q, targetType, acti
     ...(before ? { createdAt: { lt: new Date(before) } } : {}),
     ...(q ? { OR: [{ targetId: contains }, { reason: contains }, { actorId: contains }, { actorId: { in: actorIds } }] } : {}),
   };
-  return prisma.$transaction([
+  return Promise.all([
     prisma.adminAudit.findMany({ where, skip, take, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] }),
     prisma.adminAudit.count({ where }),
   ]);

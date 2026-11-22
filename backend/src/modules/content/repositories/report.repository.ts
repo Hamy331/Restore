@@ -24,7 +24,7 @@ export const findMine = (reporterId: string, skip: number, take: number) =>
 /** Báo cáo, mới trước, lọc trạng thái */
 export function findPage(query: AdminReportQuery, now: Date) {
   const where = reportWhere(query, now);
-  return prisma.$transaction([
+  return Promise.all([
     prisma.violationReport.findMany({ where, skip: (query.page - 1) * query.limit, take: query.limit,
       orderBy: [{ createdAt: query.sort === 'newest' ? 'desc' : 'asc' }, { id: 'asc' }] }),
     prisma.violationReport.count({ where }),
