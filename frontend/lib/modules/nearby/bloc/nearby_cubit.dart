@@ -84,9 +84,6 @@ class NearbyCubit extends Cubit<NearbyState> {
     _applyFilter(state.filter.copyWith(sort: sort));
   }
 
-  void toggleDeal(ListingDealType type) =>
-      _applyFilter(state.filter.toggleDeal(type));
-
   /// Nhận bộ lọc từ sheet Bộ lọc đầy đủ
   void applyFilter(ListingFilter filter) {
     if (filter == state.filter) return;

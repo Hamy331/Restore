@@ -87,7 +87,7 @@ void main() {
       expect(tester.widget<TextField>(field).controller!.text, 'iPhone');
       expect(find.byType(AppSearchPill), findsNothing);
       final l10n = AppLocalizations.of(tester.element(field))!;
-      expect(find.text(l10n.listingFilterTitle), findsOneWidget);
+      expect(find.text(l10n.listingFilterButton), findsOneWidget);
 
       await tester.enterText(field, '  Samsung  ');
       await tester.testTextInput.receiveAction(TextInputAction.search);
@@ -100,7 +100,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AppSearchPill), findsOneWidget);
       expect(find.text('Samsung'), findsOneWidget);
-      expect(find.text(l10n.listingFilterTitle), findsOneWidget);
+      expect(find.text(l10n.listingFilterButton), findsOneWidget);
 
       tester.view.physicalSize = const Size(1440, 900);
       await tester.pumpAndSettle();

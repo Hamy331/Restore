@@ -210,6 +210,7 @@ void main() {
             onRemoveHistory: (_) {},
             onOpenShop: (item) => openedShop = item.shop.id,
             onOpenUser: (user) => openedUser = user.id,
+            onOpenCategory: (_) {},
           ),
         ),
       ),
@@ -316,13 +317,13 @@ void main() {
     await tester.pump();
     // Tab Tin đăng có dải cửa hàng khớp từ khoá
     expect(find.text('Cửa hàng phù hợp'), findsOneWidget);
-    expect(find.text('Bộ lọc'), findsOneWidget);
+    expect(find.text('Lọc'), findsOneWidget);
 
     await tester.tap(find.text('Cửa hàng'));
     await tester.pump();
     expect(find.text('Cửa hàng phù hợp'), findsNothing);
     expect(
-      find.text('Bộ lọc'),
+      find.text('Lọc'),
       findsNothing,
       reason: 'chỉ tab Tin đăng có bộ lọc',
     );
@@ -334,6 +335,8 @@ void main() {
     // Chủ shop không hiện lại ở tab Người dùng
     expect(find.textContaining('@kodo.camera'), findsNothing);
     expect(find.textContaining('Không có người dùng nào khớp'), findsOneWidget);
+    // Chờ danh mục mẫu (trễ giả lập) tải xong trước khi đóng trang
+    await tester.pump(const Duration(seconds: 1));
     await results.close();
     await accounts.close();
   });

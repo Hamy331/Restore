@@ -3,6 +3,8 @@ import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/data/models/category_model.dart';
+import 'package:restore/shared/utils/filter_categories.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/core/utils/formatters/distance_formatter.dart';
@@ -13,9 +15,10 @@ import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
-import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
+import 'package:restore/shared/widgets/filter/listing_chip_filter_bar.dart';
+import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
@@ -24,7 +27,6 @@ import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/nearby_cubit.dart';
 import '../../bloc/nearby_state.dart';
-import 'widgets/nearby_filter_bar.dart';
 import 'widgets/nearby_location_notice.dart';
 import 'widgets/nearby_search_bar.dart';
 import 'widgets/nearby_skeleton.dart';
@@ -41,9 +43,11 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
   static const double _sidePadding = 16;
   static const double _contentRadius = 24;
 
-  /// Ô địa điểm (48) + khoảng cách + hàng chip lọc + lề trên dưới
-  static const double _searchHeaderHeight =
-      8 + 48 + 10 + AppFilterChip.height + 12;
+  /// Ô địa điểm (48) + khoảng cách + hàng chip lọc (40) + lề trên dưới
+  static const double _searchHeaderHeight = 8 + 48 + 10 + 40 + 12;
+
+  /// Danh mục để hiện chip danh mục đang lọc và bộ lọc riêng của nó
+  List<CategoryModel> _categories = const [];
 
   final _scrollController = ScrollController();
   final _topBarKey = GlobalKey();
@@ -54,6 +58,9 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
   @override
   void initState() {
     super.initState();
+    loadFilterCategories().then((categories) {
+      if (mounted) setState(() => _categories = categories);
+    });
     _scrollController.addListener(_updateSearchPinned);
   }
 
@@ -244,13 +251,37 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
             ),
           ),
           const SizedBox(height: 10),
-          NearbyFilterBar(
+          // Thanh lọc như trang danh mục, thêm chip bán kính và sắp xếp;
+          // không có hàng Khu vực vì trang lọc theo vị trí
+          ListingChipFilterBar(
             filter: state.filter,
-            onFiltersTap: _openFilters,
-            onRadiusTap: _pickRadius,
-            onDealToggle: cubit.toggleDeal,
-            onSortTap: _pickSort,
-            onClearTap: cubit.clearFilters,
+            defaults: NearbyState.defaultFilter,
+            category: _categories
+                .where((item) => item.id == state.filter.categoryId)
+                .firstOrNull,
+            onChanged: cubit.applyFilter,
+            onFilters: _openFilters,
+            onClearAll: cubit.clearFilters,
+            showArea: false,
+            extraChips: [
+              ListingBarChip(
+                label: l10n.nearbyRadiusChip(
+                  _distance(
+                    state.filter.radiusKm ??
+                        NearbyState.defaultFilter.radiusKm ??
+                        0,
+                  ),
+                ),
+                leading: AppIcons.nearby,
+                dropdown: true,
+                onTap: (_) => _pickRadius(),
+              ),
+              ListingBarChip(
+                label: state.filter.sort.label(l10n),
+                dropdown: true,
+                onTap: (_) => _pickSort(),
+              ),
+            ],
           ),
         ],
       ),
