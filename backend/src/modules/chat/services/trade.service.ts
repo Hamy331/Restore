@@ -108,7 +108,8 @@ export async function listReviews(recipientId: string, query: Record<string, unk
 
 export async function listMyReviews(userId: string, query: Record<string, unknown>) {
   const params = z.object({
-    status: z.enum(['pending', 'submitted']).default('pending'),
+    /** all: mọi giao dịch đã hoàn tất (trang Lịch sử giao dịch), có hoặc chưa đánh giá */
+    status: z.enum(['pending', 'submitted', 'all']).default('pending'),
     page: z.coerce.number().int().min(1).max(100000).default(1),
   }).safeParse(query);
   if (!params.success) throw new AppError(422, 'INVALID_FILTER', 'Bộ lọc không hợp lệ.');
@@ -120,7 +121,7 @@ export async function listMyReviews(userId: string, query: Record<string, unknow
     where: {
       confirmedAt: { not: null },
       OR: [{ sellerId: userId }, { buyerId: userId }],
-      reviews: status === 'pending' ? { none: author } : { some: author },
+      ...(status === 'all' ? {} : { reviews: status === 'pending' ? { none: author } : { some: author } }),
     },
     orderBy: [{ confirmedAt: 'desc' }, { conversationId: 'desc' }],
     skip: (page - 1) * pageSize,
