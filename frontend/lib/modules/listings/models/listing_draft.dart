@@ -18,6 +18,9 @@ class ListingDraft extends Equatable {
   final String? id;
   final String categoryId;
 
+  /// Danh mục con đã chọn (rỗng khi danh mục chưa chia con)
+  final String subcategoryId;
+
   /// Đường dẫn ảnh trên máy hoặc URL đã tải lên. Ảnh đầu tiên là ảnh bìa.
   final List<String> images;
   final String title;
@@ -47,6 +50,7 @@ class ListingDraft extends Equatable {
   const ListingDraft({
     this.id,
     this.categoryId = '',
+    this.subcategoryId = '',
     this.images = const [],
     this.title = '',
     this.description = '',
@@ -86,6 +90,7 @@ class ListingDraft extends Equatable {
   factory ListingDraft.fromListing(ListingModel model) => ListingDraft(
     id: model.id,
     categoryId: model.categoryId ?? '',
+    subcategoryId: model.subcategoryId ?? '',
     title: model.title,
     description: model.description,
     images: model.images,
@@ -116,6 +121,7 @@ class ListingDraft extends Equatable {
   ListingDraft copyWith({
     String? id,
     String? categoryId,
+    String? subcategoryId,
     List<String>? images,
     String? title,
     String? description,
@@ -136,6 +142,7 @@ class ListingDraft extends Equatable {
     return ListingDraft(
       id: id ?? this.id,
       categoryId: categoryId ?? this.categoryId,
+      subcategoryId: subcategoryId ?? this.subcategoryId,
       images: images ?? this.images,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -166,6 +173,7 @@ class ListingDraft extends Equatable {
     };
     return {
       'categoryId': categoryId,
+      'subcategoryId': subcategoryId.isEmpty ? null : subcategoryId,
       'title': title.trim(),
       'description': description.trim(),
       'allowSale': tradeType.allowsSale,
@@ -192,6 +200,7 @@ class ListingDraft extends Equatable {
   List<Object?> get props => [
     id,
     categoryId,
+    subcategoryId,
     images,
     title,
     description,
@@ -216,6 +225,7 @@ class _ContentKey extends Equatable {
   _ContentKey(ListingDraft draft)
     : props = [
         draft.categoryId,
+        draft.subcategoryId,
         draft.images,
         draft.title.trim(),
         draft.description.trim(),

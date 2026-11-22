@@ -55,6 +55,9 @@ class ListingModel extends Equatable {
 
   /// (đề xuất) Danh mục và thuộc tính theo danh mục (jsonb)
   final String? categoryId;
+
+  /// Danh mục con trong danh mục cha (VD dien-thoai trong electronics)
+  final String? subcategoryId;
   final String categoryName;
   final Map<String, Object?> attributes;
 
@@ -95,6 +98,7 @@ class ListingModel extends Equatable {
     this.displayDays,
     this.autoExtend = false,
     this.categoryId,
+    this.subcategoryId,
     this.categoryName = '',
     this.attributes = const {},
     this.provinceCode,
@@ -160,6 +164,7 @@ class ListingModel extends Equatable {
       displayDays: (json['displayDays'] as num?)?.toInt(),
       autoExtend: json['autoExtend'] == true,
       categoryId: json['categoryId'] as String?,
+      subcategoryId: json['subcategoryId'] as String?,
       // Tên danh mục từ API là chuỗi hoặc map theo ngôn ngữ {vi, en}
       categoryName: LocalizedText.fromJson(
         (json['category'] as Map?)?['name'],
@@ -224,6 +229,7 @@ class ListingModel extends Equatable {
     displayDays,
     autoExtend,
     categoryId,
+    subcategoryId,
     categoryName,
     attributes,
     provinceCode,

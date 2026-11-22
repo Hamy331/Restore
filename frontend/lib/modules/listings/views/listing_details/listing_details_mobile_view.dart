@@ -251,7 +251,9 @@ class ListingDetailsMobileView extends StatelessWidget {
                     for (final attribute in attributes)
                       ListingAttributeField(
                         // Key theo danh mục để ô nhập được tạo lại khi đổi danh mục
-                        key: ValueKey('${category?.id}_${attribute.key}'),
+                        key: ValueKey(
+                          '${category?.id}_${category?.subcategory?.id}_${attribute.key}',
+                        ),
                         attribute: attribute,
                         value: state.draft.attributes[attribute.key],
                         error: errors[attribute.key],

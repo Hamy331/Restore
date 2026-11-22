@@ -144,9 +144,12 @@ class CreateListingState extends Equatable {
     return !draft.sameContentAs(saved);
   }
 
+  /// Danh mục đang chọn, đã gộp thuộc tính của danh mục con
   CategoryModel? get category {
     for (final category in categories) {
-      if (category.id == draft.categoryId) return category;
+      if (category.id == draft.categoryId) {
+        return category.withSubcategory(draft.subcategoryId);
+      }
     }
     return null;
   }

@@ -3567,5 +3567,6 @@
   "tradeConfirm": "Confirm",
   "reportReasonsChanged": "Report reasons have changed. Please review your selection.",
   "homeLoadErrorBody": "Check your connection and try again.",
-  "categoryDetailLoadErrorBody": "Check your connection and try again."
+  "categoryDetailLoadErrorBody": "Check your connection and try again.",
+  "chooseSubcategory": "Choose a subcategory"
 }

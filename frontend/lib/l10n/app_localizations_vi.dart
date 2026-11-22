@@ -5846,4 +5846,7 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get categoryDetailLoadErrorBody =>
       'Kiểm tra kết nối mạng rồi thử lại nhé.';
+
+  @override
+  String get chooseSubcategory => 'Chọn danh mục con';
 }

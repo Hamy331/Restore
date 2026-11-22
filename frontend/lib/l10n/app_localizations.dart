@@ -10249,6 +10249,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check your connection and try again.'**
   String get categoryDetailLoadErrorBody;
+
+  /// No description provided for @chooseSubcategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a subcategory'**
+  String get chooseSubcategory;
 }
 
 class _AppLocalizationsDelegate

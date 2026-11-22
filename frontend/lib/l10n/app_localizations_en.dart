@@ -5952,4 +5952,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get categoryDetailLoadErrorBody =>
       'Check your connection and try again.';
+
+  @override
+  String get chooseSubcategory => 'Choose a subcategory';
 }

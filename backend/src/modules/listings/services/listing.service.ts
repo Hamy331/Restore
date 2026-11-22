@@ -8,6 +8,7 @@ import { emit } from '../../../common/events/domain-events.js';
 import { availableCredits } from '../../credits/index.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { toCategoryDto } from '../../catalog/catalog.dto.js';
+import { resolveSubcategory } from '../../catalog/category-tree.js';
 import { ListingInput, MineQuery, toListingDto, toOwnerListingDto } from '../listing.dto.js';
 import { LISTING_EDITABLE } from '../listing.type.js';
 import { validateAttributes } from '../listing.validator.js';
@@ -51,15 +52,19 @@ export { categoryHasCondition };
  * Danh mục còn dùng, tình trạng chưa ngừng, thuộc tính đúng metadata danh mục.
  * Danh mục không hỏi tình trạng thì bỏ tình trạng ([data.condition] thành null), còn lại bắt buộc.
  */
-export async function assertPublishable(tx: Db, data: Pick<ListingInput, 'categoryId' | 'condition' | 'attributes'>) {
+export async function assertPublishable(tx: Db, data: Pick<ListingInput, 'categoryId' | 'subcategoryId' | 'condition' | 'attributes'>) {
   const category = await listingRepository.findActiveCategory(tx, data.categoryId);
   if (!category) throw new AppError(400, 'INVALID_LISTING', 'Danh mục không tồn tại.', 'categoryId');
-  if (!categoryHasCondition(category.metadata)) data.condition = null;
+  // Danh mục đã chia con thì bắt buộc chọn một danh mục con của nó; danh mục chưa chia con thì bỏ
+  const { child, required, metadata } = resolveSubcategory(category.metadata, data.subcategoryId);
+  if (required && !child) throw new AppError(400, 'INVALID_LISTING', 'Chọn danh mục con hợp lệ.', 'subcategoryId');
+  data.subcategoryId = child?.id ?? null;
+  if (!categoryHasCondition(metadata)) data.condition = null;
   else if (!data.condition) throw new AppError(400, 'INVALID_LISTING', 'Tình trạng không hợp lệ.', 'condition');
   if (data.condition && (await listingRepository.findConditionPolicy(tx, data.condition))?.active === false) {
     throw new AppError(400, 'INVALID_CONDITION', 'Tình trạng đã ngừng sử dụng.');
   }
-  validateAttributes(data.attributes, category.metadata, true);
+  validateAttributes(data.attributes, metadata, true);
   return category;
 }
 
@@ -167,7 +172,8 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
     if (!LISTING_EDITABLE.includes(current.status)) {
       throw new AppError(409, 'LISTING_NOT_EDITABLE', 'Chỉ sửa được tin đang hiển thị, đã ẩn, chờ duyệt hoặc bị từ chối.');
     }
-    const categoryChanged = current.categoryId !== data.categoryId;
+    // Đổi danh mục con cũng tính là đổi chuyên mục (thuộc tính và bộ lọc khác nhau)
+    const categoryChanged = current.categoryId !== data.categoryId || (current.subcategoryId ?? null) !== (data.subcategoryId ?? null);
     if (REVISABLE.includes(current.status)) {
       if (categoryChanged) {
         throw new AppError(409, 'CATEGORY_LOCKED', 'Tin đã duyệt không đổi được chuyên mục.', 'categoryId');
@@ -544,7 +550,7 @@ export async function viewListing(viewer: Viewer, id: string) {
     seller: publicSeller,
     sellerSoldCount: _count.listings,
     sellerPlanTier: subscription && subscription.startsAt <= now && now < subscription.endsAt ? subscription.package.tier : null,
-    category: category ? toCategoryDto(category) : listing.category,
+    category: category ? toCategoryDto(category, listing.subcategoryId) : listing.category,
     sellerActiveListings,
     isFavorite: !!favorite,
     isOwner: viewer?.userId === listing.ownerId,

@@ -41,7 +41,10 @@ class ProductDetailSummary extends StatelessWidget {
     final createdAt = listing.createdAt;
     final tags = [
       ?listing.condition?.label(l10n),
-      ?detail.category?.name.of(context),
+      // Danh mục con cụ thể hơn (Điện thoại) nên ưu tiên hơn danh mục cha
+      ?(detail.category?.subcategory?.name ?? detail.category?.name)?.of(
+        context,
+      ),
       if (price != null && listing.isNegotiable) l10n.negotiable,
       if (listing.allowExchange) l10n.tradeExchangeAccepted,
     ];

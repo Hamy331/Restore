@@ -3353,5 +3353,6 @@
   "tradeConfirm": "Xác nhận",
   "reportReasonsChanged": "Danh sách lý do đã thay đổi. Vui lòng kiểm tra và chọn lại.",
   "homeLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
-  "categoryDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé."
+  "categoryDetailLoadErrorBody": "Kiểm tra kết nối mạng rồi thử lại nhé.",
+  "chooseSubcategory": "Chọn danh mục con"
 }

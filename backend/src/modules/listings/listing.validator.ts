@@ -4,6 +4,7 @@ import { AppError } from '../../common/errors/app-error.js';
 import { choice, object, page, text, version } from '../../common/validation/admin-input.js';
 import { idParam, int, oneOf, pageQuery, parse } from '../../common/validation/schemas.js';
 import { coordinates, listingLocation } from '../catalog/index.js';
+import type { CategoryAttribute } from '../catalog/category-tree.js';
 import { normalizeTitle } from './listing-lifecycle.js';
 import { FEED_FILTERS, MAX_IMAGES, MODERATION_ACTIONS, OWNER_STATUS_TARGETS } from './listing.type.js';
 
@@ -19,7 +20,7 @@ export function listingInput(value: unknown, draft = false) {
   const fail = (message: string, field?: string): never => { throw new AppError(400, draft ? 'INVALID_DRAFT' : 'INVALID_LISTING', message, field); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('Dữ liệu tin không hợp lệ.');
   const body = value as Record<string, unknown>;
-  const allowed = ['title','description','price','condition','categoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','originalPrice'];
+  const allowed = ['title','description','price','condition','categoryId','subcategoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','originalPrice'];
   // Cờ của thao tác đăng (trả xu, vẫn đăng dù trùng): controller đọc riêng, không thuộc nội dung tin
   const flags = draft ? [] : ['payWithCredits', 'allowDuplicate'];
   if (Object.keys(body).some((key) => !allowed.includes(key) && !flags.includes(key))) fail('Tin có trường không được hỗ trợ.');
@@ -29,6 +30,9 @@ export function listingInput(value: unknown, draft = false) {
   if (typeof description !== 'string' || description.trim().length > 1500 || (!draft && description.trim().length < 10)) fail('Mô tả cần từ 10 đến 1500 ký tự.', 'description');
   const categoryId = body.categoryId == null || body.categoryId === '' ? null : body.categoryId;
   if ((categoryId !== null && (typeof categoryId !== 'string' || categoryId.length > 100)) || (!draft && !categoryId)) fail('Chọn danh mục hợp lệ.', 'categoryId');
+  // Danh mục con: bắt buộc hay không và có thuộc danh mục cha không do assertPublishable xét theo metadata
+  const subcategoryId = body.subcategoryId == null || body.subcategoryId === '' ? null : body.subcategoryId;
+  if (subcategoryId !== null && (typeof subcategoryId !== 'string' || subcategoryId.length > 100)) fail('Chọn danh mục con hợp lệ.', 'subcategoryId');
   const condition = body.condition ?? null;
   // Tình trạng có thể trống (danh mục không hỏi tình trạng, VD thú cưng); bắt buộc hay không do assertPublishable xét theo danh mục
   if (condition !== null && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) fail('Tình trạng không hợp lệ.', 'condition');
@@ -64,6 +68,7 @@ export function listingInput(value: unknown, draft = false) {
   const startsAt = typeof rawStart === 'string' && rawStart.length <= 40 ? new Date(rawStart) : null;
   if (rawStart !== null && (!startsAt || Number.isNaN(startsAt.getTime()))) fail('Ngày bắt đầu không hợp lệ.', 'startsAt');
   return { title: (title as string).trim(), description: (description as string).trim(), categoryId: categoryId as string | null,
+    subcategoryId: categoryId ? subcategoryId as string | null : null,
     condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0', originalPrice, isNegotiable: (allowSale && isNegotiable) as boolean,
     allowSale: allowSale as boolean, allowExchange: allowExchange as boolean,
     exchangeWish: allowExchange ? (exchangeWish as string).trim() : '', sellerType: sellerType as string,
@@ -153,7 +158,7 @@ export function listingFilters(query: Record<string, unknown>) {
 
 /** Kiểm tra thuộc tính theo metadata của danh mục */
 export function validateAttributes(values: Prisma.InputJsonObject, metadata: unknown, required: boolean) {
-  const schema = ((metadata as { attributes?: Array<{key:string; type:string; required?:boolean; min?:number;max?:number;maxLength?:number;options?:Array<{value:string}>}> })?.attributes ?? []);
+  const schema = (metadata as { attributes?: CategoryAttribute[] } | null)?.attributes ?? [];
   const fail = (key: string): never => { throw new AppError(400,'INVALID_ATTRIBUTES',`Thuộc tính ${key} không hợp lệ.`,key); };
   for (const key of Object.keys(values)) if (!schema.some((field) => field.key === key)) fail(key);
   for (const field of schema) {

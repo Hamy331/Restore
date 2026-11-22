@@ -26,9 +26,12 @@ class PostingQuotaRequested extends CreateListingEvent {
 
 class CategorySelected extends CreateListingEvent {
   final String categoryId;
-  const CategorySelected(this.categoryId);
+
+  /// Danh mục con (rỗng khi danh mục chưa chia con)
+  final String subcategoryId;
+  const CategorySelected(this.categoryId, [this.subcategoryId = '']);
   @override
-  List<Object?> get props => [categoryId];
+  List<Object?> get props => [categoryId, subcategoryId];
 }
 
 class PhotosAdded extends CreateListingEvent {

@@ -33,7 +33,7 @@ export const listingSelect = {
   price: true,
   originalPrice: true,
   isNegotiable: true,
-  ownerId: true, categoryId: true, status: true, updatedAt: true,
+  ownerId: true, categoryId: true, subcategoryId: true, status: true, updatedAt: true,
   allowSale: true, allowExchange: true, exchangeWish: true, sellerType: true, attributes: true, location: true, reviewReason: true,
   condition: true,
   category: { select: { id: true, name: true } },
@@ -77,7 +77,7 @@ export const toRevisionDto = (revision: RevisionRecord) => ({
 /**
  * Listing cho app: { id, ownerId, title, description, price (chuỗi số), isNegotiable, condition, status,
  *   originalPrice (giá trước giảm, null = không giảm), allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
- *   categoryId, category { id, name }, owner { id, fullName, ratingAverage, ratingCount },
+ *   categoryId, subcategoryId, category { id, name }, owner { id, fullName, ratingAverage, ratingCount },
  *   viewCount, createdAt, updatedAt, publishedAt, expiresAt, startsAt, displayDays, areaLabel }
  *   (+ paidCredits, paidDays, autoExtend cho chủ tin)
  *
@@ -116,6 +116,6 @@ export type ListingDto = ReturnType<typeof toListingDto>;
 /** Cột tin trả cho trang quản trị (/admin/listings, đối tượng của báo cáo); trả nguyên bản ghi, không qua DTO */
 export const adminListingSelect = {
   id: true, title: true, description: true, price: true, status: true, images: true, reviewReason: true,
-  updatedAt: true, categoryId: true, ownerId: true, condition: true,
+  updatedAt: true, categoryId: true, subcategoryId: true, ownerId: true, condition: true,
   owner: { select: { id: true, fullName: true } }, category: { select: { id: true, name: true } },
 } as const satisfies Prisma.ListingSelect;
