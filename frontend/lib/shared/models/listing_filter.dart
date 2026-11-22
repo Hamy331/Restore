@@ -304,10 +304,6 @@ class ListingFilter extends Equatable {
     );
   }
 
-  /// Bật / tắt một kiểu giao dịch
-  ListingFilter toggleDeal(ListingDealType type) =>
-      copyWith(dealTypes: _toggle(dealTypes, type));
-
   static Set<T> _toggle<T>(Set<T> values, T value) => values.contains(value)
       ? ({...values}..remove(value))
       : {...values, value};

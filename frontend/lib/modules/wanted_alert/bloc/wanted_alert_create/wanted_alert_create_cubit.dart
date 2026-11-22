@@ -68,10 +68,6 @@ class WantedAlertCreateCubit extends Cubit<WantedAlertCreateState> {
   void applyFilter(ListingFilter filter) =>
       _update(state.draft.copyWith(filter: filter));
 
-  void toggleDeal(ListingDealType type) => _update(
-    state.draft.copyWith(filter: state.draft.filter.toggleDeal(type)),
-  );
-
   void clearFilters() => applyFilter(WantedAlertCreateState.defaultFilter);
 
   /// null là toàn quốc

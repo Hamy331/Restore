@@ -37,6 +37,8 @@ Future<ListingFilter?> showListingFilterSheet(
   required ListingFilter defaults,
   List<double>? radiusOptions,
   bool showCategories = true,
+  bool subcategories = true,
+  bool showSeller = true,
   ListingFilterOptionsRepository? repository,
 }) {
   final l10n = AppLocalizations.of(context)!;
@@ -58,6 +60,8 @@ Future<ListingFilter?> showListingFilterSheet(
       child: _ListingFilterSheetBody(
         radiusOptions: radiusOptions,
         showCategories: showCategories,
+        subcategories: subcategories,
+        showSeller: showSeller,
       ),
     ),
   );
@@ -67,9 +71,16 @@ class _ListingFilterSheetBody extends StatelessWidget {
   final List<double>? radiusOptions;
   final bool showCategories;
 
+  /// false: không có danh mục con, bộ lọc riêng và "Còn bảo hành" (Báo khi
+  /// có hàng chưa lưu được các tiêu chí đó)
+  final bool subcategories;
+  final bool showSeller;
+
   const _ListingFilterSheetBody({
     required this.radiusOptions,
     required this.showCategories,
+    required this.subcategories,
+    required this.showSeller,
   });
 
   @override
@@ -83,7 +94,9 @@ class _ListingFilterSheetBody extends StatelessWidget {
         final count = state.activeCount;
         final parent = state.selectedCategory;
         // Danh mục đã gộp danh mục con: bộ lọc riêng, tình trạng, giá tối đa
-        final category = parent?.withSubcategory(draft.subcategoryId);
+        final category = subcategories
+            ? parent?.withSubcategory(draft.subcategoryId)
+            : null;
         final sections = _sections(context, state, parent, category);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -137,7 +150,8 @@ class _ListingFilterSheetBody extends StatelessWidget {
     final cubit = context.read<ListingFilterCubit>();
     final draft = state.draft;
 
-    final subcategories = parent != null && parent.hasSubcategories
+    final subcategoryRow =
+        subcategories && parent != null && parent.hasSubcategories
         ? ListingFilterSubcategorySection(
             category: parent,
             selectedId: draft.subcategoryId,
@@ -197,7 +211,7 @@ class _ListingFilterSheetBody extends StatelessWidget {
           onSelected: cubit.selectCategory,
           onRetry: cubit.loadOptions,
         ),
-      ?subcategories,
+      ?subcategoryRow,
       price,
       if (category != null)
         ListingFilterAttributeSections(
@@ -208,7 +222,7 @@ class _ListingFilterSheetBody extends StatelessWidget {
           onRange: cubit.setAttributeRange,
         ),
       ?condition,
-      seller,
+      if (showSeller) seller,
       if (radiusOptions != null)
         ListingFilterSection(
           title: l10n.listingFilterDistance,
