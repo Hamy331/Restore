@@ -19,6 +19,9 @@ class SearchIdleContent extends StatelessWidget {
   final ValueChanged<SearchHistoryEntry> onRemoveHistory;
   final VoidCallback onClearHistory;
 
+  /// Co theo nội dung (khung gợi ý thả xuống dưới ô tìm kiếm trên desktop)
+  final bool shrinkWrap;
+
   const SearchIdleContent({
     super.key,
     required this.state,
@@ -26,6 +29,7 @@ class SearchIdleContent extends StatelessWidget {
     required this.onNearMe,
     required this.onRemoveHistory,
     required this.onClearHistory,
+    this.shrinkWrap = false,
   });
 
   @override
@@ -46,6 +50,7 @@ class SearchIdleContent extends StatelessWidget {
     );
 
     return ListView(
+      shrinkWrap: shrinkWrap,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.only(top: 10, bottom: bottom + 16),
       children: [

@@ -27,6 +27,9 @@ class SearchSuggestionList extends StatelessWidget {
   final List<CategoryMatch> categories;
   final ValueChanged<CategoryMatch> onOpenCategory;
 
+  /// Co theo nội dung (khung gợi ý thả xuống dưới ô tìm kiếm trên desktop)
+  final bool shrinkWrap;
+
   const SearchSuggestionList({
     super.key,
     required this.state,
@@ -37,6 +40,7 @@ class SearchSuggestionList extends StatelessWidget {
     required this.onOpenUser,
     this.categories = const [],
     required this.onOpenCategory,
+    this.shrinkWrap = false,
   });
 
   @override
@@ -46,6 +50,7 @@ class SearchSuggestionList extends StatelessWidget {
     final query = state.query;
 
     return ListView(
+      shrinkWrap: shrinkWrap,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.only(top: 10, bottom: bottom + 16),
       children: [
