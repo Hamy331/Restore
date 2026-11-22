@@ -1,12 +1,9 @@
 import { prisma } from '../../../lib/prisma.js';
+import { LOG_WITH_ACTOR, type LogWithActor } from './audit.repository.js';
 
 type Overview = {
   pendingListings: number; pendingEdits: number; openReports: number; activeUsers: number; activeListings: number;
   pendingStores: number; pendingPromotions: number; promotionRevenue: string;
-};
-type LogWithActor = {
-  id: string; actorId: string; action: string; targetType: string; targetId: string; reason: string;
-  before: unknown; after: unknown; createdAt: Date; actor: { id: string; fullName: string; email: string } | null;
 };
 
 /**
@@ -26,8 +23,7 @@ export async function countOverview(logCount: number) {
         (SELECT count(*) FROM "PromotionOrder" WHERE status = 'PENDING')::int AS "pendingPromotions",
         (SELECT coalesce(sum(amount), 0)::text FROM "PromotionOrder" WHERE status = 'CONFIRMED') AS "promotionRevenue"`,
     prisma.$queryRaw<LogWithActor[]>`
-      SELECT a.*, CASE WHEN u.id IS NULL THEN NULL
-        ELSE json_build_object('id', u.id, 'fullName', u."fullName", 'email', u.email) END AS actor
+      SELECT ${LOG_WITH_ACTOR}
       FROM "AdminAudit" a LEFT JOIN "User" u ON u.id = a."actorId"
       ORDER BY a."createdAt" DESC, a.id DESC LIMIT ${logCount}`,
   ]);

@@ -13,6 +13,7 @@
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
+          "subcategoryId": null,
           "status": "AVAILABLE",
           "updatedAt": "<date>",
           "allowSale": true,
@@ -76,6 +77,7 @@
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
+          "subcategoryId": null,
           "status": "AVAILABLE",
           "updatedAt": "<date>",
           "allowSale": true,
@@ -160,6 +162,7 @@
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
+          "subcategoryId": null,
           "status": "AVAILABLE",
           "updatedAt": "<date>",
           "allowSale": true,
@@ -244,6 +247,7 @@
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
+          "subcategoryId": null,
           "status": "AVAILABLE",
           "updatedAt": "<date>",
           "allowSale": true,
@@ -314,6 +318,26 @@
       }
     }
   },
+  "search den accented": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 0,
+        "totalPages": 0,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
   "search exchange": {
     "status": 200,
     "body": {
@@ -328,6 +352,7 @@
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
+          "subcategoryId": null,
           "status": "AVAILABLE",
           "updatedAt": "<date>",
           "allowSale": true,
@@ -412,6 +437,7 @@
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
+          "subcategoryId": null,
           "status": "AVAILABLE",
           "updatedAt": "<date>",
           "allowSale": true,
@@ -475,6 +501,7 @@
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
+          "subcategoryId": null,
           "status": "AVAILABLE",
           "updatedAt": "<date>",
           "allowSale": true,
@@ -538,6 +565,7 @@
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
+          "subcategoryId": null,
           "status": "AVAILABLE",
           "updatedAt": "<date>",
           "allowSale": true,
