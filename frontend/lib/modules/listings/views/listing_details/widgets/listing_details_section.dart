@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/shared/widgets/app_required_label.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 
 /// Thẻ kính mờ có tiêu đề, gom một nhóm trường trong bước 3
 class ListingDetailsSection extends StatelessWidget {
@@ -9,11 +10,15 @@ class ListingDetailsSection extends StatelessWidget {
   final bool isRequired;
   final List<Widget> children;
 
+  /// Desktop: xếp các ô thành 2 cột cho đỡ dài
+  final bool twoColumns;
+
   const ListingDetailsSection({
     super.key,
     required this.title,
     required this.children,
     this.isRequired = false,
+    this.twoColumns = false,
   });
 
   @override
@@ -33,10 +38,26 @@ class ListingDetailsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          for (var i = 0; i < children.length; i++) ...[
-            if (i > 0) const SizedBox(height: 14),
-            children[i],
-          ],
+          if (twoColumns && isDesktopLayout(context))
+            LayoutBuilder(
+              builder: (context, constraints) {
+                const gap = 16.0;
+                final width = (constraints.maxWidth - gap) / 2;
+                return Wrap(
+                  spacing: gap,
+                  runSpacing: 14,
+                  children: [
+                    for (final child in children)
+                      SizedBox(width: width, child: child),
+                  ],
+                );
+              },
+            )
+          else
+            for (var i = 0; i < children.length; i++) ...[
+              if (i > 0) const SizedBox(height: 14),
+              children[i],
+            ],
         ],
       ),
     );

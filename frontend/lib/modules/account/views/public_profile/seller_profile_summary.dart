@@ -27,12 +27,16 @@ class SellerProfileSummary extends StatelessWidget {
     required this.onFollowing,
     this.onCatalog,
     this.onCall,
+    this.onChat,
   });
   final ProfileData profile;
   final bool showShopLogo;
   final bool following;
   final int followerCount;
   final VoidCallback? onFollow, onCatalog, onFollowers, onCall;
+
+  /// Desktop: nút Nhắn tin nằm cạnh nút Gọi trong thẻ (không có thanh dưới)
+  final VoidCallback? onChat;
   final VoidCallback onReviews, onFollowing;
 
   @override
@@ -218,7 +222,32 @@ class SellerProfileSummary extends StatelessWidget {
                     ],
                   ],
                 ),
-              if (onCall != null)
+              if (onChat != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.black87,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          onPressed: onChat,
+                          icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                          label: Text(l.productChat),
+                        ),
+                      ),
+                      if (onCall != null) ...[
+                        const SizedBox(width: 8),
+                        Expanded(child: SellerCallButton(onPressed: onCall!)),
+                      ],
+                    ],
+                  ),
+                )
+              else if (onCall != null)
                 SizedBox(
                   width: double.infinity,
                   child: SellerCallButton(onPressed: onCall!),

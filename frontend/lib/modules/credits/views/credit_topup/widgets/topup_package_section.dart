@@ -25,11 +25,12 @@ class TopupPackageSection extends StatelessWidget {
           style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 14),
+        // Thẻ rộng tối đa 220: điện thoại 2 cột, khung rộng (desktop) 3-4 cột
         GridView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 220,
             mainAxisSpacing: 12,
             crossAxisSpacing: 10,
             mainAxisExtent: 144,

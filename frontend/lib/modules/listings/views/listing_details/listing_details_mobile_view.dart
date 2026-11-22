@@ -247,6 +247,7 @@ class ListingDetailsMobileView extends StatelessWidget {
                 const SizedBox(height: 14),
                 ListingDetailsSection(
                   title: l10n.categoryAttributesTitle,
+                  twoColumns: true,
                   children: [
                     for (final attribute in attributes)
                       ListingAttributeField(

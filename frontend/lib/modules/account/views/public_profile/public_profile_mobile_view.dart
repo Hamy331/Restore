@@ -8,6 +8,7 @@ import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/modules/feeds/bloc/feeds/feeds_cubit.dart';
 import 'package:restore/modules/feeds/widgets/feed_post_list.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import '../../bloc/public_profile/public_profile_cubit.dart';
 import '../../bloc/public_profile/public_profile_state.dart';
 import '../../models/profile_models.dart';
@@ -117,6 +118,63 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
         final own = p != null && context.currentUser?.id == p.id;
         final phone = s?.phone?.trim();
         final contact = p != null && !own;
+        // Desktop: thẻ hồ sơ cột trái (có sẵn Nhắn tin + Gọi), tab + lưới tin
+        // cột phải, không có thanh nút dưới đáy
+        final wide = isDesktopLayout(context);
+        Widget summary() => SellerProfileSummary(
+          profile: p!,
+          showShopLogo: widget.returnShopFollow,
+          following: p.followsSeller,
+          followerCount: s!.verified ? s.shopFollowers : p.followerCount,
+          onFollow: own ? null : () => _follow(p),
+          onCall: !own && phone != null && phone.isNotEmpty
+              ? () => _call(phone)
+              : null,
+          onChat: wide && contact && !_chatBusy ? () => _chat(p) : null,
+          onReviews: () => _tabs.animateTo(2),
+          onFollowers: s.verified
+              ? null
+              : () => context.push('/users/${p.id}/follows?tab=followers'),
+          onFollowing: () =>
+              context.push('/users/${p.id}/follows?tab=following'),
+          onCatalog: s.verified ? () => _catalog(p) : null,
+        );
+        Widget tabs() => TabBarView(
+          controller: _tabs,
+          children: [
+            SellerListings(
+              userId: p!.id,
+              grid: wide,
+              refresh: () async {
+                await Future.wait([cubit.load(), posts.load()]);
+              },
+              summary: wide
+                  ? const SizedBox.shrink()
+                  : Column(
+                      children: [
+                        summary(),
+                        SellerActivityPreview(open: () => _tabs.animateTo(1)),
+                        const Divider(
+                          thickness: 5,
+                          height: 5,
+                          color: Color(0xfff5f5f5),
+                        ),
+                      ],
+                    ),
+            ),
+            RefreshIndicator(
+              onRefresh: posts.load,
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (n) => feedScrollListener(posts, n),
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [ProfilePostsSliver(cubit: posts)],
+                ),
+              ),
+            ),
+            ProfileReviews(profile: p),
+          ],
+        );
         return PopScope(
           canPop: !widget.returnShopFollow || _shopFollowing == null,
           onPopInvokedWithResult: (didPop, _) {
@@ -170,72 +228,35 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                           )
                         : const CircularProgressIndicator(),
                   )
+                : wide
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(
+                        width: 320,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              summary(),
+                              SellerActivityPreview(
+                                open: () => _tabs.animateTo(1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const VerticalDivider(width: 1, color: Color(0xffeeeeee)),
+                      Expanded(child: tabs()),
+                    ],
+                  )
                 : Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 720),
-                      child: TabBarView(
-                        controller: _tabs,
-                        children: [
-                          SellerListings(
-                            userId: p.id,
-                            refresh: () async {
-                              await Future.wait([cubit.load(), posts.load()]);
-                            },
-                            summary: Column(
-                              children: [
-                                SellerProfileSummary(
-                                  profile: p,
-                                  showShopLogo: widget.returnShopFollow,
-                                  following: p.followsSeller,
-                                  followerCount: s!.verified
-                                      ? s.shopFollowers
-                                      : p.followerCount,
-                                  onFollow: own ? null : () => _follow(p),
-                                  onCall:
-                                      !own && phone != null && phone.isNotEmpty
-                                      ? () => _call(phone)
-                                      : null,
-                                  onReviews: () => _tabs.animateTo(2),
-                                  onFollowers: s.verified
-                                      ? null
-                                      : () => context.push(
-                                          '/users/${p.id}/follows?tab=followers',
-                                        ),
-                                  onFollowing: () => context.push(
-                                    '/users/${p.id}/follows?tab=following',
-                                  ),
-                                  onCatalog: s.verified
-                                      ? () => _catalog(p)
-                                      : null,
-                                ),
-                                SellerActivityPreview(
-                                  open: () => _tabs.animateTo(1),
-                                ),
-                                const Divider(
-                                  thickness: 5,
-                                  height: 5,
-                                  color: Color(0xfff5f5f5),
-                                ),
-                              ],
-                            ),
-                          ),
-                          RefreshIndicator(
-                            onRefresh: posts.load,
-                            child: NotificationListener<ScrollNotification>(
-                              onNotification: (n) =>
-                                  feedScrollListener(posts, n),
-                              child: CustomScrollView(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                slivers: [ProfilePostsSliver(cubit: posts)],
-                              ),
-                            ),
-                          ),
-                          ProfileReviews(profile: p),
-                        ],
-                      ),
+                      child: tabs(),
                     ),
                   ),
-            bottomNavigationBar: !contact
+            bottomNavigationBar: !contact || wide
                 ? null
                 : SafeArea(
                     top: false,
