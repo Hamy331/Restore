@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/data/models/listing_model.dart';
-import 'package:restore/modules/saved_listings/data/recently_viewed_store.dart';
 
 import '../../models/product_detail.dart';
 import '../../repositories/product_detail_repository.dart';
@@ -23,11 +22,12 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
   final ProductDetailRepository _repository;
 
   /// Chu kỳ tự tải lại tin khi đang xem, để biết người khác đã mua hoặc
-  /// người bán vừa sửa tin
-  // TODO: chuyển sang Supabase Realtime khi backend sẵn sàng
+  /// người bán vừa sửa tin. Sự kiện từ [ProductDetailRepository.changes]
+  /// báo ngay; chu kỳ này bù cho lúc mất kết nối và cho web
   final Duration refreshInterval;
 
   Timer? _refreshTimer;
+  StreamSubscription<void>? _changes;
   bool _refreshing = false;
 
   /// Bỏ qua kết quả về muộn sau khi trang đã đóng (VD bấm vào rồi thoát
@@ -49,8 +49,6 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
         ),
       );
       resumeLiveUpdates(refreshNow: false);
-      // Ghi vào Xem gần đây; lỗi lưu trên máy không ảnh hưởng trang chi tiết
-      unawaited(RecentlyViewedStore.add(listingId).catchError((Object _) {}));
     } catch (error, stack) {
       if (isClosed) return;
       if (kDebugMode) {
@@ -82,6 +80,8 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
   void pauseLiveUpdates() {
     _refreshTimer?.cancel();
     _refreshTimer = null;
+    unawaited(_changes?.cancel());
+    _changes = null;
   }
 
   /// Bật lại tự làm mới, mặc định tải lại ngay vì có thể đã lỡ thay đổi
@@ -89,6 +89,9 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
     if (isClosed || state.detail == null) return;
     pauseLiveUpdates();
     _refreshTimer = Timer.periodic(refreshInterval, (_) => refresh());
+    _changes = _repository
+        .changes(listingId)
+        .listen((_) => refresh(), onError: (Object _) {});
     if (refreshNow) refresh();
   }
 

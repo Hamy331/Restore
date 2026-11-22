@@ -5,8 +5,6 @@ import 'package:restore/modules/listings/data/mock_favorite_store.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
-import '../data/recently_viewed_store.dart';
-
 /// Nguồn dữ liệu trang Tin đã lưu
 abstract class SavedListingsRepository {
   static const int pageSize = 20;
@@ -18,7 +16,7 @@ abstract class SavedListingsRepository {
   /// Nguồn cho trang Xem gần đây (cùng giao diện với Tin đã lưu)
   factory SavedListingsRepository.recentlyViewed() => AppEnvironment.useMockData
       ? MockRecentlyViewedRepository()
-      : ApiRecentlyViewedRepository();
+      : ApiSavedListingsRepository(path: '/listings/recently-viewed');
 
   /// Trang [page] (từ 1) của các tin đã lưu, mới lưu trước
   Future<PagedResult<ListingCardItem>> getPage({int page = 1});
@@ -57,19 +55,23 @@ class MockSavedListingsRepository implements SavedListingsRepository {
 }
 
 /// Gọi backend:
-/// - `GET /listings/favorites?page=&limit=` → `{ data: [Listing + isFavorite], meta }`
-///   (chỉ tin còn hiển thị, mới lưu trước)
+/// - `GET [path]?page=&limit=` → `{ data: [Listing + isFavorite], meta }`, chỉ tin còn
+///   hiển thị: `/listings/favorites` (mới lưu trước) hoặc `/listings/recently-viewed`
+///   (30 tin vừa xem, mới xem trước; backend ghi khi mở `GET /listings/:id`)
 /// - `PUT|DELETE /listings/:id/favorite`
 class ApiSavedListingsRepository implements SavedListingsRepository {
-  ApiSavedListingsRepository({ApiClient? apiClient})
-    : _apiClient = apiClient ?? ApiClient();
+  ApiSavedListingsRepository({
+    ApiClient? apiClient,
+    this.path = '/listings/favorites',
+  }) : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
+  final String path;
 
   @override
   Future<PagedResult<ListingCardItem>> getPage({int page = 1}) async {
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/listings/favorites',
+      path,
       queryParameters: {
         'page': page,
         'limit': SavedListingsRepository.pageSize,
@@ -92,51 +94,19 @@ class ApiSavedListingsRepository implements SavedListingsRepository {
   }
 }
 
-/// Trang Xem gần đây: mã tin lấy từ [RecentlyViewedStore], dữ liệu tin tải mới
-/// qua `GET /listings/batch?ids=` (tin đã ẩn / bán / xoá tự bỏ). Một trang duy nhất.
-class ApiRecentlyViewedRepository extends ApiSavedListingsRepository {
-  ApiRecentlyViewedRepository({super.apiClient});
-
-  @override
-  Future<PagedResult<ListingCardItem>> getPage({int page = 1}) async {
-    final ids = await RecentlyViewedStore.ids();
-    if (ids.isEmpty) {
-      return const PagedResult(items: [], page: 1, hasMore: false);
-    }
-    final response = await _apiClient.dio.get<Map<String, dynamic>>(
-      '/listings/batch',
-      queryParameters: {'ids': ids.join(',')},
-    );
-    return PagedResult(
-      items: [
-        for (final item in response.data?['data'] as List? ?? const [])
-          ListingCardItem.fromJson(Map<String, dynamic>.from(item as Map)),
-      ],
-      page: 1,
-      hasMore: false,
-    );
-  }
-}
-
-/// Tin mẫu trang chủ theo thứ tự trong [RecentlyViewedStore]
+/// Trang Xem gần đây khi chạy dữ liệu mẫu: 4 tin mẫu đầu tiên
 class MockRecentlyViewedRepository extends MockSavedListingsRepository {
   MockRecentlyViewedRepository({super.latency});
 
   @override
   Future<PagedResult<ListingCardItem>> getPage({int page = 1}) async {
     await Future<void>.delayed(latency);
-    final ids = await RecentlyViewedStore.ids();
-    final byId = {
-      for (final json in HomeMockData.listings(DateTime.now()))
-        '${json['id']}': json,
-    };
     return PagedResult(
       items: [
-        for (final id in ids)
-          if (byId[id] case final json?)
-            ListingCardItem.fromJson(
-              json,
-            ).copyWith(isFavorite: MockFavoriteStore.contains(id)),
+        for (final json in HomeMockData.listings(DateTime.now()).take(4))
+          ListingCardItem.fromJson(
+            json,
+          ).copyWith(isFavorite: MockFavoriteStore.contains('${json['id']}')),
       ],
       page: 1,
       hasMore: false,

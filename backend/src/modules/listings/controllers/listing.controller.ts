@@ -82,10 +82,6 @@ export async function postingQuota(req: AuthRequest, res: Response) {
   ok(res, await listingService.getPostingQuota(req.user!.userId));
 }
 
-export async function summary(req: AuthRequest, res: Response) {
-  ok(res, await listingService.getSummary(req.user!.userId));
-}
-
 /** Giữ dạng pagination cũ { page, pageSize, totalItems, totalPages } mà màn "Tin của tôi" đang đọc */
 export async function listMine(req: AuthRequest, res: Response) {
   const { query } = getInput<ValidatedInput<MineQuery>>(res);

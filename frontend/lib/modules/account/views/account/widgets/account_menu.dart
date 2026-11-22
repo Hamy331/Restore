@@ -101,7 +101,7 @@ void showAccountMenu(BuildContext context) {
                         _MenuItem(
                           AppIcons.listings,
                           l.accTransactions,
-                          onTap: soon,
+                          onTap: () => open(MyReviewsView.transactionsPath),
                         ),
                         _MenuItem(
                           AppIcons.store,

@@ -7,6 +7,7 @@ import { deleteRevision } from '../../listings/repositories/listing.repository.j
 import { removeStoredImages, revisionOnlyImages } from '../../listings/services/image.service.js';
 import { writableThread, touchThread } from '../repositories/chat.repository.js';
 import { publish } from './chat.events.js';
+import { publishListingChanged } from '../../listings/services/listing.events.js';
 
 const conflict = () => new AppError(409, 'TRADE_CHANGED', 'Giao dịch đã thay đổi. Hãy mở lại đoạn chat.');
 const forbidden = () => new AppError(403, 'TRADE_FORBIDDEN', 'Bạn không thể xác nhận thay người còn lại.');
@@ -59,10 +60,11 @@ export async function changeTrade(userId: string, conversationId: string, action
     }
     await tx.message.create({ data: { conversationId, senderId: userId, clientId: randomUUID(), text: message } });
     await touchThread(tx,root,conversationId);
-    return { members: [buyerId,sellerId], dropped };
+    return { members: [buyerId,sellerId], dropped, listingId: listing.id };
   });
   if (result) {
     publish(result.members,'message',{ conversationId });
+    publishListingChanged(result.listingId);
     await removeStoredImages(result.dropped);
   }
   return { conversationId };
@@ -106,7 +108,8 @@ export async function listReviews(recipientId: string, query: Record<string, unk
 
 export async function listMyReviews(userId: string, query: Record<string, unknown>) {
   const params = z.object({
-    status: z.enum(['pending', 'submitted']).default('pending'),
+    /** all: mọi giao dịch đã hoàn tất (trang Lịch sử giao dịch), có hoặc chưa đánh giá */
+    status: z.enum(['pending', 'submitted', 'all']).default('pending'),
     page: z.coerce.number().int().min(1).max(100000).default(1),
   }).safeParse(query);
   if (!params.success) throw new AppError(422, 'INVALID_FILTER', 'Bộ lọc không hợp lệ.');
@@ -118,7 +121,7 @@ export async function listMyReviews(userId: string, query: Record<string, unknow
     where: {
       confirmedAt: { not: null },
       OR: [{ sellerId: userId }, { buyerId: userId }],
-      reviews: status === 'pending' ? { none: author } : { some: author },
+      ...(status === 'all' ? {} : { reviews: status === 'pending' ? { none: author } : { some: author } }),
     },
     orderBy: [{ confirmedAt: 'desc' }, { conversationId: 'desc' }],
     skip: (page - 1) * pageSize,

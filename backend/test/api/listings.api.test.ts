@@ -65,7 +65,6 @@ test('listings: create, images, moderation, status', async () => {
   expect('status hide', await api.patch(`/listings/${id}/status`, { token: tokens.buyer, body: { status: 'HIDDEN' } }));
   expect('status show', await api.patch(`/listings/${id}/status`, { token: tokens.buyer, body: { status: 'AVAILABLE' } }));
   expect('status sold', await api.patch(`/listings/${id}/status`, { token: tokens.buyer, body: { status: 'SOLD' } }));
-  expect('summary', await api.get('/listings/summary', { token: tokens.buyer }));
   expect('mine', await api.get('/listings/mine', { token: tokens.buyer }));
   expect('mine filtered', await api.get('/listings/mine?status=SOLD&page=1&pageSize=5', { token: tokens.buyer }));
 });

@@ -70,12 +70,6 @@ export async function deleteOwnedDraft(id: string, ownerId: string) {
   return deleted.count;
 }
 
-export const countByOwner = (ownerId: string) =>
-  prisma.$transaction([
-    prisma.listing.count({ where: { ownerId, status: 'AVAILABLE' } }),
-    prisma.listing.count({ where: { ownerId, status: 'SOLD' } }),
-  ]);
-
 export const findMine = (ownerId: string, status: ListingStatus | undefined, skip: number, take: number) => {
   const where = { ownerId, ...(status ? { status } : {}) };
   // Tin nháp: cái vừa sửa lên đầu để soạn tiếp

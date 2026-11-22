@@ -23,6 +23,17 @@ const withListingId = validate({ params: favoriteIdParams });
 favoriteRouter.get('/favorites', canRead, validate({ query: favoritesQuery }), favoriteController.listFavorites);
 
 /**
+ * Xem gần đây: tin người dùng vừa mở trang chi tiết (giữ 30 tin), còn hiển thị, mới xem trước
+ *
+ * Query params:
+ *  - page?: number (mặc định 1)
+ *  - limit?: number (1-100, mặc định 20)
+ *
+ * Trả về: Listing[] (kèm isFavorite) + pagination, meta
+ */
+favoriteRouter.get('/recently-viewed', canRead, validate({ query: favoritesQuery }), favoriteController.listRecentViews);
+
+/**
  * Đã lưu tin này chưa
  *
  * Path params:

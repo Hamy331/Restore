@@ -25,6 +25,7 @@ bool isAccountSectionPath(String path, {String? userId}) {
     '/insights',
     MyReviewsView.path,
     MyReviewsView.ratingsPath,
+    MyReviewsView.transactionsPath,
     SavedListingsView.path,
     SavedListingsView.recentPath,
   };
@@ -130,6 +131,11 @@ class _Sidebar extends StatelessWidget {
           ),
           _Item(AppIcons.star, l.accMyReviews, MyReviewsView.path),
           _Item(AppIcons.star, l.accReceivedRatings, MyReviewsView.ratingsPath),
+          _Item(
+            AppIcons.listings,
+            l.accTransactions,
+            MyReviewsView.transactionsPath,
+          ),
           _Item(AppIcons.settings, l.settingsPageTitle, '/settings'),
         ],
       ),
