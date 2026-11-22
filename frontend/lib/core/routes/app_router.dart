@@ -454,6 +454,15 @@ GoRouter createAppRouter(
         child: const SavedListingsView(),
       ),
     ),
+    // Tin vừa mở xem, mở từ Tài khoản → Xem gần đây
+    GoRoute(
+      path: SavedListingsView.recentPath,
+      parentNavigatorKey: _frameNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const SavedListingsView(recent: true),
+      ),
+    ),
     // Tin của một danh mục; extra là CategoryModel vừa bấm (tuỳ chọn)
     GoRoute(
       path: CategoryDetailView.path,

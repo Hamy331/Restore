@@ -333,6 +333,8 @@
   "tapHeartToRemove": "Chạm ♡ để bỏ lưu",
   "emptySavedTitle": "Chưa có tin đã lưu",
   "emptySavedDescription": "Lưu tin bạn quan tâm để xem lại nhanh hơn.",
+  "recentlyViewedEmptyTitle": "Chưa xem tin nào",
+  "recentlyViewedEmptyBody": "Các tin bạn mở xem sẽ hiện ở đây để quay lại nhanh.",
   "exploreProducts": "Khám phá sản phẩm",
   "today": "Hôm nay",
   "yesterday": "Hôm qua",

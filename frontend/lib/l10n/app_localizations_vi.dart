@@ -705,6 +705,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Lưu tin bạn quan tâm để xem lại nhanh hơn.';
 
   @override
+  String get recentlyViewedEmptyTitle => 'Chưa xem tin nào';
+
+  @override
+  String get recentlyViewedEmptyBody =>
+      'Các tin bạn mở xem sẽ hiện ở đây để quay lại nhanh.';
+
+  @override
   String get exploreProducts => 'Khám phá sản phẩm';
 
   @override

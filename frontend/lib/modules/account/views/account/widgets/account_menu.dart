@@ -74,7 +74,7 @@ void showAccountMenu(BuildContext context) {
                         _MenuItem(
                           AppIcons.clock,
                           l.accRecentlyViewed,
-                          onTap: soon,
+                          onTap: () => open(SavedListingsView.recentPath),
                         ),
                         _MenuItem(
                           AppIcons.star,

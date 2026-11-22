@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/data/models/listing_model.dart';
+import 'package:restore/modules/saved_listings/data/recently_viewed_store.dart';
 
 import '../../models/product_detail.dart';
 import '../../repositories/product_detail_repository.dart';
@@ -48,6 +49,8 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
         ),
       );
       resumeLiveUpdates(refreshNow: false);
+      // Ghi vào Xem gần đây; lỗi lưu trên máy không ảnh hưởng trang chi tiết
+      unawaited(RecentlyViewedStore.add(listingId).catchError((Object _) {}));
     } catch (error, stack) {
       if (isClosed) return;
       if (kDebugMode) {
