@@ -130,7 +130,7 @@ class _IconBadge extends StatelessWidget {
         border: Border.all(color: AppGlass.stroke, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark.withValues(alpha: 0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -159,9 +159,9 @@ class _RetryButton extends StatelessWidget {
     return FilledButton(
       onPressed: loading ? null : onPressed,
       style: FilledButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.actionPrimary,
         foregroundColor: Colors.white,
-        disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.7),
+        disabledBackgroundColor: AppColors.actionPrimary.withValues(alpha: 0.7),
         disabledForegroundColor: Colors.white,
         minimumSize: Size(compact ? 120 : 148, compact ? 40 : 46),
         padding: const EdgeInsets.symmetric(horizontal: 22),

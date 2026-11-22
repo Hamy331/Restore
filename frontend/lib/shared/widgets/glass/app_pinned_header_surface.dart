@@ -10,6 +10,7 @@ import 'package:restore/core/theme/app_header_palette.dart';
 class AppPinnedHeaderSurface extends StatelessWidget {
   final bool pinned;
   final bool blurWhenPinned;
+  final bool showDivider;
   final Widget child;
 
   /// Màu khi chưa ghim
@@ -19,6 +20,7 @@ class AppPinnedHeaderSurface extends StatelessWidget {
     super.key,
     required this.pinned,
     this.blurWhenPinned = true,
+    this.showDivider = true,
     required this.child,
     this.color = AppHeaderPalette.bottom,
   });
@@ -40,12 +42,16 @@ class AppPinnedHeaderSurface extends StatelessWidget {
             color: pinned
                 ? (blurWhenPinned ? pinnedColor : Colors.white)
                 : color,
-            border: Border(
-              bottom: BorderSide(
-                color: pinned ? AppColors.border.withValues(alpha: 0.8) : color,
-                width: 0.6,
-              ),
-            ),
+            border: showDivider
+                ? Border(
+                    bottom: BorderSide(
+                      color: pinned
+                          ? AppColors.border.withValues(alpha: 0.8)
+                          : color,
+                      width: 0.6,
+                    ),
+                  )
+                : null,
           ),
           child: child,
         ),

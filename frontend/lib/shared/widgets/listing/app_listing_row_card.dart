@@ -35,10 +35,7 @@ class AppListingRowCard extends StatelessWidget {
     final cover = listing.coverImage;
     final price = listing.price;
     final createdAt = listing.createdAt;
-    final details = [
-      ?listing.condition?.label(l10n),
-      if (listing.allowExchange) l10n.homeExchangeTag,
-    ].join(' · ');
+    final details = listing.condition?.shortLabel(l10n) ?? '';
     final big = imageSize >= 150;
 
     return InkWell(

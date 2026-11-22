@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/data/models/category_model.dart';
+import 'package:restore/shared/utils/filter_categories.dart';
 import 'package:restore/core/constants/app_dimesions.dart';
 import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
@@ -14,15 +16,16 @@ import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.
 import 'package:restore/modules/trusted_shop/widgets/shop_follow_button.dart';
 import 'package:restore/modules/trusted_shop/widgets/shop_logo.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
-import 'package:restore/modules/location/utils/listing_area.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
+import 'package:restore/shared/widgets/filter/listing_chip_filter_bar.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
+import 'package:restore/shared/widgets/listing/app_listing_row_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
@@ -35,6 +38,7 @@ import '../../models/search_user_item.dart';
 import '../../widgets/search_shop_tile.dart';
 import '../../widgets/search_user_tile.dart';
 import 'widgets/search_results_alert_prompt.dart';
+import 'widgets/search_results_category_row.dart';
 import 'widgets/search_results_header.dart';
 import 'widgets/search_results_shop_strip.dart';
 
@@ -50,7 +54,6 @@ class SearchResultsMobileView extends StatefulWidget {
 
 class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
   static const double _sidePadding = 16;
-  static const double _contentRadius = 24;
 
   final _scrollController = ScrollController();
 
@@ -59,10 +62,19 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
 
   var _tab = SearchResultsTab.listings;
 
+  /// Dạng lưới thay cho danh sách hàng ngang (mặc định là danh sách)
+  bool _grid = false;
+
+  /// Danh mục để hiện chip danh mục đang lọc và gợi ý danh mục con
+  List<CategoryModel> _categories = const [];
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_updateHeaderPinned);
+    loadFilterCategories().then((categories) {
+      if (mounted) setState(() => _categories = categories);
+    });
   }
 
   @override
@@ -104,13 +116,6 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
       filter: cubit.state.filter,
       defaults: SearchResultsState.defaultFilter,
     );
-    if (filter != null) cubit.applyFilter(filter);
-  }
-
-  /// Lọc theo tỉnh/thành hoặc phường/xã của tin
-  Future<void> _pickArea() async {
-    final cubit = context.read<SearchResultsCubit>();
-    final filter = await pickListingArea(context, cubit.state.filter);
     if (filter != null) cubit.applyFilter(filter);
   }
 
@@ -218,144 +223,124 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<SearchResultsCubit>();
     final padding = MediaQuery.paddingOf(context);
     final isDesktop =
         MediaQuery.sizeOf(context).width >= AppDimesions.desktopWidth;
-    final headerColor = isDesktop ? AppColors.surface : AppHeaderPalette.bottom;
+    const headerColor = AppColors.surface;
 
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: Column(
-        children: [
-          // Thanh trạng thái cùng màu phần đầu, chuyển trắng khi đã cuộn
-          if (!isDesktop)
-            ValueListenableBuilder<bool>(
-              valueListenable: _headerPinned,
-              builder: (context, pinned, _) => AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                height: padding.top,
-                width: double.infinity,
-                color: pinned
-                    ? AppPinnedHeaderSurface.pinnedColor
-                    : AppHeaderPalette.bottom,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: AppColors.surface,
+        body: Column(
+          children: [
+            // Thanh trạng thái trắng như phần đầu, mờ đi khi đã cuộn
+            if (!isDesktop)
+              ValueListenableBuilder<bool>(
+                valueListenable: _headerPinned,
+                builder: (context, pinned, _) => AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  height: padding.top,
+                  width: double.infinity,
+                  color: pinned
+                      ? AppPinnedHeaderSurface.pinnedColor
+                      : AppColors.surface,
+                ),
               ),
-            ),
-          Expanded(
-            child: MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: BlocBuilder<SearchResultsCubit, SearchResultsState>(
-                builder: (context, state) =>
-                    BlocBuilder<SearchAccountsCubit, SearchAccountsState>(
-                      builder: (context, accounts) => AppPullToRefresh.inline(
-                        onRefresh: _refresh,
-                        builder: (context, refreshIndicator) => AppLoadMoreListener(
-                          onLoadMore: _loadMore,
-                          child: CustomScrollView(
-                            // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
-                            scrollCacheExtent: AppScroll.prefetchCacheExtent,
-                            controller: _scrollController,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            slivers: [
-                              SliverPersistentHeader(
-                                pinned: true,
-                                delegate: AppPinnedHeaderDelegate(
-                                  height: SearchResultsHeader.heightFor(
-                                    _tab,
-                                    showSearch: !isDesktop,
-                                  ),
-                                  color: headerColor,
-                                  child: SearchResultsHeader(
-                                    showSearch: !isDesktop,
-                                    query: state.query,
-                                    tab: _tab,
-                                    onTabChanged: _selectTab,
-                                    filter: state.filter,
-                                    onBack: _back,
-                                    onEditQuery: _editQuery,
-                                    onFiltersTap: _openFilters,
-                                    onAreaTap: _pickArea,
-                                    onDealToggle: cubit.toggleDeal,
-                                    onSortTap: _pickSort,
-                                    onClearTap: cubit.clearFilters,
-                                  ),
-                                ),
-                              ),
-                              // Viên loading kéo để làm mới mở ra ngay dưới phần ghim
-                              SliverToBoxAdapter(
-                                child: ColoredBox(
-                                  color: headerColor,
-                                  child: refreshIndicator,
-                                ),
-                              ),
-                              // Mép trên bo cong của phần nội dung trắng
-                              if (!isDesktop)
-                                SliverToBoxAdapter(
-                                  child: ColoredBox(
-                                    color: AppHeaderPalette.bottom,
-                                    child: Container(
-                                      height: _contentRadius,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.surface,
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(_contentRadius),
-                                        ),
-                                      ),
+            Expanded(
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: BlocBuilder<SearchResultsCubit, SearchResultsState>(
+                  builder: (context, state) =>
+                      BlocBuilder<SearchAccountsCubit, SearchAccountsState>(
+                        builder: (context, accounts) => AppPullToRefresh.inline(
+                          onRefresh: _refresh,
+                          builder: (context, refreshIndicator) => AppLoadMoreListener(
+                            onLoadMore: _loadMore,
+                            child: CustomScrollView(
+                              // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                              scrollCacheExtent: AppScroll.prefetchCacheExtent,
+                              controller: _scrollController,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              slivers: [
+                                SliverPersistentHeader(
+                                  pinned: true,
+                                  delegate: AppPinnedHeaderDelegate(
+                                    height: SearchResultsHeader.heightFor(
+                                      showSearch: !isDesktop,
+                                    ),
+                                    color: headerColor,
+                                    child: SearchResultsHeader(
+                                      showSearch: !isDesktop,
+                                      query: state.query,
+                                      tab: _tab,
+                                      onTabChanged: _selectTab,
+                                      onBack: _back,
+                                      onEditQuery: _editQuery,
+                                      onSaveSearch: _createAlert,
                                     ),
                                   ),
                                 ),
-                              ...switch (_tab) {
-                                SearchResultsTab.listings => _content(
-                                  state,
-                                  accounts.shops,
-                                  isDesktop: isDesktop,
-                                ),
-                                SearchResultsTab.shops => _accountContent(
-                                  accounts.shops,
-                                  emptyTitle: l10nOf(
-                                    context,
-                                  ).searchShopsEmpty(state.query),
-                                  emptyIcon: AppIcons.store,
-                                  onRetry: () => context
-                                      .read<SearchAccountsCubit>()
-                                      .reloadShops(),
-                                  tile: (item) => SearchShopTile(
-                                    item: item,
-                                    highlight: state.query,
-                                    trailing: _shopFollowButton(item),
-                                    onTap: () => _openShop(item),
+                                // Viên loading kéo để làm mới mở ra ngay dưới phần ghim
+                                SliverToBoxAdapter(
+                                  child: ColoredBox(
+                                    color: headerColor,
+                                    child: refreshIndicator,
                                   ),
                                 ),
-                                SearchResultsTab.users => _accountContent(
-                                  accounts.users,
-                                  emptyTitle: l10nOf(
-                                    context,
-                                  ).searchUsersEmpty(state.query),
-                                  emptyIcon: AppIcons.user,
-                                  onRetry: () => context
-                                      .read<SearchAccountsCubit>()
-                                      .reloadUsers(),
-                                  tile: (user) => SearchUserTile(
-                                    user: user,
-                                    highlight: state.query,
-                                    trailing: _userFollowButton(user),
-                                    onTap: () => _openUser(user),
+                                ...switch (_tab) {
+                                  SearchResultsTab.listings => _content(
+                                    state,
+                                    accounts.shops,
+                                    isDesktop: isDesktop,
                                   ),
+                                  SearchResultsTab.shops => _accountContent(
+                                    accounts.shops,
+                                    emptyTitle: l10nOf(
+                                      context,
+                                    ).searchShopsEmpty(state.query),
+                                    emptyIcon: AppIcons.store,
+                                    onRetry: () => context
+                                        .read<SearchAccountsCubit>()
+                                        .reloadShops(),
+                                    tile: (item) => SearchShopTile(
+                                      item: item,
+                                      highlight: state.query,
+                                      trailing: _shopFollowButton(item),
+                                      onTap: () => _openShop(item),
+                                    ),
+                                  ),
+                                  SearchResultsTab.users => _accountContent(
+                                    accounts.users,
+                                    emptyTitle: l10nOf(
+                                      context,
+                                    ).searchUsersEmpty(state.query),
+                                    emptyIcon: AppIcons.user,
+                                    onRetry: () => context
+                                        .read<SearchAccountsCubit>()
+                                        .reloadUsers(),
+                                    tile: (user) => SearchUserTile(
+                                      user: user,
+                                      highlight: state.query,
+                                      trailing: _userFollowButton(user),
+                                      onTap: () => _openUser(user),
+                                    ),
+                                  ),
+                                },
+                                SliverToBoxAdapter(
+                                  child: SizedBox(height: padding.bottom + 16),
                                 ),
-                              },
-                              SliverToBoxAdapter(
-                                child: SizedBox(height: padding.bottom + 16),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -426,6 +411,49 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
     ];
   }
 
+  /// Thanh lọc như trang danh mục (Lọc · Danh mục · Giá · Tình trạng · Đăng
+  /// bởi, hàng Khu vực), gợi ý danh mục con theo kết quả và hàng sắp xếp
+  Widget _filters(SearchResultsState state, {required bool isDesktop}) {
+    final cubit = context.read<SearchResultsCubit>();
+    final filter = state.filter;
+    final category = _categories
+        .where((item) => item.id == filter.categoryId)
+        .firstOrNull;
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (isDesktop) const SizedBox(height: 4),
+          ListingChipFilterBar(
+            filter: filter,
+            defaults: SearchResultsState.defaultFilter,
+            category: category,
+            onChanged: cubit.applyFilter,
+            onFilters: _openFilters,
+            onClearAll: cubit.clearFilters,
+          ),
+          if (category == null && state.items.isNotEmpty)
+            SearchResultsCategoryRow(
+              items: state.items,
+              categories: _categories,
+              onSelected: (categoryId, subcategoryId) => cubit.applyFilter(
+                filter.withCategory(categoryId).withSubcategory(subcategoryId),
+              ),
+            ),
+          const SizedBox(height: 12),
+          const Divider(height: 1, thickness: 6, color: Color(0xFFF4F4F5)),
+          ListingSortRow(
+            sort: filter.sort,
+            onSort: _pickSort,
+            grid: _grid,
+            onGridToggle: () => setState(() => _grid = !_grid),
+          ),
+          const Divider(height: 1, color: AppColors.border),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _content(
     SearchResultsState state,
     SearchAccountList<TrustedShopItem> shops, {
@@ -433,12 +461,17 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
   }) {
     final l10n = AppLocalizations.of(context)!;
     final cubit = context.read<SearchResultsCubit>();
+    final filters = _filters(state, isDesktop: isDesktop);
 
     switch (state.status) {
       case SearchResultsStatus.loading:
-        return [const SliverToBoxAdapter(child: AppListingGridSkeleton())];
+        return [
+          filters,
+          const SliverToBoxAdapter(child: AppListingGridSkeleton()),
+        ];
       case SearchResultsStatus.failure:
         return [
+          filters,
           SliverFillRemaining(
             hasScrollBody: false,
             child: AppLoadErrorView(
@@ -463,6 +496,7 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
 
     if (state.items.isEmpty) {
       return [
+        filters,
         ?strip,
         SliverFillRemaining(
           hasScrollBody: false,
@@ -491,19 +525,32 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
       ];
     }
 
+    final items = state.items;
     return [
+      filters,
       ?strip,
-      SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
-        sliver: AppListingSliverGrid(
-          items: state.items,
-          itemBuilder: (_, item) => AppListingCard(
-            item: item,
-            onTap: () => _openDetail(item),
-            onFavoriteTap: () => cubit.toggleFavorite(item),
+      if (_grid)
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(_sidePadding, 12, _sidePadding, 0),
+          sliver: AppListingSliverGrid(
+            items: items,
+            itemBuilder: (_, item) => AppListingCard(
+              item: item,
+              onTap: () => _openDetail(item),
+              onFavoriteTap: () => cubit.toggleFavorite(item),
+            ),
+          ),
+        )
+      else
+        SliverList.builder(
+          itemCount: items.length,
+          itemBuilder: (_, index) => AppListingRowCard(
+            item: items[index],
+            imageSize: isDesktop ? 170 : 120,
+            onTap: () => _openDetail(items[index]),
+            onFavoriteTap: () => cubit.toggleFavorite(items[index]),
           ),
         ),
-      ),
       SliverToBoxAdapter(
         child: AppLoadMoreFooter(
           isLoading: state.isLoadingMore,

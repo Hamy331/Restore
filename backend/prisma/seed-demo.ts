@@ -6,6 +6,7 @@ import { matchApprovedListing } from '../src/modules/wanted-alerts/wanted-alert.
 import { DEMO_BANNERS, DEMO_LISTINGS, DEMO_PASSWORD, DEMO_SELLERS, DemoListing, demoImages } from './seed/demo.js';
 import { DEMO_PENDING_LISTINGS, DEMO_WANTED_ALERTS } from './seed/demo-wanted-alerts.js';
 import { seedUuid } from './seed/seed-id.js';
+import { LEGACY_PARENT, mapLegacyListing } from './seed/legacy-categories.js';
 
 /**
  * Dữ liệu demo: 4 người bán, 30 tin đang bán (6 tin ưu tiên), 3 banner trang chủ,
@@ -47,9 +48,12 @@ const sellerIds = DEMO_SELLERS.map((seller) => sellerId(seller.id));
 function listingData(item: DemoListing, status: 'AVAILABLE' | 'PENDING', createdAt: Date) {
   const provinceCode = findWard(item.ward)?.parentCode;
   const location = listingLocation({ provinceCode, wardCode: item.ward, streetAddress: '' });
+  // Dữ liệu mẫu viết theo danh mục cũ: đổi sang danh mục cha/con mới
+  const mapped = mapLegacyListing(item);
   return {
     ownerId: sellerId(item.seller),
-    categoryId: item.categoryId,
+    categoryId: mapped.categoryId,
+    subcategoryId: mapped.subcategoryId,
     title: item.title,
     description: item.description,
     price: new Prisma.Decimal(item.price),
@@ -61,7 +65,7 @@ function listingData(item: DemoListing, status: 'AVAILABLE' | 'PENDING', created
     allowExchange: item.allowExchange ?? false,
     exchangeWish: item.exchangeWish ?? '',
     sellerType: 'PERSONAL',
-    attributes: item.attributes,
+    attributes: mapped.attributes as Prisma.InputJsonObject,
     location: location as Prisma.InputJsonObject,
     images: demoImages(item.key, item.imageCount),
     createdAt,
@@ -91,7 +95,7 @@ async function seedWantedAlerts(ownerId: string) {
     const data = {
       userId: ownerId,
       keywords: alert.keywords,
-      categoryId: alert.categoryId,
+      categoryId: alert.categoryId && (LEGACY_PARENT[alert.categoryId] ?? alert.categoryId),
       minPrice: alert.minPrice != null ? BigInt(alert.minPrice) : null,
       maxPrice: alert.maxPrice != null ? BigInt(alert.maxPrice) : null,
       conditions: alert.conditions ?? [],
@@ -152,7 +156,7 @@ async function seedDemo() {
   const now = Date.now();
   let featured = 0;
   for (const [index, item] of DEMO_LISTINGS.entries()) {
-    if (!categories.has(item.categoryId)) throw new Error(`Không có danh mục ${item.categoryId}`);
+    if (!categories.has(LEGACY_PARENT[item.categoryId] ?? item.categoryId)) throw new Error(`Không có danh mục ${item.categoryId}`);
     // Lệch vài phút giữa các tin để thứ tự "mới nhất" ổn định
     const publishedAt = new Date(now - item.daysAgo * DAY - index * 7 * 60 * 1000);
     const id = listingId(item.key);
@@ -192,7 +196,7 @@ async function seedDemo() {
   }
 
   for (const item of DEMO_PENDING_LISTINGS) {
-    if (!categories.has(item.categoryId)) throw new Error(`Không có danh mục ${item.categoryId}`);
+    if (!categories.has(LEGACY_PARENT[item.categoryId] ?? item.categoryId)) throw new Error(`Không có danh mục ${item.categoryId}`);
   }
   await seedWantedAlerts(alertOwner);
 

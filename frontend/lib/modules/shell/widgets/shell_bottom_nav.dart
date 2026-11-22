@@ -231,7 +231,7 @@ class _CurvedShadowPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.drawShadow(
       clipper.getClip(size),
-      AppColors.primaryDark.withValues(alpha: 0.22),
+      AppColors.actionPrimaryDark.withValues(alpha: 0.22),
       8,
       false,
     );
@@ -264,8 +264,8 @@ class _NavItem extends StatefulWidget {
   State<_NavItem> createState() => _NavItemState();
 }
 
-/// Mục điều hướng: khi chọn thì icon nằm trong viên thuốc cam nhạt (nở ngang
-/// từ giữa), icon và chữ đậm màu cam. Nhấn hoặc giữ thì thu nhỏ lại và hiện
+/// Mục điều hướng: khi chọn thì icon nằm trong viên thuốc xanh nhạt (nở ngang
+/// từ giữa), icon và chữ đậm màu xanh. Nhấn hoặc giữ thì thu nhỏ lại và hiện
 /// viên thuốc mờ, thả tay thì nảy về.
 class _NavItemState extends State<_NavItem> {
   static const _duration = Duration(milliseconds: 280);
@@ -279,7 +279,7 @@ class _NavItemState extends State<_NavItem> {
   @override
   Widget build(BuildContext context) {
     final selected = widget.selected;
-    final color = selected ? AppColors.primaryDark : AppColors.textSecondary;
+    final color = selected ? AppColors.actionPrimary : AppColors.textSecondary;
     final pillAlpha = selected ? 0.16 : (_pressed ? 0.08 : 0.0);
 
     return Semantics(
@@ -325,7 +325,9 @@ class _NavItemState extends State<_NavItem> {
                       width: selected || _pressed ? 56 : 30,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: pillAlpha),
+                        color: AppColors.actionPrimary.withValues(
+                          alpha: pillAlpha,
+                        ),
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),

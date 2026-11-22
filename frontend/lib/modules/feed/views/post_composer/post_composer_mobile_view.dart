@@ -28,6 +28,7 @@ import 'widgets/composer_style_row.dart';
 import 'widgets/composer_text_area.dart';
 import 'widgets/composer_toolbar.dart';
 import 'widgets/composer_top_bar.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 
 class PostComposerMobileView extends StatefulWidget {
   const PostComposerMobileView({super.key, this.mediaPicker});
@@ -271,112 +272,141 @@ class _PostComposerMobileViewState extends State<PostComposerMobileView> {
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: AppGlassBackground(
-              child: SafeArea(
-                bottom: false,
-                child: Column(
-                  children: [
-                    ComposerTopBar(
-                      audience: draft.audience,
-                      canSubmit: state.canSubmit,
-                      isSubmitting: state.isSubmitting,
-                      onClose: _close,
-                      onAudienceTap: _pickAudience,
-                      onSubmit: _submit,
-                    ),
-                    Divider(
-                      height: 1,
-                      color: Colors.black.withValues(alpha: 0.06),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: _focusNode.requestFocus,
-                        child: ListView(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          keyboardDismissBehavior:
-                              ScrollViewKeyboardDismissBehavior.onDrag,
-                          children: [
-                            ComposerTextArea(
-                              controller: _textController,
-                              focusNode: _focusNode,
-                              background: draft.background,
-                              onChanged: _cubit.contentChanged,
-                            ),
-                            ComposerSelectedPhotos(
-                              photos: draft.photos,
-                              onRemove: _cubit.removePhoto,
-                            ),
-                            ComposerAttachedInfo(
-                              draft: draft,
-                              onRemoveListing: () => _cubit.setListing(null),
-                              onRemoveLink: () => _cubit.setLink(null),
-                              onRemoveLocation: () => _cubit.setLocation(null),
-                              onEditMentions: _pickMentions,
-                            ),
-                          ],
+              child: _DesktopWidth(
+                child: SafeArea(
+                  bottom: false,
+                  child: Column(
+                    children: [
+                      ComposerTopBar(
+                        audience: draft.audience,
+                        canSubmit: state.canSubmit,
+                        isSubmitting: state.isSubmitting,
+                        onClose: _close,
+                        onAudienceTap: _pickAudience,
+                        onSubmit: _submit,
+                      ),
+                      Divider(
+                        height: 1,
+                        color: Colors.black.withValues(alpha: 0.06),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: _focusNode.requestFocus,
+                          child: ListView(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            keyboardDismissBehavior:
+                                ScrollViewKeyboardDismissBehavior.onDrag,
+                            children: [
+                              ComposerTextArea(
+                                controller: _textController,
+                                focusNode: _focusNode,
+                                background: draft.background,
+                                onChanged: _cubit.contentChanged,
+                              ),
+                              ComposerSelectedPhotos(
+                                photos: draft.photos,
+                                onRemove: _cubit.removePhoto,
+                              ),
+                              ComposerAttachedInfo(
+                                draft: draft,
+                                onRemoveListing: () => _cubit.setListing(null),
+                                onRemoveLink: () => _cubit.setLink(null),
+                                onRemoveLocation: () =>
+                                    _cubit.setLocation(null),
+                                onEditMentions: _pickMentions,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    ComposerStyleRow(
-                      backgrounds: state.options.backgrounds,
-                      selected: draft.background,
-                      expanded: state.showBackgrounds,
-                      enabled:
-                          state.canUseBackground &&
-                          state.options.backgrounds.isNotEmpty,
-                      onToggle: _cubit.toggleBackgrounds,
-                      onSelect: _cubit.selectBackground,
-                    ),
-                    ComposerAttachmentChips(
-                      draft: draft,
-                      onListingTap: _pickListing,
-                      onTopicTap: _pickTopic,
-                      onClearTopic: () => _cubit.setTopic(null),
-                      onMentionTap: _pickMentions,
-                    ),
-                    ComposerToolbar(
-                      panel: state.panel,
-                      hasLink: draft.linkUrl != null,
-                      hasLocation: draft.location != null,
-                      onEmojiTap: () => _openPanel(PostComposerPanel.emoji),
-                      onPhotoTap: () => _openPanel(PostComposerPanel.photos),
-                      onVideoTap: () => TSnackBarHelper.showInfo(
-                        context,
-                        message: _l10n.featureComingSoon,
+                      ComposerStyleRow(
+                        backgrounds: state.options.backgrounds,
+                        selected: draft.background,
+                        expanded: state.showBackgrounds,
+                        enabled:
+                            state.canUseBackground &&
+                            state.options.backgrounds.isNotEmpty,
+                        onToggle: _cubit.toggleBackgrounds,
+                        onSelect: _cubit.selectBackground,
                       ),
-                      onLinkTap: _editLink,
-                      onLocationTap: _pickLocation,
-                    ),
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 220),
-                      curve: Curves.easeOutCubic,
-                      child: SizedBox(
-                        height: panelOpen
-                            ? _panelHeight + bottomInset
-                            : (keyboardOpen ? 0 : bottomInset),
-                        child: switch (state.panel) {
-                          PostComposerPanel.photos => ComposerPhotoPanel(
-                            recentPhotos: state.recentPhotos,
-                            selected: draft.photos,
-                            onCameraTap: () => _pickPhotos(MediaSource.camera),
-                            onGalleryTap: () =>
-                                _pickPhotos(MediaSource.gallery),
-                            onPhotoTap: _togglePhoto,
-                          ),
-                          PostComposerPanel.emoji => ComposerEmojiPanel(
-                            onSelected: _insertEmoji,
-                          ),
-                          PostComposerPanel.none => null,
-                        },
+                      ComposerAttachmentChips(
+                        draft: draft,
+                        onListingTap: _pickListing,
+                        onTopicTap: _pickTopic,
+                        onClearTopic: () => _cubit.setTopic(null),
+                        onMentionTap: _pickMentions,
                       ),
-                    ),
-                  ],
+                      ComposerToolbar(
+                        panel: state.panel,
+                        hasLink: draft.linkUrl != null,
+                        hasLocation: draft.location != null,
+                        onEmojiTap: () => _openPanel(PostComposerPanel.emoji),
+                        onPhotoTap: () => _openPanel(PostComposerPanel.photos),
+                        onVideoTap: () => TSnackBarHelper.showInfo(
+                          context,
+                          message: _l10n.featureComingSoon,
+                        ),
+                        onLinkTap: _editLink,
+                        onLocationTap: _pickLocation,
+                      ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeOutCubic,
+                        child: SizedBox(
+                          height: panelOpen
+                              ? _panelHeight + bottomInset
+                              : (keyboardOpen ? 0 : bottomInset),
+                          child: switch (state.panel) {
+                            PostComposerPanel.photos => ComposerPhotoPanel(
+                              recentPhotos: state.recentPhotos,
+                              selected: draft.photos,
+                              onCameraTap: () =>
+                                  _pickPhotos(MediaSource.camera),
+                              onGalleryTap: () =>
+                                  _pickPhotos(MediaSource.gallery),
+                              onPhotoTap: _togglePhoto,
+                            ),
+                            PostComposerPanel.emoji => ComposerEmojiPanel(
+                              onSelected: _insertEmoji,
+                            ),
+                            PostComposerPanel.none => null,
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+/// Desktop: giữ khung soạn bài rộng tối đa 680px ở giữa, có viền nhẹ, thay
+/// vì kéo hết bề ngang trang
+class _DesktopWidth extends StatelessWidget {
+  const _DesktopWidth({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isDesktopLayout(context)) return child;
+    return DesktopCentered(
+      maxWidth: 680,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.7),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: child,
+      ),
     );
   }
 }

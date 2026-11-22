@@ -26,7 +26,6 @@ class ListingModel extends Equatable {
   /// (đề xuất) Giá gốc trước khi giảm, chỉ có khi tin đang giảm giá
   /// (lớn hơn [price])
   final int? originalPrice;
-  final bool isNegotiable;
   final bool? _isPartner;
   bool get isPartner => _isPartner ?? false;
   final ListingCondition? condition;
@@ -55,6 +54,9 @@ class ListingModel extends Equatable {
 
   /// (đề xuất) Danh mục và thuộc tính theo danh mục (jsonb)
   final String? categoryId;
+
+  /// Danh mục con trong danh mục cha (VD dien-thoai trong electronics)
+  final String? subcategoryId;
   final String categoryName;
   final Map<String, Object?> attributes;
 
@@ -79,7 +81,6 @@ class ListingModel extends Equatable {
     required this.description,
     this.price,
     this.originalPrice,
-    this.isNegotiable = true,
     bool isPartner = false,
     this.condition,
     this.status = ListingStatus.available,
@@ -95,6 +96,7 @@ class ListingModel extends Equatable {
     this.displayDays,
     this.autoExtend = false,
     this.categoryId,
+    this.subcategoryId,
     this.categoryName = '',
     this.attributes = const {},
     this.provinceCode,
@@ -137,7 +139,6 @@ class ListingModel extends Equatable {
       description: json['description'] as String? ?? '',
       price: _parseMoney(json['price']),
       originalPrice: _parseMoney(json['originalPrice']),
-      isNegotiable: json['isNegotiable'] as bool? ?? true,
       isPartner: json['isPartner'] == true,
       condition: ListingCondition.fromApi(json['condition'] as String?),
       status:
@@ -160,6 +161,7 @@ class ListingModel extends Equatable {
       displayDays: (json['displayDays'] as num?)?.toInt(),
       autoExtend: json['autoExtend'] == true,
       categoryId: json['categoryId'] as String?,
+      subcategoryId: json['subcategoryId'] as String?,
       // Tên danh mục từ API là chuỗi hoặc map theo ngôn ngữ {vi, en}
       categoryName: LocalizedText.fromJson(
         (json['category'] as Map?)?['name'],
@@ -208,7 +210,6 @@ class ListingModel extends Equatable {
     description,
     price,
     originalPrice,
-    isNegotiable,
     isPartner,
     condition,
     status,
@@ -224,6 +225,7 @@ class ListingModel extends Equatable {
     displayDays,
     autoExtend,
     categoryId,
+    subcategoryId,
     categoryName,
     attributes,
     provinceCode,

@@ -7,20 +7,23 @@ import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
+import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
-import 'package:restore/shared/widgets/filter/app_listing_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
+import 'package:restore/shared/widgets/filter/listing_chip_filter_bar.dart';
+import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/loading/app_load_more.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
+import 'package:restore/shared/utils/filter_categories.dart';
 
 import '../../bloc/shop_detail/shop_detail_cubit.dart';
 import '../../bloc/shop_detail/shop_detail_state.dart';
@@ -57,9 +60,15 @@ class _ShopDetailMobileViewState extends State<ShopDetailMobileView> {
   /// kết quả về trang trước nếu người dùng đổi
   bool? _initialFollowing;
 
+  /// Danh mục để hiện chip danh mục đang lọc và bộ lọc riêng của nó
+  List<CategoryModel> _categories = const [];
+
   @override
   void initState() {
     super.initState();
+    loadFilterCategories().then((categories) {
+      if (mounted) setState(() => _categories = categories);
+    });
     _initialFollowing = context.read<ShopDetailCubit>().state.shop?.isFollowing;
     _scrollController.addListener(_updateHeaderPinned);
   }
@@ -205,51 +214,50 @@ class _ShopDetailMobileViewState extends State<ShopDetailMobileView> {
                     removeTop: true,
                     child: AppPullToRefresh.inline(
                       onRefresh: cubit.refresh,
-                      builder: (context, refreshIndicator) =>
-                          AppLoadMoreListener(
-                            onLoadMore: cubit.loadMore,
-                            child: CustomScrollView(
-                              // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
-                              scrollCacheExtent: AppScroll.prefetchCacheExtent,
-                              controller: _scrollController,
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              slivers: [
-                                SliverToBoxAdapter(
-                                  child: ShopDetailTopBar(
-                                    key: _headerKey,
-                                    shop: state.shop?.shop,
-                                    onBack: _close,
-                                    onCertificateTap: _showCertificate,
-                                  ),
-                                ),
-                                SliverToBoxAdapter(
-                                  child: ColoredBox(
-                                    color: AppHeaderPalette.bottom,
-                                    child: refreshIndicator,
-                                  ),
-                                ),
-                                // Mép trên bo cong của phần nội dung trắng
-                                SliverToBoxAdapter(
-                                  child: ColoredBox(
-                                    color: AppHeaderPalette.bottom,
-                                    child: Container(
-                                      height: _contentRadius,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.surface,
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(_contentRadius),
-                                        ),
-                                      ),
+                      builder: (context, refreshIndicator) => AppLoadMoreListener(
+                        onLoadMore: cubit.loadMore,
+                        child: CustomScrollView(
+                          // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                          scrollCacheExtent: AppScroll.prefetchCacheExtent,
+                          controller: _scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          slivers: [
+                            SliverToBoxAdapter(
+                              child: ShopDetailTopBar(
+                                key: _headerKey,
+                                shop: state.shop?.shop,
+                                onBack: _close,
+                                onCertificateTap: _showCertificate,
+                              ),
+                            ),
+                            SliverToBoxAdapter(
+                              child: ColoredBox(
+                                color: AppHeaderPalette.bottom,
+                                child: refreshIndicator,
+                              ),
+                            ),
+                            // Mép trên bo cong của phần nội dung trắng
+                            SliverToBoxAdapter(
+                              child: ColoredBox(
+                                color: AppHeaderPalette.bottom,
+                                child: Container(
+                                  height: _contentRadius,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.surface,
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(_contentRadius),
                                     ),
                                   ),
                                 ),
-                                ..._content(state),
-                                SliverToBoxAdapter(
-                                  child: SizedBox(height: padding.bottom + 16),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                            ..._content(state),
+                            SliverToBoxAdapter(
+                              child: SizedBox(height: padding.bottom + 16),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -332,13 +340,26 @@ class _ShopDetailMobileViewState extends State<ShopDetailMobileView> {
       SliverPersistentHeader(
         pinned: true,
         delegate: ShopDetailFilterBarDelegate(
-          filterBar: AppListingFilterBar(
+          // Thanh lọc như trang danh mục; không có hàng Khu vực vì tin của
+          // shop ở cùng một nơi, sắp xếp là chip ngay trên thanh
+          filterBar: ListingChipFilterBar(
             filter: state.filter,
             defaults: ShopDetailState.defaultFilter,
-            onFiltersTap: _openFilters,
-            onDealToggle: cubit.toggleDeal,
-            onSortTap: _pickSort,
-            onClearTap: cubit.clearFilters,
+            category: _categories
+                .where((item) => item.id == state.filter.categoryId)
+                .firstOrNull,
+            onChanged: cubit.applyFilter,
+            onFilters: _openFilters,
+            onClearAll: cubit.clearFilters,
+            showArea: false,
+            showSeller: false,
+            extraChips: [
+              ListingBarChip(
+                label: state.filter.sort.label(l10n),
+                dropdown: true,
+                onTap: (_) => _pickSort(),
+              ),
+            ],
           ),
         ),
       ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/blocs/language/language_bloc.dart';
 import '../../../../core/blocs/language/language_event.dart';
@@ -25,7 +27,9 @@ class LanguageSettingsMobileView extends StatelessWidget {
         builder: (context, state) {
           final l = AppLocalizations.of(context)!;
           return Scaffold(
-            appBar: AppBar(title: Text(l.settingsPageTitle)),
+            appBar: isDesktopLayout(context)
+          ? DesktopSectionBar(title: l.settingsPageTitle)
+          : AppBar(title: Text(l.settingsPageTitle)),
             body: SafeArea(
               child: Center(
                 child: ConstrainedBox(

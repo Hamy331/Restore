@@ -18,6 +18,9 @@ class ListingDraft extends Equatable {
   final String? id;
   final String categoryId;
 
+  /// Danh mục con đã chọn (rỗng khi danh mục chưa chia con)
+  final String subcategoryId;
+
   /// Đường dẫn ảnh trên máy hoặc URL đã tải lên. Ảnh đầu tiên là ảnh bìa.
   final List<String> images;
   final String title;
@@ -27,7 +30,6 @@ class ListingDraft extends Equatable {
 
   /// Giá gốc trước giảm (chỉ gói Cửa hàng), null = không giảm giá
   final int? originalPrice;
-  final bool isNegotiable;
   final String exchangeWish;
   final AddressInfo? address;
   final SellerType sellerType;
@@ -47,13 +49,13 @@ class ListingDraft extends Equatable {
   const ListingDraft({
     this.id,
     this.categoryId = '',
+    this.subcategoryId = '',
     this.images = const [],
     this.title = '',
     this.description = '',
     this.tradeType = TradeType.sell,
     this.price,
     this.originalPrice,
-    this.isNegotiable = true,
     this.exchangeWish = '',
     this.address,
     this.sellerType = SellerType.personal,
@@ -86,6 +88,7 @@ class ListingDraft extends Equatable {
   factory ListingDraft.fromListing(ListingModel model) => ListingDraft(
     id: model.id,
     categoryId: model.categoryId ?? '',
+    subcategoryId: model.subcategoryId ?? '',
     title: model.title,
     description: model.description,
     images: model.images,
@@ -97,7 +100,6 @@ class ListingDraft extends Equatable {
         : model.price,
     originalPrice: model.originalPrice,
     condition: model.condition,
-    isNegotiable: model.isNegotiable,
     tradeType: model.allowSale
         ? (model.allowExchange ? TradeType.sellOrExchange : TradeType.sell)
         : TradeType.exchange,
@@ -116,13 +118,13 @@ class ListingDraft extends Equatable {
   ListingDraft copyWith({
     String? id,
     String? categoryId,
+    String? subcategoryId,
     List<String>? images,
     String? title,
     String? description,
     TradeType? tradeType,
     int? Function()? price,
     int? Function()? originalPrice,
-    bool? isNegotiable,
     String? exchangeWish,
     AddressInfo? address,
     SellerType? sellerType,
@@ -136,6 +138,7 @@ class ListingDraft extends Equatable {
     return ListingDraft(
       id: id ?? this.id,
       categoryId: categoryId ?? this.categoryId,
+      subcategoryId: subcategoryId ?? this.subcategoryId,
       images: images ?? this.images,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -144,7 +147,6 @@ class ListingDraft extends Equatable {
       originalPrice: originalPrice != null
           ? originalPrice()
           : this.originalPrice,
-      isNegotiable: isNegotiable ?? this.isNegotiable,
       exchangeWish: exchangeWish ?? this.exchangeWish,
       address: address ?? this.address,
       sellerType: sellerType ?? this.sellerType,
@@ -166,6 +168,7 @@ class ListingDraft extends Equatable {
     };
     return {
       'categoryId': categoryId,
+      'subcategoryId': subcategoryId.isEmpty ? null : subcategoryId,
       'title': title.trim(),
       'description': description.trim(),
       'allowSale': tradeType.allowsSale,
@@ -174,7 +177,6 @@ class ListingDraft extends Equatable {
       'originalPrice': tradeType.requiresPrice && originalPrice != null
           ? '$originalPrice'
           : null,
-      'isNegotiable': tradeType.requiresPrice && isNegotiable,
       'exchangeWish': tradeType.allowsExchange ? exchangeWish.trim() : '',
       // Danh mục không hỏi tình trạng (thú cưng) thì không gửi
       'condition': (category?.hasCondition ?? true)
@@ -192,13 +194,13 @@ class ListingDraft extends Equatable {
   List<Object?> get props => [
     id,
     categoryId,
+    subcategoryId,
     images,
     title,
     description,
     tradeType,
     price,
     originalPrice,
-    isNegotiable,
     exchangeWish,
     address,
     sellerType,
@@ -216,13 +218,13 @@ class _ContentKey extends Equatable {
   _ContentKey(ListingDraft draft)
     : props = [
         draft.categoryId,
+        draft.subcategoryId,
         draft.images,
         draft.title.trim(),
         draft.description.trim(),
         draft.tradeType,
         draft.price,
         draft.originalPrice,
-        draft.isNegotiable,
         draft.exchangeWish.trim(),
         draft.address,
         draft.condition,

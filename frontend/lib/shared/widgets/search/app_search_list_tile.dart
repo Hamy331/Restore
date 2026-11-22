@@ -58,7 +58,7 @@ class AppSearchListTile extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: AppColors.fill,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: AppColors.border.withValues(alpha: 0.6),

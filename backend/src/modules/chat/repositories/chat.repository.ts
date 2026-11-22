@@ -29,7 +29,6 @@ const productContext = {
       ...previewSelect,
       ownerId: true,
       status: true,
-      isNegotiable: true,
       _count: { select: { conversations: { where: { trade: { isNot: null } } } } },
     },
   },
@@ -41,7 +40,7 @@ const threadSelect = {
   id: true,
   createdAt: true,
   updatedAt: true,
-  members: { select: { userId: true, blocked: true, user: { select: userSelect } } },
+  members: { select: { userId: true, blocked: true, lastReadSequence: true, user: { select: userSelect } } },
   contexts: { orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }], take: 1, select: productContext },
 } satisfies Prisma.ConversationSelect;
 
@@ -97,10 +96,14 @@ export const inThread = (id: string) => ({ OR: [{ id }, { threadId: id }] });
 
 export async function threadStats(userId: string, ids?: string[]) {
   if (ids?.length === 0) return [];
-  return prisma.$queryRaw<{ id: string; unread: number; latest: number | null }[]>`
+  // offers: các hội thoại theo tin (context) đã có tin trả giá. Tin cũ chưa có
+  // offerPrice được nhận ra qua dòng đầu do form trả giá tạo.
+  return prisma.$queryRaw<{ id: string; unread: number; latest: number | null; offers: string[] | null }[]>`
     SELECT coalesce(c."threadId",c.id) id,
       count(m.sequence) FILTER (WHERE m."senderId" <> ${userId} AND m.sequence > cm."lastReadSequence")::int unread,
-      max(m.sequence) latest
+      max(m.sequence) latest,
+      array_agg(DISTINCT c.id) FILTER (WHERE m."listingPreview" ->> 'offerPrice' IS NOT NULL
+        OR m.text LIKE 'Giá bạn đề nghị:%' OR m.text LIKE 'Your offer:%') offers
     FROM "ConversationMember" cm JOIN "Conversation" c ON c.id=cm."conversationId"
     LEFT JOIN "Message" m ON m."conversationId"=c.id
     WHERE cm."userId"=${userId}
@@ -157,6 +160,7 @@ export async function createMessage(
   text: string,
   contextId?: string,
   mediaName?: string,
+  offerPrice?: number,
 ) {
   return prisma.$transaction(async (tx) => {
     await writableThread(tx, root);
@@ -167,7 +171,7 @@ export async function createMessage(
         select: previewSelect,
       });
       if (!listing) throw new AppError(409, 'LISTING_UNAVAILABLE', 'Tin đăng không còn khả dụng.');
-      preview = listingPreview(listing);
+      preview = { ...listingPreview(listing), ...(offerPrice && { offerPrice }) };
     }
     const conversationId = contextId ?? root;
     const message = await tx.message.create({

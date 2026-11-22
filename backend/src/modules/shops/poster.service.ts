@@ -61,7 +61,7 @@ export async function getMyPosters(userId: string, now = new Date()) {
 function assertCanSubmit(q: Awaited<ReturnType<typeof quota>>) {
   if (!q.shop) throw new AppError(409, 'SHOP_REQUIRED', 'Bạn cần có trang shop để đăng poster.');
   if (q.limits.activeLimit <= 0) {
-    throw new AppError(403, 'POSTER_PLAN_REQUIRED', 'Chỉ gói Cửa hàng mới đăng được poster.', undefined, { tier: q.plan.package.tier });
+    throw new AppError(403, 'POSTER_PLAN_REQUIRED', 'Chỉ gói Cửa hàng Pro mới đăng được poster.', undefined, { tier: q.plan.package.tier });
   }
   if (q.cooldownUntil) {
     throw new AppError(409, 'POSTER_COOLDOWN', 'Poster bị từ chối nhiều lần, tạm khóa gửi poster.', undefined,

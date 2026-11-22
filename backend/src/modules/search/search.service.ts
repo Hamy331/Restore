@@ -55,9 +55,9 @@ export async function listTrending(now = new Date()) {
 }
 
 /** Gợi ý theo nội dung đang gõ; rỗng khi chưa gõ chữ/số nào */
-export async function listSuggestions({ words, limit }: SuggestionsQuery) {
+export async function listSuggestions({ words, exactWords, limit }: SuggestionsQuery) {
   if (!words.length) return [];
-  return distinctTexts(await searchRepository.findSuggestions(words, limit), limit);
+  return distinctTexts(await searchRepository.findSuggestions({ words, exactWords }, limit), limit);
 }
 
 const emptyPage = ({ page, limit }: AccountSearchQuery['pagination']) => ({ items: [], page: { page, limit, totalItems: 0 } });

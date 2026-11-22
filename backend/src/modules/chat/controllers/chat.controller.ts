@@ -104,6 +104,9 @@ export const markRead = async (req: AuthRequest, res: Response, next: NextFuncti
       Number.isSafeInteger(through) && through >= 0 ? through : undefined,
     );
     publish([req.user!.userId], 'read', { conversationId: id, ...result });
+    // Người còn lại thấy tin của họ chuyển sang "Đã xem"
+    const peers = (await chat.conversationMembers(id)).map((m) => m.userId).filter((userId) => userId !== req.user!.userId);
+    if (peers.length) publish(peers, 'seen', { conversationId: id, ...result });
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);

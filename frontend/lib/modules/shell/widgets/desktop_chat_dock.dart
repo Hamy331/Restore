@@ -210,7 +210,7 @@ class _Welcome extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final vi = Localizations.localeOf(context).languageCode == 'vi';
     return ColoredBox(
-      color: AppColors.background,
+      color: AppColors.fill,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(28),

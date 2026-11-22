@@ -45,7 +45,7 @@ export async function getMyShop(userId: string, now = new Date()) {
 export async function createMyShop(userId: string, body: ShopCreateBody, now = new Date()) {
   const plan = await storePackageForUser(prisma, userId, now);
   if (plan.package.tier !== STORE_TIER) {
-    throw new AppError(403, 'SHOP_PLAN_REQUIRED', 'Chỉ gói Cửa hàng mới mở được trang shop.', undefined,
+    throw new AppError(403, 'SHOP_PLAN_REQUIRED', 'Chỉ gói Cửa hàng Pro mới mở được trang shop.', undefined,
       { tier: plan.package.tier });
   }
   if (await prisma.shop.findUnique({ where: { ownerId: userId }, select: { id: true } })) {

@@ -340,7 +340,7 @@ class _SaveDraftButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryDark.withValues(alpha: 0.12),
+              color: Colors.black.withValues(alpha: 0.12),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

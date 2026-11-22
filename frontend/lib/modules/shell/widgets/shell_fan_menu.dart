@@ -261,20 +261,20 @@ class _FanItemState extends State<_FanItem> {
               ? const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFFFFC266), AppColors.primary],
+                  colors: [Color(0xFF62A4FF), AppColors.actionPrimary],
                 )
               : LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
                     Colors.white.withValues(alpha: 0.96),
-                    AppColors.primarySoft.withValues(alpha: 0.92),
+                    AppColors.actionSoft.withValues(alpha: 0.92),
                   ],
                 ),
           border: Border.all(color: Colors.white, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryDark.withValues(
+              color: AppColors.actionPrimaryDark.withValues(
                 alpha: _pressed ? 0.45 : 0.28,
               ),
               blurRadius: _pressed ? 18 : 12,
@@ -286,7 +286,7 @@ class _FanItemState extends State<_FanItem> {
         child: Icon(
           widget.action.icon,
           size: size * 0.44,
-          color: highlighted ? Colors.white : AppColors.primaryDark,
+          color: highlighted ? Colors.white : AppColors.actionPrimaryDark,
         ),
       ),
     );

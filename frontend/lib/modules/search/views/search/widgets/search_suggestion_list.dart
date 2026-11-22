@@ -9,6 +9,7 @@ import '../../../bloc/search_state.dart';
 import '../../../models/search_history_entry.dart';
 import '../../../models/search_user_item.dart';
 import '../../../widgets/search_shop_tile.dart';
+import '../../../utils/category_matches.dart';
 import '../../../widgets/search_user_tile.dart';
 
 /// Nội dung khi đang gõ: dòng "Tìm …" để tìm ngay, vài cửa hàng và người
@@ -22,6 +23,13 @@ class SearchSuggestionList extends StatelessWidget {
   final ValueChanged<TrustedShopItem> onOpenShop;
   final ValueChanged<SearchUserItem> onOpenUser;
 
+  /// Danh mục có tên khớp từ khoá, hiện ngay dưới dòng "Tìm …"
+  final List<CategoryMatch> categories;
+  final ValueChanged<CategoryMatch> onOpenCategory;
+
+  /// Co theo nội dung (khung gợi ý thả xuống dưới ô tìm kiếm trên desktop)
+  final bool shrinkWrap;
+
   const SearchSuggestionList({
     super.key,
     required this.state,
@@ -30,6 +38,9 @@ class SearchSuggestionList extends StatelessWidget {
     required this.onRemoveHistory,
     required this.onOpenShop,
     required this.onOpenUser,
+    this.categories = const [],
+    required this.onOpenCategory,
+    this.shrinkWrap = false,
   });
 
   @override
@@ -39,6 +50,7 @@ class SearchSuggestionList extends StatelessWidget {
     final query = state.query;
 
     return ListView(
+      shrinkWrap: shrinkWrap,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.only(top: 10, bottom: bottom + 16),
       children: [
@@ -48,6 +60,20 @@ class SearchSuggestionList extends StatelessWidget {
           title: l10n.searchForQuery(query),
           onTap: () => onSubmit(query),
         ),
+        // Gõ đúng tên danh mục thì mở thẳng trang danh mục
+        for (final match in categories)
+          AppSearchListTile(
+            icon: AppIcons.category,
+            iconColor: AppColors.primaryDark,
+            title: (match.sub?.name ?? match.parent.name).of(context),
+            subtitle: match.sub == null
+                ? l10n.searchCategorySuggestion
+                : l10n.searchSubcategorySuggestion(
+                    match.parent.name.of(context),
+                  ),
+            highlight: query,
+            onTap: () => onOpenCategory(match),
+          ),
         for (final shop in state.shops)
           SearchShopTile(
             item: shop,

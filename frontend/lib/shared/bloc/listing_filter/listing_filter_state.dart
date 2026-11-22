@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:restore/data/models/category_model.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/models/listing_filter_options.dart';
 
@@ -29,8 +30,21 @@ class ListingFilterState extends Equatable {
     return min != null && max != null && min > max;
   }
 
-  /// Chưa cho áp dụng khi khoảng giá hoặc khoảng thuộc tính bị ngược
-  bool get isInvalid => isPriceInvalid || draft.hasInvalidAttributeRange;
+  /// Có khoảng (giá hoặc thuộc tính số) đầu dưới lớn hơn đầu trên
+  bool get hasInvalidRange =>
+      isPriceInvalid ||
+      draft.attributeFilters.values.any(
+        (value) =>
+            value.min != null && value.max != null && value.min! > value.max!,
+      );
+
+  /// Danh mục đang lọc (null khi chưa chọn hoặc danh mục chưa tải xong)
+  CategoryModel? get selectedCategory {
+    for (final category in options.categories) {
+      if (category.id == draft.categoryId) return category;
+    }
+    return null;
+  }
 
   ListingFilterState copyWith({
     ListingFilter? draft,

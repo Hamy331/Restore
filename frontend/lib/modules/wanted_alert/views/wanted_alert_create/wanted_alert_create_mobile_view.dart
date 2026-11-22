@@ -3,11 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
+import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
+import 'package:restore/shared/utils/filter_categories.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
+import 'package:restore/shared/widgets/filter/listing_chip_filter_bar.dart';
 import 'package:restore/shared/widgets/search/app_search_input.dart';
 
 import '../../bloc/wanted_alert_create/wanted_alert_create_cubit.dart';
@@ -17,7 +20,6 @@ import '../../widgets/wanted_alert_page_header.dart';
 import '../wanted_alerts/wanted_alerts_view.dart';
 import '../../widgets/wanted_alert_glass_scaffold.dart';
 import 'widgets/wanted_alert_compose_form.dart';
-import 'widgets/wanted_alert_create_filter_bar.dart';
 import 'widgets/wanted_alert_suggestions.dart';
 
 class WantedAlertCreateMobileView extends StatefulWidget {
@@ -42,6 +44,17 @@ class _WantedAlertCreateMobileViewState
     text: widget.initialKeywords,
   );
   final _searchFocus = FocusNode();
+
+  /// Danh mục để hiện chip danh mục đang chọn
+  List<CategoryModel> _categories = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadFilterCategories().then((categories) {
+      if (mounted) setState(() => _categories = categories);
+    });
+  }
 
   @override
   void dispose() {
@@ -71,6 +84,8 @@ class _WantedAlertCreateMobileViewState
       context,
       filter: cubit.state.draft.filter,
       defaults: WantedAlertCreateState.defaultFilter,
+      subcategories: false,
+      showSeller: false,
     );
     if (filter != null) cubit.applyFilter(filter);
   }
@@ -164,12 +179,34 @@ class _WantedAlertCreateMobileViewState
                           ),
                         ),
                         const SizedBox(height: 10),
-                        WantedAlertCreateFilterBar(
-                          draft: state.draft,
-                          onFiltersTap: _openFilters,
-                          onAreaTap: _pickArea,
-                          onDealToggle: cubit.toggleDeal,
-                          onClearTap: cubit.clearFilters,
+                        // Thanh lọc như trang danh mục, chỉ các tiêu chí thông
+                        // báo lưu được: khu vực, danh mục cha, giá, tình trạng
+                        ListingChipFilterBar(
+                          filter: state.draft.filter,
+                          defaults: WantedAlertCreateState.defaultFilter,
+                          category: _categories
+                              .where(
+                                (item) =>
+                                    item.id == state.draft.filter.categoryId,
+                              )
+                              .firstOrNull,
+                          onChanged: cubit.applyFilter,
+                          onFilters: _openFilters,
+                          onClearAll: cubit.clearFilters,
+                          showArea: false,
+                          subcategories: false,
+                          showSeller: false,
+                          extraChips: [
+                            ListingBarChip(
+                              label:
+                                  state.draft.area?.name ??
+                                  l10n.wantedAlertNationwide,
+                              leading: AppIcons.location,
+                              selected: state.draft.area != null,
+                              dropdown: true,
+                              onTap: (_) => _pickArea(),
+                            ),
+                          ],
                         ),
                       ],
                     ),

@@ -167,6 +167,7 @@ class AppIcons {
   static const IconData categoryBook = LucideIcons.bookOpen300;
   static const IconData categorySport = LucideIcons.volleyball300;
   static const IconData categoryBaby = LucideIcons.baby300;
+  static const IconData categoryOffice = LucideIcons.briefcase300;
   static const IconData categoryOther = LucideIcons.package300;
 
   static const Map<String, IconData> _categoryIcons = {
@@ -180,6 +181,7 @@ class AppIcons {
     'book': categoryBook,
     'sport': categorySport,
     'baby': categoryBaby,
+    'office': categoryOffice,
     'other': categoryOther,
   };
 

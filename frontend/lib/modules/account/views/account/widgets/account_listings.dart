@@ -355,9 +355,9 @@ class _RowAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const color = AppColors.textPrimary;
+    final color = filled ? AppColors.onAction : AppColors.textPrimary;
     return Material(
-      color: filled ? AppColors.primary : AppColors.surface,
+      color: filled ? AppColors.actionPrimary : AppColors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(9),
         side: filled
@@ -376,13 +376,13 @@ class _RowAction extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(icon, size: 15, color: color),
+                    Icon(icon, size: 16, color: color),
                     const SizedBox(width: 5),
                     Text(
                       label,
                       style: TextStyle(
                         fontFamily: profileFontFamily,
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: color,
                       ),

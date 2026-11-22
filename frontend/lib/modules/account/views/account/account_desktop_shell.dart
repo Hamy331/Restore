@@ -8,6 +8,7 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
+import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
 import 'package:restore/modules/saved_listings/views/saved_listings_view.dart';
 
 import '../../widgets/profile_header.dart';
@@ -58,6 +59,93 @@ class _Item {
       (match?.any(location.startsWith) ?? false);
 }
 
+/// Các mục của menu bên trái, dùng chung cho menu và cho breadcrumb
+List<(String, List<_Item>)> _menuGroups(BuildContext context) {
+  final l = AppLocalizations.of(context)!;
+  final vi = Localizations.localeOf(context).languageCode == 'vi';
+  String t(String vn, String en) => vi ? vn : en;
+  return [
+    (
+      t('Tài khoản của tôi', 'My account'),
+      [
+        _Item(
+          AppIcons.user,
+          t('Hồ sơ', 'Profile'),
+          '/account',
+          match: const ['/profile/edit'],
+        ),
+        _Item(AppIcons.star, l.accMyReviews, MyReviewsView.path),
+        _Item(AppIcons.star, l.accReceivedRatings, MyReviewsView.ratingsPath),
+        _Item(
+          AppIcons.listings,
+          l.accTransactions,
+          MyReviewsView.transactionsPath,
+        ),
+        _Item(AppIcons.settings, l.settingsPageTitle, '/settings'),
+      ],
+    ),
+    (
+      t('Bán hàng', 'Selling'),
+      [
+        _Item(
+          AppIcons.saveDraft,
+          t('Tin nháp', 'Drafts'),
+          '/create-listing/drafts',
+        ),
+        _Item(AppIcons.boost, t('Quảng bá tin', 'Promotions'), '/boost'),
+        _Item(AppIcons.stats, t('Thống kê', 'Insights'), '/insights'),
+        _Item(AppIcons.store, t('Cửa hàng của tôi', 'My shop'), '/my-shop'),
+        _Item(
+          AppIcons.posterPromo,
+          t('Poster shop', 'Shop posters'),
+          '/shop-posters',
+        ),
+      ],
+    ),
+    (
+      t('Theo dõi', 'Following'),
+      [
+        _Item(AppIcons.following, l.homeQuickFollowing, '/following'),
+        _Item(AppIcons.favorite, l.savedListings, SavedListingsView.path),
+        _Item(
+          AppIcons.clock,
+          l.accRecentlyViewed,
+          SavedListingsView.recentPath,
+        ),
+        _Item(AppIcons.wantedAlert, l.homeQuickWanted, '/wanted-alerts'),
+      ],
+    ),
+    (
+      t('Ví & gói', 'Wallet & plan'),
+      [
+        _Item(AppIcons.wallet, l.accCoins, '/credits'),
+        _Item(AppIcons.pro, l.accProPlan, '/plans'),
+      ],
+    ),
+  ];
+}
+
+/// Các mục cha của trang con đang mở, VD `/credits/topup` →
+/// `Tài khoản / Ví xu`. Trang gốc của menu hoặc trang không thuộc mục nào
+/// thì rỗng (không có breadcrumb).
+List<BreadcrumbItem> _breadcrumbParents(BuildContext context, String location) {
+  _Item? best;
+  for (final (_, items) in _menuGroups(context)) {
+    for (final item in items) {
+      final inside =
+          item.path != '/account' && location.startsWith('${item.path}/');
+      if (inside && (best == null || item.path.length > best.path.length)) {
+        best = item;
+      }
+    }
+  }
+  if (best == null) return const [];
+  return [
+    BreadcrumbItem(AppLocalizations.of(context)!.accountTitle, '/account'),
+    BreadcrumbItem(best.label, best.path),
+  ];
+}
+
 /// Khung trang nhóm Tài khoản trên desktop: menu trái + nội dung bên phải
 /// trong khối trắng bo góc, cả hai nằm trong khung 1200px ở giữa.
 class AccountDesktopShell extends StatelessWidget {
@@ -73,7 +161,7 @@ class AccountDesktopShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.background,
+      color: AppColors.fill,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(
@@ -95,7 +183,11 @@ class AccountDesktopShell extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: child,
+                      // Trang con nhận breadcrumb để tự thay nút quay lại
+                      child: DesktopBreadcrumbScope(
+                        parents: _breadcrumbParents(context, location),
+                        child: child,
+                      ),
                     ),
                   ),
                 ),
@@ -115,69 +207,8 @@ class _Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final vi = Localizations.localeOf(context).languageCode == 'vi';
-    String t(String vn, String en) => vi ? vn : en;
     final user = context.watchUser();
-
-    final groups = <(String, List<_Item>)>[
-      (
-        t('Tài khoản của tôi', 'My account'),
-        [
-          _Item(
-            AppIcons.user,
-            t('Hồ sơ', 'Profile'),
-            '/account',
-            match: const ['/profile/edit'],
-          ),
-          _Item(AppIcons.star, l.accMyReviews, MyReviewsView.path),
-          _Item(AppIcons.star, l.accReceivedRatings, MyReviewsView.ratingsPath),
-          _Item(
-            AppIcons.listings,
-            l.accTransactions,
-            MyReviewsView.transactionsPath,
-          ),
-          _Item(AppIcons.settings, l.settingsPageTitle, '/settings'),
-        ],
-      ),
-      (
-        t('Bán hàng', 'Selling'),
-        [
-          _Item(
-            AppIcons.saveDraft,
-            t('Tin nháp', 'Drafts'),
-            '/create-listing/drafts',
-          ),
-          _Item(AppIcons.boost, t('Quảng bá tin', 'Promotions'), '/boost'),
-          _Item(AppIcons.stats, t('Thống kê', 'Insights'), '/insights'),
-          _Item(AppIcons.store, t('Cửa hàng của tôi', 'My shop'), '/my-shop'),
-          _Item(
-            AppIcons.posterPromo,
-            t('Poster shop', 'Shop posters'),
-            '/shop-posters',
-          ),
-        ],
-      ),
-      (
-        t('Theo dõi', 'Following'),
-        [
-          _Item(AppIcons.following, l.homeQuickFollowing, '/following'),
-          _Item(AppIcons.favorite, l.savedListings, SavedListingsView.path),
-          _Item(
-            AppIcons.clock,
-            l.accRecentlyViewed,
-            SavedListingsView.recentPath,
-          ),
-          _Item(AppIcons.wantedAlert, l.homeQuickWanted, '/wanted-alerts'),
-        ],
-      ),
-      (
-        t('Ví & gói', 'Wallet & plan'),
-        [
-          _Item(AppIcons.wallet, l.accCoins, '/credits'),
-          _Item(AppIcons.pro, l.accProPlan, '/plans'),
-        ],
-      ),
-    ];
+    final groups = _menuGroups(context);
 
     return SingleChildScrollView(
       child: Column(

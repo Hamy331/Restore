@@ -45,6 +45,9 @@ test('listing creation accepts supported fields and rejects invalid or silently 
   assert.equal(result.price,valid.price);
   assert.equal(result.allowSale,true);
   assert.equal(result.allowExchange,false);
+  // Tin có bán luôn cho trả giá, kể cả khi app cũ gửi isNegotiable: false; tin chỉ trao đổi thì không
+  assert.equal(createInput({ ...valid, isNegotiable: false }).isNegotiable, true);
+  assert.equal(createInput({ ...valid, allowSale: false, allowExchange: true, price: '0' }).isNegotiable, false);
   assert.equal((result.location as {streetAddress:string}).streetAddress,'Nhà riêng');
   assert.equal((publicLocation(result.location) as unknown as {streetAddress?:string}).streetAddress,undefined);
   assert.throws(() => createInput({ ...valid, price: '1.200.000' }), { code: 'INVALID_LISTING', field: 'price' });
@@ -89,15 +92,19 @@ test('listing images accept real supported bytes and cannot attach foreign URLs 
 
 test('listing filters validate range and normalize search values', () => {
   assert.deepEqual(listingFilters({ q: '  Bàn  GỖ! ', categoryId: 'furniture', condition: 'USED_GOOD', minPrice: '100000', maxPrice: '200000' }), {
-    q: 'Bàn  GỖ!', words: ['ban', 'go'], categoryId: 'furniture', conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000',
-    provinceCode: '', wardCode: '', attributes: {}, attributeRanges: {},
+    q: 'Bàn  GỖ!', words: ['ban', 'go'], exactWords: ['bàn', 'gỗ'], categoryId: 'furniture', subcategoryId: '', attributeFilters: [], sellers: [],
+    conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000', provinceCode: '', wardCode: '',
   });
-  assert.deepEqual(listingFilters({ 'attrMin.year': '2015', 'attrMax.year': '2020', 'attrMax.mileage': '50000' }).attributeRanges,
-    { year: { min: '2015', max: '2020' }, mileage: { min: null, max: '50000' } });
-  assert.throws(() => listingFilters({ 'attrMin.year': '2020', 'attrMax.year': '2015' }), { code: 'INVALID_QUERY' });
-  assert.throws(() => listingFilters({ 'attrMin.year': '20; DROP' }), { code: 'INVALID_QUERY' });
-  assert.deepEqual(listingFilters({ 'attr.brand': 'Apple, Samsung', 'attr.storage': '' }).attributes, { brand: ['Apple', 'Samsung'] });
-  assert.throws(() => listingFilters({ "attr.brand'--": 'Apple' }), { code: 'INVALID_QUERY' });
+  // Danh mục con và bộ lọc thuộc tính; danh mục con bỏ qua khi chưa chọn danh mục cha
+  const sub = listingFilters({ categoryId: 'electronics', subcategoryId: 'dien-thoai', attrs: '{"brand":["Apple"]}' });
+  assert.deepEqual([sub.subcategoryId, sub.attributeFilters], ['dien-thoai', [{ key: 'brand', values: ['Apple'] }]]);
+  assert.equal(listingFilters({ subcategoryId: 'dien-thoai' }).subcategoryId, '');
+  assert.throws(() => listingFilters({ attrs: '{bad' }), { code: 'INVALID_QUERY' });
+  assert.deepEqual(listingFilters({ seller: 'personal,partner' }).sellers, ['personal', 'partner']);
+  assert.throws(() => listingFilters({ seller: 'shop' }), { code: 'INVALID_QUERY' });
+  // Khoảng thuộc tính số đi chung trong attrs; khu vực lọc trên server theo mã tỉnh / phường
+  assert.deepEqual(listingFilters({ attrs: '{"year":{"min":2015,"max":2020}}' }).attributeFilters, [{ key: 'year', min: 2015, max: 2020 }]);
+  assert.throws(() => listingFilters({ attrs: '{"year":{"min":2020,"max":2015}}' }), { code: 'INVALID_QUERY' });
   assert.equal(listingFilters({ provinceCode: '79' }).provinceCode, '79');
   assert.throws(() => listingFilters({ wardCode: "1' OR 1=1" }), { code: 'INVALID_QUERY' });
   // GET /listings chỉ đổi thứ tự khi sắp theo giá; newest giữ thứ tự feed (ưu tiên tin được đẩy)
@@ -108,6 +115,9 @@ test('listing filters validate range and normalize search values', () => {
   assert.deepEqual(multi.conditions, ['NEW', 'USED_GOOD']);
   assert.deepEqual(multi.deals, ['buy', 'exchange']);
   assert.deepEqual(listingFilters({ q: 'Đèn ngủ gỗ' }).words, ['den', 'ngu', 'go']);
+  // Từ khoá giữ dấu đi cùng thứ tự với từ khoá bỏ dấu, để "cộ" không khớp "có"
+  assert.deepEqual(listingFilters({ q: 'Xe CỘ, iPhone-15' }).exactWords, ['xe', 'cộ', 'iphone', '15']);
+  assert.deepEqual(listingFilters({ q: 'Xe CỘ, iPhone-15' }).words, ['xe', 'co', 'iphone', '15']);
   assert.throws(() => listingFilters({ deal: 'rent' }), { code: 'INVALID_QUERY' });
   assert.throws(() => listingFilters({ minPrice: '200', maxPrice: '100' }), { code: 'INVALID_QUERY' });
   assert.throws(() => listingFilters({ minPrice: '-1' }), { code: 'INVALID_QUERY' });

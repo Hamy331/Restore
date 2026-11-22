@@ -16,6 +16,22 @@ extension ListingDealTypeLabel on ListingDealType {
   };
 }
 
+extension ListingConditionGroupLabel on ListingConditionGroup {
+  String label(AppLocalizations l10n) => switch (this) {
+    ListingConditionGroup.warranty => l10n.listingConditionWarranty,
+    ListingConditionGroup.newItem => l10n.listingConditionNew,
+    ListingConditionGroup.used => l10n.listingConditionUsed,
+  };
+}
+
+extension ListingSellerKindLabel on ListingSellerKind {
+  String label(AppLocalizations l10n) => switch (this) {
+    ListingSellerKind.personal => l10n.listingSellerPersonal,
+    ListingSellerKind.pro => l10n.listingSellerPro,
+    ListingSellerKind.partner => l10n.listingSellerPartner,
+  };
+}
+
 extension ListingSortLabel on ListingSort {
   String label(AppLocalizations l10n) => switch (this) {
     ListingSort.relevance => l10n.listingSortRelevance,

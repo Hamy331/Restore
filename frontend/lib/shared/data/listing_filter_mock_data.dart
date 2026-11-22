@@ -41,16 +41,20 @@ extension MockListingFilterMatch on ListingFilter {
       return false;
     }
     if (wardCode != null && listing.wardCode != wardCode) return false;
-    for (final entry in attributes.entries) {
-      final value = '${listing.attributes[entry.key]}';
-      if (!entry.value.contains(value)) return false;
+    if (subcategoryId != null && listing.subcategoryId != subcategoryId) {
+      return false;
     }
-    for (final entry in attributeRanges.entries) {
+    for (final entry in attributeFilters.entries) {
       final value = listing.attributes[entry.key];
-      final range = entry.value;
-      if (value is! num) return false;
-      if (range.min != null && value < range.min!) return false;
-      if (range.max != null && value > range.max!) return false;
+      final filter = entry.value;
+      if (filter.values.isNotEmpty && !filter.values.contains('$value')) {
+        return false;
+      }
+      if (filter.min != null || filter.max != null) {
+        if (value is! num) return false;
+        if (filter.min != null && value < filter.min!) return false;
+        if (filter.max != null && value > filter.max!) return false;
+      }
     }
     if (conditions.isNotEmpty && !conditions.contains(listing.condition)) {
       return false;

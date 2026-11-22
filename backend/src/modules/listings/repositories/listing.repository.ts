@@ -155,7 +155,7 @@ export const findPendingRevisions = () =>
 
 /** Tin cần đọc khi admin ra quyết định */
 export const findForModeration = (tx: Db, id: string) =>
-  tx.listing.findUnique({ where: { id }, select: { id: true, ownerId: true, status: true, images: true, updatedAt: true, categoryId: true, condition: true, title: true,
+  tx.listing.findUnique({ where: { id }, select: { id: true, ownerId: true, status: true, images: true, updatedAt: true, categoryId: true, subcategoryId: true, condition: true, title: true,
     price: true, expiresAt: true, startsAt: true, displayDays: true, revision: { select: revisionSelect } } });
 
 /** Áp bản sửa vào tin khi tin vẫn đúng trạng thái và bản sửa vẫn đúng updatedAt lúc admin mở; trả về số dòng đổi */

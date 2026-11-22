@@ -134,7 +134,7 @@ class _NotificationLeading extends StatelessWidget {
             child: Container(
               width: _size,
               height: _size,
-              color: AppColors.background,
+              color: AppColors.fill,
               child: AppLocalImage(
                 path: image,
                 width: _size,

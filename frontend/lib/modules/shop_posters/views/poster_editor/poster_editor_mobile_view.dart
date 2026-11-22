@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
+import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -58,7 +60,9 @@ class _PosterEditorMobileViewState extends State<PosterEditorMobileView> {
         final running = state.poster?.state == ShopPosterState.running;
         return Scaffold(
           backgroundColor: AppColors.background,
-          appBar: AppBar(
+          appBar: isDesktopLayout(context)
+          ? DesktopSectionBar(title: state.editing ? l.spEditTitle : l.spNewTitle, onBack: () => context.pop(false))
+          : AppBar(
             backgroundColor: AppColors.background,
             surfaceTintColor: Colors.transparent,
             leading: IconButton(

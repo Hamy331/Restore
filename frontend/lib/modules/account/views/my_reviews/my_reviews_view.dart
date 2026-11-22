@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/network/api_client.dart';
@@ -41,7 +42,9 @@ class MyReviewsView extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: isDesktopLayout(context)
+                  ? EdgeInsets.zero
+                  : const EdgeInsets.symmetric(vertical: 8),
               child: AppPageTitleRow(
                 title: received
                     ? l.accReceivedRatings
@@ -57,7 +60,8 @@ class MyReviewsView extends StatelessWidget {
                 },
               ),
             ),
-            const Divider(height: 1),
+            // Desktop: tiêu đề đã có đường kẻ riêng
+            if (!isDesktopLayout(context)) const Divider(height: 1),
             Expanded(
               child: received
                   ? ProfileReviews(

@@ -14,6 +14,9 @@ class AppSearchPill extends StatelessWidget {
   final bool isPlaceholder;
   final Widget? trailing;
   final double height;
+  final Color iconColor;
+  final bool showBorder;
+  final bool showShadow;
 
   const AppSearchPill({
     super.key,
@@ -23,6 +26,9 @@ class AppSearchPill extends StatelessWidget {
     this.isPlaceholder = true,
     this.trailing,
     this.height = 48,
+    this.iconColor = AppColors.primaryDark,
+    this.showBorder = true,
+    this.showShadow = true,
   });
 
   @override
@@ -30,19 +36,23 @@ class AppSearchPill extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(height / 2),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryDark.withValues(alpha: 0.08),
-            blurRadius: 16,
-            spreadRadius: -4,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        boxShadow: showShadow
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  spreadRadius: -4,
+                  offset: const Offset(0, 6),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: AppColors.surface,
         shape: StadiumBorder(
-          side: BorderSide(color: AppColors.border.withValues(alpha: 0.9)),
+          side: showBorder
+              ? BorderSide(color: AppColors.border.withValues(alpha: 0.9))
+              : BorderSide.none,
         ),
         child: InkWell(
           onTap: onTap,
@@ -52,7 +62,7 @@ class AppSearchPill extends StatelessWidget {
             child: Row(
               children: [
                 const SizedBox(width: 16),
-                Icon(icon, size: 20, color: AppColors.primaryDark),
+                Icon(icon, size: 20, color: iconColor),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(

@@ -6,6 +6,8 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/home/repositories/home_repository.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
+import 'package:restore/shared/widgets/listing/app_listing_card.dart';
+import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
 import 'package:restore/shared/widgets/listing/listing_partner_badge.dart';
 
 class SellerListings extends StatefulWidget {
@@ -14,9 +16,13 @@ class SellerListings extends StatefulWidget {
     required this.userId,
     required this.summary,
     required this.refresh,
+    this.grid = false,
   });
   final String userId;
   final Widget summary;
+
+  /// Desktop: tin đăng dạng lưới thẻ (như trang danh mục) thay vì danh sách
+  final bool grid;
   final Future<void> Function() refresh;
   @override
   State<SellerListings> createState() => _SellerListingsState();
@@ -86,6 +92,15 @@ class _SellerListingsState extends State<SellerListings>
     }
   }
 
+  Future<void> _open(ListingCardItem item) async {
+    final listing = item.listing;
+    final saved = await context.push<bool>(
+      '/listings/${listing.id}',
+      extra: listing,
+    );
+    if (saved != null) _sync(listing.id, saved);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -119,120 +134,127 @@ class _SellerListingsState extends State<SellerListings>
                 ),
               ),
             ),
-            SliverList.builder(
-              itemCount: _items.length,
-              itemBuilder: (_, index) {
-                final item = _items[index], listing = item.listing;
-                final date = listing.createdAt;
-                return Column(
-                  children: [
-                    InkWell(
-                      onTap: () async {
-                        final saved = await context.push<bool>(
-                          '/listings/${listing.id}',
-                          extra: listing,
-                        );
-                        if (saved != null) _sync(listing.id, saved);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 9,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: SizedBox.square(
-                                dimension: 106,
-                                child: listing.coverImage == null
-                                    ? const ColoredBox(
-                                        color: Color(0xfff5f5f5),
-                                        child: Icon(Icons.image_outlined),
-                                      )
-                                    : AppLocalImage(
-                                        path: listing.coverImage!,
-                                        cacheWidth: 320,
-                                      ),
+            if (widget.grid)
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                sliver: AppListingSliverGrid(
+                  items: _items,
+                  itemBuilder: (_, item) => AppListingCard(
+                    item: item,
+                    onTap: () => _open(item),
+                    onFavoriteTap: () => _favorite(item),
+                  ),
+                ),
+              )
+            else
+              SliverList.builder(
+                itemCount: _items.length,
+                itemBuilder: (_, index) {
+                  final item = _items[index], listing = item.listing;
+                  final date = listing.createdAt;
+                  return Column(
+                    children: [
+                      InkWell(
+                        onTap: () => _open(item),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 9,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: SizedBox.square(
+                                  dimension: 106,
+                                  child: listing.coverImage == null
+                                      ? const ColoredBox(
+                                          color: Color(0xfff5f5f5),
+                                          child: Icon(Icons.image_outlined),
+                                        )
+                                      : AppLocalImage(
+                                          path: listing.coverImage!,
+                                          cacheWidth: 320,
+                                        ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListingCardTitle(
-                                    title: listing.title,
-                                    isPartner: listing.isPartner,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ListingCardTitle(
+                                      title: listing.title,
+                                      isPartner: listing.isPartner,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    listing.price == null
-                                        ? l.homeExchangeOnly
-                                        : CurrencyFormatter.formatVnd(
-                                            listing.price!,
-                                            locale: l.localeName,
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      listing.price == null
+                                          ? l.homeExchangeOnly
+                                          : CurrencyFormatter.formatVnd(
+                                              listing.price!,
+                                              locale: l.localeName,
+                                            ),
+                                      style: const TextStyle(
+                                        color: Color(0xffce2854),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            [
+                                                  item.areaLabel,
+                                                  if (date != null)
+                                                    TimeAgoFormatter.format(
+                                                      date,
+                                                      l,
+                                                    ),
+                                                ]
+                                                .where((s) => s.isNotEmpty)
+                                                .join(' · '),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.bodySmall,
                                           ),
-                                    style: const TextStyle(
-                                      color: Color(0xffce2854),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                        ),
+                                        IconButton(
+                                          tooltip: item.isFavorite
+                                              ? l.listingSavedLabel
+                                              : l.accSave,
+                                          onPressed: () => _favorite(item),
+                                          icon: Icon(
+                                            item.isFavorite
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: item.isFavorite
+                                                ? Colors.red
+                                                : null,
+                                            size: 21,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          [
-                                                item.areaLabel,
-                                                if (date != null)
-                                                  TimeAgoFormatter.format(
-                                                    date,
-                                                    l,
-                                                  ),
-                                              ]
-                                              .where((s) => s.isNotEmpty)
-                                              .join(' · '),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodySmall,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        tooltip: item.isFavorite
-                                            ? l.listingSavedLabel
-                                            : l.accSave,
-                                        onPressed: () => _favorite(item),
-                                        icon: Icon(
-                                          item.isFavorite
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
-                                          color: item.isFavorite
-                                              ? Colors.red
-                                              : null,
-                                          size: 21,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const Divider(height: 1, color: Color(0xffeeeeee)),
-                  ],
-                );
-              },
-            ),
+                      const Divider(height: 1, color: Color(0xffeeeeee)),
+                    ],
+                  );
+                },
+              ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(12),

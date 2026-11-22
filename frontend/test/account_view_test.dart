@@ -52,11 +52,7 @@ Widget host(Widget child) {
   );
 }
 
-/// Ô nhập trong trang chỉnh sửa hồ sơ theo key của AppLabeledTextField
-Finder field(String key) => find.descendant(
-  of: find.byKey(ValueKey(key)),
-  matching: find.byType(TextField),
-);
+Finder field(String key) => find.byKey(ValueKey(key));
 
 void main() {
   testWidgets('account profile opens menu and moves a listing to hidden', (
@@ -81,8 +77,13 @@ void main() {
     await tester.tap(find.byTooltip('Chỉnh sửa trang'));
     await tester.pumpAndSettle();
     expect(find.text('Chỉnh sửa hồ sơ'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('edit-profile-name-row')));
+    await tester.pumpAndSettle();
     await tester.enterText(field('edit-profile-name'), 'Huy Nguyễn');
-    await tester.tap(find.text('Lưu'));
+    await tester.pump();
+    await tester.tap(find.text('Áp dụng'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('edit-profile-save')));
     await tester.pumpAndSettle();
     expect(find.text('Huy Nguyễn'), findsOneWidget);
     // đợi thông báo "Đã lưu hồ sơ" tự ẩn để không che các nút phía trên
@@ -133,16 +134,22 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Chỉnh sửa trang'));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('edit-profile-username-row')));
+    await tester.pumpAndSettle();
     final username = field('edit-profile-username');
     await tester.enterText(username, 'Bad Name');
-    await tester.tap(find.text('Lưu'));
+    await tester.pump();
+    await tester.tap(find.text('Áp dụng'));
     await tester.pumpAndSettle();
     expect(
       find.text('3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.'),
       findsOneWidget,
     );
     await tester.enterText(username, 'taken');
-    await tester.tap(find.text('Lưu'));
+    await tester.pump();
+    await tester.tap(find.text('Áp dụng'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('edit-profile-save')));
     await tester.pumpAndSettle();
     expect(find.text('Tên người dùng đã được sử dụng.'), findsOneWidget);
     expect(find.text('Chỉnh sửa hồ sơ'), findsOneWidget);

@@ -7,16 +7,21 @@ import 'package:restore/shared/models/listing_filter_options.dart';
 import 'package:restore/shared/widgets/app_labeled_text_field.dart';
 
 import 'app_filter_bar.dart';
+import 'filter_popover.dart';
 import 'listing_filter_section.dart';
 
-/// Khoảng giá trong sheet Bộ lọc: hai ô nhập giá và các mức giá gợi ý.
-/// Ô nhập tự cập nhật khi giá đổi từ bên ngoài (chọn mức gợi ý, xoá bộ lọc).
+/// Khoảng giá trong sheet Bộ lọc: hai ô nhập giá kèm thanh trượt (khi biết
+/// [priceMax] của danh mục) hoặc các mức giá gợi ý.
+/// Ô nhập tự cập nhật khi giá đổi từ bên ngoài (kéo thanh trượt, xoá bộ lọc).
 class ListingFilterPriceSection extends StatefulWidget {
   final int? minPrice;
   final int? maxPrice;
   final List<PriceRangeOption> presets;
   final bool isInvalid;
   final void Function({required int? min, required int? max}) onChanged;
+
+  /// Đầu trên thanh trượt (VND); null thì hiện mức giá gợi ý thay thanh trượt
+  final int? priceMax;
 
   const ListingFilterPriceSection({
     super.key,
@@ -25,6 +30,7 @@ class ListingFilterPriceSection extends StatefulWidget {
     required this.presets,
     required this.isInvalid,
     required this.onChanged,
+    this.priceMax,
   });
 
   @override
@@ -140,7 +146,19 @@ class _ListingFilterPriceSectionState extends State<ListingFilterPriceSection> {
               ),
             ),
           ],
-          if (widget.presets.isNotEmpty) ...[
+          if (widget.priceMax case final top?)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: FilterRangeSlider(
+                top: top,
+                min: widget.minPrice,
+                max: widget.maxPrice,
+                money: true,
+                onChanged: (min, max) =>
+                    widget.onChanged(min: min?.toInt(), max: max?.toInt()),
+              ),
+            )
+          else if (widget.presets.isNotEmpty) ...[
             const SizedBox(height: 12),
             ListingFilterChipWrap(
               children: [

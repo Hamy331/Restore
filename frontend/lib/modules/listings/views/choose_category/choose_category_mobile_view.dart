@@ -7,6 +7,7 @@ import 'package:restore/modules/credits/views/credit_topup/credit_topup_view.dar
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/animations/fade_slide_in.dart';
+import 'package:restore/shared/widgets/app_option_sheet.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 import '../../bloc/create_listing/create_listing_bloc.dart';
@@ -24,6 +25,7 @@ import 'widgets/drafts_banner.dart';
 import '../listing_drafts/listing_drafts_view.dart';
 import 'widgets/posting_quota_banner.dart';
 import '../../../plans/views/plans/plans_view.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 
 /// Bước 1: Chọn danh mục (danh sách lấy từ API / dữ liệu mẫu)
 class ChooseCategoryMobileView extends StatelessWidget {
@@ -82,7 +84,30 @@ class ChooseCategoryMobileView extends StatelessWidget {
       }
     }
     if (!context.mounted) return;
-    bloc.add(CategorySelected(category.id));
+    // Danh mục chia con: chọn tiếp danh mục con, mỗi con có
+    // thông tin chi tiết riêng. Chỉ một con thì chọn luôn.
+    var subcategoryId = '';
+    if (category.hasSubcategories) {
+      final draft = bloc.state.draft;
+      final chosen = category.subcategories.length == 1
+          ? category.subcategories.first.id
+          : await showAppOptionSheet<String>(
+              context,
+              title: category.name.of(context),
+              subtitle: AppLocalizations.of(context)!.chooseSubcategory,
+              searchable: false,
+              selected: draft.categoryId == category.id
+                  ? draft.subcategoryId
+                  : null,
+              options: [
+                for (final item in category.subcategories)
+                  AppSheetOption(item.id, item.name.of(context)),
+              ],
+            );
+      if (chosen == null || !context.mounted) return;
+      subcategoryId = chosen;
+    }
+    bloc.add(CategorySelected(category.id, subcategoryId));
     // Điều hướng ngay khi chạm, không chờ state đổi: nếu chọn lại đúng
     // danh mục cũ thì state không đổi và trang sẽ "đứng" (lỗi cũ)
     context.push(CreateListingStep.basicInfo.path);
@@ -234,6 +259,20 @@ class _CategoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Desktop: lưới 2 cột thay vì danh sách dài
+    if (isDesktopLayout(context)) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth / 2;
+          return Wrap(
+            children: [
+              for (var i = 0; i < categories.length; i++)
+                SizedBox(width: width, child: _buildCard(i)),
+            ],
+          );
+        },
+      );
+    }
     return Column(
       children: [for (var i = 0; i < categories.length; i++) _buildCard(i)],
     );

@@ -46,7 +46,7 @@ class AppSearchInput extends StatelessWidget {
         ),
         shadows: [
           BoxShadow(
-            color: AppColors.primaryDark.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 16,
             spreadRadius: -4,
             offset: const Offset(0, 6),

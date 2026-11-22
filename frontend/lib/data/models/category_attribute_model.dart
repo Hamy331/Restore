@@ -19,6 +19,23 @@ enum AttributeType {
       .firstWhere((type) => type.name == value, orElse: () => text);
 }
 
+/// Cách thuộc tính được dùng làm bộ lọc của danh mục con:
+/// [single] chip chọn một, [multi] chip chọn nhiều, [list] chọn một
+/// trong danh sách dài có ô tìm (Hãng, Màu...), [range] khoảng số
+enum AttributeFilterKind {
+  single,
+  multi,
+  list,
+  range;
+
+  static AttributeFilterKind? fromJson(Object? value) {
+    for (final kind in values) {
+      if (kind.name == value) return kind;
+    }
+    return null;
+  }
+}
+
 class AttributeOption extends Equatable {
   /// Giá trị lưu xuống DB / gửi lên API
   final String value;
@@ -90,6 +107,9 @@ class CategoryAttributeModel extends Equatable {
   final num? max;
   final int? maxLength;
 
+  /// Khác null thì thuộc tính là một bộ lọc của danh mục con
+  final AttributeFilterKind? filter;
+
   const CategoryAttributeModel({
     required this.key,
     required this.type,
@@ -102,6 +122,7 @@ class CategoryAttributeModel extends Equatable {
     this.min,
     this.max,
     this.maxLength,
+    this.filter,
   });
 
   factory CategoryAttributeModel.fromJson(Map<String, dynamic> json) {
@@ -127,6 +148,7 @@ class CategoryAttributeModel extends Equatable {
       min: json['min'] as num?,
       max: json['max'] as num?,
       maxLength: json['maxLength'] as int?,
+      filter: AttributeFilterKind.fromJson(json['filter']),
     );
   }
 
@@ -143,6 +165,7 @@ class CategoryAttributeModel extends Equatable {
     'min': min,
     'max': max,
     'maxLength': maxLength,
+    if (filter != null) 'filter': filter!.name,
   };
 
   AttributeOption? optionOf(String? value) {
@@ -198,5 +221,6 @@ class CategoryAttributeModel extends Equatable {
     min,
     max,
     maxLength,
+    filter,
   ];
 }

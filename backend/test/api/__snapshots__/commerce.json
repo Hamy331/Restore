@@ -72,7 +72,7 @@
         "package": {
           "id": "basic",
           "tier": "BASIC",
-          "name": "Cửa hàng Basic",
+          "name": "Bán chuyên",
           "monthlyPrice": "99000",
           "dailyListingLimit": 10,
           "activeListingLimit": 30,
@@ -227,7 +227,7 @@
           "package": {
             "id": "basic",
             "tier": "BASIC",
-            "name": "Cửa hàng Basic",
+            "name": "Bán chuyên",
             "monthlyPrice": "99000",
             "dailyListingLimit": 10,
             "activeListingLimit": 30,
@@ -362,7 +362,7 @@
           "package": {
             "id": "basic",
             "tier": "BASIC",
-            "name": "Cửa hàng Basic",
+            "name": "Bán chuyên",
             "monthlyPrice": "99000",
             "dailyListingLimit": 10,
             "activeListingLimit": 30,
@@ -496,7 +496,7 @@
         "package": {
           "id": "basic",
           "tier": "BASIC",
-          "name": "Cửa hàng Basic",
+          "name": "Bán chuyên",
           "monthlyPrice": "99000",
           "dailyListingLimit": 10,
           "activeListingLimit": 30,

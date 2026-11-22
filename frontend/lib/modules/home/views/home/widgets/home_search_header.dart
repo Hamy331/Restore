@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_search_pill.dart';
 import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
@@ -22,7 +23,7 @@ class HomeSearchHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.onNotificationsTap,
   });
 
-  static const double height = 68;
+  static const double height = 60;
 
   @override
   double get minExtent => height;
@@ -39,13 +40,21 @@ class HomeSearchHeaderDelegate extends SliverPersistentHeaderDelegate {
     final l10n = AppLocalizations.of(context)!;
     return AppPinnedHeaderSurface(
       blurWhenPinned: false,
+      showDivider: false,
       pinned: overlapsContent || shrinkOffset > 0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
             Expanded(
-              child: AppSearchPill(text: hintText, onTap: onTap),
+              child: AppSearchPill(
+                text: hintText,
+                onTap: onTap,
+                height: 44,
+                iconColor: AppHeaderPalette.top,
+                showBorder: false,
+                showShadow: false,
+              ),
             ),
             const SizedBox(width: 8),
             HomeHeaderIconButton(

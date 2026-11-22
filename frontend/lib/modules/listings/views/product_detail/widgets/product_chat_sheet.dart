@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/modules/shell/widgets/desktop_chat_controller.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
+import 'package:toastification/toastification.dart';
 import '../../../models/product_detail.dart';
 
 void openListingConversation(BuildContext context, String id) {
@@ -12,6 +14,63 @@ void openListingConversation(BuildContext context, String id) {
   if (!openDesktopChat(context, conversationId: id)) {
     context.push('/messages/$id');
   }
+}
+
+/// Sau khi trả giá: toast nổi "Trả giá thành công · Đi tới trò chuyện" thay
+/// vì tự mở cuộc trò chuyện, để người mua xem tiếp tin. 4 giây đủ đọc và bấm
+/// nút mà không che màn hình lâu. Hộp thư được làm mới để số tin cập nhật.
+///
+/// Dùng toastification (overlay của app) vì trang chi tiết tin trên desktop
+/// không nằm trong Scaffold nên SnackBar không hiện được.
+void showOfferSentToast(BuildContext context, String conversationId) {
+  final l = AppLocalizations.of(context)!;
+  DesktopChatScope.maybeOf(context)?.invalidateInbox();
+  toastification.showCustom(
+    context: context,
+    // Giữa phía dưới: không che header / ô tìm kiếm trên desktop
+    alignment: Alignment.bottomCenter,
+    autoCloseDuration: const Duration(seconds: 4),
+    builder: (_, item) => Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 420),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(18, 6, 6, 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFF333333),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                l.offerSentToast,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                toastification.dismiss(item);
+                if (context.mounted) {
+                  openListingConversation(context, conversationId);
+                }
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFFFFC107),
+              ),
+              child: Text(
+                l.offerSentGoToChat,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 List<String> productQuestions(ProductDetail detail, AppLocalizations l) {
@@ -29,9 +88,15 @@ List<String> productQuestions(ProductDetail detail, AppLocalizations l) {
         detail.listing.attributes['warranty'] != 'none')
       l.listingWarranty,
     if (fields.contains('mileage')) l.listingService,
-    if (fields.contains('vaccinated') &&
-        detail.listing.attributes['pet_type'] != 'accessories')
+    // Chó, mèo: câu hỏi riêng (không còn ô "Đã tiêm phòng" khi đăng)
+    if (const {'cho', 'meo'}.contains(
+      detail.category?.subcategory?.id ?? detail.listing.subcategoryId,
+    )) ...[
       l.listingVaccines,
+      l.listingPetPurebred,
+      l.listingPetPapers,
+      l.listingPetSupplies,
+    ],
     if (detail.listing.allowExchange) l.listingExchange,
     if (detail.canMakeOffer) l.listingNegotiate,
     l.listingMeet,
@@ -43,7 +108,11 @@ class ListingMessageSender {
   final _repository = ApiChatRepository();
   String? _previousBody;
   String _clientId = '';
-  Future<String> send(ProductDetail detail, String body) async {
+  Future<String> send(
+    ProductDetail detail,
+    String body, {
+    int? offerPrice,
+  }) async {
     if (body.length > 2000) throw const FormatException('Message too long');
     if (_previousBody != body) {
       _previousBody = body;
@@ -58,6 +127,7 @@ class ListingMessageSender {
       _clientId,
       body,
       listingId: detail.listing.id,
+      offerPrice: offerPrice,
     );
     _previousBody = null;
     return id;
@@ -225,8 +295,8 @@ class _ComposerState extends State<_Composer> {
                         IconButton.filled(
                           tooltip: l.listingSend,
                           style: IconButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFD21A),
-                            foregroundColor: Colors.black,
+                            backgroundColor: AppColors.actionPrimary,
+                            foregroundColor: AppColors.onAction,
                           ),
                           onPressed:
                               _busy ||
@@ -240,6 +310,7 @@ class _ComposerState extends State<_Composer> {
                                   dimension: 18,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
+                                    color: AppColors.onAction,
                                   ),
                                 )
                               : const Icon(Icons.send_outlined),

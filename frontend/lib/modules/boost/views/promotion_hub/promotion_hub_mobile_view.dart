@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -147,7 +149,9 @@ class PromotionHubMobileView extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
+      appBar: isDesktopLayout(context)
+          ? DesktopSectionBar(title: l.hubTitle)
+          : AppBar(
         backgroundColor: AppColors.background,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(

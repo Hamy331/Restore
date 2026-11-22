@@ -2,8 +2,9 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../../../lib/prisma.js';
 import { listingSelect } from '../listing.dto.js';
 import type { ListingFilters } from '../listing.type.js';
-import type { DealType, SearchSort } from '../listing.validator.js';
+import type { AttributeFilter, DealType, SearchSort, SellerKind } from '../listing.validator.js';
 import { visible } from './listing.repository.js';
+import { accented, allTermsIn, folded, searchTerms, type SearchTerm } from './keyword-match.js';
 
 /** Bộ lọc thêm của trang Shop uy tín */
 type ShopFilters = { verifiedShop?: boolean; onSale?: boolean };
@@ -30,6 +31,10 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
         FROM "Listing" l
         JOIN "User" u ON u.id = l."ownerId" AND u.status = 'ACTIVE'
         LEFT JOIN "Category" c ON c.id = l."categoryId"
+        ${filters.words.length ? Prisma.sql`CROSS JOIN LATERAL (SELECT
+          ${folded(searchSource)} AS f, ${accented(searchSource)} AS a,
+          ${folded(Prisma.sql`l.title`)} AS tf, ${accented(Prisma.sql`l.title`)} AS ta,
+          ${folded(categoryNames)} AS cf, ${accented(categoryNames)} AS ca) search` : Prisma.empty}
         ${filters.interestUserId ? Prisma.sql`LEFT JOIN (
           SELECT saved."categoryId", COUNT(*) AS affinity
           FROM "ListingFavorite" f JOIN "Listing" saved ON saved.id = f."listingId"
@@ -57,69 +62,66 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
             SELECT 1 FROM "Shop" s WHERE s."ownerId" = l."ownerId" AND s."verificationType" IS NOT NULL))
           AND (${filters.onSale ?? false} = false OR l."originalPrice" > l.price)
           AND (${filters.nearby?.radius ?? null}::double precision IS NULL OR ${distance} <= ${filters.nearby?.radius ?? null})
-          AND ${wordsMatch(filters.words)}
+          AND ${wordsMatch(searchTerms(filters))}
           AND (${filters.categoryId} = '' OR l."categoryId" = ${filters.categoryId})
+          AND (${filters.subcategoryId} = '' OR l."subcategoryId" = ${filters.subcategoryId})
+          AND ${attributeMatch(filters.attributeFilters)}
+          AND ${sellerMatch(filters.sellers)}
           AND (${filters.provinceCode} = '' OR l.location ->> 'provinceCode' = ${filters.provinceCode})
           AND (${filters.wardCode} = '' OR l.location ->> 'wardCode' = ${filters.wardCode})
           AND (cardinality(${filters.conditions}::text[]) = 0 OR l.condition::text = ANY(${filters.conditions}::text[]))
           AND ${dealMatch(filters.deals)}
-          AND ${attributesMatch(filters.attributes)}
-          AND ${attributeRangesMatch(filters.attributeRanges)}
           AND (${filters.minPrice}::numeric IS NULL OR l.price >= ${filters.minPrice}::numeric)
           AND (${filters.maxPrice}::numeric IS NULL OR l.price <= ${filters.maxPrice}::numeric)
         ORDER BY ${orderBy(filters, distance, sort)}`;
 }
 
-/**
- * Biểu thức SQL [column] chữ thường, bỏ dấu tiếng Việt (kể cả đ), để so với từ khoá đã qua normalizeTitle.
- * Chưa có index: tính trên từng tin đang hiển thị, đủ nhanh với vài chục nghìn tin.
- */
-// ponytail: full scan on folded text; past ~50k listings add a stored folded column + pg_trgm GIN index and match with LIKE.
-export const foldedText = (column: Prisma.Sql) =>
-  Prisma.sql`replace(regexp_replace(normalize(lower(${column}), NFD), ${'[̀-ͯ]'}, '', 'g'), 'đ', 'd')`;
-
-const foldedTitle = foldedText(Prisma.sql`l.title`);
+/** Tên chuyên mục + tên danh mục con của tin */
+const categoryNames = Prisma.sql`concat_ws(' ', c.name, (
+    SELECT sub -> 'name' ->> 'vi' FROM jsonb_array_elements(COALESCE(c.metadata -> 'subcategories', '[]'::jsonb)) sub
+    WHERE sub ->> 'id' = l."subcategoryId" LIMIT 1))`;
 
 /**
- * Nội dung dùng để tìm: tiêu đề + tên chuyên mục + hãng + dòng máy (thuộc tính brand, model).
- * Nhờ vậy "điện thoại" ra mọi tin chuyên mục Điện thoại, "apple" ra các tin iPhone.
+ * Nội dung dùng để tìm: tiêu đề + tên chuyên mục + tên danh mục con + hãng + dòng máy (thuộc tính brand, model).
+ * Nhờ vậy "điện thoại" ra mọi tin danh mục con Điện thoại, "apple" ra các tin iPhone.
  * Không tìm trong mô tả vì mô tả hay nhắc chữ không liên quan ("liên hệ qua điện thoại").
  */
-const foldedSearchText = foldedText(Prisma.sql`concat_ws(' ', l.title, c.name,
-  l.attributes ->> 'brand', l.attributes ->> 'model')`);
+const searchSource = Prisma.sql`concat_ws(' ', l.title, ${categoryNames}, l.attributes ->> 'brand', l.attributes ->> 'model')`;
 
-const containsAll = (column: Prisma.Sql, words: string[]) =>
-  Prisma.join(words.map((word) => Prisma.sql`POSITION(${word} IN ${column}) > 0`), ' AND ', '(', ')');
+/** Nội dung tìm kiếm chứa đủ mọi từ đã gõ */
+const wordsMatch = (terms: SearchTerm[]) =>
+  !terms.length ? Prisma.sql`TRUE` : allTermsIn(terms, Prisma.sql`search.f`, Prisma.sql`search.a`);
 
-/** Nội dung tìm kiếm chứa đủ mọi từ đã gõ (không phân biệt dấu) */
-const wordsMatch = (words: string[]) => !words.length ? Prisma.sql`TRUE` : containsAll(foldedSearchText, words);
+/**
+ * Khớp mọi bộ lọc thuộc tính: values = giá trị thuộc tính nằm trong danh sách; min/max = thuộc tính kiểu số
+ * trong khoảng (giá trị không phải số thì không khớp).
+ */
+function attributeMatch(filters: AttributeFilter[]) {
+  if (!filters.length) return Prisma.sql`TRUE`;
+  return Prisma.join(filters.map(({ key, values, min, max }) => {
+    if (values) return Prisma.sql`l.attributes ->> ${key}::text = ANY(${values}::text[])`;
+    const value = Prisma.sql`(CASE WHEN jsonb_typeof(l.attributes -> ${key}::text) = 'number'
+      THEN (l.attributes ->> ${key}::text)::numeric END)`;
+    return Prisma.sql`(${value} IS NOT NULL AND (${min ?? null}::numeric IS NULL OR ${value} >= ${min ?? null}::numeric)
+      AND (${max ?? null}::numeric IS NULL OR ${value} <= ${max ?? null}::numeric))`;
+  }), ' AND ', '(', ')');
+}
+
+/** Gói người đăng tương ứng với từng lựa chọn "Đăng bởi" */
+const SELLER_TIER: Record<SellerKind, string> = { personal: 'PERSONAL', pro: 'BASIC', partner: 'PRO' };
+
+/** Người đăng thuộc một trong các nhóm đã chọn, theo gói đang hiệu lực (không có gói = Cá nhân) */
+function sellerMatch(sellers: SellerKind[]) {
+  if (!sellers.length) return Prisma.sql`TRUE`;
+  const tiers = sellers.map((item) => SELLER_TIER[item]);
+  return Prisma.sql`COALESCE(sp.tier::text, 'PERSONAL') = ANY(${tiers}::text[])`;
+}
 
 /** Khớp một trong các kiểu giao dịch đã chọn: buy = có bán, exchange = cho đổi */
 function dealMatch(deals: DealType[]) {
   if (!deals.length) return Prisma.sql`TRUE`;
   return Prisma.sql`(${deals.includes('buy')} AND l."allowSale" OR ${deals.includes('exchange')} AND l."allowExchange")`;
 }
-
-/** Mỗi thuộc tính đã chọn: giá trị của tin là một trong các giá trị đó */
-const attributesMatch = (attributes: Record<string, string[]>) => {
-  const entries = Object.entries(attributes);
-  if (!entries.length) return Prisma.sql`TRUE`;
-  return Prisma.join(entries.map(([key, values]) =>
-    Prisma.sql`l.attributes ->> ${key} = ANY(${values}::text[])`), ' AND ', '(', ')');
-};
-
-/** Thuộc tính dạng số nằm trong khoảng đã chọn; tin không có số (hoặc lưu sai kiểu) không khớp */
-const attributeRangesMatch = (ranges: Record<string, { min: string | null; max: string | null }>) => {
-  const conditions = Object.entries(ranges).flatMap(([key, { min, max }]) => {
-    const value = Prisma.sql`(CASE WHEN jsonb_typeof(l.attributes -> ${key}) = 'number'
-      THEN (l.attributes ->> ${key})::numeric END)`;
-    return [
-      ...(min !== null ? [Prisma.sql`${value} >= ${min}::numeric`] : []),
-      ...(max !== null ? [Prisma.sql`${value} <= ${max}::numeric`] : []),
-    ];
-  });
-  return conditions.length ? Prisma.join(conditions, ' AND ', '(', ')') : Prisma.sql`TRUE`;
-};
 
 /** Thứ tự mặc định của feed: gần nhất (nếu có), đẩy FEATURED, gói cửa hàng cùng danh mục, BUMP, thời gian */
 const rankOrder = Prisma.sql`COALESCE(boosted."featuredPriority", 0) DESC,
@@ -145,9 +147,15 @@ function orderBy(filters: FeedOptions, distance: Prisma.Sql, sort?: SearchSort) 
         ${filters.nearby ? Prisma.sql`${distance} ASC,` : Prisma.empty} ${rankOrder}`;
     case 'relevance': {
       if (!filters.words.length) return rankOrder;
-      const phrase = filters.words.join(' ');
-      return Prisma.sql`(POSITION(${phrase} IN ${foldedTitle}) = 1) DESC, (POSITION(${phrase} IN ${foldedTitle}) > 0) DESC,
-        ${containsAll(foldedTitle, filters.words)} DESC, ${rankOrder}`;
+      const terms = searchTerms(filters);
+      // Gõ có dấu thì so cụm từ trên nội dung giữ dấu
+      const exact = terms.some((term) => term.exact);
+      const phrase = ` ${terms.map((term) => term.text).join(' ')}`;
+      const title = exact ? Prisma.sql`search.ta` : Prisma.sql`search.tf`;
+      const category = exact ? Prisma.sql`search.ca` : Prisma.sql`search.cf`;
+      return Prisma.sql`(POSITION(${phrase} IN ${title}) = 1) DESC, (POSITION(${phrase} IN ${title}) > 0) DESC,
+        (POSITION(${phrase} IN ${category}) > 0) DESC,
+        ${allTermsIn(terms, Prisma.sql`search.tf`, Prisma.sql`search.ta`)} DESC, ${rankOrder}`;
     }
     case 'newest':
       return newest;

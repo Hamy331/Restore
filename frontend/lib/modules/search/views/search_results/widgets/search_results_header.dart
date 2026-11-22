@@ -1,29 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/shared/models/listing_filter.dart';
-import 'package:restore/shared/widgets/app_circle_icon_button.dart';
-import 'package:restore/shared/widgets/app_search_pill.dart';
 import 'package:restore/shared/widgets/app_underline_tabs.dart';
-import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
-import 'package:restore/shared/widgets/filter/app_listing_filter_bar.dart';
+import 'package:restore/shared/widgets/search/app_listing_search_bar.dart';
 
 import '../../../bloc/search_results_state.dart';
 
 /// Phần ghim đầu trang kết quả: nút quay lại, ô hiện từ khoá (bấm để sửa),
-/// tab Tin đăng / Cửa hàng / Người dùng và hàng lọc nhanh (chỉ ở tab Tin đăng)
+/// tab Tin đăng / Cửa hàng / Người dùng. Thanh lọc nằm trong nội dung tab Tin
+/// đăng (cuộn theo danh sách, như trang danh mục)
 class SearchResultsHeader extends StatelessWidget {
   final String query;
   final SearchResultsTab tab;
   final ValueChanged<SearchResultsTab> onTabChanged;
-  final ListingFilter filter;
   final VoidCallback onBack;
   final VoidCallback onEditQuery;
-  final VoidCallback onFiltersTap;
-  final VoidCallback onAreaTap;
-  final ValueChanged<ListingDealType> onDealToggle;
-  final VoidCallback onSortTap;
-  final VoidCallback onClearTap;
+
+  /// Lưu tìm kiếm thành "Báo khi có hàng"
+  final VoidCallback onSaveSearch;
 
   /// false: ẩn nút quay lại + ô từ khoá (màn rộng đã có ô tìm kiếm ở trên)
   final bool showSearch;
@@ -33,23 +26,17 @@ class SearchResultsHeader extends StatelessWidget {
     required this.query,
     required this.tab,
     required this.onTabChanged,
-    required this.filter,
     required this.onBack,
     required this.onEditQuery,
-    required this.onFiltersTap,
-    required this.onAreaTap,
-    required this.onDealToggle,
-    required this.onSortTap,
-    required this.onClearTap,
+    required this.onSaveSearch,
     this.showSearch = true,
   });
 
-  /// Ô tìm kiếm (48) + hàng tab + hàng chip lọc (tab Tin đăng) + lề trên dưới
-  static double heightFor(SearchResultsTab tab, {bool showSearch = true}) =>
+  /// Ô tìm kiếm + hàng tab + lề trên dưới
+  static double heightFor({bool showSearch = true}) =>
       8 +
-      (showSearch ? 48 + 4 : 0) +
+      (showSearch ? AppListingSearchBar.rowHeight + 4 : 0) +
       AppUnderlineTabs.height +
-      (tab == SearchResultsTab.listings ? 10 + AppFilterChip.height : 0) +
       12;
 
   @override
@@ -60,25 +47,11 @@ class SearchResultsHeader extends StatelessWidget {
       child: Column(
         children: [
           if (showSearch) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
-              child: Row(
-                children: [
-                  AppCircleIconButton(
-                    icon: AppIcons.back,
-                    tooltip: l10n.back,
-                    onTap: onBack,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: AppSearchPill(
-                      text: query,
-                      isPlaceholder: false,
-                      onTap: onEditQuery,
-                    ),
-                  ),
-                ],
-              ),
+            AppListingSearchBar(
+              text: query,
+              onBack: onBack,
+              onEdit: onEditQuery,
+              onSave: onSaveSearch,
             ),
             const SizedBox(height: 4),
           ],
@@ -91,18 +64,6 @@ class SearchResultsHeader extends StatelessWidget {
             selectedIndex: tab.index,
             onChanged: (index) => onTabChanged(SearchResultsTab.values[index]),
           ),
-          if (tab == SearchResultsTab.listings) ...[
-            const SizedBox(height: 10),
-            AppListingFilterBar(
-              filter: filter,
-              defaults: SearchResultsState.defaultFilter,
-              onFiltersTap: onFiltersTap,
-              onAreaTap: onAreaTap,
-              onDealToggle: onDealToggle,
-              onSortTap: onSortTap,
-              onClearTap: onClearTap,
-            ),
-          ],
         ],
       ),
     );

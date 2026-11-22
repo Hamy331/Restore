@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -381,25 +382,34 @@ class _HeaderTail extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          AppHeaderPalette.bottom,
-          AppHeaderPalette.bottom,
-          AppColors.surface,
-          AppColors.surface,
-        ],
-        stops: [0, 0.4, 0.4, 1],
+  Widget build(BuildContext context) {
+    // Web desktop: tiêu đề trang đã là khối trắng, không cần dải màu nối
+    if (isDesktopLayout(context)) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(28, 16, 28, 0),
+        child: child,
+      );
+    }
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            AppHeaderPalette.bottom,
+            AppHeaderPalette.bottom,
+            AppColors.surface,
+            AppColors.surface,
+          ],
+          stops: [0, 0.4, 0.4, 1],
+        ),
       ),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-      child: child,
-    ),
-  );
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+        child: child,
+      ),
+    );
+  }
 }
 
 class _Header extends StatelessWidget {

@@ -29,7 +29,7 @@ class ProfileAvatar extends StatelessWidget {
         : appImageProvider(path);
     return CircleAvatar(
       radius: radius,
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.fill,
       foregroundImage: image,
       onForegroundImageError: image == null ? null : (_, _) {},
       child: Text(
@@ -162,7 +162,7 @@ class ProfileHeader extends StatelessWidget {
         if (bio != null || onBioTap != null) ...[
           const SizedBox(height: 23),
           Material(
-            color: AppColors.background,
+            color: AppColors.fill,
             borderRadius: BorderRadius.circular(30),
             child: InkWell(
               borderRadius: BorderRadius.circular(30),

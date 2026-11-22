@@ -20,7 +20,7 @@ class MockPostingQuotaStore {
   /// chuyên mục; Cá nhân theo bảng từng chuyên mục
   static int limitOf(String categoryId) {
     switch (DevPlanOverride.plan.value) {
-      case SubscriptionPlan.pro:
+      case SubscriptionPlan.basic:
         return PostingQuotaMockData.proLimit;
       case SubscriptionPlan.shop:
         return PostingQuotaMockData.shopLimit;

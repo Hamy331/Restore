@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/core/utils/formatters/thousands_separator_input_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -48,7 +49,7 @@ class _DealState extends State<ProductDealSection> {
     );
     if (mounted && id != null) {
       _amount.clear();
-      openListingConversation(context, id);
+      showOfferSentToast(context, id);
     }
   }
 
@@ -274,8 +275,8 @@ class _OfferState extends State<_OfferForm> {
                 const SizedBox(height: 10),
                 FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xffffd21a),
-                    foregroundColor: Colors.black,
+                    backgroundColor: AppColors.actionPrimary,
+                    foregroundColor: AppColors.onAction,
                   ),
                   onPressed: !valid || _busy
                       ? null
@@ -288,6 +289,7 @@ class _OfferState extends State<_OfferForm> {
                             final id = await _sender.send(
                               widget.detail,
                               '${l.productOfferAmountLabel}: ${money(amount)}\n${_note.text.trim()}',
+                              offerPrice: amount,
                             );
                             if (context.mounted) Navigator.pop(context, id);
                           } catch (_) {

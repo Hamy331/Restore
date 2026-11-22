@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
 import { idParam, int, pageQuery, parse } from '../../common/validation/schemas.js';
-import { searchWords } from '../listings/index.js';
+import { exactSearchWords, searchWords } from '../listings/index.js';
 
 /** Query GET /search/suggestions: q (tối đa 100 ký tự), limit 1-20 (mặc định 8) */
 export const suggestionsQuery = z.object({
@@ -11,7 +11,11 @@ export const suggestionsQuery = z.object({
   if (q !== undefined && (typeof q !== 'string' || q.trim().length > 100)) {
     throw new AppError(400, 'INVALID_QUERY', 'Từ khóa tìm kiếm không hợp lệ.', 'q');
   }
-  return { words: typeof q === 'string' ? searchWords(q) : [], limit };
+  return {
+    words: typeof q === 'string' ? searchWords(q) : [],
+    exactWords: typeof q === 'string' ? exactSearchWords(q) : [],
+    limit,
+  };
 });
 
 /** Params DELETE /search/history/:id */

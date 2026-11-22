@@ -7,8 +7,15 @@ import { captureListingHold, releaseListingHold } from '../../credits/index.js';
 import { AdminDecisionInput, AdminListingQuery, DecisionInput, toOwnerListingDto, toRevisionDto } from '../listing.dto.js';
 import { removeStoredImages, revisionOnlyImages } from './image.service.js';
 import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
+import { resolveSubcategory } from '../../catalog/category-tree.js';
 import { freeDaysFor } from '../display-pricing.js';
 import type { ModerationAction } from '../listing.type.js';
+
+/** Danh mục con còn hợp lệ và có tình trạng nếu danh mục (con) hỏi tình trạng */
+function usableCategory(metadata: unknown, subcategoryId: string | null, condition: unknown) {
+  const { child, required, metadata: effective } = resolveSubcategory(metadata, subcategoryId);
+  return (!required || !!child) && (!categoryHasCondition(effective) || !!condition);
+}
 import * as listingRepository from '../repositories/listing.repository.js';
 import { runApprovalHooks, runModeratedHooks } from './approval-hooks.js';
 
@@ -43,7 +50,7 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
       listingRepository.findActiveCategory(tx, item.categoryId ?? ''),
       item.condition ? listingRepository.findConditionPolicy(tx, item.condition) : null,
     ]);
-    if (!category || (categoryHasCondition(category.metadata) && !item.condition) || condition?.active === false) {
+    if (!category || !usableCategory(category.metadata, item.subcategoryId, item.condition) || condition?.active === false) {
       throw new AppError(409, 'INVALID_LISTING', 'Danh mục hoặc tình trạng không còn được sử dụng.');
     }
     // Bắt đầu tính thời gian hiển thị từ ngày hẹn (hoặc lúc duyệt nếu muộn hơn), đủ số ngày người bán chọn;
@@ -103,7 +110,7 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
     listingRepository.findActiveCategory(tx, item.categoryId ?? ''),
     revision.condition ? listingRepository.findConditionPolicy(tx, revision.condition) : null,
   ]);
-  if (!category || (categoryHasCondition(category.metadata) && !revision.condition) || condition?.active === false) {
+  if (!category || !usableCategory(category.metadata, item.subcategoryId, revision.condition) || condition?.active === false) {
     throw new AppError(409, 'INVALID_LISTING', 'Danh mục hoặc tình trạng không còn được sử dụng.');
   }
   changed(await listingRepository.applyRevision(tx, item.id, item.status, expected, {

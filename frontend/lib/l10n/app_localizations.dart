@@ -119,7 +119,7 @@ abstract class AppLocalizations {
   /// No description provided for @sellerPartnerInfo.
   ///
   /// In en, this message translates to:
-  /// **'This seller has an active ReStore Shop plan. Ask the shop about warranty and returns for this listing.'**
+  /// **'This seller has an active ReStore Professional Shop plan. Ask the shop about warranty and returns for this listing.'**
   String get sellerPartnerInfo;
 
   /// No description provided for @sellerGotIt.
@@ -263,8 +263,26 @@ abstract class AppLocalizations {
   /// No description provided for @listingVaccines.
   ///
   /// In en, this message translates to:
-  /// **'Can I see the vaccination record?'**
+  /// **'Has the pet been vaccinated?'**
   String get listingVaccines;
+
+  /// No description provided for @listingPetPurebred.
+  ///
+  /// In en, this message translates to:
+  /// **'Is it purebred or mixed?'**
+  String get listingPetPurebred;
+
+  /// No description provided for @listingPetPapers.
+  ///
+  /// In en, this message translates to:
+  /// **'Does the pet come with any papers?'**
+  String get listingPetPapers;
+
+  /// No description provided for @listingPetSupplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Are any of its supplies included?'**
+  String get listingPetSupplies;
 
   /// No description provided for @listingMeet.
   ///
@@ -319,6 +337,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No matching posts found.'**
   String get feedSearchEmpty;
+
+  /// No description provided for @messagesSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search conversations…'**
+  String get messagesSearchHint;
+
+  /// No description provided for @messagesSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching conversations found.'**
+  String get messagesSearchEmpty;
+
+  /// No description provided for @messagesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet.'**
+  String get messagesEmpty;
+
+  /// No description provided for @messagesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load messages. Try again'**
+  String get messagesLoadError;
 
   /// No description provided for @feedFollow.
   ///
@@ -3272,12 +3314,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load categories'**
   String get loadCategoriesFailedTitle;
 
-  /// No description provided for @negotiableHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Buyers can make offers in chat'**
-  String get negotiableHint;
-
   /// No description provided for @addressNearbyHint.
   ///
   /// In en, this message translates to:
@@ -3529,12 +3565,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hot'**
   String get homeFeaturedTag;
-
-  /// No description provided for @homeExchangeTag.
-  ///
-  /// In en, this message translates to:
-  /// **'Swappable'**
-  String get homeExchangeTag;
 
   /// No description provided for @homeExchangeOnly.
   ///
@@ -4465,12 +4495,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Condition'**
   String get listingFilterCondition;
-
-  /// No description provided for @listingFilterDeal.
-  ///
-  /// In en, this message translates to:
-  /// **'Deal type'**
-  String get listingFilterDeal;
 
   /// No description provided for @listingFilterDistance.
   ///
@@ -5525,13 +5549,13 @@ abstract class AppLocalizations {
   /// No description provided for @postingRuleBusiness.
   ///
   /// In en, this message translates to:
-  /// **'Business plan (coming soon): up to {limit} listings per category. Shop plan: your own shop page.'**
+  /// **'Basic plan: up to {limit} listings per category. Professional Shop plan: your own shop page.'**
   String postingRuleBusiness(int limit);
 
   /// No description provided for @homeGreetingPro.
   ///
   /// In en, this message translates to:
-  /// **'Hi pro seller {name} 👋'**
+  /// **'Hi seller {name} 👋'**
   String homeGreetingPro(String name);
 
   /// No description provided for @homeGreetingShop.
@@ -5546,16 +5570,16 @@ abstract class AppLocalizations {
   /// **'Personal'**
   String get planPersonal;
 
-  /// No description provided for @planPro.
+  /// No description provided for @planBasic.
   ///
   /// In en, this message translates to:
-  /// **'Pro seller'**
-  String get planPro;
+  /// **'Basic'**
+  String get planBasic;
 
   /// No description provided for @planShop.
   ///
   /// In en, this message translates to:
-  /// **'Shop'**
+  /// **'Professional Shop'**
   String get planShop;
 
   /// No description provided for @devPlanTag.
@@ -7019,8 +7043,38 @@ abstract class AppLocalizations {
   /// No description provided for @plansBenefitShopPage.
   ///
   /// In en, this message translates to:
-  /// **'Your own shop page (coming soon)'**
+  /// **'Your own shop page with a cover photo, live after ReStore approval'**
   String get plansBenefitShopPage;
+
+  /// No description provided for @plansTaglinePersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell your own things, free of charge'**
+  String get plansTaglinePersonal;
+
+  /// No description provided for @plansTaglineBasic.
+  ///
+  /// In en, this message translates to:
+  /// **'For regular sellers who post more'**
+  String get plansTaglineBasic;
+
+  /// No description provided for @plansTaglineShop.
+  ///
+  /// In en, this message translates to:
+  /// **'For shops and brands, with a page of their own'**
+  String get plansTaglineShop;
+
+  /// No description provided for @plansPriceUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'points / 30 days'**
+  String get plansPriceUnit;
+
+  /// No description provided for @plansFreeForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Free forever'**
+  String get plansFreeForever;
 
   /// No description provided for @plansBuy.
   ///
@@ -7865,13 +7919,13 @@ abstract class AppLocalizations {
   /// No description provided for @spPlanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Posters are part of the Store plan'**
+  /// **'Posters are part of the Professional Shop plan'**
   String get spPlanTitle;
 
   /// No description provided for @spPlanBody.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to the Store plan to run posters on your shop page and on Trusted shops.'**
+  /// **'Upgrade to the Professional Shop plan to run posters on your shop page and on Trusted shops.'**
   String get spPlanBody;
 
   /// No description provided for @spSeePlans.
@@ -8285,7 +8339,7 @@ abstract class AppLocalizations {
   /// No description provided for @spErrPlan.
   ///
   /// In en, this message translates to:
-  /// **'Only the Store plan can run posters.'**
+  /// **'Only the Professional Shop plan can run posters.'**
   String get spErrPlan;
 
   /// No description provided for @spErrShop.
@@ -8414,6 +8468,36 @@ abstract class AppLocalizations {
   /// **'Profile details'**
   String get accInfoSection;
 
+  /// No description provided for @accApplyField.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get accApplyField;
+
+  /// No description provided for @accNotProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get accNotProvided;
+
+  /// No description provided for @accRegisteredEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration email · read only'**
+  String get accRegisteredEmailHint;
+
+  /// No description provided for @accContactReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Account contact information · read only'**
+  String get accContactReadOnly;
+
+  /// No description provided for @accShopDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop name, logo and address'**
+  String get accShopDetailsHint;
+
   /// No description provided for @accDisplayNameHint.
   ///
   /// In en, this message translates to:
@@ -8495,13 +8579,13 @@ abstract class AppLocalizations {
   /// No description provided for @msPlanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Shop pages come with the Store plan'**
+  /// **'Shop pages come with the Professional Shop plan'**
   String get msPlanTitle;
 
   /// No description provided for @msPlanBody.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to the Store plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.'**
+  /// **'Upgrade to the Professional Shop plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.'**
   String get msPlanBody;
 
   /// No description provided for @msCreateTitle.
@@ -8711,7 +8795,7 @@ abstract class AppLocalizations {
   /// No description provided for @msPlanExpiredTitle.
   ///
   /// In en, this message translates to:
-  /// **'Store plan expired'**
+  /// **'Professional Shop plan expired'**
   String get msPlanExpiredTitle;
 
   /// No description provided for @msPlanExpiredBody.
@@ -10213,6 +10297,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check your connection and try again.'**
   String get categoryDetailLoadErrorBody;
+
+  /// No description provided for @chooseSubcategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a subcategory'**
+  String get chooseSubcategory;
+
+  /// No description provided for @listingFilterSubcategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Type of {category}'**
+  String listingFilterSubcategory(String category);
+
+  /// No description provided for @listingFilterAllSubcategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get listingFilterAllSubcategories;
+
+  /// No description provided for @listingFilterButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get listingFilterButton;
+
+  /// No description provided for @listingFilterSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted by'**
+  String get listingFilterSeller;
+
+  /// No description provided for @listingSellerPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual'**
+  String get listingSellerPersonal;
+
+  /// No description provided for @listingSellerPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Semi-pro'**
+  String get listingSellerPro;
+
+  /// No description provided for @listingSellerPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get listingSellerPartner;
+
+  /// No description provided for @listingConditionWarranty.
+  ///
+  /// In en, this message translates to:
+  /// **'Under warranty'**
+  String get listingConditionWarranty;
+
+  /// No description provided for @listingConditionNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get listingConditionNew;
+
+  /// No description provided for @listingConditionUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
+  String get listingConditionUsed;
+
+  /// No description provided for @listingFilterAllOf.
+  ///
+  /// In en, this message translates to:
+  /// **'All {category}'**
+  String listingFilterAllOf(String category);
+
+  /// No description provided for @listingFilterAny.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get listingFilterAny;
+
+  /// No description provided for @categoryPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All categories'**
+  String get categoryPickerTitle;
+
+  /// No description provided for @categoryPickerSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all categories'**
+  String get categoryPickerSeeAll;
+
+  /// No description provided for @filterClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get filterClear;
+
+  /// No description provided for @filterSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search {label}'**
+  String filterSearchHint(String label);
+
+  /// No description provided for @filterPlusMax.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}+'**
+  String filterPlusMax(String value);
+
+  /// No description provided for @chatSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get chatSent;
+
+  /// No description provided for @chatSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Seen'**
+  String get chatSeen;
+
+  /// No description provided for @offerSentToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer sent'**
+  String get offerSentToast;
+
+  /// No description provided for @offerSentGoToChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to chat'**
+  String get offerSentGoToChat;
+
+  /// No description provided for @chatTabAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get chatTabAll;
+
+  /// No description provided for @chatTabUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get chatTabUnread;
+
+  /// No description provided for @chatNegotiating.
+  ///
+  /// In en, this message translates to:
+  /// **'Negotiating'**
+  String get chatNegotiating;
+
+  /// No description provided for @searchCategorySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get searchCategorySuggestion;
+
+  /// No description provided for @searchSubcategorySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'In {parent}'**
+  String searchSubcategorySuggestion(String parent);
 }
 
 class _AppLocalizationsDelegate

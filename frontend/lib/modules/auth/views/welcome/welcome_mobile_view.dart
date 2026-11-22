@@ -9,7 +9,7 @@ class WelcomeMobileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const backgroundColor = Color(0xFFFFFCF7);
+    const backgroundColor = AppColors.surface;
     final tablet = MediaQuery.sizeOf(context).width >= 600;
 
     return Scaffold(

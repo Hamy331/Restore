@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/data/models/category_model.dart';
+import 'package:restore/shared/utils/filter_categories.dart';
+import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
@@ -12,7 +15,8 @@ import 'package:restore/shared/widgets/search/app_search_input.dart';
 import '../../bloc/search_cubit.dart';
 import '../../bloc/search_state.dart';
 import '../../models/search_user_item.dart';
-import '../search_results/search_results_view.dart';
+import '../../utils/category_matches.dart';
+import '../../utils/open_listing_search.dart';
 import 'widgets/search_idle_content.dart';
 import 'widgets/search_suggestion_list.dart';
 
@@ -32,6 +36,29 @@ class _SearchMobileViewState extends State<SearchMobileView> {
   late final _controller = TextEditingController(text: widget.initialQuery);
   final _focusNode = FocusNode();
 
+  /// Danh mục để gợi ý khi gõ đúng tên danh mục; tải lỗi thì không gợi ý
+  List<CategoryModel> _categories = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadFilterCategories().then((categories) {
+      if (mounted) setState(() => _categories = categories);
+    });
+  }
+
+  /// Mở trang danh mục (kèm danh mục con nếu có) từ gợi ý
+  void _openCategory(CategoryMatch match) {
+    _focusNode.unfocus();
+    context.push(
+      CategoryDetailView.location(
+        match.parent.id,
+        subcategoryId: match.sub?.id,
+      ),
+      extra: match.parent,
+    );
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -49,9 +76,16 @@ class _SearchMobileViewState extends State<SearchMobileView> {
     _setText(query);
     cubit.queryChanged(query);
     _focusNode.unfocus();
-    await context.push(SearchResultsView.location(query, fromSearch: true));
+    // Tên danh mục ("Sở thích") thì vào thẳng trang danh mục
+    final category = await openListingSearch(context, query, fromSearch: true);
+    if (!mounted) return;
+    // Vào danh mục là duyệt chứ không phải tìm: quay lại thì ô trống để gõ mới
+    if (category) {
+      _setText('');
+      cubit.queryChanged('');
+    }
     // Từ khoá vừa tìm đã được lưu vào lịch sử
-    if (mounted) cubit.loadHistory();
+    cubit.loadHistory();
   }
 
   /// Mở trang shop từ gợi ý khi đang gõ
@@ -117,6 +151,12 @@ class _SearchMobileViewState extends State<SearchMobileView> {
                             onRemoveHistory: cubit.removeHistory,
                             onOpenShop: _openShop,
                             onOpenUser: _openUser,
+                            categories: matchCategories(
+                              _categories,
+                              state.query,
+                              (name) => name.of(context),
+                            ),
+                            onOpenCategory: _openCategory,
                           )
                         : SearchIdleContent(
                             key: const ValueKey('idle'),

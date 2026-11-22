@@ -47,9 +47,9 @@ class ProductDetail extends Equatable {
   /// Còn mua / trả giá / đổi được không
   bool get isAvailable => listing.status == ListingStatus.available;
 
-  /// Có thể trả giá: tin bán, có giá và người bán cho thương lượng
-  bool get canMakeOffer =>
-      listing.allowSale && listing.price != null && listing.isNegotiable;
+  /// Có thể trả giá: mọi tin có bán và có giá (tin chỉ trao đổi thì không có
+  /// giá để trả)
+  bool get canMakeOffer => listing.allowSale && listing.price != null;
 
   factory ProductDetail.fromJson(Map<String, dynamic> json) {
     final seller = json['seller'];

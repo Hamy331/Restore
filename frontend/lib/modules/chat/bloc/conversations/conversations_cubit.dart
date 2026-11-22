@@ -19,6 +19,11 @@ class ConversationsCubit extends Cubit<ConversationsState> {
   DateTime? _lastLoadedAt;
   bool _dirty = true;
 
+  void search(String query) {
+    if (isClosed || query == state.searchQuery) return;
+    emit(state.copyWith(searchQuery: query));
+  }
+
   /// Chỉ chạy khi danh sách đang hiển thị. Giữ dữ liệu khi mở lại.
   void start() {
     if (isClosed || _timer != null) return;
@@ -62,17 +67,13 @@ class ConversationsCubit extends Cubit<ConversationsState> {
       final items = await _repository.listConversations();
       if (!isClosed) {
         _lastLoadedAt = DateTime.now();
-        emit(ConversationsState(conversations: items, loading: false));
+        emit(
+          state.copyWith(conversations: items, loading: false, failed: false),
+        );
       }
     } catch (_) {
       if (!isClosed) {
-        emit(
-          ConversationsState(
-            conversations: state.conversations,
-            loading: false,
-            failed: true,
-          ),
-        );
+        emit(state.copyWith(loading: false, failed: true));
       }
     }
   }

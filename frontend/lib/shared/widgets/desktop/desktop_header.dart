@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/blocs/language/language_bloc.dart';
 import 'package:restore/core/blocs/language/language_event.dart';
+import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_dimesions.dart';
 import 'package:restore/core/constants/app_icons.dart';
@@ -16,7 +18,20 @@ import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
 import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/data/models/category_model.dart';
+import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
+import 'package:restore/modules/search/bloc/search_cubit.dart';
+import 'package:restore/modules/search/bloc/search_state.dart';
+import 'package:restore/modules/search/models/search_user_item.dart';
+import 'package:restore/modules/search/repositories/search_repository.dart';
+import 'package:restore/modules/search/utils/category_matches.dart';
+import 'package:restore/modules/search/utils/open_listing_search.dart';
+import 'package:restore/modules/search/views/search/widgets/search_idle_content.dart';
+import 'package:restore/modules/search/views/search/widgets/search_suggestion_list.dart';
 import 'package:restore/modules/search/views/search_results/search_results_view.dart';
+import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
+import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.dart';
+import 'package:restore/shared/utils/filter_categories.dart';
 
 /// Đầu trang web desktop, màu trơn xanh đậm theo logo (bố cục kiểu Amazon):
 /// - Thanh chính xanh đậm: logo, khu vực, ô tìm kiếm, ngôn ngữ, tài khoản,
@@ -38,6 +53,11 @@ class DesktopHeader extends StatefulWidget {
   final int unreadMessages;
   final VoidCallback onMessagesTap;
 
+  /// Trang tìm kiếm riêng không dùng trên desktop: nơi khác gọi hàm này để mở
+  /// ô tìm kiếm trên header (kèm khung gợi ý) thay vì mở trang `/search`
+  static final searchRequests = ValueNotifier(0);
+  static void requestSearch() => searchRequests.value++;
+
   @override
   State<DesktopHeader> createState() => _DesktopHeaderState();
 }
@@ -48,6 +68,144 @@ class _DesktopHeaderState extends State<DesktopHeader> {
 
   late final _query = TextEditingController(text: widget.listingSearchQuery);
   final _searchFocus = FocusNode();
+
+  /// Khung gợi ý thả xuống dưới ô tìm kiếm: chưa gõ thì "Gần
+  /// tôi", gợi ý tìm nhanh, lịch sử; đang gõ thì danh mục khớp, shop, người
+  /// dùng và từ khoá gợi ý (cùng nội dung trang tìm kiếm trên điện thoại)
+  final _suggestLink = LayerLink();
+  final _suggestions = OverlayPortalController();
+  final _tapGroup = Object();
+  SearchCubit? _searchCubit;
+  List<CategoryModel> _categories = const [];
+  double _boxWidth = 480;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchFocus.addListener(_onSearchFocus);
+    DesktopHeader.searchRequests.addListener(_searchFocus.requestFocus);
+  }
+
+  SearchCubit get _cubit => _searchCubit ??= SearchCubit(
+    searchRepository: AppEnvironment.useMockData
+        ? MockSearchRepository()
+        : ApiSearchRepository(),
+    query: _query.text,
+    showHistory: context.isSignedIn,
+  )..start();
+
+  void _onSearchFocus() {
+    if (!_searchFocus.hasFocus) return;
+    if (_categories.isEmpty) {
+      loadFilterCategories().then((categories) {
+        if (mounted) setState(() => _categories = categories);
+      });
+    }
+    final cubit = _searchCubit;
+    if (cubit == null) {
+      _cubit;
+    } else {
+      cubit
+        ..loadHistory()
+        ..queryChanged(_query.text);
+    }
+    _suggestions.show();
+  }
+
+  void _closeSuggestions() {
+    _suggestions.hide();
+    _searchFocus.unfocus();
+  }
+
+  /// Đưa gợi ý lên ô để gõ tiếp
+  void _fill(String text) {
+    _query.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+    _cubit.queryChanged(text);
+    _searchFocus.requestFocus();
+  }
+
+  /// Danh mục khớp tên: mở trang danh mục, ô tìm kiếm để trống
+  void _openCategory(CategoryMatch match) {
+    _closeSuggestions();
+    _query.clear();
+    context.push(
+      CategoryDetailView.location(
+        match.parent.id,
+        subcategoryId: match.sub?.id,
+      ),
+      extra: match.parent,
+    );
+  }
+
+  void _openShop(TrustedShopItem item) {
+    _closeSuggestions();
+    context.push(ShopDetailView.location(item.shop.id), extra: item);
+  }
+
+  void _openUser(SearchUserItem user) {
+    _closeSuggestions();
+    context.push('/users/${user.id}');
+  }
+
+  Widget _suggestionPanel(BuildContext context) => CompositedTransformFollower(
+    link: _suggestLink,
+    targetAnchor: Alignment.bottomLeft,
+    offset: const Offset(0, 6),
+    child: Align(
+      alignment: Alignment.topLeft,
+      child: TapRegion(
+        groupId: _tapGroup,
+        onTapOutside: (_) => _closeSuggestions(),
+        child: SizedBox(
+          width: _boxWidth,
+          child: Material(
+            color: AppColors.surface,
+            elevation: 8,
+            borderRadius: BorderRadius.circular(12),
+            clipBehavior: Clip.antiAlias,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 480),
+              child: BlocProvider.value(
+                value: _cubit,
+                child: BlocBuilder<SearchCubit, SearchState>(
+                  builder: (context, state) => state.isTyping
+                      ? SearchSuggestionList(
+                          state: state,
+                          shrinkWrap: true,
+                          onSubmit: (text) => _search(text),
+                          onFill: _fill,
+                          onRemoveHistory: _cubit.removeHistory,
+                          onOpenShop: _openShop,
+                          onOpenUser: _openUser,
+                          categories: matchCategories(
+                            _categories,
+                            state.query,
+                            (name) => name.of(context),
+                          ),
+                          onOpenCategory: _openCategory,
+                        )
+                      : SearchIdleContent(
+                          state: state,
+                          shrinkWrap: true,
+                          onSubmit: (text) => _search(text),
+                          onNearMe: () {
+                            _closeSuggestions();
+                            context.push('/nearby');
+                          },
+                          onRemoveHistory: _cubit.removeHistory,
+                          onClearHistory: _cubit.clearHistory,
+                        ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 
   @override
   void didUpdateWidget(DesktopHeader oldWidget) {
@@ -65,23 +223,36 @@ class _DesktopHeaderState extends State<DesktopHeader> {
 
   @override
   void dispose() {
+    DesktopHeader.searchRequests.removeListener(_searchFocus.requestFocus);
+    _searchFocus.removeListener(_onSearchFocus);
+    _searchCubit?.close();
     _query.dispose();
     _searchFocus.dispose();
     super.dispose();
   }
 
-  void _search() {
+  /// Tìm [text] (bấm gợi ý / lịch sử) hoặc chữ đang gõ trên ô
+  Future<void> _search([String? text]) async {
+    if (text != null) _query.text = text;
     final q = _query.text.trim();
     if (q.isEmpty) {
       _searchFocus.requestFocus();
       return;
     }
-    _searchFocus.unfocus();
-    final destination = SearchResultsView.location(q);
-    if (widget.location == SearchResultsView.path) {
-      if (q != widget.listingSearchQuery) context.pushReplacement(destination);
+    _closeSuggestions();
+    final onResults = widget.location == SearchResultsView.path;
+    if (onResults && q == widget.listingSearchQuery) return;
+    // Tên danh mục thì mở trang danh mục (ô tìm kiếm để trống);
+    // đang ở trang kết quả hay trang danh mục thì thay trang để nút quay lại
+    // không phải bấm qua từng lần tìm
+    final replace = onResults || widget.location.startsWith('/categories/');
+    final target = await listingSearchDestination(context, q);
+    if (!mounted) return;
+    if (target.extra != null) _query.clear();
+    if (replace) {
+      context.pushReplacement(target.location, extra: target.extra);
     } else {
-      context.push(destination);
+      context.push(target.location, extra: target.extra);
     }
   }
 
@@ -220,11 +391,32 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _SearchBox(
-                    controller: _query,
-                    focusNode: _searchFocus,
-                    hint: l10n.homeSearchHint,
-                    onSearch: _search,
+                  child: OverlayPortal(
+                    controller: _suggestions,
+                    overlayChildBuilder: _suggestionPanel,
+                    child: CompositedTransformTarget(
+                      link: _suggestLink,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          _boxWidth = constraints.maxWidth;
+                          return TapRegion(
+                            groupId: _tapGroup,
+                            child: _SearchBox(
+                              controller: _query,
+                              focusNode: _searchFocus,
+                              groupId: _tapGroup,
+                              hint: l10n.homeSearchHint,
+                              onSearch: _search,
+                              onChanged: (text) {
+                                _cubit.queryChanged(text);
+                                _suggestions.show();
+                              },
+                              onEscape: _closeSuggestions,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -337,7 +529,7 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                     ),
                     textStyle: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   icon: const Icon(AppIcons.add, size: 18),
@@ -478,14 +670,22 @@ class _SearchBox extends StatelessWidget {
   const _SearchBox({
     required this.controller,
     required this.focusNode,
+    required this.groupId,
     required this.hint,
     required this.onSearch,
+    required this.onChanged,
+    required this.onEscape,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
+
+  /// Cùng nhóm với khung gợi ý: bấm vào khung không làm ô mất focus
+  final Object groupId;
   final String hint;
   final VoidCallback onSearch;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onEscape;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -498,24 +698,31 @@ class _SearchBox extends StatelessWidget {
     child: Row(
       children: [
         Expanded(
-          child: TextField(
-            controller: controller,
-            focusNode: focusNode,
-            onSubmitted: (_) => onSearch(),
-            textInputAction: TextInputAction.search,
-            style: const TextStyle(fontSize: 14),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
+          child: CallbackShortcuts(
+            bindings: {
+              const SingleActivator(LogicalKeyboardKey.escape): onEscape,
+            },
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              groupId: groupId,
+              onChanged: onChanged,
+              onSubmitted: (_) => onSearch(),
+              textInputAction: TextInputAction.search,
+              style: const TextStyle(fontSize: 14),
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+                filled: false,
+                isDense: true,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14),
               ),
-              filled: false,
-              isDense: true,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14),
             ),
           ),
         ),

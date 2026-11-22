@@ -1,32 +1,39 @@
 import 'package:restore/l10n/app_localizations.dart';
 
-/// Gói đăng ký của tài khoản (đề xuất bảng subscriptions ở backend). Loại
-/// tài khoản và quyền lợi đi theo gói, không hỏi lại khi đăng tin.
+/// Gói tài khoản. [tier] là giá trị `StoreTier` ở backend, tên hiển thị khớp
+/// với gói đang bán:
+/// - `PERSONAL`: Cá nhân / Personal (miễn phí)
+/// - `BASIC`: Bán chuyên / Basic
+/// - `PRO`: Cửa hàng Pro / Professional Shop
+///
+/// Mọi chỗ đổi tier sang gói trong app đi qua [fromTier], không tự so chuỗi.
 enum SubscriptionPlan {
   /// Miễn phí, hạn mức tin cá nhân
   personal('PERSONAL'),
 
-  /// Bán chuyên: nhiều tin hơn mỗi chuyên mục, huy hiệu bán chuyên
-  pro('PRO'),
+  /// Bán chuyên: nhiều tin hơn mỗi chuyên mục, không có trang cửa hàng
+  basic('BASIC'),
 
-  /// Cửa hàng: trang shop riêng, có thể xuất hiện ở Shop uy tín khi đã
-  /// xác minh
-  shop('SHOP');
+  /// Cửa hàng Pro: trang cửa hàng riêng có ảnh bìa (hiện sau khi ReStore
+  /// duyệt), xuất hiện ở Shop uy tín khi đã xác minh
+  shop('PRO');
 
-  const SubscriptionPlan(this.apiValue);
+  const SubscriptionPlan(this.tier);
 
-  final String apiValue;
+  /// Giá trị `StoreTier` ở backend
+  final String tier;
 
-  static SubscriptionPlan fromApi(String? value) {
+  /// Tier không rõ hoặc null là gói Cá nhân
+  static SubscriptionPlan fromTier(String? tier) {
     for (final plan in values) {
-      if (plan.apiValue == value) return plan;
+      if (plan.tier == tier) return plan;
     }
     return personal;
   }
 
   String label(AppLocalizations l10n) => switch (this) {
     personal => l10n.planPersonal,
-    pro => l10n.planPro,
+    basic => l10n.planBasic,
     shop => l10n.planShop,
   };
 }

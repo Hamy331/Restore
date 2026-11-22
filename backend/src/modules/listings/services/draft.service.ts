@@ -4,6 +4,7 @@ import { assertDraftQuota, draftQuota } from '../../commerce/index.js';
 import { DraftInput, toOwnerListingDto } from '../listing.dto.js';
 import { DRAFT_EDITABLE } from '../listing.type.js';
 import { createInput, validateAttributes } from '../listing.validator.js';
+import { resolveSubcategory } from '../../catalog/category-tree.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
 import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing, withListingWriteTransaction } from './listing.service.js';
@@ -37,7 +38,12 @@ export async function updateDraft(ownerId: string, id: string, data: DraftInput)
       throw new AppError(400, 'INVALID_DRAFT', 'Danh mục không tồn tại.', 'categoryId');
     }
     const category = data.categoryId ? await listingRepository.findCategory(data.categoryId, tx) : null;
-    if (category) validateAttributes(data.attributes, category.metadata, false);
+    // Nháp chưa chọn (hoặc chọn sai) danh mục con thì bỏ danh mục con, thuộc tính xét theo danh mục cha
+    if (category) {
+      const { child, metadata } = resolveSubcategory(category.metadata, data.subcategoryId);
+      data.subcategoryId = child?.id ?? null;
+      validateAttributes(data.attributes, metadata, false);
+    }
     await updateOwnedListing(tx, id, ownerId, current.status, { ...data, status: ListingStatus.DRAFT, reviewReason: null });
     // Tin đã duyệt đưa về nháp: bản sửa chờ duyệt không còn dùng (nháp đã chứa nội dung mới)
     if (current.revision) await listingRepository.deleteRevision(tx, id);

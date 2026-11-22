@@ -141,7 +141,7 @@ class _BannerFrame extends StatelessWidget {
       button: banner.route != null,
       label: AppLocalizations.of(context)!.homeBannerTooltip,
       child: Material(
-        color: AppColors.background,
+        color: AppColors.fill,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: radius),
         child: InkWell(

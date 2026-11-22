@@ -33,9 +33,9 @@ class AppButton extends StatelessWidget {
             children: [
               const AppLoadingIndicator(
                 dotSize: 5,
-                color: AppColors.textPrimary,
+                color: AppColors.actionPrimaryDark,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Text(label),
             ],
           )
@@ -44,8 +44,8 @@ class AppButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 20),
-                const SizedBox(width: 8),
+                Icon(icon, size: 18),
+                const SizedBox(width: 6),
               ],
               Text(label),
             ],
@@ -67,8 +67,8 @@ class AppButton extends StatelessWidget {
         AppButtonVariant.secondary => OutlinedButton(
           onPressed: callback,
           style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: AppColors.primary),
-            foregroundColor: AppColors.primaryDark,
+            side: const BorderSide(color: AppColors.actionPrimary),
+            foregroundColor: AppColors.actionPrimaryDark,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius),
             ),

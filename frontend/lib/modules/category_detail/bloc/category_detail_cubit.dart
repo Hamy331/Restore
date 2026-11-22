@@ -48,8 +48,12 @@ class CategoryDetailCubit extends Cubit<CategoryDetailState> {
     _applyFilter(state.filter.copyWith(sort: sort));
   }
 
-  void toggleDeal(ListingDealType type) =>
-      _applyFilter(state.filter.toggleDeal(type));
+  /// Chọn danh mục con (null là tất cả); bộ lọc thuộc tính của danh mục con
+  /// cũ được bỏ
+  void selectSubcategory(String? id) {
+    if (id == state.filter.subcategoryId) return;
+    _applyFilter(state.filter.withSubcategory(id));
+  }
 
   /// Nhận bộ lọc từ sheet Bộ lọc đầy đủ. Danh mục luôn giữ theo trang.
   void applyFilter(ListingFilter filter) {

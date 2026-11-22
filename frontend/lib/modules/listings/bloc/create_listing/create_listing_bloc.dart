@@ -55,12 +55,6 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         (draft) => draft.copyWith(originalPrice: () => event.originalPrice),
       ),
     );
-    on<NegotiableChanged>(
-      (event, emit) => _updateDraft(
-        emit,
-        (draft) => draft.copyWith(isNegotiable: event.isNegotiable),
-      ),
-    );
     on<ExchangeWishChanged>(
       (event, emit) => _updateDraft(
         emit,
@@ -160,12 +154,16 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     CategorySelected event,
     Emitter<CreateListingState> emit,
   ) {
-    if (event.categoryId == state.draft.categoryId) return;
-    // Mỗi danh mục có bộ thông tin chi tiết riêng nên cần làm mới
+    if (event.categoryId == state.draft.categoryId &&
+        event.subcategoryId == state.draft.subcategoryId) {
+      return;
+    }
+    // Mỗi danh mục (con) có bộ thông tin chi tiết riêng nên cần làm mới
     emit(
       state.copyWith(
         draft: state.draft.copyWith(
           categoryId: event.categoryId,
+          subcategoryId: event.subcategoryId,
           attributes: const {},
           // Mỗi danh mục có số ngày miễn phí / tối đa riêng: chọn lại từ đầu
           displayDays: () => null,

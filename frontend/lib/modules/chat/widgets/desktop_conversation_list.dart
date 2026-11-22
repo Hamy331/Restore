@@ -12,6 +12,7 @@ import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import '../bloc/conversations/conversations_cubit.dart';
 import '../bloc/conversations/conversations_state.dart';
 import '../models/chat_models.dart';
+import 'conversation_tabs.dart';
 
 /// Danh sách hội thoại cho web desktop (cửa sổ chat nổi và trang Tin nhắn):
 /// ReStore AI ghim ở đầu, sau đó là các cuộc trò chuyện với người bán/mua.
@@ -41,7 +42,7 @@ class DesktopConversationList extends StatefulWidget {
 
 class _DesktopConversationListState extends State<DesktopConversationList> {
   final _query = TextEditingController();
-  bool _unreadOnly = false;
+  var _tab = ConversationTab.all;
 
   @override
   void dispose() {
@@ -72,10 +73,8 @@ class _DesktopConversationListState extends State<DesktopConversationList> {
                       hintText: t('Tìm theo tên', 'Search by name'),
                       hintStyle: const TextStyle(fontSize: 13),
                       prefixIcon: const Icon(AppIcons.search, size: 16),
-                      prefixIconConstraints: const BoxConstraints(
-                        minWidth: 36,
-                      ),
-                      fillColor: AppColors.background,
+                      prefixIconConstraints: const BoxConstraints(minWidth: 36),
+                      fillColor: AppColors.fill,
                       contentPadding: EdgeInsets.zero,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -89,18 +88,17 @@ class _DesktopConversationListState extends State<DesktopConversationList> {
                   ),
                 ),
               ),
-              const SizedBox(width: 6),
-              ChoiceChip(
-                label: Text(t('Chưa đọc', 'Unread')),
-                selected: _unreadOnly,
-                onSelected: (value) => setState(() => _unreadOnly = value),
-                labelStyle: const TextStyle(fontSize: 12),
-                visualDensity: VisualDensity.compact,
-                selectedColor: const Color(0xFFDDE4F7),
-                side: const BorderSide(color: AppColors.border),
-                showCheckmark: false,
-              ),
             ],
+          ),
+        ),
+        ConversationTabs(
+          selected: _tab,
+          onChanged: (tab) => setState(() => _tab = tab),
+          padding: EdgeInsets.fromLTRB(
+            compact ? 10 : 14,
+            0,
+            compact ? 10 : 14,
+            compact ? 10 : 12,
           ),
         ),
         const Divider(height: 1, color: AppColors.border),
@@ -109,7 +107,7 @@ class _DesktopConversationListState extends State<DesktopConversationList> {
             builder: (context, state) {
               final query = _query.text.trim().toLowerCase();
               final items = state.conversations.where((chat) {
-                if (_unreadOnly && chat.unreadCount == 0) return false;
+                if (!_tab.matches(chat)) return false;
                 return query.isEmpty ||
                     chat.otherUser.fullName.toLowerCase().contains(query);
               }).toList();
@@ -191,10 +189,12 @@ class _AssistantTile extends StatelessWidget {
           color: selected ? const Color(0xFFDDE4F7) : const Color(0xFFEEF2FC),
           border: Border(
             left: BorderSide(
-              color: selected ? AppHeaderPalette.desktopBar : Colors.transparent,
+              color: selected
+                  ? AppHeaderPalette.desktopBar
+                  : Colors.transparent,
               width: 3,
             ),
-            bottom: const BorderSide(color: Color(0xFFF5F1EA)),
+            bottom: const BorderSide(color: Color(0xFFF0F1F3)),
           ),
         ),
         child: InkWell(
@@ -320,10 +320,12 @@ class _ConversationTile extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               left: BorderSide(
-                color: selected ? AppHeaderPalette.desktopBar : Colors.transparent,
+                color: selected
+                    ? AppHeaderPalette.desktopBar
+                    : Colors.transparent,
                 width: 3,
               ),
-              bottom: const BorderSide(color: Color(0xFFF5F1EA)),
+              bottom: const BorderSide(color: Color(0xFFF0F1F3)),
             ),
           ),
           padding: EdgeInsets.symmetric(
@@ -392,6 +394,10 @@ class _ConversationTile extends StatelessWidget {
                             : AppColors.textSecondary,
                       ),
                     ),
+                    if (conversation.negotiating) ...[
+                      const SizedBox(height: 4),
+                      const NegotiatingTag(),
+                    ],
                   ],
                 ),
               ),
@@ -439,10 +445,8 @@ class _ConversationTile extends StatelessWidget {
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => const SizedBox(
-                      width: 40,
-                      height: 40,
-                    ),
+                    errorBuilder: (_, _, _) =>
+                        const SizedBox(width: 40, height: 40),
                   ),
                 ),
               ],

@@ -257,7 +257,6 @@ class TrustedShopMockData {
           'description': '',
           'price': price,
           'originalPrice': _originalPrices[id],
-          'isNegotiable': shop['verificationType'] != 'OFFICIAL_BRAND',
           'condition': condition,
           'status': 'AVAILABLE',
           'allowSale': true,

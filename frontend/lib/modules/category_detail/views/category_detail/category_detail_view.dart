@@ -17,16 +17,35 @@ class CategoryDetailView extends StatelessWidget {
   final String categoryId;
   final CategoryModel? category;
 
+  /// Danh mục con mở sẵn (`?sub=`), VD gợi ý "Điện thoại" trong ô tìm kiếm
+  final String? subcategoryId;
+
+  /// Mở từ trang tìm kiếm (`?from=search`): chạm ô tìm kiếm thì quay lại
+  /// trang tìm kiếm đó thay vì mở thêm trang mới, như trang kết quả
+  final bool fromSearch;
+
   const CategoryDetailView({
     super.key,
     required this.categoryId,
     this.category,
+    this.subcategoryId,
+    this.fromSearch = false,
   });
 
   static const String path = '/categories/:id';
 
   /// Đường dẫn mở trang của danh mục [categoryId]
-  static String location(String categoryId) => '/categories/$categoryId';
+  static String location(
+    String categoryId, {
+    String? subcategoryId,
+    bool fromSearch = false,
+  }) {
+    final query = {'sub': ?subcategoryId, if (fromSearch) 'from': 'search'};
+    return Uri(
+      path: '/categories/$categoryId',
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +58,11 @@ class CategoryDetailView extends StatelessWidget {
         category: category,
         filter: CategoryDetailState.defaultFilterFor(
           categoryId,
-        ).withUserArea(context),
+        ).withUserArea(context).withSubcategory(subcategoryId),
       )..start(),
-      child: const TResponsiveLayout(
-        mobile: CategoryDetailMobileView(),
-        desktop: CategoryDetailMobileView(wide: true),
+      child: TResponsiveLayout(
+        mobile: CategoryDetailMobileView(fromSearch: fromSearch),
+        desktop: const CategoryDetailMobileView(wide: true),
       ),
     );
   }

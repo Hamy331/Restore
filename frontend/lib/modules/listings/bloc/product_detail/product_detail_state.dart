@@ -42,7 +42,7 @@ class ProductDetailChange extends Equatable {
             : ProductDetailChangeKind.unavailable,
       );
     }
-    if (old.price != now.price || old.isNegotiable != now.isNegotiable) {
+    if (old.price != now.price) {
       return ProductDetailChange(
         ProductDetailChangeKind.price,
         previousPrice: old.price,

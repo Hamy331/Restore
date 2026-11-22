@@ -48,11 +48,11 @@ function listingContext(context: Thread['contexts'][number] | undefined | null, 
     contextId: context.id,
     ...(listing && {
       product: repository.listingPreview(listing),
+      // Mọi tin có bán đều trả giá được (không còn tuỳ chọn "có thể thương lượng")
       canOffer:
         listing.ownerId !== selfId &&
         listing.status === 'AVAILABLE' &&
         listing.allowSale &&
-        listing.isNegotiable &&
         !trade,
     }),
     title: trade?.title ?? listing!.title,
@@ -94,6 +94,14 @@ async function summaries(selfId: string, threads: Thread[]) {
       otherUser: { ...peer.user, isOnline: online(peer.user.lastActiveAt) },
       lastMessage: latest.get(stat?.latest ?? 0) ?? null,
       unreadCount: stat?.unread ?? 0,
+      // Nhãn "Đang thương lượng": đã trả giá trên tin này, tin còn bán và chưa chốt giao dịch
+      negotiating:
+        !!context?.product &&
+        row.contexts[0]?.listing?.status === 'AVAILABLE' &&
+        !row.contexts[0]?.trade &&
+        !!stat?.offers?.includes(context.contextId),
+      // Người kia đã đọc tới tin nào: tin của mình có sequence <= số này là "Đã xem"
+      otherReadSequence: peer.lastReadSequence,
     };
   });
 }
@@ -138,6 +146,12 @@ export async function sendMessage(selfId: string, id: string, body: unknown) {
   if (!text || text.length > 2000)
     throw new AppError(422, 'INVALID_MESSAGE', 'Tin nhắn phải có 1–2000 ký tự.');
   let contextId: string | undefined;
+  const offerPrice = input.offerPrice;
+  if (
+    offerPrice !== undefined &&
+    (!Number.isSafeInteger(offerPrice) || (offerPrice as number) <= 0 || input.listingId === undefined)
+  )
+    throw new AppError(422, 'INVALID_OFFER', 'Giá đề nghị không hợp lệ.');
   if (input.listingId !== undefined || input.attachListing === true) {
     const listingId = input.listingId === undefined ? undefined : parseId(input.listingId, 'listingId');
     const context = await prisma.conversation.findFirst({
@@ -168,7 +182,15 @@ export async function sendMessage(selfId: string, id: string, body: unknown) {
   if (prior) return prior;
   try {
     return {
-      message: await repository.createMessage(root, selfId, clientId, text, contextId),
+      message: await repository.createMessage(
+        root,
+        selfId,
+        clientId,
+        text,
+        contextId,
+        undefined,
+        offerPrice as number | undefined,
+      ),
       created: true,
     };
   } catch (error) {

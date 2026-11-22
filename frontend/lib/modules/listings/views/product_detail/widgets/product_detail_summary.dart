@@ -40,9 +40,12 @@ class ProductDetailSummary extends StatelessWidget {
         previousPrice ?? (discount == null ? null : listing.originalPrice);
     final createdAt = listing.createdAt;
     final tags = [
-      ?listing.condition?.label(l10n),
-      ?detail.category?.name.of(context),
-      if (price != null && listing.isNegotiable) l10n.negotiable,
+      ?listing.condition?.shortLabel(l10n),
+      // Danh mục con cụ thể hơn (Điện thoại) nên ưu tiên hơn danh mục cha
+      ?(detail.category?.subcategory?.name ?? detail.category?.name)?.of(
+        context,
+      ),
+      if (detail.canMakeOffer) l10n.negotiable,
       if (listing.allowExchange) l10n.tradeExchangeAccepted,
     ];
 
@@ -231,7 +234,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: AppColors.fill,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppColors.border),
       ),

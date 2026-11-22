@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
-import { foldedText } from '../listings/index.js';
+import { accented, allTermsIn, folded, foldedText, searchTerms, tokens } from '../listings/index.js';
 import { HISTORY_LIMIT, MIN_SHARED_USERS } from './search.type.js';
 
 /** Đưa từ khoá lên đầu lịch sử (gộp bản trùng theo [normalized]), chỉ giữ HISTORY_LIMIT từ khoá mới nhất */
@@ -51,35 +51,34 @@ const containsAll = (column: Prisma.Sql, words: string[]) =>
   Prisma.join(words.map((word) => Prisma.sql`POSITION(${word} IN ${column}) > 0`), ' AND ');
 
 /**
- * Gợi ý khi gõ: từ khoá nhiều người tìm (trong lịch sử), tên chuyên mục, rồi tới tiêu đề tin đang hiển thị,
- * cùng chứa đủ mọi từ đã gõ (không phân biệt dấu); cái bắt đầu bằng cụm từ khoá lên trước.
+ * Gợi ý khi gõ: từ khoá nhiều người tìm (trong lịch sử) rồi tới tiêu đề tin đang hiển thị, cùng chứa đủ mọi
+ * từ đã gõ theo cùng quy tắc với tìm tin (nguyên từ, gõ có dấu thì so đúng dấu); cái bắt đầu bằng cụm từ khoá
+ * lên trước. Tên danh mục do app tự gợi ý (bấm là mở trang danh mục) nên không trả ở đây.
  */
-export async function findSuggestions(words: string[], limit: number) {
+export async function findSuggestions(query: { words: string[]; exactWords?: string[] }, limit: number) {
+  const { words } = query;
+  const terms = searchTerms(query);
   const phrase = words.join(' ');
-  const [keywords, categories, titles] = await Promise.all([
+  const [keywords, titles] = await Promise.all([
     prisma.$queryRaw<{ text: string }[]>`
       SELECT (array_agg(keyword ORDER BY "searchedAt" DESC))[1] AS text
       FROM "SearchHistory"
-      WHERE ${containsAll(Prisma.sql`normalized`, words)}
+      WHERE ${allTermsIn(terms, tokens(Prisma.sql`normalized`), accented(Prisma.sql`keyword`))}
       GROUP BY normalized
       HAVING COUNT(DISTINCT "userId") >= ${MIN_SHARED_USERS}
       ORDER BY (POSITION(${phrase} IN normalized) = 1) DESC, COUNT(DISTINCT "userId") DESC, MAX("searchedAt") DESC, normalized
       LIMIT ${limit}`,
-    prisma.$queryRaw<{ text: string }[]>`
-      SELECT c.name AS text FROM "Category" c
-      WHERE c.active AND ${containsAll(foldedText(Prisma.sql`c.name`), words)}
-      ORDER BY c.name`,
     prisma.$queryRaw<{ text: string }[]>`
       SELECT t.title AS text FROM (
         SELECT l.id, l.title, ${foldedText(Prisma.sql`l.title`)} AS f, COALESCE(l."publishedAt", l."createdAt") AS at
         FROM "Listing" l JOIN "User" u ON u.id = l."ownerId" AND u.status = 'ACTIVE'
         WHERE l.status = 'AVAILABLE'
       ) t
-      WHERE ${containsAll(Prisma.sql`t.f`, words)}
+      WHERE ${allTermsIn(terms, folded(Prisma.sql`t.title`), accented(Prisma.sql`t.title`))}
       ORDER BY (POSITION(${phrase} IN t.f) = 1) DESC, t.at DESC, t.id
       LIMIT ${limit}`,
   ]);
-  return [...keywords, ...categories, ...titles].map((row) => row.text);
+  return [...keywords, ...titles].map((row) => row.text);
 }
 
 /* ---------- Tìm cửa hàng, người dùng ---------- */

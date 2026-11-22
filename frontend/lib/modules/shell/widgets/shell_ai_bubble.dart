@@ -166,7 +166,7 @@ class _BubbleFace extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.primary.withValues(
+                      color: AppColors.actionPrimary.withValues(
                         alpha: 0.45 * (1 - t),
                       ),
                       width: 2,

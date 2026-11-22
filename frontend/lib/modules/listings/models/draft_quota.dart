@@ -16,7 +16,7 @@ class DraftQuota extends Equatable {
   /// Giới hạn mẫu theo gói: Cá nhân 3, Bán chuyên 10, Cửa hàng 30
   static int mockLimitFor(SubscriptionPlan plan) => switch (plan) {
     SubscriptionPlan.personal => personalLimit,
-    SubscriptionPlan.pro => 10,
+    SubscriptionPlan.basic => 10,
     SubscriptionPlan.shop => 30,
   };
 

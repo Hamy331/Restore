@@ -4,7 +4,11 @@ import { findWard } from '../src/modules/catalog/catalog.service.js';
 import { listingLocation } from '../src/modules/catalog/catalog.validator.js';
 import { DEMO_PASSWORD, demoImages } from './seed/demo.js';
 import { seedUuid } from './seed/seed-id.js';
+import { LEGACY_PARENT, mapLegacyListing } from './seed/legacy-categories.js';
 import { PRO_SELLERS, SHOPS, type SeedListing } from './seed/shops.js';
+
+/** Danh mục cũ trong dữ liệu mẫu → danh mục cha mới */
+const parentOf = (id: string) => LEGACY_PARENT[id] ?? id;
 
 /**
  * Shop uy tín và tài khoản Bán chuyên để test trang Shop uy tín:
@@ -48,16 +52,17 @@ async function upsertListings(ownerName: string, key: string, ward: string, sell
   for (const [index, item] of listings.entries()) {
     const id = listingIdOf(ownerName, index);
     const publishedAt = new Date(now - item.daysAgo * DAY - index * 11 * 60 * 1000);
+    const mapped = mapLegacyListing(item);
     const data = {
-      ownerId, categoryId: item.categoryId, title: item.title, description: item.description,
+      ownerId, categoryId: mapped.categoryId, subcategoryId: mapped.subcategoryId, title: item.title, description: item.description,
       price: new Prisma.Decimal(item.price),
       originalPrice: item.originalPrice ? new Prisma.Decimal(item.originalPrice) : null,
       isNegotiable: false, condition: item.condition, status: 'AVAILABLE' as const, reviewReason: null,
       allowSale: true, allowExchange: item.allowExchange ?? false, exchangeWish: item.exchangeWish ?? '',
-      sellerType, attributes: item.attributes, location: location as Prisma.InputJsonObject,
+      sellerType, attributes: mapped.attributes as Prisma.InputJsonObject, location: location as Prisma.InputJsonObject,
       images: demoImages(`${key}-${index + 1}`, 3),
       createdAt: publishedAt, publishedAt,
-      expiresAt: new Date(publishedAt.getTime() + displayDays(item.categoryId) * DAY),
+      expiresAt: new Date(publishedAt.getTime() + displayDays(mapped.categoryId) * DAY),
       startsAt: null, displayDays: null, paidDays: 0, paidCredits: 0,
     };
     await prisma.listing.upsert({ where: { id }, create: { id, ...data }, update: data });
@@ -98,14 +103,14 @@ async function seedAll() {
       password, status: 'ACTIVE' as const, role: 'USER' as const,
     };
     await prisma.user.upsert({ where: { id }, create: { id, ...user }, update: user });
-    await subscription(id, pro.id, shop.categoryIds[0]);
+    await subscription(id, pro.id, parentOf(shop.categoryIds[0]!));
     const verifiedAt = new Date(now - shop.verifiedDaysAgo * DAY);
     const data = {
       ownerId: id, name: shop.name, tagline: shop.tagline, description: shop.description,
       logoUrl: `assets/images/shops/${shop.key}.png`, coverUrl: `https://picsum.photos/seed/restore-shop-${shop.key}/1200/600`,
       accentColor: shop.accentColor, verificationType: shop.verificationType, verifiedAt,
       certificateCode: `RS-${verifiedAt.getFullYear()}-${String(SHOPS.indexOf(shop) + 101).padStart(5, '0')}`,
-      categoryIds: shop.categoryIds, address: areaOf(shop.ward).label, createdAt: new Date(verifiedAt.getTime() - 7 * DAY),
+      categoryIds: [...new Set(shop.categoryIds.map(parentOf))], address: areaOf(shop.ward).label, createdAt: new Date(verifiedAt.getTime() - 7 * DAY),
     };
     await prisma.shop.upsert({ where: { id }, create: { id, ...data }, update: data });
     await upsertListings(`shop-${shop.key}`, shop.key, shop.ward, 'BUSINESS', shop.listings, now, daysFor(pro.freeDaysPercent));
@@ -130,7 +135,7 @@ async function seedAll() {
       password, status: 'ACTIVE' as const, role: 'USER' as const,
     };
     await prisma.user.upsert({ where: { id }, create: { id, ...user }, update: user });
-    await subscription(id, basic.id, seller.categoryId);
+    await subscription(id, basic.id, parentOf(seller.categoryId));
     await upsertListings(`pro-seller-${seller.key}`, seller.key, seller.ward, 'BUSINESS', seller.listings, now, daysFor(basic.freeDaysPercent));
   }
 

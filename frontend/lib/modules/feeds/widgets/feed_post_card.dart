@@ -289,7 +289,7 @@ class _Pill extends StatelessWidget {
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) => Material(
-    color: AppColors.background,
+    color: AppColors.fill,
     shape: const StadiumBorder(),
     clipBehavior: Clip.antiAlias,
     child: InkWell(

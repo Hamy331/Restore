@@ -3,6 +3,8 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/formatters/time_ago_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
+import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/search/app_search_list_tile.dart';
 import 'package:restore/shared/widgets/search/app_search_section_header.dart';
 
@@ -17,6 +19,9 @@ class SearchIdleContent extends StatelessWidget {
   final ValueChanged<SearchHistoryEntry> onRemoveHistory;
   final VoidCallback onClearHistory;
 
+  /// Co theo nội dung (khung gợi ý thả xuống dưới ô tìm kiếm trên desktop)
+  final bool shrinkWrap;
+
   const SearchIdleContent({
     super.key,
     required this.state,
@@ -24,14 +29,28 @@ class SearchIdleContent extends StatelessWidget {
     required this.onNearMe,
     required this.onRemoveHistory,
     required this.onClearHistory,
+    this.shrinkWrap = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final bottom = MediaQuery.paddingOf(context).bottom;
+    // Desktop: gợi ý dạng chip, lịch sử 2 cột thay vì danh sách dọc dài
+    final wide = isDesktopLayout(context);
+    Widget historyTile(SearchHistoryEntry entry) => AppSearchListTile(
+      icon: AppIcons.history,
+      boxed: true,
+      title: entry.keyword,
+      subtitle: entry.searchedAt == null
+          ? null
+          : TimeAgoFormatter.format(entry.searchedAt!, l10n),
+      onTap: () => onSubmit(entry.keyword),
+      onRemove: () => onRemoveHistory(entry),
+    );
 
     return ListView(
+      shrinkWrap: shrinkWrap,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.only(top: 10, bottom: bottom + 16),
       children: [
@@ -46,11 +65,25 @@ class SearchIdleContent extends StatelessWidget {
         if (state.trending.isNotEmpty) ...[
           const Divider(height: 20, indent: 16, endIndent: 16),
           AppSearchSectionHeader(title: l10n.searchTipsTitle),
-          for (final keyword in state.trending)
-            AppSearchListTile(
-              title: keyword,
-              onTap: () => onSubmit(keyword),
-            ),
+          if (wide)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final keyword in state.trending)
+                    AppFilterChip(
+                      label: keyword,
+                      icon: AppIcons.search,
+                      onTap: () => onSubmit(keyword),
+                    ),
+                ],
+              ),
+            )
+          else
+            for (final keyword in state.trending)
+              AppSearchListTile(title: keyword, onTap: () => onSubmit(keyword)),
         ],
         if (state.history.isNotEmpty) ...[
           AppSearchSectionHeader(
@@ -58,17 +91,20 @@ class SearchIdleContent extends StatelessWidget {
             actionLabel: l10n.searchClearHistory,
             onAction: onClearHistory,
           ),
-          for (final entry in state.history)
-            AppSearchListTile(
-              icon: AppIcons.history,
-              boxed: true,
-              title: entry.keyword,
-              subtitle: entry.searchedAt == null
-                  ? null
-                  : TimeAgoFormatter.format(entry.searchedAt!, l10n),
-              onTap: () => onSubmit(entry.keyword),
-              onRemove: () => onRemoveHistory(entry),
-            ),
+          if (wide)
+            LayoutBuilder(
+              builder: (context, constraints) => Wrap(
+                children: [
+                  for (final entry in state.history)
+                    SizedBox(
+                      width: constraints.maxWidth / 2,
+                      child: historyTile(entry),
+                    ),
+                ],
+              ),
+            )
+          else
+            for (final entry in state.history) historyTile(entry),
         ],
       ],
     );

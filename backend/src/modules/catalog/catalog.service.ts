@@ -61,7 +61,7 @@ export async function listCategories() {
   const categories = await catalogRepository.findActiveCategories();
   const order = new Map(CATEGORY_ORDER.map((id, index) => [id, index]));
   categories.sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
-  return categories.map(toCategoryDto);
+  return categories.map((category) => toCategoryDto(category));
 }
 
 export const listProvinces = () => PROVINCES;

@@ -98,8 +98,8 @@ class _SellerState extends State<ProductDetailSellerCard> {
               const SizedBox(height: 20),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xffffd21a),
-                  foregroundColor: Colors.black,
+                  backgroundColor: AppColors.actionPrimary,
+                  foregroundColor: AppColors.onAction,
                 ),
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(l.sellerGotIt),
@@ -152,34 +152,43 @@ class _SellerState extends State<ProductDetailSellerCard> {
                                     content: Text(l.productActionFailed),
                                   ),
                                 ),
-                            builder: (context, state) => Material(
-                              color: const Color(0xffffd21a),
-                              shape: const CircleBorder(),
-                              child: IconButton(
-                                constraints: const BoxConstraints.tightFor(
-                                  width: 25,
-                                  height: 25,
-                                ),
-                                padding: EdgeInsets.zero,
-                                tooltip: state.profile?.followsSeller == true
-                                    ? l.feedUnfollow
-                                    : l.feedFollow,
-                                onPressed: state.following
-                                    ? null
-                                    : () async {
-                                        if (!widget.signedIn()) return;
-                                        final c = context
-                                            .read<PublicProfileCubit>();
-                                        if (c.state.profile == null) {
-                                          await c.load();
-                                        }
-                                        if (!c.isClosed) await c.toggleFollow();
-                                      },
-                                icon: Icon(
-                                  state.profile?.followsSeller == true
-                                      ? Icons.check
-                                      : Icons.add,
-                                  size: 17,
+                            builder: (context, state) => Tooltip(
+                              message: state.profile?.followsSeller == true
+                                  ? l.feedUnfollow
+                                  : l.feedFollow,
+                              child: SizedBox.square(
+                                dimension: 26,
+                                child: Material(
+                                  color: AppColors.actionPrimary,
+                                  shape: const CircleBorder(
+                                    side: BorderSide(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: InkWell(
+                                    onTap: state.following
+                                        ? null
+                                        : () async {
+                                            if (!widget.signedIn()) return;
+                                            final c = context
+                                                .read<PublicProfileCubit>();
+                                            if (c.state.profile == null) {
+                                              await c.load();
+                                            }
+                                            if (!c.isClosed) {
+                                              await c.toggleFollow();
+                                            }
+                                          },
+                                    child: Icon(
+                                      state.profile?.followsSeller == true
+                                          ? Icons.check
+                                          : Icons.add,
+                                      size: 15,
+                                      color: AppColors.onAction,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -210,7 +219,7 @@ class _SellerState extends State<ProductDetailSellerCard> {
                           ),
                           if (shop || pro)
                             Tooltip(
-                              message: shop ? l.planShop : l.planPro,
+                              message: shop ? l.planShop : l.planBasic,
                               child: Icon(
                                 shop
                                     ? Icons.storefront
@@ -299,8 +308,8 @@ class _SellerState extends State<ProductDetailSellerCard> {
                   FilledButton(
                     onPressed: _sending ? null : _send,
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xffffd21a),
-                      foregroundColor: Colors.black,
+                      backgroundColor: AppColors.actionPrimary,
+                      foregroundColor: AppColors.onAction,
                     ),
                     child: Text(l.listingSend),
                   ),
@@ -392,11 +401,7 @@ class _Avatar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primarySoft, Color(0xFFFFE0B0)],
-        ),
+        color: AppColors.fill,
         border: Border.all(color: AppColors.surface, width: 2),
         boxShadow: const [
           BoxShadow(
