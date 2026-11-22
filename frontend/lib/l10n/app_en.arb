@@ -340,6 +340,8 @@
   "tapHeartToRemove": "Tap ♡ to remove",
   "emptySavedTitle": "No saved listings yet",
   "emptySavedDescription": "Save listings you like to find them faster later.",
+  "recentlyViewedEmptyTitle": "No recently viewed listings",
+  "recentlyViewedEmptyBody": "Listings you open will show up here so you can get back to them.",
   "exploreProducts": "Explore products",
   "today": "Today",
   "yesterday": "Yesterday",

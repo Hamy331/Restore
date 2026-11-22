@@ -242,7 +242,11 @@ void main() {
       await tester.pump();
       await tester.tap(submit);
       expect(repository.calls, 1);
-      expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+      final button = find.descendant(
+        of: submit,
+        matching: find.byType(FilledButton),
+      );
+      expect(tester.widget<FilledButton>(button).onPressed, isNull);
       repository.pending.complete();
       await tester.pumpAndSettle();
       expect(find.byType(ReportListingSheet), findsNothing);

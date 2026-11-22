@@ -26,6 +26,7 @@ bool isAccountSectionPath(String path, {String? userId}) {
     MyReviewsView.path,
     MyReviewsView.ratingsPath,
     SavedListingsView.path,
+    SavedListingsView.recentPath,
   };
   const prefixes = [
     '/credits',
@@ -155,6 +156,11 @@ class _Sidebar extends StatelessWidget {
         [
           _Item(AppIcons.following, l.homeQuickFollowing, '/following'),
           _Item(AppIcons.favorite, l.savedListings, SavedListingsView.path),
+          _Item(
+            AppIcons.clock,
+            l.accRecentlyViewed,
+            SavedListingsView.recentPath,
+          ),
           _Item(AppIcons.wantedAlert, l.homeQuickWanted, '/wanted-alerts'),
         ],
       ),

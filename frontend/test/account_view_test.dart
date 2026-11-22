@@ -103,8 +103,11 @@ void main() {
     await tester.tap(find.byTooltip('Menu và cài đặt'));
     await tester.pumpAndSettle();
     expect(find.text('Xu ReStore'), findsOneWidget);
-    expect(find.text('Đánh giá từ tôi'), findsOneWidget);
+    expect(find.text('Đánh giá của tôi'), findsOneWidget);
     expect(find.text('Cửa hàng / chuyên trang'), findsOneWidget);
+    // Menu dài hơn màn hình test, cuộn tới nút Đăng xuất trước khi bấm
+    await tester.ensureVisible(find.text('Đăng xuất'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Đăng xuất'));
     await tester.pumpAndSettle();
     expect(find.text('Đăng xuất khỏi ReStore?'), findsOneWidget);

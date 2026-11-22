@@ -737,6 +737,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Save listings you like to find them faster later.';
 
   @override
+  String get recentlyViewedEmptyTitle => 'No recently viewed listings';
+
+  @override
+  String get recentlyViewedEmptyBody =>
+      'Listings you open will show up here so you can get back to them.';
+
+  @override
   String get exploreProducts => 'Explore products';
 
   @override

@@ -1400,6 +1400,18 @@ abstract class AppLocalizations {
   /// **'Save listings you like to find them faster later.'**
   String get emptySavedDescription;
 
+  /// No description provided for @recentlyViewedEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No recently viewed listings'**
+  String get recentlyViewedEmptyTitle;
+
+  /// No description provided for @recentlyViewedEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings you open will show up here so you can get back to them.'**
+  String get recentlyViewedEmptyBody;
+
   /// No description provided for @exploreProducts.
   ///
   /// In en, this message translates to:

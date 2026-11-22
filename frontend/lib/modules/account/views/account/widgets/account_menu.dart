@@ -11,6 +11,7 @@ import '../../../../trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import '../../../widgets/profile_header.dart';
 import '../../my_reviews/my_reviews_view.dart';
 import 'package:restore/modules/saved_listings/views/saved_listings_view.dart';
+import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import '../../../../plans/views/plans/plans_view.dart';
 
 /// Báo tính năng chưa có màn hình; giữ nút theo thiết kế Figma.
@@ -66,15 +67,16 @@ void showAccountMenu(BuildContext context) {
                           l.accSaved,
                           onTap: () => open(SavedListingsView.path),
                         ),
+                        // Tìm kiếm đã lưu = các thông báo "Báo khi có hàng"
                         _MenuItem(
                           AppIcons.search,
                           l.accSavedSearches,
-                          onTap: soon,
+                          onTap: () => open(WantedAlertsView.path),
                         ),
                         _MenuItem(
                           AppIcons.clock,
                           l.accRecentlyViewed,
-                          onTap: soon,
+                          onTap: () => open(SavedListingsView.recentPath),
                         ),
                         _MenuItem(
                           AppIcons.star,

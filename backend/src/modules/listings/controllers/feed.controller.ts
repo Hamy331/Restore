@@ -15,3 +15,8 @@ export async function listRecommended(req: AuthRequest, res: Response) {
   const { query } = getInput<ValidatedInput<RecommendedQuery>>(res);
   ok(res, await feedService.listRecommended(req.user?.userId, query));
 }
+
+export async function listByIds(req: AuthRequest, res: Response) {
+  const { query } = getInput<ValidatedInput<{ ids: string[] }>>(res);
+  ok(res, await feedService.listByIds(req.user?.userId, query.ids));
+}

@@ -5,6 +5,8 @@ import 'package:restore/modules/listings/data/mock_favorite_store.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/models/paged_result.dart';
 
+import '../data/recently_viewed_store.dart';
+
 /// Nguồn dữ liệu trang Tin đã lưu
 abstract class SavedListingsRepository {
   static const int pageSize = 20;
@@ -12,6 +14,11 @@ abstract class SavedListingsRepository {
   factory SavedListingsRepository() => AppEnvironment.useMockData
       ? MockSavedListingsRepository()
       : ApiSavedListingsRepository();
+
+  /// Nguồn cho trang Xem gần đây (cùng giao diện với Tin đã lưu)
+  factory SavedListingsRepository.recentlyViewed() => AppEnvironment.useMockData
+      ? MockRecentlyViewedRepository()
+      : ApiRecentlyViewedRepository();
 
   /// Trang [page] (từ 1) của các tin đã lưu, mới lưu trước
   Future<PagedResult<ListingCardItem>> getPage({int page = 1});
@@ -82,5 +89,57 @@ class ApiSavedListingsRepository implements SavedListingsRepository {
     favorite
         ? await _apiClient.dio.put<void>(path)
         : await _apiClient.dio.delete<void>(path);
+  }
+}
+
+/// Trang Xem gần đây: mã tin lấy từ [RecentlyViewedStore], dữ liệu tin tải mới
+/// qua `GET /listings/batch?ids=` (tin đã ẩn / bán / xoá tự bỏ). Một trang duy nhất.
+class ApiRecentlyViewedRepository extends ApiSavedListingsRepository {
+  ApiRecentlyViewedRepository({super.apiClient});
+
+  @override
+  Future<PagedResult<ListingCardItem>> getPage({int page = 1}) async {
+    final ids = await RecentlyViewedStore.ids();
+    if (ids.isEmpty) {
+      return const PagedResult(items: [], page: 1, hasMore: false);
+    }
+    final response = await _apiClient.dio.get<Map<String, dynamic>>(
+      '/listings/batch',
+      queryParameters: {'ids': ids.join(',')},
+    );
+    return PagedResult(
+      items: [
+        for (final item in response.data?['data'] as List? ?? const [])
+          ListingCardItem.fromJson(Map<String, dynamic>.from(item as Map)),
+      ],
+      page: 1,
+      hasMore: false,
+    );
+  }
+}
+
+/// Tin mẫu trang chủ theo thứ tự trong [RecentlyViewedStore]
+class MockRecentlyViewedRepository extends MockSavedListingsRepository {
+  MockRecentlyViewedRepository({super.latency});
+
+  @override
+  Future<PagedResult<ListingCardItem>> getPage({int page = 1}) async {
+    await Future<void>.delayed(latency);
+    final ids = await RecentlyViewedStore.ids();
+    final byId = {
+      for (final json in HomeMockData.listings(DateTime.now()))
+        '${json['id']}': json,
+    };
+    return PagedResult(
+      items: [
+        for (final id in ids)
+          if (byId[id] case final json?)
+            ListingCardItem.fromJson(
+              json,
+            ).copyWith(isFavorite: MockFavoriteStore.contains(id)),
+      ],
+      page: 1,
+      hasMore: false,
+    );
   }
 }

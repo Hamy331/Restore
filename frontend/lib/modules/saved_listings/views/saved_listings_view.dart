@@ -18,26 +18,35 @@ import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import '../bloc/saved_listings_cubit.dart';
 import '../repositories/saved_listings_repository.dart';
 
-/// Route `/saved`: tin người dùng đã lưu (Tài khoản → Đã lưu)
+/// Route `/saved`: tin người dùng đã lưu (Tài khoản → Đã lưu).
+/// [recent] = true: route `/recently-viewed`, các tin vừa mở xem (Tài khoản → Xem gần đây).
 class SavedListingsView extends StatelessWidget {
-  const SavedListingsView({super.key, this.repository});
+  const SavedListingsView({super.key, this.repository, this.recent = false});
 
   /// Thay nguồn dữ liệu khi test
   final SavedListingsRepository? repository;
+  final bool recent;
 
   static const String path = '/saved';
+  static const String recentPath = '/recently-viewed';
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) =>
-        SavedListingsCubit(repository: repository ?? SavedListingsRepository())
-          ..start(),
-    child: const TResponsiveLayout(mobile: _SavedListingsBody()),
+    create: (_) => SavedListingsCubit(
+      repository:
+          repository ??
+          (recent
+              ? SavedListingsRepository.recentlyViewed()
+              : SavedListingsRepository()),
+    )..start(),
+    child: TResponsiveLayout(mobile: _SavedListingsBody(recent: recent)),
   );
 }
 
 class _SavedListingsBody extends StatelessWidget {
-  const _SavedListingsBody();
+  const _SavedListingsBody({required this.recent});
+
+  final bool recent;
 
   static const double _sidePadding = 16;
 
@@ -68,7 +77,7 @@ class _SavedListingsBody extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(
-          l10n.savedListings,
+          recent ? l10n.accRecentlyViewed : l10n.savedListings,
           style: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w700,
@@ -90,9 +99,13 @@ class _SavedListingsBody extends StatelessWidget {
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: FeedbackView(
-                  icon: AppIcons.favorite,
-                  title: l10n.emptySavedTitle,
-                  message: l10n.emptySavedDescription,
+                  icon: recent ? AppIcons.clock : AppIcons.favorite,
+                  title: recent
+                      ? l10n.recentlyViewedEmptyTitle
+                      : l10n.emptySavedTitle,
+                  message: recent
+                      ? l10n.recentlyViewedEmptyBody
+                      : l10n.emptySavedDescription,
                 ),
               ),
             SavedListingsStatus.ready => SliverPadding(
