@@ -6,7 +6,7 @@ import type { UserActionInput, UserIdParams, UserListQuery } from '../admin.dto.
 import * as userService from '../services/user.service.js';
 
 export async function getSelf(req: AuthRequest, res: Response) {
-  ok(res, await userService.getSelf(req.user!.userId));
+  ok(res, userService.getSelf(req.account!));
 }
 
 export async function listMembers(_req: AuthRequest, res: Response) {

@@ -30,7 +30,13 @@ const authUserSelect = {
   status: true,
   authVersion: true,
   suspendedUntil: true,
+  // Thêm các cột hồ sơ để GET /admin/me dùng lại, khỏi đọc user lần nữa
+  fullName: true,
+  username: true,
+  createdAt: true,
+  updatedAt: true,
 } satisfies Prisma.UserSelect;
+export type AuthUser = Prisma.UserGetPayload<{ select: typeof authUserSelect }>;
 
 /**
  * Người dùng cho middleware xác thực (chạy ở mọi request có token).
