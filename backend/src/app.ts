@@ -12,6 +12,8 @@ function corsOptions(): cors.CorsOptions {
   const allowedOrigins = process.env.CORS_ORIGINS?.split(',').map((origin) => origin.trim()).filter(Boolean);
   return {
     exposedHeaders: ['X-Request-Id'],
+    // Web quản trị khác origin với API gửi cookie phiên (chỉ các origin được phép ở dưới)
+    credentials: true,
     origin(origin, callback) {
       const isLocalDevelopmentOrigin =
         process.env.NODE_ENV !== 'production' && !!origin && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);

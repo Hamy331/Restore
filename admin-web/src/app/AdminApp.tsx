@@ -81,7 +81,8 @@ export function AdminApp() {
     return () => window.removeEventListener('hashchange', follow);
   }, []);
   const [busy, setBusy] = useState(false),
-    [restoring, setRestoring] = useState(Session.hasStored),
+    // Cookie phiên là httpOnly nên JS không biết trước có phiên hay không: luôn thử mở lại
+    [restoring, setRestoring] = useState(true),
     [error, setError] = useState('');
   function expired() {
     setAuth(undefined);
