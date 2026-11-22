@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { verifyAccessToken } from '../modules/auth/services/token.service.js';
 import { Role } from '@prisma/client';
-import { findAuthUserById } from '../modules/auth/repositories/auth.repository.js';
+import { findAuthUserById, type AuthUser } from '../modules/auth/repositories/auth.repository.js';
 import { hasPermission, Permission } from '../common/auth/permissions.js';
 
 export interface AuthRequest extends Request {
   user?: { userId: string; email: string; role: Role };
+  /** Bản ghi user middleware vừa đọc (đã kiểm tra trạng thái, phiên) */
+  account?: AuthUser;
 }
 
 export const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -46,6 +48,7 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
       });
     }
     req.user = { userId: user.id, email: user.email, role: user.role };
+    req.account = user;
     next();
   } catch (error) {
     next(error);

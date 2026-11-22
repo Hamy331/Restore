@@ -11,6 +11,27 @@ jobs:
     name: Build & Verify Node.js
     runs-on: ubuntu-latest
 
+    # Database thử cho test API: mỗi file test xoá và dựng lại từ migrations
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: restore_test
+          # Giống Postgres của Supabase CLI: sắp theo mã ký tự, lower() hiểu tiếng Việt (snapshot phụ thuộc thứ tự)
+          POSTGRES_INITDB_ARGS: --locale=C.UTF-8
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/restore_test
+
     defaults:
       run:
         working-directory: ./backend
@@ -32,7 +53,7 @@ jobs:
         if: steps.changes.outputs.backend == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
           cache-dependency-path: "./backend/package-lock.json"
 
@@ -51,3 +72,11 @@ jobs:
       - name: Build TypeScript to JavaScript
         if: steps.changes.outputs.backend == 'true'
         run: npm run build
+
+      - name: Run unit tests
+        if: steps.changes.outputs.backend == 'true'
+        run: npm test
+
+      - name: Run API tests
+        if: steps.changes.outputs.backend == 'true'
+        run: npm run test:api

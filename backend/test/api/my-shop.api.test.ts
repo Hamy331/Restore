@@ -32,7 +32,8 @@ test('my shop: create with store plan, edit, images, name lock', async () => {
   assert.equal((await api.patch('/shops/me', { token, body: { tagline: 'x' } })).body.code, 'SHOP_REQUIRED');
 
   await prisma.storeSubscription.deleteMany({ where: { userId: 'user-seller' } });
-  await prisma.storeSubscription.create({ data: { userId: 'user-seller', packageId: 'pro', categoryId: 'furniture', endsAt: new Date(Date.now() + 20 * DAY) } });
+  // startsAt rõ ràng: mặc định của DB là giờ không múi giờ, so với giờ Node có lúc lệch
+  await prisma.storeSubscription.create({ data: { userId: 'user-seller', packageId: 'pro', categoryId: 'furniture', startsAt: new Date(Date.now() - DAY), endsAt: new Date(Date.now() + 20 * DAY) } });
   const before = await api.get('/shops/me', { token });
   assert.deepEqual([before.body.data.storePlan, before.body.data.canCreate], [true, true]);
 

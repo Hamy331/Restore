@@ -1,0 +1,732 @@
+{
+  "search ban": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing-1",
+          "title": "Bàn gỗ sồi thật",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "originalPrice": null,
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:10:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "isPartner": false,
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false
+        },
+        {
+          "id": "listing-3",
+          "title": "Đèn bàn học cũ",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "originalPrice": null,
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:30:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "isPartner": false,
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": true,
+          "isFavorite": false
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 2,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "search ban go": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing-1",
+          "title": "Bàn gỗ sồi thật",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "originalPrice": null,
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:10:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "isPartner": false,
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 1,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "search den": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing-3",
+          "title": "Đèn bàn học cũ",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "originalPrice": null,
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:30:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "isPartner": false,
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": true,
+          "isFavorite": false
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 1,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "search exchange": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing-2",
+          "title": "Ghế xoay văn phòng",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "originalPrice": null,
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": true,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:20:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "isPartner": false,
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 1,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "search conditions": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "listing-3",
+          "title": "Đèn bàn học cũ",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "originalPrice": null,
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:30:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:30:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "isPartner": false,
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": true,
+          "isFavorite": false
+        },
+        {
+          "id": "listing-2",
+          "title": "Ghế xoay văn phòng",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "originalPrice": null,
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": true,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:20:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:20:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "isPartner": false,
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false
+        },
+        {
+          "id": "listing-1",
+          "title": "Bàn gỗ sồi thật",
+          "description": "Mô tả sản phẩm dùng để kiểm thử API.",
+          "price": "1200000",
+          "originalPrice": null,
+          "isNegotiable": true,
+          "ownerId": "user-seller",
+          "categoryId": "furniture",
+          "status": "AVAILABLE",
+          "updatedAt": "<date>",
+          "allowSale": true,
+          "allowExchange": false,
+          "exchangeWish": "",
+          "sellerType": "PERSONAL",
+          "attributes": {},
+          "location": {
+            "provinceCode": "79",
+            "wardCode": "26740",
+            "province": {
+              "code": "79",
+              "name": "Thành phố Hồ Chí Minh",
+              "level": "province"
+            },
+            "ward": {
+              "code": "26740",
+              "name": "Phường Sài Gòn",
+              "level": "ward",
+              "center": {
+                "latitude": 10.7769,
+                "longitude": 106.7009
+              },
+              "parentCode": "79"
+            },
+            "latitude": 10.7769,
+            "longitude": 106.7009,
+            "geoSource": "ward_center"
+          },
+          "reviewReason": null,
+          "condition": "USED_GOOD",
+          "category": {
+            "id": "furniture",
+            "name": "Nội thất, trang trí"
+          },
+          "images": [],
+          "createdAt": "2026-10-01T00:10:00.000Z",
+          "viewCount": 0,
+          "publishedAt": "2026-10-01T00:10:00.000Z",
+          "expiresAt": null,
+          "startsAt": null,
+          "displayDays": null,
+          "owner": {
+            "id": "user-seller",
+            "fullName": "user-seller",
+            "ratingAverage": 0,
+            "ratingCount": 0
+          },
+          "isPartner": false,
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+          "distanceKm": null,
+          "isFeatured": false,
+          "isFavorite": false
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 3,
+        "totalPages": 1,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "search no match": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "pageSize": 10,
+        "totalItems": 0,
+        "totalPages": 0,
+        "hasMore": false
+      },
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "hasMore": false
+      }
+    }
+  },
+  "search bad sort": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "sort chỉ nhận: relevance, newest, price_asc, price_desc, nearest.",
+      "code": "INVALID_INPUT",
+      "field": "sort"
+    }
+  },
+  "search bad deal": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Kiểu giao dịch không hợp lệ.",
+      "code": "INVALID_QUERY"
+    }
+  },
+  "search nearest without location": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Cần latitude và longitude để xếp tin gần nhất.",
+      "code": "LOCATION_REQUIRED",
+      "field": "location"
+    }
+  },
+  "history as guest": {
+    "status": 401,
+    "body": {
+      "success": false,
+      "error": "Vui lòng đăng nhập để tiếp tục.",
+      "code": "AUTH_REQUIRED"
+    }
+  },
+  "history": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": "<uuid>",
+          "keyword": "ghe xoay",
+          "searchedAt": "<date>"
+        }
+      ]
+    }
+  },
+  "suggestions private keyword": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        "Ghế xoay văn phòng"
+      ]
+    }
+  },
+  "suggestions ghe": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        "ghe XOAY",
+        "Ghế xoay văn phòng"
+      ]
+    }
+  },
+  "suggestions empty": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": []
+    }
+  },
+  "trending": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        "ghe XOAY",
+        "Đồ gia dụng",
+        "Sách, văn phòng phẩm",
+        "Đồ điện tử",
+        "Thời trang",
+        "Nội thất, trang trí",
+        "Khác",
+        "Thú cưng"
+      ]
+    }
+  },
+  "history delete other user": {
+    "status": 204,
+    "body": null
+  },
+  "history delete": {
+    "status": 204,
+    "body": null
+  },
+  "history clear": {
+    "status": 204,
+    "body": null
+  }
+}

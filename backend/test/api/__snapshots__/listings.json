@@ -61,6 +61,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
@@ -123,6 +124,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -206,6 +208,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -289,6 +292,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
@@ -372,6 +376,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": 0.3584492601997935,
           "isFeatured": true,
@@ -434,6 +439,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": 0.3584492601997935,
           "isFeatured": false,
@@ -496,6 +502,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": 0.3584492601997935,
           "isFeatured": false,
@@ -588,6 +595,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -671,6 +679,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -763,6 +772,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
@@ -825,6 +835,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -887,6 +898,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -970,6 +982,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
@@ -1029,7 +1042,7 @@
             "en": "Furniture & decor",
             "vi": "Nội thất, trang trí"
           },
-          "imageUrl": "assets/images/categories/furniture.png",
+          "imageUrl": "assets/images/marketplace/listing-lamp.png",
           "attributes": [
             {
               "key": "home_type",
@@ -1124,6 +1137,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
         "seller": {
           "id": "user-seller",
@@ -1131,10 +1145,14 @@
           "username": "user_seller",
           "avatarUrl": null,
           "status": "ACTIVE",
+          "phone": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "createdAt": "2026-10-01T00:00:00.000Z"
+          "createdAt": "2026-10-01T00:00:00.000Z",
+          "lastActiveAt": null
         },
+        "sellerSoldCount": 0,
+        "sellerPlanTier": null,
         "sellerActiveListings": 3,
         "isFavorite": false,
         "isOwner": false
@@ -1262,6 +1280,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "isFavorite": true
         }
@@ -1343,6 +1362,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
@@ -1405,6 +1425,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -1467,6 +1488,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -1580,6 +1602,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -1651,6 +1674,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -1776,6 +1800,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -1859,6 +1884,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "paidCredits": 0,
           "paidDays": 0,
           "autoExtend": false,
@@ -1950,8 +1976,7 @@
           "description": {
             "en": "Items that fit no other category",
             "vi": "Các món đồ chưa có danh mục phù hợp"
-          },
-          "imageUrl": "assets/images/categories/other.png"
+          }
         },
         "images": [
           "/api/v1/listings/media/<uuid>.png",
@@ -1969,6 +1994,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
         "seller": {
           "id": "user-buyer",
@@ -1976,10 +2002,14 @@
           "username": "user_buyer",
           "avatarUrl": null,
           "status": "ACTIVE",
+          "phone": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "createdAt": "2026-10-01T00:00:00.000Z"
+          "createdAt": "2026-10-01T00:00:00.000Z",
+          "lastActiveAt": null
         },
+        "sellerSoldCount": 0,
+        "sellerPlanTier": null,
         "sellerActiveListings": 1,
         "isFavorite": false,
         "isOwner": false
@@ -2061,6 +2091,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -2135,6 +2166,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -2209,6 +2241,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -2284,6 +2317,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "paidCredits": 0,
           "paidDays": 0,
           "autoExtend": false,
@@ -2366,6 +2400,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "paidCredits": 0,
           "paidDays": 0,
           "autoExtend": false,
@@ -2417,6 +2452,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -2488,6 +2524,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
@@ -2570,6 +2607,7 @@
           "ratingAverage": 0,
           "ratingCount": 0
         },
+        "isPartner": false,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,

@@ -11,7 +11,7 @@
             "en": "Phones",
             "vi": "Điện thoại"
           },
-          "imageUrl": "assets/images/categories/phones.png",
+          "imageUrl": null,
           "attributes": [
             {
               "key": "brand",
@@ -274,7 +274,7 @@
             "en": "Electronics",
             "vi": "Đồ điện tử"
           },
-          "imageUrl": "assets/images/categories/electronics.png",
+          "imageUrl": "assets/images/marketplace/listing-camera.png",
           "attributes": [
             {
               "key": "device_type",
@@ -424,7 +424,7 @@
             "en": "Vehicles",
             "vi": "Xe cộ"
           },
-          "imageUrl": "assets/images/categories/vehicles.png",
+          "imageUrl": null,
           "attributes": [
             {
               "key": "vehicle_type",
@@ -557,7 +557,7 @@
             "en": "Fashion",
             "vi": "Thời trang"
           },
-          "imageUrl": "assets/images/categories/fashion.png",
+          "imageUrl": null,
           "attributes": [
             {
               "key": "product_type",
@@ -699,7 +699,7 @@
             "en": "Appliances",
             "vi": "Đồ gia dụng"
           },
-          "imageUrl": "assets/images/categories/appliances.png",
+          "imageUrl": null,
           "attributes": [
             {
               "key": "appliance_type",
@@ -839,7 +839,7 @@
             "en": "Pets",
             "vi": "Thú cưng"
           },
-          "imageUrl": "assets/images/categories/pets.png",
+          "imageUrl": null,
           "attributes": [
             {
               "key": "pet_type",
@@ -981,7 +981,7 @@
             "en": "Furniture & decor",
             "vi": "Nội thất, trang trí"
           },
-          "imageUrl": "assets/images/categories/furniture.png",
+          "imageUrl": "assets/images/marketplace/listing-lamp.png",
           "attributes": [
             {
               "key": "home_type",
@@ -1147,8 +1147,7 @@
           "description": {
             "en": "Textbooks, novels, course books...",
             "vi": "Sách giáo khoa, truyện, giáo trình..."
-          },
-          "imageUrl": "assets/images/categories/books.png"
+          }
         },
         {
           "id": "sports",
@@ -1198,8 +1197,7 @@
           "description": {
             "en": "Gym gear, sport bikes, camping...",
             "vi": "Dụng cụ tập, xe đạp thể thao, đồ cắm trại..."
-          },
-          "imageUrl": "assets/images/categories/sports.png"
+          }
         },
         {
           "id": "other",
@@ -1224,8 +1222,7 @@
           "description": {
             "en": "Items that fit no other category",
             "vi": "Các món đồ chưa có danh mục phù hợp"
-          },
-          "imageUrl": "assets/images/categories/other.png"
+          }
         }
       ]
     }
@@ -3482,8 +3479,7 @@
             "description": {
               "en": "Items that fit no other category",
               "vi": "Các món đồ chưa có danh mục phù hợp"
-            },
-            "imageUrl": "assets/images/categories/other.png"
+            }
           },
           "freeListingLimit": 2,
           "extraListingCredits": 5,
@@ -3503,7 +3499,7 @@
               "en": "Furniture & decor",
               "vi": "Nội thất, trang trí"
             },
-            "imageUrl": "assets/images/categories/furniture.png",
+            "imageUrl": "assets/images/marketplace/listing-lamp.png",
             "attributes": [
               {
                 "key": "home_type",
@@ -3680,8 +3676,7 @@
             "description": {
               "en": "Textbooks, novels, course books...",
               "vi": "Sách giáo khoa, truyện, giáo trình..."
-            },
-            "imageUrl": "assets/images/categories/books.png"
+            }
           },
           "freeListingLimit": 3,
           "extraListingCredits": 5,
@@ -3701,7 +3696,7 @@
               "en": "Pets",
               "vi": "Thú cưng"
             },
-            "imageUrl": "assets/images/categories/pets.png",
+            "imageUrl": null,
             "attributes": [
               {
                 "key": "pet_type",
@@ -3895,8 +3890,7 @@
             "description": {
               "en": "Gym gear, sport bikes, camping...",
               "vi": "Dụng cụ tập, xe đạp thể thao, đồ cắm trại..."
-            },
-            "imageUrl": "assets/images/categories/sports.png"
+            }
           },
           "freeListingLimit": 2,
           "extraListingCredits": 5,
@@ -3916,7 +3910,7 @@
               "en": "Fashion",
               "vi": "Thời trang"
             },
-            "imageUrl": "assets/images/categories/fashion.png",
+            "imageUrl": null,
             "attributes": [
               {
                 "key": "product_type",
@@ -4069,7 +4063,7 @@
               "en": "Vehicles",
               "vi": "Xe cộ"
             },
-            "imageUrl": "assets/images/categories/vehicles.png",
+            "imageUrl": null,
             "attributes": [
               {
                 "key": "vehicle_type",
@@ -4213,7 +4207,7 @@
               "en": "Phones",
               "vi": "Điện thoại"
             },
-            "imageUrl": "assets/images/categories/phones.png",
+            "imageUrl": null,
             "attributes": [
               {
                 "key": "brand",
@@ -4487,7 +4481,7 @@
               "en": "Appliances",
               "vi": "Đồ gia dụng"
             },
-            "imageUrl": "assets/images/categories/appliances.png",
+            "imageUrl": null,
             "attributes": [
               {
                 "key": "appliance_type",
@@ -4638,7 +4632,7 @@
               "en": "Electronics",
               "vi": "Đồ điện tử"
             },
-            "imageUrl": "assets/images/categories/electronics.png",
+            "imageUrl": "assets/images/marketplace/listing-camera.png",
             "attributes": [
               {
                 "key": "device_type",

@@ -55,4 +55,3 @@ export async function countMemberTypes(q: { name: string; email: string } | unde
   return Object.fromEntries(MEMBER_TYPES.map((type, index) => [type, counts[index]])) as Record<MemberType, number>;
 }
 
-export const findSelf = (id: string) => prisma.user.findUniqueOrThrow({ where: { id }, select: adminUserSelect });
