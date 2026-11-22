@@ -25,6 +25,8 @@ export const actions: Record<string, string> = {
   HOME_BANNER_CREATE: 'Tạo banner',
   HOME_BANNER_UPDATE: 'Sửa banner',
   HOME_BANNER_DELETE: 'Xóa banner',
+  SHOP_APPROVE: 'Duyệt shop',
+  SHOP_REJECT: 'Từ chối shop',
   SHOP_VERIFY: 'Xác minh shop',
   SHOP_UNVERIFY: 'Thu hồi xác minh shop',
 };
@@ -43,5 +45,5 @@ export const modules: Record<string, string> = {
   KNOWLEDGE: 'Kho tri thức',
   HOME_BANNER: 'Banner',
   FEED_POST: 'Bài viết bảng tin',
-  SHOP: 'Xác minh shop',
+  Shop: 'Duyệt shop',
 };

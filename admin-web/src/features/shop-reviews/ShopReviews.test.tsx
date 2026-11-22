@@ -2,9 +2,8 @@
 import '../../test/dom';
 import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WorkspaceContext } from '../../app/workspace';
 import type { Session } from '../../shared/api/session';
-import { ShopVerification } from './ShopVerification';
+import { ShopReviews } from './ShopReviews';
 
 afterEach(cleanup);
 
@@ -14,29 +13,30 @@ const shop = (verified: boolean) => ({
   tagline: '',
   description: '',
   address: null,
-  createdAt: '2026-11-20T08:00:00Z',
+  logoUrl: null,
+  coverUrl: null,
+  status: 'APPROVED',
+  submittedAt: '2026-11-20T08:00:00Z',
+  reviewedAt: '2026-11-21T08:00:00Z',
+  rejectNote: null,
+  verified,
   verificationType: verified ? 'CERTIFIED' : null,
-  verifiedAt: verified ? '2026-11-21T08:00:00Z' : null,
   certificateCode: verified ? 'RS-2026-00042' : null,
-  owner: { id: 'u1', fullName: 'Chủ Shop', email: 'chu@example.com', status: 'ACTIVE' },
-  plan: { tier: 'PRO', endsAt: '2026-12-20T08:00:00Z' },
+  owner: { id: 'u1', email: 'chu@example.com', fullName: 'Chủ Shop', status: 'ACTIVE' },
+  planTier: 'PRO',
+  planEndsAt: null,
 });
 
 function open(verified: boolean) {
   const call = vi.fn((path: string) =>
-    Promise.resolve(path.startsWith('/admin/shops?') ? { items: [shop(verified)], total: 1, page: 1, pending: 1 } : {}),
+    Promise.resolve(path.startsWith('/admin/shops?') ? { pendingCount: 0, items: [shop(verified)] } : {}),
   );
-  render(
-    <WorkspaceContext.Provider value={{ canOpen: () => false, openSection: () => {}, filter: '' }}>
-      <ShopVerification session={{ call } as unknown as Session} />
-    </WorkspaceContext.Provider>,
-  );
+  render(<ShopReviews session={{ call } as unknown as Session} />);
   return call;
 }
 
-it('mặc định xem shop chờ xác minh; xác minh gửi loại đã chọn', async () => {
+it('shop đã duyệt xác minh được, gửi loại đã chọn', async () => {
   const call = open(false);
-  await waitFor(() => expect(call).toHaveBeenCalledWith('/admin/shops?page=1&status=PENDING&q='));
   fireEvent.click(await screen.findByRole('button', { name: 'Xác minh' }));
   fireEvent.click(await screen.findByRole('button', { name: 'Xác minh shop' }));
   await waitFor(() =>
@@ -44,10 +44,11 @@ it('mặc định xem shop chờ xác minh; xác minh gửi loại đã chọn',
   );
 });
 
-it('thu hồi xác minh phải có lý do', async () => {
+it('shop uy tín hiện mã chứng nhận; thu hồi phải có lý do', async () => {
   const call = open(true);
-  fireEvent.click(await screen.findByRole('button', { name: 'Thu hồi' }));
-  fireEvent.click(await screen.findByRole('button', { name: 'Thu hồi xác minh' }));
+  expect(await screen.findByText('Shop uy tín · RS-2026-00042')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Thu hồi xác minh' }));
+  fireEvent.click((await screen.findAllByRole('button', { name: 'Thu hồi xác minh' })).at(-1)!);
   expect(await screen.findByText('Nhập từ 5 đến 300 ký tự.')).toBeTruthy();
   expect(call).not.toHaveBeenCalledWith('/admin/shops/s1/unverify', expect.anything());
 });

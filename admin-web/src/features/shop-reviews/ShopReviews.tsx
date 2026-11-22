@@ -3,10 +3,12 @@ import { Alert, Button, Form, Input, Modal, Popconfirm, Segmented, Select, Space
 import { Session, errorText } from '../../shared/api/session';
 import { useResource } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
+import { EditDialog } from '../../shared/ui/EditDialog';
 import { Panel } from '../../shared/ui/Panel';
 import { PosterImage } from '../shop-posters/ShopPosters';
 
 type ShopStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+type VerificationType = 'OFFICIAL_BRAND' | 'CERTIFIED';
 type Shop = {
   id: string;
   name: string;
@@ -20,6 +22,8 @@ type Shop = {
   reviewedAt: string | null;
   rejectNote: string | null;
   verified: boolean;
+  verificationType: VerificationType | null;
+  certificateCode: string | null;
   owner: { id: string; email: string; fullName: string; status: string };
   planTier: string;
   planEndsAt: string | null;
@@ -30,6 +34,10 @@ const statusTags: Record<ShopStatus, { label: string; color: string }> = {
   PENDING: { label: 'Chờ duyệt', color: 'gold' },
   APPROVED: { label: 'Đã duyệt', color: 'green' },
   REJECTED: { label: 'Đã từ chối', color: 'red' },
+};
+const verificationTypes: Record<VerificationType, string> = {
+  OFFICIAL_BRAND: 'Thương hiệu chính hãng',
+  CERTIFIED: 'Shop được chứng nhận',
 };
 const tierLabels: Record<string, string> = { PRO: 'Cửa hàng', BASIC: 'Bán chuyên', PERSONAL: 'Cá nhân' };
 /** Lý do mẫu theo quy định kiểm duyệt cửa hàng của Chợ Tốt; admin sửa thêm được */
@@ -50,6 +58,8 @@ export function ShopReviews({ session }: { session: Session }) {
   const [rejecting, setRejecting] = useState<Shop>();
   const [rejectError, setRejectError] = useState('');
   const [form] = Form.useForm<{ note: string }>();
+  // Shop đã duyệt đang mở hộp thoại xác minh / thu hồi xác minh
+  const [verifying, setVerifying] = useState<Shop>();
 
   async function approve(shop: Shop) {
     if (busy) return;
@@ -79,6 +89,16 @@ export function ShopReviews({ session }: { session: Session }) {
     } finally {
       setBusy('');
     }
+  }
+
+  async function saveVerification({ type, reason }: { type?: VerificationType; reason?: string }) {
+    if (!verifying) return;
+    const verify = !verifying.verified;
+    await session.call(`/admin/shops/${encodeURIComponent(verifying.id)}/${verify ? 'verify' : 'unverify'}`, {
+      ...(verify ? { type } : {}),
+      reason: reason?.trim() || undefined,
+    });
+    message.success(verify ? 'Đã xác minh, shop hiện ở Shop uy tín.' : 'Đã thu hồi xác minh, shop rời Shop uy tín.');
   }
 
   const pending = data?.pendingCount ?? 0;
@@ -147,7 +167,11 @@ export function ShopReviews({ session }: { session: Session }) {
                     <small>{shop.owner.email}</small>
                     <span>
                       <Tag color={shop.planTier === 'PRO' ? 'purple' : 'default'}>{tierLabels[shop.planTier] ?? shop.planTier}</Tag>
-                      {shop.verified && <Tag color="green">Shop uy tín</Tag>}
+                      {shop.verified && (
+                        <Tag color="green" title={shop.verificationType ? verificationTypes[shop.verificationType] : undefined}>
+                          Shop uy tín{shop.certificateCode && ` · ${shop.certificateCode}`}
+                        </Tag>
+                      )}
                       {shop.owner.status !== 'ACTIVE' && <Tag color="red">Tài khoản {shop.owner.status}</Tag>}
                     </span>
                   </Space>
@@ -194,7 +218,14 @@ export function ShopReviews({ session }: { session: Session }) {
                       </Button>
                     </Space>
                   ) : (
-                    <span className="muted">{shop.reviewedAt ? `Xử lý ${dateText(shop.reviewedAt)}` : '—'}</span>
+                    <Space orientation="vertical" size={4}>
+                      <span className="muted">{shop.reviewedAt ? `Xử lý ${dateText(shop.reviewedAt)}` : '—'}</span>
+                      {shop.status === 'APPROVED' && (
+                        <Button size="small" danger={shop.verified} disabled={!!busy} onClick={() => setVerifying(shop)}>
+                          {shop.verified ? 'Thu hồi xác minh' : 'Xác minh'}
+                        </Button>
+                      )}
+                    </Space>
                   ),
               },
             ]}
@@ -233,6 +264,42 @@ export function ShopReviews({ session }: { session: Session }) {
           {rejectError && <Alert type="error" title={rejectError} className="notice" />}
         </Form>
       </Modal>
+      {verifying && (
+        <EditDialog<{ type?: VerificationType; reason?: string }>
+          title={verifying.verified ? `Thu hồi xác minh “${verifying.name}”` : `Xác minh “${verifying.name}”`}
+          submitLabel={verifying.verified ? 'Thu hồi xác minh' : 'Xác minh shop'}
+          initialValues={{ type: 'CERTIFIED' }}
+          save={saveVerification}
+          close={() => setVerifying(undefined)}
+          saved={reload}
+        >
+          <p>
+            {verifying.verified
+              ? `Shop sẽ rời "Shop uy tín" và mất mã chứng nhận ${verifying.certificateCode ?? ''}.`
+              : 'Shop sẽ hiện ở "Shop uy tín" và được cấp mã chứng nhận.'}
+          </p>
+          {!verifying.verified && (
+            <Form.Item name="type" label="Loại xác minh" rules={[{ required: true }]}>
+              <Select options={Object.entries(verificationTypes).map(([value, label]) => ({ value, label }))} />
+            </Form.Item>
+          )}
+          <Form.Item
+            name="reason"
+            label={verifying.verified ? 'Lý do thu hồi' : 'Ghi chú (nếu có)'}
+            rules={[
+              {
+                required: verifying.verified,
+                min: 5,
+                max: 300,
+                transform: (v) => v?.trim(),
+                message: 'Nhập từ 5 đến 300 ký tự.',
+              },
+            ]}
+          >
+            <Input.TextArea maxLength={300} />
+          </Form.Item>
+        </EditDialog>
+      )}
     </>
   );
 }
