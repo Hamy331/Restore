@@ -35,6 +35,7 @@ class ListingChipFilterBar extends StatelessWidget {
     this.extraChips = const [],
     this.showArea = true,
     this.subcategories = true,
+    this.attributes = true,
     this.showSeller = true,
   });
 
@@ -66,8 +67,12 @@ class ListingChipFilterBar extends StatelessWidget {
   final bool showArea;
 
   /// false: chỉ chọn danh mục cha, không có danh mục con, bộ lọc riêng và
-  /// "Còn bảo hành" (Báo khi có hàng chưa lưu được các tiêu chí đó)
+  /// "Còn bảo hành"
   final bool subcategories;
+
+  /// false: có danh mục con nhưng không có chip bộ lọc riêng (Hãng...) và
+  /// "Còn bảo hành" (Báo khi có hàng chưa lưu được thuộc tính)
+  final bool attributes;
 
   /// Chip "Đăng bởi"
   final bool showSeller;
@@ -196,7 +201,7 @@ class ListingChipFilterBar extends StatelessWidget {
   Future<void> _pickCondition(BuildContext anchor) async {
     final l10n = AppLocalizations.of(anchor)!;
     final groups = ListingConditionGroup.available(
-      warranty: _merged?.hasWarranty ?? false,
+      warranty: attributes && (_merged?.hasWarranty ?? false),
     );
     final picked = await _choose(
       anchor,
@@ -249,7 +254,9 @@ class ListingChipFilterBar extends StatelessWidget {
     String t(String vn, String en) => vi ? vn : en;
     final active = filter.activeCount(defaults);
     final merged = _merged;
-    final filterAttributes = merged?.filterAttributes ?? const [];
+    final filterAttributes = attributes
+        ? merged?.filterAttributes ?? const []
+        : const <CategoryAttributeModel>[];
 
     // Hãng đã chọn thành chip riêng "Apple ×" cạnh danh mục
     final brand = filterAttributes
