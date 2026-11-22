@@ -85,6 +85,7 @@ model User {
   pushDevices    PushDevice[]
   savedAddresses SavedAddress[]
   recentAreas    RecentArea[]
+  recentViews    ListingRecentView[]
 
   @@index([status, suspendedUntil])
 }
@@ -432,6 +433,7 @@ model Listing {
   creditHolds   CreditHold[]
   promotions    Promotion[]
   favorites     ListingFavorite[]
+  recentViews   ListingRecentView[]
   promotionOrders PromotionOrder[]
   wantedAlertMatches WantedAlertMatch[]
   viewDays      ListingViewDaily[]
@@ -466,6 +468,18 @@ model AiListingIndex {
   collection String
   indexedAt DateTime @default(now())
   @@index([collection, model])
+}
+
+/// Tin người dùng vừa xem (trang Xem gần đây), giữ 30 tin mới nhất mỗi người
+model ListingRecentView {
+  userId    String
+  listingId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  viewedAt  DateTime @default(now())
+
+  @@id([userId, listingId])
+  @@index([userId, viewedAt])
 }
 
 model ListingFavorite {
