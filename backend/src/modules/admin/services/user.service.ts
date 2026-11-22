@@ -3,12 +3,12 @@ import { ROLE_PERMISSIONS } from '../../../common/auth/permissions.js';
 import { withQuotaTransaction } from '../../commerce/index.js';
 import { sanctionUser } from '../../users/index.js';
 import type { UserActionInput, UserListQuery } from '../admin.dto.js';
+import type { AuthUser } from '../../auth/repositories/auth.repository.js';
 import * as userRepository from '../repositories/user.repository.js';
 
-/** Hồ sơ của admin đang đăng nhập */
-export async function getSelf(id: string) {
-  const user = await userRepository.findSelf(id);
-  return { ...user, permissions: ROLE_PERMISSIONS[user.role] };
+/** Hồ sơ của admin đang đăng nhập, từ bản ghi middleware xác thực đã đọc (không truy vấn lại) */
+export function getSelf({ id, email, fullName, username, role, status, suspendedUntil, updatedAt, createdAt }: AuthUser) {
+  return { id, email, fullName, username, role, status, suspendedUntil, updatedAt, createdAt, permissions: ROLE_PERMISSIONS[role] };
 }
 
 /** Thành viên, 25 mỗi trang */

@@ -25,11 +25,21 @@
         "fullName": "user-admin",
         "username": "user_admin",
         "role": "ADMIN",
-        "permissions": ["profile:read", "admin:access", "user:manage", "catalog:manage", "banner:manage", "listing:moderate", "store:order-manage", "promotion:manage", "content:manage"],
         "status": "ACTIVE",
         "suspendedUntil": null,
         "updatedAt": "<date>",
-        "createdAt": "2026-10-01T00:00:00.000Z"
+        "createdAt": "2026-10-01T00:00:00.000Z",
+        "permissions": [
+          "profile:read",
+          "admin:access",
+          "user:manage",
+          "catalog:manage",
+          "banner:manage",
+          "listing:moderate",
+          "store:order-manage",
+          "promotion:manage",
+          "content:manage"
+        ]
       }
     }
   },
@@ -70,7 +80,8 @@
             "condition": "USED_GOOD",
             "owner": {
               "id": "user-seller",
-              "fullName": "user-seller"
+              "fullName": "user-seller",
+              "email": "user-seller@restore.test"
             },
             "category": {
               "id": "furniture",
@@ -263,8 +274,7 @@
               "description": {
                 "en": "Items that fit no other category",
                 "vi": "Các món đồ chưa có danh mục phù hợp"
-              },
-              "imageUrl": "assets/images/categories/other.png"
+              }
             },
             "freeListingLimit": 2,
             "extraListingCredits": 5,
@@ -284,7 +294,7 @@
                 "en": "Furniture & decor",
                 "vi": "Nội thất, trang trí"
               },
-              "imageUrl": "assets/images/categories/furniture.png",
+              "imageUrl": "assets/images/marketplace/listing-lamp.png",
               "attributes": [
                 {
                   "key": "home_type",
@@ -461,8 +471,7 @@
               "description": {
                 "en": "Textbooks, novels, course books...",
                 "vi": "Sách giáo khoa, truyện, giáo trình..."
-              },
-              "imageUrl": "assets/images/categories/books.png"
+              }
             },
             "freeListingLimit": 3,
             "extraListingCredits": 5,
@@ -482,7 +491,7 @@
                 "en": "Pets",
                 "vi": "Thú cưng"
               },
-              "imageUrl": "assets/images/categories/pets.png",
+              "imageUrl": null,
               "attributes": [
                 {
                   "key": "pet_type",
@@ -676,8 +685,7 @@
               "description": {
                 "en": "Gym gear, sport bikes, camping...",
                 "vi": "Dụng cụ tập, xe đạp thể thao, đồ cắm trại..."
-              },
-              "imageUrl": "assets/images/categories/sports.png"
+              }
             },
             "freeListingLimit": 2,
             "extraListingCredits": 5,
@@ -697,7 +705,7 @@
                 "en": "Fashion",
                 "vi": "Thời trang"
               },
-              "imageUrl": "assets/images/categories/fashion.png",
+              "imageUrl": null,
               "attributes": [
                 {
                   "key": "product_type",
@@ -850,7 +858,7 @@
                 "en": "Vehicles",
                 "vi": "Xe cộ"
               },
-              "imageUrl": "assets/images/categories/vehicles.png",
+              "imageUrl": null,
               "attributes": [
                 {
                   "key": "vehicle_type",
@@ -994,7 +1002,7 @@
                 "en": "Phones",
                 "vi": "Điện thoại"
               },
-              "imageUrl": "assets/images/categories/phones.png",
+              "imageUrl": null,
               "attributes": [
                 {
                   "key": "brand",
@@ -1268,7 +1276,7 @@
                 "en": "Appliances",
                 "vi": "Đồ gia dụng"
               },
-              "imageUrl": "assets/images/categories/appliances.png",
+              "imageUrl": null,
               "attributes": [
                 {
                   "key": "appliance_type",
@@ -1419,7 +1427,7 @@
                 "en": "Electronics",
                 "vi": "Đồ điện tử"
               },
-              "imageUrl": "assets/images/categories/electronics.png",
+              "imageUrl": "assets/images/marketplace/listing-camera.png",
               "attributes": [
                 {
                   "key": "device_type",
@@ -1744,7 +1752,12 @@
             "after": {
               "status": "REJECTED"
             },
-            "createdAt": "<date>"
+            "createdAt": "<date>",
+            "actor": {
+              "id": "user-admin",
+              "fullName": "user-admin",
+              "email": "user-admin@restore.test"
+            }
           },
           {
             "id": "<uuid>",
@@ -1787,7 +1800,12 @@
               "extendDiscountPercent": 20,
               "monthlyPromotionQuota": 2
             },
-            "createdAt": "<date>"
+            "createdAt": "<date>",
+            "actor": {
+              "id": "user-admin",
+              "fullName": "user-admin",
+              "email": "user-admin@restore.test"
+            }
           },
           {
             "id": "<uuid>",
@@ -1798,7 +1816,12 @@
             "reason": "Bán xác",
             "before": null,
             "after": null,
-            "createdAt": "<date>"
+            "createdAt": "<date>",
+            "actor": {
+              "id": "user-admin",
+              "fullName": "user-admin",
+              "email": "user-admin@restore.test"
+            }
           },
           {
             "id": "<uuid>",
@@ -1839,7 +1862,12 @@
               "freeListingLimit": 2,
               "extraListingCredits": 5
             },
-            "createdAt": "<date>"
+            "createdAt": "<date>",
+            "actor": {
+              "id": "user-admin",
+              "fullName": "user-admin",
+              "email": "user-admin@restore.test"
+            }
           },
           {
             "id": "<uuid>",
@@ -1850,7 +1878,12 @@
             "reason": "Đồ cổ",
             "before": null,
             "after": null,
-            "createdAt": "<date>"
+            "createdAt": "<date>",
+            "actor": {
+              "id": "user-admin",
+              "fullName": "user-admin",
+              "email": "user-admin@restore.test"
+            }
           },
           {
             "id": "<uuid>",
@@ -1874,7 +1907,12 @@
               "days": 7,
               "status": "ACTIVE"
             },
-            "createdAt": "<date>"
+            "createdAt": "<date>",
+            "actor": {
+              "id": "user-admin",
+              "fullName": "user-admin",
+              "email": "user-admin@restore.test"
+            }
           },
           {
             "id": "<uuid>",
@@ -1898,7 +1936,12 @@
               "days": 3,
               "status": "SUSPENDED"
             },
-            "createdAt": "<date>"
+            "createdAt": "<date>",
+            "actor": {
+              "id": "user-admin",
+              "fullName": "user-admin",
+              "email": "user-admin@restore.test"
+            }
           },
           {
             "id": "<uuid>",
@@ -1922,7 +1965,12 @@
               "days": 7,
               "status": "ACTIVE"
             },
-            "createdAt": "<date>"
+            "createdAt": "<date>",
+            "actor": {
+              "id": "user-admin",
+              "fullName": "user-admin",
+              "email": "user-admin@restore.test"
+            }
           }
         ],
         "total": 8,

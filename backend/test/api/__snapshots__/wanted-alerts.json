@@ -129,6 +129,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -200,6 +201,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -263,6 +265,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -577,6 +580,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
@@ -680,6 +684,7 @@
             "ratingAverage": 0,
             "ratingCount": 0
           },
+          "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,

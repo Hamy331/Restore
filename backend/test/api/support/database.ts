@@ -4,13 +4,21 @@ import { TEST_DATABASE_URL } from './env.js';
 
 export const PASSWORD = 'Password@123';
 
+// Migration RLS thu quyền của các role Supabase; PostgreSQL thường (máy dev, CI) không có sẵn nên tạo trước
+const SUPABASE_ROLES = `DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN CREATE ROLE anon NOLOGIN; END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
+END $$;`;
+
 /** Xóa và tạo lại database thử từ migrations (giống production, có cả dữ liệu mặc định trong migration). */
 export function resetDatabase() {
-  execFileSync('npx', ['prisma', 'migrate', 'reset', '--force', '--skip-seed', '--skip-generate'], {
+  const options = {
     env: { ...process.env, DATABASE_URL: TEST_DATABASE_URL, DIRECT_URL: TEST_DATABASE_URL },
-    stdio: 'pipe',
+    stdio: 'pipe' as const,
     shell: process.platform === 'win32',
-  });
+  };
+  execFileSync('npx', ['prisma', 'db', 'execute', '--stdin', '--schema', 'prisma/schema.prisma'], { ...options, input: SUPABASE_ROLES });
+  execFileSync('npx', ['prisma', 'migrate', 'reset', '--force', '--skip-seed', '--skip-generate'], options);
 }
 
 const location = (provinceCode: string, wardCode: string, provinceName: string, wardName: string, latitude: number, longitude: number) => ({
