@@ -88,9 +88,15 @@ List<String> productQuestions(ProductDetail detail, AppLocalizations l) {
         detail.listing.attributes['warranty'] != 'none')
       l.listingWarranty,
     if (fields.contains('mileage')) l.listingService,
-    if (fields.contains('vaccinated') &&
-        detail.listing.attributes['pet_type'] != 'accessories')
+    // Chó, mèo: câu hỏi riêng (không còn ô "Đã tiêm phòng" khi đăng)
+    if (const {'cho', 'meo'}.contains(
+      detail.category?.subcategory?.id ?? detail.listing.subcategoryId,
+    )) ...[
       l.listingVaccines,
+      l.listingPetPurebred,
+      l.listingPetPapers,
+      l.listingPetSupplies,
+    ],
     if (detail.listing.allowExchange) l.listingExchange,
     if (detail.canMakeOffer) l.listingNegotiate,
     l.listingMeet,

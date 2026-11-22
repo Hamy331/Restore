@@ -64,7 +64,7 @@ const text = (key: string, label: Text, extra: Partial<Attribute> = {}): Attribu
 const number = (key: string, label: Text, min: number, max: number, extra: Partial<Attribute> = {}): Attribute =>
   ({ key, type: 'number', label, required: false, min, max, ...extra });
 
-const flag = (key: string, label: Text): Attribute => ({ key, type: 'boolean', label });
+const flag = (key: string, label: Text, extra: Partial<Attribute> = {}): Attribute => ({ key, type: 'boolean', label, ...extra });
 
 /* ---------- Thuộc tính dùng lại ---------- */
 
@@ -74,6 +74,8 @@ const model = (hint: Text, required = false) => text('model', t('Dòng máy', 'M
 const year = number('year', t('Năm sản xuất', 'Year'), 1980, 2030, { filter: 'range', unit: null });
 const mileage = number('mileage', t('Số km đã đi', 'Mileage'), 0, 2000000, { filter: 'range', unit: 'km' });
 const hasPapers = flag('has_papers', t('Còn giấy tờ chính chủ', 'Has registration papers'));
+// Lọc được: chip bật/tắt "Đã tiêm phòng" (chỉ lọc tin đã tiêm, giá trị true)
+const vaccinated = flag('vaccinated', t('Đã tiêm phòng', 'Vaccinated'), { filter: 'single' });
 const fuel = filterSelect('fuel', t('Nhiên liệu', 'Fuel'),
   labelled(['petrol', 'Xăng', 'Petrol'], ['diesel', 'Dầu', 'Diesel'], ['hybrid', 'Hybrid'], ['electric', 'Điện', 'Electric']));
 const warranty = select('warranty', t('Bảo hành', 'Warranty'),
@@ -105,7 +107,6 @@ const furnitureMaterial = material(labelled(
 const dimensions = text('dimensions', t('Kích thước', 'Dimensions'), { hint: t('VD: 120 x 60 x 75 cm', 'e.g. 120 x 60 x 75 cm') });
 const petGender = (male: string, female: string) => filterSelect('pet_gender', t('Giới tính', 'Gender'),
   labelled(['male', male, 'Male'], ['female', female, 'Female'], ['unknown', 'Không rõ', 'Unknown']));
-const vaccinated = flag('vaccinated', t('Đã tiêm phòng', 'Vaccinated'));
 const ageGroup = (young: string, adult: string) => filterSelect('age_group', t('Độ tuổi', 'Age'),
   labelled(['young', young, 'Under 3 months'], ['junior', 'Dưới 1 năm tuổi', 'Under 1 year'],
     ['adult', adult, 'Over 1 year'], ['unknown', 'Không rõ', 'Unknown']));

@@ -77,6 +77,21 @@ class ListingFilterAttributeSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final key = attribute.key;
     final selected = value?.values ?? const <String>{};
+    // Có / không ("Đã tiêm phòng"): một chip "Có", chọn lại là bỏ
+    if (attribute.type == AttributeType.boolean) {
+      return ListingFilterSection(
+        title: attribute.label.of(context),
+        child: ListingFilterChipWrap(
+          children: [
+            AppFilterChip(
+              label: AppLocalizations.of(context)!.yes,
+              selected: selected.contains('true'),
+              onTap: () => onSelect(key, 'true'),
+            ),
+          ],
+        ),
+      );
+    }
     final child = switch (attribute.filter!) {
       AttributeFilterKind.single ||
       AttributeFilterKind.multi => ListingFilterChipWrap(

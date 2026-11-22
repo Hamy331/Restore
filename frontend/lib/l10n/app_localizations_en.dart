@@ -93,7 +93,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listingService => 'When was the vehicle last serviced?';
 
   @override
-  String get listingVaccines => 'Can I see the vaccination record?';
+  String get listingVaccines => 'Has the pet been vaccinated?';
+
+  @override
+  String get listingPetPurebred => 'Is it purebred or mixed?';
+
+  @override
+  String get listingPetPapers => 'Does the pet come with any papers?';
+
+  @override
+  String get listingPetSupplies => 'Are any of its supplies included?';
 
   @override
   String get listingMeet => 'When could we meet?';

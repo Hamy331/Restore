@@ -93,7 +93,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get listingService => 'Xe được bảo dưỡng lần cuối khi nào?';
 
   @override
-  String get listingVaccines => 'Mình xem sổ tiêm phòng của bé được không?';
+  String get listingVaccines => 'Bé đã tiêm phòng chưa bạn?';
+
+  @override
+  String get listingPetPurebred => 'Bé thuần chủng hay lai vậy bạn?';
+
+  @override
+  String get listingPetPapers => 'Bé có giấy tờ gì không bạn?';
+
+  @override
+  String get listingPetSupplies => 'Có kèm đồ dùng của bé không bạn?';
 
   @override
   String get listingMeet => 'Mình có thể hẹn xem khi nào?';

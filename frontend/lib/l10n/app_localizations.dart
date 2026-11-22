@@ -263,8 +263,26 @@ abstract class AppLocalizations {
   /// No description provided for @listingVaccines.
   ///
   /// In en, this message translates to:
-  /// **'Can I see the vaccination record?'**
+  /// **'Has the pet been vaccinated?'**
   String get listingVaccines;
+
+  /// No description provided for @listingPetPurebred.
+  ///
+  /// In en, this message translates to:
+  /// **'Is it purebred or mixed?'**
+  String get listingPetPurebred;
+
+  /// No description provided for @listingPetPapers.
+  ///
+  /// In en, this message translates to:
+  /// **'Does the pet come with any papers?'**
+  String get listingPetPapers;
+
+  /// No description provided for @listingPetSupplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Are any of its supplies included?'**
+  String get listingPetSupplies;
 
   /// No description provided for @listingMeet.
   ///

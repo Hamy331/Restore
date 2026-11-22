@@ -18,11 +18,12 @@ test('seed: 9 danh mục cha đúng thứ tự, mỗi cha có danh mục con, id
   for (const category of CATEGORIES) assert.ok(subcategoriesOf(category).length > 0, category.id);
 });
 
-test('seed: thuộc tính có filter phải là select (single/multi/list) hoặc number (range), danh mục có priceMax', () => {
+test('seed: thuộc tính có filter phải là select (single/multi/list), boolean (single) hoặc number (range), danh mục có priceMax', () => {
   for (const category of CATEGORIES) {
     for (const child of subcategoriesOf(category)) {
       for (const attribute of effectiveMetadata(category, child.id).attributes ?? []) {
-        if (attribute.filter && attribute.filter !== 'range') assert.equal(attribute.type, 'select', `${child.id}.${attribute.key}`);
+        if (attribute.type === 'boolean' && attribute.filter) assert.equal(attribute.filter, 'single', `${child.id}.${attribute.key}`);
+        else if (attribute.filter && attribute.filter !== 'range') assert.equal(attribute.type, 'select', `${child.id}.${attribute.key}`);
         if (attribute.key === 'warranty') assert.equal(attribute.filter, undefined, 'warranty lọc qua nhóm tình trạng');
         if (attribute.filter === 'range') assert.equal(attribute.type, 'number', `${child.id}.${attribute.key}`);
       }
