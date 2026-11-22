@@ -3,7 +3,7 @@ import { LOG_WITH_ACTOR, type LogWithActor } from './audit.repository.js';
 
 type Overview = {
   pendingListings: number; pendingEdits: number; openReports: number; activeUsers: number; activeListings: number;
-  pendingStores: number; pendingPromotions: number; promotionRevenue: string;
+  pendingStores: number; pendingShops: number; pendingPromotions: number; promotionRevenue: string;
 };
 
 /**
@@ -20,6 +20,7 @@ export async function countOverview(logCount: number) {
         (SELECT count(*) FROM "User" WHERE role = 'USER' AND status = 'ACTIVE')::int AS "activeUsers",
         (SELECT count(*) FROM "Listing" WHERE status = 'AVAILABLE')::int AS "activeListings",
         (SELECT count(*) FROM "StoreOrder" WHERE status = 'PENDING')::int AS "pendingStores",
+        (SELECT count(*) FROM "Shop" WHERE status = 'PENDING')::int AS "pendingShops",
         (SELECT count(*) FROM "PromotionOrder" WHERE status = 'PENDING')::int AS "pendingPromotions",
         (SELECT coalesce(sum(amount), 0)::text FROM "PromotionOrder" WHERE status = 'CONFIRMED') AS "promotionRevenue"`,
     prisma.$queryRaw<LogWithActor[]>`
