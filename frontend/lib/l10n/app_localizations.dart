@@ -8792,6 +8792,30 @@ abstract class AppLocalizations {
   /// **'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.'**
   String get msUnverifiedBody;
 
+  /// No description provided for @msPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop under review'**
+  String get msPendingTitle;
+
+  /// No description provided for @msPendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore is checking your shop name, images and description. Buyers can see your shop page once it is approved.'**
+  String get msPendingBody;
+
+  /// No description provided for @msRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop not approved'**
+  String get msRejectedTitle;
+
+  /// No description provided for @msRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}. Edit your details and tap Save changes to send it for review again.'**
+  String msRejectedBody(String reason);
+
   /// No description provided for @msPlanExpiredTitle.
   ///
   /// In en, this message translates to:
@@ -8845,6 +8869,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That image is not valid. Try another one.'**
   String get msErrImage;
+
+  /// No description provided for @msErrNameNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop names can\'t include phone numbers, web links or words like \"No. 1\", \"best\" or \"official\".'**
+  String get msErrNameNotAllowed;
 
   /// No description provided for @msErrGeneric.
   ///
@@ -9691,6 +9721,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Poster \"{title}\" was not approved.'**
   String notifPosterRejectedBody(String title);
+
+  /// No description provided for @notifShopApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop approved'**
+  String get notifShopApprovedTitle;
+
+  /// No description provided for @notifShopApprovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop \"{name}\" was approved. Buyers can now see your shop page.'**
+  String notifShopApprovedBody(String name);
+
+  /// No description provided for @notifShopRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop not approved'**
+  String get notifShopRejectedTitle;
+
+  /// No description provided for @notifShopRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop \"{name}\" was not approved. Edit your details and save to send it for review again.'**
+  String notifShopRejectedBody(String name);
 
   /// No description provided for @creditBonusSheetTitle.
   ///

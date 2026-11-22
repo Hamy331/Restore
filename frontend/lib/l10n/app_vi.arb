@@ -2792,6 +2792,15 @@
   },
   "msUnverifiedTitle": "Shop chưa xác minh",
   "msUnverifiedBody": "Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Liên hệ ReStore để được xác minh.",
+  "msPendingTitle": "Shop đang chờ duyệt",
+  "msPendingBody": "ReStore đang xem tên, ảnh và mô tả của shop. Người mua sẽ xem được trang shop sau khi được duyệt.",
+  "msRejectedTitle": "Shop chưa được duyệt",
+  "msRejectedBody": "Lý do: {reason}. Sửa thông tin rồi bấm Lưu thay đổi để gửi duyệt lại.",
+  "@msRejectedBody": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
   "msPlanExpiredTitle": "Gói Cửa hàng Pro đã hết hạn",
   "msPlanExpiredBody": "Poster của shop đang tạm ẩn. Gia hạn gói để poster chạy lại.",
   "msViewPublic": "Xem trang shop",
@@ -2801,6 +2810,7 @@
   "msSaved": "Đã lưu thông tin shop",
   "msErrExists": "Bạn đã có trang shop.",
   "msErrImage": "Ảnh tải lên không hợp lệ, hãy thử ảnh khác.",
+  "msErrNameNotAllowed": "Tên shop không được có số điện thoại, đường dẫn web hoặc từ như \"số 1\", \"tốt nhất\", \"chính hãng\".",
   "msErrGeneric": "Không lưu được, vui lòng thử lại.",
   "followShopsTab": "Shop",
   "followShopsEmpty": "Bạn chưa theo dõi shop nào",
@@ -3172,6 +3182,20 @@
   "@notifPosterRejectedBody": {
     "placeholders": {
       "title": {"type": "String"}
+    }
+  },
+  "notifShopApprovedTitle": "Cửa hàng đã được duyệt",
+  "notifShopApprovedBody": "Cửa hàng \"{name}\" đã được duyệt, người mua đã xem được trang shop.",
+  "@notifShopApprovedBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifShopRejectedTitle": "Cửa hàng chưa được duyệt",
+  "notifShopRejectedBody": "Cửa hàng \"{name}\" chưa được duyệt. Sửa thông tin rồi lưu để gửi duyệt lại.",
+  "@notifShopRejectedBody": {
+    "placeholders": {
+      "name": {"type": "String"}
     }
   },
   "creditBonusSheetTitle": "Xu tặng và hạn dùng",

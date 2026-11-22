@@ -111,6 +111,7 @@ async function seedAll() {
       accentColor: shop.accentColor, verificationType: shop.verificationType, verifiedAt,
       certificateCode: `RS-${verifiedAt.getFullYear()}-${String(SHOPS.indexOf(shop) + 101).padStart(5, '0')}`,
       categoryIds: [...new Set(shop.categoryIds.map(parentOf))], address: areaOf(shop.ward).label, createdAt: new Date(verifiedAt.getTime() - 7 * DAY),
+      status: 'APPROVED' as const, reviewedAt: verifiedAt,
     };
     await prisma.shop.upsert({ where: { id }, create: { id, ...data }, update: data });
     await upsertListings(`shop-${shop.key}`, shop.key, shop.ward, 'BUSINESS', shop.listings, now, daysFor(pro.freeDaysPercent));

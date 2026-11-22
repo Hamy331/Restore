@@ -28,7 +28,7 @@ export async function findStorefront(id: string, viewerId: string) {
         storeSubscription: { select: { startsAt: true, endsAt: true, package: { select: { tier: true } } } },
         shop: { select: {
           id: true, name: true, address: true, logoUrl: true, coverUrl: true, description: true,
-          verificationType: true,
+          verificationType: true, status: true,
         } },
       },
     }),
@@ -40,7 +40,8 @@ export async function findStorefront(id: string, viewerId: string) {
   const sub = user.storeSubscription;
   const tier = sub && sub.startsAt <= now && now < sub.endsAt ? sub.package.tier : 'PERSONAL';
   const shop = user.shop;
-  const branding = shop && (tier === 'PRO' || shop.verificationType) ? {
+  // Shop chưa được duyệt (chờ duyệt / bị từ chối) chưa hiện lên trang cá nhân
+  const branding = shop && (shop.verificationType || (shop.status === 'APPROVED' && tier === 'PRO')) ? {
     id: shop.id, name: shop.name, address: shop.address, logoUrl: shop.logoUrl,
     coverUrl: shop.coverUrl, description: shop.description, verified: !!shop.verificationType,
     // Theo dõi shop = theo dõi chủ shop: dùng chung số người theo dõi và trạng thái của chủ shop

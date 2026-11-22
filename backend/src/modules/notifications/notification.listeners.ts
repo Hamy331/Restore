@@ -265,6 +265,20 @@ const POSTER_REASONS: Record<string, string> = {
   OTHER: 'Lý do khác',
 };
 
+/** Admin duyệt / từ chối cửa hàng; bấm vào mở trang Quản lý shop */
+export async function notifyShopReviewed(event: DomainEvents['shop.reviewed']) {
+  await notify({
+    userId: event.ownerId,
+    type: event.approved ? 'SHOP_APPROVED' : 'SHOP_REJECTED',
+    title: event.approved ? 'Cửa hàng đã được duyệt' : 'Cửa hàng chưa được duyệt',
+    body: event.approved
+      ? `Cửa hàng "${event.shopName}" đã được duyệt, người mua đã xem được trang shop.`
+      : `Cửa hàng "${event.shopName}" chưa được duyệt. Lý do: ${(event.note ?? '').replace(/[.\s]+$/, '')}. Sửa thông tin rồi lưu để gửi duyệt lại.`,
+    link: '/my-shop',
+    data: { shopId: event.shopId, shopName: event.shopName, reason: event.note },
+  });
+}
+
 /** 2.10 Admin duyệt / từ chối poster của shop */
 export async function notifyPosterReviewed(event: DomainEvents['poster.reviewed']) {
   const reason = event.reason ? [POSTER_REASONS[event.reason] ?? event.reason, event.note].filter(Boolean).join(': ') : null;

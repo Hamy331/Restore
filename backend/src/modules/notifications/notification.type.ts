@@ -35,6 +35,8 @@ export const NOTIFICATION_TYPES = {
   STORE_PLAN_EXPIRED: 'wallet',
   SHOP_POSTER_APPROVED: 'wallet',
   SHOP_POSTER_REJECTED: 'wallet',
+  SHOP_APPROVED: 'wallet',
+  SHOP_REJECTED: 'wallet',
   WANTED_ALERT_MATCH: 'activity',
   NEW_FOLLOWER: 'activity',
   LISTING_FAVORITED: 'activity',

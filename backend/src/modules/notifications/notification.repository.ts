@@ -46,8 +46,12 @@ export const findActiveUser = (id: string) =>
 export const findListingBrief = (id: string) =>
   prisma.listing.findUnique({ where: { id }, select: { id: true, ownerId: true, title: true, images: true, status: true } });
 
+/** Shop đã duyệt / xác minh của [ownerId]; shop chờ duyệt hoặc bị từ chối chưa hiện tên trong thông báo */
 export const findShopOfOwner = (ownerId: string) =>
-  prisma.shop.findUnique({ where: { ownerId }, select: { id: true, name: true, logoUrl: true } });
+  prisma.shop.findFirst({
+    where: { ownerId, OR: [{ status: 'APPROVED' }, { verificationType: { not: null } }] },
+    select: { id: true, name: true, logoUrl: true },
+  });
 
 /** Người theo dõi [ownerId] (theo dõi shop = theo dõi chủ shop; tài khoản còn hoạt động, không gồm chính chủ) */
 export async function findFollowerIds(ownerId: string) {

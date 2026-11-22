@@ -3,7 +3,7 @@ import { onListingModerated } from '../listings/index.js';
 import {
   notifyBonusExpiring, notifyListingAutoExtended, notifyListingAutoExtendFailed, notifyListingExpired, notifyListingExpiring,
   notifyListingModerated, notifyListingPublished, notifyOrderRejected, notifyPlanActivated, notifyPlanExpired, notifyPlanExpiring,
-  notifyPosterReviewed, notifyPromotionEnded, notifyPromotionStarted, notifyTopupFailed, notifyTopupPaid,
+  notifyPosterReviewed, notifyPromotionEnded, notifyPromotionStarted, notifyShopReviewed, notifyTopupFailed, notifyTopupPaid,
 } from './notification.listeners.js';
 import {
   notifyActivityOnModeration, notifyChatMessage, notifyCommentLiked, notifyFeedCommented, notifyFollowersOnPublish,
@@ -31,6 +31,7 @@ on('plan.activated', notifyPlanActivated);
 on('plan.expiring', notifyPlanExpiring);
 on('plan.expired', notifyPlanExpired);
 on('poster.reviewed', notifyPosterReviewed);
+on('shop.reviewed', notifyShopReviewed);
 // Hoạt động giữa người dùng (mục 3)
 on('wantedAlert.matched', notifyWantedAlertMatched);
 on('chat.messageSent', notifyChatMessage);

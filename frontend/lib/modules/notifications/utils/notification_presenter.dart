@@ -46,6 +46,8 @@ class NotificationPresenter {
     NotificationType.planExpired => l10n.notifPlanExpiredTitle,
     NotificationType.posterApproved => l10n.notifPosterApprovedTitle,
     NotificationType.posterRejected => l10n.notifPosterRejectedTitle,
+    NotificationType.shopApproved => l10n.notifShopApprovedTitle,
+    NotificationType.shopRejected => l10n.notifShopRejectedTitle,
     NotificationType.wantedAlertMatch => l10n.notifWantedMatchTitle,
     NotificationType.newFollower =>
       item.text('shopName') != null
@@ -128,6 +130,7 @@ class NotificationPresenter {
     NotificationType.listingEditRejected,
     NotificationType.orderRejected,
     NotificationType.posterRejected,
+    NotificationType.shopRejected,
   };
 
   static String? _body(AppLocalizations l10n, NotificationModel item) {
@@ -138,6 +141,7 @@ class NotificationPresenter {
     final plan = item.text('planName') ?? item.text('packageName');
     final date = _date(item);
     final poster = item.text('posterTitle');
+    final shop = item.text('shopName');
     final comment = item.text('commentText');
     // Thông báo gộp: số người khác ngoài người mới nhất
     final others = ((item.number('count') ?? 1) - 1).clamp(0, 1 << 30).toInt();
@@ -204,6 +208,10 @@ class NotificationPresenter {
         l10n.notifPosterApprovedBody(poster),
       NotificationType.posterRejected when poster != null =>
         l10n.notifPosterRejectedBody(poster),
+      NotificationType.shopApproved when shop != null =>
+        l10n.notifShopApprovedBody(shop),
+      NotificationType.shopRejected when shop != null =>
+        l10n.notifShopRejectedBody(shop),
       NotificationType.wantedAlertMatch
           when title != null && item.text('alertKeywords') != null =>
         l10n.notifWantedMatchBody(title, item.text('alertKeywords')!),
@@ -270,6 +278,8 @@ class NotificationPresenter {
     NotificationType.planExpired => AppIcons.pro,
     NotificationType.posterApproved ||
     NotificationType.posterRejected => AppIcons.image,
+    NotificationType.shopApproved ||
+    NotificationType.shopRejected => AppIcons.store,
     NotificationType.wantedAlertMatch => AppIcons.wantedAlert,
     NotificationType.newFollower => AppIcons.followUser,
     NotificationType.listingFavorited ||
@@ -292,12 +302,14 @@ class NotificationPresenter {
     NotificationType.listingPublished ||
     NotificationType.creditTopupSuccess ||
     NotificationType.planActivated ||
-    NotificationType.posterApproved => AppColors.success,
+    NotificationType.posterApproved ||
+    NotificationType.shopApproved => AppColors.success,
     NotificationType.listingRejected ||
     NotificationType.listingRemoved ||
     NotificationType.creditTopupFailed ||
     NotificationType.orderRejected ||
     NotificationType.posterRejected ||
+    NotificationType.shopRejected ||
     NotificationType.listingFavorited ||
     NotificationType.feedPostLiked ||
     NotificationType.feedCommentLiked => AppColors.error,

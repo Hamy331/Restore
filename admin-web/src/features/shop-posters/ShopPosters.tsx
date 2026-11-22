@@ -61,8 +61,8 @@ const tierLabels: Record<string, string> = { PRO: 'Cửa hàng Pro', BASIC: 'Bá
 
 const dateText = (value: string | null) => (value ? new Date(value).toLocaleDateString('vi-VN') : '—');
 
-/** Ảnh poster: file tải lên (/api/v1/media/posters/...) cần token nên tải qua session; ảnh mẫu trong app không xem được ở web */
-function PosterImage({ session, path, alt }: { session: Session; path: string; alt: string }) {
+/** Ảnh poster / shop: file tải lên (/api/v1/media/posters|shops/...) tải qua session; ảnh mẫu trong app không xem được ở web */
+export function PosterImage({ session, path, alt, width = 200 }: { session: Session; path: string; alt: string; width?: number }) {
   const [src, setSrc] = useState<string>(),
     [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -70,10 +70,9 @@ function PosterImage({ session, path, alt }: { session: Session; path: string; a
     let blobUrl: string | undefined;
     setFailed(false);
     setSrc(undefined);
-    const media = path.match(/^\/api\/v1\/media\/posters\/([^/?#]+)$/);
+    const media = path.match(/^\/api\/v1\/media\/(posters|shops)\/([^/?#]+)$/);
     if (media) {
-      session
-        .posterImage(media[1])
+      (media[1] === 'shops' ? session.shopImage(media[2]) : session.posterImage(media[2]))
         .then((blob) => {
           if (!active) return;
           blobUrl = URL.createObjectURL(blob);
@@ -90,7 +89,7 @@ function PosterImage({ session, path, alt }: { session: Session; path: string; a
     };
   }, [session, path]);
   if (failed) return <span className="muted">{path.startsWith('assets/') ? 'Ảnh mẫu trong app' : 'Không tải được ảnh'}</span>;
-  return src ? <Image width={200} src={src} alt={alt} onError={() => setFailed(true)} /> : <span>Đang tải ảnh…</span>;
+  return src ? <Image width={width} src={src} alt={alt} onError={() => setFailed(true)} /> : <span>Đang tải ảnh…</span>;
 }
 
 export function ShopPosters({ session }: { session: Session }) {

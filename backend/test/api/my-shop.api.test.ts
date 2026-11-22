@@ -70,3 +70,44 @@ test('my shop: create with store plan, edit, images, name lock', async () => {
   assert.equal((await api.patch('/shops/me', { token, body: { name: 'Tên mới' } })).body.code, 'SHOP_NAME_LOCKED');
   assert.equal((await api.patch('/shops/me', { token, body: { name: 'Nội Thất Gỗ Việt', tagline: 'Mới' } })).status, 200, 'gửi lại tên cũ vẫn được');
 });
+
+/** Duyệt cửa hàng: chờ duyệt thì chưa ai xem được, từ chối kèm lý do, sửa là gửi lại, duyệt xong mới công khai và khoá tên */
+test('my shop: admin review flow', async () => {
+  const { api, tokens } = ctx;
+  const { prisma } = await import('../../src/lib/prisma.js');
+  const token = tokens.seller;
+  const { id } = await prisma.shop.update({
+    where: { ownerId: 'user-seller' }, data: { verificationType: null, verifiedAt: null, status: 'PENDING' }, select: { id: true },
+  });
+
+  assert.equal((await api.patch('/shops/me', { token, body: { name: 'Shop Gỗ 0901 234 567' } })).body.code, 'SHOP_NAME_NOT_ALLOWED');
+  assert.equal((await api.patch('/shops/me', { token, body: { name: 'Nội thất tốt nhất' } })).body.code, 'SHOP_NAME_NOT_ALLOWED');
+  const pending = await api.get('/shops/me', { token });
+  assert.deepEqual([pending.body.data.review.status, pending.body.data.nameLocked], ['PENDING', false]);
+  assert.equal((await api.get(`/shops/${id}`, { token: tokens.buyer })).status, 404, 'chờ duyệt thì chưa công khai');
+
+  assert.equal((await api.get('/admin/shops', { token })).status, 403);
+  const queue = await api.get('/admin/shops', { token: tokens.admin });
+  assert.equal(queue.status, 200, JSON.stringify(queue.body));
+  assert.ok(queue.body.data.pendingCount >= 1);
+  assert.equal(queue.body.data.items.find((shop: { id: string }) => shop.id === id)?.owner.email, 'user-seller@restore.test');
+
+  assert.equal((await api.post(`/admin/shops/${id}/reject`, { token: tokens.admin, body: {} })).status, 400, 'thiếu lý do');
+  const rejected = await api.post(`/admin/shops/${id}/reject`, { token: tokens.admin, body: { note: 'Ảnh bìa có logo thương hiệu khác' } });
+  assert.deepEqual([rejected.status, rejected.body.data.status], [200, 'REJECTED']);
+  assert.equal((await api.post(`/admin/shops/${id}/approve`, { token: tokens.admin })).body.code, 'SHOP_NOT_PENDING');
+  const mine = await api.get('/shops/me', { token });
+  assert.deepEqual([mine.body.data.review.status, mine.body.data.review.rejectNote], ['REJECTED', 'Ảnh bìa có logo thương hiệu khác']);
+
+  const resent = await api.patch('/shops/me', { token, body: { coverUrl: null } });
+  assert.deepEqual([resent.body.data.review.status, resent.body.data.review.rejectNote], ['PENDING', null], 'sửa là gửi duyệt lại');
+
+  const approved = await api.post(`/admin/shops/${id}/approve`, { token: tokens.admin });
+  assert.deepEqual([approved.status, approved.body.data.status], [200, 'APPROVED']);
+  assert.equal((await api.get(`/shops/${id}`, { token: tokens.buyer })).status, 200, 'đã duyệt thì công khai');
+  assert.equal((await api.get('/shops/me', { token })).body.data.nameLocked, true);
+  assert.equal((await api.patch('/shops/me', { token, body: { name: 'Tên khác' } })).body.code, 'SHOP_NAME_LOCKED');
+
+  const types = (await prisma.notification.findMany({ where: { userId: 'user-seller', type: { startsWith: 'SHOP_' } } })).map((n) => n.type);
+  assert.deepEqual(types.sort(), ['SHOP_APPROVED', 'SHOP_REJECTED']);
+});
