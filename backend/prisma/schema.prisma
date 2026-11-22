@@ -867,6 +867,8 @@ model WantedAlert {
   keywords      String
   categoryId    String?
   category      Category?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  /// Danh mục con (id trong Category.metadata.subcategories của categoryId); null là mọi danh mục con
+  subcategoryId String?
   /// Khoảng giá VND, null là không giới hạn
   minPrice      BigInt?
   maxPrice      BigInt?
