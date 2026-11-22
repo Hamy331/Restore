@@ -88,7 +88,7 @@ Finder _field(String key) => find.descendant(
 void main() {
   testWidgets('personal plan sees the Store plan upsell', (tester) async {
     await _pump(tester, _Repo(const MyShopOverview()));
-    expect(find.text('Trang shop dành cho gói Cửa hàng'), findsOneWidget);
+    expect(find.text('Trang shop dành cho gói Cửa hàng Pro'), findsOneWidget);
     await tester.tap(find.text('Xem gói'));
     await _settle(tester);
     expect(find.text('plans page'), findsOneWidget);
@@ -152,7 +152,7 @@ void main() {
     await _pump(tester, repository);
     expect(find.text('Shop đã xác minh'), findsOneWidget);
     expect(find.textContaining('RS-2026-00128'), findsOneWidget);
-    expect(find.text('Gói Cửa hàng đã hết hạn'), findsOneWidget);
+    expect(find.text('Gói Cửa hàng Pro đã hết hạn'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
     final name = tester.widget<TextField>(_field('my-shop-name'));
     expect(name.enabled, isFalse);
