@@ -20,9 +20,9 @@ listingsRouter.use(listingRouter);
 
 export { imageExtension } from './services/image.service.js';
 export { searchListings } from './services/feed.service.js';
-export { foldedText } from './repositories/feed.repository.js';
+export { accented, allTermsIn, folded, foldedText, searchTerms, tokens } from './repositories/keyword-match.js';
 export { normalizeTitle } from './listing-lifecycle.js';
-export { searchQuery, searchWords } from './listing.validator.js';
+export { exactSearchWords, searchQuery, searchWords } from './listing.validator.js';
 export type { SearchQuery } from './listing.dto.js';
 export { listingSelect, toFeedItemDto } from './listing.dto.js';
 export type { ListingDto, ListingRecord } from './listing.dto.js';

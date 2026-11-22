@@ -92,7 +92,7 @@ test('listing images accept real supported bytes and cannot attach foreign URLs 
 
 test('listing filters validate range and normalize search values', () => {
   assert.deepEqual(listingFilters({ q: '  Bàn  GỖ! ', categoryId: 'furniture', condition: 'USED_GOOD', minPrice: '100000', maxPrice: '200000' }), {
-    q: 'Bàn  GỖ!', words: ['ban', 'go'], categoryId: 'furniture', subcategoryId: '', attributeFilters: [], sellers: [],
+    q: 'Bàn  GỖ!', words: ['ban', 'go'], exactWords: ['bàn', 'gỗ'], categoryId: 'furniture', subcategoryId: '', attributeFilters: [], sellers: [],
     conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000', provinceCode: '', wardCode: '',
   });
   // Danh mục con và bộ lọc thuộc tính; danh mục con bỏ qua khi chưa chọn danh mục cha
@@ -115,6 +115,9 @@ test('listing filters validate range and normalize search values', () => {
   assert.deepEqual(multi.conditions, ['NEW', 'USED_GOOD']);
   assert.deepEqual(multi.deals, ['buy', 'exchange']);
   assert.deepEqual(listingFilters({ q: 'Đèn ngủ gỗ' }).words, ['den', 'ngu', 'go']);
+  // Từ khoá giữ dấu đi cùng thứ tự với từ khoá bỏ dấu, để "cộ" không khớp "có"
+  assert.deepEqual(listingFilters({ q: 'Xe CỘ, iPhone-15' }).exactWords, ['xe', 'cộ', 'iphone', '15']);
+  assert.deepEqual(listingFilters({ q: 'Xe CỘ, iPhone-15' }).words, ['xe', 'co', 'iphone', '15']);
   assert.throws(() => listingFilters({ deal: 'rent' }), { code: 'INVALID_QUERY' });
   assert.throws(() => listingFilters({ minPrice: '200', maxPrice: '100' }), { code: 'INVALID_QUERY' });
   assert.throws(() => listingFilters({ minPrice: '-1' }), { code: 'INVALID_QUERY' });

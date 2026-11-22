@@ -94,6 +94,10 @@ export type DealType = (typeof DEAL_TYPES)[number];
 /** Từ khoá đã bỏ dấu, chữ thường, tối đa 10 từ (VD "Ghế  gỗ!" → ["ghe", "go"]) */
 export const searchWords = (q: string) => normalizeTitle(q).split(' ').filter(Boolean).slice(0, 10);
 
+/** Từ khoá giữ dấu (chữ thường), cùng thứ tự với searchWords: từ nào gõ có dấu thì tìm đúng dấu */
+export const exactSearchWords = (q: string) =>
+  q.normalize('NFC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim().split(' ').filter(Boolean).slice(0, 10);
+
 /** Tách giá trị query dạng "a,b" (hoặc lặp ?a=..&a=..), bỏ trùng và rỗng; null khi không phải chuỗi */
 function csv(value: unknown): string[] | null {
   const items = Array.isArray(value) ? value : [value];
@@ -202,6 +206,7 @@ export function listingFilters(query: Record<string, unknown>) {
     ...(nearby?{nearby}:{}), ...(query.allowExchange==='true'?{allowExchange:true}:{}),
     q: typeof q === 'string' ? q.trim() : '',
     words: typeof q === 'string' ? searchWords(q) : [],
+    exactWords: typeof q === 'string' ? exactSearchWords(q) : [],
     categoryId: typeof categoryId === 'string' ? categoryId : '',
     // Danh mục con chỉ có nghĩa khi đã chọn danh mục cha
     subcategoryId: typeof categoryId === 'string' && typeof subcategoryId === 'string' ? subcategoryId : '',
