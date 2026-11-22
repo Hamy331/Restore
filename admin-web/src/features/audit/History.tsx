@@ -7,7 +7,7 @@ import { Panel } from '../../shared/ui/Panel';
 import { Failure } from '../../shared/ui/Failure';
 import { actions } from './auditLabels';
 import { RecordId } from './AuditTable';
-import type { Entry } from './auditColumns';
+import { actorName, type Entry } from './auditColumns';
 
 export function History({ session, type }: { session: Session; type: string }) {
   const { openSection, canOpen } = useWorkspace();
@@ -53,7 +53,7 @@ function HistoryList({
               <b>{actions[r.action] ?? r.action}</b> · {r.reason}
               <div className="history-meta">
                 <RecordId value={r.targetId} />
-                <span>{r.actorId}</span>
+                <span>{actorName(r)}</span>
                 <time>{new Date(r.createdAt).toLocaleString('vi-VN')}</time>
               </div>
             </div>

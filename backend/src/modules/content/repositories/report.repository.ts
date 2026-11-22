@@ -31,6 +31,10 @@ export function findPage(query: AdminReportQuery, now: Date) {
   ]);
 }
 
+/** Tên và email người báo cáo (ViolationReport chỉ lưu reporterId) */
+export const findReporters = (ids: string[]) =>
+  prisma.user.findMany({ where: { id: { in: ids } }, select: { id: true, fullName: true, email: true } });
+
 type ReportGroup = {
   targetType: string; targetId: string; reportCount: number; oldestAt: Date; latestAt: Date;
   reasons: { code: string | null; label: string; count: number }[];

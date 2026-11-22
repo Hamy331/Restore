@@ -12,6 +12,7 @@ import { ListingDetails, type Listing } from '../listings/ListingDetails';
 export type Report = {
   id: string;
   reporterId: string;
+  reporter?: { fullName: string; email: string } | null;
   targetId: string;
   targetType: 'USER' | 'LISTING' | 'FEED_POST';
   reason: string;
@@ -98,7 +99,10 @@ function Review({
           <strong>Bằng chứng</strong> · {report.evidence}
         </p>
       )}
-      <p>Người báo cáo · {report.reporterId}</p>
+      <p>
+        Người báo cáo ·{' '}
+        {report.reporter ? `${report.reporter.fullName} · ${report.reporter.email}` : report.reporterId}
+      </p>
       {(report.contactPhone || report.contactEmail) && (
         <div>
           <strong>Thông tin liên hệ của người báo cáo</strong>
