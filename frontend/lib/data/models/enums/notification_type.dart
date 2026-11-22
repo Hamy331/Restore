@@ -47,6 +47,8 @@ enum NotificationType {
   planExpired('STORE_PLAN_EXPIRED', NotificationGroup.wallet),
   posterApproved('SHOP_POSTER_APPROVED', NotificationGroup.wallet),
   posterRejected('SHOP_POSTER_REJECTED', NotificationGroup.wallet),
+  shopApproved('SHOP_APPROVED', NotificationGroup.wallet),
+  shopRejected('SHOP_REJECTED', NotificationGroup.wallet),
   wantedAlertMatch('WANTED_ALERT_MATCH', NotificationGroup.activity),
   newFollower('NEW_FOLLOWER', NotificationGroup.activity),
   listingFavorited('LISTING_FAVORITED', NotificationGroup.activity),

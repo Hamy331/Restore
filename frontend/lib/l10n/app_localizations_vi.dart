@@ -4948,6 +4948,21 @@ class AppLocalizationsVi extends AppLocalizations {
       'Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Liên hệ ReStore để được xác minh.';
 
   @override
+  String get msPendingTitle => 'Shop đang chờ duyệt';
+
+  @override
+  String get msPendingBody =>
+      'ReStore đang xem tên, ảnh và mô tả của shop. Người mua sẽ xem được trang shop sau khi được duyệt.';
+
+  @override
+  String get msRejectedTitle => 'Shop chưa được duyệt';
+
+  @override
+  String msRejectedBody(String reason) {
+    return 'Lý do: $reason. Sửa thông tin rồi bấm Lưu thay đổi để gửi duyệt lại.';
+  }
+
+  @override
   String get msPlanExpiredTitle => 'Gói Cửa hàng Pro đã hết hạn';
 
   @override
@@ -4975,6 +4990,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get msErrImage => 'Ảnh tải lên không hợp lệ, hãy thử ảnh khác.';
+
+  @override
+  String get msErrNameNotAllowed =>
+      'Tên shop không được có số điện thoại, đường dẫn web hoặc từ như \"số 1\", \"tốt nhất\", \"chính hãng\".';
 
   @override
   String get msErrGeneric => 'Không lưu được, vui lòng thử lại.';
@@ -5501,6 +5520,22 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String notifPosterRejectedBody(String title) {
     return 'Poster \"$title\" không được duyệt.';
+  }
+
+  @override
+  String get notifShopApprovedTitle => 'Cửa hàng đã được duyệt';
+
+  @override
+  String notifShopApprovedBody(String name) {
+    return 'Cửa hàng \"$name\" đã được duyệt, người mua đã xem được trang shop.';
+  }
+
+  @override
+  String get notifShopRejectedTitle => 'Cửa hàng chưa được duyệt';
+
+  @override
+  String notifShopRejectedBody(String name) {
+    return 'Cửa hàng \"$name\" chưa được duyệt. Sửa thông tin rồi lưu để gửi duyệt lại.';
   }
 
   @override

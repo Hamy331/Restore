@@ -155,6 +155,7 @@ class MockMyShopRepository implements MyShopRepository {
     if (_overview.shop != null) throw const MyShopException('SHOP_EXISTS');
     return _overview = MyShopOverview(
       storePlan: true,
+      reviewStatus: 'PENDING',
       shop: ShopModel(
         id: 'shop-mock',
         ownerId: 'me',
@@ -179,6 +180,13 @@ class MockMyShopRepository implements MyShopRepository {
     String? pick(String key, String? old) =>
         changes.containsKey(key) ? changes[key] as String? : old;
     return _overview = MyShopOverview(
+      // shop bị từ chối: lưu là gửi duyệt lại
+      reviewStatus: _overview.reviewStatus == 'REJECTED'
+          ? 'PENDING'
+          : _overview.reviewStatus,
+      rejectNote: _overview.reviewStatus == 'REJECTED'
+          ? null
+          : _overview.rejectNote,
       storePlan: _overview.storePlan,
       planEndsAt: _overview.planEndsAt,
       nameLocked: _overview.nameLocked,

@@ -3006,6 +3006,15 @@
   },
   "msUnverifiedTitle": "Not verified yet",
   "msUnverifiedBody": "Your shop isn't in Trusted shops yet and posters can't run. Contact ReStore to get verified.",
+  "msPendingTitle": "Shop under review",
+  "msPendingBody": "ReStore is checking your shop name, images and description. Buyers can see your shop page once it is approved.",
+  "msRejectedTitle": "Shop not approved",
+  "msRejectedBody": "Reason: {reason}. Edit your details and tap Save changes to send it for review again.",
+  "@msRejectedBody": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
   "msPlanExpiredTitle": "Professional Shop plan expired",
   "msPlanExpiredBody": "Your posters are hidden for now. Renew the plan to run them again.",
   "msViewPublic": "View shop page",
@@ -3015,6 +3024,7 @@
   "msSaved": "Shop details saved",
   "msErrExists": "You already have a shop page.",
   "msErrImage": "That image is not valid. Try another one.",
+  "msErrNameNotAllowed": "Shop names can't include phone numbers, web links or words like \"No. 1\", \"best\" or \"official\".",
   "msErrGeneric": "Couldn't save. Please try again.",
   "followShopsTab": "Shops",
   "followShopsEmpty": "You're not following any shops yet",
@@ -3386,6 +3396,20 @@
   "@notifPosterRejectedBody": {
     "placeholders": {
       "title": {"type": "String"}
+    }
+  },
+  "notifShopApprovedTitle": "Shop approved",
+  "notifShopApprovedBody": "Your shop \"{name}\" was approved. Buyers can now see your shop page.",
+  "@notifShopApprovedBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifShopRejectedTitle": "Shop not approved",
+  "notifShopRejectedBody": "Your shop \"{name}\" was not approved. Edit your details and save to send it for review again.",
+  "@notifShopRejectedBody": {
+    "placeholders": {
+      "name": {"type": "String"}
     }
   },
   "creditBonusSheetTitle": "Bonus points and expiry",
