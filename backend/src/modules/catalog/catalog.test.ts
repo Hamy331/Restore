@@ -71,5 +71,5 @@ test('listingLocation falls back to the ward center and rejects a ward of anothe
 
 test('toCategoryDto fills name, description, attributes for admin-created categories', () => {
   const dto = toCategoryDto({ id: 'x', name: 'X', active: true, metadata: {} });
-  assert.deepEqual(dto, { id: 'x', name: 'X', description: '', attributes: [] });
+  assert.deepEqual(dto, { id: 'x', name: 'X', description: '', attributes: [], subcategories: [] });
 });

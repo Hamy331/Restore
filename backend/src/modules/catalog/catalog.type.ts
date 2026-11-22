@@ -26,4 +26,4 @@ export const LOCATION_KEYS = ['provinceCode', 'wardCode', 'streetAddress', 'lati
  * Thứ tự hiển thị danh mục mặc định (khớp prisma/seed/categories.ts, seed.ts kiểm tra).
  * Danh mục admin tạo thêm đứng sau, theo tên.
  */
-export const CATEGORY_ORDER = ['phones', 'electronics', 'vehicles', 'fashion', 'appliances', 'pets', 'furniture', 'books', 'sports', 'other'];
+export const CATEGORY_ORDER = ['vehicles', 'electronics', 'pets', 'appliances', 'furniture', 'office', 'hobbies', 'fashion', 'mom-baby'];

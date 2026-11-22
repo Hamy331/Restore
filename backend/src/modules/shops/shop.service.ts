@@ -63,7 +63,7 @@ export async function overview(viewerId: string | undefined, now = new Date()) {
 
   return {
     stats: { shopCount: shops.length, listingCount },
-    categories: categories.map(toCategoryDto),
+    categories: categories.map((category) => toCategoryDto(category)),
     banners: banners.flatMap((banner) => {
       const shop = byId.get(banner.shopId);
       return shop ? [toBannerDto(banner, shop)] : [];

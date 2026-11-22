@@ -40,8 +40,19 @@ class ApiCategoryRepository implements CategoryRepository {
     };
   }
 
+  /// Danh mục ít đổi: tải một lần mỗi phiên app, dùng chung cho đăng tin,
+  /// bộ lọc và bảng chọn danh mục. Lỗi thì lần sau tải lại.
+  static Future<List<CategoryModel>>? _cache;
+
   @override
-  Future<List<CategoryModel>> getCategories() async {
+  Future<List<CategoryModel>> getCategories() =>
+      _cache ??= _fetchCategories()
+        ..catchError((Object _) {
+          _cache = null;
+          return const <CategoryModel>[];
+        });
+
+  Future<List<CategoryModel>> _fetchCategories() async {
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
       '/catalog/categories',
       queryParameters: const {'include': 'attributes'},

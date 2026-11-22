@@ -396,6 +396,8 @@ model Listing {
   owner         User             @relation(fields: [ownerId], references: [id])
   categoryId    String?
   category      Category?        @relation(fields: [categoryId], references: [id])
+  /// Danh mục con (id trong Category.metadata.subcategories của danh mục cha), khoá cùng categoryId sau khi duyệt
+  subcategoryId String?
   title         String
   description   String
   price         Decimal
@@ -441,6 +443,7 @@ model Listing {
 
   @@index([ownerId, publishedAt])
   @@index([ownerId, categoryId, status])
+  @@index([categoryId, subcategoryId, status])
   @@index([status, expiresAt])
   @@index([status, startsAt])
 }

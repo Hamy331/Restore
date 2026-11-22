@@ -43,16 +43,15 @@ export const CREDIT_PACKAGES: { id: string; priceVnd: number; credits: number; b
 /** Hạn mức đăng tin, ngày hiển thị (miễn phí / tối đa / giá 30 ngày thêm) và giá đẩy tin theo chuyên mục */
 export const POSTING_LIMITS: Record<string, { freeListingLimit: number; extraListingCredits: number; displayDays: number;
   maxDisplayDays: number; dayPackCredits: number; boostCredits: number }> = {
-  phones: { freeListingLimit: 1, extraListingCredits: 15, displayDays: 30, maxDisplayDays: 120, dayPackCredits: 15, boostCredits: 10 },
   vehicles: { freeListingLimit: 1, extraListingCredits: 15, displayDays: 30, maxDisplayDays: 180, dayPackCredits: 15, boostCredits: 10 },
   electronics: { freeListingLimit: 1, extraListingCredits: 15, displayDays: 45, maxDisplayDays: 120, dayPackCredits: 12, boostCredits: 10 },
   appliances: { freeListingLimit: 1, extraListingCredits: 10, displayDays: 45, maxDisplayDays: 180, dayPackCredits: 8, boostCredits: 6 },
   pets: { freeListingLimit: 1, extraListingCredits: 10, displayDays: 21, maxDisplayDays: 60, dayPackCredits: 8, boostCredits: 6 },
   furniture: { freeListingLimit: 2, extraListingCredits: 10, displayDays: 60, maxDisplayDays: 180, dayPackCredits: 6, boostCredits: 6 },
   fashion: { freeListingLimit: 2, extraListingCredits: 5, displayDays: 30, maxDisplayDays: 90, dayPackCredits: 4, boostCredits: 4 },
-  sports: { freeListingLimit: 2, extraListingCredits: 5, displayDays: 45, maxDisplayDays: 120, dayPackCredits: 4, boostCredits: 4 },
-  other: { freeListingLimit: 2, extraListingCredits: 5, displayDays: 45, maxDisplayDays: 120, dayPackCredits: 4, boostCredits: 4 },
-  books: { freeListingLimit: 3, extraListingCredits: 5, displayDays: 60, maxDisplayDays: 180, dayPackCredits: 3, boostCredits: 4 },
+  office: { freeListingLimit: 2, extraListingCredits: 10, displayDays: 45, maxDisplayDays: 180, dayPackCredits: 6, boostCredits: 6 },
+  hobbies: { freeListingLimit: 2, extraListingCredits: 5, displayDays: 45, maxDisplayDays: 120, dayPackCredits: 4, boostCredits: 4 },
+  'mom-baby': { freeListingLimit: 2, extraListingCredits: 5, displayDays: 45, maxDisplayDays: 120, dayPackCredits: 4, boostCredits: 4 },
 };
 
 /** Mốc mua ngày hiển thị rẻ hơn */
