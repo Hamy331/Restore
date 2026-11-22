@@ -88,7 +88,7 @@ Finder _field(String key) => find.descendant(
 void main() {
   testWidgets('personal plan sees the Store plan upsell', (tester) async {
     await _pump(tester, _Repo(const MyShopOverview()));
-    expect(find.text('Trang shop dành cho gói Cửa hàng'), findsOneWidget);
+    expect(find.text('Trang shop dành cho gói Cửa hàng Pro'), findsOneWidget);
     await tester.tap(find.text('Xem gói'));
     await _settle(tester);
     expect(find.text('plans page'), findsOneWidget);
@@ -110,7 +110,9 @@ void main() {
     await tester.tap(find.text('Mở shop'));
     await _settle(tester);
     expect(find.text('Thông tin shop'), findsOneWidget);
-    expect(find.text('Shop chưa xác minh'), findsOneWidget);
+    // shop mới mở vào hàng chờ duyệt, chưa có nút xem trang công khai
+    expect(find.text('Shop đang chờ duyệt'), findsOneWidget);
+    expect(find.byKey(const ValueKey('my-shop-view-public')), findsNothing);
     // chưa đổi gì thì nút lưu tắt
     await tester.tap(find.text('Lưu thay đổi'));
     await _settle(tester);
@@ -152,7 +154,7 @@ void main() {
     await _pump(tester, repository);
     expect(find.text('Shop đã xác minh'), findsOneWidget);
     expect(find.textContaining('RS-2026-00128'), findsOneWidget);
-    expect(find.text('Gói Cửa hàng đã hết hạn'), findsOneWidget);
+    expect(find.text('Gói Cửa hàng Pro đã hết hạn'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
     final name = tester.widget<TextField>(_field('my-shop-name'));
     expect(name.enabled, isFalse);
@@ -166,6 +168,40 @@ void main() {
     await tester.tap(find.text('Lưu thay đổi'));
     await _settle(tester);
     expect(repository.updates.single, {'logoUrl': null});
+    await tester.pump(const Duration(seconds: 5));
+  });
+
+  testWidgets('rejected shop shows the reason and resubmits on save', (
+    tester,
+  ) async {
+    final repository = _Repo(
+      const MyShopOverview(
+        storePlan: true,
+        reviewStatus: 'REJECTED',
+        rejectNote: 'Ảnh bìa có logo thương hiệu khác',
+        shop: ShopModel(id: 's1', name: 'Góc Gỗ'),
+      ),
+    );
+    await _pump(tester, repository);
+    expect(find.text('Shop chưa được duyệt'), findsOneWidget);
+    expect(
+      find.textContaining('Ảnh bìa có logo thương hiệu khác'),
+      findsOneWidget,
+    );
+
+    await tester.enterText(_field('my-shop-tagline'), 'Đồ gỗ thủ công');
+    await tester.pump();
+    await tester.tap(find.text('Lưu thay đổi'));
+    await _settle(tester);
+    expect(repository.updates.single, {'tagline': 'Đồ gỗ thủ công'});
+    // kéo về đầu trang để thấy thẻ trạng thái
+    await tester.drag(
+      find.byKey(const ValueKey('my-shop-list')),
+      const Offset(0, 2000),
+    );
+    await _settle(tester);
+    expect(find.text('Shop đang chờ duyệt'), findsOneWidget);
+    expect(find.text('Shop chưa được duyệt'), findsNothing);
     await tester.pump(const Duration(seconds: 5));
   });
 }

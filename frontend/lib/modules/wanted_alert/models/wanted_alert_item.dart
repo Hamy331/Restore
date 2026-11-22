@@ -7,7 +7,8 @@ import 'package:restore/shared/models/localized_text.dart';
 class WantedAlertItem extends Equatable {
   final WantedAlertModel alert;
 
-  /// Tên danh mục để hiện ngay, null khi không lọc danh mục
+  /// Tên danh mục để hiện ngay ("Xe cộ › Xe máy" khi có danh mục con), null
+  /// khi không lọc danh mục
   final LocalizedText? categoryName;
 
   /// Tổng số tin đã khớp và số tin khớp người dùng chưa xem
@@ -29,10 +30,16 @@ class WantedAlertItem extends Equatable {
 
   factory WantedAlertItem.fromJson(Map<String, dynamic> json) {
     final category = json['category'];
+    final subcategory = json['subcategory'];
     return WantedAlertItem(
       alert: WantedAlertModel.fromJson(json),
       categoryName: category is Map
-          ? LocalizedText.fromJson(category['name'])
+          ? withSubcategory(
+              LocalizedText.fromJson(category['name']),
+              subcategory is Map
+                  ? LocalizedText.fromJson(subcategory['name'])
+                  : null,
+            )
           : null,
       matchCount: (json['matchCount'] as num?)?.toInt() ?? 0,
       newMatchCount: (json['newMatchCount'] as num?)?.toInt() ?? 0,
@@ -42,6 +49,18 @@ class WantedAlertItem extends Equatable {
       ],
     );
   }
+
+  /// "Danh mục › Danh mục con" theo từng ngôn ngữ; [child] null thì giữ [parent]
+  static LocalizedText withSubcategory(
+    LocalizedText parent,
+    LocalizedText? child,
+  ) => child == null
+      ? parent
+      : LocalizedText({
+          for (final language in {...parent.values.keys, ...child.values.keys})
+            language:
+                '${parent.resolve(language)} › ${child.resolve(language)}',
+        });
 
   /// Đã mở xem các tin khớp
   WantedAlertItem markSeen() => WantedAlertItem(

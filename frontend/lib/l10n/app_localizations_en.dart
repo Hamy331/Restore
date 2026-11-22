@@ -5041,6 +5041,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.';
 
   @override
+  String get msPendingTitle => 'Shop under review';
+
+  @override
+  String get msPendingBody =>
+      'ReStore is checking your shop name, images and description. Buyers can see your shop page once it is approved.';
+
+  @override
+  String get msRejectedTitle => 'Shop not approved';
+
+  @override
+  String msRejectedBody(String reason) {
+    return 'Reason: $reason. Edit your details and tap Save changes to send it for review again.';
+  }
+
+  @override
   String get msPlanExpiredTitle => 'Professional Shop plan expired';
 
   @override
@@ -5068,6 +5083,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msErrImage => 'That image is not valid. Try another one.';
+
+  @override
+  String get msErrNameNotAllowed =>
+      'Shop names can\'t include phone numbers, web links or words like \"No. 1\", \"best\" or \"official\".';
 
   @override
   String get msErrGeneric => 'Couldn\'t save. Please try again.';
@@ -5596,6 +5615,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String notifPosterRejectedBody(String title) {
     return 'Poster \"$title\" was not approved.';
+  }
+
+  @override
+  String get notifShopApprovedTitle => 'Shop approved';
+
+  @override
+  String notifShopApprovedBody(String name) {
+    return 'Your shop \"$name\" was approved. Buyers can now see your shop page.';
+  }
+
+  @override
+  String get notifShopRejectedTitle => 'Shop not approved';
+
+  @override
+  String notifShopRejectedBody(String name) {
+    return 'Your shop \"$name\" was not approved. Edit your details and save to send it for review again.';
   }
 
   @override

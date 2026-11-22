@@ -36,6 +36,9 @@ const HomeBanners = lazy(() =>
 const ShopPosters = lazy(() =>
   import('../features/shop-posters/ShopPosters').then((m) => ({ default: m.ShopPosters })),
 );
+const ShopReviews = lazy(() =>
+  import('../features/shop-reviews/ShopReviews').then((m) => ({ default: m.ShopReviews })),
+);
 
 import {
   AppstoreOutlined,
@@ -51,6 +54,7 @@ import {
   HistoryOutlined,
   PictureOutlined,
   NotificationOutlined,
+  SolutionOutlined,
 } from '@ant-design/icons';
 
 export const sections = [
@@ -71,6 +75,15 @@ export const sections = [
     detail: 'Xem xét nội dung và xử lý tin đăng.',
     permission: 'listing:moderate',
     View: Listings,
+  },
+  {
+    key: 'shopReviews',
+    label: 'Duyệt cửa hàng',
+    group: 'Vận hành',
+    icon: SolutionOutlined,
+    detail: 'Duyệt tên, ảnh và mô tả của cửa hàng mới mở trước khi người mua xem được.',
+    permission: 'listing:moderate',
+    View: ShopReviews,
   },
   {
     key: 'shopPosters',

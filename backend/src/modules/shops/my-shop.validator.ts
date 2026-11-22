@@ -25,6 +25,22 @@ const clearable = (field: string, max: number, pattern?: { regex: RegExp; messag
 
 const name = () => str('name', { min: SHOP_LIMITS.name[0], max: SHOP_LIMITS.name[1] });
 
+/** Chữ thường, bỏ dấu tiếng Việt (kể cả đ) */
+const fold = (input: string) => input.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
+
+/** Từ quảng cáo quá mức hoặc mạo danh (so khớp sau khi bỏ dấu) */
+const BANNED_WORDS = /\b(so (1|mot)|top 1|no\.? ?1|tot nhat|re nhat|uy tin nhat|chinh hang|admin|restore)\b/;
+
+/**
+ * Tên shop bị chặn ngay khi lưu (theo quy định kiểm duyệt cửa hàng của Chợ Tốt): số điện thoại, đường dẫn web,
+ * từ quảng cáo quá mức hoặc mạo danh. Trả về luật vi phạm, null = được. Phần còn lại admin duyệt tay.
+ */
+export function shopNameProblem(value: string): 'PHONE' | 'LINK' | 'WORDING' | null {
+  if (/(\d[\s.-]?){9,}/.test(value)) return 'PHONE';
+  if (/https?:\/\/|www\.|\.(com|vn|net|org|info|biz|shop|store)\b/i.test(value)) return 'LINK';
+  return BANNED_WORDS.test(fold(value)) ? 'WORDING' : null;
+}
+
 /** Tạo shop (gói Cửa hàng): name, tagline?, description?, address? */
 export const shopCreateBody = strictBody({
   name: name(),

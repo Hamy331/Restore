@@ -4,7 +4,7 @@ import { AppError } from '../../../common/errors/app-error.js';
 import { ADMIN_PAGE_SIZE, changed, text } from '../../../common/validation/admin-input.js';
 import { storePackageForUser, withQuotaTransaction } from '../../commerce/index.js';
 import { captureListingHold, releaseListingHold } from '../../credits/index.js';
-import { AdminDecisionInput, AdminListingQuery, DecisionInput, toOwnerListingDto, toRevisionDto } from '../listing.dto.js';
+import { AdminDecisionInput, AdminListingQuery, DecisionInput, toAdminListing, toOwnerListingDto, toRevisionDto } from '../listing.dto.js';
 import { removeStoredImages, revisionOnlyImages } from './image.service.js';
 import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
 import { resolveSubcategory } from '../../catalog/category-tree.js';
@@ -170,7 +170,7 @@ export async function listPending() {
 export async function listForAdmin({ status, q, edit, page }: AdminListingQuery) {
   const [rows, total] = await listingRepository.findAdminPage({ status, q, edit }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
   const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
-    ...item,
+    ...toAdminListing(item),
     ...(revision && {
       pendingEdit: toRevisionDto(revision),
       current: { title: item.title, description: item.description, price: item.price.toString(),
@@ -189,4 +189,7 @@ export async function adminDecide(actorId: string, id: string, { action, reason,
 }
 
 /** Tin cho trang quản trị (null nếu không có) */
-export const getAdminListing = (id: string) => listingRepository.findAdminListing(id);
+export async function getAdminListing(id: string) {
+  const row = await listingRepository.findAdminListing(id);
+  return row && toAdminListing(row);
+}

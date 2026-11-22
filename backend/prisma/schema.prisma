@@ -867,6 +867,8 @@ model WantedAlert {
   keywords      String
   categoryId    String?
   category      Category?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  /// Danh mục con (id trong Category.metadata.subcategories của categoryId); null là mọi danh mục con
+  subcategoryId String?
   /// Khoảng giá VND, null là không giới hạn
   minPrice      BigInt?
   maxPrice      BigInt?
@@ -1056,6 +1058,14 @@ enum ShopBannerRejectReason {
   OTHER
 }
 
+/// Duyệt cửa hàng (như Chợ Tốt): mở shop hoặc sửa shop bị từ chối thì chờ duyệt.
+/// Chỉ shop đã duyệt (hoặc đã xác minh) mới có trang công khai
+enum ShopStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 /// Gian hàng của một tài khoản bán (thường là gói Cửa hàng). Chỉ hiện ở "Shop uy tín" khi đã xác minh
 model Shop {
   id               String                @id @default(uuid())
@@ -1076,11 +1086,18 @@ model Shop {
   categoryIds      String[]
   /// Địa chỉ hiển thị, VD "Quận 1, TP. Hồ Chí Minh"
   address          String?
+  status           ShopStatus            @default(PENDING)
+  /// Lần gửi duyệt gần nhất (mở shop, hoặc sửa sau khi bị từ chối); hàng chờ duyệt xếp cũ trước
+  submittedAt      DateTime              @default(now())
+  reviewedAt       DateTime?
+  /// Lý do admin từ chối; chủ shop sửa rồi lưu là gửi duyệt lại
+  rejectNote       String?
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
   banners          ShopBanner[]
 
   @@index([verificationType, verifiedAt])
+  @@index([status, submittedAt])
 }
 
 /// Banner sự kiện shop gửi lên (ảnh 1200 x 600), admin duyệt rồi mới hiện

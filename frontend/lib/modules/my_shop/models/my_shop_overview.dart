@@ -31,11 +31,14 @@ class MyShopStats extends Equatable {
   ];
 }
 
-/// `GET /shops/me`: shop của mình (null nếu chưa mở), gói Cửa hàng còn hạn
-/// không, có được mở shop không, tên có bị khoá (shop đã xác minh) không
+/// `GET /shops/me`: shop của mình (null nếu chưa mở), trạng thái duyệt, gói
+/// Cửa hàng còn hạn không, có được mở shop không, tên có bị khoá (shop đã
+/// duyệt / xác minh) không
 class MyShopOverview extends Equatable {
   const MyShopOverview({
     this.shop,
+    this.reviewStatus,
+    this.rejectNote,
     this.storePlan = false,
     this.planEndsAt,
     this.canCreate = false,
@@ -44,6 +47,12 @@ class MyShopOverview extends Equatable {
   });
 
   final ShopModel? shop;
+
+  /// `review.status`: PENDING | APPROVED | REJECTED (null khi chưa có shop)
+  final String? reviewStatus;
+
+  /// Lý do admin từ chối
+  final String? rejectNote;
   final bool storePlan;
   final DateTime? planEndsAt;
   final bool canCreate;
@@ -51,11 +60,13 @@ class MyShopOverview extends Equatable {
   final MyShopStats? stats;
 
   factory MyShopOverview.fromJson(Map<String, dynamic> json) {
-    final shop = json['shop'], stats = json['stats'];
+    final shop = json['shop'], stats = json['stats'], review = json['review'];
     return MyShopOverview(
       shop: shop is Map
           ? ShopModel.fromJson(Map<String, dynamic>.from(shop))
           : null,
+      reviewStatus: review is Map ? review['status'] as String? : null,
+      rejectNote: review is Map ? review['rejectNote'] as String? : null,
       storePlan: json['storePlan'] == true,
       planEndsAt: DateTime.tryParse('${json['planEndsAt']}')?.toLocal(),
       canCreate: json['canCreate'] == true,
@@ -66,9 +77,15 @@ class MyShopOverview extends Equatable {
     );
   }
 
+  /// Người mua xem được trang shop: đã duyệt hoặc đã xác minh
+  bool get isPublic =>
+      reviewStatus == 'APPROVED' || (shop?.isVerified ?? false);
+
   @override
   List<Object?> get props => [
     shop,
+    reviewStatus,
+    rejectNote,
     storePlan,
     planEndsAt,
     canCreate,

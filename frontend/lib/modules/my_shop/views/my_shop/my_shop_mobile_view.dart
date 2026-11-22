@@ -38,6 +38,7 @@ String myShopError(AppLocalizations l, String code) => switch (code) {
   'SHOP_NAME_LOCKED' => l.msNameLocked,
   'SHOP_PLAN_REQUIRED' => l.msPlanTitle,
   'SHOP_EXISTS' => l.msErrExists,
+  'SHOP_NAME_NOT_ALLOWED' => l.msErrNameNotAllowed,
   'INVALID_IMAGE_URL' || 'INVALID_IMAGE' || 'IMAGE_TOO_LARGE' => l.msErrImage,
   'VALIDATION_ERROR' => l.msNameRequired,
   _ => l.msErrGeneric,
@@ -448,7 +449,7 @@ class _MyShopEditorState extends State<_MyShopEditor> {
     final code = shop.certificateCode;
     return _MyShopScaffold(
       actions: [
-        if (shop.isVerified)
+        if (overview.isPublic)
           IconButton(
             key: const ValueKey('my-shop-view-public'),
             tooltip: l.msViewPublic,
@@ -501,7 +502,25 @@ class _MyShopEditorState extends State<_MyShopEditor> {
                 child: Text(l.spSeePlans),
               ),
             ),
-          if (shop.isVerified)
+          if (overview.reviewStatus == 'PENDING' && !shop.isVerified)
+            MyShopStatusCard(
+              key: const ValueKey('my-shop-pending'),
+              icon: AppIcons.clock,
+              title: l.msPendingTitle,
+              body: l.msPendingBody,
+              color: AppColors.warning,
+              background: AppColors.warningBg,
+            )
+          else if (overview.reviewStatus == 'REJECTED' && !shop.isVerified)
+            MyShopStatusCard(
+              key: const ValueKey('my-shop-rejected'),
+              icon: AppIcons.block,
+              title: l.msRejectedTitle,
+              body: l.msRejectedBody(overview.rejectNote ?? ''),
+              color: AppColors.error,
+              background: AppColors.errorBg,
+            )
+          else if (shop.isVerified)
             MyShopStatusCard(
               title: l.msVerifiedTitle,
               body: code == null

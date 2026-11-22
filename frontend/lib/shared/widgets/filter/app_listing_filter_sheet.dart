@@ -38,6 +38,7 @@ Future<ListingFilter?> showListingFilterSheet(
   List<double>? radiusOptions,
   bool showCategories = true,
   bool subcategories = true,
+  bool attributes = true,
   bool showSeller = true,
   ListingFilterOptionsRepository? repository,
 }) {
@@ -61,6 +62,7 @@ Future<ListingFilter?> showListingFilterSheet(
         radiusOptions: radiusOptions,
         showCategories: showCategories,
         subcategories: subcategories,
+        attributes: attributes,
         showSeller: showSeller,
       ),
     ),
@@ -71,15 +73,19 @@ class _ListingFilterSheetBody extends StatelessWidget {
   final List<double>? radiusOptions;
   final bool showCategories;
 
-  /// false: không có danh mục con, bộ lọc riêng và "Còn bảo hành" (Báo khi
-  /// có hàng chưa lưu được các tiêu chí đó)
+  /// false: không có danh mục con, bộ lọc riêng và "Còn bảo hành"
   final bool subcategories;
+
+  /// false: có danh mục con nhưng không có bộ lọc riêng và "Còn bảo hành"
+  /// (Báo khi có hàng lưu danh mục con, chưa lưu được thuộc tính)
+  final bool attributes;
   final bool showSeller;
 
   const _ListingFilterSheetBody({
     required this.radiusOptions,
     required this.showCategories,
     required this.subcategories,
+    required this.attributes,
     required this.showSeller,
   });
 
@@ -170,7 +176,7 @@ class _ListingFilterSheetBody extends StatelessWidget {
     // Tình trạng theo nhóm: Điện tử có "Còn bảo hành"; danh mục
     // không hỏi tình trạng (thú cưng) thì ẩn
     final groups = ListingConditionGroup.available(
-      warranty: category?.hasWarranty ?? false,
+      warranty: attributes && (category?.hasWarranty ?? false),
     );
     final condition = (category?.hasCondition ?? true)
         ? ListingFilterSection(
@@ -213,7 +219,7 @@ class _ListingFilterSheetBody extends StatelessWidget {
         ),
       ?subcategoryRow,
       price,
-      if (category != null)
+      if (attributes && category != null)
         ListingFilterAttributeSections(
           category: category,
           values: draft.attributeFilters,

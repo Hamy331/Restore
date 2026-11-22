@@ -15,6 +15,9 @@ class WantedAlertModel extends Equatable {
   final String keywords;
   final String? categoryId;
 
+  /// Danh mục con của [categoryId], null là mọi danh mục con
+  final String? subcategoryId;
+
   /// Khoảng giá VND, mỗi đầu null là không giới hạn
   final int? minPrice;
   final int? maxPrice;
@@ -40,6 +43,7 @@ class WantedAlertModel extends Equatable {
     required this.keywords,
     this.userId = '',
     this.categoryId,
+    this.subcategoryId,
     this.minPrice,
     this.maxPrice,
     this.conditions = const {},
@@ -56,6 +60,7 @@ class WantedAlertModel extends Equatable {
   /// Bộ lọc và bộ lọc tin mẫu
   ListingFilter get filter => ListingFilter(
     categoryId: categoryId,
+    subcategoryId: subcategoryId,
     minPrice: minPrice,
     maxPrice: maxPrice,
     conditions: conditions,
@@ -69,6 +74,7 @@ class WantedAlertModel extends Equatable {
       userId: '${json['userId'] ?? ''}',
       keywords: json['keywords'] as String? ?? '',
       categoryId: json['categoryId'] as String?,
+      subcategoryId: json['subcategoryId'] as String?,
       minPrice: (json['minPrice'] as num?)?.toInt(),
       maxPrice: (json['maxPrice'] as num?)?.toInt(),
       conditions: {
@@ -96,6 +102,7 @@ class WantedAlertModel extends Equatable {
     'userId': userId,
     'keywords': keywords,
     'categoryId': categoryId,
+    'subcategoryId': subcategoryId,
     'minPrice': minPrice,
     'maxPrice': maxPrice,
     'conditions': [for (final item in conditions) item.apiValue],
@@ -113,6 +120,7 @@ class WantedAlertModel extends Equatable {
     userId: userId,
     keywords: keywords,
     categoryId: categoryId,
+    subcategoryId: subcategoryId,
     minPrice: minPrice,
     maxPrice: maxPrice,
     conditions: conditions,
@@ -131,6 +139,7 @@ class WantedAlertModel extends Equatable {
     userId,
     keywords,
     categoryId,
+    subcategoryId,
     minPrice,
     maxPrice,
     conditions,

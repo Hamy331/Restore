@@ -294,6 +294,7 @@
         "userId": "user-buyer",
         "keywords": "ghế công thái học",
         "categoryId": "other",
+        "subcategoryId": null,
         "conditions": [],
         "dealTypes": [
           "buy"
@@ -307,6 +308,7 @@
           "id": "other",
           "name": "Khác"
         },
+        "subcategory": null,
         "minPrice": null,
         "maxPrice": null,
         "area": {
@@ -330,6 +332,7 @@
         "userId": "user-buyer",
         "keywords": "ghế công thái học màu đỏ ergonomic",
         "categoryId": null,
+        "subcategoryId": null,
         "conditions": [],
         "dealTypes": [],
         "matchLevel": "STRICT",
@@ -338,6 +341,7 @@
         "createdAt": "<date>",
         "updatedAt": "<date>",
         "category": null,
+        "subcategory": null,
         "minPrice": null,
         "maxPrice": null,
         "area": null,
@@ -357,6 +361,7 @@
         "userId": "user-seller",
         "keywords": "ghế công thái học",
         "categoryId": null,
+        "subcategoryId": null,
         "conditions": [],
         "dealTypes": [],
         "matchLevel": "BALANCED",
@@ -365,6 +370,7 @@
         "createdAt": "<date>",
         "updatedAt": "<date>",
         "category": null,
+        "subcategory": null,
         "minPrice": null,
         "maxPrice": null,
         "area": null,
@@ -391,6 +397,7 @@
           "userId": "user-buyer",
           "keywords": "ghế công thái học màu đỏ ergonomic",
           "categoryId": null,
+          "subcategoryId": null,
           "conditions": [],
           "dealTypes": [],
           "matchLevel": "STRICT",
@@ -399,6 +406,7 @@
           "createdAt": "<date>",
           "updatedAt": "<date>",
           "category": null,
+          "subcategory": null,
           "minPrice": null,
           "maxPrice": null,
           "area": null,
@@ -412,6 +420,7 @@
           "userId": "user-buyer",
           "keywords": "ghế công thái học",
           "categoryId": "other",
+          "subcategoryId": null,
           "conditions": [],
           "dealTypes": [
             "buy"
@@ -425,6 +434,7 @@
             "id": "other",
             "name": "Khác"
           },
+          "subcategory": null,
           "minPrice": null,
           "maxPrice": null,
           "area": {
@@ -452,6 +462,7 @@
           "userId": "user-seller",
           "keywords": "ghế công thái học",
           "categoryId": null,
+          "subcategoryId": null,
           "conditions": [],
           "dealTypes": [],
           "matchLevel": "BALANCED",
@@ -460,6 +471,7 @@
           "createdAt": "<date>",
           "updatedAt": "<date>",
           "category": null,
+          "subcategory": null,
           "minPrice": null,
           "maxPrice": null,
           "area": null,
@@ -480,6 +492,7 @@
         "userId": "user-buyer",
         "keywords": "ghế công thái học",
         "categoryId": "other",
+        "subcategoryId": null,
         "conditions": [],
         "dealTypes": [
           "buy"
@@ -493,6 +506,7 @@
           "id": "other",
           "name": "Khác"
         },
+        "subcategory": null,
         "minPrice": null,
         "maxPrice": null,
         "area": {
@@ -723,6 +737,7 @@
         "userId": "user-buyer",
         "keywords": "ghế công thái học",
         "categoryId": "other",
+        "subcategoryId": null,
         "conditions": [],
         "dealTypes": [
           "buy"
@@ -736,6 +751,7 @@
           "id": "other",
           "name": "Khác"
         },
+        "subcategory": null,
         "minPrice": null,
         "maxPrice": null,
         "area": {
