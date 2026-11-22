@@ -45,7 +45,7 @@ class ProductDetailSummary extends StatelessWidget {
       ?(detail.category?.subcategory?.name ?? detail.category?.name)?.of(
         context,
       ),
-      if (price != null && listing.isNegotiable) l10n.negotiable,
+      if (detail.canMakeOffer) l10n.negotiable,
       if (listing.allowExchange) l10n.tradeExchangeAccepted,
     ];
 

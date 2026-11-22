@@ -32,7 +32,7 @@ class ListingPreviewSummaryCard extends StatelessWidget {
     final tags = [
       ?category?.name.of(context),
       if (category?.hasCondition ?? true) ?draft.condition?.label(l10n),
-      if (draft.tradeType.requiresPrice && draft.isNegotiable) l10n.negotiable,
+      if (draft.tradeType.requiresPrice) l10n.negotiable,
       draft.sellerType == SellerType.personal
           ? l10n.sellerPersonal
           : l10n.sellerBusiness,

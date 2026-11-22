@@ -68,7 +68,6 @@ class BasicInfoMobileView extends StatelessWidget {
             const SizedBox(height: 16),
             BasicInfoTradeSection(
               tradeType: draft.tradeType,
-              isNegotiable: draft.isNegotiable,
               hasPriceError: errors.contains(ListingField.price),
               canSetOriginalPrice:
                   (state.quota?.canSetOriginalPrice ?? false) ||

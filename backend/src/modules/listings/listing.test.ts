@@ -45,6 +45,9 @@ test('listing creation accepts supported fields and rejects invalid or silently 
   assert.equal(result.price,valid.price);
   assert.equal(result.allowSale,true);
   assert.equal(result.allowExchange,false);
+  // Tin có bán luôn cho trả giá, kể cả khi app cũ gửi isNegotiable: false; tin chỉ trao đổi thì không
+  assert.equal(createInput({ ...valid, isNegotiable: false }).isNegotiable, true);
+  assert.equal(createInput({ ...valid, allowSale: false, allowExchange: true, price: '0' }).isNegotiable, false);
   assert.equal((result.location as {streetAddress:string}).streetAddress,'Nhà riêng');
   assert.equal((publicLocation(result.location) as unknown as {streetAddress?:string}).streetAddress,undefined);
   assert.throws(() => createInput({ ...valid, price: '1.200.000' }), { code: 'INVALID_LISTING', field: 'price' });

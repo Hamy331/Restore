@@ -8,7 +8,6 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/app_choice_chips.dart';
 import 'package:restore/shared/widgets/app_labeled_choice_row.dart';
 import 'package:restore/shared/widgets/app_labeled_text_field.dart';
-import 'package:restore/shared/widgets/app_switch_tile.dart';
 import '../../../bloc/create_listing/create_listing_bloc.dart';
 import '../../../bloc/create_listing/create_listing_event.dart';
 import '../../../models/listing_draft.dart';
@@ -18,7 +17,6 @@ import '../../../models/listing_enums.dart';
 /// hiện hoặc ẩn mượt theo hình thức đang chọn
 class BasicInfoTradeSection extends StatefulWidget {
   final TradeType tradeType;
-  final bool isNegotiable;
   final bool hasPriceError;
 
   /// Gói Cửa hàng: hiện thêm ô giá gốc để bán giảm giá
@@ -32,7 +30,6 @@ class BasicInfoTradeSection extends StatefulWidget {
   const BasicInfoTradeSection({
     super.key,
     required this.tradeType,
-    required this.isNegotiable,
     this.hasPriceError = false,
     this.canSetOriginalPrice = false,
     this.hasOriginalPriceError = false,
@@ -120,13 +117,6 @@ class _BasicInfoTradeSectionState extends State<BasicInfoTradeSection> {
                   const SizedBox(height: 16),
                   _buildOriginalPriceField(l10n),
                 ],
-                const SizedBox(height: 12),
-                AppSwitchTile(
-                  label: l10n.negotiable,
-                  subtitle: l10n.negotiableHint,
-                  value: widget.isNegotiable,
-                  onChanged: (value) => _bloc.add(NegotiableChanged(value)),
-                ),
               ],
               if (tradeType.allowsExchange) ...[
                 const SizedBox(height: 16),

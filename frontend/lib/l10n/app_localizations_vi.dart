@@ -1715,9 +1715,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loadCategoriesFailedTitle => 'Không tải được danh mục';
 
   @override
-  String get negotiableHint => 'Người mua có thể trả giá khi nhắn tin';
-
-  @override
   String get addressNearbyHint => 'Giúp người mua gần bạn tìm thấy tin';
 
   @override

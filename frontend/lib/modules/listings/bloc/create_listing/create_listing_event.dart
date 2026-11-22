@@ -91,13 +91,6 @@ class OriginalPriceChanged extends CreateListingEvent {
   List<Object?> get props => [originalPrice];
 }
 
-class NegotiableChanged extends CreateListingEvent {
-  final bool isNegotiable;
-  const NegotiableChanged(this.isNegotiable);
-  @override
-  List<Object?> get props => [isNegotiable];
-}
-
 class ExchangeWishChanged extends CreateListingEvent {
   final String exchangeWish;
   const ExchangeWishChanged(this.exchangeWish);

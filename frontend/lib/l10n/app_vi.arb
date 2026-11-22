@@ -781,7 +781,6 @@
   "yes": "Có",
   "no": "Không",
   "loadCategoriesFailedTitle": "Không tải được danh mục",
-  "negotiableHint": "Người mua có thể trả giá khi nhắn tin",
   "addressNearbyHint": "Giúp người mua gần bạn tìm thấy tin",
   "privateStreetAddress": "{street} (không công khai)",
   "addressSheetTitle": "Địa chỉ của món đồ",

@@ -30,7 +30,6 @@ class ListingDraft extends Equatable {
 
   /// Giá gốc trước giảm (chỉ gói Cửa hàng), null = không giảm giá
   final int? originalPrice;
-  final bool isNegotiable;
   final String exchangeWish;
   final AddressInfo? address;
   final SellerType sellerType;
@@ -57,7 +56,6 @@ class ListingDraft extends Equatable {
     this.tradeType = TradeType.sell,
     this.price,
     this.originalPrice,
-    this.isNegotiable = true,
     this.exchangeWish = '',
     this.address,
     this.sellerType = SellerType.personal,
@@ -102,7 +100,6 @@ class ListingDraft extends Equatable {
         : model.price,
     originalPrice: model.originalPrice,
     condition: model.condition,
-    isNegotiable: model.isNegotiable,
     tradeType: model.allowSale
         ? (model.allowExchange ? TradeType.sellOrExchange : TradeType.sell)
         : TradeType.exchange,
@@ -128,7 +125,6 @@ class ListingDraft extends Equatable {
     TradeType? tradeType,
     int? Function()? price,
     int? Function()? originalPrice,
-    bool? isNegotiable,
     String? exchangeWish,
     AddressInfo? address,
     SellerType? sellerType,
@@ -151,7 +147,6 @@ class ListingDraft extends Equatable {
       originalPrice: originalPrice != null
           ? originalPrice()
           : this.originalPrice,
-      isNegotiable: isNegotiable ?? this.isNegotiable,
       exchangeWish: exchangeWish ?? this.exchangeWish,
       address: address ?? this.address,
       sellerType: sellerType ?? this.sellerType,
@@ -182,7 +177,6 @@ class ListingDraft extends Equatable {
       'originalPrice': tradeType.requiresPrice && originalPrice != null
           ? '$originalPrice'
           : null,
-      'isNegotiable': tradeType.requiresPrice && isNegotiable,
       'exchangeWish': tradeType.allowsExchange ? exchangeWish.trim() : '',
       // Danh mục không hỏi tình trạng (thú cưng) thì không gửi
       'condition': (category?.hasCondition ?? true)
@@ -207,7 +201,6 @@ class ListingDraft extends Equatable {
     tradeType,
     price,
     originalPrice,
-    isNegotiable,
     exchangeWish,
     address,
     sellerType,
@@ -232,7 +225,6 @@ class _ContentKey extends Equatable {
         draft.tradeType,
         draft.price,
         draft.originalPrice,
-        draft.isNegotiable,
         draft.exchangeWish.trim(),
         draft.address,
         draft.condition,

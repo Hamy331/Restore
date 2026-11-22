@@ -13,7 +13,7 @@ const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
  * Đăng tin mới, tin vào hàng chờ duyệt (PENDING). Trừ lượt đăng trong ngày theo gói cửa hàng
  *
  * Body: title (5-70), description (10-1500), price (chuỗi số VND), condition, categoryId,
- *       isNegotiable?, allowSale?, allowExchange?, exchangeWish?, sellerType?, location, attributes?,
+ *       isNegotiable? (bỏ qua: tin có bán luôn cho trả giá), allowSale?, allowExchange?, exchangeWish?, sellerType?, location, attributes?,
  *       payWithCredits? (true = đồng ý trả xu khi hết suất miễn phí),
  *       allowDuplicate? (true = vẫn đăng mới dù có tin giống vậy đã ẩn / hết hạn),
  *       displayDays?, startsAt?, originalPrice? (giá gốc trước giảm, chỉ gói Cửa hàng, phải cao hơn price;

@@ -815,7 +815,6 @@
   "yes": "Yes",
   "no": "No",
   "loadCategoriesFailedTitle": "Couldn't load categories",
-  "negotiableHint": "Buyers can make offers in chat",
   "addressNearbyHint": "Helps nearby buyers find your listing",
   "privateStreetAddress": "{street} (private)",
   "@privateStreetAddress": {

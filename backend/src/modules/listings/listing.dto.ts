@@ -91,7 +91,8 @@ export function toListingDto(listing: ListingRecord, owner = false) {
     storeSubscription.startsAt <= now && now < storeSubscription.endsAt;
   const location = owner ? listing.location : publicLocation(listing.location);
   const address = listing.location as { province?: { name?: string }; ward?: { name?: string } } | null;
-  return { ...rest, owner: publicOwner, isPartner, ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
+  // Mọi tin có bán đều cho trả giá: không đọc cột isNegotiable cũ (tin cũ có thể còn false)
+  return { ...rest, isNegotiable: listing.allowSale, owner: publicOwner, isPartner, ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
     originalPrice: listing.originalPrice?.toString() ?? null, location,
     areaLabel: address ? [address.ward?.name, address.province?.name].filter(Boolean).join(', ') : '' };
 }

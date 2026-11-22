@@ -1750,9 +1750,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadCategoriesFailedTitle => 'Couldn\'t load categories';
 
   @override
-  String get negotiableHint => 'Buyers can make offers in chat';
-
-  @override
   String get addressNearbyHint => 'Helps nearby buyers find your listing';
 
   @override

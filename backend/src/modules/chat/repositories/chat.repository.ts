@@ -29,7 +29,6 @@ const productContext = {
       ...previewSelect,
       ownerId: true,
       status: true,
-      isNegotiable: true,
       _count: { select: { conversations: { where: { trade: { isNot: null } } } } },
     },
   },

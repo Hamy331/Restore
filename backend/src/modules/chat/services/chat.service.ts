@@ -48,11 +48,11 @@ function listingContext(context: Thread['contexts'][number] | undefined | null, 
     contextId: context.id,
     ...(listing && {
       product: repository.listingPreview(listing),
+      // Mọi tin có bán đều trả giá được (không còn tuỳ chọn "có thể thương lượng")
       canOffer:
         listing.ownerId !== selfId &&
         listing.status === 'AVAILABLE' &&
         listing.allowSale &&
-        listing.isNegotiable &&
         !trade,
     }),
     title: trade?.title ?? listing!.title,

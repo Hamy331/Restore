@@ -3266,12 +3266,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load categories'**
   String get loadCategoriesFailedTitle;
 
-  /// No description provided for @negotiableHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Buyers can make offers in chat'**
-  String get negotiableHint;
-
   /// No description provided for @addressNearbyHint.
   ///
   /// In en, this message translates to:
