@@ -104,7 +104,7 @@ export async function decidePendingOrder(tx: Db, id: string, status: 'CONFIRMED'
 /** Đơn đẩy tin cho trang quản trị, mới trước, kèm người mua, gói, tin */
 export function findOrderPage(status: Prisma.PromotionOrderWhereInput['status'] | undefined, skip: number, take: number) {
   const where: Prisma.PromotionOrderWhereInput = status ? { status } : {};
-  return prisma.$transaction([
+  return Promise.all([
     prisma.promotionOrder.findMany({ where, take, skip, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       include: { user: { select: { fullName: true, email: true } }, package: true, listing: { select: { id: true, title: true } } } }),
     prisma.promotionOrder.count({ where }),

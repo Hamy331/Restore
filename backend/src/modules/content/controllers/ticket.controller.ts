@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
-import type { AdminTicketReplyInput, PageQuery, TicketInput, TicketReplyInput, TicketStatusInput } from '../content.dto.js';
+import type { AdminTicketListQuery, AdminTicketReplyInput, PageQuery, TicketInput, TicketReplyInput, TicketStatusInput } from '../content.dto.js';
 import * as ticketService from '../services/ticket.service.js';
 
 export async function listMine(req: AuthRequest, res: Response) {
@@ -22,7 +22,7 @@ export async function reply(req: AuthRequest, res: Response) {
 /* ---------- /admin/tickets ---------- */
 
 export async function listForAdmin(_req: AuthRequest, res: Response) {
-  ok(res, await ticketService.listForAdmin(getInput<ValidatedInput<PageQuery>>(res).query));
+  ok(res, await ticketService.listForAdmin(getInput<ValidatedInput<AdminTicketListQuery>>(res).query));
 }
 
 export async function adminReply(req: AuthRequest, res: Response) {

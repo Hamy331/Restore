@@ -27,7 +27,11 @@ Khi thêm màn hình, đặt code trong thư mục nghiệp vụ tương ứng v
 
 ## Chạy web quản trị
 
-Khởi động backend ở cổng 3000. Trong admin-web chạy `npm ci` rồi `npm run dev`. Mở http://localhost:5173 và đăng nhập bằng tài khoản quản trị của môi trường thử. Vite chuyển các yêu cầu /api sang backend. Token nằm trong bộ nhớ tab; tải lại trang cần đăng nhập lại.
+Khởi động backend ở cổng 3000. Trong admin-web chạy `npm ci` rồi `npm run dev`. Mở http://localhost:5173 và đăng nhập bằng tài khoản quản trị của môi trường thử. Vite chuyển các yêu cầu /api sang backend.
+
+Phiên đăng nhập: access token (15 phút) nằm trong sessionStorage để tải lại trang không phải refresh; refresh token nằm trong cookie httpOnly `restore_refresh` do backend đặt khi request có header `X-Session-Cookie: 1` (JS không đọc được). Tải lại trang hoặc mở tab mới vẫn giữ đăng nhập; đóng trình duyệt hoặc bấm Đăng xuất là hết phiên. App Flutter không gửi header này nên vẫn nhận refresh token trong body như cũ.
+
+Khi triển khai web khác origin với API (đặt `VITE_API_BASE_URL`), thêm origin của web vào `CORS_ORIGINS` của backend và giữ hai tên miền cùng site (ví dụ `admin.example.vn` và `api.example.vn`), vì cookie dùng `SameSite=Strict`.
 
 `npm run build` kiểm tra TypeScript và tạo bản tĩnh `dist/`. Các bộ kiểm thử admin, content và commerce trong `backend/test/api/` dùng `TEST_DATABASE_URL` trỏ vào PostgreSQL thử riêng; chúng tạo lại database thử trước mỗi nhóm.
 

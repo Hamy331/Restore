@@ -4,7 +4,10 @@ import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 import 'package:restore/data/models/category_model.dart';
 
+import 'package:restore/modules/location/utils/listing_area.dart';
+
 import '../../bloc/category_detail_cubit.dart';
+import '../../bloc/category_detail_state.dart';
 import '../../repositories/category_listings_repository.dart';
 import 'category_detail_mobile_view.dart';
 
@@ -28,12 +31,15 @@ class CategoryDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CategoryDetailCubit(
+      create: (context) => CategoryDetailCubit(
         repository: AppEnvironment.useMockData
             ? MockCategoryListingsRepository()
             : ApiCategoryListingsRepository(),
         categoryId: categoryId,
         category: category,
+        filter: CategoryDetailState.defaultFilterFor(
+          categoryId,
+        ).withUserArea(context),
       )..start(),
       child: const TResponsiveLayout(
         mobile: CategoryDetailMobileView(),

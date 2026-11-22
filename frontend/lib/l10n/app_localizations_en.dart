@@ -519,6 +519,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accNoSubmittedReviews => 'You haven\'t submitted any reviews yet.';
 
   @override
+  String get accNoTransactions => 'You have no completed transactions yet.';
+
+  @override
+  String get tradeYouSold => 'You sold';
+
+  @override
+  String get tradeYouBought => 'You bought';
+
+  @override
   String get accTransactions => 'Transaction history';
 
   @override
@@ -747,6 +756,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emptySavedDescription =>
       'Save listings you like to find them faster later.';
+
+  @override
+  String get recentlyViewedEmptyTitle => 'No recently viewed listings';
+
+  @override
+  String get recentlyViewedEmptyBody =>
+      'Listings you open will show up here so you can get back to them.';
 
   @override
   String get exploreProducts => 'Explore products';
@@ -2388,6 +2404,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listingFilterPriceInvalid => 'Min price is higher than max price.';
+
+  @override
+  String get listingFilterRangeFrom => 'From';
+
+  @override
+  String get listingFilterRangeTo => 'To';
+
+  @override
+  String get listingFilterRangeInvalid => '\"From\" is higher than \"To\".';
 
   @override
   String listingFilterPriceUnder(String price) {
@@ -5957,16 +5982,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listingFilterAllSubcategories => 'All';
-
-  @override
-  String get listingFilterRangeFrom => 'From';
-
-  @override
-  String get listingFilterRangeTo => 'To';
-
-  @override
-  String get listingFilterRangeInvalid =>
-      'The lower bound must not be greater than the upper bound';
 
   @override
   String get listingFilterButton => 'Filter';

@@ -45,6 +45,7 @@ import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
 import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
+import 'package:restore/modules/saved_listings/views/saved_listings_view.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/modules/nearby/views/nearby/nearby_view.dart';
 import 'package:restore/modules/search/views/search/search_view.dart';
@@ -374,6 +375,11 @@ GoRouter createAppRouter(
       parentNavigatorKey: _frameNavigatorKey,
       builder: (_, _) => const MyReviewsView(received: true),
     ),
+    GoRoute(
+      path: MyReviewsView.transactionsPath,
+      parentNavigatorKey: _frameNavigatorKey,
+      builder: (_, _) => const MyReviewsView(transactions: true),
+    ),
     // Chỉnh sửa hồ sơ, mở từ tab Tài khoản (extra = UserProfileCubit);
     // thiếu extra (VD mở lại từ link) thì về tab Tài khoản
     GoRoute(
@@ -442,6 +448,24 @@ GoRouter createAppRouter(
       pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
         state: state,
         child: const HotSaleView(),
+      ),
+    ),
+    // Tin đã lưu, mở từ Tài khoản → Đã lưu
+    GoRoute(
+      path: SavedListingsView.path,
+      parentNavigatorKey: _frameNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const SavedListingsView(),
+      ),
+    ),
+    // Tin vừa mở xem, mở từ Tài khoản → Xem gần đây
+    GoRoute(
+      path: SavedListingsView.recentPath,
+      parentNavigatorKey: _frameNavigatorKey,
+      pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
+        state: state,
+        child: const SavedListingsView(recent: true),
       ),
     ),
     // Tin của một danh mục; extra là CategoryModel vừa bấm (tuỳ chọn)

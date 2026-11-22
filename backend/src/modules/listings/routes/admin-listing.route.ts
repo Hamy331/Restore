@@ -3,6 +3,7 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { authorizePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as moderationController from '../controllers/moderation.controller.js';
+import { notifyViewers } from '../services/listing.events.js';
 import { adminDecisionBody, adminListingQuery, listingIdParams } from '../listing.validator.js';
 
 /** Quản trị tin, gắn tại /api/v1/admin (adminRouter đã xác thực token) */
@@ -37,6 +38,6 @@ adminListingRouter.get('/listings', moderate, validate({ query: adminListingQuer
  * Trả về: { updated: true }
  */
 adminListingRouter.post('/listings/:id/decision', moderate, validate({ params: listingIdParams, body: adminDecisionBody }),
-  moderationController.adminDecide);
+  notifyViewers, moderationController.adminDecide);
 
 export default adminListingRouter;

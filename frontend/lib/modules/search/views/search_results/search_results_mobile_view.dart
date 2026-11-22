@@ -14,6 +14,7 @@ import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.
 import 'package:restore/modules/trusted_shop/widgets/shop_follow_button.dart';
 import 'package:restore/modules/trusted_shop/widgets/shop_logo.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
+import 'package:restore/modules/location/utils/listing_area.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
@@ -103,6 +104,13 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
       filter: cubit.state.filter,
       defaults: SearchResultsState.defaultFilter,
     );
+    if (filter != null) cubit.applyFilter(filter);
+  }
+
+  /// Lọc theo tỉnh/thành hoặc phường/xã của tin
+  Future<void> _pickArea() async {
+    final cubit = context.read<SearchResultsCubit>();
+    final filter = await pickListingArea(context, cubit.state.filter);
     if (filter != null) cubit.applyFilter(filter);
   }
 
@@ -267,6 +275,7 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
                                     onBack: _back,
                                     onEditQuery: _editQuery,
                                     onFiltersTap: _openFilters,
+                                    onAreaTap: _pickArea,
                                     onDealToggle: cubit.toggleDeal,
                                     onSortTap: _pickSort,
                                     onClearTap: cubit.clearFilters,

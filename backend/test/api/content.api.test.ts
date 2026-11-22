@@ -37,6 +37,11 @@ test('content: knowledge base', async () => {
   expect('search knowledge too short', await api.get('/content/knowledge/search?q=a'));
   const list = await api.get('/admin/knowledge', { token: tokens.admin });
   const current = list.body.data.items.find((item: { id: string }) => item.id === doc.body.data.id);
+  assert.equal('content' in current, false);
+  assert.ok('aiIndex' in current);
+  const full = expect('get knowledge', await api.get(`/admin/knowledge/${doc.body.data.id}`, { token: tokens.admin }));
+  assert.equal(full.body.data.content, 'Người mua có thể đổi trả trong 3 ngày.');
+  assert.equal((await api.get('/admin/knowledge/missing-doc', { token: tokens.admin })).status, 404);
   const updated = expect('update knowledge', await api.put(`/admin/knowledge/${doc.body.data.id}`, { token: tokens.admin, body: { title: 'Chính sách đổi trả mới', content: 'Người mua có thể đổi trả trong 5 ngày.', active: true, updatedAt: current.updatedAt } }));
   expect('delete knowledge', await api.delete(`/admin/knowledge/${doc.body.data.id}`, { token: tokens.admin, body: { updatedAt: updated.body.data.updatedAt } }));
   void synced;

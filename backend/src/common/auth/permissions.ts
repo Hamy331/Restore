@@ -10,7 +10,7 @@ export const PERMISSION = {
   /** Xem hồ sơ của chính mình: GET /users/me, GET /auth/me */
   PROFILE_READ: 'profile:read',
 
-  /** Đăng và quản lý tin của mình: tạo/sửa tin, nháp, ảnh, trạng thái, /listings/mine, /listings/summary */
+  /** Đăng và quản lý tin của mình: tạo/sửa tin, nháp, ảnh, trạng thái, /listings/mine */
   LISTING_MANAGE_OWN: 'listing:manage-own',
   /** Xem tin đã lưu: GET /listings/favorites, GET /listings/:id/favorite */
   FAVORITE_READ: 'favorite:read',

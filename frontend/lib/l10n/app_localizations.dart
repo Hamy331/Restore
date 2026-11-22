@@ -992,6 +992,24 @@ abstract class AppLocalizations {
   /// **'You haven\'t submitted any reviews yet.'**
   String get accNoSubmittedReviews;
 
+  /// No description provided for @accNoTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no completed transactions yet.'**
+  String get accNoTransactions;
+
+  /// No description provided for @tradeYouSold.
+  ///
+  /// In en, this message translates to:
+  /// **'You sold'**
+  String get tradeYouSold;
+
+  /// No description provided for @tradeYouBought.
+  ///
+  /// In en, this message translates to:
+  /// **'You bought'**
+  String get tradeYouBought;
+
   /// No description provided for @accTransactions.
   ///
   /// In en, this message translates to:
@@ -1423,6 +1441,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save listings you like to find them faster later.'**
   String get emptySavedDescription;
+
+  /// No description provided for @recentlyViewedEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No recently viewed listings'**
+  String get recentlyViewedEmptyTitle;
+
+  /// No description provided for @recentlyViewedEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings you open will show up here so you can get back to them.'**
+  String get recentlyViewedEmptyBody;
 
   /// No description provided for @exploreProducts.
   ///
@@ -4411,6 +4441,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Min price is higher than max price.'**
   String get listingFilterPriceInvalid;
+
+  /// No description provided for @listingFilterRangeFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get listingFilterRangeFrom;
+
+  /// No description provided for @listingFilterRangeTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get listingFilterRangeTo;
+
+  /// No description provided for @listingFilterRangeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'\"From\" is higher than \"To\".'**
+  String get listingFilterRangeInvalid;
 
   /// No description provided for @listingFilterPriceUnder.
   ///
@@ -10255,24 +10303,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get listingFilterAllSubcategories;
-
-  /// No description provided for @listingFilterRangeFrom.
-  ///
-  /// In en, this message translates to:
-  /// **'From'**
-  String get listingFilterRangeFrom;
-
-  /// No description provided for @listingFilterRangeTo.
-  ///
-  /// In en, this message translates to:
-  /// **'To'**
-  String get listingFilterRangeTo;
-
-  /// No description provided for @listingFilterRangeInvalid.
-  ///
-  /// In en, this message translates to:
-  /// **'The lower bound must not be greater than the upper bound'**
-  String get listingFilterRangeInvalid;
 
   /// No description provided for @listingFilterButton.
   ///

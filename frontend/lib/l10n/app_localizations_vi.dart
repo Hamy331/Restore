@@ -488,6 +488,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accNoSubmittedReviews => 'Bạn chưa gửi đánh giá nào.';
 
   @override
+  String get accNoTransactions => 'Bạn chưa có giao dịch nào hoàn tất.';
+
+  @override
+  String get tradeYouSold => 'Bạn đã bán';
+
+  @override
+  String get tradeYouBought => 'Bạn đã mua';
+
+  @override
   String get accTransactions => 'Lịch sử giao dịch';
 
   @override
@@ -715,6 +724,13 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get emptySavedDescription =>
       'Lưu tin bạn quan tâm để xem lại nhanh hơn.';
+
+  @override
+  String get recentlyViewedEmptyTitle => 'Chưa xem tin nào';
+
+  @override
+  String get recentlyViewedEmptyBody =>
+      'Các tin bạn mở xem sẽ hiện ở đây để quay lại nhanh.';
 
   @override
   String get exploreProducts => 'Khám phá sản phẩm';
@@ -2352,6 +2368,16 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get listingFilterPriceInvalid =>
       'Giá thấp nhất đang lớn hơn giá cao nhất.';
+
+  @override
+  String get listingFilterRangeFrom => 'Từ';
+
+  @override
+  String get listingFilterRangeTo => 'Đến';
+
+  @override
+  String get listingFilterRangeInvalid =>
+      'Giá trị \"Từ\" đang lớn hơn \"Đến\".';
 
   @override
   String listingFilterPriceUnder(String price) {
@@ -5851,16 +5877,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get listingFilterAllSubcategories => 'Tất cả';
-
-  @override
-  String get listingFilterRangeFrom => 'Từ';
-
-  @override
-  String get listingFilterRangeTo => 'Đến';
-
-  @override
-  String get listingFilterRangeInvalid =>
-      'Giá trị \"Từ\" không được lớn hơn \"Đến\"';
 
   @override
   String get listingFilterButton => 'Lọc';

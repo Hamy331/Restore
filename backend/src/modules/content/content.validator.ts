@@ -187,4 +187,9 @@ export const resolveReportBody = z.unknown().transform((value) => {
   };
 });
 
+/** Query GET /admin/tickets: page, status? (OPEN | RESOLVED; giá trị khác coi như tất cả) */
+export const adminTicketListQuery = z.record(z.string(), z.unknown()).transform((query) => ({
+  page: page(query.page),
+  status: query.status === 'OPEN' || query.status === 'RESOLVED' ? query.status : undefined,
+}));
 export const adminPostListQuery = z.record(z.string(), z.unknown()).transform(query => ({page:page(query.page), withAuthor:query.include === 'author'}));

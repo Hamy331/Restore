@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, Button, Input, Select, Table } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import { auditColumns } from './AuditTable';
-import type { Entry } from './auditColumns';
+import { actorName, type Entry } from './auditColumns';
 import { actions, modules } from './auditLabels';
 import { Session, errorText } from '../../shared/api/session';
 import { useResource, type Page } from '../../shared/api/useResource';
@@ -18,7 +18,7 @@ function downloadCsv(rows: Entry[]) {
       modules[r.targetType] ?? r.targetType,
       r.targetId,
       r.reason,
-      r.actorId,
+      r.actor ? `${actorName(r)} <${r.actor.email}>` : r.actorId,
     ]),
   ];
   const csv = values
@@ -81,7 +81,7 @@ export function Audit({ session }: { session: Session }) {
         <Input.Search
           className="filter-search"
           aria-label="Tìm nhật ký"
-          placeholder="Tìm mã đối tượng, người xử lý, lý do"
+          placeholder="Tìm mã đối tượng, tên/email người xử lý, lý do"
           allowClear
           maxLength={100}
           onSearch={(v) => {

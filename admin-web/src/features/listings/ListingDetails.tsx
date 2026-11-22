@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Image, Space, Typography } from 'antd';
 import { Session } from '../../shared/api/session';
+import { MemberLink } from '../members/MemberLink';
 import type { ListingContent, PendingEdit } from './RevisionCompare';
 export type Listing = {
   id: string;
@@ -9,7 +10,7 @@ export type Listing = {
   status: string;
   images: string[];
   updatedAt: string;
-  owner?: { fullName: string };
+  owner?: { fullName: string; email?: string };
   category?: { name: string };
   reviewReason?: string;
   /** Bản sửa của tin đã duyệt (PENDING: chờ duyệt, REJECTED: đã từ chối) */
@@ -74,9 +75,12 @@ export function ListingDetails({ item, session, summary }: { item: Listing; sess
     <>
       <Typography.Title level={4}>{item.title}</Typography.Title>
       <p>
-        {[item.owner?.fullName, item.category?.name, listingStatus[item.status] ?? item.status]
-          .filter(Boolean)
-          .join(' · ')}
+        {item.owner?.email ? (
+          <MemberLink person={{ fullName: item.owner.fullName, email: item.owner.email }} />
+        ) : (
+          item.owner?.fullName
+        )}
+        {[item.category?.name, listingStatus[item.status] ?? item.status].map((part) => part && ' · ' + part)}
       </p>
       {!summary && (
         <>

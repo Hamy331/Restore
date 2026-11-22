@@ -144,7 +144,7 @@ export function attributeFilterQuery(raw: unknown): AttributeFilter[] {
 /**
  * Bộ lọc tìm kiếm tin đăng dùng chung cho GET /listings, tìm kiếm, gần bạn.
  * Query: q, categoryId, subcategoryId, attrs (xem attributeFilterQuery), seller (personal,pro,partner), condition (một hoặc nhiều, cách nhau dấu phẩy), deal (buy,exchange),
- * minPrice, maxPrice, latitude + longitude (+ radiusKm), allowExchange.
+ * minPrice, maxPrice, latitude + longitude (+ radiusKm), allowExchange, provinceCode, wardCode.
  * q được tách thành words (bỏ dấu, chữ thường): tin khớp khi tiêu đề chứa đủ mọi từ.
  */
 export function listingFilters(query: Record<string, unknown>) {
@@ -192,6 +192,12 @@ export function listingFilters(query: Record<string, unknown>) {
     nearby={...point,radius};
   }
   if(query.allowExchange!=null && query.allowExchange!=='true' && query.allowExchange!=='false')throw new AppError(400,'INVALID_QUERY','Bộ lọc trao đổi không hợp lệ.');
+  // Khu vực của tin: mã tỉnh/thành hoặc phường/xã, so với location.provinceCode / wardCode
+  for (const value of [query.provinceCode, query.wardCode]) {
+    if (value !== undefined && (typeof value !== 'string' || !/^[\w-]{1,20}$/.test(value))) {
+      throw new AppError(400, 'INVALID_QUERY', 'Khu vực không hợp lệ.');
+    }
+  }
   return {
     ...(nearby?{nearby}:{}), ...(query.allowExchange==='true'?{allowExchange:true}:{}),
     q: typeof q === 'string' ? q.trim() : '',
@@ -205,6 +211,8 @@ export function listingFilters(query: Record<string, unknown>) {
     deals: deals as DealType[],
     minPrice: typeof minPrice === 'string' ? minPrice : null,
     maxPrice: typeof maxPrice === 'string' ? maxPrice : null,
+    provinceCode: typeof query.provinceCode === 'string' ? query.provinceCode : '',
+    wardCode: typeof query.wardCode === 'string' ? query.wardCode : '',
   };
 }
 
@@ -335,12 +343,15 @@ export const decisionBody = z.unknown().transform((body) => {
  * - newest:   mới nhất (tin được đẩy xếp trước). Bỏ qua tọa độ nếu có.
  * - nearby:   bắt buộc latitude + longitude, lọc trong radiusKm (mặc định 5) và xếp gần nhất trước.
  * - exchange: chỉ tin cho phép trao đổi.
- * Các bộ lọc tìm kiếm (q, categoryId, condition, minPrice, maxPrice) dùng được với mọi filter.
+ * Các bộ lọc tìm kiếm (q, categoryId, condition, deal, minPrice, maxPrice, provinceCode, wardCode, attr.<key>, attrMin.<key>, attrMax.<key>) dùng được với mọi filter.
+ * sort=price_asc | price_desc xếp theo giá (tin chỉ trao đổi xếp cuối); giá trị khác giữ thứ tự feed
+ * để tin được đẩy (FEATURED/BUMP) vẫn ưu tiên.
  */
 export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
   const filter = parse(oneOf('filter', FEED_FILTERS, 'newest'), raw.filter);
   const pagination = parse(pageQuery({ defaultLimit: 10, maxLimit: 50 }), raw);
   const { nearby, allowExchange, ...search } = listingFilters(raw);
+  const sort = parse(oneOf('sort', SEARCH_SORTS, 'newest'), raw.sort);
 
   if (filter === 'nearby' && !nearby) {
     throw new AppError(400, 'LOCATION_REQUIRED', 'Cần latitude và longitude để xem tin gần bạn.', 'location');
@@ -354,7 +365,7 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
     ...(raw.verifiedShop === 'true' ? { verifiedShop: true } : {}),
     ...(raw.onSale === 'true' ? { onSale: true } : {}),
   };
-  return { filter, pagination, filters };
+  return { filter, pagination, filters, sort: sort === 'price_asc' || sort === 'price_desc' ? sort : undefined };
 });
 
 /** Cách sắp xếp của trang kết quả tìm kiếm */

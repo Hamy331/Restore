@@ -52,8 +52,9 @@ const EXPECTED: Record<string, [unknown, unknown][]> = {
     [{ "resetToken": "t", "newPassword": "Strong123" }, { "ok": { "resetToken": "t", "newPassword": "Strong123" } }],
   ],
   refresh: [
-    [undefined, { "error": { "statusCode": 422, "code": "TOKEN_REQUIRED", "message": "Phiên xác thực không hợp lệ.", "field": "refreshToken" } }],
-    [{  }, { "error": { "statusCode": 422, "code": "TOKEN_REQUIRED", "message": "Phiên xác thực không hợp lệ.", "field": "refreshToken" } }],
+    // Thiếu token hợp lệ ở body: controller lấy từ cookie (web) hoặc trả 422 như trước (Flutter)
+    [undefined, { "ok": { "refreshToken": undefined } }],
+    [{  }, { "ok": { "refreshToken": undefined } }],
     [{ "refreshToken": "" }, { "error": { "statusCode": 422, "code": "TOKEN_REQUIRED", "message": "Phiên xác thực không hợp lệ.", "field": "refreshToken" } }],
     [{ "refreshToken": " r " }, { "ok": { "refreshToken": "r" } }],
     [{ "refreshToken": 5 }, { "error": { "statusCode": 422, "code": "TOKEN_REQUIRED", "message": "Phiên xác thực không hợp lệ.", "field": "refreshToken" } }],

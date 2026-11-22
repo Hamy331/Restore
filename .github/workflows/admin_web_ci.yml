@@ -1,0 +1,50 @@
+name: Admin Web CI Test
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test_and_build:
+    name: Test & Build Admin Web
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./admin-web
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect admin-web changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            admin:
+              - "admin-web/**"
+              - ".github/workflows/admin_web_ci.yml"
+
+      - name: Setup Node.js
+        if: steps.changes.outputs.admin == 'true'
+        uses: actions/setup-node@v4
+        with:
+          # Vite 7 cần Node 20.19+ hoặc 22.12+
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "./admin-web/package-lock.json"
+
+      - name: Install dependencies
+        if: steps.changes.outputs.admin == 'true'
+        run: npm ci
+
+      - name: Run tests
+        if: steps.changes.outputs.admin == 'true'
+        run: npm test
+
+      - name: Type-check and build
+        if: steps.changes.outputs.admin == 'true'
+        run: npm run build

@@ -13,10 +13,12 @@ export async function getSelf(id: string) {
 
 /** Thành viên, 25 mỗi trang */
 export async function listMembers({ q, status, page, details, type }: UserListQuery, now = new Date()) {
-  const [items, total] = await userRepository.findMemberPage(q, status, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE, details, type, now);
+  // details (bảng quản trị web): gói đang dùng planTier (hết hạn = PERSONAL), shop, số tài khoản mỗi phân loại; đếm song song với trang
+  const [[items, total], counts] = await Promise.all([
+    userRepository.findMemberPage(q, status, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE, details, type, now),
+    details ? userRepository.countMemberTypes(q, status, now) : undefined,
+  ]);
   if (!details) return { items, total, page };
-  // details (bảng quản trị web): gói đang dùng planTier (hết hạn = PERSONAL), shop, số tài khoản mỗi phân loại
-  const counts = await userRepository.countMemberTypes(q, status, now);
   return {
     items: items.map(({ storeSubscription: subscription, shop: rawShop, ...member }) => {
       const storeSubscription = subscription as { endsAt: Date; package: { tier: string } } | null | undefined;

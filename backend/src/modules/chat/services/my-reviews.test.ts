@@ -54,6 +54,12 @@ test('my reviews filters confirmed trades and only returns reviews written by th
     some: { authorId: 'buyer' },
   });
   assert.deepEqual(submitted.items[0]?.review, review);
+  // Lịch sử giao dịch: mọi giao dịch đã hoàn tất, không lọc theo đánh giá
+  await listMyReviews('buyer', { status: 'all' });
+  assert.deepEqual(queries[2]?.where, {
+    confirmedAt: { not: null },
+    OR: [{ sellerId: 'buyer' }, { buyerId: 'buyer' }],
+  });
   await assert.rejects(listMyReviews('buyer', { status: 'received' }), { code: 'INVALID_FILTER' });
-  assert.equal(queries.length, 2);
+  assert.equal(queries.length, 3);
 });

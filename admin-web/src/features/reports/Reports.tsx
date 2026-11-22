@@ -8,10 +8,12 @@ import { useResource } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { DecisionForm, type Action } from '../moderation/DecisionForm';
 import { ListingDetails, type Listing } from '../listings/ListingDetails';
+import { MemberLink, memberStatus } from '../members/MemberLink';
 
 export type Report = {
   id: string;
   reporterId: string;
+  reporter?: { fullName: string; email: string } | null;
   targetId: string;
   targetType: 'USER' | 'LISTING' | 'FEED_POST';
   reason: string;
@@ -30,7 +32,7 @@ type ReportedFeedPost = {
   imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
-  author: { id: string; fullName: string; status: string };
+  author: { id: string; fullName: string; email?: string; status: string };
 };
 type Target = Listing | ReportedUser | ReportedFeedPost;
 
@@ -55,7 +57,7 @@ function FeedPostImage({ session, url }: { session: Session; url: string }) {
   return src ? <Image src={src} alt="Ảnh trong bài viết bị báo cáo" width={240} /> : null;
 }
 
-function Review({
+export function Review({
   report,
   session,
   close,
@@ -88,7 +90,7 @@ function Review({
       footer={null}
       onCancel={() => !busy && close()}
       closable={!busy}
-      maskClosable={false}
+      mask={{ closable: false }}
     >
       <p>
         <strong>Lý do báo cáo</strong> · {report.reason}
@@ -98,7 +100,10 @@ function Review({
           <strong>Bằng chứng</strong> · {report.evidence}
         </p>
       )}
-      <p>Người báo cáo · {report.reporterId}</p>
+      <p>
+        Người báo cáo ·{' '}
+        {report.reporter ? <MemberLink person={report.reporter} /> : report.reporterId}
+      </p>
       {(report.contactPhone || report.contactEmail) && (
         <div>
           <strong>Thông tin liên hệ của người báo cáo</strong>
@@ -121,7 +126,13 @@ function Review({
           ) : 'text' in target.data ? (
             <>
               <p>
-                <strong>Tác giả</strong> · {target.data.author.fullName} · {target.data.author.status}
+                <strong>Tác giả</strong> ·{' '}
+                {target.data.author.email ? (
+                  <MemberLink person={{ fullName: target.data.author.fullName, email: target.data.author.email }} />
+                ) : (
+                  target.data.author.fullName
+                )}{' '}
+                · {memberStatus[target.data.author.status] ?? target.data.author.status}
               </p>
               <p>
                 <strong>Đăng lúc</strong> · {new Date(target.data.createdAt).toLocaleString('vi-VN')}
@@ -131,7 +142,7 @@ function Review({
             </>
           ) : (
             <p>
-              {target.data.fullName} · {target.data.email}
+              <MemberLink person={target.data} /> · {memberStatus[target.data.status] ?? target.data.status}
             </p>
           )}
           {report.status === 'OPEN' && (

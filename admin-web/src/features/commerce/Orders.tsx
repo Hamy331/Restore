@@ -7,6 +7,7 @@ import { useResource, type Page } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { EditDialog } from '../../shared/ui/EditDialog';
 import { vnd } from './PackageFields';
+import { MemberLink } from '../members/MemberLink';
 
 export type OrderKind = 'store' | 'promotion';
 const statuses = { PENDING: 'Chờ đối soát', CONFIRMED: 'Đã xác nhận', REJECTED: 'Đã từ chối' };
@@ -97,7 +98,7 @@ export function Orders({ session, kind }: { session: Session; kind: OrderKind })
               <>
                 <p>Mã đơn: {r.id}</p>
                 <p>
-                  {r.user.email} · {target(r)}
+                  <MemberLink person={r.user} /> · {target(r)}
                 </p>
                 {r.decidedAt && <p>Xử lý lúc {date(r.decidedAt)}</p>}
               </>

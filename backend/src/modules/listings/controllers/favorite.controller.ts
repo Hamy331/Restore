@@ -7,6 +7,12 @@ import * as favoriteService from '../services/favorite.service.js';
 
 type IdInput = ValidatedInput<undefined, { id: string }>;
 
+export async function listRecentViews(req: AuthRequest, res: Response) {
+  const { query } = getInput<ValidatedInput<FavoritesQuery>>(res);
+  const { items, page } = await favoriteService.listRecentViews(req.user!.userId, query);
+  paginated(res, items, page);
+}
+
 export async function listFavorites(req: AuthRequest, res: Response) {
   const { query } = getInput<ValidatedInput<FavoritesQuery>>(res);
   const { items, page } = await favoriteService.listFavorites(req.user!.userId, query);

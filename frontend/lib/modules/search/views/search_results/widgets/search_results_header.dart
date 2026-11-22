@@ -20,6 +20,7 @@ class SearchResultsHeader extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onEditQuery;
   final VoidCallback onFiltersTap;
+  final VoidCallback onAreaTap;
   final ValueChanged<ListingDealType> onDealToggle;
   final VoidCallback onSortTap;
   final VoidCallback onClearTap;
@@ -36,6 +37,7 @@ class SearchResultsHeader extends StatelessWidget {
     required this.onBack,
     required this.onEditQuery,
     required this.onFiltersTap,
+    required this.onAreaTap,
     required this.onDealToggle,
     required this.onSortTap,
     required this.onClearTap,
@@ -95,6 +97,7 @@ class SearchResultsHeader extends StatelessWidget {
               filter: filter,
               defaults: SearchResultsState.defaultFilter,
               onFiltersTap: onFiltersTap,
+              onAreaTap: onAreaTap,
               onDealToggle: onDealToggle,
               onSortTap: onSortTap,
               onClearTap: onClearTap,

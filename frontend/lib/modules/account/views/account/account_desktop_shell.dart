@@ -9,6 +9,7 @@ import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
+import 'package:restore/modules/saved_listings/views/saved_listings_view.dart';
 
 import '../../widgets/profile_header.dart';
 import '../my_reviews/my_reviews_view.dart';
@@ -25,6 +26,9 @@ bool isAccountSectionPath(String path, {String? userId}) {
     '/insights',
     MyReviewsView.path,
     MyReviewsView.ratingsPath,
+    MyReviewsView.transactionsPath,
+    SavedListingsView.path,
+    SavedListingsView.recentPath,
   };
   const prefixes = [
     '/credits',
@@ -72,6 +76,11 @@ List<(String, List<_Item>)> _menuGroups(BuildContext context) {
         ),
         _Item(AppIcons.star, l.accMyReviews, MyReviewsView.path),
         _Item(AppIcons.star, l.accReceivedRatings, MyReviewsView.ratingsPath),
+        _Item(
+          AppIcons.listings,
+          l.accTransactions,
+          MyReviewsView.transactionsPath,
+        ),
         _Item(AppIcons.settings, l.settingsPageTitle, '/settings'),
       ],
     ),
@@ -97,6 +106,12 @@ List<(String, List<_Item>)> _menuGroups(BuildContext context) {
       t('Theo dõi', 'Following'),
       [
         _Item(AppIcons.following, l.homeQuickFollowing, '/following'),
+        _Item(AppIcons.favorite, l.savedListings, SavedListingsView.path),
+        _Item(
+          AppIcons.clock,
+          l.accRecentlyViewed,
+          SavedListingsView.recentPath,
+        ),
         _Item(AppIcons.wantedAlert, l.homeQuickWanted, '/wanted-alerts'),
       ],
     ),

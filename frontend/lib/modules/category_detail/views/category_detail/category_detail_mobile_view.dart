@@ -7,8 +7,7 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
-import 'package:restore/modules/location/models/area_option.dart';
-import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/modules/location/utils/listing_area.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
@@ -50,9 +49,15 @@ class CategoryDetailMobileView extends StatefulWidget {
 }
 
 class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
-  /// Tỉnh / thành chọn ở "Khu vực". API danh mục chưa lọc theo tỉnh nên tạm
-  /// lọc trên các tin đã tải về theo khu vực hiển thị của tin.
-  String? _province;
+  /// Tỉnh / thành chọn nhanh trên hàng "Khu vực:" (tên → mã tỉnh), lọc ở
+  /// server. 5 thành phố trực thuộc trung ương theo danh sách 34 tỉnh mới.
+  static const _quickProvinces = {
+    'TP. Hồ Chí Minh': '79',
+    'Hà Nội': '01',
+    'Đà Nẵng': '48',
+    'Hải Phòng': '31',
+    'Cần Thơ': '92',
+  };
   bool _grid = false;
 
   CategoryDetailCubit get _cubit => context.read<CategoryDetailCubit>();
@@ -224,18 +229,21 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
     if (sort != null) _cubit.setSort(sort);
   }
 
+  /// Chọn khu vực (kể cả "Gần tôi"), đổi luôn khu vực của cả app
   Future<void> _pickArea() async {
-    final result = await context.push<AreaPickResult>(
-      AreaSearchView.location(allowNationwide: true),
+    final filter = await pickListingArea(context, _cubit.state.filter);
+    if (filter != null && mounted) _cubit.applyFilter(filter);
+  }
+
+  /// Chip tỉnh nhanh: chỉ lọc trang này, bấm lại để bỏ
+  void _toggleQuickProvince(String name) {
+    final filter = _cubit.state.filter;
+    _cubit.applyFilter(
+      // So theo mã: nhãn từ trang chọn khu vực có thể khác ("Hồ Chí Minh")
+      filter.provinceCode == _quickProvinces[name]
+          ? filter.withArea(null)
+          : filter.withArea(_quickProvinces[name], label: name),
     );
-    if (result == null || !mounted) return;
-    setState(() {
-      if (result.nationwide) {
-        _province = null;
-      } else if (result.area case final area?) {
-        _province = area.displayName;
-      }
-    });
   }
 
   Future<void> _openDetail(ListingCardItem item) async {
@@ -248,29 +256,14 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
     _cubit.syncFavorite(id, favorite);
   }
 
-  /// "TP. Hồ Chí Minh", "Thành phố Hà Nội"... → phần tên chính để so khớp
-  static String _core(String name) => name
-      .replaceAll(RegExp(r'^(TP\.?|Tp\.?|Thành phố|Tỉnh)\s*'), '')
-      .trim()
-      .toLowerCase();
-
-  List<ListingCardItem> _visible(List<ListingCardItem> items) {
-    final province = _province;
-    if (province == null) return items;
-    final core = _core(province);
-    return [
-      for (final item in items)
-        if (item.areaLabel.toLowerCase().contains(core)) item,
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryDetailCubit, CategoryDetailState>(
       builder: (context, state) {
         final header = _Header(
           state: state,
-          province: _province,
+          province: state.filter.areaLabel,
+          provinces: _quickProvinces,
           grid: _grid,
           wide: widget.wide,
           onBack: _back,
@@ -281,6 +274,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
             ),
           ),
           onArea: _pickArea,
+          onProvince: _toggleQuickProvince,
           onFilters: _openFilters,
           onCategoryTap: _pickCategory,
           onSubcategory: _cubit.selectSubcategory,
@@ -290,8 +284,6 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
           onCondition: _pickCondition,
           onSeller: _pickSeller,
           onClearAll: _cubit.clearFilters,
-          onProvince: (value) =>
-              setState(() => _province = _province == value ? null : value),
           onSort: _pickSort,
           onGridToggle: () => setState(() => _grid = !_grid),
         );
@@ -374,9 +366,9 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
         break;
     }
 
-    final items = _visible(state.items);
+    final items = state.items;
     if (items.isEmpty) {
-      final filtered = state.hasActiveFilters || _province != null;
+      final filtered = state.hasActiveFilters || state.filter.hasArea;
       return [
         SliverToBoxAdapter(
           child: SizedBox(
@@ -392,8 +384,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
               action: filtered
                   ? OutlinedButton(
                       onPressed: () {
-                        setState(() => _province = null);
-                        _cubit.clearFilters();
+                        _cubit.clearAll();
                       },
                       child: Text(l10n.listingFilterReset),
                     )
@@ -410,7 +401,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
 
     return [
       if (!state.hasActiveFilters &&
-          _province == null &&
+          !state.filter.hasArea &&
           state.hotItems.isNotEmpty) ...[
         const SliverToBoxAdapter(child: SizedBox(height: 14)),
         SliverToBoxAdapter(
@@ -463,6 +454,7 @@ class _Header extends StatelessWidget {
   const _Header({
     required this.state,
     required this.province,
+    required this.provinces,
     required this.grid,
     required this.wide,
     required this.onBack,
@@ -485,6 +477,9 @@ class _Header extends StatelessWidget {
 
   final CategoryDetailState state;
   final String? province;
+
+  /// Chip tỉnh nhanh: tên → mã tỉnh
+  final Map<String, String> provinces;
   final bool grid;
   final bool wide;
   final VoidCallback onBack;
@@ -504,15 +499,6 @@ class _Header extends StatelessWidget {
   final ValueChanged<BuildContext> onSeller;
   final VoidCallback onClearAll;
   final ValueChanged<String> onProvince;
-
-  /// Tỉnh / thành chọn nhanh trên hàng "Khu vực:"
-  static const _quickProvinces = [
-    'TP. Hồ Chí Minh',
-    'Hà Nội',
-    'Đà Nẵng',
-    'Cần Thơ',
-    'Bình Dương',
-  ];
   final VoidCallback onSort;
   final VoidCallback onGridToggle;
 
@@ -617,6 +603,28 @@ class _Header extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: children,
+      ),
+    );
+
+    // Chip tròn của hàng "Khu vực:"; đang chọn thì nền đậm chữ trắng
+    Widget areaChip(
+      String name, {
+      required bool selected,
+      required VoidCallback onPressed,
+    }) => Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          shape: const StadiumBorder(),
+          backgroundColor: selected
+              ? AppColors.textPrimary
+              : Colors.transparent,
+          foregroundColor: selected ? Colors.white : AppColors.textPrimary,
+          side: const BorderSide(color: AppColors.border),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+        ),
+        child: Text(name),
       ),
     );
 
@@ -773,28 +781,17 @@ class _Header extends StatelessWidget {
               ),
             ),
           ),
-          for (final name in [
-            if (province != null && !_quickProvinces.contains(province))
-              province!,
-            ..._quickProvinces,
-          ])
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: OutlinedButton(
-                onPressed: () => onProvince(name),
-                style: OutlinedButton.styleFrom(
-                  shape: const StadiumBorder(),
-                  backgroundColor: province == name
-                      ? AppColors.textPrimary
-                      : Colors.transparent,
-                  foregroundColor: province == name
-                      ? Colors.white
-                      : AppColors.textPrimary,
-                  side: const BorderSide(color: AppColors.border),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                child: Text(name),
-              ),
+          // Khu vực chọn từ "Xem thêm" (không nằm trong chip nhanh) hiện đầu
+          // hàng, bấm để chọn lại
+          if (filter.hasArea &&
+              !provinces.containsValue(filter.provinceCode) &&
+              province != null)
+            areaChip(province!, selected: true, onPressed: onArea),
+          for (final MapEntry(key: name, value: code) in provinces.entries)
+            areaChip(
+              name,
+              selected: filter.provinceCode == code,
+              onPressed: () => onProvince(name),
             ),
           OutlinedButton(
             onPressed: onArea,

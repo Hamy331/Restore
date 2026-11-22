@@ -31,3 +31,28 @@ export const findFavoriteListings = (userId: string, take: number, skip: number)
     }),
     prisma.listingFavorite.count({ where: { userId, listing: visible } }),
   ]);
+
+/** Đưa tin lên đầu Xem gần đây của [userId], chỉ giữ [keep] tin mới xem nhất */
+export const recordRecentView = (userId: string, listingId: string, keep: number) =>
+  prisma.$transaction([
+    prisma.listingRecentView.upsert({
+      where: { userId_listingId: { userId, listingId } },
+      create: { userId, listingId },
+      update: { viewedAt: new Date() },
+    }),
+    prisma.$executeRaw`DELETE FROM "ListingRecentView" WHERE "userId" = ${userId} AND "listingId" NOT IN (
+      SELECT "listingId" FROM "ListingRecentView" WHERE "userId" = ${userId} ORDER BY "viewedAt" DESC LIMIT ${keep})`,
+  ]);
+
+/** Tin vừa xem và vẫn còn hiển thị, mới xem trước */
+export const findRecentViewListings = (userId: string, take: number, skip: number) =>
+  prisma.$transaction([
+    prisma.listingRecentView.findMany({
+      where: { userId, listing: visible },
+      select: { listing: { select: listingSelect } },
+      orderBy: { viewedAt: 'desc' },
+      take,
+      skip,
+    }),
+    prisma.listingRecentView.count({ where: { userId, listing: visible } }),
+  ]);

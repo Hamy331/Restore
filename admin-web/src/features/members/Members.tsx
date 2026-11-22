@@ -4,6 +4,9 @@ import { Session, ApiError, errorText } from '../../shared/api/session';
 import { useResource, type Page } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { useWorkspace } from '../../app/workspace';
+import { pickFilter } from '../../app/route';
+import { memberStatus } from './MemberLink';
+import { TargetHistory } from '../audit/History';
 type Member = {
   phone: string | null;
   _count: { listings: number };
@@ -34,12 +37,6 @@ const tiers: Record<Member['planTier'], { label: string; color: string }> = {
   PERSONAL: { label: 'Cá nhân', color: 'default' },
   BASIC: { label: 'Bán chuyên', color: 'blue' },
   PRO: { label: 'Cửa hàng Pro', color: 'purple' },
-};
-const statuses: Record<string, string> = {
-  ACTIVE: 'Hoạt động',
-  BANNED: 'Đã cấm',
-  SUSPENDED: 'Tạm khóa',
-  UNVERIFIED: 'Chưa xác minh',
 };
 const actions = {
   WARN: 'Cảnh cáo',
@@ -99,7 +96,7 @@ function MemberAction({
       title={'Xử lý tài khoản · ' + member.email}
       onCancel={close}
       closable={!busy}
-      maskClosable={false}
+      mask={{ closable: false }}
       keyboard={!busy}
       footer={
         <Space>
@@ -112,6 +109,7 @@ function MemberAction({
         </Space>
       }
     >
+      <TargetHistory session={session} type="USER" id={member.id} />
       <Form
         form={form}
         layout="vertical"
@@ -153,8 +151,9 @@ function MemberAction({
 export function Members({ session }: { session: Session }) {
   const { filter } = useWorkspace();
   const [page, setPage] = useState(1),
-    [query, setQuery] = useState(''),
-    [status, setStatus] = useState(filter),
+    // Mở từ tin đăng / báo cáo / ticket / đơn: bộ lọc là email thì tìm thẳng người đó
+    [query, setQuery] = useState(filter.includes('@') ? filter.slice(0, 100) : ''),
+    [status, setStatus] = useState(pickFilter(filter, Object.keys(memberStatus))),
     [type, setType] = useState<MemberType | ''>(''),
     [member, setMember] = useState<Member>();
   const { data, error, reload } = useResource<MemberPage>(
@@ -183,6 +182,7 @@ export function Members({ session }: { session: Session }) {
           <Input.Search
             className="filter-search"
             aria-label="Tìm thành viên"
+            defaultValue={query}
             placeholder="Tìm tên, tài khoản, email hoặc số điện thoại"
             allowClear
             maxLength={100}
@@ -201,7 +201,7 @@ export function Members({ session }: { session: Session }) {
             }}
             options={[
               { value: '', label: 'Tất cả trạng thái' },
-              ...Object.entries(statuses).map(([value, label]) => ({ value, label })),
+              ...Object.entries(memberStatus).map(([value, label]) => ({ value, label })),
             ]}
           />
           <span className="toolbar-end">{data && data.total + ' thành viên'}</span>
@@ -266,7 +266,7 @@ export function Members({ session }: { session: Session }) {
                 dataIndex: 'status',
                 render: (s: string) => (
                   <Tag color={s === 'ACTIVE' ? 'green' : s === 'BANNED' ? 'red' : 'orange'}>
-                    {statuses[s] ?? s}
+                    {memberStatus[s] ?? s}
                   </Tag>
                 ),
               },

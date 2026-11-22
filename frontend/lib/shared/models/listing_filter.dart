@@ -118,6 +118,15 @@ class ListingFilter extends Equatable {
   /// "Đăng bởi": rỗng là mọi người đăng
   final Set<ListingSellerKind> sellers;
 
+  /// Khu vực của tin: mã tỉnh/thành hoặc mã phường/xã (chọn một trong hai),
+  /// null là toàn quốc. Trang tự hiện chip khu vực nên không tính vào
+  /// [activeCount] và giữ nguyên khi "Xoá bộ lọc" trong sheet.
+  final String? provinceCode;
+  final String? wardCode;
+
+  /// Tên khu vực đang lọc để hiện trên chip, không gửi lên API
+  final String? areaLabel;
+
   const ListingFilter({
     this.dealTypes = const {},
     this.sort = ListingSort.newest,
@@ -129,7 +138,12 @@ class ListingFilter extends Equatable {
     this.maxPrice,
     this.conditions = const {},
     this.sellers = const {},
+    this.provinceCode,
+    this.wardCode,
+    this.areaLabel,
   });
+
+  bool get hasArea => provinceCode != null || wardCode != null;
 
   /// Thuộc tính bảo hành và các giá trị tính là "Còn bảo hành"
   static const warrantyKey = 'warranty';
@@ -186,9 +200,21 @@ class ListingFilter extends Equatable {
       (dealTypes.isEmpty ? 0 : 1) +
       (radiusKm == defaults.radiusKm ? 0 : 1);
 
-  /// Xoá mọi tiêu chí về [defaults] nhưng giữ cách sắp xếp đang chọn
-  ListingFilter resetTo(ListingFilter defaults) =>
-      defaults.copyWith(sort: sort);
+  /// Xoá mọi tiêu chí về [defaults] nhưng giữ cách sắp xếp và khu vực đang chọn
+  ListingFilter resetTo(ListingFilter defaults) => defaults.copyWith(
+    sort: sort,
+    provinceCode: () => provinceCode,
+    wardCode: () => wardCode,
+    areaLabel: () => areaLabel,
+  );
+
+  /// Lọc theo một tỉnh/thành hoặc phường/xã ([isWard]), [code] null là toàn quốc
+  ListingFilter withArea(String? code, {bool isWard = false, String? label}) =>
+      copyWith(
+        provinceCode: () => code == null || isWard ? null : code,
+        wardCode: () => code != null && isWard ? code : null,
+        areaLabel: () => code == null ? null : label,
+      );
 
   /// Các trường có thể null nhận hàm trả giá trị để xoá được về null,
   /// VD `copyWith(categoryId: () => null)`.
@@ -203,6 +229,9 @@ class ListingFilter extends Equatable {
     int? Function()? maxPrice,
     Set<ListingCondition>? conditions,
     Set<ListingSellerKind>? sellers,
+    String? Function()? provinceCode,
+    String? Function()? wardCode,
+    String? Function()? areaLabel,
   }) => ListingFilter(
     dealTypes: dealTypes ?? this.dealTypes,
     sort: sort ?? this.sort,
@@ -214,6 +243,9 @@ class ListingFilter extends Equatable {
     maxPrice: maxPrice == null ? this.maxPrice : maxPrice(),
     conditions: conditions ?? this.conditions,
     sellers: sellers ?? this.sellers,
+    provinceCode: provinceCode == null ? this.provinceCode : provinceCode(),
+    wardCode: wardCode == null ? this.wardCode : wardCode(),
+    areaLabel: areaLabel == null ? this.areaLabel : areaLabel(),
   );
 
   /// Đổi danh mục: bỏ danh mục con, bộ lọc thuộc tính và nhóm tình trạng
@@ -299,6 +331,8 @@ class ListingFilter extends Equatable {
       'condition': [for (final item in conditions) item.apiValue].join(','),
     if (sellers.isNotEmpty)
       'seller': [for (final item in sellers) item.apiValue].join(','),
+    'provinceCode': ?provinceCode,
+    'wardCode': ?wardCode,
   };
 
   @override
@@ -313,5 +347,8 @@ class ListingFilter extends Equatable {
     maxPrice,
     conditions,
     sellers,
+    provinceCode,
+    wardCode,
+    areaLabel,
   ];
 }

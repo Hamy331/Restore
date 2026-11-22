@@ -1,15 +1,41 @@
-import { Dashboard } from '../features/dashboard/Dashboard';
-import { Audit } from '../features/audit/Audit';
-import { Members } from '../features/members/Members';
-import { Listings } from '../features/listings/Listings';
-import { Reports } from '../features/reports/Reports';
-import { Posts } from '../features/posts/Posts';
-import { Tickets } from '../features/support/Tickets';
-import { Knowledge } from '../features/knowledge/Knowledge';
-import { Catalog } from '../features/catalog/Catalog';
-import { Stores, Promotions } from '../features/commerce/Commerce';
-import { HomeBanners } from '../features/banners/HomeBanners';
-import { ShopPosters } from '../features/shop-posters/ShopPosters';
+import { lazy } from 'react';
+
+// Mỗi mục là một chunk riêng: trang đăng nhập và mục đầu tiên không phải tải cả bảng quản trị
+const Dashboard = lazy(() =>
+  import('../features/dashboard/Dashboard').then((m) => ({ default: m.Dashboard })),
+);
+const Audit = lazy(() => import('../features/audit/Audit').then((m) => ({ default: m.Audit })));
+const Members = lazy(() =>
+  import('../features/members/Members').then((m) => ({ default: m.Members })),
+);
+const Listings = lazy(() =>
+  import('../features/listings/Listings').then((m) => ({ default: m.Listings })),
+);
+const Reports = lazy(() =>
+  import('../features/reports/Reports').then((m) => ({ default: m.Reports })),
+);
+const Posts = lazy(() => import('../features/posts/Posts').then((m) => ({ default: m.Posts })));
+const Tickets = lazy(() =>
+  import('../features/support/Tickets').then((m) => ({ default: m.Tickets })),
+);
+const Knowledge = lazy(() =>
+  import('../features/knowledge/Knowledge').then((m) => ({ default: m.Knowledge })),
+);
+const Catalog = lazy(() =>
+  import('../features/catalog/Catalog').then((m) => ({ default: m.Catalog })),
+);
+const Stores = lazy(() =>
+  import('../features/commerce/Commerce').then((m) => ({ default: m.Stores })),
+);
+const Promotions = lazy(() =>
+  import('../features/commerce/Commerce').then((m) => ({ default: m.Promotions })),
+);
+const HomeBanners = lazy(() =>
+  import('../features/banners/HomeBanners').then((m) => ({ default: m.HomeBanners })),
+);
+const ShopPosters = lazy(() =>
+  import('../features/shop-posters/ShopPosters').then((m) => ({ default: m.ShopPosters })),
+);
 
 import {
   AppstoreOutlined,

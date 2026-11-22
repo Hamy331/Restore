@@ -100,4 +100,8 @@ export const resetPasswordBody = z.unknown().transform((body) => {
 });
 
 /** POST /auth/refresh, /auth/logout */
-export const refreshTokenBody = z.unknown().transform((body) => ({ refreshToken: token(fieldsOf(body).refreshToken, 'refreshToken') }));
+/** Web quản trị không gửi refreshToken trong body mà dùng cookie httpOnly (xem auth.controller) */
+export const refreshTokenBody = z.unknown().transform((body) => {
+  const value = fieldsOf(body).refreshToken;
+  return { refreshToken: value === undefined ? undefined : token(value, 'refreshToken') };
+});

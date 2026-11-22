@@ -18,12 +18,23 @@ export const createDocument = (tx: Db, data: { title: string; content: string; a
 
 type KnowledgeData = { title: string; content: string; active: boolean; indexedText: string | null; syncedAt: Date | null };
 
-/** Mọi tài liệu, cập nhật gần nhất trước */
+/** Mọi tài liệu, cập nhật gần nhất trước; không kèm nội dung (tối đa 100 KB mỗi tài liệu) */
 export const findPage = (skip: number, take: number) =>
-  prisma.$transaction([
-    prisma.knowledgeDocument.findMany({ skip, take, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }] }),
+  Promise.all([
+    prisma.knowledgeDocument.findMany({
+      skip, take, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+      select: {
+        id: true, title: true, active: true, syncedAt: true, updatedAt: true,
+        aiIndex: { select: { status: true, model: true, indexedAt: true, documentVersion: true, errorCode: true } },
+      },
+    }),
     prisma.knowledgeDocument.count(),
   ]);
+
+/** Một tài liệu kèm nội dung để admin sửa; không có thì 404 */
+export const findForAdmin = (id: string) => prisma.knowledgeDocument.findUniqueOrThrow({
+  where: { id }, select: { id: true, title: true, content: true, active: true, syncedAt: true, updatedAt: true },
+});
 
 export const findByIdOrThrow = (tx: Db, id: string) => tx.knowledgeDocument.findUniqueOrThrow({ where: { id } });
 

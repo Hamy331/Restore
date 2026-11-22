@@ -82,6 +82,7 @@ export function Dashboard({ session }: { session: Session }) {
       label: 'Yêu cầu hỗ trợ đang mở',
       count: insights.data?.openTickets,
       icon: CustomerServiceOutlined,
+      filter: 'OPEN',
     },
   ];
   return (

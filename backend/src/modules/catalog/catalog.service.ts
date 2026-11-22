@@ -98,6 +98,11 @@ const AREAS: { option: AreaOption; keys: string[]; parentKey?: string }[] = [
   }),
 ];
 
+const AREA_BY_CODE = new Map(AREAS.map(({ option }) => [option.code, option]));
+
+/** Khu vực theo mã tỉnh/thành hoặc phường/xã, undefined nếu không có */
+export const findArea = (code: string) => AREA_BY_CODE.get(code);
+
 /**
  * Tìm khu vực theo tên, không phân biệt dấu: khớp tên trước (khớp từ đầu tên ngắn lên đầu),
  * rồi tới phường thuộc tỉnh có tên khớp.

@@ -16,12 +16,20 @@ import '../../models/profile_models.dart';
 import '../public_profile/profile_reviews.dart';
 
 class MyReviewsView extends StatelessWidget {
-  const MyReviewsView({super.key, this.received = false});
+  const MyReviewsView({
+    super.key,
+    this.received = false,
+    this.transactions = false,
+  });
 
   static const path = '/account/my-reviews';
   static const ratingsPath = '/account/ratings';
 
+  /// Lịch sử giao dịch: mọi giao dịch đã hoàn tất, kèm đánh giá đã gửi nếu có
+  static const transactionsPath = '/account/transactions';
+
   final bool received;
+  final bool transactions;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +46,11 @@ class MyReviewsView extends StatelessWidget {
                   ? EdgeInsets.zero
                   : const EdgeInsets.symmetric(vertical: 8),
               child: AppPageTitleRow(
-                title: received ? l.accReceivedRatings : l.accMyReviews,
+                title: received
+                    ? l.accReceivedRatings
+                    : transactions
+                    ? l.accTransactions
+                    : l.accMyReviews,
                 onBack: () {
                   if (context.canPop()) {
                     context.pop();
@@ -66,7 +78,10 @@ class MyReviewsView extends StatelessWidget {
                         ratingCount: user.ratingCount,
                       ),
                     )
-                  : _OutgoingReviews(key: ValueKey(user.id)),
+                  : _OutgoingReviews(
+                      key: ValueKey(user.id),
+                      history: transactions,
+                    ),
             ),
           ],
         ),
@@ -75,10 +90,13 @@ class MyReviewsView extends StatelessWidget {
   }
 }
 
-enum _ReviewStatus { pending, submitted }
+enum _ReviewStatus { pending, submitted, all }
 
 class _OutgoingReviews extends StatefulWidget {
-  const _OutgoingReviews({super.key});
+  const _OutgoingReviews({super.key, this.history = false});
+
+  /// Lịch sử giao dịch: không có bộ lọc, hiện vai trò mua / bán
+  final bool history;
 
   @override
   State<_OutgoingReviews> createState() => _OutgoingReviewsState();
@@ -86,7 +104,9 @@ class _OutgoingReviews extends StatefulWidget {
 
 class _OutgoingReviewsState extends State<_OutgoingReviews> {
   final _items = <_ReviewItem>[];
-  _ReviewStatus _status = _ReviewStatus.pending;
+  late _ReviewStatus _status = widget.history
+      ? _ReviewStatus.all
+      : _ReviewStatus.pending;
   int _page = 0;
   int _request = 0;
   bool _loading = false;
@@ -155,28 +175,29 @@ class _OutgoingReviewsState extends State<_OutgoingReviews> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-          child: SegmentedButton<_ReviewStatus>(
-            segments: [
-              ButtonSegment(
-                value: _ReviewStatus.pending,
-                label: Text(l.accPendingReviews),
-              ),
-              ButtonSegment(
-                value: _ReviewStatus.submitted,
-                label: Text(l.accSubmittedReviews),
-              ),
-            ],
-            selected: {_status},
-            showSelectedIcon: false,
-            onSelectionChanged: (selected) {
-              if (selected.single == _status) return;
-              _status = selected.single;
-              _load(reset: true);
-            },
+        if (!widget.history)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: SegmentedButton<_ReviewStatus>(
+              segments: [
+                ButtonSegment(
+                  value: _ReviewStatus.pending,
+                  label: Text(l.accPendingReviews),
+                ),
+                ButtonSegment(
+                  value: _ReviewStatus.submitted,
+                  label: Text(l.accSubmittedReviews),
+                ),
+              ],
+              selected: {_status},
+              showSelectedIcon: false,
+              onSelectionChanged: (selected) {
+                if (selected.single == _status) return;
+                _status = selected.single;
+                _load(reset: true);
+              },
+            ),
           ),
-        ),
         Expanded(
           child: RefreshIndicator(
             onRefresh: () => _load(reset: true),
@@ -185,7 +206,11 @@ class _OutgoingReviewsState extends State<_OutgoingReviews> {
               padding: const EdgeInsets.all(16),
               children: [
                 for (final item in _items)
-                  _ReviewCard(item: item, onReview: () => _review(item)),
+                  _ReviewCard(
+                    item: item,
+                    showRole: widget.history,
+                    onReview: () => _review(item),
+                  ),
                 if (_loading)
                   const Padding(
                     padding: EdgeInsets.all(20),
@@ -201,12 +226,11 @@ class _OutgoingReviewsState extends State<_OutgoingReviews> {
                 else if (_items.isEmpty)
                   Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text(
-                      _status == _ReviewStatus.pending
-                          ? l.accNoPendingReviews
-                          : l.accNoSubmittedReviews,
-                      textAlign: TextAlign.center,
-                    ),
+                    child: Text(switch (_status) {
+                      _ReviewStatus.pending => l.accNoPendingReviews,
+                      _ReviewStatus.submitted => l.accNoSubmittedReviews,
+                      _ReviewStatus.all => l.accNoTransactions,
+                    }, textAlign: TextAlign.center),
                   ),
               ],
             ),
@@ -260,10 +284,15 @@ class _ReviewItem {
 }
 
 class _ReviewCard extends StatelessWidget {
-  const _ReviewCard({required this.item, required this.onReview});
+  const _ReviewCard({
+    required this.item,
+    required this.onReview,
+    this.showRole = false,
+  });
 
   final _ReviewItem item;
   final VoidCallback onReview;
+  final bool showRole;
 
   @override
   Widget build(BuildContext context) {
@@ -297,6 +326,11 @@ class _ReviewCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(item.title, style: theme.textTheme.titleSmall),
+                      if (showRole)
+                        Text(
+                          item.isSeller ? l.tradeYouSold : l.tradeYouBought,
+                          style: theme.textTheme.bodySmall,
+                        ),
                       if (item.recipientName case final name?) Text(name),
                       if (item.price case final price?)
                         Text(

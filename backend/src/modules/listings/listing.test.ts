@@ -93,7 +93,7 @@ test('listing images accept real supported bytes and cannot attach foreign URLs 
 test('listing filters validate range and normalize search values', () => {
   assert.deepEqual(listingFilters({ q: '  Bàn  GỖ! ', categoryId: 'furniture', condition: 'USED_GOOD', minPrice: '100000', maxPrice: '200000' }), {
     q: 'Bàn  GỖ!', words: ['ban', 'go'], categoryId: 'furniture', subcategoryId: '', attributeFilters: [], sellers: [],
-    conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000',
+    conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000', provinceCode: '', wardCode: '',
   });
   // Danh mục con và bộ lọc thuộc tính; danh mục con bỏ qua khi chưa chọn danh mục cha
   const sub = listingFilters({ categoryId: 'electronics', subcategoryId: 'dien-thoai', attrs: '{"brand":["Apple"]}' });
@@ -102,6 +102,15 @@ test('listing filters validate range and normalize search values', () => {
   assert.throws(() => listingFilters({ attrs: '{bad' }), { code: 'INVALID_QUERY' });
   assert.deepEqual(listingFilters({ seller: 'personal,partner' }).sellers, ['personal', 'partner']);
   assert.throws(() => listingFilters({ seller: 'shop' }), { code: 'INVALID_QUERY' });
+  // Khoảng thuộc tính số đi chung trong attrs; khu vực lọc trên server theo mã tỉnh / phường
+  assert.deepEqual(listingFilters({ attrs: '{"year":{"min":2015,"max":2020}}' }).attributeFilters, [{ key: 'year', min: 2015, max: 2020 }]);
+  assert.throws(() => listingFilters({ attrs: '{"year":{"min":2020,"max":2015}}' }), { code: 'INVALID_QUERY' });
+  assert.equal(listingFilters({ provinceCode: '79' }).provinceCode, '79');
+  assert.throws(() => listingFilters({ wardCode: "1' OR 1=1" }), { code: 'INVALID_QUERY' });
+  // GET /listings chỉ đổi thứ tự khi sắp theo giá; newest giữ thứ tự feed (ưu tiên tin được đẩy)
+  assert.equal(parse(feedQuery, { sort: 'price_asc' }).sort, 'price_asc');
+  assert.equal(parse(feedQuery, { sort: 'newest' }).sort, undefined);
+  assert.throws(() => parse(feedQuery, { sort: 'cheap' }));
   const multi = listingFilters({ condition: 'NEW, USED_GOOD,NEW', deal: 'buy,exchange' });
   assert.deepEqual(multi.conditions, ['NEW', 'USED_GOOD']);
   assert.deepEqual(multi.deals, ['buy', 'exchange']);
