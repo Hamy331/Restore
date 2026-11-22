@@ -28,18 +28,20 @@ test('matcher scores close titles above loose ones and tolerates small typos', (
 });
 
 const alert: MatchableAlert = {
-  keywords: 'ghế xoay', matchLevel: 'BALANCED', categoryId: 'furniture', minPrice: 100_000, maxPrice: 2_000_000,
+  keywords: 'ghế xoay', matchLevel: 'BALANCED', categoryId: 'furniture', subcategoryId: null, minPrice: 100_000, maxPrice: 2_000_000,
   conditions: [], dealTypes: [], areaCode: '79', areaLevel: 'province', createdAt: new Date('2026-10-01T00:00:00Z'),
 };
 const listing: MatchableListing = {
   title: 'Ghế xoay văn phòng', description: '', price: 1_200_000, condition: 'USED_GOOD', allowSale: true, allowExchange: false,
-  categoryId: 'furniture', provinceCode: '79', wardCode: '26740', createdAt: new Date('2026-10-02T00:00:00Z'),
+  categoryId: 'furniture', subcategoryId: 'chairs', provinceCode: '79', wardCode: '26740', createdAt: new Date('2026-10-02T00:00:00Z'),
 };
 
 test('matchListing applies hard filters before scoring', () => {
   assert.ok((matchListing(alert, listing) ?? 0) >= 0.45);
   assert.equal(matchListing(alert, { ...listing, createdAt: new Date('2026-09-30T00:00:00Z') }), null, 'tin cũ hơn thông báo');
   assert.equal(matchListing(alert, { ...listing, categoryId: 'books' }), null);
+  assert.ok(matchListing({ ...alert, subcategoryId: 'chairs' }, listing) != null, 'cùng danh mục con');
+  assert.equal(matchListing({ ...alert, subcategoryId: 'tables' }, listing), null, 'khác danh mục con');
   assert.equal(matchListing(alert, { ...listing, price: 5_000_000 }), null);
   assert.ok(matchListing(alert, { ...listing, price: 5_000_000, allowSale: false, allowExchange: true }) != null, 'tin chỉ đổi bỏ qua giá');
   assert.equal(matchListing({ ...alert, dealTypes: ['exchange'] }, listing), null);
@@ -54,14 +56,16 @@ test('draft body normalizes the app payload', () => {
     keywords: ' Ghế xoay ', categoryId: 'furniture', minPrice: 100000, maxPrice: '2000000', conditions: ['USED_GOOD', 'USED_GOOD'],
     dealTypes: ['buy'], area: { code: '26740', level: 'ward', label: 'bỏ qua' }, matchLevel: 'STRICT',
   }), {
-    keywords: 'Ghế xoay', categoryId: 'furniture', minPrice: 100000, maxPrice: 2000000, conditions: ['USED_GOOD'], dealTypes: ['buy'],
+    keywords: 'Ghế xoay', categoryId: 'furniture', subcategoryId: null, minPrice: 100000, maxPrice: 2000000, conditions: ['USED_GOOD'], dealTypes: ['buy'],
     areaCode: '26740', areaLevel: 'ward', areaLabel: 'Phường Sài Gòn, Thành phố Hồ Chí Minh', matchLevel: 'STRICT',
   });
   assert.deepEqual(draft({ keywords: 'máy ảnh', categoryId: null, minPrice: null, conditions: null, area: null }), {
-    keywords: 'máy ảnh', categoryId: null, minPrice: null, maxPrice: null, conditions: [], dealTypes: [],
+    keywords: 'máy ảnh', categoryId: null, subcategoryId: null, minPrice: null, maxPrice: null, conditions: [], dealTypes: [],
     areaCode: null, areaLevel: null, areaLabel: null, matchLevel: 'BALANCED',
   });
   assert.equal(draft({ keywords: 'xe', area: { code: '79', level: 'province' } }).areaLabel, 'Thành phố Hồ Chí Minh');
+  assert.equal(draft({ keywords: 'xe', categoryId: 'vehicles', subcategoryId: 'motorbikes' }).subcategoryId, 'motorbikes');
+  assert.equal(draft({ keywords: 'xe', subcategoryId: 'motorbikes' }).subcategoryId, null, 'không có danh mục thì bỏ danh mục con');
 });
 
 test('draft body rejects invalid fields', () => {
@@ -78,4 +82,20 @@ test('draft body rejects invalid fields', () => {
   assert.equal(code(() => draft({ keywords: 'xe', sort: 'newest' })), 'INVALID_INPUT:sort');
   assert.deepEqual(parse(previewQuery, {}), { limit: 20 });
   assert.equal(code(() => parse(previewQuery, { limit: '99' })), 'INVALID_INPUT:limit');
+});
+
+test('alert dto names the subcategory and hides category metadata', async () => {
+  const { toWantedAlertDto } = await import('./wanted-alert.dto.js');
+  const metadata = { subcategories: [{ id: 'motorbikes', name: { vi: 'Xe máy', en: 'Motorbikes' }, attributes: [] }] };
+  const record = {
+    id: 'a', userId: 'u', keywords: 'xe', categoryId: 'vehicles', subcategoryId: 'motorbikes', minPrice: null, maxPrice: 5n,
+    conditions: [], dealTypes: [], areaCode: null, areaLevel: null, areaLabel: null, matchLevel: 'BALANCED',
+    seenAt: new Date(0), lastMatchedAt: null, createdAt: new Date(0), updatedAt: new Date(0),
+    category: { id: 'vehicles', name: 'Xe cộ', metadata },
+  } as unknown as Parameters<typeof toWantedAlertDto>[0];
+  const dto = toWantedAlertDto(record);
+  assert.deepEqual(dto.category, { id: 'vehicles', name: 'Xe cộ' });
+  assert.deepEqual(dto.subcategory, { id: 'motorbikes', name: { vi: 'Xe máy', en: 'Motorbikes' } });
+  assert.equal(dto.maxPrice, 5);
+  assert.equal(toWantedAlertDto({ ...record, subcategoryId: null }).subcategory, null);
 });

@@ -46,6 +46,7 @@ class WantedAlertDraft extends Equatable {
   Map<String, dynamic> toJson() => {
     'keywords': trimmedKeywords,
     'categoryId': filter.categoryId,
+    'subcategoryId': filter.categoryId == null ? null : filter.subcategoryId,
     'minPrice': filter.minPrice,
     'maxPrice': filter.maxPrice,
     'conditions': [for (final item in filter.conditions) item.apiValue],

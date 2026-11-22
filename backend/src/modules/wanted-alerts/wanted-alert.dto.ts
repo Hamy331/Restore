@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import type { z } from 'zod';
 import { ListingRecord, toFeedItemDto } from '../listings/index.js';
+import { findSubcategory } from '../catalog/category-tree.js';
 import type { alertIdParams, draftBody, matchesQuery, previewQuery } from './wanted-alert.validator.js';
 
 /* ---------- Vào (suy ra từ schema) ---------- */
@@ -14,9 +15,9 @@ export type AlertIdParams = z.output<typeof alertIdParams>;
 
 /** Cột của WantedAlert đọc từ DB, kèm tên danh mục */
 export const wantedAlertSelect = {
-  id: true, userId: true, keywords: true, categoryId: true, minPrice: true, maxPrice: true, conditions: true, dealTypes: true,
+  id: true, userId: true, keywords: true, categoryId: true, subcategoryId: true, minPrice: true, maxPrice: true, conditions: true, dealTypes: true,
   areaCode: true, areaLevel: true, areaLabel: true, matchLevel: true, seenAt: true, lastMatchedAt: true, createdAt: true, updatedAt: true,
-  category: { select: { id: true, name: true } },
+  category: { select: { id: true, name: true, metadata: true } },
 } as const satisfies Prisma.WantedAlertSelect;
 
 export type WantedAlertRecord = Prisma.WantedAlertGetPayload<{ select: typeof wantedAlertSelect }>;
@@ -27,14 +28,17 @@ const toNumber = (value: bigint | null) => (value == null ? null : Number(value)
 
 /**
  * Thông báo cho app (WantedAlertItem.fromJson):
- * { id, userId, keywords, categoryId, category { id, name } | null, minPrice, maxPrice, conditions[], dealTypes[],
- *   area { code, level, label } | null, areaLabel, matchLevel, seenAt, lastMatchedAt, createdAt, updatedAt,
- *   matchCount, newMatchCount, previewImages[] }
+ * { id, userId, keywords, categoryId, subcategoryId, category { id, name } | null, subcategory { id, name { vi, en } } | null,
+ *   minPrice, maxPrice, conditions[], dealTypes[], area { code, level, label } | null, areaLabel, matchLevel, seenAt,
+ *   lastMatchedAt, createdAt, updatedAt, matchCount, newMatchCount, previewImages[] }
  */
 export function toWantedAlertDto(alert: WantedAlertRecord, stats: AlertStats = { matchCount: 0, newMatchCount: 0, previewImages: [] }) {
-  const { areaCode, areaLevel, areaLabel, minPrice, maxPrice, ...rest } = alert;
+  const { areaCode, areaLevel, areaLabel, minPrice, maxPrice, category, ...rest } = alert;
+  const subcategory = findSubcategory(category?.metadata, alert.subcategoryId);
   return {
     ...rest,
+    category: category && { id: category.id, name: category.name },
+    subcategory: subcategory ? { id: subcategory.id, name: subcategory.name } : null,
     minPrice: toNumber(minPrice),
     maxPrice: toNumber(maxPrice),
     area: areaCode ? { code: areaCode, level: areaLevel, label: areaLabel } : null,

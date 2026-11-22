@@ -13,7 +13,8 @@ const visibleListing = { status: 'AVAILABLE', owner: { status: 'ACTIVE' } } as c
 
 export const countByUser = (userId: string) => prisma.wantedAlert.count({ where: { userId } });
 
-export const findActiveCategory = (id: string) => prisma.category.findFirst({ where: { id, active: true }, select: { id: true } });
+export const findActiveCategory = (id: string) =>
+  prisma.category.findFirst({ where: { id, active: true }, select: { id: true, metadata: true } });
 
 export const create = (data: Prisma.WantedAlertUncheckedCreateInput) =>
   prisma.wantedAlert.create({ data, select: wantedAlertSelect });
@@ -79,7 +80,7 @@ export const findMatchesPage = (alertId: string, take: number, skip: number) => 
  * không gồm tin của chính người xem; mới đăng trước. Giá, kiểu giao dịch và từ khoá lọc ở service.
  */
 export const findPreviewCandidates = (
-  filters: { categoryId: string | null; conditions: ListingCondition[]; areaCode: string | null; areaLevel: string | null },
+  filters: { categoryId: string | null; subcategoryId: string | null; conditions: ListingCondition[]; areaCode: string | null; areaLevel: string | null },
   viewerId: string,
   take: number,
 ) =>
@@ -88,6 +89,7 @@ export const findPreviewCandidates = (
       ...visibleListing,
       ownerId: { not: viewerId },
       ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+      ...(filters.subcategoryId ? { subcategoryId: filters.subcategoryId } : {}),
       ...(filters.conditions.length ? { condition: { in: filters.conditions } } : {}),
       ...(filters.areaCode
         ? { location: { path: [filters.areaLevel === 'ward' ? 'wardCode' : 'provinceCode'], equals: filters.areaCode } }
@@ -112,7 +114,7 @@ export const findListingForMatching = (tx: Db, id: string) =>
     where: { id },
     select: {
       id: true, ownerId: true, title: true, description: true, price: true, condition: true,
-      allowSale: true, allowExchange: true, categoryId: true, location: true, status: true, images: true,
+      allowSale: true, allowExchange: true, categoryId: true, subcategoryId: true, location: true, status: true, images: true,
     },
   });
 
@@ -125,7 +127,7 @@ export const findCandidateAlerts = (tx: Db, listing: { ownerId: string; category
       OR: [{ categoryId: null }, ...(listing.categoryId ? [{ categoryId: listing.categoryId }] : [])],
     },
     select: {
-      id: true, userId: true, keywords: true, matchLevel: true, categoryId: true, minPrice: true, maxPrice: true,
+      id: true, userId: true, keywords: true, matchLevel: true, categoryId: true, subcategoryId: true, minPrice: true, maxPrice: true,
       conditions: true, dealTypes: true, areaCode: true, areaLevel: true, createdAt: true,
     },
   });

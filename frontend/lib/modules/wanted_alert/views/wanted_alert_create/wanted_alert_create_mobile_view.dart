@@ -84,7 +84,7 @@ class _WantedAlertCreateMobileViewState
       context,
       filter: cubit.state.draft.filter,
       defaults: WantedAlertCreateState.defaultFilter,
-      subcategories: false,
+      attributes: false,
       showSeller: false,
     );
     if (filter != null) cubit.applyFilter(filter);
@@ -180,7 +180,8 @@ class _WantedAlertCreateMobileViewState
                         ),
                         const SizedBox(height: 10),
                         // Thanh lọc như trang danh mục, chỉ các tiêu chí thông
-                        // báo lưu được: khu vực, danh mục cha, giá, tình trạng
+                        // báo lưu được: khu vực, danh mục (cả danh mục con), giá,
+                        // tình trạng
                         ListingChipFilterBar(
                           filter: state.draft.filter,
                           defaults: WantedAlertCreateState.defaultFilter,
@@ -194,7 +195,7 @@ class _WantedAlertCreateMobileViewState
                           onFilters: _openFilters,
                           onClearAll: cubit.clearFilters,
                           showArea: false,
-                          subcategories: false,
+                          attributes: false,
                           showSeller: false,
                           extraChips: [
                             ListingBarChip(

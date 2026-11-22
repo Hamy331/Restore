@@ -14,6 +14,7 @@ import { alertIdParams, draftBody, matchesQuery, previewQuery } from './wanted-a
  * Body chung của POST / và POST /preview (WantedAlertDraft):
  *  - keywords: string (2-80) - món cần tìm, VD "máy ảnh film Canon"
  *  - categoryId?: string | null
+ *  - subcategoryId?: string | null (danh mục con của categoryId; bỏ qua nếu không có categoryId)
  *  - minPrice?, maxPrice?: number | null - VND, 0..999 999 999 999
  *  - conditions?: ListingCondition[] - rỗng là mọi tình trạng
  *  - dealTypes?: ('buy' | 'exchange')[] - rỗng là mọi kiểu giao dịch

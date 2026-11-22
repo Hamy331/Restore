@@ -47,19 +47,21 @@ const sent = z.unknown().optional();
 
 /**
  * Body của POST /wanted-alerts và POST /wanted-alerts/preview (WantedAlertDraft.toJson trong app):
- * { keywords, categoryId?, minPrice?, maxPrice?, conditions?, dealTypes?, area?, matchLevel? }
+ * { keywords, categoryId?, subcategoryId? (cần categoryId), minPrice?, maxPrice?, conditions?, dealTypes?, area?, matchLevel? }
  */
 export const draftBody = strictBody({
-  keywords: sent, categoryId: sent, minPrice: sent, maxPrice: sent, conditions: sent, dealTypes: sent, area: sent, matchLevel: sent,
+  keywords: sent, categoryId: sent, subcategoryId: sent, minPrice: sent, maxPrice: sent, conditions: sent, dealTypes: sent, area: sent, matchLevel: sent,
 }).transform((body) => {
   const keywords = parse(str('keywords', { min: KEYWORDS_MIN, max: KEYWORDS_MAX }), body.keywords);
   if (tokens(keywords).length === 0) throw invalid('keywords cần ít nhất một từ có nghĩa.', 'keywords');
   const minPrice = price('minPrice', body.minPrice);
   const maxPrice = price('maxPrice', body.maxPrice);
   if (minPrice != null && maxPrice != null && minPrice > maxPrice) throw invalid('minPrice phải nhỏ hơn hoặc bằng maxPrice.', 'maxPrice');
+  const categoryId = parse(optionalStr('categoryId', { max: 64 }), body.categoryId) ?? null;
   return {
     keywords,
-    categoryId: parse(optionalStr('categoryId', { max: 64 }), body.categoryId) ?? null,
+    categoryId,
+    subcategoryId: categoryId ? parse(optionalStr('subcategoryId', { max: 64 }), body.subcategoryId) ?? null : null,
     minPrice,
     maxPrice,
     conditions: setOf('conditions', Object.values(ListingCondition), body.conditions),

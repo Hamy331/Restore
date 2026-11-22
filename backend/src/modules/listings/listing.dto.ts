@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import type { z } from 'zod';
 import { publicLocation } from '../catalog/index.js';
+import { findSubcategory } from '../catalog/category-tree.js';
 import type {
   adminDecisionBody, autoExtendBody, extendBody, adminListingQuery, createListingBody, decisionBody, draftBody, favoritesQuery, featureBody, feedQuery, mineQuery, recommendedQuery, searchQuery, statusBody,
 } from './listing.validator.js';
@@ -118,5 +119,13 @@ export type ListingDto = ReturnType<typeof toListingDto>;
 export const adminListingSelect = {
   id: true, title: true, description: true, price: true, status: true, images: true, reviewReason: true,
   updatedAt: true, categoryId: true, subcategoryId: true, ownerId: true, condition: true,
-  owner: { select: { id: true, fullName: true, email: true } }, category: { select: { id: true, name: true } },
+  owner: { select: { id: true, fullName: true, email: true } }, category: { select: { id: true, name: true, metadata: true } },
 } as const satisfies Prisma.ListingSelect;
+
+/** Tin cho trang quản trị: tên danh mục kèm danh mục con ("Điện tử › Điện thoại"), không trả metadata danh mục */
+export function toAdminListing<T extends { subcategoryId: string | null; category: { id: string; name: string; metadata: Prisma.JsonValue } | null }>(
+  { category, ...item }: T) {
+  const name = findSubcategory(category?.metadata, item.subcategoryId)?.name as string | { vi?: string } | undefined;
+  const sub = typeof name === 'string' ? name : name?.vi;
+  return { ...item, category: category && { id: category.id, name: sub ? `${category.name} › ${sub}` : category.name } };
+}

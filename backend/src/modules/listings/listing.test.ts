@@ -192,3 +192,11 @@ test('recommended limit is between 1 and 20', () => {
   assert.equal(parseRecommendedQuery({ limit: '5' }).limit, 5);
   assert.throws(() => parseRecommendedQuery({ limit: '21' }), AppError);
 });
+
+test('admin listings name the subcategory next to the category', async () => {
+  const { toAdminListing } = await import('./listing.dto.js');
+  const category = { id: 'electronics', name: 'Điện tử', metadata: { subcategories: [{ id: 'phones', name: { vi: 'Điện thoại', en: 'Phones' } }] } };
+  assert.deepEqual(toAdminListing({ id: 'a', subcategoryId: 'phones', category }).category, { id: 'electronics', name: 'Điện tử › Điện thoại' });
+  assert.deepEqual(toAdminListing({ id: 'b', subcategoryId: 'gone', category }).category, { id: 'electronics', name: 'Điện tử' });
+  assert.equal(toAdminListing({ id: 'c', subcategoryId: null, category: null }).category, null);
+});
