@@ -36,7 +36,8 @@ export function findMemberPage(
     storeSubscription: { select: { endsAt: true, package: { select: { tier: true } } } },
     shop: { select: { name: true, verificationType: true } },
   } : {};
-  return prisma.$transaction([
+  // Promise.all thay $transaction: chạy song song trên pool thay vì lần lượt trong một giao dịch
+  return Promise.all([
     prisma.user.findMany({ where, select: { ...adminUserSelect, ...extra }, take, skip, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] }),
     prisma.user.count({ where }),
   ]);
@@ -50,7 +51,7 @@ export async function countMemberTypes(q: { name: string; email: string } | unde
     ...(q ? { OR: [{ fullName: { contains: q.name, mode: 'insensitive' } }, { email: { contains: q.email, mode: 'insensitive' } },
       { username: { contains: q.name, mode: 'insensitive' } }, { phone: { contains: q.name } }] } : {}),
   };
-  const counts = await prisma.$transaction(MEMBER_TYPES.map((type) => prisma.user.count({ where: { AND: [search, typeWhere(type, now)] } })));
+  const counts = await Promise.all(MEMBER_TYPES.map((type) => prisma.user.count({ where: { AND: [search, typeWhere(type, now)] } })));
   return Object.fromEntries(MEMBER_TYPES.map((type, index) => [type, counts[index]])) as Record<MemberType, number>;
 }
 

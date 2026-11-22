@@ -2,7 +2,7 @@ import { AppError } from '../../../common/errors/app-error.js';
 import { audit } from '../../../common/audit/admin-audit.js';
 import { ADMIN_PAGE_SIZE, changed } from '../../../common/validation/admin-input.js';
 import { withQuotaTransaction } from '../../commerce/index.js';
-import type { AdminTicketReplyInput, PageQuery, TicketInput, TicketStatusInput } from '../content.dto.js';
+import type { AdminTicketListQuery, AdminTicketReplyInput, PageQuery, TicketInput, TicketStatusInput } from '../content.dto.js';
 import { PAGE_SIZE } from '../content.type.js';
 import * as ticketRepository from '../repositories/ticket.repository.js';
 
@@ -26,8 +26,10 @@ export function reply(userId: string, id: string, content: string) {
 /* ---------- Quản trị (/admin/tickets) ---------- */
 
 /** Mọi yêu cầu hỗ trợ kèm tin nhắn, 25 mỗi trang */
-export async function listForAdmin({ page }: PageQuery) {
-  const [items, total] = await ticketRepository.findPage((page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+export async function listForAdmin({ page, status }: AdminTicketListQuery) {
+  const [tickets, total] = await ticketRepository.findPage((page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE, status);
+  const senders = new Map((await ticketRepository.findSenders([...new Set(tickets.map((t) => t.userId))])).map((u) => [u.id, u]));
+  const items = tickets.map((ticket) => ({ ...ticket, sender: senders.get(ticket.userId) ?? null }));
   return { items, total, page };
 }
 

@@ -3,7 +3,7 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { authorizePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import {
-  adminPostListQuery, adminReportQuery, adminTicketReplyBody, idParams, knowledgeBody, pageOnlyQuery, postBody, resolveReportBody, ticketStatusBody, versionBody,
+  adminPostListQuery, adminReportQuery, adminTicketListQuery, adminTicketReplyBody, idParams, knowledgeBody, pageOnlyQuery, postBody, resolveReportBody, ticketStatusBody, versionBody,
 } from '../content.validator.js';
 import * as knowledgeController from '../controllers/knowledge.controller.js';
 import * as postController from '../controllers/post.controller.js';
@@ -45,12 +45,15 @@ adminContentRouter.put('/posts/:id', manageContent, validate({ params: idParams,
 /* ---------- Hỗ trợ ---------- */
 
 /**
- * Mọi yêu cầu hỗ trợ kèm tin nhắn, cập nhật gần nhất trước
+ * Yêu cầu hỗ trợ kèm tin nhắn và người gửi, cập nhật gần nhất trước
  *
  * Query params:
  *  - page?: number (mặc định 1)
+ *  - status?: 'OPEN' | 'RESOLVED' (bỏ trống: tất cả)
+ *
+ * Trả về: { items: [{ ...ticket, messages, sender: { id, fullName, email } | null }], total, page }
  */
-adminContentRouter.get('/tickets', manageContent, validate({ query: pageOnlyQuery }), ticketController.listForAdmin);
+adminContentRouter.get('/tickets', manageContent, validate({ query: adminTicketListQuery }), ticketController.listForAdmin);
 
 /**
  * Trả lời yêu cầu đang mở

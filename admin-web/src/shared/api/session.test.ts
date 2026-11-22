@@ -1,128 +1,168 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Session } from './session';
 
-const key = 'restore-admin-session';
 const admin = { fullName: 'Quản trị', email: 'admin@restore.test', permissions: ['admin:access'] };
 const ok = (data: unknown) => new Response(JSON.stringify({ success: true, data }), { status: 200 });
-const fail = (status: number) =>
-  new Response(JSON.stringify({ success: false, error: 'Lỗi ' + status }), { status });
+const fail = (status: number, code?: string) =>
+  new Response(JSON.stringify({ success: false, error: 'Lỗi ' + status, code }), { status });
 
+// Máy chủ giả giống backend: refresh token nằm trong cookie, mỗi lần refresh đổi token mới
+let cookie: string | undefined;
+let access: Set<string>;
+let generation: number;
+let me: () => Response;
 let storage: Map<string, string>;
-let fetchMock: ReturnType<typeof vi.fn>;
-// Mỗi request đi qua đây: trả về Response theo đường dẫn và access token đang gửi
-function serve(handle: (path: string, token?: string, body?: any) => Response | Promise<Response>) {
-  fetchMock.mockImplementation(async (url: string, init: RequestInit) => {
-    const token = new Headers(init.headers).get('Authorization')?.replace('Bearer ', '');
-    const body = typeof init.body === 'string' ? JSON.parse(init.body) : undefined;
-    return handle(url.replace('/api/v1', ''), token, body);
-  });
+const savedAccess = () => storage.get('restore-admin-access');
+type Fetch = (url: string, init: RequestInit) => Promise<Response>;
+let fetchMock: ReturnType<typeof vi.fn<Fetch>>;
+const calls = () => fetchMock.mock.calls.map(([url]) => url.replace('/api/v1', ''));
+function issue() {
+  generation++;
+  cookie = 'r' + generation;
+  access.add('a' + generation);
+  return ok({ accessToken: 'a' + generation });
 }
-const saved = () => JSON.parse(storage.get(key) ?? 'null');
-const paths = () => fetchMock.mock.calls.map(([url]) => url.replace('/api/v1', ''));
 
 beforeEach(() => {
+  cookie = undefined;
+  access = new Set();
+  generation = 0;
+  me = () => ok(admin);
   storage = new Map();
   vi.stubGlobal('sessionStorage', {
     getItem: (k: string) => storage.get(k) ?? null,
     setItem: (k: string, v: string) => storage.set(k, v),
     removeItem: (k: string) => storage.delete(k),
   });
-  fetchMock = vi.fn();
+  fetchMock = vi.fn<Fetch>(async (url, init) => {
+    const headers = new Headers(init.headers);
+    const token = headers.get('Authorization')?.replace('Bearer ', '');
+    const usesCookie = headers.get('X-Session-Cookie') === '1' && init.credentials === 'include';
+    switch (url.replace('/api/v1', '')) {
+      case '/auth/login':
+        return issue();
+      case '/auth/refresh':
+        return usesCookie && cookie ? issue() : fail(401, 'INVALID_REFRESH_TOKEN');
+      case '/auth/logout':
+        cookie = undefined;
+        return ok(null);
+      case '/admin/me':
+        return token && access.has(token) ? me() : fail(401);
+      default:
+        return token && access.has(token) ? ok(url) : fail(401);
+    }
+  });
   vi.stubGlobal('fetch', fetchMock);
 });
 
 describe('Session', () => {
-  it('đăng nhập lưu token, tải lại trang mở lại đúng phiên', async () => {
-    serve((path, token) => {
-      if (path === '/auth/login') return ok({ accessToken: 'a1', refreshToken: 'r1' });
-      if (path === '/admin/me' && token === 'a1') return ok(admin);
-      return fail(401);
-    });
-    await Session.login('admin@restore.test', 'x', vi.fn());
-    expect(saved()).toEqual({ accessToken: 'a1', refreshToken: 'r1' });
-
-    const restored = await Session.restore(vi.fn());
-    expect(restored?.admin).toEqual(admin);
+  it('đăng nhập không đưa refresh token cho JS, chỉ gửi kèm cookie', async () => {
+    const { admin: me } = await Session.login('admin@restore.test', 'x', vi.fn());
+    expect(me).toEqual(admin);
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init.credentials).toBe('include');
+    expect(new Headers(init.headers).get('X-Session-Cookie')).toBe('1');
+    expect(cookie).toBe('r1');
   });
 
-  it('tài khoản không có quyền admin thì không lưu phiên', async () => {
-    serve((path) => {
-      if (path === '/auth/login') return ok({ accessToken: 'a1', refreshToken: 'r1' });
-      if (path === '/admin/me') return ok({ ...admin, permissions: [] });
-      return ok(null);
-    });
-    await expect(Session.login('user@restore.test', 'x', vi.fn())).rejects.toThrow('quyền quản trị');
-    expect(storage.has(key)).toBe(false);
-    expect(paths()).toContain('/auth/logout');
+  it('đăng nhập lưu access token (không lưu refresh token), đăng xuất thì xoá', async () => {
+    const { session } = await Session.login('admin@restore.test', 'x', vi.fn());
+    expect(savedAccess()).toBe('a1');
+    expect([...storage.values()].join()).not.toContain('r1');
+    await session.logout();
+    expect(savedAccess()).toBeUndefined();
   });
 
-  it('không có phiên đã lưu thì không gọi máy chủ', async () => {
-    expect(Session.hasStored()).toBe(false);
-    expect(await Session.restore(vi.fn())).toBeUndefined();
-    expect(fetchMock).not.toHaveBeenCalled();
+  it('tải lại trang khi access token còn hạn thì không cần refresh', async () => {
+    cookie = 'r0';
+    access.add('a0');
+    storage.set('restore-admin-access', 'a0');
+    expect((await Session.restore(vi.fn()))?.admin).toEqual(admin);
+    expect(calls()).toEqual(['/admin/me']);
   });
 
-  it('access token hết hạn thì refresh, lưu token mới và gọi lại', async () => {
-    storage.set(key, JSON.stringify({ accessToken: 'old', refreshToken: 'r1' }));
-    serve((path, token, body) => {
-      if (path === '/auth/refresh' && body.refreshToken === 'r1')
-        return ok({ accessToken: 'a2', refreshToken: 'r2' });
-      if (path === '/admin/me' && token === 'a2') return ok(admin);
-      return fail(401);
-    });
-    const restored = await Session.restore(vi.fn());
-    expect(restored?.admin).toEqual(admin);
-    expect(saved()).toEqual({ accessToken: 'a2', refreshToken: 'r2' });
+  it('access token đã lưu hết hạn thì refresh bằng cookie và lưu token mới', async () => {
+    cookie = 'r0';
+    storage.set('restore-admin-access', 'cu');
+    expect((await Session.restore(vi.fn()))?.admin).toEqual(admin);
+    expect(calls()).toEqual(['/admin/me', '/auth/refresh', '/admin/me']);
+    expect(savedAccess()).toBe('a1');
   });
 
-  it('nhiều request cùng gặp 401 chỉ refresh một lần', async () => {
-    storage.set(key, JSON.stringify({ accessToken: 'a1', refreshToken: 'r1' }));
-    let current = 'a1';
-    serve((path, token) => {
-      if (path === '/auth/refresh') return ok({ accessToken: 'a3', refreshToken: 'r3' });
-      if (path === '/admin/me') return ok(admin);
-      return token === current ? ok(path) : fail(401);
-    });
-    const { session } = (await Session.restore(vi.fn()))!;
-    current = 'a3';
-    expect(await Promise.all([session.call('/x'), session.call('/y')])).toEqual(['/x', '/y']);
-    expect(paths().filter((p) => p === '/auth/refresh')).toHaveLength(1);
-  });
-
-  it('refresh token bị từ chối thì xoá phiên và báo hết hạn', async () => {
-    storage.set(key, JSON.stringify({ accessToken: 'old', refreshToken: 'bad' }));
-    serve(() => fail(401));
+  it('access token đã lưu hết hạn và cookie cũng hết thì về form đăng nhập, không báo hết hạn', async () => {
+    storage.set('restore-admin-access', 'cu');
     const expired = vi.fn();
-    await expect(Session.restore(expired)).rejects.toThrow();
+    expect(await Session.restore(expired)).toBeUndefined();
+    expect(expired).not.toHaveBeenCalled();
+    expect(savedAccess()).toBeUndefined();
+  });
+
+  it('tài khoản không có quyền admin thì đăng xuất ngay', async () => {
+    me = () => ok({ ...admin, permissions: [] });
+    await expect(Session.login('user@restore.test', 'x', vi.fn())).rejects.toThrow('quyền quản trị');
+    expect(cookie).toBeUndefined();
+  });
+
+  it('chưa đăng nhập thì mở lại phiên trả undefined, không báo lỗi', async () => {
+    expect(await Session.restore(vi.fn())).toBeUndefined();
+  });
+
+  it('tải lại trang thì dùng cookie để mở lại phiên', async () => {
+    cookie = 'r0';
+    const restored = await Session.restore(vi.fn());
+    expect(restored?.admin).toEqual(admin);
+    expect(calls()).toEqual(['/auth/refresh', '/admin/me']);
+  });
+
+  it('access token hết hạn thì refresh một lần cho mọi request đang chờ', async () => {
+    const { session } = await Session.login('admin@restore.test', 'x', vi.fn());
+    access.clear();
+    expect(await Promise.all([session.call('/x'), session.call('/y')])).toEqual([
+      '/api/v1/x',
+      '/api/v1/y',
+    ]);
+    expect(calls().filter((p) => p === '/auth/refresh')).toHaveLength(1);
+  });
+
+  it('tab khác vừa đổi cookie (REFRESH_TOKEN_REUSED) thì thử refresh lại một lần', async () => {
+    const { session } = await Session.login('admin@restore.test', 'x', vi.fn());
+    access.clear();
+    const original = fetchMock.getMockImplementation()!;
+    fetchMock.mockImplementationOnce(original);
+    fetchMock.mockImplementationOnce(async () => fail(401, 'REFRESH_TOKEN_REUSED'));
+    expect(await session.call('/x')).toBe('/api/v1/x');
+    expect(calls().filter((p) => p === '/auth/refresh')).toHaveLength(2);
+  });
+
+  it('cookie không còn hiệu lực thì đóng phiên và báo hết hạn', async () => {
+    const expired = vi.fn();
+    const { session } = await Session.login('admin@restore.test', 'x', expired);
+    access.clear();
+    cookie = undefined;
+    await expect(session.call('/x')).rejects.toThrow();
     expect(expired).toHaveBeenCalledOnce();
-    expect(storage.has(key)).toBe(false);
+    await expect(session.call('/x')).rejects.toThrow('Phiên đăng nhập đã kết thúc.');
   });
 
-  it('mất mạng hoặc máy chủ lỗi 5xx thì giữ phiên để thử lại', async () => {
-    const tokens = JSON.stringify({ accessToken: 'a1', refreshToken: 'r1' });
-    storage.set(key, tokens);
-    fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
-    await expect(Session.restore(vi.fn())).rejects.toThrow(TypeError);
-    expect(storage.get(key)).toBe(tokens);
-
-    serve(() => fail(503));
+  it('máy chủ lỗi 5xx khi mở lại phiên thì giữ cookie để thử lại', async () => {
+    cookie = 'r0';
+    me = () => fail(503);
     await expect(Session.restore(vi.fn())).rejects.toThrow('Lỗi 503');
-    expect(storage.get(key)).toBe(tokens);
+    expect(cookie).toBe('r1');
+    expect(calls()).not.toContain('/auth/logout');
   });
 
-  it('phiên đã lưu nhưng bị thu quyền admin thì xoá phiên', async () => {
-    storage.set(key, JSON.stringify({ accessToken: 'a1', refreshToken: 'r1' }));
-    serve((path) => (path === '/admin/me' ? fail(403) : ok(null)));
+  it('bị thu quyền admin (403) khi mở lại phiên thì đăng xuất', async () => {
+    cookie = 'r0';
+    me = () => fail(403);
     await expect(Session.restore(vi.fn())).rejects.toThrow('Lỗi 403');
-    expect(storage.has(key)).toBe(false);
+    expect(cookie).toBeUndefined();
   });
 
-  it('đăng xuất xoá phiên kể cả khi máy chủ không phản hồi', async () => {
-    serve((path) => (path === '/auth/login' ? ok({ accessToken: 'a1', refreshToken: 'r1' }) : ok(admin)));
+  it('đăng xuất đóng phiên kể cả khi máy chủ không phản hồi', async () => {
     const { session } = await Session.login('admin@restore.test', 'x', vi.fn());
     fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
     await expect(session.logout()).rejects.toThrow(TypeError);
-    expect(storage.has(key)).toBe(false);
     await expect(session.call('/admin/me')).rejects.toThrow('Phiên đăng nhập đã kết thúc.');
   });
 });

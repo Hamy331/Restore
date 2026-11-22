@@ -38,5 +38,7 @@ export const auditQuery = z.object({
   before: z.iso.datetime().optional(),
   q: z.string().trim().max(100).optional(),
   targetType: z.string().max(60).optional().transform(value => value || undefined),
+  // Một đối tượng cụ thể (vd. lịch sử xử lý của một thành viên); khớp chính xác, dùng index (targetType, targetId)
+  targetId: z.string().max(60).optional().transform(value => value || undefined),
   action: z.string().max(60).optional().transform(value => value || undefined),
 });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Form, Input, Space, Switch, Table, Tag, Tooltip, message } from 'antd';
 import { Session, errorText } from '../../shared/api/session';
 import { usePage } from '../../shared/api/usePage';
@@ -58,6 +58,25 @@ export function Knowledge({ session }: { session: Session }) {
     setEditor(undefined);
     setFile(undefined);
   };
+  // Tài liệu đang tạo embedding (có thể ở tab hoặc máy admin khác): hỏi trạng thái mỗi 5 giây,
+  // xong thì tải lại danh sách một lần thay vì tải cả trang liên tục
+  const indexing = list.data?.items
+    .filter((d) => d.aiIndex?.status === 'INDEXING')
+    .map((d) => d.id)
+    .join('\n');
+  useEffect(() => {
+    if (!indexing) return;
+    const timer = setInterval(async () => {
+      const states = await Promise.all(
+        indexing.split('\n').map((id) =>
+          session.call<EmbedIndex>(ragPath(id)).catch(() => undefined),
+        ),
+      );
+      // null: tài liệu đã bị xóa; undefined: lỗi mạng, chờ lần hỏi sau
+      if (states.some((s) => s !== undefined && s?.status !== 'INDEXING')) list.reload();
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [indexing, session]); // list.reload chỉ gọi setState nên giữ được qua các lần render
   const row = editor && 'row' in editor ? editor.row : undefined;
   async function openEdit(id: string) {
     setOpening(id);

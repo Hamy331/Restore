@@ -20,7 +20,7 @@ type KnowledgeData = { title: string; content: string; active: boolean; indexedT
 
 /** Mọi tài liệu, cập nhật gần nhất trước; không kèm nội dung (tối đa 100 KB mỗi tài liệu) */
 export const findPage = (skip: number, take: number) =>
-  prisma.$transaction([
+  Promise.all([
     prisma.knowledgeDocument.findMany({
       skip, take, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
       select: {

@@ -117,5 +117,5 @@ export type ListingDto = ReturnType<typeof toListingDto>;
 export const adminListingSelect = {
   id: true, title: true, description: true, price: true, status: true, images: true, reviewReason: true,
   updatedAt: true, categoryId: true, ownerId: true, condition: true,
-  owner: { select: { id: true, fullName: true } }, category: { select: { id: true, name: true } },
+  owner: { select: { id: true, fullName: true, email: true } }, category: { select: { id: true, name: true } },
 } as const satisfies Prisma.ListingSelect;

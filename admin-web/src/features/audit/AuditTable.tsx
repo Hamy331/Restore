@@ -1,6 +1,6 @@
 import { Tag, Typography } from 'antd';
 import { actions, modules } from './auditLabels';
-import type { Entry } from './auditColumns';
+import { actorName, type Entry } from './auditColumns';
 
 const colors: Record<string, string> = {
   CONFIRM: 'green',
@@ -46,11 +46,10 @@ export const auditColumns = [
   { title: 'Lý do', dataIndex: 'reason' },
   {
     title: 'Người xử lý',
-    dataIndex: 'actorId',
-    render: (s: string, _r: Entry) => (
-      <span className="actor">
-        <span className="avatar tiny">{s.slice(0, 2).toUpperCase()}</span>
-        {s}
+    render: (_: unknown, r: Entry) => (
+      <span className="actor" title={r.actor?.email ?? r.actorId}>
+        <span className="avatar tiny">{actorName(r).slice(0, 2).toUpperCase()}</span>
+        {actorName(r)}
       </span>
     ),
   },

@@ -28,12 +28,16 @@ export const createUserMessage = (tx: Db, ticketId: string, authorId: string, co
 
 /* ---------- Quản trị ---------- */
 
-/** Mọi yêu cầu hỗ trợ kèm tin nhắn, cập nhật gần nhất trước */
-export const findPage = (skip: number, take: number) =>
-  prisma.$transaction([
-    prisma.supportTicket.findMany({ skip, take, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], include: { messages: { orderBy: { createdAt: 'asc' } } } }),
-    prisma.supportTicket.count(),
+/** Yêu cầu hỗ trợ kèm tin nhắn, cập nhật gần nhất trước; lọc theo trạng thái nếu có */
+export const findPage = (skip: number, take: number, status?: string) =>
+  Promise.all([
+    prisma.supportTicket.findMany({ where: { status }, skip, take, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], include: { messages: { orderBy: { createdAt: 'asc' } } } }),
+    prisma.supportTicket.count({ where: { status } }),
   ]);
+
+/** Tên và email người gửi (SupportTicket chỉ lưu userId, không có quan hệ Prisma) */
+export const findSenders = (ids: string[]) =>
+  prisma.user.findMany({ where: { id: { in: ids } }, select: { id: true, fullName: true, email: true } });
 
 /** Đánh dấu có hoạt động mới khi yêu cầu còn mở và updatedAt như lúc đọc; trả về số dòng đổi */
 export async function touchOpenWhereVersion(tx: Db, id: string, updatedAt: Date) {

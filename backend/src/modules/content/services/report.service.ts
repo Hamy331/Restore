@@ -51,7 +51,9 @@ export const listMine = (reporterId: string, { page }: PageQuery) =>
 
 /** Báo cáo, mới trước, 25 mỗi trang */
 export async function listForAdmin(query: AdminReportQuery) {
-  const [items, total] = await reportRepository.findPage(query, query.asOf ?? new Date());
+  const [reports, total] = await reportRepository.findPage(query, query.asOf ?? new Date());
+  const reporters = new Map((await reportRepository.findReporters([...new Set(reports.map((r) => r.reporterId))])).map((u) => [u.id, u]));
+  const items = reports.map((report) => ({ ...report, reporter: reporters.get(report.reporterId) ?? null }));
   return { items, total, page: query.page };
 }
 

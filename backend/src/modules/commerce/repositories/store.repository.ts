@@ -62,7 +62,7 @@ export const findAllPackages = () => prisma.storePackage.findMany({ orderBy: { p
 /** Đơn mua gói, mới trước, kèm người mua, gói, danh mục */
 export function findOrderPage(status: Prisma.StoreOrderWhereInput['status'] | undefined, skip: number, take: number) {
   const where: Prisma.StoreOrderWhereInput = status ? { status } : {};
-  return prisma.$transaction([
+  return Promise.all([
     prisma.storeOrder.findMany({ where, take, skip, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       include: { user: { select: { fullName: true, email: true } }, package: true, category: true } }),
     prisma.storeOrder.count({ where }),
