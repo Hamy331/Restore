@@ -43,7 +43,7 @@ export const findAdminReportTarget = (postId: string) =>
       imageUrl: true,
       createdAt: true,
       updatedAt: true,
-      author: { select: { id: true, fullName: true, status: true } },
+      author: { select: { id: true, fullName: true, email: true, status: true } },
     },
   });
 
