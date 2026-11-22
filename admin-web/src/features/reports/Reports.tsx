@@ -88,7 +88,7 @@ function Review({
       footer={null}
       onCancel={() => !busy && close()}
       closable={!busy}
-      maskClosable={false}
+      mask={{ closable: false }}
     >
       <p>
         <strong>Lý do báo cáo</strong> · {report.reason}

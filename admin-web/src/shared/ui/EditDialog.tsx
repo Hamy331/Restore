@@ -34,16 +34,17 @@ export function EditDialog<T>({
     setError('');
     try {
       await save(values);
+      // Không mở lại khoá: hộp thoại đang đóng, lần bấm thứ hai còn đang kiểm tra form không được gửi lại
       saved();
       close();
     } catch (err) {
+      pending.current = false;
       setError(errorText(err));
       if (onStale && err instanceof ApiError && err.status === 409) {
         setStale(true);
         onStale();
       }
     } finally {
-      pending.current = false;
       setBusy(false);
     }
   }
@@ -56,7 +57,7 @@ export function EditDialog<T>({
       confirmLoading={busy}
       okButtonProps={{ disabled: stale }}
       cancelButtonProps={{ disabled: busy }}
-      maskClosable={false}
+      mask={{ closable: false }}
       closable={!busy}
       keyboard={!busy}
       onCancel={() => {

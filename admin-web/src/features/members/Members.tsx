@@ -99,7 +99,7 @@ function MemberAction({
       title={'Xử lý tài khoản · ' + member.email}
       onCancel={close}
       closable={!busy}
-      maskClosable={false}
+      mask={{ closable: false }}
       keyboard={!busy}
       footer={
         <Space>

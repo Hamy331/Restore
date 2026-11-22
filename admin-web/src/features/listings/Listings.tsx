@@ -109,7 +109,7 @@ export function Listings({ session }: { session: Session }) {
           footer={null}
           onCancel={() => !busy && select(undefined)}
           closable={!busy}
-          maskClosable={false}
+          mask={{ closable: false }}
         >
           {edit && item.current ? (
             <>
