@@ -10363,6 +10363,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{value}+'**
   String filterPlusMax(String value);
+
+  /// No description provided for @offerSentToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer sent'**
+  String get offerSentToast;
+
+  /// No description provided for @offerSentGoToChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to chat'**
+  String get offerSentGoToChat;
 }
 
 class _AppLocalizationsDelegate

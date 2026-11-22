@@ -5912,4 +5912,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String filterPlusMax(String value) {
     return '$value+';
   }
+
+  @override
+  String get offerSentToast => 'Trả giá thành công';
+
+  @override
+  String get offerSentGoToChat => 'Đi tới trò chuyện';
 }

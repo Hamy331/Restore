@@ -3590,5 +3590,7 @@
   "filterSearchHint": "Search {label}",
   "@filterSearchHint": {"placeholders":{"label":{"type":"String"}}},
   "filterPlusMax": "{value}+",
-  "@filterPlusMax": {"placeholders":{"value":{"type":"String"}}}
+  "@filterPlusMax": {"placeholders":{"value":{"type":"String"}}},
+  "offerSentToast": "Offer sent",
+  "offerSentGoToChat": "Go to chat"
 }

@@ -3372,5 +3372,7 @@
   "categoryPickerSeeAll": "Xem tất cả danh mục",
   "filterClear": "Xoá lọc",
   "filterSearchHint": "Nhập tìm {label}",
-  "filterPlusMax": "{value}+"
+  "filterPlusMax": "{value}+",
+  "offerSentToast": "Trả giá thành công",
+  "offerSentGoToChat": "Đi tới trò chuyện"
 }

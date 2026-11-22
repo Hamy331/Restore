@@ -49,7 +49,7 @@ class _DealState extends State<ProductDealSection> {
     );
     if (mounted && id != null) {
       _amount.clear();
-      openListingConversation(context, id);
+      showOfferSentToast(context, id);
     }
   }
 

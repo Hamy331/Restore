@@ -6018,4 +6018,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String filterPlusMax(String value) {
     return '$value+';
   }
+
+  @override
+  String get offerSentToast => 'Offer sent';
+
+  @override
+  String get offerSentGoToChat => 'Go to chat';
 }
