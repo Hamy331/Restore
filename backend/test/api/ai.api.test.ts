@@ -49,7 +49,8 @@ test('AI routes enforce authentication, role, strict body and disabled provider'
   assert.equal((await api.post(path, { token: admin, body: {} })).status, 403);
   assert.equal((await api.post(path, { token: buyer, body: { requestId: randomUUID(), message: 'x', userId: 'other' } })).status, 400);
   process.env.AI_ENABLED = 'false';
-  const unavailable = await api.post(path, { token: buyer, body: { requestId: randomUUID(), message: 'hello' } });
+  // Câu chào được trả lời tại chỗ, không cần AI; câu tìm sản phẩm mới phải gọi nhà cung cấp
+  const unavailable = await api.post(path, { token: buyer, body: { requestId: randomUUID(), message: 'Mình cần tìm xe đạp cũ' } });
   assert.equal(unavailable.status, 503);
   assert.equal(unavailable.body.code, 'AI_NOT_CONFIGURED');
   assert.equal((await api.post('/ai/rag/documents/policy/index', { token: buyer, body: {} })).status, 403);
@@ -110,7 +111,7 @@ test('failed provider releases lease without saving fabricated answer or draft',
   const provider = new ScriptedProvider();
   provider.generate = async () => { throw new Error('private upstream error'); };
   const id = randomUUID();
-  await assert.rejects(send('user-buyer', id, randomUUID(), 'hello', provider), { code: 'AI_UNAVAILABLE' });
+  await assert.rejects(send('user-buyer', id, randomUUID(), 'Mình cần tìm xe đạp cũ', provider), { code: 'AI_UNAVAILABLE' });
   assert.equal(await prisma.aiTurn.count(), 0); assert.equal(await prisma.aiAction.count(), 0);
   assert.equal((await prisma.aiConversation.findUniqueOrThrow({ where: { id } })).lease, null);
 });
