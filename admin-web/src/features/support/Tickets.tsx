@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Button, Form, Input, Radio, Space, Table } from 'antd';
+import { Button, Form, Input, Radio, Segmented, Space, Table, Tag } from 'antd';
+import { useWorkspace } from '../../app/workspace';
 import { Session } from '../../shared/api/session';
 import { usePage } from '../../shared/api/usePage';
 import { EditDialog } from '../../shared/ui/EditDialog';
@@ -13,7 +14,14 @@ type Ticket = {
   status: 'OPEN' | 'RESOLVED';
   messages: Message[];
   updatedAt: string;
+  sender: { fullName: string; email: string } | null;
 };
+const statuses = [
+  { value: 'OPEN', label: 'Đang mở' },
+  { value: 'RESOLVED', label: 'Đã giải quyết' },
+  { value: '', label: 'Tất cả' },
+];
+const senderText = (t: Ticket) => (t.sender ? `${t.sender.fullName} · ${t.sender.email}` : t.userId);
 type Fields = { action: 'reply' | 'status'; content?: string };
 function ReplyInput() {
   const action = Form.useWatch('action');
@@ -28,10 +36,14 @@ function ReplyInput() {
   ) : null;
 }
 export function Tickets({ session }: { session: Session }) {
-  const list = usePage<Ticket>(session, '/admin/tickets');
+  const { filter } = useWorkspace();
+  // Mặc định chỉ xem yêu cầu đang mở; link từ Tổng quan cũng mở bộ lọc này
+  const [status, setStatus] = useState(filter && statuses.some((s) => s.value === filter) ? filter : 'OPEN');
+  const list = usePage<Ticket>(session, '/admin/tickets' + (status ? '?status=' + status : ''));
   const [row, select] = useState<Ticket>();
   return (
     <>
+      <Segmented className="notice" value={status} onChange={setStatus} options={statuses} />
       {list.error ? (
         <Failure error={list.error} reload={list.reload} />
       ) : (
@@ -39,14 +51,19 @@ export function Tickets({ session }: { session: Session }) {
           rowKey="id"
           loading={!list.data}
           dataSource={list.data?.items}
-          scroll={{ x: 620 }}
+          scroll={{ x: 760 }}
           pagination={list.pagination}
           columns={[
             { title: 'Yêu cầu', dataIndex: 'subject' },
-            { title: 'Người gửi', dataIndex: 'userId' },
+            { title: 'Người gửi', render: (_, r) => senderText(r) },
             {
               title: 'Trạng thái',
-              render: (_, r) => (r.status === 'OPEN' ? 'Đang mở' : 'Đã giải quyết'),
+              render: (_, r) =>
+                r.status === 'OPEN' ? <Tag color="orange">Đang mở</Tag> : <Tag>Đã giải quyết</Tag>,
+            },
+            {
+              title: 'Cập nhật',
+              render: (_, r) => new Date(r.updatedAt).toLocaleString('vi-VN'),
             },
             { title: '', render: (_, r) => <Button onClick={() => select(r)}>Xem yêu cầu</Button> },
           ]}
@@ -69,6 +86,7 @@ export function Tickets({ session }: { session: Session }) {
             )
           }
         >
+          <p className="muted">Người gửi: {senderText(row)}</p>
           <Space orientation="vertical" className="notice">
             {row.messages.map((m) => (
               <div key={m.id}>
