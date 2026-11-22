@@ -10387,6 +10387,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to chat'**
   String get offerSentGoToChat;
+
+  /// No description provided for @chatTabAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get chatTabAll;
+
+  /// No description provided for @chatTabUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get chatTabUnread;
+
+  /// No description provided for @chatNegotiating.
+  ///
+  /// In en, this message translates to:
+  /// **'Negotiating'**
+  String get chatNegotiating;
 }
 
 class _AppLocalizationsDelegate

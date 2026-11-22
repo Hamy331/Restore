@@ -6030,4 +6030,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offerSentGoToChat => 'Go to chat';
+
+  @override
+  String get chatTabAll => 'All';
+
+  @override
+  String get chatTabUnread => 'Unread';
+
+  @override
+  String get chatNegotiating => 'Negotiating';
 }

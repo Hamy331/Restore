@@ -102,7 +102,11 @@ class ListingMessageSender {
   final _repository = ApiChatRepository();
   String? _previousBody;
   String _clientId = '';
-  Future<String> send(ProductDetail detail, String body) async {
+  Future<String> send(
+    ProductDetail detail,
+    String body, {
+    int? offerPrice,
+  }) async {
     if (body.length > 2000) throw const FormatException('Message too long');
     if (_previousBody != body) {
       _previousBody = body;
@@ -117,6 +121,7 @@ class ListingMessageSender {
       _clientId,
       body,
       listingId: detail.listing.id,
+      offerPrice: offerPrice,
     );
     _previousBody = null;
     return id;

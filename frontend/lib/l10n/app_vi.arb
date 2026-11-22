@@ -3376,5 +3376,8 @@
   "chatSent": "Đã gửi",
   "chatSeen": "Đã xem",
   "offerSentToast": "Trả giá thành công",
-  "offerSentGoToChat": "Đi tới trò chuyện"
+  "offerSentGoToChat": "Đi tới trò chuyện",
+  "chatTabAll": "Tất cả",
+  "chatTabUnread": "Chưa đọc",
+  "chatNegotiating": "Đang thương lượng"
 }

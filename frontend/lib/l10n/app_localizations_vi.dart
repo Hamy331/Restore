@@ -5924,4 +5924,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get offerSentGoToChat => 'Đi tới trò chuyện';
+
+  @override
+  String get chatTabAll => 'Tất cả';
+
+  @override
+  String get chatTabUnread => 'Chưa đọc';
+
+  @override
+  String get chatNegotiating => 'Đang thương lượng';
 }

@@ -26,6 +26,7 @@ abstract class ChatRepository {
     String clientId,
     String text, {
     String? listingId,
+    int? offerPrice,
   });
   Future<void> markRead(String id, {int? through});
 
@@ -85,6 +86,7 @@ class MockChatRepository implements ChatRepository {
     String clientId,
     String text, {
     String? listingId,
+    int? offerPrice,
   }) async {
     final message = ChatMessage(
       id: clientId,
@@ -239,6 +241,7 @@ class ApiChatRepository implements ChatRepository {
     String clientId,
     String text, {
     String? listingId,
+    int? offerPrice,
   }) async {
     final response = await _apiClient.dio.post<Map<String, dynamic>>(
       '/conversations/$id/messages',
@@ -246,6 +249,7 @@ class ApiChatRepository implements ChatRepository {
         'clientId': clientId,
         'text': text,
         if (listingId != null) 'listingId': listingId,
+        if (offerPrice != null) 'offerPrice': offerPrice,
       },
     );
     return ChatMessage.fromJson(

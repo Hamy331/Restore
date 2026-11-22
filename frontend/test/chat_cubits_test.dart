@@ -288,6 +288,7 @@ class _FakeChatRepository implements ChatRepository {
     String clientId,
     String text, {
     String? listingId,
+    int? offerPrice,
   }) async {
     if (failSend) throw Exception('offline');
     final message = ChatMessage(

@@ -3594,5 +3594,8 @@
   "chatSent": "Sent",
   "chatSeen": "Seen",
   "offerSentToast": "Offer sent",
-  "offerSentGoToChat": "Go to chat"
+  "offerSentGoToChat": "Go to chat",
+  "chatTabAll": "All",
+  "chatTabUnread": "Unread",
+  "chatNegotiating": "Negotiating"
 }

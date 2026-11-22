@@ -289,6 +289,7 @@ class _OfferState extends State<_OfferForm> {
                             final id = await _sender.send(
                               widget.detail,
                               '${l.productOfferAmountLabel}: ${money(amount)}\n${_note.text.trim()}',
+                              offerPrice: amount,
                             );
                             if (context.mounted) Navigator.pop(context, id);
                           } catch (_) {

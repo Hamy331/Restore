@@ -11,6 +11,7 @@ import 'package:restore/shared/widgets/app_list_search_bar.dart';
 import '../../bloc/conversations/conversations_cubit.dart';
 import '../../bloc/conversations/conversations_state.dart';
 import '../../models/chat_models.dart';
+import '../../widgets/conversation_tabs.dart';
 
 class LiveMessagesMobileView extends StatefulWidget {
   const LiveMessagesMobileView({
@@ -32,6 +33,7 @@ class _LiveMessagesMobileViewState extends State<LiveMessagesMobileView> {
   late final _search = TextEditingController(
     text: context.read<ConversationsCubit>().state.searchQuery,
   );
+  var _tab = ConversationTab.all;
 
   @override
   void dispose() {
@@ -56,6 +58,10 @@ class _LiveMessagesMobileViewState extends State<LiveMessagesMobileView> {
               onChanged: cubit.search,
               onSearch: () => cubit.search(_search.text),
             ),
+            ConversationTabs(
+              selected: _tab,
+              onChanged: (tab) => setState(() => _tab = tab),
+            ),
             Expanded(
               child: BlocBuilder<ConversationsCubit, ConversationsState>(
                 builder: (context, state) {
@@ -73,7 +79,9 @@ class _LiveMessagesMobileViewState extends State<LiveMessagesMobileView> {
                   if (state.conversations.isEmpty) {
                     return Center(child: Text(l.messagesEmpty));
                   }
-                  final conversations = state.visibleConversations;
+                  final conversations = state.visibleConversations
+                      .where(_tab.matches)
+                      .toList();
                   if (conversations.isEmpty) {
                     return Center(child: Text(l.messagesSearchEmpty));
                   }
@@ -164,11 +172,24 @@ class _ConversationTile extends StatelessWidget {
             color: AppColors.textPrimary,
           ),
         ),
-        subtitle: Text(
-          conversation.lastMessage?.text ?? activityLabel(person),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              conversation.lastMessage?.text ?? activityLabel(person),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            if (conversation.negotiating) ...[
+              const SizedBox(height: 4),
+              const NegotiatingTag(),
+            ],
+          ],
         ),
         trailing: conversation.unreadCount > 0
             ? CircleAvatar(
