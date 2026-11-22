@@ -37,6 +37,21 @@ extension MockListingFilterMatch on ListingFilter {
         (dealTypes.contains(ListingDealType.exchange) && listing.allowExchange);
     if (!dealMatches) return false;
     if (categoryId != null && listing.categoryId != categoryId) return false;
+    if (subcategoryId != null && listing.subcategoryId != subcategoryId) {
+      return false;
+    }
+    for (final entry in attributeFilters.entries) {
+      final value = listing.attributes[entry.key];
+      final filter = entry.value;
+      if (filter.values.isNotEmpty && !filter.values.contains('$value')) {
+        return false;
+      }
+      if (filter.min != null || filter.max != null) {
+        if (value is! num) return false;
+        if (filter.min != null && value < filter.min!) return false;
+        if (filter.max != null && value > filter.max!) return false;
+      }
+    }
     if (conditions.isNotEmpty && !conditions.contains(listing.condition)) {
       return false;
     }

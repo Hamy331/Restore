@@ -2411,9 +2411,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listingFilterCondition => 'Condition';
 
   @override
-  String get listingFilterDeal => 'Deal type';
-
-  @override
   String get listingFilterDistance => 'Distance';
 
   @override
@@ -5955,4 +5952,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseSubcategory => 'Choose a subcategory';
+
+  @override
+  String listingFilterSubcategory(String category) {
+    return 'Type of $category';
+  }
+
+  @override
+  String get listingFilterAllSubcategories => 'All';
+
+  @override
+  String get listingFilterRangeFrom => 'From';
+
+  @override
+  String get listingFilterRangeTo => 'To';
+
+  @override
+  String get listingFilterRangeInvalid =>
+      'The lower bound must not be greater than the upper bound';
+
+  @override
+  String get listingFilterButton => 'Filter';
+
+  @override
+  String get listingFilterSeller => 'Posted by';
+
+  @override
+  String get listingSellerPersonal => 'Individual';
+
+  @override
+  String get listingSellerPro => 'Semi-pro';
+
+  @override
+  String get listingSellerPartner => 'Partner';
+
+  @override
+  String get listingConditionWarranty => 'Under warranty';
+
+  @override
+  String get listingConditionNew => 'New';
+
+  @override
+  String get listingConditionUsed => 'Used';
+
+  @override
+  String listingFilterAllOf(String category) {
+    return 'All $category';
+  }
+
+  @override
+  String get listingFilterAny => 'All';
+
+  @override
+  String get categoryPickerTitle => 'All categories';
+
+  @override
+  String get categoryPickerSeeAll => 'See all categories';
+
+  @override
+  String get filterClear => 'Clear';
+
+  @override
+  String filterSearchHint(String label) {
+    return 'Search $label';
+  }
+
+  @override
+  String filterPlusMax(String value) {
+    return '$value+';
+  }
 }

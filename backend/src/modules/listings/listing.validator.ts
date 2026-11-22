@@ -5,6 +5,7 @@ import { choice, object, page, text, version } from '../../common/validation/adm
 import { idParam, int, oneOf, pageQuery, parse } from '../../common/validation/schemas.js';
 import { coordinates, listingLocation } from '../catalog/index.js';
 import type { CategoryAttribute } from '../catalog/category-tree.js';
+import type { CategoryAttribute } from '../catalog/category-tree.js';
 import { normalizeTitle } from './listing-lifecycle.js';
 import { FEED_FILTERS, MAX_IMAGES, MODERATION_ACTIONS, OWNER_STATUS_TARGETS } from './listing.type.js';
 
@@ -19,7 +20,7 @@ import { FEED_FILTERS, MAX_IMAGES, MODERATION_ACTIONS, OWNER_STATUS_TARGETS } fr
 export function listingInput(value: unknown, draft = false) {
   const fail = (message: string, field?: string): never => { throw new AppError(400, draft ? 'INVALID_DRAFT' : 'INVALID_LISTING', message, field); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('Dữ liệu tin không hợp lệ.');
-  const body = value as Record<string, unknown>;
+  const allowed = ['title','description','price','condition','categoryId','subcategoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','originalPrice'];
   const allowed = ['title','description','price','condition','categoryId','subcategoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','originalPrice'];
   // Cờ của thao tác đăng (trả xu, vẫn đăng dù trùng): controller đọc riêng, không thuộc nội dung tin
   const flags = draft ? [] : ['payWithCredits', 'allowDuplicate'];
@@ -29,6 +30,9 @@ export function listingInput(value: unknown, draft = false) {
   if (typeof title !== 'string' || title.trim().length > 70 || (!draft && title.trim().length < 5)) fail('Tiêu đề cần từ 5 đến 70 ký tự.', 'title');
   if (typeof description !== 'string' || description.trim().length > 1500 || (!draft && description.trim().length < 10)) fail('Mô tả cần từ 10 đến 1500 ký tự.', 'description');
   const categoryId = body.categoryId == null || body.categoryId === '' ? null : body.categoryId;
+  // Danh mục con: bắt buộc hay không và có thuộc danh mục cha không do assertPublishable xét theo metadata
+  const subcategoryId = body.subcategoryId == null || body.subcategoryId === '' ? null : body.subcategoryId;
+  if (subcategoryId !== null && (typeof subcategoryId !== 'string' || subcategoryId.length > 100)) fail('Chọn danh mục con hợp lệ.', 'subcategoryId');
   if ((categoryId !== null && (typeof categoryId !== 'string' || categoryId.length > 100)) || (!draft && !categoryId)) fail('Chọn danh mục hợp lệ.', 'categoryId');
   // Danh mục con: bắt buộc hay không và có thuộc danh mục cha không do assertPublishable xét theo metadata
   const subcategoryId = body.subcategoryId == null || body.subcategoryId === '' ? null : body.subcategoryId;
@@ -64,7 +68,8 @@ export function listingInput(value: unknown, draft = false) {
   if (displayDays !== null && (typeof displayDays !== 'number' || !Number.isInteger(displayDays) || displayDays < 1 || displayDays > 365)) {
     fail('Số ngày hiển thị không hợp lệ.', 'displayDays');
   }
-  const rawStart = body.startsAt ?? null;
+    subcategoryId: categoryId ? subcategoryId as string | null : null,
+    condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0', originalPrice, isNegotiable: (allowSale && isNegotiable) as boolean,
   const startsAt = typeof rawStart === 'string' && rawStart.length <= 40 ? new Date(rawStart) : null;
   if (rawStart !== null && (!startsAt || Number.isNaN(startsAt.getTime()))) fail('Ngày bắt đầu không hợp lệ.', 'startsAt');
   return { title: (title as string).trim(), description: (description as string).trim(), categoryId: categoryId as string | null,
@@ -97,9 +102,49 @@ export const searchWords = (q: string) => normalizeTitle(q).split(' ').filter(Bo
 
 /** Tách giá trị query dạng "a,b" (hoặc lặp ?a=..&a=..), bỏ trùng và rỗng; null khi không phải chuỗi */
 function csv(value: unknown): string[] | null {
+/** "Đăng bởi": personal = Cá nhân (không gói), pro = Bán chuyên (gói BASIC), partner = Đối tác (gói PRO) */
+export const SELLER_KINDS = ['personal', 'pro', 'partner'] as const;
+export type SellerKind = (typeof SELLER_KINDS)[number];
+
+/** Bộ lọc theo một thuộc tính: values (khớp một trong các giá trị) hoặc khoảng số min/max */
+export type AttributeFilter = { key: string; values?: string[]; min?: number; max?: number };
+
+/**
+ * Query attrs: JSON {"brand":["Apple","Samsung"],"year":{"min":2015,"max":2020}}.
+ * Chỉ kiểm tra cấu trúc; key không có trong danh mục thì đơn giản là không tin nào khớp.
+ */
+export function attributeFilterQuery(raw: unknown): AttributeFilter[] {
+  if (raw === undefined || raw === '') return [];
+  const fail = (): never => { throw new AppError(400, 'INVALID_QUERY', 'Bộ lọc thuộc tính không hợp lệ.'); };
+  if (typeof raw !== 'string' || raw.length > 2000) fail();
+  let parsed: unknown;
+  try { parsed = JSON.parse(raw as string); } catch { fail(); }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || Object.keys(parsed).length > 12) fail();
+  const filters: AttributeFilter[] = [];
+  for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
+    if (!/^[a-z][a-z0-9_]{0,39}$/.test(key)) fail();
+    if (Array.isArray(value)) {
+      if (value.length > 30 || value.some((item) => typeof item !== 'string' || !item || item.length > 60)) fail();
+      if (value.length) filters.push({ key, values: [...new Set(value as string[])] });
+      continue;
+    }
+    const range = value as { min?: unknown; max?: unknown } | null;
+    if (!range || typeof range !== 'object' || Object.keys(range).some((name) => name !== 'min' && name !== 'max')) fail();
+    const bound = (item: unknown) => {
+      if (item == null) return undefined;
+      if (typeof item !== 'number' || !Number.isFinite(item) || Math.abs(item) > 1e12) fail();
+      return item as number;
+    };
+    const min = bound(range!.min), max = bound(range!.max);
+    if (min !== undefined && max !== undefined && min > max) fail();
+    if (min !== undefined || max !== undefined) filters.push({ key, ...(min !== undefined && { min }), ...(max !== undefined && { max }) });
+  }
+  return filters;
+}
+
   const items = Array.isArray(value) ? value : [value];
   if (items.some((item) => typeof item !== 'string' || item.length > 200)) return null;
-  return [...new Set((items as string[]).flatMap((item) => item.split(',')).map((item) => item.trim()).filter(Boolean))];
+ * Query: q, categoryId, subcategoryId, attrs (xem attributeFilterQuery), seller (personal,pro,partner), condition (một hoặc nhiều, cách nhau dấu phẩy), deal (buy,exchange),
 }
 
 /**
@@ -122,6 +167,15 @@ export function listingFilters(query: Record<string, unknown>) {
   const conditions = query.condition === undefined ? [] : csv(query.condition);
   if (!conditions || conditions.some((item) => !Object.values(ListingCondition).includes(item as ListingCondition))) {
     throw new AppError(400, 'INVALID_QUERY', 'Tình trạng sản phẩm không hợp lệ.');
+  const subcategoryId = query.subcategoryId;
+  if (subcategoryId !== undefined && (typeof subcategoryId !== 'string' || subcategoryId.length > 100)) {
+    throw new AppError(400, 'INVALID_QUERY', 'Danh mục con không hợp lệ.');
+  }
+  const attributeFilters = attributeFilterQuery(query.attrs);
+  const sellers = query.seller === undefined ? [] : csv(query.seller);
+  if (!sellers || sellers.some((item) => !(SELLER_KINDS as readonly string[]).includes(item))) {
+    throw new AppError(400, 'INVALID_QUERY', 'Người đăng không hợp lệ.');
+  }
   }
   const deals = query.deal === undefined ? [] : csv(query.deal);
   if (!deals || deals.some((item) => !(DEAL_TYPES as readonly string[]).includes(item))) {
@@ -144,6 +198,10 @@ export function listingFilters(query: Record<string, unknown>) {
     nearby={...point,radius};
   }
   if(query.allowExchange!=null && query.allowExchange!=='true' && query.allowExchange!=='false')throw new AppError(400,'INVALID_QUERY','Bộ lọc trao đổi không hợp lệ.');
+    // Danh mục con chỉ có nghĩa khi đã chọn danh mục cha
+    subcategoryId: typeof categoryId === 'string' && typeof subcategoryId === 'string' ? subcategoryId : '',
+    attributeFilters,
+    sellers: sellers as SellerKind[],
   return {
     ...(nearby?{nearby}:{}), ...(query.allowExchange==='true'?{allowExchange:true}:{}),
     q: typeof q === 'string' ? q.trim() : '',
@@ -153,7 +211,7 @@ export function listingFilters(query: Record<string, unknown>) {
     deals: deals as DealType[],
     minPrice: typeof minPrice === 'string' ? minPrice : null,
     maxPrice: typeof maxPrice === 'string' ? maxPrice : null,
-  };
+  const schema = (metadata as { attributes?: CategoryAttribute[] } | null)?.attributes ?? [];
 }
 
 /** Kiểm tra thuộc tính theo metadata của danh mục */

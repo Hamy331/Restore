@@ -4442,12 +4442,6 @@ abstract class AppLocalizations {
   /// **'Condition'**
   String get listingFilterCondition;
 
-  /// No description provided for @listingFilterDeal.
-  ///
-  /// In en, this message translates to:
-  /// **'Deal type'**
-  String get listingFilterDeal;
-
   /// No description provided for @listingFilterDistance.
   ///
   /// In en, this message translates to:
@@ -10255,6 +10249,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a subcategory'**
   String get chooseSubcategory;
+
+  /// No description provided for @listingFilterSubcategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Type of {category}'**
+  String listingFilterSubcategory(String category);
+
+  /// No description provided for @listingFilterAllSubcategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get listingFilterAllSubcategories;
+
+  /// No description provided for @listingFilterRangeFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get listingFilterRangeFrom;
+
+  /// No description provided for @listingFilterRangeTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get listingFilterRangeTo;
+
+  /// No description provided for @listingFilterRangeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The lower bound must not be greater than the upper bound'**
+  String get listingFilterRangeInvalid;
+
+  /// No description provided for @listingFilterButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get listingFilterButton;
+
+  /// No description provided for @listingFilterSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted by'**
+  String get listingFilterSeller;
+
+  /// No description provided for @listingSellerPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual'**
+  String get listingSellerPersonal;
+
+  /// No description provided for @listingSellerPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Semi-pro'**
+  String get listingSellerPro;
+
+  /// No description provided for @listingSellerPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get listingSellerPartner;
+
+  /// No description provided for @listingConditionWarranty.
+  ///
+  /// In en, this message translates to:
+  /// **'Under warranty'**
+  String get listingConditionWarranty;
+
+  /// No description provided for @listingConditionNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get listingConditionNew;
+
+  /// No description provided for @listingConditionUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
+  String get listingConditionUsed;
+
+  /// No description provided for @listingFilterAllOf.
+  ///
+  /// In en, this message translates to:
+  /// **'All {category}'**
+  String listingFilterAllOf(String category);
+
+  /// No description provided for @listingFilterAny.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get listingFilterAny;
+
+  /// No description provided for @categoryPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All categories'**
+  String get categoryPickerTitle;
+
+  /// No description provided for @categoryPickerSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all categories'**
+  String get categoryPickerSeeAll;
+
+  /// No description provided for @filterClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get filterClear;
+
+  /// No description provided for @filterSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search {label}'**
+  String filterSearchHint(String label);
+
+  /// No description provided for @filterPlusMax.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}+'**
+  String filterPlusMax(String value);
 }
 
 class _AppLocalizationsDelegate

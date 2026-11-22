@@ -89,8 +89,16 @@ test('listing images accept real supported bytes and cannot attach foreign URLs 
 
 test('listing filters validate range and normalize search values', () => {
   assert.deepEqual(listingFilters({ q: '  Bàn  GỖ! ', categoryId: 'furniture', condition: 'USED_GOOD', minPrice: '100000', maxPrice: '200000' }), {
-    q: 'Bàn  GỖ!', words: ['ban', 'go'], categoryId: 'furniture', conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000',
+    q: 'Bàn  GỖ!', words: ['ban', 'go'], categoryId: 'furniture', subcategoryId: '', attributeFilters: [], sellers: [],
+    conditions: ['USED_GOOD'], deals: [], minPrice: '100000', maxPrice: '200000',
   });
+  // Danh mục con và bộ lọc thuộc tính; danh mục con bỏ qua khi chưa chọn danh mục cha
+  const sub = listingFilters({ categoryId: 'electronics', subcategoryId: 'dien-thoai', attrs: '{"brand":["Apple"]}' });
+  assert.deepEqual([sub.subcategoryId, sub.attributeFilters], ['dien-thoai', [{ key: 'brand', values: ['Apple'] }]]);
+  assert.equal(listingFilters({ subcategoryId: 'dien-thoai' }).subcategoryId, '');
+  assert.throws(() => listingFilters({ attrs: '{bad' }), { code: 'INVALID_QUERY' });
+  assert.deepEqual(listingFilters({ seller: 'personal,partner' }).sellers, ['personal', 'partner']);
+  assert.throws(() => listingFilters({ seller: 'shop' }), { code: 'INVALID_QUERY' });
   const multi = listingFilters({ condition: 'NEW, USED_GOOD,NEW', deal: 'buy,exchange' });
   assert.deepEqual(multi.conditions, ['NEW', 'USED_GOOD']);
   assert.deepEqual(multi.deals, ['buy', 'exchange']);

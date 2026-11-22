@@ -2375,9 +2375,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get listingFilterCondition => 'Tình trạng';
 
   @override
-  String get listingFilterDeal => 'Hình thức';
-
-  @override
   String get listingFilterDistance => 'Khoảng cách';
 
   @override
@@ -5849,4 +5846,73 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chooseSubcategory => 'Chọn danh mục con';
+
+  @override
+  String listingFilterSubcategory(String category) {
+    return 'Loại $category';
+  }
+
+  @override
+  String get listingFilterAllSubcategories => 'Tất cả';
+
+  @override
+  String get listingFilterRangeFrom => 'Từ';
+
+  @override
+  String get listingFilterRangeTo => 'Đến';
+
+  @override
+  String get listingFilterRangeInvalid =>
+      'Giá trị \"Từ\" không được lớn hơn \"Đến\"';
+
+  @override
+  String get listingFilterButton => 'Lọc';
+
+  @override
+  String get listingFilterSeller => 'Đăng bởi';
+
+  @override
+  String get listingSellerPersonal => 'Cá nhân';
+
+  @override
+  String get listingSellerPro => 'Bán chuyên';
+
+  @override
+  String get listingSellerPartner => 'Đối tác';
+
+  @override
+  String get listingConditionWarranty => 'Còn bảo hành';
+
+  @override
+  String get listingConditionNew => 'Mới';
+
+  @override
+  String get listingConditionUsed => 'Đã sử dụng';
+
+  @override
+  String listingFilterAllOf(String category) {
+    return 'Tất cả $category';
+  }
+
+  @override
+  String get listingFilterAny => 'Tất cả';
+
+  @override
+  String get categoryPickerTitle => 'Tất cả danh mục';
+
+  @override
+  String get categoryPickerSeeAll => 'Xem tất cả danh mục';
+
+  @override
+  String get filterClear => 'Xoá lọc';
+
+  @override
+  String filterSearchHint(String label) {
+    return 'Nhập tìm $label';
+  }
+
+  @override
+  String filterPlusMax(String value) {
+    return '$value+';
+  }
 }

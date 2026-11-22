@@ -11,11 +11,14 @@ import 'package:restore/modules/location/models/area_option.dart';
 import 'package:restore/modules/location/views/area_search/area_search_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
-import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
+import 'package:restore/data/models/category_attribute_model.dart';
+import 'package:restore/data/models/category_model.dart';
+import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
+import 'package:restore/shared/widgets/filter/filter_popover.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
 import 'package:restore/shared/widgets/listing/app_hot_sale_section.dart';
@@ -28,6 +31,8 @@ import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/category_detail_cubit.dart';
 import '../../bloc/category_detail_state.dart';
+import 'category_detail_view.dart';
+import 'widgets/category_picker_sheet.dart';
 
 /// Trang tin của một danh mục, cùng một bố cục cho điện thoại và web
 /// desktop ([wide]): đầu trang trắng gồm ô tìm kiếm mang tên danh mục,
@@ -45,10 +50,8 @@ class CategoryDetailMobileView extends StatefulWidget {
 }
 
 class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
-  /// Tỉnh / thành chọn nhanh. API danh mục chưa lọc theo tỉnh nên tạm lọc
-  /// trên các tin đã tải về theo khu vực hiển thị của tin.
-  static const _quickProvinces = ['TP Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng'];
-
+  /// Tỉnh / thành chọn ở "Khu vực". API danh mục chưa lọc theo tỉnh nên tạm
+  /// lọc trên các tin đã tải về theo khu vực hiển thị của tin.
   String? _province;
   bool _grid = false;
 
@@ -56,6 +59,7 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
 
   void _back() => context.canPop() ? context.pop() : context.go('/home');
 
+  /// Sheet Bộ lọc đầy đủ (nút "Lọc")
   Future<void> _openFilters() async {
     final filter = await showListingFilterSheet(
       context,
@@ -64,6 +68,151 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
       showCategories: false,
     );
     if (filter != null) _cubit.applyFilter(filter);
+  }
+
+  ListingFilter get _filter => _cubit.state.filter;
+
+  /// Danh mục đã gộp danh mục con đang chọn (bộ lọc riêng, giá tối đa...)
+  CategoryModel? get _merged =>
+      _cubit.state.category?.withSubcategory(_filter.subcategoryId);
+
+  /// Bảng chọn trong danh sách (radio / checkbox), trả tập giá trị đã chọn
+  Future<Set<T>?> _choose<T>(
+    BuildContext anchor,
+    String title,
+    List<FilterChoice<T>> choices,
+    Set<T> selected, {
+    bool multiple = false,
+  }) => showFilterPopover<Set<T>>(
+    anchor,
+    builder: (_) => FilterChoicePanel<T>(
+      title: title,
+      choices: choices,
+      selected: selected,
+      multiple: multiple,
+    ),
+  );
+
+  /// Chip "Giá ▾": thanh trượt tới giá tối đa của danh mục con + hai ô nhập
+  Future<void> _pickPrice(BuildContext anchor) async {
+    final l10n = AppLocalizations.of(context)!;
+    final range = await showFilterPopover<FilterRange>(
+      anchor,
+      builder: (_) => FilterRangePanel(
+        min: _filter.minPrice,
+        max: _filter.maxPrice,
+        top: _merged?.priceMax,
+        money: true,
+        minLabel: l10n.listingFilterPriceMin,
+        maxLabel: l10n.listingFilterPriceMax,
+      ),
+    );
+    if (range == null || !mounted) return;
+    _cubit.applyFilter(
+      _filter.copyWith(
+        minPrice: () => range.min?.toInt(),
+        maxPrice: () => range.max?.toInt(),
+      ),
+    );
+  }
+
+  /// Chip bộ lọc riêng ("Hãng ▾", "Dung lượng ▾"...) theo ux_type
+  Future<void> _pickAttribute(
+    BuildContext anchor,
+    CategoryAttributeModel attribute,
+  ) async {
+    final label = attribute.label.of(context);
+    final current = _filter.attributeFilters[attribute.key];
+    if (attribute.filter == AttributeFilterKind.range) {
+      final range = await showFilterPopover<FilterRange>(
+        anchor,
+        builder: (_) => FilterRangePanel(
+          title: label,
+          min: current?.min,
+          max: current?.max,
+          unit: attribute.unit?.of(context),
+        ),
+      );
+      if (range == null || !mounted) return;
+      _cubit.applyFilter(
+        _filter.withAttribute(
+          attribute.key,
+          AttributeFilterValue(min: range.min, max: range.max),
+        ),
+      );
+      return;
+    }
+    final values = await _choose(
+      anchor,
+      label,
+      [
+        for (final option in attribute.options)
+          (value: option.value, label: option.label.of(context)),
+      ],
+      current?.values ?? const <String>{},
+      multiple: attribute.filter == AttributeFilterKind.multi,
+    );
+    if (values == null || !mounted) return;
+    _cubit.applyFilter(
+      _filter.withAttribute(
+        attribute.key,
+        AttributeFilterValue(values: values),
+      ),
+    );
+  }
+
+  void _clearAttribute(String key) => _cubit.applyFilter(
+    _filter.withAttribute(key, const AttributeFilterValue()),
+  );
+
+  /// Chip "Tình trạng ▾": theo nhóm (Điện tử có thêm Còn bảo hành)
+  Future<void> _pickCondition(BuildContext anchor) async {
+    final l10n = AppLocalizations.of(context)!;
+    final groups = ListingConditionGroup.available(
+      warranty: _merged?.hasWarranty ?? false,
+    );
+    final picked = await _choose(
+      anchor,
+      l10n.listingFilterCondition,
+      [for (final group in groups) (value: group, label: group.label(l10n))],
+      {?_filter.conditionGroup},
+    );
+    if (picked == null || !mounted) return;
+    _cubit.applyFilter(_filter.withConditionGroup(picked.firstOrNull));
+  }
+
+  /// Chip "Đăng bởi ▾": chọn nhiều Cá nhân / Bán chuyên / Đối tác
+  Future<void> _pickSeller(BuildContext anchor) async {
+    final l10n = AppLocalizations.of(context)!;
+    final picked = await _choose(
+      anchor,
+      l10n.listingFilterSeller,
+      [
+        for (final kind in ListingSellerKind.values)
+          (value: kind, label: kind.label(l10n)),
+      ],
+      _filter.sellers,
+      multiple: true,
+    );
+    if (picked == null || !mounted) return;
+    _cubit.applyFilter(_filter.copyWith(sellers: picked));
+  }
+
+  /// Chip danh mục: chọn danh mục con hoặc chuyển sang danh mục khác
+  Future<void> _pickCategory(BuildContext anchor) async {
+    final category = _cubit.state.category;
+    if (category == null) return;
+    final pick = await showCategoryPicker(
+      anchor,
+      category: category,
+      subcategoryId: _filter.subcategoryId,
+    );
+    if (pick == null || !mounted) return;
+    if (pick.categoryId == category.id) {
+      _cubit.selectSubcategory(pick.subcategoryId);
+    } else {
+      context.pushReplacement(CategoryDetailView.location(pick.categoryId));
+    }
   }
 
   Future<void> _pickSort() async {
@@ -122,7 +271,6 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
         final header = _Header(
           state: state,
           province: _province,
-          provinces: _quickProvinces,
           grid: _grid,
           wide: widget.wide,
           onBack: _back,
@@ -133,10 +281,17 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
             ),
           ),
           onArea: _pickArea,
-          onProvince: (value) => setState(
-            () => _province = _province == value ? null : value,
-          ),
           onFilters: _openFilters,
+          onCategoryTap: _pickCategory,
+          onSubcategory: _cubit.selectSubcategory,
+          onPrice: _pickPrice,
+          onAttribute: _pickAttribute,
+          onAttributeClear: _clearAttribute,
+          onCondition: _pickCondition,
+          onSeller: _pickSeller,
+          onClearAll: _cubit.clearFilters,
+          onProvince: (value) =>
+              setState(() => _province = _province == value ? null : value),
           onSort: _pickSort,
           onGridToggle: () => setState(() => _grid = !_grid),
         );
@@ -308,30 +463,56 @@ class _Header extends StatelessWidget {
   const _Header({
     required this.state,
     required this.province,
-    required this.provinces,
     required this.grid,
     required this.wide,
     required this.onBack,
     required this.onSearch,
     required this.onSaveSearch,
     required this.onArea,
-    required this.onProvince,
     required this.onFilters,
+    required this.onCategoryTap,
+    required this.onSubcategory,
+    required this.onPrice,
+    required this.onAttribute,
+    required this.onAttributeClear,
+    required this.onCondition,
+    required this.onSeller,
+    required this.onClearAll,
+    required this.onProvince,
     required this.onSort,
     required this.onGridToggle,
   });
 
   final CategoryDetailState state;
   final String? province;
-  final List<String> provinces;
   final bool grid;
   final bool wide;
   final VoidCallback onBack;
   final VoidCallback onSearch;
   final VoidCallback onSaveSearch;
   final VoidCallback onArea;
-  final ValueChanged<String> onProvince;
   final VoidCallback onFilters;
+  final ValueChanged<BuildContext> onCategoryTap;
+  final ValueChanged<String?> onSubcategory;
+
+  /// Các chip "▾" mở popover ngay dưới chip ([BuildContext] của chip)
+  final ValueChanged<BuildContext> onPrice;
+  final void Function(BuildContext anchor, CategoryAttributeModel attribute)
+  onAttribute;
+  final ValueChanged<String> onAttributeClear;
+  final ValueChanged<BuildContext> onCondition;
+  final ValueChanged<BuildContext> onSeller;
+  final VoidCallback onClearAll;
+  final ValueChanged<String> onProvince;
+
+  /// Tỉnh / thành chọn nhanh trên hàng "Khu vực:"
+  static const _quickProvinces = [
+    'TP. Hồ Chí Minh',
+    'Hà Nội',
+    'Đà Nẵng',
+    'Cần Thơ',
+    'Bình Dương',
+  ];
   final VoidCallback onSort;
   final VoidCallback onGridToggle;
 
@@ -344,12 +525,17 @@ class _Header extends StatelessWidget {
     String t(String vn, String en) => vi ? vn : en;
     final filter = state.filter;
     final defaults = state.defaultFilter;
-    final categoryName = state.category?.name.of(context);
+    final category = state.category;
+    final categoryName = category?.name.of(context);
     final active = filter.activeCount(defaults);
+    // Danh mục đã gộp danh mục con đang chọn: bộ lọc riêng (Hãng, Dung
+    // lượng...) thành chip "▾" trên thanh lọc
+    final merged = category?.withSubcategory(filter.subcategoryId);
+    final filterAttributes = merged?.filterAttributes ?? const [];
 
     Widget chip({
       required String label,
-      required VoidCallback onTap,
+      required ValueChanged<BuildContext> onTap,
       bool selected = false,
       IconData? leading,
       bool dropdown = false,
@@ -359,60 +545,71 @@ class _Header extends StatelessWidget {
       child: Material(
         color: selected ? AppColors.textPrimary : _chipFill,
         shape: const StadiumBorder(),
-        child: InkWell(
-          customBorder: const StadiumBorder(),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (leading != null) ...[
-                  Icon(
-                    leading,
-                    size: 17,
-                    color: selected ? Colors.white : AppColors.textPrimary,
-                  ),
-                  const SizedBox(width: 6),
-                ],
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 160),
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w600,
+        child: Builder(
+          builder: (chipContext) => InkWell(
+            customBorder: const StadiumBorder(),
+            onTap: () => onTap(chipContext),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (leading != null) ...[
+                    Icon(
+                      leading,
+                      size: 17,
                       color: selected ? Colors.white : AppColors.textPrimary,
                     ),
-                  ),
-                ),
-                if (dropdown) ...[
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    size: 20,
-                    color: selected ? Colors.white : AppColors.textPrimary,
-                  ),
-                ],
-                if (onClear != null) ...[
-                  const SizedBox(width: 6),
-                  GestureDetector(
-                    onTap: onClear,
-                    child: const Icon(
-                      AppIcons.close,
-                      size: 16,
-                      color: Colors.white,
+                    const SizedBox(width: 6),
+                  ],
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 160),
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        color: selected ? Colors.white : AppColors.textPrimary,
+                      ),
                     ),
                   ),
+                  if (dropdown) ...[
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      size: 20,
+                      color: selected ? Colors.white : AppColors.textPrimary,
+                    ),
+                  ],
+                  if (onClear != null) ...[
+                    const SizedBox(width: 6),
+                    GestureDetector(
+                      onTap: onClear,
+                      child: const Icon(
+                        AppIcons.close,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
       ),
     );
+
+    // Hãng đã chọn thành chip riêng "Apple ×" cạnh danh mục
+    final brand = filterAttributes
+        .where((item) => item.key == 'brand')
+        .firstOrNull;
+    final brandValues = filter.attributeFilters['brand']?.values ?? const {};
+    final brandChip = brand != null && brandValues.length == 1
+        ? brand.optionOf(brandValues.first)
+        : null;
 
     Widget scrollRow(List<Widget> children) => SizedBox(
       height: 40,
@@ -471,8 +668,10 @@ class _Header extends StatelessWidget {
                             color: AppColors.border,
                           ),
                           IconButton(
-                            tooltip: t('Lưu tìm kiếm, báo khi có hàng',
-                                'Save search'),
+                            tooltip: t(
+                              'Lưu tìm kiếm, báo khi có hàng',
+                              'Save search',
+                            ),
                             onPressed: onSaveSearch,
                             icon: const Icon(
                               Icons.bookmark_border,
@@ -489,127 +688,125 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-        // Khu vực
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
-          child: InkWell(
-            onTap: onArea,
-            child: Row(
-              children: [
-                const Icon(
-                  AppIcons.location,
-                  size: 20,
-                  color: AppColors.primary,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  t('Khu vực: ', 'Area: '),
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Flexible(
-                  child: Text(
-                    province ?? l10n.areaNationwide,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Icon(
-                  AppIcons.chevronDown,
-                  size: 18,
-                  color: AppColors.primaryDark,
-                ),
-              ],
-            ),
-          ),
-        ),
-        // Bộ lọc
+        const SizedBox(height: 6),
+        // Thanh lọc: Lọc · danh mục đang xem (bấm để đổi danh mục
+        // con) · Giá · bộ lọc riêng của danh mục con · Tình trạng · Đăng bởi.
+        // Mỗi chip ▾ mở riêng mục đó.
         scrollRow([
           chip(
             label: active > 0
-                ? '${l10n.listingFilterTitle} ($active)'
-                : l10n.listingFilterTitle,
+                ? '${l10n.listingFilterButton} ($active)'
+                : l10n.listingFilterButton,
             leading: AppIcons.filter,
-            onTap: onFilters,
+            selected: active > 0,
+            onTap: (_) => onFilters(),
           ),
           if (categoryName != null)
             chip(
-              label: categoryName,
+              label: merged?.subcategory?.name.of(context) ?? categoryName,
               selected: true,
-              onTap: onFilters,
-              onClear: onBack,
+              dropdown: category?.hasSubcategories ?? false,
+              onTap: onCategoryTap,
+              // Bỏ danh mục con thì về cả danh mục; đang ở cả danh mục thì thoát
+              onClear: filter.subcategoryId != null
+                  ? () => onSubcategory(null)
+                  : onBack,
+            ),
+          if (brandChip != null)
+            chip(
+              label: brandChip.label.of(context),
+              selected: true,
+              onTap: (anchor) => onAttribute(anchor, brand!),
+              onClear: () => onAttributeClear('brand'),
             ),
           chip(
             label: t('Giá', 'Price'),
             dropdown: true,
             selected: filter.hasPriceRange,
-            onTap: onFilters,
+            onTap: onPrice,
           ),
-          chip(
-            label: t('Tình trạng', 'Condition'),
-            dropdown: true,
-            selected: filter.conditions.isNotEmpty,
-            onTap: onFilters,
-          ),
-          for (final type in ListingDealType.values)
+          for (final attribute in filterAttributes)
+            if (brandChip == null || attribute.key != 'brand')
+              chip(
+                label: attribute.label.of(context),
+                dropdown: true,
+                selected: filter.attributeFilters.containsKey(attribute.key),
+                onTap: (anchor) => onAttribute(anchor, attribute),
+              ),
+          if (merged?.hasCondition ?? true)
             chip(
-              label: type.label(l10n),
-              selected: filter.dealTypes.contains(type),
-              onTap: () => context.read<CategoryDetailCubit>().toggleDeal(type),
+              label: l10n.listingFilterCondition,
+              dropdown: true,
+              selected: filter.conditionGroup != null,
+              onTap: onCondition,
+            ),
+          chip(
+            label: l10n.listingFilterSeller,
+            dropdown: true,
+            selected: filter.sellers.isNotEmpty,
+            onTap: onSeller,
+          ),
+          if (active > 0)
+            TextButton(
+              onPressed: onClearAll,
+              child: Text(
+                l10n.filterClear,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
             ),
         ]),
         const SizedBox(height: 10),
-        // Chọn nhanh tỉnh / thành
-        SizedBox(
-          height: 38,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              Center(
-                child: Text(
-                  t('Khu vực:', 'Area:'),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+        // Hàng "Khu vực:": vài tỉnh / thành chọn nhanh + Xem thêm
+        scrollRow([
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Text(
+                t('Khu vực:', 'Area:'),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(width: 10),
-              for (final name in provinces)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: OutlinedButton(
-                    onPressed: () => onProvince(name),
-                    style: OutlinedButton.styleFrom(
-                      shape: const StadiumBorder(),
-                      backgroundColor: province == name
-                          ? AppColors.textPrimary
-                          : Colors.transparent,
-                      foregroundColor: province == name
-                          ? Colors.white
-                          : AppColors.textPrimary,
-                      side: const BorderSide(color: AppColors.border),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      textStyle: const TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    child: Text(name),
-                  ),
-                ),
-            ],
+            ),
           ),
-        ),
+          for (final name in [
+            if (province != null && !_quickProvinces.contains(province))
+              province!,
+            ..._quickProvinces,
+          ])
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: OutlinedButton(
+                onPressed: () => onProvince(name),
+                style: OutlinedButton.styleFrom(
+                  shape: const StadiumBorder(),
+                  backgroundColor: province == name
+                      ? AppColors.textPrimary
+                      : Colors.transparent,
+                  foregroundColor: province == name
+                      ? Colors.white
+                      : AppColors.textPrimary,
+                  side: const BorderSide(color: AppColors.border),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
+                child: Text(name),
+              ),
+            ),
+          OutlinedButton(
+            onPressed: onArea,
+            style: OutlinedButton.styleFrom(
+              shape: const StadiumBorder(),
+              foregroundColor: AppColors.textPrimary,
+              side: const BorderSide(color: AppColors.border),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            child: Text(t('Xem thêm', 'More')),
+          ),
+        ]),
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 6, color: Color(0xFFF4F4F5)),
         // Sắp xếp + đổi dạng hiển thị
