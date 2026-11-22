@@ -8,6 +8,7 @@ import 'package:restore/shared/widgets/filter/listing_filter_section.dart';
 
 import '../../../bloc/wanted_alert_create/wanted_alert_create_state.dart';
 import '../../../models/wanted_alert_draft.dart';
+import '../../../models/wanted_alert_item.dart';
 import '../../../models/wanted_alert_match.dart';
 import '../../../utils/wanted_alert_criteria.dart';
 import 'wanted_alert_criteria_card.dart';
@@ -49,10 +50,16 @@ class WantedAlertComposeForm extends StatelessWidget {
     final draft = state.draft;
     final language = Localizations.localeOf(context).languageCode;
     final keywords = draft.trimmedKeywords;
+    final category = state.selectedCategory;
     final criteria = WantedAlertCriteria.of(
       context,
       filter: draft.filter,
-      categoryName: state.selectedCategory?.name.resolve(language),
+      categoryName: category == null
+          ? null
+          : WantedAlertItem.withSubcategory(
+              category.name,
+              category.subcategoryOf(draft.filter.subcategoryId)?.name,
+            ).resolve(language),
       areaLabel: draft.area?.label,
     );
 
