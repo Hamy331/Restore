@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +8,6 @@ import 'package:restore/data/models/category_model.dart';
 import 'package:restore/shared/utils/filter_categories.dart';
 import 'package:restore/core/constants/app_dimesions.dart';
 import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
@@ -54,7 +54,6 @@ class SearchResultsMobileView extends StatefulWidget {
 
 class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
   static const double _sidePadding = 16;
-  static const double _contentRadius = 24;
 
   final _scrollController = ScrollController();
 
@@ -227,140 +226,121 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
     final padding = MediaQuery.paddingOf(context);
     final isDesktop =
         MediaQuery.sizeOf(context).width >= AppDimesions.desktopWidth;
-    final headerColor = isDesktop ? AppColors.surface : AppHeaderPalette.bottom;
+    const headerColor = AppColors.surface;
 
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: Column(
-        children: [
-          // Thanh trạng thái cùng màu phần đầu, chuyển trắng khi đã cuộn
-          if (!isDesktop)
-            ValueListenableBuilder<bool>(
-              valueListenable: _headerPinned,
-              builder: (context, pinned, _) => AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                height: padding.top,
-                width: double.infinity,
-                color: pinned
-                    ? AppPinnedHeaderSurface.pinnedColor
-                    : AppHeaderPalette.bottom,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: AppColors.surface,
+        body: Column(
+          children: [
+            // Thanh trạng thái trắng như phần đầu, mờ đi khi đã cuộn
+            if (!isDesktop)
+              ValueListenableBuilder<bool>(
+                valueListenable: _headerPinned,
+                builder: (context, pinned, _) => AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  height: padding.top,
+                  width: double.infinity,
+                  color: pinned
+                      ? AppPinnedHeaderSurface.pinnedColor
+                      : AppColors.surface,
+                ),
               ),
-            ),
-          Expanded(
-            child: MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: BlocBuilder<SearchResultsCubit, SearchResultsState>(
-                builder: (context, state) =>
-                    BlocBuilder<SearchAccountsCubit, SearchAccountsState>(
-                      builder: (context, accounts) => AppPullToRefresh.inline(
-                        onRefresh: _refresh,
-                        builder: (context, refreshIndicator) => AppLoadMoreListener(
-                          onLoadMore: _loadMore,
-                          child: CustomScrollView(
-                            // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
-                            scrollCacheExtent: AppScroll.prefetchCacheExtent,
-                            controller: _scrollController,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            slivers: [
-                              SliverPersistentHeader(
-                                pinned: true,
-                                delegate: AppPinnedHeaderDelegate(
-                                  height: SearchResultsHeader.heightFor(
-                                    showSearch: !isDesktop,
-                                  ),
-                                  color: headerColor,
-                                  // Chưa ghim thì nằm trên nền xanh: tab chữ trắng
-                                  child: ValueListenableBuilder<bool>(
-                                    valueListenable: _headerPinned,
-                                    builder: (context, pinned, _) =>
-                                        SearchResultsHeader(
-                                          showSearch: !isDesktop,
-                                          onDark: !isDesktop && !pinned,
-                                          query: state.query,
-                                          tab: _tab,
-                                          onTabChanged: _selectTab,
-                                          onBack: _back,
-                                          onEditQuery: _editQuery,
-                                          onSaveSearch: _createAlert,
-                                        ),
-                                  ),
-                                ),
-                              ),
-                              // Viên loading kéo để làm mới mở ra ngay dưới phần ghim
-                              SliverToBoxAdapter(
-                                child: ColoredBox(
-                                  color: headerColor,
-                                  child: refreshIndicator,
-                                ),
-                              ),
-                              // Mép trên bo cong của phần nội dung trắng
-                              if (!isDesktop)
-                                SliverToBoxAdapter(
-                                  child: ColoredBox(
-                                    color: AppHeaderPalette.bottom,
-                                    child: Container(
-                                      height: _contentRadius,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.surface,
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(_contentRadius),
-                                        ),
-                                      ),
+            Expanded(
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: BlocBuilder<SearchResultsCubit, SearchResultsState>(
+                  builder: (context, state) =>
+                      BlocBuilder<SearchAccountsCubit, SearchAccountsState>(
+                        builder: (context, accounts) => AppPullToRefresh.inline(
+                          onRefresh: _refresh,
+                          builder: (context, refreshIndicator) => AppLoadMoreListener(
+                            onLoadMore: _loadMore,
+                            child: CustomScrollView(
+                              // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                              scrollCacheExtent: AppScroll.prefetchCacheExtent,
+                              controller: _scrollController,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              slivers: [
+                                SliverPersistentHeader(
+                                  pinned: true,
+                                  delegate: AppPinnedHeaderDelegate(
+                                    height: SearchResultsHeader.heightFor(
+                                      showSearch: !isDesktop,
+                                    ),
+                                    color: headerColor,
+                                    child: SearchResultsHeader(
+                                      showSearch: !isDesktop,
+                                      query: state.query,
+                                      tab: _tab,
+                                      onTabChanged: _selectTab,
+                                      onBack: _back,
+                                      onEditQuery: _editQuery,
+                                      onSaveSearch: _createAlert,
                                     ),
                                   ),
                                 ),
-                              ...switch (_tab) {
-                                SearchResultsTab.listings => _content(
-                                  state,
-                                  accounts.shops,
-                                  isDesktop: isDesktop,
-                                ),
-                                SearchResultsTab.shops => _accountContent(
-                                  accounts.shops,
-                                  emptyTitle: l10nOf(
-                                    context,
-                                  ).searchShopsEmpty(state.query),
-                                  emptyIcon: AppIcons.store,
-                                  onRetry: () => context
-                                      .read<SearchAccountsCubit>()
-                                      .reloadShops(),
-                                  tile: (item) => SearchShopTile(
-                                    item: item,
-                                    highlight: state.query,
-                                    trailing: _shopFollowButton(item),
-                                    onTap: () => _openShop(item),
+                                // Viên loading kéo để làm mới mở ra ngay dưới phần ghim
+                                SliverToBoxAdapter(
+                                  child: ColoredBox(
+                                    color: headerColor,
+                                    child: refreshIndicator,
                                   ),
                                 ),
-                                SearchResultsTab.users => _accountContent(
-                                  accounts.users,
-                                  emptyTitle: l10nOf(
-                                    context,
-                                  ).searchUsersEmpty(state.query),
-                                  emptyIcon: AppIcons.user,
-                                  onRetry: () => context
-                                      .read<SearchAccountsCubit>()
-                                      .reloadUsers(),
-                                  tile: (user) => SearchUserTile(
-                                    user: user,
-                                    highlight: state.query,
-                                    trailing: _userFollowButton(user),
-                                    onTap: () => _openUser(user),
+                                ...switch (_tab) {
+                                  SearchResultsTab.listings => _content(
+                                    state,
+                                    accounts.shops,
+                                    isDesktop: isDesktop,
                                   ),
+                                  SearchResultsTab.shops => _accountContent(
+                                    accounts.shops,
+                                    emptyTitle: l10nOf(
+                                      context,
+                                    ).searchShopsEmpty(state.query),
+                                    emptyIcon: AppIcons.store,
+                                    onRetry: () => context
+                                        .read<SearchAccountsCubit>()
+                                        .reloadShops(),
+                                    tile: (item) => SearchShopTile(
+                                      item: item,
+                                      highlight: state.query,
+                                      trailing: _shopFollowButton(item),
+                                      onTap: () => _openShop(item),
+                                    ),
+                                  ),
+                                  SearchResultsTab.users => _accountContent(
+                                    accounts.users,
+                                    emptyTitle: l10nOf(
+                                      context,
+                                    ).searchUsersEmpty(state.query),
+                                    emptyIcon: AppIcons.user,
+                                    onRetry: () => context
+                                        .read<SearchAccountsCubit>()
+                                        .reloadUsers(),
+                                    tile: (user) => SearchUserTile(
+                                      user: user,
+                                      highlight: state.query,
+                                      trailing: _userFollowButton(user),
+                                      onTap: () => _openUser(user),
+                                    ),
+                                  ),
+                                },
+                                SliverToBoxAdapter(
+                                  child: SizedBox(height: padding.bottom + 16),
                                 ),
-                              },
-                              SliverToBoxAdapter(
-                                child: SizedBox(height: padding.bottom + 16),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

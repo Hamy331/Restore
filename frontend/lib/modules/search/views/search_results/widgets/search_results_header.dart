@@ -21,9 +21,6 @@ class SearchResultsHeader extends StatelessWidget {
   /// false: ẩn nút quay lại + ô từ khoá (màn rộng đã có ô tìm kiếm ở trên)
   final bool showSearch;
 
-  /// Phần đầu đang trên nền xanh (chưa ghim, điện thoại): tab chữ trắng
-  final bool onDark;
-
   const SearchResultsHeader({
     super.key,
     required this.query,
@@ -33,12 +30,14 @@ class SearchResultsHeader extends StatelessWidget {
     required this.onEditQuery,
     required this.onSaveSearch,
     this.showSearch = true,
-    this.onDark = false,
   });
 
-  /// Ô tìm kiếm (48) + hàng tab + lề trên dưới
+  /// Ô tìm kiếm + hàng tab + lề trên dưới
   static double heightFor({bool showSearch = true}) =>
-      8 + (showSearch ? 48 + 4 : 0) + AppUnderlineTabs.height + 12;
+      8 +
+      (showSearch ? AppListingSearchBar.rowHeight + 4 : 0) +
+      AppUnderlineTabs.height +
+      12;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +62,6 @@ class SearchResultsHeader extends StatelessWidget {
               l10n.searchUsersSection,
             ],
             selectedIndex: tab.index,
-            onDark: onDark,
             onChanged: (index) => onTabChanged(SearchResultsTab.values[index]),
           ),
         ],

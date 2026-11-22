@@ -13,7 +13,7 @@ import 'package:restore/modules/auth/repositories/auth_repository.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/modules/search/views/search_results/search_results_view.dart';
-import 'package:restore/shared/widgets/app_search_pill.dart';
+import 'package:restore/shared/widgets/search/app_listing_search_bar.dart';
 
 void main() {
   testWidgets(
@@ -85,7 +85,7 @@ void main() {
       final field = find.byType(TextField);
       expect(field, findsOneWidget);
       expect(tester.widget<TextField>(field).controller!.text, 'iPhone');
-      expect(find.byType(AppSearchPill), findsNothing);
+      expect(find.byType(AppListingSearchBar), findsNothing);
       final l10n = AppLocalizations.of(tester.element(field))!;
       expect(find.text(l10n.listingFilterButton), findsOneWidget);
 
@@ -98,13 +98,13 @@ void main() {
 
       tester.view.physicalSize = const Size(390, 850);
       await tester.pumpAndSettle();
-      expect(find.byType(AppSearchPill), findsOneWidget);
+      expect(find.byType(AppListingSearchBar), findsOneWidget);
       expect(find.text('Samsung'), findsOneWidget);
       expect(find.text(l10n.listingFilterButton), findsOneWidget);
 
       tester.view.physicalSize = const Size(1440, 900);
       await tester.pumpAndSettle();
-      expect(find.byType(AppSearchPill), findsNothing);
+      expect(find.byType(AppListingSearchBar), findsNothing);
       expect(tester.widget<TextField>(field).controller!.text, 'Samsung');
     },
   );

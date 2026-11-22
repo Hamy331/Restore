@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:restore/core/constants/app_scroll.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
@@ -53,10 +53,8 @@ class CategoryDetailMobileView extends StatefulWidget {
 }
 
 class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
-  static const double _contentRadius = 24;
-
-  /// Ô tìm kiếm (48) + lề trên dưới, như phần đầu trang kết quả
-  static const double _searchBarHeight = 8 + AppListingSearchBar.height + 12;
+  /// Ô tìm kiếm + lề trên dưới, như phần đầu trang kết quả
+  static const double _searchBarHeight = 6 + AppListingSearchBar.rowHeight + 8;
 
   bool _grid = false;
 
@@ -167,90 +165,79 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
 
         final padding = MediaQuery.paddingOf(context);
         final name = state.category?.name.of(context) ?? '';
-        return Scaffold(
-          backgroundColor: AppColors.surface,
-          body: Column(
-            children: [
-              // Thanh trạng thái cùng màu phần đầu, chuyển trắng khi đã cuộn
-              ValueListenableBuilder<bool>(
-                valueListenable: _headerPinned,
-                builder: (context, pinned, _) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  height: padding.top,
-                  width: double.infinity,
-                  color: pinned
-                      ? AppPinnedHeaderSurface.pinnedColor
-                      : AppHeaderPalette.bottom,
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark,
+          child: Scaffold(
+            backgroundColor: AppColors.surface,
+            body: Column(
+              children: [
+                // Thanh trạng thái trắng như phần đầu, mờ đi khi đã cuộn
+                ValueListenableBuilder<bool>(
+                  valueListenable: _headerPinned,
+                  builder: (context, pinned, _) => AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    height: padding.top,
+                    width: double.infinity,
+                    color: pinned
+                        ? AppPinnedHeaderSurface.pinnedColor
+                        : AppColors.surface,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: AppPullToRefresh(
-                    onRefresh: _cubit.refresh,
-                    child: AppLoadMoreListener(
-                      onLoadMore: _cubit.loadMore,
-                      child: CustomScrollView(
-                        // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
-                        scrollCacheExtent: AppScroll.prefetchCacheExtent,
-                        controller: _scrollController,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        slivers: [
-                          SliverPersistentHeader(
-                            pinned: true,
-                            delegate: AppPinnedHeaderDelegate(
-                              height: _searchBarHeight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 8,
-                                  bottom: 12,
-                                ),
-                                child: AppListingSearchBar(
-                                  // Đang duyệt danh mục, không phải tìm từ
-                                  // khoá: ô trống với chữ gợi ý
-                                  text: AppLocalizations.of(
-                                    context,
-                                  )!.homeSearchHint,
-                                  isPlaceholder: true,
-                                  onBack: _back,
-                                  onEdit: _editQuery,
-                                  onSave: () => context.push(
-                                    WantedAlertCreateView.location(
-                                      keywords: name,
+                Expanded(
+                  child: MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: AppPullToRefresh(
+                      onRefresh: _cubit.refresh,
+                      child: AppLoadMoreListener(
+                        onLoadMore: _cubit.loadMore,
+                        child: CustomScrollView(
+                          // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                          scrollCacheExtent: AppScroll.prefetchCacheExtent,
+                          controller: _scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          slivers: [
+                            SliverPersistentHeader(
+                              pinned: true,
+                              delegate: AppPinnedHeaderDelegate(
+                                height: _searchBarHeight,
+                                color: AppColors.surface,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 6,
+                                    bottom: 8,
+                                  ),
+                                  child: AppListingSearchBar(
+                                    // Đang duyệt danh mục, không phải tìm từ
+                                    // khoá: ô trống với chữ gợi ý
+                                    text: AppLocalizations.of(
+                                      context,
+                                    )!.homeSearchHint,
+                                    isPlaceholder: true,
+                                    onBack: _back,
+                                    onEdit: _editQuery,
+                                    onSave: () => context.push(
+                                      WantedAlertCreateView.location(
+                                        keywords: name,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          // Mép trên bo cong của phần nội dung trắng
-                          SliverToBoxAdapter(
-                            child: ColoredBox(
-                              color: AppHeaderPalette.bottom,
-                              child: Container(
-                                height: _contentRadius,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.surface,
-                                  borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(_contentRadius),
-                                  ),
-                                ),
-                              ),
+                            SliverToBoxAdapter(child: header),
+                            ..._content(state, wide: false),
+                            SliverToBoxAdapter(
+                              child: SizedBox(height: padding.bottom + 16),
                             ),
-                          ),
-                          SliverToBoxAdapter(child: header),
-                          ..._content(state, wide: false),
-                          SliverToBoxAdapter(
-                            child: SizedBox(height: padding.bottom + 16),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

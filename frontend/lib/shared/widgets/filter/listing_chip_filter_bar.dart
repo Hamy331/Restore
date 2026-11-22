@@ -4,17 +4,23 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/data/models/category_attribute_model.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/modules/location/utils/listing_area.dart';
 import 'package:restore/shared/models/listing_filter.dart';
+import 'package:restore/shared/widgets/filter/area_filter_panel.dart';
 import 'package:restore/shared/widgets/filter/category_picker_popover.dart';
 import 'package:restore/shared/widgets/filter/filter_popover.dart';
 import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
+import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 
-/// Thanh lọc dùng chung cho trang danh mục, kết quả tìm kiếm và
-/// Gần bạn: Lọc · danh mục (bấm để chọn danh mục / danh mục con) · Giá · bộ
-/// lọc riêng của danh mục con · Tình trạng · Đăng bởi · Xoá lọc; bên dưới là
-/// hàng "Khu vực:" chọn nhanh tỉnh / thành. Mỗi chip "▾" mở popover ngay dưới
-/// chip (bottom sheet trên điện thoại). Mọi thay đổi trả qua [onChanged].
+/// Thanh lọc dùng chung cho trang danh mục, kết quả tìm kiếm,
+/// Gần bạn, shop và Báo khi có hàng: Lọc · danh mục (bấm để chọn danh mục /
+/// danh mục con) · Giá · bộ lọc riêng của danh mục con · Tình trạng · Đăng
+/// bởi. Khu vực theo từng cỡ màn hình:
+/// - Điện thoại: hàng "Khu vực: Toàn quốc ▾" (bấm để chọn) và "Xoá lọc" nằm
+///   trên hàng chip.
+/// - Desktop: "Xoá lọc" cuối hàng chip, bên dưới là hàng tỉnh / thành chọn
+///   nhanh + Xem thêm.
+/// Mỗi chip "▾" mở popover ngay dưới chip (bottom sheet trên điện thoại).
+/// Mọi thay đổi trả qua [onChanged].
 class ListingChipFilterBar extends StatelessWidget {
   const ListingChipFilterBar({
     super.key,
@@ -65,16 +71,6 @@ class ListingChipFilterBar extends StatelessWidget {
 
   /// Chip "Đăng bởi"
   final bool showSeller;
-
-  /// Tỉnh / thành chọn nhanh (tên → mã tỉnh), lọc ở server. 5 thành phố
-  /// trực thuộc trung ương theo danh sách 34 tỉnh mới.
-  static const quickProvinces = {
-    'TP. Hồ Chí Minh': '79',
-    'Hà Nội': '01',
-    'Đà Nẵng': '48',
-    'Hải Phòng': '31',
-    'Cần Thơ': '92',
-  };
 
   /// Danh mục đã gộp danh mục con đang chọn (bộ lọc riêng, giá tối đa...)
   CategoryModel? get _merged =>
@@ -229,16 +225,16 @@ class ListingChipFilterBar extends StatelessWidget {
     onChanged(filter.copyWith(sellers: picked));
   }
 
-  /// "Xem thêm": chọn khu vực bất kỳ (kể cả phường / xã)
-  Future<void> _pickArea(BuildContext context) async {
-    final picked = await pickListingArea(context, filter);
+  /// Bảng "Khu vực", mở dưới [anchor] (sheet trên điện thoại)
+  Future<void> _pickArea(BuildContext anchor) async {
+    final picked = await showAreaFilterPanel(anchor, filter);
     if (picked != null) onChanged(picked);
   }
 
   /// Chip tỉnh nhanh: bấm lại để bỏ. So theo mã vì nhãn từ trang chọn khu
   /// vực có thể khác ("Hồ Chí Minh")
   void _toggleProvince(String name) {
-    final code = quickProvinces[name];
+    final code = quickProvinceCodes[name];
     onChanged(
       filter.provinceCode == code
           ? filter.withArea(null)
@@ -265,10 +261,73 @@ class ListingChipFilterBar extends StatelessWidget {
         : null;
 
     final area = filter.areaLabel;
+    // Điện thoại: khu vực thu gọn thành một dòng chọn
+    final compactArea = showArea && !isDesktopLayout(context);
+    final clear = TextButton(
+      onPressed: onClearAll ?? () => onChanged(filter.resetTo(defaults)),
+      child: Text(
+        l10n.filterClear,
+        style: const TextStyle(
+          fontWeight: FontWeight.w700,
+          color: AppColors.textPrimary,
+        ),
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (compactArea)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 8, 4),
+            child: Row(
+              children: [
+                Text(
+                  t('Khu vực: ', 'Area: '),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Flexible(
+                  child: Builder(
+                    builder: (anchor) => InkWell(
+                      onTap: () => _pickArea(anchor),
+                      borderRadius: BorderRadius.circular(6),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                area ?? l10n.areaNationwide,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.primaryDark,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_drop_down,
+                              size: 22,
+                              color: AppColors.textPrimary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                if (active > 0) clear,
+              ],
+            ),
+          ),
         _scrollRow([
           ListingBarChip(
             label: active > 0
@@ -347,20 +406,9 @@ class ListingChipFilterBar extends StatelessWidget {
               selected: filter.sellers.isNotEmpty,
               onTap: _pickSeller,
             ),
-          if (active > 0)
-            TextButton(
-              onPressed:
-                  onClearAll ?? () => onChanged(filter.resetTo(defaults)),
-              child: Text(
-                l10n.filterClear,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ),
+          if (active > 0 && !compactArea) clear,
         ]),
-        if (showArea) ...[
+        if (showArea && !compactArea) ...[
           const SizedBox(height: 10),
           // Hàng "Khu vực:": vài tỉnh / thành chọn nhanh + Xem thêm
           _scrollRow([
@@ -379,24 +427,20 @@ class ListingChipFilterBar extends StatelessWidget {
             // Khu vực chọn từ "Xem thêm" (không nằm trong chip nhanh) hiện
             // đầu hàng, bấm để chọn lại
             if (filter.hasArea &&
-                !quickProvinces.containsValue(filter.provinceCode) &&
+                !quickProvinceCodes.containsValue(filter.provinceCode) &&
                 area != null)
-              _AreaChip(
-                area,
-                selected: true,
-                onPressed: () => _pickArea(context),
-              ),
+              _AreaChip(area, selected: true, onPressed: _pickArea),
             for (final MapEntry(key: name, value: code)
-                in quickProvinces.entries)
+                in quickProvinceCodes.entries)
               _AreaChip(
                 name,
                 selected: filter.provinceCode == code,
-                onPressed: () => _toggleProvince(name),
+                onPressed: (_) => _toggleProvince(name),
               ),
             _AreaChip(
               t('Xem thêm', 'More'),
               selected: false,
-              onPressed: () => _pickArea(context),
+              onPressed: _pickArea,
             ),
           ]),
         ],
@@ -498,13 +542,15 @@ class _AreaChip extends StatelessWidget {
 
   final String name;
   final bool selected;
-  final VoidCallback onPressed;
+
+  /// Nhận context của chip để bảng Khu vực mở ngay dưới chip
+  final ValueChanged<BuildContext> onPressed;
 
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(right: 8),
     child: OutlinedButton(
-      onPressed: onPressed,
+      onPressed: () => onPressed(context),
       style: OutlinedButton.styleFrom(
         shape: const StadiumBorder(),
         backgroundColor: selected ? AppColors.textPrimary : Colors.transparent,
