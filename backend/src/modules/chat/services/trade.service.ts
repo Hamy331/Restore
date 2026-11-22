@@ -7,6 +7,7 @@ import { deleteRevision } from '../../listings/repositories/listing.repository.j
 import { removeStoredImages, revisionOnlyImages } from '../../listings/services/image.service.js';
 import { writableThread, touchThread } from '../repositories/chat.repository.js';
 import { publish } from './chat.events.js';
+import { publishListingChanged } from '../../listings/services/listing.events.js';
 
 const conflict = () => new AppError(409, 'TRADE_CHANGED', 'Giao dịch đã thay đổi. Hãy mở lại đoạn chat.');
 const forbidden = () => new AppError(403, 'TRADE_FORBIDDEN', 'Bạn không thể xác nhận thay người còn lại.');
@@ -59,10 +60,11 @@ export async function changeTrade(userId: string, conversationId: string, action
     }
     await tx.message.create({ data: { conversationId, senderId: userId, clientId: randomUUID(), text: message } });
     await touchThread(tx,root,conversationId);
-    return { members: [buyerId,sellerId], dropped };
+    return { members: [buyerId,sellerId], dropped, listingId: listing.id };
   });
   if (result) {
     publish(result.members,'message',{ conversationId });
+    publishListingChanged(result.listingId);
     await removeStoredImages(result.dropped);
   }
   return { conversationId };
