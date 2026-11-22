@@ -14,7 +14,6 @@ import '../bloc/shell_badges_cubit.dart';
 import '../models/shell_quick_action.dart';
 import '../widgets/shell_ai_bubble.dart';
 import '../widgets/shell_bottom_nav.dart';
-import '../widgets/shell_nav_rail.dart';
 
 class MainShell extends StatelessWidget {
   const MainShell({
@@ -91,32 +90,7 @@ class MainShell extends StatelessWidget {
     if (hideNavigation || width >= AppDimesions.desktopWidth) {
       return Scaffold(body: navigationShell);
     }
-    final isWide = width >= 840;
     final aiBubble = ShellAiBubble(onTap: () => context.push(_aiAssistantPath));
-
-    if (isWide) {
-      return Scaffold(
-        body: SafeArea(
-          child: Row(
-            children: [
-              ShellNavRail(
-                selectedIndex: _uiIndex,
-                onSelected: (i) => _select(context, i),
-              ),
-              const VerticalDivider(width: 1),
-              Expanded(
-                child: Stack(
-                  children: [
-                    navigationShell,
-                    Positioned.fill(child: aiBubble),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
 
     // extendBody: nội dung chạy xuống dưới thanh điều hướng kính để thấy
     // hiệu ứng mờ; MediaQuery padding dưới của body đã gồm chiều cao thanh
