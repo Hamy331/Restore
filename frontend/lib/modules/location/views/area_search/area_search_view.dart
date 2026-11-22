@@ -7,7 +7,9 @@ import '../../bloc/area_search/area_search_cubit.dart';
 import '../../repositories/area_search_repository.dart';
 import 'area_search_mobile_view.dart';
 
-/// Route `/nearby/area`: chọn khu vực để xem tin quanh đó.
+/// Route `/area`: chọn khu vực (Gần bạn, trang danh mục, tìm kiếm, Báo khi có
+/// hàng, khu vực của app). Không đặt dưới `/nearby` để menu desktop không tô
+/// mục "Gần bạn" khi đang chọn khu vực từ trang khác.
 /// Đóng trang trả về `AreaPickResult` (null nếu người dùng quay lại).
 /// [allowNationwide] (query `nationwide=1`): thay lựa chọn "Gần tôi" bằng
 /// "Toàn quốc", dùng khi chọn khu vực cho thông báo "Báo khi có hàng".
@@ -16,7 +18,7 @@ class AreaSearchView extends StatelessWidget {
 
   const AreaSearchView({super.key, this.allowNationwide = false});
 
-  static const String path = '/nearby/area';
+  static const String path = '/area';
 
   static String location({bool allowNationwide = false}) => Uri(
     path: path,
