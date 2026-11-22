@@ -16,7 +16,7 @@ import '../../bloc/search_cubit.dart';
 import '../../bloc/search_state.dart';
 import '../../models/search_user_item.dart';
 import '../../utils/category_matches.dart';
-import '../search_results/search_results_view.dart';
+import '../../utils/open_listing_search.dart';
 import 'widgets/search_idle_content.dart';
 import 'widgets/search_suggestion_list.dart';
 
@@ -76,9 +76,16 @@ class _SearchMobileViewState extends State<SearchMobileView> {
     _setText(query);
     cubit.queryChanged(query);
     _focusNode.unfocus();
-    await context.push(SearchResultsView.location(query, fromSearch: true));
+    // Tên danh mục ("Sở thích") thì vào thẳng trang danh mục
+    final category = await openListingSearch(context, query, fromSearch: true);
+    if (!mounted) return;
+    // Vào danh mục là duyệt chứ không phải tìm: quay lại thì ô trống để gõ mới
+    if (category) {
+      _setText('');
+      cubit.queryChanged('');
+    }
     // Từ khoá vừa tìm đã được lưu vào lịch sử
-    if (mounted) cubit.loadHistory();
+    cubit.loadHistory();
   }
 
   /// Mở trang shop từ gợi ý khi đang gõ

@@ -39,3 +39,25 @@ List<String> _words(String text) => VietnameseText.normalize(text)
     .split(RegExp(r'[^\p{L}\p{N}]+', unicode: true))
     .where((w) => w.isNotEmpty)
     .toList();
+
+/// Từ khoá trùng đúng tên một danh mục / danh mục con (không phân biệt hoa
+/// thường, có dấu hay không dấu), VD "sở thích", "dien lanh", "Ô tô". Danh mục
+/// cha được ưu tiên khi trùng tên với danh mục con của nó.
+CategoryMatch? exactCategoryMatch(
+  List<CategoryModel> categories,
+  String query,
+  String Function(LocalizedText name) label,
+) {
+  final key = _words(query).join(' ');
+  if (key.isEmpty) return null;
+  bool same(LocalizedText name) => _words(label(name)).join(' ') == key;
+  for (final parent in categories) {
+    if (same(parent.name)) return (parent: parent, sub: null);
+  }
+  for (final parent in categories) {
+    for (final sub in parent.subcategories) {
+      if (same(sub.name)) return (parent: parent, sub: sub);
+    }
+  }
+  return null;
+}

@@ -47,4 +47,19 @@ void main() {
     expect(ids('noi th'), isEmpty);
     expect(ids(''), isEmpty);
   });
+
+  test('a query equal to a category name opens that category', () {
+    String? open(String query) {
+      final match = exactCategoryMatch(categories, query, vi);
+      return match?.sub?.id ?? match?.parent.id;
+    }
+
+    expect(open('Xe cộ'), 'vehicles');
+    expect(open('xe co'), 'vehicles');
+    expect(open('  Ô TÔ '), 'o-to');
+    // Gõ một phần tên thì vẫn là tìm theo từ khoá
+    expect(open('xe'), isNull);
+    expect(open('xe cộ cũ'), isNull);
+    expect(open(''), isNull);
+  });
 }
