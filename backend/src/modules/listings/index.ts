@@ -8,7 +8,7 @@ import moderationRouter from './routes/moderation.route.js';
 
 /**
  * Toàn bộ API /api/v1/listings. Thứ tự mount quan trọng: các đường dẫn một đoạn
- * (/recommended, /favorites, /summary, /mine) phải đứng trước GET /:id trong listingRouter.
+ * (/recommended, /favorites, /mine) phải đứng trước GET /:id trong listingRouter.
  */
 export const listingsRouter = Router();
 listingsRouter.use(feedRouter);

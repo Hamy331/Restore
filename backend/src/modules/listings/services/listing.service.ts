@@ -504,12 +504,6 @@ export async function featureListing(ownerId: string, id: string, packageId: str
 export const getPostingQuota = (ownerId: string) =>
   listingRepository.transaction((tx) => postingQuota(tx, ownerId, new Date()));
 
-/** Số tin đang bán và đã bán */
-export async function getSummary(ownerId: string) {
-  const [active, sold] = await listingRepository.countByOwner(ownerId);
-  return { active, sold };
-}
-
 /** Tin của tôi, mới tạo trước */
 export async function listMine(ownerId: string, { page, pageSize, status }: MineQuery) {
   const [items, totalItems] = await listingRepository.findMine(ownerId, status, (page - 1) * pageSize, pageSize);

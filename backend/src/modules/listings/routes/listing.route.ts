@@ -40,13 +40,6 @@ listingRouter.post('/', manageOwn, validate({ body: createListingBody }), listin
 listingRouter.get('/posting-quota', manageOwn, listingController.postingQuota);
 
 /**
- * Số tin đang bán và đã bán của tôi
- *
- * Trả về: { active, sold }
- */
-listingRouter.get('/summary', manageOwn, listingController.summary);
-
-/**
  * Trang Boost của tôi: tin đang hiển thị (sắp hết hạn trước, tối đa 100) kèm quảng bá đang chạy
  *
  * Trả về: { available, discountPercent, boost: { freeLeft, freePerMonth }, thisMonth: { boosts, features },

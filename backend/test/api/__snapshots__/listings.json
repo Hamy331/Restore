@@ -2216,16 +2216,6 @@
       }
     }
   },
-  "summary": {
-    "status": 200,
-    "body": {
-      "success": true,
-      "data": {
-        "active": 0,
-        "sold": 1
-      }
-    }
-  },
   "mine": {
     "status": 200,
     "body": {
