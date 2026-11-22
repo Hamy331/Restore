@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { optionalAuth } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as feedController from '../controllers/feed.controller.js';
-import { batchQuery, feedQuery, recommendedQuery } from '../listing.validator.js';
+import { feedQuery, recommendedQuery } from '../listing.validator.js';
 
 /** Danh sách tin công khai cho trang chủ, gắn tại /api/v1/listings. Có token thì tính isFavorite */
 const feedRouter = Router();
@@ -33,8 +33,5 @@ feedRouter.get(['/', '/search'], optionalAuth, validate({ query: feedQuery }), f
  *  - categoryId?: string - chỉ lấy tin của chuyên mục này
  */
 feedRouter.get('/recommended', optionalAuth, validate({ query: recommendedQuery }), feedController.listRecommended);
-
-/** Các tin theo danh sách mã (?ids=a,b,c, tối đa 50), giữ thứ tự; tin không còn hiển thị thì bỏ. Dùng cho trang Xem gần đây. */
-feedRouter.get('/batch', optionalAuth, validate({ query: batchQuery }), feedController.listByIds);
 
 export default feedRouter;

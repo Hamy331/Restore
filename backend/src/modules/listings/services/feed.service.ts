@@ -35,19 +35,6 @@ async function rankedPage(viewerId: string | undefined, filters: Parameters<type
   return { items, page: { page, limit, totalItems } };
 }
 
-/** Các tin [ids] còn hiển thị, giữ đúng thứ tự [ids] (trang Xem gần đây); tin đã ẩn / bán / xoá thì bỏ */
-export async function listByIds(viewerId: string | undefined, ids: string[]) {
-  const [listings, favoriteIds] = await Promise.all([
-    feedRepository.findVisibleByIds(ids),
-    feedRepository.findFavoriteIds(viewerId, ids),
-  ]);
-  const byId = new Map(listings.map((listing) => [listing.id, listing]));
-  return ids.flatMap((id) => {
-    const listing = byId.get(id);
-    return listing ? [toFeedItemDto(listing, { distanceKm: null, isFeatured: false, isFavorite: favoriteIds.has(id) })] : [];
-  });
-}
-
 /** Tin Hot sale: các tin đang có tin ưu tiên (FEATURED), lọc theo chuyên mục nếu có */
 export async function listRecommended(viewerId: string | undefined, { limit, page, categoryId }: RecommendedQuery,
   now = new Date()) {

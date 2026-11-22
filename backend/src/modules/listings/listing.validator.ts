@@ -361,15 +361,6 @@ export const searchQuery = z.record(z.string(), z.unknown()).transform((raw) => 
   return { sort, pagination, filters };
 });
 
-/** Query GET /listings/batch: ids = tối đa 50 mã tin cách nhau dấu phẩy (trang Xem gần đây) */
-export const batchQuery = z.record(z.string(), z.unknown()).transform((query) => {
-  const list = csv(query.ids ?? '');
-  if (!list || list.length > 50 || list.some((id) => !/^[\w-]{1,64}$/.test(id))) {
-    throw new AppError(400, 'INVALID_QUERY', 'Danh sách tin không hợp lệ.', 'ids');
-  }
-  return { ids: list };
-});
-
 /** Query GET /listings/recommended */
 export const recommendedQuery = z.object({
   limit: int('limit', { min: 1, max: 20, fallback: 10 }),
