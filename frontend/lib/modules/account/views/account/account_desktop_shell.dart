@@ -8,6 +8,7 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
+import 'package:restore/modules/saved_listings/views/saved_listings_view.dart';
 
 import '../../widgets/profile_header.dart';
 import '../my_reviews/my_reviews_view.dart';
@@ -24,6 +25,7 @@ bool isAccountSectionPath(String path, {String? userId}) {
     '/insights',
     MyReviewsView.path,
     MyReviewsView.ratingsPath,
+    SavedListingsView.path,
   };
   const prefixes = [
     '/credits',
@@ -152,6 +154,7 @@ class _Sidebar extends StatelessWidget {
         t('Theo dõi', 'Following'),
         [
           _Item(AppIcons.following, l.homeQuickFollowing, '/following'),
+          _Item(AppIcons.favorite, l.savedListings, SavedListingsView.path),
           _Item(AppIcons.wantedAlert, l.homeQuickWanted, '/wanted-alerts'),
         ],
       ),

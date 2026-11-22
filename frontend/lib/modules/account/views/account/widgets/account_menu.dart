@@ -10,6 +10,7 @@ import '../../../../credits/views/credit_wallet/credit_wallet_view.dart';
 import '../../../../trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import '../../../widgets/profile_header.dart';
 import '../../my_reviews/my_reviews_view.dart';
+import 'package:restore/modules/saved_listings/views/saved_listings_view.dart';
 import '../../../../plans/views/plans/plans_view.dart';
 
 /// Báo tính năng chưa có màn hình; giữ nút theo thiết kế Figma.
@@ -60,7 +61,11 @@ void showAccountMenu(BuildContext context) {
                     const SizedBox(height: 16),
                     _MenuGroup(
                       items: [
-                        _MenuItem(AppIcons.favorite, l.accSaved, onTap: soon),
+                        _MenuItem(
+                          AppIcons.favorite,
+                          l.accSaved,
+                          onTap: () => open(SavedListingsView.path),
+                        ),
                         _MenuItem(
                           AppIcons.search,
                           l.accSavedSearches,
