@@ -968,6 +968,24 @@ abstract class AppLocalizations {
   /// **'You haven\'t submitted any reviews yet.'**
   String get accNoSubmittedReviews;
 
+  /// No description provided for @accNoTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no completed transactions yet.'**
+  String get accNoTransactions;
+
+  /// No description provided for @tradeYouSold.
+  ///
+  /// In en, this message translates to:
+  /// **'You sold'**
+  String get tradeYouSold;
+
+  /// No description provided for @tradeYouBought.
+  ///
+  /// In en, this message translates to:
+  /// **'You bought'**
+  String get tradeYouBought;
+
   /// No description provided for @accTransactions.
   ///
   /// In en, this message translates to:

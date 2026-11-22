@@ -507,6 +507,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accNoSubmittedReviews => 'You haven\'t submitted any reviews yet.';
 
   @override
+  String get accNoTransactions => 'You have no completed transactions yet.';
+
+  @override
+  String get tradeYouSold => 'You sold';
+
+  @override
+  String get tradeYouBought => 'You bought';
+
+  @override
   String get accTransactions => 'Transaction history';
 
   @override

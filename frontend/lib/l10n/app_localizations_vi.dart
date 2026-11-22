@@ -476,6 +476,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accNoSubmittedReviews => 'Bạn chưa gửi đánh giá nào.';
 
   @override
+  String get accNoTransactions => 'Bạn chưa có giao dịch nào hoàn tất.';
+
+  @override
+  String get tradeYouSold => 'Bạn đã bán';
+
+  @override
+  String get tradeYouBought => 'Bạn đã mua';
+
+  @override
   String get accTransactions => 'Lịch sử giao dịch';
 
   @override
