@@ -1865,9 +1865,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeFeaturedTag => 'Hot';
 
   @override
-  String get homeExchangeTag => 'Đổi được';
-
-  @override
   String get homeExchangeOnly => 'Chỉ trao đổi';
 
   @override

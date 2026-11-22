@@ -1902,9 +1902,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeFeaturedTag => 'Hot';
 
   @override
-  String get homeExchangeTag => 'Swappable';
-
-  @override
   String get homeExchangeOnly => 'Swap only';
 
   @override

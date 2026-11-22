@@ -27,6 +27,11 @@ enum ListingCondition {
     forParts => l10n.conditionForParts,
   };
 
+  /// Nhãn hiện trên thẻ tin và trang chi tiết, gọn: chỉ "Mới"
+  /// hoặc "Đã sử dụng" (các mức như mới / còn tốt... đều là đã sử dụng)
+  String shortLabel(AppLocalizations l10n) =>
+      this == newItem ? l10n.listingConditionNew : l10n.listingConditionUsed;
+
   String description(AppLocalizations l10n) => switch (this) {
     newItem => l10n.conditionNewDesc,
     likeNew => l10n.conditionLikeNewDesc,

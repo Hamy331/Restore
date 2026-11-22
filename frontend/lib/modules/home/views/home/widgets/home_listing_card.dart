@@ -80,10 +80,6 @@ class HomeListingCard extends StatelessWidget {
                       children: [
                         if (item.isFeatured)
                           _Tag(label: l10n.homeFeaturedTag, highlighted: true),
-                        if (item.isFeatured && listing.allowExchange)
-                          const SizedBox(height: 4),
-                        if (listing.allowExchange)
-                          _Tag(label: l10n.homeExchangeTag),
                       ],
                     ),
                   ),

@@ -40,7 +40,7 @@ class ProductDetailSummary extends StatelessWidget {
         previousPrice ?? (discount == null ? null : listing.originalPrice);
     final createdAt = listing.createdAt;
     final tags = [
-      ?listing.condition?.label(l10n),
+      ?listing.condition?.shortLabel(l10n),
       // Danh mục con cụ thể hơn (Điện thoại) nên ưu tiên hơn danh mục cha
       ?(detail.category?.subcategory?.name ?? detail.category?.name)?.of(
         context,

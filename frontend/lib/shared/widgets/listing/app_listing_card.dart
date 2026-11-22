@@ -104,8 +104,6 @@ class AppListingCard extends StatelessWidget {
                           ),
                         if (item.isFeatured)
                           _HotBadge(label: l10n.homeFeaturedTag),
-                        if (listing.allowExchange)
-                          _Tag(label: l10n.homeExchangeTag),
                       ],
                     ),
                   ),

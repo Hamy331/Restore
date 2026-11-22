@@ -3548,12 +3548,6 @@ abstract class AppLocalizations {
   /// **'Hot'**
   String get homeFeaturedTag;
 
-  /// No description provided for @homeExchangeTag.
-  ///
-  /// In en, this message translates to:
-  /// **'Swappable'**
-  String get homeExchangeTag;
-
   /// No description provided for @homeExchangeOnly.
   ///
   /// In en, this message translates to:
