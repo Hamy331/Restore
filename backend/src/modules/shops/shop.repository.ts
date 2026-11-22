@@ -27,7 +27,12 @@ export const trustedListing = {
 export const findTrustedShops = () =>
   prisma.shop.findMany({ where: trusted, select: shopSelect });
 
-export const findShop = (id: string) => prisma.shop.findFirst({ where: { id, ...trusted }, select: shopSelect });
+/** Shop có trang công khai: đã duyệt hoặc đã xác minh (shop uy tín), chủ shop còn hoạt động */
+export const published = {
+  owner: { status: 'ACTIVE' }, OR: [{ status: 'APPROVED' }, { verificationType: { not: null } }],
+} as const satisfies Prisma.ShopWhereInput;
+
+export const findShop = (id: string) => prisma.shop.findFirst({ where: { id, ...published }, select: shopSelect });
 
 /** Số tin đang bán theo chủ shop */
 export async function countListingsByOwner(ownerIds: string[]) {
