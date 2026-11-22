@@ -54,6 +54,7 @@
         "activeUsers": 2,
         "activeListings": 3,
         "pendingStores": 0,
+        "pendingShops": 0,
         "pendingPromotions": 0,
         "promotionRevenue": "0",
         "logs": []

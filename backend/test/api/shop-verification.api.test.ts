@@ -24,7 +24,10 @@ test('shop verification: verify approved shops, unverify, audit', async () => {
   assert.equal((await api.post('/admin/shops/shop-new/verify', { ...admin, body: { type: 'CERTIFIED' } })).body.code,
     'SHOP_NOT_APPROVED', 'shop chờ duyệt chưa xác minh được');
 
+  const pendingShops = async () => (await api.get('/admin/dashboard', admin)).body.data.pendingShops as number;
+  assert.equal(await pendingShops(), 1, 'tổng quan đếm shop chờ duyệt');
   assert.equal((await api.post('/admin/shops/shop-new/approve', admin)).status, 200);
+  assert.equal(await pendingShops(), 0);
   const verify = await api.post('/admin/shops/shop-new/verify', { ...admin, body: { type: 'OFFICIAL_BRAND' } });
   assert.equal(verify.status, 200, JSON.stringify(verify.body));
   assert.equal(verify.body.data.verified, true);

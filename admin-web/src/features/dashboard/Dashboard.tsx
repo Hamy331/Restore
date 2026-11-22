@@ -12,6 +12,7 @@ import {
   ReloadOutlined,
   CheckCircleOutlined,
   EditOutlined,
+  SolutionOutlined,
 } from '@ant-design/icons';
 import { useWorkspace } from '../../app/workspace';
 import { auditColumns } from '../audit/AuditTable';
@@ -38,6 +39,7 @@ const queue = [
   },
   { key: 'openReports', section: 'reports', label: 'Báo cáo đang mở', icon: FlagOutlined },
   { key: 'pendingStores', section: 'stores', label: 'Đơn cửa hàng chờ xử lý', icon: ShopOutlined },
+  { key: 'pendingShops', section: 'shopReviews', label: 'Cửa hàng chờ duyệt', icon: SolutionOutlined },
   {
     key: 'pendingPromotions',
     section: 'promotions',
