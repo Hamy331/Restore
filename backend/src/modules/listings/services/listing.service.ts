@@ -19,6 +19,7 @@ import { COUNTED_STATUSES, findDayPacks } from '../repositories/posting-quota.re
 import { assertNotDuplicate, spendForListing } from './listing-lifecycle.service.js';
 import { removeStoredImages, revisionOnlyImages } from './image.service.js';
 import { assertPostingSlot, chargeListing, postingQuota } from './posting-quota.service.js';
+import { recordRecentView } from './favorite.service.js';
 
 type Viewer = AuthRequest['user'];
 
@@ -526,6 +527,7 @@ export async function viewListing(viewer: Viewer, id: string) {
   const views = await listingRepository.incrementViewCount(id, hasPermission(viewer?.role, PERMISSION.LISTING_MODERATE), viewer?.userId ?? '');
   if (!views.length) throw new AppError(404, 'LISTING_NOT_FOUND', 'Tin không còn hiển thị.');
   listing.viewCount = views[0]!.viewCount;
+  if (viewer?.userId && viewer.userId !== listing.ownerId) void recordRecentView(viewer.userId, id);
   const [seller, category, sellerActiveListings, favorite] = await listingRepository.findDetailExtras(
     listing.ownerId, listing.categoryId, id, viewer?.userId);
   // Trang chi tiết (docs: listing-api-contract.md mục 5): người bán công khai, danh mục kèm thuộc tính
