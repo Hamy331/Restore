@@ -903,3 +903,11 @@ h1 {
   white-space: normal;
   text-align: start;
 }
+
+/* Lịch sử xử lý của một đối tượng, trong hộp thoại xử lý thành viên */
+.target-history {
+  margin-bottom: 16px;
+}
+.target-history .history-row {
+  padding: 8px 0;
+}

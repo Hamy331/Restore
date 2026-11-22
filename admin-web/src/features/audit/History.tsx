@@ -44,22 +44,50 @@ function HistoryList({
       ) : !data.items.length ? (
         <p className="pad muted">Chưa có thao tác được ghi nhận.</p>
       ) : (
-        data.items.slice(0, 4).map((r) => (
-          <div className="history-row" key={r.id}>
-            <span className="metric-icon">
-              <HistoryOutlined />
-            </span>
-            <div>
-              <b>{actions[r.action] ?? r.action}</b> · {r.reason}
-              <div className="history-meta">
-                <RecordId value={r.targetId} />
-                <span>{actorName(r)}</span>
-                <time>{new Date(r.createdAt).toLocaleString('vi-VN')}</time>
-              </div>
-            </div>
-          </div>
-        ))
+        data.items.slice(0, 4).map((r) => <HistoryRow key={r.id} entry={r} showTarget />)
       )}
     </Panel>
+  );
+}
+function HistoryRow({ entry: r, showTarget }: { entry: Entry; showTarget?: boolean }) {
+  return (
+    <div className="history-row">
+      <span className="metric-icon">
+        <HistoryOutlined />
+      </span>
+      <div>
+        <b>{actions[r.action] ?? r.action}</b>
+        {r.reason && ' · ' + r.reason}
+        <div className="history-meta">
+          {showTarget && <RecordId value={r.targetId} />}
+          <span>{actorName(r)}</span>
+          <time>{new Date(r.createdAt).toLocaleString('vi-VN')}</time>
+        </div>
+      </div>
+    </div>
+  );
+}
+/** Các lần xử lý trước của một đối tượng (vd. một thành viên), mới nhất trước; ẩn nếu không xem được nhật ký */
+export function TargetHistory({ session, type, id }: { session: Session; type: string; id: string }) {
+  const { canOpen } = useWorkspace();
+  if (!canOpen('audit')) return null;
+  return <TargetHistoryList session={session} type={type} id={id} />;
+}
+function TargetHistoryList({ session, type, id }: { session: Session; type: string; id: string }) {
+  const { data, error } = useResource<Page<Entry>>(
+    session,
+    '/admin/audit?' + new URLSearchParams({ targetType: type, targetId: id }),
+  );
+  if (error) return <p className="muted">Không tải được lịch sử xử lý: {error}</p>;
+  if (!data) return <Spin size="small" />;
+  return (
+    <section className="target-history" aria-label="Lịch sử xử lý">
+      <b>
+        {data.total ? `Đã xử lý ${data.total} lần` : 'Chưa từng bị xử lý'}
+      </b>
+      {data.items.slice(0, 5).map((r) => (
+        <HistoryRow key={r.id} entry={r} />
+      ))}
+    </section>
   );
 }

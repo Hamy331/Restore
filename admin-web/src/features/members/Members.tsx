@@ -6,6 +6,7 @@ import { Failure } from '../../shared/ui/Failure';
 import { useWorkspace } from '../../app/workspace';
 import { pickFilter } from '../../app/route';
 import { memberStatus } from './MemberLink';
+import { TargetHistory } from '../audit/History';
 type Member = {
   phone: string | null;
   _count: { listings: number };
@@ -108,6 +109,7 @@ function MemberAction({
         </Space>
       }
     >
+      <TargetHistory session={session} type="USER" id={member.id} />
       <Form
         form={form}
         layout="vertical"
