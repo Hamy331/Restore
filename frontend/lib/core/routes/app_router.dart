@@ -375,6 +375,11 @@ GoRouter createAppRouter(
       parentNavigatorKey: _frameNavigatorKey,
       builder: (_, _) => const MyReviewsView(received: true),
     ),
+    GoRoute(
+      path: MyReviewsView.transactionsPath,
+      parentNavigatorKey: _frameNavigatorKey,
+      builder: (_, _) => const MyReviewsView(transactions: true),
+    ),
     // Chỉnh sửa hồ sơ, mở từ tab Tài khoản (extra = UserProfileCubit);
     // thiếu extra (VD mở lại từ link) thì về tab Tài khoản
     GoRoute(
