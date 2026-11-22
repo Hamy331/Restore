@@ -476,6 +476,7 @@ GoRouter createAppRouter(
         state: state,
         child: CategoryDetailView(
           categoryId: state.pathParameters['id']!,
+          subcategoryId: state.uri.queryParameters['sub'],
           category: state.extra is CategoryModel
               ? state.extra! as CategoryModel
               : null,

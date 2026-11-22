@@ -10447,6 +10447,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Negotiating'**
   String get chatNegotiating;
+
+  /// No description provided for @searchCategorySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get searchCategorySuggestion;
+
+  /// No description provided for @searchSubcategorySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'In {parent}'**
+  String searchSubcategorySuggestion(String parent);
 }
 
 class _AppLocalizationsDelegate

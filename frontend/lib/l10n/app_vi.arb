@@ -3386,5 +3386,7 @@
   "offerSentGoToChat": "Đi tới trò chuyện",
   "chatTabAll": "Tất cả",
   "chatTabUnread": "Chưa đọc",
-  "chatNegotiating": "Đang thương lượng"
+  "chatNegotiating": "Đang thương lượng",
+  "searchCategorySuggestion": "Danh mục",
+  "searchSubcategorySuggestion": "Trong {parent}"
 }

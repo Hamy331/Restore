@@ -5955,4 +5955,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chatNegotiating => 'Đang thương lượng';
+
+  @override
+  String get searchCategorySuggestion => 'Danh mục';
+
+  @override
+  String searchSubcategorySuggestion(String parent) {
+    return 'Trong $parent';
+  }
 }

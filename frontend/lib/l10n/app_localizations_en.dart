@@ -6060,4 +6060,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatNegotiating => 'Negotiating';
+
+  @override
+  String get searchCategorySuggestion => 'Category';
+
+  @override
+  String searchSubcategorySuggestion(String parent) {
+    return 'In $parent';
+  }
 }

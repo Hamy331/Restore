@@ -3604,5 +3604,8 @@
   "offerSentGoToChat": "Go to chat",
   "chatTabAll": "All",
   "chatTabUnread": "Unread",
-  "chatNegotiating": "Negotiating"
+  "chatNegotiating": "Negotiating",
+  "searchCategorySuggestion": "Category",
+  "searchSubcategorySuggestion": "In {parent}",
+  "@searchSubcategorySuggestion": {"placeholders":{"parent":{"type":"String"}}}
 }

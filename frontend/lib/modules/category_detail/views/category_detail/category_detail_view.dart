@@ -17,16 +17,23 @@ class CategoryDetailView extends StatelessWidget {
   final String categoryId;
   final CategoryModel? category;
 
+  /// Danh mục con mở sẵn (`?sub=`), VD gợi ý "Điện thoại" trong ô tìm kiếm
+  final String? subcategoryId;
+
   const CategoryDetailView({
     super.key,
     required this.categoryId,
     this.category,
+    this.subcategoryId,
   });
 
   static const String path = '/categories/:id';
 
   /// Đường dẫn mở trang của danh mục [categoryId]
-  static String location(String categoryId) => '/categories/$categoryId';
+  static String location(String categoryId, {String? subcategoryId}) => Uri(
+    path: '/categories/$categoryId',
+    queryParameters: subcategoryId == null ? null : {'sub': subcategoryId},
+  ).toString();
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +46,7 @@ class CategoryDetailView extends StatelessWidget {
         category: category,
         filter: CategoryDetailState.defaultFilterFor(
           categoryId,
-        ).withUserArea(context),
+        ).withUserArea(context).withSubcategory(subcategoryId),
       )..start(),
       child: const TResponsiveLayout(
         mobile: CategoryDetailMobileView(),
