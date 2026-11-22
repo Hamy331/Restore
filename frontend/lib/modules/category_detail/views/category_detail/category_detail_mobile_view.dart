@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_scroll.dart';
-import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
+import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
+import 'package:restore/shared/widgets/search/app_listing_search_bar.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/models/listing_filter.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
@@ -28,15 +30,22 @@ import '../../bloc/category_detail_state.dart';
 import 'category_detail_view.dart';
 import 'package:restore/shared/widgets/filter/listing_chip_filter_bar.dart';
 
-/// Trang tin của một danh mục, cùng một bố cục cho điện thoại và web
-/// desktop ([wide]): đầu trang trắng gồm ô tìm kiếm mang tên danh mục,
-/// khu vực, hàng nút lọc, chọn nhanh tỉnh/thành, hàng sắp xếp; bên dưới
-/// là danh sách tin dạng hàng ngang (có thể đổi sang lưới).
+/// Trang tin của một danh mục, trông giống hệt trang kết quả tìm kiếm: cùng
+/// thanh tìm kiếm ghim trên dải xanh (ô hiện tên danh mục), cùng thanh lọc,
+/// hàng Khu vực, hàng sắp xếp; bên dưới là danh sách tin dạng hàng ngang (có
+/// thể đổi sang lưới). Web desktop ([wide]) dùng ô tìm kiếm của header site.
 class CategoryDetailMobileView extends StatefulWidget {
-  const CategoryDetailMobileView({super.key, this.wide = false});
+  const CategoryDetailMobileView({
+    super.key,
+    this.wide = false,
+    this.fromSearch = false,
+  });
 
   /// Web desktop: đặt trong khung giữa màn hình (header site ở trên)
   final bool wide;
+
+  /// Mở từ trang tìm kiếm: chạm ô tìm kiếm thì quay lại trang đó
+  final bool fromSearch;
 
   @override
   State<CategoryDetailMobileView> createState() =>
@@ -44,7 +53,43 @@ class CategoryDetailMobileView extends StatefulWidget {
 }
 
 class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
+  static const double _contentRadius = 24;
+
+  /// Ô tìm kiếm (48) + lề trên dưới, như phần đầu trang kết quả
+  static const double _searchBarHeight = 8 + AppListingSearchBar.height + 12;
+
   bool _grid = false;
+
+  final _scrollController = ScrollController();
+
+  /// Thanh tìm kiếm đã ghim (đã cuộn), để dải thanh trạng thái đổi màu theo
+  final _headerPinned = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateHeaderPinned);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _headerPinned.dispose();
+    super.dispose();
+  }
+
+  void _updateHeaderPinned() =>
+      _headerPinned.value = _scrollController.offset > 0;
+
+  /// Chạm ô tìm kiếm: quay lại trang tìm kiếm nếu vừa từ đó sang (ô đã được
+  /// xoá trống), không thì mở trang tìm kiếm trống
+  void _editQuery() {
+    if (widget.fromSearch && context.canPop()) {
+      context.pop();
+      return;
+    }
+    context.push('/search');
+  }
 
   CategoryDetailCubit get _cubit => context.read<CategoryDetailCubit>();
 
@@ -89,12 +134,6 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
           grid: _grid,
           wide: widget.wide,
           onBack: _back,
-          onSearch: () => context.push('/search'),
-          onSaveSearch: () => context.push(
-            WantedAlertCreateView.location(
-              keywords: state.category?.name.of(context) ?? '',
-            ),
-          ),
           onFilters: _openFilters,
           onFilterChanged: _cubit.applyFilter,
           onSwitchCategory: (id) =>
@@ -127,31 +166,91 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
         }
 
         final padding = MediaQuery.paddingOf(context);
-        return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.dark,
-          child: Scaffold(
-            backgroundColor: AppColors.surface,
-            body: SafeArea(
-              bottom: false,
-              child: AppPullToRefresh(
-                onRefresh: _cubit.refresh,
-                child: AppLoadMoreListener(
-                  onLoadMore: _cubit.loadMore,
-                  child: CustomScrollView(
-                    // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
-                    scrollCacheExtent: AppScroll.prefetchCacheExtent,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      SliverToBoxAdapter(child: header),
-                      ..._content(state, wide: false),
-                      SliverToBoxAdapter(
-                        child: SizedBox(height: padding.bottom + 16),
+        final name = state.category?.name.of(context) ?? '';
+        return Scaffold(
+          backgroundColor: AppColors.surface,
+          body: Column(
+            children: [
+              // Thanh trạng thái cùng màu phần đầu, chuyển trắng khi đã cuộn
+              ValueListenableBuilder<bool>(
+                valueListenable: _headerPinned,
+                builder: (context, pinned, _) => AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  height: padding.top,
+                  width: double.infinity,
+                  color: pinned
+                      ? AppPinnedHeaderSurface.pinnedColor
+                      : AppHeaderPalette.bottom,
+                ),
+              ),
+              Expanded(
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: AppPullToRefresh(
+                    onRefresh: _cubit.refresh,
+                    child: AppLoadMoreListener(
+                      onLoadMore: _cubit.loadMore,
+                      child: CustomScrollView(
+                        // Dựng sẵn và tải ảnh trước khoảng 1,5 màn hình phía dưới
+                        scrollCacheExtent: AppScroll.prefetchCacheExtent,
+                        controller: _scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        slivers: [
+                          SliverPersistentHeader(
+                            pinned: true,
+                            delegate: AppPinnedHeaderDelegate(
+                              height: _searchBarHeight,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 8,
+                                  bottom: 12,
+                                ),
+                                child: AppListingSearchBar(
+                                  // Đang duyệt danh mục, không phải tìm từ
+                                  // khoá: ô trống với chữ gợi ý
+                                  text: AppLocalizations.of(
+                                    context,
+                                  )!.homeSearchHint,
+                                  isPlaceholder: true,
+                                  onBack: _back,
+                                  onEdit: _editQuery,
+                                  onSave: () => context.push(
+                                    WantedAlertCreateView.location(
+                                      keywords: name,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Mép trên bo cong của phần nội dung trắng
+                          SliverToBoxAdapter(
+                            child: ColoredBox(
+                              color: AppHeaderPalette.bottom,
+                              child: Container(
+                                height: _contentRadius,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.surface,
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(_contentRadius),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SliverToBoxAdapter(child: header),
+                          ..._content(state, wide: false),
+                          SliverToBoxAdapter(
+                            child: SizedBox(height: padding.bottom + 16),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       },
@@ -265,16 +364,14 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
   }
 }
 
-/// Đầu trang trắng của trang danh mục: ô tìm kiếm mang tên danh mục, thanh
-/// lọc dùng chung (như trang tìm kiếm) và hàng sắp xếp
+/// Thanh lọc dùng chung (như trang kết quả tìm kiếm) và hàng sắp xếp của
+/// trang danh mục; ô tìm kiếm là [AppListingSearchBar] ghim ở đầu trang
 class _Header extends StatelessWidget {
   const _Header({
     required this.state,
     required this.grid,
     required this.wide,
     required this.onBack,
-    required this.onSearch,
-    required this.onSaveSearch,
     required this.onFilters,
     required this.onFilterChanged,
     required this.onSwitchCategory,
@@ -287,8 +384,6 @@ class _Header extends StatelessWidget {
   final bool grid;
   final bool wide;
   final VoidCallback onBack;
-  final VoidCallback onSearch;
-  final VoidCallback onSaveSearch;
   final VoidCallback onFilters;
   final ValueChanged<ListingFilter> onFilterChanged;
   final ValueChanged<String> onSwitchCategory;
@@ -298,80 +393,10 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final vi = Localizations.localeOf(context).languageCode == 'vi';
-    String t(String vn, String en) => vi ? vn : en;
-    final categoryName = state.category?.name.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Quay lại + ô tìm kiếm mang tên danh mục + lưu tìm kiếm
-        Padding(
-          padding: EdgeInsets.fromLTRB(wide ? 12 : 4, wide ? 14 : 6, 12, 6),
-          child: Row(
-            children: [
-              IconButton(
-                tooltip: l10n.back,
-                onPressed: onBack,
-                icon: const Icon(AppIcons.back, size: 24),
-              ),
-              Expanded(
-                child: Material(
-                  color: ListingBarChip.fill,
-                  borderRadius: BorderRadius.circular(24),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(24),
-                    onTap: onSearch,
-                    child: SizedBox(
-                      height: 46,
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 14),
-                          const Icon(
-                            AppIcons.search,
-                            size: 20,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              categoryName ?? l10n.categoryDetailSearch,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 1,
-                            height: 22,
-                            color: AppColors.border,
-                          ),
-                          IconButton(
-                            tooltip: t(
-                              'Lưu tìm kiếm, báo khi có hàng',
-                              'Save search',
-                            ),
-                            onPressed: onSaveSearch,
-                            icon: const Icon(
-                              Icons.bookmark_border,
-                              size: 22,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 6),
+        if (wide) const SizedBox(height: 14),
         ListingChipFilterBar(
           filter: state.filter,
           defaults: state.defaultFilter,

@@ -270,13 +270,20 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
                                     showSearch: !isDesktop,
                                   ),
                                   color: headerColor,
-                                  child: SearchResultsHeader(
-                                    showSearch: !isDesktop,
-                                    query: state.query,
-                                    tab: _tab,
-                                    onTabChanged: _selectTab,
-                                    onBack: _back,
-                                    onEditQuery: _editQuery,
+                                  // Chưa ghim thì nằm trên nền xanh: tab chữ trắng
+                                  child: ValueListenableBuilder<bool>(
+                                    valueListenable: _headerPinned,
+                                    builder: (context, pinned, _) =>
+                                        SearchResultsHeader(
+                                          showSearch: !isDesktop,
+                                          onDark: !isDesktop && !pinned,
+                                          query: state.query,
+                                          tab: _tab,
+                                          onTabChanged: _selectTab,
+                                          onBack: _back,
+                                          onEditQuery: _editQuery,
+                                          onSaveSearch: _createAlert,
+                                        ),
                                   ),
                                 ),
                               ),

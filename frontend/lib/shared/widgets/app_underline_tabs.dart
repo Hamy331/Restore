@@ -11,6 +11,9 @@ class AppUnderlineTabs extends StatelessWidget {
   final ValueChanged<int> onChanged;
   final EdgeInsetsGeometry padding;
 
+  /// Nằm trên nền xanh của phần đầu (chưa ghim): chữ trắng cho dễ đọc
+  final bool onDark;
+
   static const double height = 40;
 
   const AppUnderlineTabs({
@@ -19,6 +22,7 @@ class AppUnderlineTabs extends StatelessWidget {
     required this.selectedIndex,
     required this.onChanged,
     this.padding = const EdgeInsets.symmetric(horizontal: 16),
+    this.onDark = false,
   });
 
   @override
@@ -37,7 +41,11 @@ class AppUnderlineTabs extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
                     onTap: () => onChanged(i),
-                    child: _Tab(label: labels[i], selected: i == selectedIndex),
+                    child: _Tab(
+                      label: labels[i],
+                      selected: i == selectedIndex,
+                      onDark: onDark,
+                    ),
                   ),
                 ),
               ),
@@ -51,8 +59,13 @@ class AppUnderlineTabs extends StatelessWidget {
 class _Tab extends StatelessWidget {
   final String label;
   final bool selected;
+  final bool onDark;
 
-  const _Tab({required this.label, required this.selected});
+  const _Tab({
+    required this.label,
+    required this.selected,
+    required this.onDark,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +77,9 @@ class _Tab extends StatelessWidget {
           style: TextStyle(
             fontSize: 14.5,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? AppColors.textPrimary : AppColors.textSecondary,
+            color: onDark
+                ? (selected ? Colors.white : Colors.white70)
+                : (selected ? AppColors.textPrimary : AppColors.textSecondary),
           ),
           child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
         ),

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/shared/widgets/app_circle_icon_button.dart';
-import 'package:restore/shared/widgets/app_search_pill.dart';
 import 'package:restore/shared/widgets/app_underline_tabs.dart';
+import 'package:restore/shared/widgets/search/app_listing_search_bar.dart';
 
 import '../../../bloc/search_results_state.dart';
 
@@ -17,8 +15,14 @@ class SearchResultsHeader extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onEditQuery;
 
+  /// Lưu tìm kiếm thành "Báo khi có hàng"
+  final VoidCallback onSaveSearch;
+
   /// false: ẩn nút quay lại + ô từ khoá (màn rộng đã có ô tìm kiếm ở trên)
   final bool showSearch;
+
+  /// Phần đầu đang trên nền xanh (chưa ghim, điện thoại): tab chữ trắng
+  final bool onDark;
 
   const SearchResultsHeader({
     super.key,
@@ -27,7 +31,9 @@ class SearchResultsHeader extends StatelessWidget {
     required this.onTabChanged,
     required this.onBack,
     required this.onEditQuery,
+    required this.onSaveSearch,
     this.showSearch = true,
+    this.onDark = false,
   });
 
   /// Ô tìm kiếm (48) + hàng tab + lề trên dưới
@@ -42,25 +48,11 @@ class SearchResultsHeader extends StatelessWidget {
       child: Column(
         children: [
           if (showSearch) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
-              child: Row(
-                children: [
-                  AppCircleIconButton(
-                    icon: AppIcons.back,
-                    tooltip: l10n.back,
-                    onTap: onBack,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: AppSearchPill(
-                      text: query,
-                      isPlaceholder: false,
-                      onTap: onEditQuery,
-                    ),
-                  ),
-                ],
-              ),
+            AppListingSearchBar(
+              text: query,
+              onBack: onBack,
+              onEdit: onEditQuery,
+              onSave: onSaveSearch,
             ),
             const SizedBox(height: 4),
           ],
@@ -71,6 +63,7 @@ class SearchResultsHeader extends StatelessWidget {
               l10n.searchUsersSection,
             ],
             selectedIndex: tab.index,
+            onDark: onDark,
             onChanged: (index) => onTabChanged(SearchResultsTab.values[index]),
           ),
         ],
