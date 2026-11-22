@@ -29,7 +29,6 @@ const productContext = {
       ...previewSelect,
       ownerId: true,
       status: true,
-      _count: { select: { conversations: { where: { trade: { isNot: null } } } } },
     },
   },
   trade: {
@@ -41,7 +40,7 @@ const threadSelect = {
   createdAt: true,
   updatedAt: true,
   members: { select: { userId: true, blocked: true, user: { select: userSelect } } },
-  contexts: { orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }], take: 1, select: productContext },
+  members: { select: { userId: true, blocked: true, lastReadSequence: true, user: { select: userSelect } } },
 } satisfies Prisma.ConversationSelect;
 
 export const findRecipient = (id: string) =>

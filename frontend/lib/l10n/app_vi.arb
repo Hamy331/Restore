@@ -3373,6 +3373,8 @@
   "filterClear": "Xoá lọc",
   "filterSearchHint": "Nhập tìm {label}",
   "filterPlusMax": "{value}+",
+  "chatSent": "Đã gửi",
+  "chatSeen": "Đã xem",
   "offerSentToast": "Trả giá thành công",
   "offerSentGoToChat": "Đi tới trò chuyện"
 }

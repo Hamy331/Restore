@@ -5914,6 +5914,12 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get chatSent => 'Đã gửi';
+
+  @override
+  String get chatSeen => 'Đã xem';
+
+  @override
   String get offerSentToast => 'Trả giá thành công';
 
   @override

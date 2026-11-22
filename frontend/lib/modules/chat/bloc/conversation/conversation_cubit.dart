@@ -55,7 +55,7 @@ class ConversationCubit extends Cubit<ConversationState> {
   void start() {
     unawaited(load());
     _events = _repository.events().listen((event) {
-      if (event == 'message' || event == 'presence') {
+      if (event == 'message' || event == 'presence' || event == 'seen') {
         unawaited(load(silent: true));
       }
     }, onError: (Object _) {});

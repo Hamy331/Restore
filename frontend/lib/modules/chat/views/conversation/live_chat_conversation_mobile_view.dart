@@ -240,6 +240,8 @@ class _LiveChatConversationMobileViewState
           builder: (context, state) {
             final person = state.conversation?.otherUser;
             final trade = state.conversation?.trade;
+            // Tin cuối mình gửi: hiện trạng thái Đã gửi / Đã xem
+            final lastMine = state.messages.where(state.isMine).lastOrNull;
             return Column(
               children: [
                 Material(
@@ -396,6 +398,14 @@ class _LiveChatConversationMobileViewState
                                 message: message,
                                 thread: cubit.conversationId,
                                 mine: state.isMine(message),
+                                // Tin cuối mình gửi: Đã gửi / Đã xem
+                                seen: message.id == lastMine?.id
+                                    ? (message.sequence ?? 0) <=
+                                          (state
+                                                  .conversation
+                                                  ?.otherReadSequence ??
+                                              0)
+                                    : null,
                                 onOpenProduct: message.product == null
                                     ? null
                                     : () => context.push(
@@ -572,11 +582,15 @@ class _MessageBubble extends StatelessWidget {
     required this.mine,
     required this.thread,
     this.onOpenProduct,
+    this.seen,
   });
   final ChatMessage message;
   final bool mine;
   final String thread;
   final VoidCallback? onOpenProduct;
+
+  /// Chỉ có ở tin cuối mình gửi: true "Đã xem", false "Đã gửi"
+  final bool? seen;
 
   @override
   Widget build(BuildContext context) {
@@ -609,9 +623,32 @@ class _MessageBubble extends StatelessWidget {
             else
               Text(message.text),
             const SizedBox(height: 3),
-            Text(
-              '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
-              style: const TextStyle(fontSize: 10, color: Color(0xFF70695F)),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  [
+                    '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
+                    if ((seen, AppLocalizations.of(context)) case (
+                      final seen?,
+                      final l?,
+                    ))
+                      seen ? l.chatSeen : l.chatSent,
+                  ].join(' | '),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFF70695F),
+                  ),
+                ),
+                if (seen == true) ...[
+                  const SizedBox(width: 3),
+                  const Icon(
+                    Icons.check_circle,
+                    size: 11,
+                    color: Color(0xFF70695F),
+                  ),
+                ],
+              ],
             ),
           ],
         ),

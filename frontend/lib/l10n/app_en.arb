@@ -3591,6 +3591,8 @@
   "@filterSearchHint": {"placeholders":{"label":{"type":"String"}}},
   "filterPlusMax": "{value}+",
   "@filterPlusMax": {"placeholders":{"value":{"type":"String"}}},
+  "chatSent": "Sent",
+  "chatSeen": "Seen",
   "offerSentToast": "Offer sent",
   "offerSentGoToChat": "Go to chat"
 }

@@ -49,10 +49,10 @@ function listingContext(context: Thread['contexts'][number] | undefined | null, 
     ...(listing && {
       product: repository.listingPreview(listing),
       // Mọi tin có bán đều trả giá được (không còn tuỳ chọn "có thể thương lượng")
+      // Mọi tin có bán đều trả giá được (không còn tuỳ chọn "có thể thương lượng")
       canOffer:
         listing.ownerId !== selfId &&
         listing.status === 'AVAILABLE' &&
-        listing.allowSale &&
         !trade,
     }),
     title: trade?.title ?? listing!.title,
@@ -94,6 +94,8 @@ async function summaries(selfId: string, threads: Thread[]) {
       otherUser: { ...peer.user, isOnline: online(peer.user.lastActiveAt) },
       lastMessage: latest.get(stat?.latest ?? 0) ?? null,
       unreadCount: stat?.unread ?? 0,
+      // Người kia đã đọc tới tin nào: tin của mình có sequence <= số này là "Đã xem"
+      otherReadSequence: peer.lastReadSequence,
     };
   });
 }

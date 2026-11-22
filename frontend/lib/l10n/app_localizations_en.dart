@@ -6020,6 +6020,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get chatSent => 'Sent';
+
+  @override
+  String get chatSeen => 'Seen';
+
+  @override
   String get offerSentToast => 'Offer sent';
 
   @override

@@ -139,10 +139,15 @@ class ChatConversation extends Equatable {
     this.trade,
     this.blocked = false,
     this.blockedByMe = false,
+    this.otherReadSequence = 0,
   });
   final String id;
   final ChatPerson otherUser;
   final int unreadCount;
+
+  /// Người kia đã đọc tới tin có sequence này: tin của mình có sequence nhỏ
+  /// hơn hoặc bằng là "Đã xem"
+  final int otherReadSequence;
   final ChatMessage? lastMessage;
   final ChatTrade? trade;
   final bool blocked, blockedByMe;
@@ -159,6 +164,7 @@ class ChatConversation extends Equatable {
           Map<String, dynamic>.from(json['otherUser'] as Map),
         ),
         unreadCount: (json['unreadCount'] as num?)?.toInt() ?? 0,
+        otherReadSequence: (json['otherReadSequence'] as num?)?.toInt() ?? 0,
         lastMessage: json['lastMessage'] is Map
             ? ChatMessage.fromJson(
                 Map<String, dynamic>.from(json['lastMessage'] as Map),
@@ -175,6 +181,7 @@ class ChatConversation extends Equatable {
     trade,
     blocked,
     blockedByMe,
+    otherReadSequence,
   ];
 }
 

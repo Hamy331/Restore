@@ -10364,6 +10364,18 @@ abstract class AppLocalizations {
   /// **'{value}+'**
   String filterPlusMax(String value);
 
+  /// No description provided for @chatSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get chatSent;
+
+  /// No description provided for @chatSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Seen'**
+  String get chatSeen;
+
   /// No description provided for @offerSentToast.
   ///
   /// In en, this message translates to:
