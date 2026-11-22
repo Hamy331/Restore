@@ -19,7 +19,7 @@ test('listing search is routed as a feed query rather than a listing ID', async 
   }
 });
 import { ListingStatus, Prisma } from '@prisma/client';
-import { createInput, draftInput, feedQuery, listingFilters, orderedImages, recommendedQuery, validateAttributes } from './listing.validator.js';
+import { batchQuery, createInput, draftInput, feedQuery, listingFilters, orderedImages, recommendedQuery, validateAttributes } from './listing.validator.js';
 import { canChangeListingStatus, requireOwnedListing, updateOwnedListing } from './services/listing.service.js';
 import { imageExtension } from './services/image.service.js';
 import { AppError } from '../../common/errors/app-error.js';
@@ -96,6 +96,11 @@ test('listing filters validate range and normalize search values', () => {
     { year: { min: '2015', max: '2020' }, mileage: { min: null, max: '50000' } });
   assert.throws(() => listingFilters({ 'attrMin.year': '2020', 'attrMax.year': '2015' }), { code: 'INVALID_QUERY' });
   assert.throws(() => listingFilters({ 'attrMin.year': '20; DROP' }), { code: 'INVALID_QUERY' });
+  // GET /listings/batch (Xem gần đây): giữ thứ tự, bỏ trùng, tối đa 50 mã
+  assert.deepEqual(parse(batchQuery, { ids: 'b, a,b' }).ids, ['b', 'a']);
+  assert.deepEqual(parse(batchQuery, {}).ids, []);
+  assert.throws(() => parse(batchQuery, { ids: "a';--" }));
+  assert.throws(() => parse(batchQuery, { ids: Array.from({ length: 51 }, (_, i) => `id${i}`).join(',') }));
   assert.deepEqual(listingFilters({ 'attr.brand': 'Apple, Samsung', 'attr.storage': '' }).attributes, { brand: ['Apple', 'Samsung'] });
   assert.throws(() => listingFilters({ "attr.brand'--": 'Apple' }), { code: 'INVALID_QUERY' });
   assert.equal(listingFilters({ provinceCode: '79' }).provinceCode, '79');
