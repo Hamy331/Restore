@@ -72,7 +72,7 @@ export const rejectShop = (adminId: string, id: string, note: string, now = new 
   decide(adminId, id, 'REJECTED', note, now);
 
 /** Mã chứng nhận kế tiếp trong năm, VD "RS-2026-00129" (số 5 chữ số nên so chuỗi cũng đúng thứ tự) */
-async function nextCertificateCode(tx: Prisma.TransactionClient, now: Date) {
+export async function nextCertificateCode(tx: Prisma.TransactionClient, now: Date) {
   const prefix = `RS-${now.getUTCFullYear()}-`;
   const last = await tx.shop.findFirst({
     where: { certificateCode: { startsWith: prefix } }, orderBy: { certificateCode: 'desc' }, select: { certificateCode: true },
@@ -97,6 +97,12 @@ export function setVerification(adminId: string, id: string, type: 'OFFICIAL_BRA
       ? { verificationType: type, verifiedAt: now, certificateCode: await nextCertificateCode(tx, now) }
       : { verificationType: null, verifiedAt: null, certificateCode: null };
     await tx.shop.update({ where: { id }, data });
+    // Xác minh trực tiếp thì hồ sơ xin xác minh đang chờ (nếu có) coi như đã duyệt
+    if (type) {
+      await tx.shopVerification.updateMany({
+        where: { shopId: id, status: 'PENDING' }, data: { status: 'APPROVED', reviewedAt: now, reviewedById: adminId },
+      });
+    }
     await audit(tx, adminId, type ? 'SHOP_VERIFY' : 'SHOP_UNVERIFY', 'Shop', id, reason,
       { verificationType: shop.verificationType, certificateCode: shop.certificateCode },
       { verificationType: data.verificationType, certificateCode: data.certificateCode });

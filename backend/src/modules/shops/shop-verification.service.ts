@@ -6,6 +6,7 @@ import { prisma } from '../../lib/prisma.js';
 import { storePackageForUser } from '../commerce/services/quota.service.js';
 import { isMediaUrl } from '../media/media.service.js';
 import { getMyShop } from './my-shop.service.js';
+import { nextCertificateCode } from './shop-review.service.js';
 import type { ShopVerificationBody } from './my-shop.validator.js';
 
 /**
@@ -60,13 +61,6 @@ export async function adminListVerifications(status: ShopStatus | 'ALL') {
   return { pendingCount, items };
 }
 
-/** Mã chứng nhận "RS-<năm>-<số thứ tự>", tiếp theo các shop đã xác minh */
-async function nextCertificateCode(tx: Prisma.TransactionClient, now: Date) {
-  // ponytail: đếm số shop đã có mã, hai admin duyệt cùng lúc có thể trùng số; cần duy nhất thì dùng sequence
-  const issued = await tx.shop.count({ where: { certificateCode: { not: null } } });
-  return `RS-${now.getFullYear()}-${String(issued + 101).padStart(5, '0')}`;
-}
-
 /** Duyệt / từ chối hồ sơ đang chờ, ghi AdminAudit, rồi báo chủ shop. Lỗi 404 VERIFICATION_NOT_FOUND, 409 VERIFICATION_NOT_PENDING */
 async function decide(adminId: string, id: string, decision: { type: ShopVerificationType } | { note: string }, now: Date) {
   const approved = 'type' in decision;
@@ -80,14 +74,17 @@ async function decide(adminId: string, id: string, decision: { type: ShopVerific
       if (!exists) throw new AppError(404, 'VERIFICATION_NOT_FOUND', 'Không tìm thấy hồ sơ xác minh.');
       throw new AppError(409, 'VERIFICATION_NOT_PENDING', 'Hồ sơ không còn ở trạng thái chờ duyệt.');
     }
-    const { shopId } = await tx.shopVerification.findUniqueOrThrow({ where: { id }, select: { shopId: true } });
-    if (approved) {
+    const { shopId, shop } = await tx.shopVerification.findUniqueOrThrow({
+      where: { id }, select: { shopId: true, shop: { select: { verificationType: true } } },
+    });
+    // Shop đã được xác minh trực tiếp thì giữ nguyên nhãn và mã cũ
+    if (approved && !shop.verificationType) {
       await tx.shop.update({
         where: { id: shopId },
         data: { verificationType: decision.type, verifiedAt: now, certificateCode: await nextCertificateCode(tx, now) },
       });
     }
-    await audit(tx, adminId, approved ? 'SHOP_VERIFY' : 'SHOP_VERIFY_REJECT', 'ShopVerification', id,
+    await audit(tx, adminId, approved ? 'SHOP_VERIFY' : 'SHOP_VERIFY_REJECT', 'Shop', shopId,
       approved ? decision.type : decision.note, { status: 'PENDING' }, approved ? { type: decision.type } : { note: decision.note });
     return tx.shopVerification.findUniqueOrThrow({ where: { id }, select: adminSelect });
   });
