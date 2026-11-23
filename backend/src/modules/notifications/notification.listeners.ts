@@ -279,6 +279,20 @@ export async function notifyShopReviewed(event: DomainEvents['shop.reviewed']) {
   });
 }
 
+/** Admin duyệt / từ chối hồ sơ xác minh shop; bấm vào mở trang Quản lý shop */
+export async function notifyShopVerificationReviewed(event: DomainEvents['shop.verificationReviewed']) {
+  await notify({
+    userId: event.ownerId,
+    type: event.approved ? 'SHOP_VERIFIED' : 'SHOP_VERIFICATION_REJECTED',
+    title: event.approved ? 'Shop đã được xác minh' : 'Hồ sơ xác minh chưa được duyệt',
+    body: event.approved
+      ? `Shop "${event.shopName}" đã được xác minh${event.certificateCode ? ` (mã ${event.certificateCode})` : ''} và hiện ở mục Shop uy tín.`
+      : `Hồ sơ xác minh của shop "${event.shopName}" chưa được duyệt. Lý do: ${(event.note ?? '').replace(/[.\s]+$/, '')}. Bổ sung giấy tờ rồi gửi lại.`,
+    link: '/my-shop',
+    data: { shopId: event.shopId, shopName: event.shopName, reason: event.note, certificateCode: event.certificateCode },
+  });
+}
+
 /** 2.10 Admin duyệt / từ chối poster của shop */
 export async function notifyPosterReviewed(event: DomainEvents['poster.reviewed']) {
   const reason = event.reason ? [POSTER_REASONS[event.reason] ?? event.reason, event.note].filter(Boolean).join(': ') : null;
