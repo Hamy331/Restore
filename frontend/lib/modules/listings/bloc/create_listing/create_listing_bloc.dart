@@ -81,6 +81,9 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         ),
       ),
     );
+    on<ShopOnlyChanged>(
+      (event, emit) => emit(state.copyWith(shopOnly: event.value)),
+    );
     on<BasicInfoSubmitted>(
       (event, emit) => emit(state.copyWith(showBasicInfoErrors: true)),
     );
@@ -314,6 +317,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     // Sửa tin đã đăng thì tin đã có suất (backend báo nếu cần suất mới)
     if (!event.payWithCredits &&
         !state.isEditing &&
+        !state.postsShopOnly &&
         (state.quota?.isFull(state.draft.categoryId) ?? false)) {
       emit(state.copyWith(postingLimitHits: state.postingLimitHits + 1));
       return;
@@ -334,6 +338,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         payWithCredits: event.payWithCredits,
         allowDuplicate: event.allowDuplicate,
         acceptFlags: acceptFlags,
+        shopOnly: state.postsShopOnly,
       );
       emit(
         state.copyWith(

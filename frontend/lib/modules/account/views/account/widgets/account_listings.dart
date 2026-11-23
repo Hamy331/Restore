@@ -244,6 +244,15 @@ class _ListingRow extends StatelessWidget {
                       const SizedBox(height: 6),
                       _ExpiryChip(label: expiry, urgent: expiryUrgent),
                     ],
+                    if (item.shopOnly) ...[
+                      const SizedBox(height: 6),
+                      _ExpiryChip(
+                        key: ValueKey('listing-shop-only-${item.id}'),
+                        icon: AppIcons.store,
+                        label: l.accShopOnly,
+                        urgent: false,
+                      ),
+                    ],
                     if (item.editStatus case final edit?) ...[
                       const SizedBox(height: 6),
                       _ExpiryChip(
@@ -298,12 +307,21 @@ class _ListingRow extends StatelessWidget {
               if (visible) ...[
                 const SizedBox(width: 6),
                 Expanded(
-                  child: _RowAction(
-                    l.accBoost,
-                    icon: AppIcons.boost,
-                    filled: true,
-                    onTap: () => promoteAccountListing(context, item),
-                  ),
+                  child: item.shopOnly
+                      ? _RowAction(
+                          l.accToMarketplace,
+                          key: ValueKey('listing-to-marketplace-${item.id}'),
+                          icon: AppIcons.globe,
+                          filled: true,
+                          onTap: () =>
+                              publishAccountListingToMarketplace(context, item),
+                        )
+                      : _RowAction(
+                          l.accBoost,
+                          icon: AppIcons.boost,
+                          filled: true,
+                          onTap: () => promoteAccountListing(context, item),
+                        ),
                 ),
               ],
               if (visible || item.editStatus != null) ...[
@@ -311,18 +329,19 @@ class _ListingRow extends StatelessWidget {
                 _MoreButton(
                   tooltip: l.accMoreOptions,
                   actions: [
-                    if (visible) ...[
+                    // Hot sale chỉ có tác dụng trên trang Listing chính
+                    if (visible && !item.shopOnly)
                       (
                         AppIcons.hot,
                         l.featureAction,
                         () => promoteAccountListing(context, item),
                       ),
+                    if (visible)
                       (
                         AppIcons.calendar,
                         l.accExtend,
                         () => extendAccountListing(context, item),
                       ),
-                    ],
                     if (item.editStatus != null)
                       (
                         AppIcons.close,
@@ -344,6 +363,7 @@ class _ListingRow extends StatelessWidget {
 class _RowAction extends StatelessWidget {
   const _RowAction(
     this.label, {
+    super.key,
     required this.icon,
     required this.onTap,
     this.filled = false,
@@ -457,6 +477,7 @@ class _MoreButton extends StatelessWidget {
 /// Dòng hạn hiển thị của tin: đỏ khi đã hết hạn hoặc còn tối đa 3 ngày
 class _ExpiryChip extends StatelessWidget {
   const _ExpiryChip({
+    super.key,
     required this.label,
     required this.urgent,
     this.icon = AppIcons.clock,

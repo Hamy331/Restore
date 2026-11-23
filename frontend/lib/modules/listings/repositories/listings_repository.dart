@@ -24,12 +24,14 @@ abstract class ListingsRepository {
   /// miễn phí (backend giữ xu, duyệt thì trừ, từ chối thì hoàn).
   /// [allowDuplicate]: vẫn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn.
   /// [acceptFlags]: vẫn gửi duyệt dù nội dung bị gắn cờ (SĐT, link, hàng cấm).
+  /// [shopOnly]: shop Đối tác chỉ đăng lên trang Cửa hàng (không tính hạn mức).
   Future<ListingDraft> publish(
     ListingDraft draft,
     CategoryModel? category, {
     bool payWithCredits = false,
     bool allowDuplicate = false,
     bool acceptFlags = false,
+    bool shopOnly = false,
   });
   Future<ListingDraft> getDraft(String id);
 
@@ -56,6 +58,14 @@ abstract class ListingsRepository {
 
   /// Bật/tắt tự gia hạn (chỉ gói có hỗ trợ, ví dụ Cửa hàng)
   Future<void> setAutoExtend(String id, bool enabled);
+
+  /// Tin Cửa hàng lên trang Listing chính ([enabled]) hoặc chỉ ở trang Cửa
+  /// hàng. Lên trang chính tính hạn mức gói như tin thường
+  Future<void> setMarketplace(
+    String id,
+    bool enabled, {
+    bool payWithCredits = false,
+  });
 
   /// Đẩy tin đang hiển thị lên đầu 1 ngày: dùng lượt tặng của gói, hết lượt
   /// thì trả xu. Lỗi 409 ném [ListingBoostException].
@@ -166,6 +176,13 @@ class MockListingsRepository implements ListingsRepository {
 
   @override
   Future<void> setAutoExtend(String id, bool enabled) async {}
+
+  @override
+  Future<void> setMarketplace(
+    String id,
+    bool enabled, {
+    bool payWithCredits = false,
+  }) async {}
 
   @override
   Future<BoostResult> boost(String id) async =>
@@ -286,6 +303,7 @@ class MockListingsRepository implements ListingsRepository {
     bool payWithCredits = false,
     bool allowDuplicate = false,
     bool acceptFlags = false,
+    bool shopOnly = false,
   }) async {
     await Future<void>.delayed(latency);
     // Sửa tin đã duyệt: lưu bản sửa chờ duyệt, tin vẫn giữ bản cũ
@@ -620,6 +638,7 @@ class ApiListingsRepository implements ListingsRepository {
     bool payWithCredits = false,
     bool allowDuplicate = false,
     bool acceptFlags = false,
+    bool shopOnly = false,
   }) {
     if (draft.id != null && draft.status == ListingStatus.draft) {
       return _saveDraft(
@@ -629,6 +648,7 @@ class ApiListingsRepository implements ListingsRepository {
         payWithCredits: payWithCredits,
         allowDuplicate: allowDuplicate,
         acceptFlags: acceptFlags,
+        shopOnly: shopOnly,
       );
     }
     return _publishListing(
@@ -637,6 +657,7 @@ class ApiListingsRepository implements ListingsRepository {
       payWithCredits: payWithCredits,
       allowDuplicate: allowDuplicate,
       acceptFlags: acceptFlags,
+      shopOnly: shopOnly,
     );
   }
 
@@ -646,6 +667,7 @@ class ApiListingsRepository implements ListingsRepository {
     bool payWithCredits = false,
     bool allowDuplicate = false,
     bool acceptFlags = false,
+    bool shopOnly = false,
   }) async {
     var working = draft;
     try {
@@ -654,6 +676,8 @@ class ApiListingsRepository implements ListingsRepository {
         if (payWithCredits) 'payWithCredits': true,
         if (allowDuplicate) 'allowDuplicate': true,
         if (acceptFlags) 'acceptFlags': true,
+        // Chỉ gửi khi đăng mới; sửa tin (PUT) không nhận cờ này
+        if (shopOnly && draft.id == null) 'shopOnly': true,
       };
       // Lần đầu: tạo tin mới. Thử lại sau khi tải ảnh lỗi giữa chừng: tin đã
       // tạo rồi nên chỉ cập nhật nội dung (không tạo trùng, không trừ thêm lượt)
@@ -682,6 +706,7 @@ class ApiListingsRepository implements ListingsRepository {
     bool payWithCredits = false,
     bool allowDuplicate = false,
     bool acceptFlags = false,
+    bool shopOnly = false,
   }) async {
     var working = draft;
     try {
@@ -717,6 +742,7 @@ class ApiListingsRepository implements ListingsRepository {
             if (payWithCredits) 'payWithCredits': true,
             if (allowDuplicate) 'allowDuplicate': true,
             if (acceptFlags) 'acceptFlags': true,
+            if (shopOnly) 'shopOnly': true,
           },
         ),
       );
@@ -872,6 +898,16 @@ class ApiListingsRepository implements ListingsRepository {
   Future<void> setAutoExtend(String id, bool enabled) => _dio.patch<void>(
     '/listings/${Uri.encodeComponent(id)}/auto-extend',
     data: {'enabled': enabled},
+  );
+
+  @override
+  Future<void> setMarketplace(
+    String id,
+    bool enabled, {
+    bool payWithCredits = false,
+  }) => _dio.patch<void>(
+    '/listings/${Uri.encodeComponent(id)}/marketplace',
+    data: {'enabled': enabled, if (payWithCredits) 'payWithCredits': true},
   );
 
   @override

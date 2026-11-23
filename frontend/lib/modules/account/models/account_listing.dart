@@ -27,6 +27,7 @@ class AccountListing extends Equatable {
     this.paidCredits = 0,
     this.startsAt,
     this.autoExtend = false,
+    this.shopOnly = false,
     this.editStatus,
     this.editReason,
   });
@@ -53,6 +54,9 @@ class AccountListing extends Equatable {
 
   /// Đang bật tự gia hạn (gói Cửa hàng)
   final bool autoExtend;
+
+  /// Tin chỉ ở trang Cửa hàng, chưa lên trang Listing chính
+  final bool shopOnly;
 
   /// Bản sửa của tin đã duyệt: đang chờ duyệt / bị từ chối; null khi không
   /// có bản sửa. Trong lúc chờ, người mua vẫn thấy bản cũ.
@@ -93,6 +97,7 @@ class AccountListing extends Equatable {
     paidCredits: paidCredits,
     startsAt: startsAt,
     autoExtend: autoExtend,
+    shopOnly: shopOnly,
     editStatus: editStatus,
     editReason: editReason,
   );
@@ -112,6 +117,7 @@ class AccountListing extends Equatable {
     paidCredits,
     startsAt,
     autoExtend,
+    shopOnly,
     editStatus,
     editReason,
   ];

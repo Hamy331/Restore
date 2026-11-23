@@ -154,6 +154,10 @@ class PostingQuota extends Equatable {
   /// Gói tài khoản ở backend: PERSONAL, BASIC (Bán chuyên), PRO (Cửa hàng)
   final String tier;
 
+  /// Shop Đối tác: danh mục được đăng tin chỉ ở trang Cửa hàng (không giới
+  /// hạn, không tính hạn mức gói). Rỗng với tài khoản thường
+  final List<String> shopCategoryIds;
+
   /// Chỉ gói Cửa hàng Pro được nhập giá gốc để bán giảm giá
   bool get canSetOriginalPrice => tier == 'PRO';
 
@@ -171,6 +175,7 @@ class PostingQuota extends Equatable {
     this.boostDiscountPercent = 0,
     this.display = const DisplayPricing(),
     this.tier = 'PERSONAL',
+    this.shopCategoryIds = const [],
   });
 
   CategoryPostingQuota forCategory(String categoryId) =>
@@ -233,6 +238,9 @@ class PostingQuota extends Equatable {
             : null,
       ),
       tier: json['tier'] as String? ?? 'PERSONAL',
+      shopCategoryIds: [
+        for (final id in json['shopCategoryIds'] as List? ?? const []) '$id',
+      ],
     );
   }
 
@@ -251,6 +259,7 @@ class PostingQuota extends Equatable {
     boostDiscountPercent,
     display,
     tier,
+    shopCategoryIds,
   ];
 }
 
