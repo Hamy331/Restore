@@ -148,11 +148,9 @@ export class Session {
   async feedImage(filename: string): Promise<Blob> {
     return this.mediaImage('/media/feeds/', filename);
   }
-  async posterImage(filename: string): Promise<Blob> {
-    return this.mediaImage('/media/posters/', filename);
-  }
-  async shopImage(filename: string): Promise<Blob> {
-    return this.mediaImage('/media/shops/', filename);
+  /** Ảnh tải lên qua /media/images: poster, ảnh shop, giấy tờ xác minh shop (khu riêng, cần quyền duyệt) */
+  async uploadedImage(area: 'posters' | 'shops' | 'verifications', filename: string): Promise<Blob> {
+    return this.mediaImage(`/media/${area}/`, filename);
   }
   async upload<T>(path: string, file: Blob, mediaType: string): Promise<T> {
     return this.authorized((token) => request<T>(path, token, file, 'POST', mediaType));
