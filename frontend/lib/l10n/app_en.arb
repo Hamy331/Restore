@@ -227,7 +227,7 @@
   "accComingSoon": "This feature is under development",
   "accActivity": "Activity",
   "accProPlan": "Account plan",
-  "accCreateStore": "Create a store",
+  "accCreateStore": "Become a Shop",
   "accCoins": "ReStore Points",
   "accSaved": "Saved",
   "accSavedSearches": "Saved searches",
@@ -3711,5 +3711,113 @@
   "chatNegotiating": "Negotiating",
   "searchCategorySuggestion": "Category",
   "searchSubcategorySuggestion": "In {parent}",
-  "@searchSubcategorySuggestion": {"placeholders":{"parent":{"type":"String"}}}
+  "@searchSubcategorySuggestion": {"placeholders":{"parent":{"type":"String"}}},
+  "bsIntroTitle": "Switch to a Shop account",
+  "bsIntroLead": "Consider switching if any of these apply to you:",
+  "bsIntroResell": "You buy items to resell them for a regular income or profit",
+  "bsIntroNew": "You take pre-orders, or mostly sell brand-new or many similar items",
+  "bsIntroVolume": "You regularly list or sell large quantities",
+  "bsIntroService": "You provide services",
+  "bsIntroBusiness": "You have a registered household business or company",
+  "bsIntroStore": "You sell on several platforms or have a physical store",
+  "bsIntroAction": "Find out how it works",
+  "bsBenefitsTitle": "Benefits of a Shop account",
+  "bsBenefitPageTitle": "Your own shop page",
+  "bsBenefitPageBody": "A cover photo, logo, address, opening hours and an introduction.",
+  "bsBenefitBadgeTitle": "Build trust with the Partner badge",
+  "bsBenefitBadgeBody": "The Partner badge shows on your profile and every listing. Verify your business licence to add a tick.",
+  "bsBenefitFeedTitle": "Post on the Feed",
+  "bsBenefitFeedBody": "Share new arrivals and offers with your followers. Other members can only view, react and comment.",
+  "bsAgreeLead": "By proceeding, you agree to the ",
+  "bsTermsLink": "Shop Agreement",
+  "bsAgreeTail": " of ReStore.",
+  "bsSwitchAction": "Switch to a Shop account",
+  "bsRegisterTitle": "Register your shop",
+  "bsRegisterBody": "Name your shop. ReStore checks the name before your shop goes public.",
+  "bsFeeTitle": "Registration fee",
+  "bsFeeBody": "{fee} credits, paid once from your credit wallet. Account plans (boosts, listing quota) are separate.",
+  "@bsFeeBody": {
+    "placeholders": {
+      "fee": {"type": "int"}
+    }
+  },
+  "bsAgree": "I have read and agree to the ReStore Shop Agreement",
+  "bsAgreeRequired": "You need to accept the agreement to register.",
+  "bsPayAction": "Pay {fee} credits",
+  "@bsPayAction": {
+    "placeholders": {
+      "fee": {"type": "int"}
+    }
+  },
+  "bsNotEnoughCredits": "You need {fee} credits. Top up and try again.",
+  "@bsNotEnoughCredits": {
+    "placeholders": {
+      "fee": {"type": "int"}
+    }
+  },
+  "bsTopUp": "Top up",
+  "bsDoneTitle": "You are now a Shop!",
+  "bsDoneBadge": "Shop account",
+  "bsDoneFeatures": "New features",
+  "bsDoneReview": "ReStore is reviewing your shop, usually within one working day. Once approved you get the Partner badge and can post on the Feed.",
+  "bsDonePage": "Add a cover photo, logo, address and opening hours to your shop page",
+  "bsDoneSuccess": "Switched to a Shop account",
+  "bsVerifyAction": "Verify your licence to get the tick",
+  "bsLater": "Later",
+  "bsTermsTitle": "Shop Agreement",
+  "bsTermsVersion": "Version {version}",
+  "@bsTermsVersion": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+  "accSwitchToShop": "Become a Shop",
+  "profAbout": "About",
+  "profOnRestore": "on ReStore",
+  "profYears": "{count, plural, =1{1 year} other{{count} years}}",
+  "@profYears": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profMonths": "{count, plural, =1{1 month} other{{count} months}}",
+  "@profMonths": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@profDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profPartnerTitle": "ReStore Partner",
+  "profPartnerBody": "A shop registered with and approved by ReStore",
+  "profVerifiedTitle": "Verified shop",
+  "profOfficialTitle": "Official brand",
+  "profVerifiedBody": "ReStore has checked the business licence",
+  "profAccountDetails": "Account details",
+  "profFollowers": "{count, plural, =1{1 follower} other{{count} followers}}",
+  "@profFollowers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profFollowing": "Following {count}",
+  "@profFollowing": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profSelling": "{listings} for sale · {sold} sold",
+  "@profSelling": {
+    "placeholders": {
+      "listings": {"type": "int"},
+      "sold": {"type": "int"}
+    }
+  },
+  "profMore": "Read more",
+  "profLess": "Show less",
+  "profNoAbout": "No introduction yet."
 }

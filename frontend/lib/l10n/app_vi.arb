@@ -227,7 +227,7 @@
   "accComingSoon": "Tính năng này đang được phát triển",
   "accActivity": "Hoạt động",
   "accProPlan": "Gói tài khoản",
-  "accCreateStore": "Tạo cửa hàng",
+  "accCreateStore": "Lên Cửa hàng",
   "accCoins": "Xu ReStore",
   "accSaved": "Đã lưu",
   "accSavedSearches": "Tìm kiếm đã lưu",
@@ -3492,5 +3492,113 @@
   "chatTabUnread": "Chưa đọc",
   "chatNegotiating": "Đang thương lượng",
   "searchCategorySuggestion": "Danh mục",
-  "searchSubcategorySuggestion": "Trong {parent}"
+  "searchSubcategorySuggestion": "Trong {parent}",
+  "bsIntroTitle": "Chuyển sang tài khoản Cửa hàng",
+  "bsIntroLead": "Nên chuyển nếu bạn thuộc một trong các trường hợp sau:",
+  "bsIntroResell": "Bạn mua hàng về để bán lại, nhằm có thu nhập hoặc lợi nhuận đều đặn",
+  "bsIntroNew": "Bạn nhận đặt trước, chủ yếu bán hàng mới hoặc nhiều món giống nhau",
+  "bsIntroVolume": "Bạn thường xuyên đăng bán số lượng lớn",
+  "bsIntroService": "Bạn cung cấp dịch vụ",
+  "bsIntroBusiness": "Bạn có hộ kinh doanh hoặc doanh nghiệp đã đăng ký",
+  "bsIntroStore": "Bạn bán trên nhiều nền tảng hoặc có cửa hàng thật",
+  "bsIntroAction": "Tìm hiểu cách hoạt động",
+  "bsBenefitsTitle": "Quyền lợi của tài khoản Cửa hàng",
+  "bsBenefitPageTitle": "Trang cửa hàng riêng",
+  "bsBenefitPageBody": "Ảnh bìa, logo, địa chỉ, giờ mở cửa và lời giới thiệu cửa hàng.",
+  "bsBenefitBadgeTitle": "Nhãn Đối tác tạo niềm tin",
+  "bsBenefitBadgeBody": "Nhãn Đối tác hiện trên hồ sơ và mọi tin đăng của bạn. Xác minh giấy phép kinh doanh để có thêm dấu tick.",
+  "bsBenefitFeedTitle": "Đăng bài lên Bảng tin",
+  "bsBenefitFeedBody": "Giới thiệu hàng mới và khuyến mãi tới người theo dõi. Người dùng thường chỉ xem, thả tim và bình luận.",
+  "bsAgreeLead": "Khi tiếp tục, bạn đồng ý với ",
+  "bsTermsLink": "Hợp đồng Cửa hàng",
+  "bsAgreeTail": " của ReStore.",
+  "bsSwitchAction": "Chuyển sang Cửa hàng",
+  "bsRegisterTitle": "Đăng ký Cửa hàng",
+  "bsRegisterBody": "Đặt tên cửa hàng. ReStore duyệt tên trước khi cửa hàng hiện công khai.",
+  "bsFeeTitle": "Phí đăng ký",
+  "bsFeeBody": "{fee} xu, trả một lần, trừ vào ví xu của bạn. Gói tài khoản (đẩy tin, số tin đăng) mua riêng.",
+  "@bsFeeBody": {
+    "placeholders": {
+      "fee": {"type": "int"}
+    }
+  },
+  "bsAgree": "Tôi đã đọc và đồng ý Hợp đồng Cửa hàng ReStore",
+  "bsAgreeRequired": "Bạn cần đồng ý hợp đồng để đăng ký.",
+  "bsPayAction": "Thanh toán {fee} xu",
+  "@bsPayAction": {
+    "placeholders": {
+      "fee": {"type": "int"}
+    }
+  },
+  "bsNotEnoughCredits": "Ví chưa đủ {fee} xu. Nạp thêm xu rồi đăng ký lại.",
+  "@bsNotEnoughCredits": {
+    "placeholders": {
+      "fee": {"type": "int"}
+    }
+  },
+  "bsTopUp": "Nạp xu",
+  "bsDoneTitle": "Bạn đã lên Cửa hàng!",
+  "bsDoneBadge": "Tài khoản Cửa hàng",
+  "bsDoneFeatures": "Tính năng mới",
+  "bsDoneReview": "ReStore đang duyệt cửa hàng, thường trong 1 ngày làm việc. Duyệt xong bạn có nhãn Đối tác và đăng bài lên Bảng tin được.",
+  "bsDonePage": "Thêm ảnh bìa, logo, địa chỉ và giờ mở cửa cho trang cửa hàng",
+  "bsDoneSuccess": "Đã chuyển sang tài khoản Cửa hàng",
+  "bsVerifyAction": "Xác minh giấy phép để nhận dấu tick",
+  "bsLater": "Để sau",
+  "bsTermsTitle": "Hợp đồng Cửa hàng",
+  "bsTermsVersion": "Phiên bản {version}",
+  "@bsTermsVersion": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+  "accSwitchToShop": "Lên Cửa hàng",
+  "profAbout": "Giới thiệu",
+  "profOnRestore": "trên ReStore",
+  "profYears": "{count} năm",
+  "@profYears": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profMonths": "{count} tháng",
+  "@profMonths": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profDays": "{count} ngày",
+  "@profDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profPartnerTitle": "Đối tác ReStore",
+  "profPartnerBody": "Cửa hàng đã đăng ký và được ReStore duyệt",
+  "profVerifiedTitle": "Cửa hàng đã xác minh",
+  "profOfficialTitle": "Thương hiệu chính hãng",
+  "profVerifiedBody": "ReStore đã đối chiếu giấy phép kinh doanh",
+  "profAccountDetails": "Thông tin tài khoản",
+  "profFollowers": "{count} người theo dõi",
+  "@profFollowers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profFollowing": "Đang theo dõi {count}",
+  "@profFollowing": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "profSelling": "Đang bán {listings} · Đã bán {sold}",
+  "@profSelling": {
+    "placeholders": {
+      "listings": {"type": "int"},
+      "sold": {"type": "int"}
+    }
+  },
+  "profMore": "Xem thêm",
+  "profLess": "Thu gọn",
+  "profNoAbout": "Chưa có lời giới thiệu."
 }

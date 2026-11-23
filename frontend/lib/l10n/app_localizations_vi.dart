@@ -464,7 +464,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accProPlan => 'Gói tài khoản';
 
   @override
-  String get accCreateStore => 'Tạo cửa hàng';
+  String get accCreateStore => 'Lên Cửa hàng';
 
   @override
   String get accCoins => 'Xu ReStore';
@@ -6156,4 +6156,206 @@ class AppLocalizationsVi extends AppLocalizations {
   String searchSubcategorySuggestion(String parent) {
     return 'Trong $parent';
   }
+
+  @override
+  String get bsIntroTitle => 'Chuyển sang tài khoản Cửa hàng';
+
+  @override
+  String get bsIntroLead =>
+      'Nên chuyển nếu bạn thuộc một trong các trường hợp sau:';
+
+  @override
+  String get bsIntroResell =>
+      'Bạn mua hàng về để bán lại, nhằm có thu nhập hoặc lợi nhuận đều đặn';
+
+  @override
+  String get bsIntroNew =>
+      'Bạn nhận đặt trước, chủ yếu bán hàng mới hoặc nhiều món giống nhau';
+
+  @override
+  String get bsIntroVolume => 'Bạn thường xuyên đăng bán số lượng lớn';
+
+  @override
+  String get bsIntroService => 'Bạn cung cấp dịch vụ';
+
+  @override
+  String get bsIntroBusiness =>
+      'Bạn có hộ kinh doanh hoặc doanh nghiệp đã đăng ký';
+
+  @override
+  String get bsIntroStore =>
+      'Bạn bán trên nhiều nền tảng hoặc có cửa hàng thật';
+
+  @override
+  String get bsIntroAction => 'Tìm hiểu cách hoạt động';
+
+  @override
+  String get bsBenefitsTitle => 'Quyền lợi của tài khoản Cửa hàng';
+
+  @override
+  String get bsBenefitPageTitle => 'Trang cửa hàng riêng';
+
+  @override
+  String get bsBenefitPageBody =>
+      'Ảnh bìa, logo, địa chỉ, giờ mở cửa và lời giới thiệu cửa hàng.';
+
+  @override
+  String get bsBenefitBadgeTitle => 'Nhãn Đối tác tạo niềm tin';
+
+  @override
+  String get bsBenefitBadgeBody =>
+      'Nhãn Đối tác hiện trên hồ sơ và mọi tin đăng của bạn. Xác minh giấy phép kinh doanh để có thêm dấu tick.';
+
+  @override
+  String get bsBenefitFeedTitle => 'Đăng bài lên Bảng tin';
+
+  @override
+  String get bsBenefitFeedBody =>
+      'Giới thiệu hàng mới và khuyến mãi tới người theo dõi. Người dùng thường chỉ xem, thả tim và bình luận.';
+
+  @override
+  String get bsAgreeLead => 'Khi tiếp tục, bạn đồng ý với ';
+
+  @override
+  String get bsTermsLink => 'Hợp đồng Cửa hàng';
+
+  @override
+  String get bsAgreeTail => ' của ReStore.';
+
+  @override
+  String get bsSwitchAction => 'Chuyển sang Cửa hàng';
+
+  @override
+  String get bsRegisterTitle => 'Đăng ký Cửa hàng';
+
+  @override
+  String get bsRegisterBody =>
+      'Đặt tên cửa hàng. ReStore duyệt tên trước khi cửa hàng hiện công khai.';
+
+  @override
+  String get bsFeeTitle => 'Phí đăng ký';
+
+  @override
+  String bsFeeBody(int fee) {
+    return '$fee xu, trả một lần, trừ vào ví xu của bạn. Gói tài khoản (đẩy tin, số tin đăng) mua riêng.';
+  }
+
+  @override
+  String get bsAgree => 'Tôi đã đọc và đồng ý Hợp đồng Cửa hàng ReStore';
+
+  @override
+  String get bsAgreeRequired => 'Bạn cần đồng ý hợp đồng để đăng ký.';
+
+  @override
+  String bsPayAction(int fee) {
+    return 'Thanh toán $fee xu';
+  }
+
+  @override
+  String bsNotEnoughCredits(int fee) {
+    return 'Ví chưa đủ $fee xu. Nạp thêm xu rồi đăng ký lại.';
+  }
+
+  @override
+  String get bsTopUp => 'Nạp xu';
+
+  @override
+  String get bsDoneTitle => 'Bạn đã lên Cửa hàng!';
+
+  @override
+  String get bsDoneBadge => 'Tài khoản Cửa hàng';
+
+  @override
+  String get bsDoneFeatures => 'Tính năng mới';
+
+  @override
+  String get bsDoneReview =>
+      'ReStore đang duyệt cửa hàng, thường trong 1 ngày làm việc. Duyệt xong bạn có nhãn Đối tác và đăng bài lên Bảng tin được.';
+
+  @override
+  String get bsDonePage =>
+      'Thêm ảnh bìa, logo, địa chỉ và giờ mở cửa cho trang cửa hàng';
+
+  @override
+  String get bsDoneSuccess => 'Đã chuyển sang tài khoản Cửa hàng';
+
+  @override
+  String get bsVerifyAction => 'Xác minh giấy phép để nhận dấu tick';
+
+  @override
+  String get bsLater => 'Để sau';
+
+  @override
+  String get bsTermsTitle => 'Hợp đồng Cửa hàng';
+
+  @override
+  String bsTermsVersion(String version) {
+    return 'Phiên bản $version';
+  }
+
+  @override
+  String get accSwitchToShop => 'Lên Cửa hàng';
+
+  @override
+  String get profAbout => 'Giới thiệu';
+
+  @override
+  String get profOnRestore => 'trên ReStore';
+
+  @override
+  String profYears(int count) {
+    return '$count năm';
+  }
+
+  @override
+  String profMonths(int count) {
+    return '$count tháng';
+  }
+
+  @override
+  String profDays(int count) {
+    return '$count ngày';
+  }
+
+  @override
+  String get profPartnerTitle => 'Đối tác ReStore';
+
+  @override
+  String get profPartnerBody => 'Cửa hàng đã đăng ký và được ReStore duyệt';
+
+  @override
+  String get profVerifiedTitle => 'Cửa hàng đã xác minh';
+
+  @override
+  String get profOfficialTitle => 'Thương hiệu chính hãng';
+
+  @override
+  String get profVerifiedBody => 'ReStore đã đối chiếu giấy phép kinh doanh';
+
+  @override
+  String get profAccountDetails => 'Thông tin tài khoản';
+
+  @override
+  String profFollowers(int count) {
+    return '$count người theo dõi';
+  }
+
+  @override
+  String profFollowing(int count) {
+    return 'Đang theo dõi $count';
+  }
+
+  @override
+  String profSelling(int listings, int sold) {
+    return 'Đang bán $listings · Đã bán $sold';
+  }
+
+  @override
+  String get profMore => 'Xem thêm';
+
+  @override
+  String get profLess => 'Thu gọn';
+
+  @override
+  String get profNoAbout => 'Chưa có lời giới thiệu.';
 }
