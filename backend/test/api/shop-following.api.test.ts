@@ -85,7 +85,7 @@ test('shop following: suggestions rank by saved categories and skip followed sho
   assert.ok(res.body.data[0].previews.length >= 1 && res.body.data[0].previews.length <= 3);
   const brand = res.body.data.find((shop: { id: string }) => shop.id === 'shop-hidden');
   assert.deepEqual([brand.isPartner, brand.reason], [true, 'PARTNER'], 'chính hãng là đối tác, xếp sau shop hợp sở thích');
-  assert.equal(res.body.data[0].isPartner, false);
+  assert.equal(res.body.data[0].isPartner, true, 'shop đã xác minh cũng là Đối tác');
 
   // chủ shop không thấy shop của mình
   const own = await api.get('/shops/following/suggestions', { token: tokens.seller });
