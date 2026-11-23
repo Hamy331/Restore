@@ -6358,4 +6358,37 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profNoAbout => 'Chưa có lời giới thiệu.';
+
+  @override
+  String get bsCategory => 'Danh mục cửa hàng';
+
+  @override
+  String get bsCategoryHint =>
+      'Tin của cửa hàng chỉ đăng trong danh mục này. Tin cá nhân vẫn đăng được mọi danh mục.';
+
+  @override
+  String get bsCategoryRequired => 'Chọn một danh mục cho cửa hàng';
+
+  @override
+  String get listingShopOnlyTitle => 'Nơi hiển thị tin';
+
+  @override
+  String get listingOnMarketplace => 'Đăng lên trang Listing chính';
+
+  @override
+  String get listingShopOnlyBody =>
+      'Tin chỉ ở trang Cửa hàng của bạn: không giới hạn số tin, không tính hạn mức gói.';
+
+  @override
+  String get listingOnMarketplaceBody =>
+      'Tin hiện ở trang Cửa hàng, trang chủ và tìm kiếm; tính vào hạn mức đăng tin của gói.';
+
+  @override
+  String get accShopOnly => 'Chỉ ở trang Cửa hàng';
+
+  @override
+  String get accToMarketplace => 'Lên trang chính';
+
+  @override
+  String get accOnMarketplaceDone => 'Tin đã lên trang Listing chính';
 }

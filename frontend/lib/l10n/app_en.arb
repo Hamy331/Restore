@@ -3819,5 +3819,15 @@
   },
   "profMore": "Read more",
   "profLess": "Show less",
-  "profNoAbout": "No introduction yet."
+  "profNoAbout": "No introduction yet.",
+  "bsCategory": "Shop category",
+  "bsCategoryHint": "Shop listings can only be posted in this category. Personal listings can still use any category.",
+  "bsCategoryRequired": "Choose a category for your shop",
+  "listingShopOnlyTitle": "Where this listing shows",
+  "listingOnMarketplace": "Also post on the main listings",
+  "listingShopOnlyBody": "Only on your shop page: unlimited, and it does not use your plan quota.",
+  "listingOnMarketplaceBody": "Shows on your shop page, home and search; it uses your plan posting quota.",
+  "accShopOnly": "Shop page only",
+  "accToMarketplace": "Post to main",
+  "accOnMarketplaceDone": "Listing is now on the main listings"
 }

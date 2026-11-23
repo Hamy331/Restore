@@ -6486,4 +6486,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profNoAbout => 'No introduction yet.';
+
+  @override
+  String get bsCategory => 'Shop category';
+
+  @override
+  String get bsCategoryHint =>
+      'Shop listings can only be posted in this category. Personal listings can still use any category.';
+
+  @override
+  String get bsCategoryRequired => 'Choose a category for your shop';
+
+  @override
+  String get listingShopOnlyTitle => 'Where this listing shows';
+
+  @override
+  String get listingOnMarketplace => 'Also post on the main listings';
+
+  @override
+  String get listingShopOnlyBody =>
+      'Only on your shop page: unlimited, and it does not use your plan quota.';
+
+  @override
+  String get listingOnMarketplaceBody =>
+      'Shows on your shop page, home and search; it uses your plan posting quota.';
+
+  @override
+  String get accShopOnly => 'Shop page only';
+
+  @override
+  String get accToMarketplace => 'Post to main';
+
+  @override
+  String get accOnMarketplaceDone => 'Listing is now on the main listings';
 }
