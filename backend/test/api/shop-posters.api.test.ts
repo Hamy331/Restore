@@ -11,8 +11,8 @@ const { ctx } = useApi('shop-posters');
 const DAY = 86_400_000;
 const PNG = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0]);
 
-/** Poster shop: chỉ gói Cửa hàng, hạn mức cùng lúc và theo tháng, admin duyệt / từ chối, dừng, khóa khi bị từ chối nhiều */
-test('shop posters: quota, review, stop, cooldown, plan expiry', async () => {
+/** Poster shop: chỉ cửa hàng Đối tác (gói nào cũng được), hạn mức cùng lúc và theo tháng, admin duyệt / từ chối, dừng, khóa khi bị từ chối nhiều */
+test('shop posters: partner shops, quota, review, stop, cooldown', async () => {
   const { api, tokens } = ctx;
   const { prisma } = await import('../../src/lib/prisma.js');
   // ảnh /media đặt tên theo id người dùng dạng UUID, nên chủ shop là một tài khoản mới có id UUID
@@ -45,12 +45,12 @@ test('shop posters: quota, review, stop, cooldown, plan expiry', async () => {
   assert.equal((await send()).body.code, 'SHOP_REQUIRED');
 
   await prisma.shop.create({ data: {
-    id: 'shop-seller', ownerId, name: 'Nội Thất Test', verificationType: 'CERTIFIED', verifiedAt: new Date(), categoryIds: ['furniture'],
+    id: 'shop-seller', ownerId, name: 'Nội Thất Test', categoryIds: ['furniture'],
   } });
-  const personal = await send();
-  assert.deepEqual([personal.status, personal.body.code], [403, 'POSTER_PLAN_REQUIRED']);
+  const pending = await send();
+  assert.deepEqual([pending.status, pending.body.code], [403, 'POSTER_PARTNER_REQUIRED'], 'shop chờ duyệt chưa đăng poster');
 
-  await prisma.storeSubscription.create({ data: { userId: ownerId, packageId: 'pro', categoryId: 'furniture', endsAt: new Date(Date.now() + 20 * DAY) } });
+  await prisma.shop.update({ where: { id: 'shop-seller' }, data: { verificationType: 'CERTIFIED', verifiedAt: new Date() } });
 
   assert.equal((await send({ imageUrl: await upload(other) })).body.code, 'INVALID_IMAGE_URL', 'ảnh của người khác');
   assert.equal((await send({ listingId: 'nope' })).body.code, 'POSTER_LISTING_INVALID');
@@ -76,7 +76,7 @@ test('shop posters: quota, review, stop, cooldown, plan expiry', async () => {
   assert.equal(queue.status, 200, JSON.stringify(queue.body));
   assert.equal(queue.body.data.pendingCount, 3);
   assert.deepEqual(queue.body.data.items.map((item: { id: string }) => item.id), [a.body.data.id, b.body.data.id, c.body.data.id]);
-  assert.deepEqual([queue.body.data.items[0].shop.name, queue.body.data.items[0].shop.planTier], ['Nội Thất Test', 'PRO']);
+  assert.equal(queue.body.data.items[0].shop.name, 'Nội Thất Test');
 
   const approved = await api.post(`/admin/shop-posters/${a.body.data.id}/approve`, { token: tokens.admin });
   assert.deepEqual([approved.status, approved.body.data.state], [200, 'RUNNING']);
@@ -84,11 +84,6 @@ test('shop posters: quota, review, stop, cooldown, plan expiry', async () => {
   const live = await api.get('/shops/shop-seller/banners');
   assert.deepEqual(live.body.data.map((item: { id: string }) => item.id), [a.body.data.id]);
   assert.equal(live.body.data[0].rejectNote, undefined, 'không lộ cột duyệt ra ngoài');
-
-  // gói hết hạn thì poster tạm ẩn
-  await prisma.storeSubscription.update({ where: { userId: ownerId }, data: { endsAt: new Date(Date.now() - DAY) } });
-  assert.deepEqual((await api.get('/shops/shop-seller/banners')).body.data, []);
-  await prisma.storeSubscription.update({ where: { userId: ownerId }, data: { endsAt: new Date(Date.now() + 20 * DAY) } });
 
   const reject = (id: string, payload: Record<string, unknown>) => api.post(`/admin/shop-posters/${id}/reject`, { token: tokens.admin, body: payload });
   assert.equal((await reject(b.body.data.id, { reason: 'OTHER' })).body.code, 'REJECT_NOTE_REQUIRED');
