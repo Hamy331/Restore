@@ -1,4 +1,5 @@
 import '../../../core/network/media_url.dart';
+import 'package:restore/data/models/shop_opening_hours.dart';
 import 'package:equatable/equatable.dart';
 
 class SellerStorefront extends Equatable {
@@ -12,6 +13,8 @@ class SellerStorefront extends Equatable {
     this.description,
     this.phone,
     this.verified = false,
+    this.verificationType,
+    this.openingHours = const [],
     this.shopFollowers = 0,
     this.followsShop = false,
     this.listings = 0,
@@ -19,10 +22,15 @@ class SellerStorefront extends Equatable {
   });
   final String tier;
   final String? shopId, name, logo, cover, address, description, phone;
+
+  /// CERTIFIED | OFFICIAL_BRAND khi đã xác minh
+  final String? verificationType;
+  final List<ShopOpeningDay> openingHours;
   final bool verified, followsShop;
   final int shopFollowers, listings, sold;
-  bool get isShop => tier == 'PRO' || verified;
-  bool get isPro => tier == 'BASIC' && !isShop;
+
+  /// Đã lên Cửa hàng và được duyệt / xác minh: có nhãn Đối tác (không phụ thuộc gói tài khoản)
+  bool get isShop => shopId != null;
 
   SellerStorefront withShopFollow(bool value) => SellerStorefront(
     tier: tier,
@@ -34,6 +42,8 @@ class SellerStorefront extends Equatable {
     description: description,
     phone: phone,
     verified: verified,
+    verificationType: verificationType,
+    openingHours: openingHours,
     listings: listings,
     sold: sold,
     followsShop: value,
@@ -60,6 +70,8 @@ class SellerStorefront extends Equatable {
       address: shop?['address'] as String?,
       description: shop?['description'] as String?,
       verified: shop?['verified'] == true,
+      verificationType: shop?['verificationType'] as String?,
+      openingHours: ShopOpeningDay.listFromJson(shop?['openingHours']),
       shopFollowers: shop?['followerCount'] as int? ?? 0,
       followsShop: shop?['isFollowing'] == true,
     );
@@ -76,6 +88,8 @@ class SellerStorefront extends Equatable {
     description,
     phone,
     verified,
+    verificationType,
+    openingHours,
     shopFollowers,
     followsShop,
     listings,

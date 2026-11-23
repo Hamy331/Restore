@@ -97,17 +97,20 @@ void main() {
       );
       await tester.pumpAndSettle();
       final l = AppLocalizations.of(tester.element(find.byType(TabBar)))!;
+      // Bố cục kiểu Carousell: cửa hàng có nhãn Đối tác + dấu xác minh, ảnh bìa
+      // một màu khi chưa có ảnh; gói tài khoản (BASIC) không đổi nhãn
+      expect(find.widgetWithText(Tab, l.accListings), findsOneWidget);
       expect(
-        find.widgetWithText(
-          Tab,
-          shop
-              ? l.planShop
-              : tier == 'BASIC'
-              ? l.planBasic
-              : l.sellerPersonal,
-        ),
-        findsOneWidget,
+        find.byKey(const ValueKey('profile-partner')),
+        shop ? findsOneWidget : findsNothing,
       );
+      expect(
+        find.byKey(const ValueKey('profile-verified')),
+        shop ? findsOneWidget : findsNothing,
+      );
+      expect(find.byKey(const ValueKey('profile-cover-plain')), findsOneWidget);
+      expect(find.text('@lan'), findsOneWidget);
+      expect(find.byKey(const ValueKey('profile-tenure')), findsOneWidget);
       expect(find.text(shop ? 'Lan Store' : 'Lan'), findsWidgets);
       expect(
         tester.widget<ProfileAvatar>(find.byType(ProfileAvatar)).url,
@@ -125,7 +128,6 @@ void main() {
             .queryParameters['authorId'],
         'seller',
       );
-      expect(find.text('Laptop Dell'), findsOneWidget);
       await tester.tap(find.text(l.feedFollow));
       await tester.pumpAndSettle();
       expect(
@@ -133,6 +135,11 @@ void main() {
         shop ? '/shops/store/follow' : '/users/seller/follow',
       );
       expect(find.text(l.feedUnfollow), findsOneWidget);
+      // đầu trang cuộn đi, tab vẫn ghim
+      await tester.drag(find.byType(NestedScrollView), const Offset(0, -500));
+      await tester.pumpAndSettle();
+      expect(find.text('Laptop Dell'), findsOneWidget);
+      expect(find.widgetWithText(Tab, l.accActivity), findsOneWidget);
       await tester.tap(find.widgetWithText(Tab, l.accActivity));
       await tester.pumpAndSettle();
       expect(find.text(shop ? 'New stock' : l.feedEmpty), findsOneWidget);
@@ -140,6 +147,18 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(l.sellerRatingsTitle), findsOneWidget);
       expect(find.text('4.5'), findsWidgets);
+      await tester.tap(find.widgetWithText(Tab, l.profAbout));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('profile-about')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('about-partner')),
+        shop ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('about-verified')),
+        shop ? findsOneWidget : findsNothing,
+      );
+      expect(find.text(l.profSelling(1, 0)), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }

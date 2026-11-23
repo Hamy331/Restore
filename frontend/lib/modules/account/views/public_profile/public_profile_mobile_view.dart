@@ -13,6 +13,7 @@ import '../../bloc/public_profile/public_profile_cubit.dart';
 import '../../bloc/public_profile/public_profile_state.dart';
 import '../../models/profile_models.dart';
 import '../../widgets/profile_posts.dart';
+import 'profile_about.dart';
 import 'seller_activity_preview.dart';
 import 'seller_listings.dart';
 import 'seller_profile_summary.dart';
@@ -33,7 +34,7 @@ class PublicProfileMobileView extends StatefulWidget {
 class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
     with SingleTickerProviderStateMixin {
   late final TabController _tabs = TabController(
-    length: 3,
+    length: 4,
     initialIndex: widget.openReviews ? 2 : 0,
     vsync: this,
   );
@@ -125,19 +126,28 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
           profile: p!,
           showShopLogo: widget.returnShopFollow,
           following: p.followsSeller,
-          followerCount: s!.verified ? s.shopFollowers : p.followerCount,
           onFollow: own ? null : () => _follow(p),
           onCall: !own && phone != null && phone.isNotEmpty
               ? () => _call(phone)
               : null,
           onChat: wide && contact && !_chatBusy ? () => _chat(p) : null,
           onReviews: () => _tabs.animateTo(2),
-          onFollowers: s.verified
-              ? null
-              : () => context.push('/users/${p.id}/follows?tab=followers'),
-          onFollowing: () =>
-              context.push('/users/${p.id}/follows?tab=following'),
-          onCatalog: s.verified ? () => _catalog(p) : null,
+          onCatalog: s!.verified ? () => _catalog(p) : null,
+        );
+        TabBar tabBar() => TabBar(
+          controller: _tabs,
+          indicatorSize: TabBarIndicatorSize.tab,
+          // 4 tab vừa màn hình hẹp (390px) không cắt chữ
+          labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+          indicatorColor: storefrontOrange,
+          labelColor: storefrontOrange,
+          unselectedLabelColor: Colors.black87,
+          tabs: [
+            Tab(text: l.accListings),
+            Tab(text: l.accActivity),
+            Tab(text: l.reviews),
+            Tab(text: l.profAbout),
+          ],
         );
         Widget tabs() => TabBarView(
           controller: _tabs,
@@ -152,7 +162,6 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                   ? const SizedBox.shrink()
                   : Column(
                       children: [
-                        summary(),
                         SellerActivityPreview(open: () => _tabs.animateTo(1)),
                         const Divider(
                           thickness: 5,
@@ -173,6 +182,15 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
               ),
             ),
             ProfileReviews(profile: p),
+            ProfileAbout(
+              profile: p,
+              followerCount: s!.verified ? s.shopFollowers : p.followerCount,
+              onFollowers: s.verified
+                  ? null
+                  : () => context.push('/users/${p.id}/follows?tab=followers'),
+              onFollowing: () =>
+                  context.push('/users/${p.id}/follows?tab=following'),
+            ),
           ],
         );
         return PopScope(
@@ -192,26 +210,8 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              bottom: p == null
-                  ? null
-                  : TabBar(
-                      controller: _tabs,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      indicatorColor: storefrontOrange,
-                      labelColor: storefrontOrange,
-                      unselectedLabelColor: Colors.black87,
-                      tabs: [
-                        Tab(
-                          text: s!.isShop
-                              ? l.planShop
-                              : s.isPro
-                              ? l.planBasic
-                              : l.sellerPersonal,
-                        ),
-                        Tab(text: l.accActivity),
-                        Tab(text: l.reviews),
-                      ],
-                    ),
+              // Desktop: tab nằm trên cột phải; điện thoại: tab ghim dưới đầu trang
+              bottom: p == null || !wide ? null : tabBar(),
             ),
             body: p == null
                 ? Center(
@@ -253,7 +253,18 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                 : Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 720),
-                      child: tabs(),
+                      // Bố cục như Carousell: ảnh bìa, avatar giữa, tên + nhãn,
+                      // đánh giá + thời gian ở ReStore, rồi tab ghim khi cuộn
+                      child: NestedScrollView(
+                        headerSliverBuilder: (_, _) => [
+                          SliverToBoxAdapter(child: summary()),
+                          SliverPersistentHeader(
+                            pinned: true,
+                            delegate: _TabsHeader(tabBar()),
+                          ),
+                        ],
+                        body: tabs(),
+                      ),
                     ),
                   ),
             bottomNavigationBar: !contact || wide
@@ -315,4 +326,31 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
       },
     );
   }
+}
+
+/// Thanh tab ghim dưới đầu trang hồ sơ khi cuộn
+class _TabsHeader extends SliverPersistentHeaderDelegate {
+  _TabsHeader(this.bar);
+  final TabBar bar;
+
+  @override
+  double get minExtent => bar.preferredSize.height + 1;
+
+  @override
+  double get maxExtent => minExtent;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlaps) =>
+      ColoredBox(
+        color: Colors.white,
+        child: Column(
+          children: [
+            bar,
+            const Divider(height: 1, color: Color(0xffeeeeee)),
+          ],
+        ),
+      );
+
+  @override
+  bool shouldRebuild(_TabsHeader old) => old.bar != bar;
 }
