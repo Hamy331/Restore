@@ -34,12 +34,26 @@ const RULES: Record<FlagCode, RegExp[]> = {
   ],
 };
 
+/** Từ admin thêm (bảng BannedTerm); chỉ thêm vào CONTACT và BANNED, luật có sẵn ở trên không đổi */
+export type ExtraTermCode = 'CONTACT' | 'BANNED';
+const extra: Partial<Record<FlagCode, RegExp>> = {};
+const escape = (term: string) => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** Thay danh sách từ admin thêm (gọi khi khởi động, định kỳ và sau mỗi lần admin sửa) */
+export function setExtraTerms(terms: { term: string; code: ExtraTermCode }[]) {
+  for (const code of ['CONTACT', 'BANNED'] as const) {
+    const list = terms.filter((t) => t.code === code).map((t) => escape(t.term.normalize('NFC')));
+    if (list.length) extra[code] = word(list.join('|'));
+    else delete extra[code];
+  }
+}
+
 /** Cờ của nội dung, mỗi loại một cờ kèm đoạn khớp đầu tiên (để admin thấy vì sao bị gắn) */
 export function contentFlags(...texts: (string | null | undefined)[]): ContentFlag[] {
   const text = texts.filter(Boolean).join('\n').normalize('NFC');
   const flags: ContentFlag[] = [];
   for (const [code, patterns] of Object.entries(RULES) as [FlagCode, RegExp[]][]) {
-    for (const pattern of patterns) {
+    for (const pattern of [...patterns, ...(extra[code] ? [extra[code]] : [])]) {
       const found = text.match(pattern);
       if (found) {
         flags.push({ code, match: found[0].trim() });

@@ -115,3 +115,25 @@ test('posting warns about flagged content, admin sees seller history', async () 
   assert.equal((await api.get('/admin/listings/missing/seller-history', admin)).status, 404);
   assert.equal((await api.get(`/admin/listings/${id}/seller-history`, { token })).status, 403);
 });
+
+/** Admin thêm từ vào bộ lọc: áp dụng ngay cho tin gửi sau, bỏ từ thì hết bị chặn */
+test('admin banned terms join the content filter', async () => {
+  const { api, tokens } = ctx;
+  const admin = { token: tokens.admin }, token = tokens.buyer;
+  const body = { ...listingBody('Đồng hồ cũ còn chạy'), description: 'Đồng hồ hàng xách tay, kiểu dáng y hệt bản gốc.' };
+
+  assert.equal((await api.get('/admin/banned-terms', { token })).status, 403);
+  const added = await api.post('/admin/banned-terms', { ...admin, body: { term: '  Y  hệt bản gốc ', code: 'BANNED' } });
+  assert.equal(added.status, 201, JSON.stringify(added.body));
+  assert.deepEqual([added.body.data.term, added.body.data.code], ['y hệt bản gốc', 'BANNED']);
+  assert.equal((await api.post('/admin/banned-terms', { ...admin, body: { term: 'Y HỆT BẢN GỐC', code: 'BANNED' } })).body.code, 'TERM_EXISTS');
+  assert.equal((await api.post('/admin/banned-terms', { ...admin, body: { term: 'abc', code: 'LINK' } })).status, 400);
+  assert.deepEqual((await api.get('/admin/banned-terms', admin)).body.data.map((t: { term: string }) => t.term), ['y hệt bản gốc']);
+
+  const warned = await api.post('/listings', { token, body });
+  assert.deepEqual([warned.status, warned.body.details?.flags], [409, [{ code: 'BANNED', match: 'y hệt bản gốc' }]]);
+
+  assert.equal((await api.delete(`/admin/banned-terms/${added.body.data.id}`, admin)).status, 204);
+  assert.equal((await api.delete(`/admin/banned-terms/${added.body.data.id}`, admin)).status, 404);
+  assert.equal((await api.post('/listings', { token, body })).status, 201, 'bỏ từ thì đăng bình thường');
+});
