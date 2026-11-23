@@ -1491,6 +1491,31 @@
   },
   "shopFollowersLabel": "Người theo dõi",
   "shopProductsLabel": "Sản phẩm",
+  "shopWeekday": "{day, select, 1{Thứ Hai} 2{Thứ Ba} 3{Thứ Tư} 4{Thứ Năm} 5{Thứ Sáu} 6{Thứ Bảy} other{Chủ nhật}}",
+  "@shopWeekday": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "shopOpenNow": "Đang mở cửa · Đóng lúc {time}",
+  "@shopOpenNow": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "shopOpensToday": "Đã đóng cửa · Mở lúc {time}",
+  "@shopOpensToday": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "shopOpensOn": "Đã đóng cửa · Mở lúc {time} {day}",
+  "@shopOpensOn": {
+    "placeholders": {
+      "time": {"type": "String"},
+      "day": {"type": "String"}
+    }
+  },
   "shopDescriptionMore": "Xem thêm",
   "shopDescriptionLess": "Thu gọn",
   "shopDetailProductsTitle": "Sản phẩm đang bán",
@@ -2791,12 +2816,46 @@
     }
   },
   "msUnverifiedTitle": "Shop chưa xác minh",
-  "msUnverifiedBody": "Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Liên hệ ReStore để được xác minh.",
+  "msUnverifiedBody": "Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Gửi giấy phép kinh doanh bên dưới để được xác minh.",
   "msPendingTitle": "Shop đang chờ duyệt",
   "msPendingBody": "ReStore đang xem tên, ảnh và mô tả của shop. Người mua sẽ xem được trang shop sau khi được duyệt.",
   "msRejectedTitle": "Shop chưa được duyệt",
   "msRejectedBody": "Lý do: {reason}. Sửa thông tin rồi bấm Lưu thay đổi để gửi duyệt lại.",
   "@msRejectedBody": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "msHoursSection": "Giờ mở cửa",
+  "msHoursHint": "Chọn ngày mở cửa và khung giờ, người mua thấy shop đang mở hay đã đóng. Bỏ chọn hết là ẩn giờ mở cửa.",
+  "msWeekdayShort": "{day, select, 1{T2} 2{T3} 3{T4} 4{T5} 5{T6} 6{T7} other{CN}}",
+  "@msWeekdayShort": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "msHoursOpen": "Mở cửa",
+  "msHoursClose": "Đóng cửa",
+  "msHoursInvalid": "Giờ mở cửa phải trước giờ đóng cửa.",
+  "msVerifySection": "Xác minh cửa hàng",
+  "msVerifyBody": "Gửi giấy phép kinh doanh để nhận nhãn Shop uy tín và mã chứng nhận, shop sẽ hiện ở mục Shop uy tín.",
+  "msVerifyBusinessName": "Tên doanh nghiệp / hộ kinh doanh",
+  "msVerifyBusinessNameHint": "Đúng như trên giấy phép",
+  "msVerifyBusinessNameInvalid": "Nhập tên từ 2 đến 120 ký tự.",
+  "msVerifyTaxCode": "Mã số thuế",
+  "msVerifyTaxCodeHint": "10 số, chi nhánh thêm -001",
+  "msVerifyTaxCodeInvalid": "Mã số thuế gồm 10 số, chi nhánh thêm -001.",
+  "msVerifyDocs": "Ảnh giấy phép kinh doanh",
+  "msVerifyDocsHint": "1-3 ảnh rõ nét, đủ 4 góc. Chỉ ReStore xem được.",
+  "msVerifyDocsRequired": "Thêm ít nhất 1 ảnh giấy phép.",
+  "msVerifyAddDoc": "Thêm ảnh",
+  "msVerifySubmit": "Gửi xác minh",
+  "msVerifySent": "Đã gửi hồ sơ xác minh.",
+  "msVerifyPendingTitle": "Đang xét hồ sơ xác minh",
+  "msVerifyPendingBody": "ReStore đang đối chiếu giấy phép kinh doanh của shop, thường trong 1-2 ngày làm việc.",
+  "msVerifyRejectedTitle": "Hồ sơ xác minh chưa được duyệt",
+  "msVerifyRejectedBody": "Lý do: {reason}. Bổ sung giấy tờ rồi gửi lại bên dưới.",
+  "@msVerifyRejectedBody": {
     "placeholders": {
       "reason": {"type": "String"}
     }
@@ -3194,6 +3253,20 @@
   "notifShopRejectedTitle": "Cửa hàng chưa được duyệt",
   "notifShopRejectedBody": "Cửa hàng \"{name}\" chưa được duyệt. Sửa thông tin rồi lưu để gửi duyệt lại.",
   "@notifShopRejectedBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifShopVerifiedTitle": "Shop đã được xác minh",
+  "notifShopVerifiedBody": "Shop \"{name}\" đã được xác minh và hiện ở mục Shop uy tín.",
+  "@notifShopVerifiedBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifShopVerificationRejectedTitle": "Hồ sơ xác minh chưa được duyệt",
+  "notifShopVerificationRejectedBody": "Hồ sơ xác minh của shop \"{name}\" chưa được duyệt. Bổ sung giấy tờ rồi gửi lại.",
+  "@notifShopVerificationRejectedBody": {
     "placeholders": {
       "name": {"type": "String"}
     }

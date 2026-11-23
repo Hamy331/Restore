@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/network/api_client.dart';
 import 'package:restore/data/models/shop_model.dart';
+import 'package:restore/data/models/shop_opening_hours.dart';
 import 'package:restore/services/image_upload_service.dart';
 
 import '../models/my_shop_overview.dart';
@@ -38,6 +39,16 @@ abstract class MyShopRepository {
 
   /// Tải logo / ảnh bìa đã cắt lên, trả về đường dẫn để lưu vào shop
   Future<String> uploadImage(Uint8List bytes);
+
+  /// Tải ảnh giấy phép kinh doanh lên khu riêng (chỉ chủ shop và admin xem được)
+  Future<String> uploadDocument(Uint8List bytes);
+
+  /// Gửi hồ sơ xin xác minh shop
+  Future<MyShopOverview> requestVerification({
+    required String businessName,
+    required String taxCode,
+    required List<String> documentUrls,
+  });
 }
 
 class ApiMyShopRepository implements MyShopRepository {
@@ -102,9 +113,33 @@ class ApiMyShopRepository implements MyShopRepository {
       purpose: ImagePurpose.shop,
     ),
   );
+
+  @override
+  Future<String> uploadDocument(Uint8List bytes) => _guard(
+    () => (_uploader ?? ImageUploadService(dio: _dio)).uploadBytes(
+      bytes,
+      purpose: ImagePurpose.verification,
+    ),
+  );
+
+  @override
+  Future<MyShopOverview> requestVerification({
+    required String businessName,
+    required String taxCode,
+    required List<String> documentUrls,
+  }) => _overview(
+    () => _dio.post<Map<String, dynamic>>(
+      '/shops/me/verification',
+      data: {
+        'businessName': businessName,
+        'taxCode': taxCode,
+        'documentUrls': documentUrls,
+      },
+    ),
+  );
 }
 
-/// Dữ liệu trong bộ nhớ: tài khoản gói Cửa hàng đã có shop chưa xác minh
+/// Dữ liệu trong bộ nhớ: tài khoản gói Cửa hàng đã có shop đã duyệt, chưa xác minh
 class MockMyShopRepository implements MyShopRepository {
   MockMyShopRepository({
     MyShopOverview? initial,
@@ -113,6 +148,7 @@ class MockMyShopRepository implements MyShopRepository {
            initial ??
            const MyShopOverview(
              storePlan: true,
+             reviewStatus: 'APPROVED',
              shop: ShopModel(
                id: 'shop-mock',
                ownerId: 'me',
@@ -187,6 +223,8 @@ class MockMyShopRepository implements MyShopRepository {
       rejectNote: _overview.reviewStatus == 'REJECTED'
           ? null
           : _overview.rejectNote,
+      verificationStatus: _overview.verificationStatus,
+      verificationNote: _overview.verificationNote,
       storePlan: _overview.storePlan,
       planEndsAt: _overview.planEndsAt,
       nameLocked: _overview.nameLocked,
@@ -201,6 +239,9 @@ class MockMyShopRepository implements MyShopRepository {
         logoUrl: pick('logoUrl', shop.logoUrl),
         coverUrl: pick('coverUrl', shop.coverUrl),
         accentColor: pick('accentColor', shop.accentColor),
+        openingHours: changes.containsKey('openingHours')
+            ? ShopOpeningDay.listFromJson(changes['openingHours'])
+            : shop.openingHours,
         verificationType: shop.verificationType,
         verifiedAt: shop.verifiedAt,
         certificateCode: shop.certificateCode,
@@ -216,5 +257,34 @@ class MockMyShopRepository implements MyShopRepository {
     return _uploads.isOdd
         ? 'assets/images/shops/ikea.png'
         : 'assets/images/banners/banner-kodo-week.jpg';
+  }
+
+  @override
+  Future<String> uploadDocument(Uint8List bytes) async {
+    await _wait();
+    return '/api/v1/media/verifications/me_mock-${++_uploads}.jpg';
+  }
+
+  @override
+  Future<MyShopOverview> requestVerification({
+    required String businessName,
+    required String taxCode,
+    required List<String> documentUrls,
+  }) async {
+    await _wait();
+    if (_overview.shop == null) throw const MyShopException('SHOP_REQUIRED');
+    if (!_overview.canRequestVerification) {
+      throw const MyShopException('VERIFICATION_PENDING');
+    }
+    return _overview = MyShopOverview(
+      shop: _overview.shop,
+      reviewStatus: _overview.reviewStatus,
+      rejectNote: _overview.rejectNote,
+      verificationStatus: 'PENDING',
+      storePlan: _overview.storePlan,
+      planEndsAt: _overview.planEndsAt,
+      nameLocked: _overview.nameLocked,
+      stats: _overview.stats,
+    );
   }
 }

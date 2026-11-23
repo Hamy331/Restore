@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:restore/data/models/enums/shop_verification_type.dart';
+import 'package:restore/data/models/shop_opening_hours.dart';
 
 /// Một dòng của bảng Shop (đề xuất, xem `backend/docs/trusted-shops.md`):
 /// gian hàng của một tài khoản bán, chỉ hiện ở "Shop uy tín" khi đã được
@@ -37,6 +38,9 @@ class ShopModel extends Equatable {
 
   /// Địa chỉ hiển thị, VD "Quận 1, TP. Hồ Chí Minh"
   final String? address;
+
+  /// Giờ mở cửa theo thứ, rỗng = shop chưa đặt
+  final List<ShopOpeningDay> openingHours;
   final double ratingAverage;
   final int ratingCount;
   final int followerCount;
@@ -60,6 +64,7 @@ class ShopModel extends Equatable {
     this.certificateCode,
     this.categoryIds = const [],
     this.address,
+    this.openingHours = const [],
     this.ratingAverage = 0,
     this.ratingCount = 0,
     this.followerCount = 0,
@@ -88,6 +93,7 @@ class ShopModel extends Equatable {
       for (final id in json['categoryIds'] as List? ?? const []) '$id',
     ],
     address: json['address'] as String?,
+    openingHours: ShopOpeningDay.listFromJson(json['openingHours']),
     ratingAverage: (json['ratingAverage'] as num?)?.toDouble() ?? 0,
     ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
     followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
@@ -110,6 +116,7 @@ class ShopModel extends Equatable {
     certificateCode: certificateCode,
     categoryIds: categoryIds,
     address: address,
+    openingHours: openingHours,
     ratingAverage: ratingAverage,
     ratingCount: ratingCount,
     followerCount: followerCount ?? this.followerCount,
@@ -133,6 +140,7 @@ class ShopModel extends Equatable {
     certificateCode,
     categoryIds,
     address,
+    openingHours,
     ratingAverage,
     ratingCount,
     followerCount,

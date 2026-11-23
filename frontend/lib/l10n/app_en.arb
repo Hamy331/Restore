@@ -1532,6 +1532,31 @@
   },
   "shopFollowersLabel": "Followers",
   "shopProductsLabel": "Products",
+  "shopWeekday": "{day, select, 1{Monday} 2{Tuesday} 3{Wednesday} 4{Thursday} 5{Friday} 6{Saturday} other{Sunday}}",
+  "@shopWeekday": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "shopOpenNow": "Open now · Closes at {time}",
+  "@shopOpenNow": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "shopOpensToday": "Closed · Opens at {time}",
+  "@shopOpensToday": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "shopOpensOn": "Closed · Opens {day} at {time}",
+  "@shopOpensOn": {
+    "placeholders": {
+      "time": {"type": "String"},
+      "day": {"type": "String"}
+    }
+  },
   "shopDescriptionMore": "Show more",
   "shopDescriptionLess": "Show less",
   "shopDetailProductsTitle": "Products for sale",
@@ -3005,12 +3030,46 @@
     }
   },
   "msUnverifiedTitle": "Not verified yet",
-  "msUnverifiedBody": "Your shop isn't in Trusted shops yet and posters can't run. Contact ReStore to get verified.",
+  "msUnverifiedBody": "Your shop isn't in Trusted shops yet and posters can't run. Send your business licence below to get verified.",
   "msPendingTitle": "Shop under review",
   "msPendingBody": "ReStore is checking your shop name, images and description. Buyers can see your shop page once it is approved.",
   "msRejectedTitle": "Shop not approved",
   "msRejectedBody": "Reason: {reason}. Edit your details and tap Save changes to send it for review again.",
   "@msRejectedBody": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "msHoursSection": "Opening hours",
+  "msHoursHint": "Pick the days and hours you are open so buyers can see whether your shop is open. Clear all days to hide opening hours.",
+  "msWeekdayShort": "{day, select, 1{Mon} 2{Tue} 3{Wed} 4{Thu} 5{Fri} 6{Sat} other{Sun}}",
+  "@msWeekdayShort": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "msHoursOpen": "Opens",
+  "msHoursClose": "Closes",
+  "msHoursInvalid": "Opening time must be before closing time.",
+  "msVerifySection": "Verify your shop",
+  "msVerifyBody": "Send your business licence to get the Trusted shop badge and a certificate code. Your shop will then appear in Trusted shops.",
+  "msVerifyBusinessName": "Registered business name",
+  "msVerifyBusinessNameHint": "Exactly as on the licence",
+  "msVerifyBusinessNameInvalid": "Enter 2 to 120 characters.",
+  "msVerifyTaxCode": "Tax code",
+  "msVerifyTaxCodeHint": "10 digits, branches add -001",
+  "msVerifyTaxCodeInvalid": "A tax code has 10 digits; branches add -001.",
+  "msVerifyDocs": "Business licence photos",
+  "msVerifyDocsHint": "1-3 clear photos showing all four corners. Only ReStore can see them.",
+  "msVerifyDocsRequired": "Add at least one photo of the licence.",
+  "msVerifyAddDoc": "Add photo",
+  "msVerifySubmit": "Send for verification",
+  "msVerifySent": "Verification request sent.",
+  "msVerifyPendingTitle": "Verification in review",
+  "msVerifyPendingBody": "ReStore is checking your business licence. This usually takes 1-2 working days.",
+  "msVerifyRejectedTitle": "Verification not approved",
+  "msVerifyRejectedBody": "Reason: {reason}. Add the missing documents and send again below.",
+  "@msVerifyRejectedBody": {
     "placeholders": {
       "reason": {"type": "String"}
     }
@@ -3408,6 +3467,20 @@
   "notifShopRejectedTitle": "Shop not approved",
   "notifShopRejectedBody": "Your shop \"{name}\" was not approved. Edit your details and save to send it for review again.",
   "@notifShopRejectedBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifShopVerifiedTitle": "Your shop is verified",
+  "notifShopVerifiedBody": "\"{name}\" is verified and now appears in Trusted shops.",
+  "@notifShopVerifiedBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "notifShopVerificationRejectedTitle": "Verification not approved",
+  "notifShopVerificationRejectedBody": "The verification request for \"{name}\" was not approved. Add the missing documents and send it again.",
+  "@notifShopVerificationRejectedBody": {
     "placeholders": {
       "name": {"type": "String"}
     }

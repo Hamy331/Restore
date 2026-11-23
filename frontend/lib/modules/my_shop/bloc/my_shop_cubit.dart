@@ -96,4 +96,20 @@ class MyShopCubit extends Cubit<MyShopState> with SafeEmit<MyShopState> {
     if (cover != null) body['coverUrl'] = await _repository.uploadImage(cover);
     return _repository.update(body);
   });
+
+  /// Tải ảnh giấy phép lên khu riêng rồi gửi hồ sơ xin xác minh
+  Future<String?> requestVerification({
+    required String businessName,
+    required String taxCode,
+    required List<Uint8List> documents,
+  }) => _run(() async {
+    final urls = [
+      for (final bytes in documents) await _repository.uploadDocument(bytes),
+    ];
+    return _repository.requestVerification(
+      businessName: businessName,
+      taxCode: taxCode,
+      documentUrls: urls,
+    );
+  });
 }

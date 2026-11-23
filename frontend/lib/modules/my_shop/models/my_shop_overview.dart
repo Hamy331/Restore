@@ -39,6 +39,8 @@ class MyShopOverview extends Equatable {
     this.shop,
     this.reviewStatus,
     this.rejectNote,
+    this.verificationStatus,
+    this.verificationNote,
     this.storePlan = false,
     this.planEndsAt,
     this.canCreate = false,
@@ -53,6 +55,12 @@ class MyShopOverview extends Equatable {
 
   /// Lý do admin từ chối
   final String? rejectNote;
+
+  /// Hồ sơ xin xác minh gần nhất: PENDING | APPROVED | REJECTED (null = chưa gửi)
+  final String? verificationStatus;
+
+  /// Lý do admin từ chối hồ sơ xác minh
+  final String? verificationNote;
   final bool storePlan;
   final DateTime? planEndsAt;
   final bool canCreate;
@@ -61,12 +69,19 @@ class MyShopOverview extends Equatable {
 
   factory MyShopOverview.fromJson(Map<String, dynamic> json) {
     final shop = json['shop'], stats = json['stats'], review = json['review'];
+    final verification = json['verification'];
     return MyShopOverview(
       shop: shop is Map
           ? ShopModel.fromJson(Map<String, dynamic>.from(shop))
           : null,
       reviewStatus: review is Map ? review['status'] as String? : null,
       rejectNote: review is Map ? review['rejectNote'] as String? : null,
+      verificationStatus: verification is Map
+          ? verification['status'] as String?
+          : null,
+      verificationNote: verification is Map
+          ? verification['rejectNote'] as String?
+          : null,
       storePlan: json['storePlan'] == true,
       planEndsAt: DateTime.tryParse('${json['planEndsAt']}')?.toLocal(),
       canCreate: json['canCreate'] == true,
@@ -81,11 +96,21 @@ class MyShopOverview extends Equatable {
   bool get isPublic =>
       reviewStatus == 'APPROVED' || (shop?.isVerified ?? false);
 
+  /// Gửi được hồ sơ xác minh: gói Cửa hàng, shop đã duyệt, chưa xác minh và
+  /// không có hồ sơ đang chờ
+  bool get canRequestVerification =>
+      storePlan &&
+      reviewStatus == 'APPROVED' &&
+      !(shop?.isVerified ?? true) &&
+      verificationStatus != 'PENDING';
+
   @override
   List<Object?> get props => [
     shop,
     reviewStatus,
     rejectNote,
+    verificationStatus,
+    verificationNote,
     storePlan,
     planEndsAt,
     canCreate,
