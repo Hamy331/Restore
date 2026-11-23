@@ -8,11 +8,10 @@ import { useApi } from './support/context.js';
 process.env.STORAGE_DISK_ROOT = mkdtempSync(path.join(tmpdir(), 'restore-my-shop-'));
 
 const { ctx } = useApi('my-shop');
-const DAY = 86_400_000;
 const PNG = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0]);
 
-/** Quản lý shop: mở shop (gói Cửa hàng), sửa thông tin, logo / ảnh bìa, khoá tên khi đã xác minh */
-test('my shop: create with store plan, edit, images, name lock', async () => {
+/** Quản lý shop: đăng ký lên cửa hàng (hợp đồng + phí xu, không cần gói), sửa thông tin, logo / ảnh bìa, khoá tên khi đã xác minh */
+test('my shop: register as a shop, edit, images, name lock', async () => {
   const { api, tokens } = ctx;
   const { prisma } = await import('../../src/lib/prisma.js');
   const token = tokens.seller;
@@ -24,26 +23,31 @@ test('my shop: create with store plan, edit, images, name lock', async () => {
 
   const none = await api.get('/shops/me', { token });
   assert.equal(none.status, 200, JSON.stringify(none.body));
-  assert.deepEqual([none.body.data.shop, none.body.data.storePlan, none.body.data.canCreate], [null, false, false]);
+  const { registration } = none.body.data;
+  assert.deepEqual([none.body.data.shop, none.body.data.canCreate, registration.fee], [null, true, 199], 'gói Cá nhân vẫn đăng ký được');
   assert.equal((await api.get('/shops/me')).status, 401);
-
-  const personal = await api.post('/shops/me', { token, body: { name: 'Nội Thất Test' } });
-  assert.deepEqual([personal.status, personal.body.code], [403, 'SHOP_PLAN_REQUIRED']);
   assert.equal((await api.patch('/shops/me', { token, body: { tagline: 'x' } })).body.code, 'SHOP_REQUIRED');
 
-  await prisma.storeSubscription.deleteMany({ where: { userId: 'user-seller' } });
-  // startsAt rõ ràng: mặc định của DB là giờ không múi giờ, so với giờ Node có lúc lệch
-  await prisma.storeSubscription.create({ data: { userId: 'user-seller', packageId: 'pro', categoryId: 'furniture', startsAt: new Date(Date.now() - DAY), endsAt: new Date(Date.now() + 20 * DAY) } });
-  const before = await api.get('/shops/me', { token });
-  assert.deepEqual([before.body.data.storePlan, before.body.data.canCreate], [true, true]);
+  const terms = registration.termsVersion as string;
+  assert.equal((await api.post('/shops/me', { token, body: { name: 'Nội Thất Test' } })).status, 400, 'chưa đồng ý hợp đồng');
+  assert.equal((await api.post('/shops/me', { token, body: { name: 'Nội Thất Test', termsVersion: '2020-01' } })).status, 400, 'hợp đồng cũ');
+  assert.equal((await api.post('/shops/me', { token, body: { name: 'A', termsVersion: terms } })).status, 400, 'tên quá ngắn');
+  await prisma.creditTransaction.deleteMany({ where: { userId: 'user-seller' } });
+  const broke = await api.post('/shops/me', { token, body: { name: 'Nội Thất Test', termsVersion: terms } });
+  assert.deepEqual([broke.status, broke.body.code, broke.body.details?.required], [409, 'NOT_ENOUGH_CREDITS', 199]);
+  assert.equal(await prisma.shop.count({ where: { ownerId: 'user-seller' } }), 0, 'thiếu xu thì không tạo shop');
 
-  assert.equal((await api.post('/shops/me', { token, body: { name: 'A' } })).status, 400, 'tên quá ngắn');
-  const created = await api.post('/shops/me', { token, body: { name: '  Nội Thất Test ', tagline: 'Gỗ thật', address: 'Quận 1, TP.HCM' } });
+  await prisma.creditTransaction.create({ data: { userId: 'user-seller', type: 'TOPUP', bucket: 'PAID', amount: 250, note: 'test' } });
+  const created = await api.post('/shops/me', { token, body: { name: '  Nội Thất Test ', tagline: 'Gỗ thật', address: 'Quận 1, TP.HCM', termsVersion: terms } });
   assert.equal(created.status, 201, JSON.stringify(created.body));
+  const row = await prisma.shop.findUniqueOrThrow({ where: { ownerId: 'user-seller' } });
+  assert.deepEqual([row.termsVersion, !!row.termsAcceptedAt, row.registrationCredits], [terms, true, 199]);
+  const spent = await prisma.creditTransaction.aggregate({ where: { userId: 'user-seller' }, _sum: { amount: true } });
+  assert.equal(spent._sum.amount, 51, 'trừ 199 xu');
   const shop = created.body.data.shop;
   assert.deepEqual([shop.name, shop.tagline, shop.address, shop.verificationType, created.body.data.nameLocked], ['Nội Thất Test', 'Gỗ thật', 'Quận 1, TP.HCM', null, false]);
   assert.deepEqual(created.body.data.stats, { followerCount: 0, listingCount: created.body.data.stats.listingCount, runningPosters: 0, pendingPosters: 0 });
-  assert.equal((await api.post('/shops/me', { token, body: { name: 'Shop thứ hai' } })).body.code, 'SHOP_EXISTS');
+  assert.equal((await api.post('/shops/me', { token, body: { name: 'Shop thứ hai', termsVersion: terms } })).body.code, 'SHOP_EXISTS');
 
   // ảnh của người khác hoặc sai khu thì từ chối
   const other = await upload(tokens.admin);
@@ -102,11 +106,27 @@ test('my shop: admin review flow', async () => {
   const resent = await api.patch('/shops/me', { token, body: { coverUrl: null } });
   assert.deepEqual([resent.body.data.review.status, resent.body.data.review.rejectNote], ['PENDING', null], 'sửa là gửi duyệt lại');
 
+  // Bảng tin: shop chờ duyệt chưa phải Đối tác nên chưa đăng bài được
+  const me = async (t: string) => (await api.get('/users/me', { token: t })).body.data;
+  assert.deepEqual([(await me(token)).shopStatus, (await me(token)).canPost], ['PENDING', false]);
+  assert.equal((await api.post('/feeds', { token, body: { text: 'Hàng mới về' } })).body.code, 'FEED_POST_FORBIDDEN');
+
   const approved = await api.post(`/admin/shops/${id}/approve`, { token: tokens.admin });
   assert.deepEqual([approved.status, approved.body.data.status], [200, 'APPROVED']);
   assert.equal((await api.get(`/shops/${id}`, { token: tokens.buyer })).status, 200, 'đã duyệt thì công khai');
   assert.equal((await api.get('/shops/me', { token })).body.data.nameLocked, true);
   assert.equal((await api.patch('/shops/me', { token, body: { name: 'Tên khác' } })).body.code, 'SHOP_NAME_LOCKED');
+
+  // Đối tác và admin đăng bài; người dùng thường chỉ xem, thả tim, bình luận
+  assert.deepEqual([(await me(token)).isPartner, (await me(token)).canPost], [true, true]);
+  const posted = await api.post('/feeds', { token, body: { text: 'Hàng mới về' } });
+  assert.equal(posted.status, 201, JSON.stringify(posted.body));
+  assert.equal((await api.post('/feeds', { token: tokens.admin, body: { text: 'Thông báo' } })).status, 201);
+  assert.equal((await api.post('/feeds', { token: tokens.buyer, body: { text: 'Bán xe' } })).body.code, 'FEED_POST_FORBIDDEN');
+  const postId = posted.body.data.id;
+  assert.equal((await api.put(`/feeds/${postId}/like`, { token: tokens.buyer })).status, 200);
+  assert.equal((await api.post(`/feeds/${postId}/comments`, { token: tokens.buyer, body: { text: 'Còn hàng không?' } })).status, 201);
+  await prisma.feedPost.deleteMany({ where: { authorId: { in: ['user-seller', 'user-admin'] } } });
 
   const types = (await prisma.notification.findMany({ where: { userId: 'user-seller', type: { startsWith: 'SHOP_' } } })).map((n) => n.type);
   assert.deepEqual(types.sort(), ['SHOP_APPROVED', 'SHOP_REJECTED']);

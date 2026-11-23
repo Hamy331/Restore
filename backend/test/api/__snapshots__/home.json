@@ -23,7 +23,10 @@
         "presence": {
           "isOnline": false,
           "lastActiveAt": null
-        }
+        },
+        "shopStatus": null,
+        "isPartner": false,
+        "canPost": false
       }
     }
   },
@@ -51,7 +54,10 @@
         "presence": {
           "isOnline": false,
           "lastActiveAt": null
-        }
+        },
+        "shopStatus": null,
+        "isPartner": false,
+        "canPost": true
       }
     }
   },

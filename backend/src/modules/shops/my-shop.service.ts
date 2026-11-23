@@ -1,15 +1,33 @@
 import { Prisma } from '@prisma/client';
 import { AppError } from '../../common/errors/app-error.js';
 import { prisma } from '../../lib/prisma.js';
-import { storePackageForUser } from '../commerce/services/quota.service.js';
+import { withQuotaTransaction } from '../commerce/services/quota.service.js';
+import { spendCredits } from '../credits/credit.hold.js';
 import { isMediaUrl } from '../media/media.service.js';
 import { visible } from '../listings/repositories/listing.repository.js';
 import { toShopDto } from './shop.dto.js';
 import { shopSelect } from './shop.repository.js';
-import { shopNameProblem, type ShopCreateBody, type ShopUpdateBody } from './my-shop.validator.js';
+import {
+  SHOP_REGISTRATION_CREDITS, SHOP_TERMS_VERSION, shopNameProblem, type ShopCreateBody, type ShopUpdateBody,
+} from './my-shop.validator.js';
 
-/** Gói Cửa hàng (tier PRO) mới được mở shop */
-const STORE_TIER = 'PRO';
+/**
+ * Quyền theo cửa hàng cho tab Tài khoản và Bảng tin: shopStatus (PENDING | APPROVED | REJECTED | null = chưa đăng ký),
+ * isPartner (shop đã duyệt / đã xác minh: có nhãn Đối tác), canPost (đối tác hoặc admin mới đăng bài lên Bảng tin)
+ */
+export async function sellerAccess(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId }, select: { role: true, shop: { select: { status: true, verificationType: true } } },
+  });
+  const isPartner = !!user?.shop && (user.shop.status === 'APPROVED' || user.shop.verificationType !== null);
+  return { shopStatus: user?.shop?.status ?? null, isPartner, canPost: isPartner || user?.role === 'ADMIN' };
+}
+
+/** Bảng tin chỉ cho đối tác và admin đăng bài, người dùng thường chỉ xem, thả tim, bình luận. Lỗi 403 FEED_POST_FORBIDDEN */
+export async function assertCanPost(userId: string) {
+  if ((await sellerAccess(userId)).canPost) return;
+  throw new AppError(403, 'FEED_POST_FORBIDDEN', 'Chỉ cửa hàng đối tác mới đăng bài lên Bảng tin.');
+}
 
 const findMine = (ownerId: string) => prisma.shop.findUnique({
   where: { ownerId },
@@ -23,14 +41,14 @@ const findMine = (ownerId: string) => prisma.shop.findUnique({
  * Trang Quản lý shop: { shop (Shop như GET /shops/:id, kể cả khi chưa duyệt) | null,
  *   review { status (PENDING | APPROVED | REJECTED), rejectNote, reviewedAt } | null,
  *   verification { status, rejectNote, submittedAt, reviewedAt } | null (hồ sơ xin xác minh gần nhất),
- *   storePlan (đang dùng gói Cửa hàng), canCreate, nameLocked (shop đã duyệt / xác minh thì không tự đổi tên),
- *   planEndsAt, stats { followerCount, listingCount, runningPosters, pendingPosters } | null }
+ *   canCreate (chưa đăng ký cửa hàng), registration { fee (xu), termsVersion } (đăng ký lên cửa hàng),
+ *   nameLocked (shop đã duyệt / xác minh thì không tự đổi tên),
+ *   stats { followerCount, listingCount, runningPosters, pendingPosters } | null }
  */
 export async function getMyShop(userId: string, now = new Date()) {
-  const [mine, plan] = await Promise.all([findMine(userId), storePackageForUser(prisma, userId, now)]);
-  const storePlan = plan.package.tier === STORE_TIER;
-  const base = { storePlan, planEndsAt: plan.endsAt };
-  if (!mine) return { ...base, shop: null, review: null, verification: null, canCreate: storePlan, nameLocked: false, stats: null };
+  const mine = await findMine(userId);
+  const base = { registration: { fee: SHOP_REGISTRATION_CREDITS, termsVersion: SHOP_TERMS_VERSION } };
+  if (!mine) return { ...base, shop: null, review: null, verification: null, canCreate: true, nameLocked: false, stats: null };
   const { status, rejectNote, reviewedAt, verification, ...shop } = mine;
   const [listingCount, runningPosters, pendingPosters] = await Promise.all([
     prisma.listing.count({ where: { ...visible, ownerId: userId } }),
@@ -62,22 +80,24 @@ function assertName(name: string | undefined) {
   }
 }
 
-/** Mở shop, vào hàng chờ duyệt. Lỗi 403 SHOP_PLAN_REQUIRED, 409 SHOP_EXISTS, 400 SHOP_NAME_NOT_ALLOWED */
+/**
+ * Đăng ký lên cửa hàng (không phụ thuộc gói tài khoản): đồng ý hợp đồng, trả phí một lần bằng xu, shop vào hàng chờ duyệt.
+ * Duyệt xong là Đối tác; xác minh giấy phép làm sau. Lỗi 409 SHOP_EXISTS | NOT_ENOUGH_CREDITS, 400 SHOP_NAME_NOT_ALLOWED
+ */
 export async function createMyShop(userId: string, body: ShopCreateBody, now = new Date()) {
   assertName(body.name);
-  const plan = await storePackageForUser(prisma, userId, now);
-  if (plan.package.tier !== STORE_TIER) {
-    throw new AppError(403, 'SHOP_PLAN_REQUIRED', 'Chỉ gói Cửa hàng Pro mới mở được trang shop.', undefined,
-      { tier: plan.package.tier });
-  }
-  if (await prisma.shop.findUnique({ where: { ownerId: userId }, select: { id: true } })) {
-    throw new AppError(409, 'SHOP_EXISTS', 'Bạn đã có trang shop.');
-  }
-  await prisma.shop.create({
-    data: {
-      ownerId: userId, name: body.name, tagline: body.tagline ?? '', description: body.description ?? '',
-      address: body.address ?? null, status: 'PENDING', submittedAt: now,
-    },
+  await withQuotaTransaction(async (tx) => {
+    if (await tx.shop.findUnique({ where: { ownerId: userId }, select: { id: true } })) {
+      throw new AppError(409, 'SHOP_EXISTS', 'Bạn đã có trang shop.');
+    }
+    await spendCredits(tx, { userId, amount: SHOP_REGISTRATION_CREDITS, note: 'Phí đăng ký lên Cửa hàng' });
+    await tx.shop.create({
+      data: {
+        ownerId: userId, name: body.name, tagline: body.tagline ?? '', description: body.description ?? '',
+        address: body.address ?? null, status: 'PENDING', submittedAt: now,
+        termsVersion: body.termsVersion, termsAcceptedAt: now, registrationCredits: SHOP_REGISTRATION_CREDITS,
+      },
+    });
   });
   return getMyShop(userId, now);
 }

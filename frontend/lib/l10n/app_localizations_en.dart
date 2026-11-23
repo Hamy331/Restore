@@ -494,7 +494,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accProPlan => 'Account plan';
 
   @override
-  String get accCreateStore => 'Create a store';
+  String get accCreateStore => 'Become a Shop';
 
   @override
   String get accCoins => 'ReStore Points';
@@ -6260,4 +6260,230 @@ class AppLocalizationsEn extends AppLocalizations {
   String searchSubcategorySuggestion(String parent) {
     return 'In $parent';
   }
+
+  @override
+  String get bsIntroTitle => 'Switch to a Shop account';
+
+  @override
+  String get bsIntroLead => 'Consider switching if any of these apply to you:';
+
+  @override
+  String get bsIntroResell =>
+      'You buy items to resell them for a regular income or profit';
+
+  @override
+  String get bsIntroNew =>
+      'You take pre-orders, or mostly sell brand-new or many similar items';
+
+  @override
+  String get bsIntroVolume => 'You regularly list or sell large quantities';
+
+  @override
+  String get bsIntroService => 'You provide services';
+
+  @override
+  String get bsIntroBusiness =>
+      'You have a registered household business or company';
+
+  @override
+  String get bsIntroStore =>
+      'You sell on several platforms or have a physical store';
+
+  @override
+  String get bsIntroAction => 'Find out how it works';
+
+  @override
+  String get bsBenefitsTitle => 'Benefits of a Shop account';
+
+  @override
+  String get bsBenefitPageTitle => 'Your own shop page';
+
+  @override
+  String get bsBenefitPageBody =>
+      'A cover photo, logo, address, opening hours and an introduction.';
+
+  @override
+  String get bsBenefitBadgeTitle => 'Build trust with the Partner badge';
+
+  @override
+  String get bsBenefitBadgeBody =>
+      'The Partner badge shows on your profile and every listing. Verify your business licence to add a tick.';
+
+  @override
+  String get bsBenefitFeedTitle => 'Post on the Feed';
+
+  @override
+  String get bsBenefitFeedBody =>
+      'Share new arrivals and offers with your followers. Other members can only view, react and comment.';
+
+  @override
+  String get bsAgreeLead => 'By proceeding, you agree to the ';
+
+  @override
+  String get bsTermsLink => 'Shop Agreement';
+
+  @override
+  String get bsAgreeTail => ' of ReStore.';
+
+  @override
+  String get bsSwitchAction => 'Switch to a Shop account';
+
+  @override
+  String get bsRegisterTitle => 'Register your shop';
+
+  @override
+  String get bsRegisterBody =>
+      'Name your shop. ReStore checks the name before your shop goes public.';
+
+  @override
+  String get bsFeeTitle => 'Registration fee';
+
+  @override
+  String bsFeeBody(int fee) {
+    return '$fee credits, paid once from your credit wallet. Account plans (boosts, listing quota) are separate.';
+  }
+
+  @override
+  String get bsAgree => 'I have read and agree to the ReStore Shop Agreement';
+
+  @override
+  String get bsAgreeRequired => 'You need to accept the agreement to register.';
+
+  @override
+  String bsPayAction(int fee) {
+    return 'Pay $fee credits';
+  }
+
+  @override
+  String bsNotEnoughCredits(int fee) {
+    return 'You need $fee credits. Top up and try again.';
+  }
+
+  @override
+  String get bsTopUp => 'Top up';
+
+  @override
+  String get bsDoneTitle => 'You are now a Shop!';
+
+  @override
+  String get bsDoneBadge => 'Shop account';
+
+  @override
+  String get bsDoneFeatures => 'New features';
+
+  @override
+  String get bsDoneReview =>
+      'ReStore is reviewing your shop, usually within one working day. Once approved you get the Partner badge and can post on the Feed.';
+
+  @override
+  String get bsDonePage =>
+      'Add a cover photo, logo, address and opening hours to your shop page';
+
+  @override
+  String get bsDoneSuccess => 'Switched to a Shop account';
+
+  @override
+  String get bsVerifyAction => 'Verify your licence to get the tick';
+
+  @override
+  String get bsLater => 'Later';
+
+  @override
+  String get bsTermsTitle => 'Shop Agreement';
+
+  @override
+  String bsTermsVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get accSwitchToShop => 'Become a Shop';
+
+  @override
+  String get profAbout => 'About';
+
+  @override
+  String get profOnRestore => 'on ReStore';
+
+  @override
+  String profYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years',
+      one: '1 year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profPartnerTitle => 'ReStore Partner';
+
+  @override
+  String get profPartnerBody =>
+      'A shop registered with and approved by ReStore';
+
+  @override
+  String get profVerifiedTitle => 'Verified shop';
+
+  @override
+  String get profOfficialTitle => 'Official brand';
+
+  @override
+  String get profVerifiedBody => 'ReStore has checked the business licence';
+
+  @override
+  String get profAccountDetails => 'Account details';
+
+  @override
+  String profFollowers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count followers',
+      one: '1 follower',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profFollowing(int count) {
+    return 'Following $count';
+  }
+
+  @override
+  String profSelling(int listings, int sold) {
+    return '$listings for sale · $sold sold';
+  }
+
+  @override
+  String get profMore => 'Read more';
+
+  @override
+  String get profLess => 'Show less';
+
+  @override
+  String get profNoAbout => 'No introduction yet.';
 }

@@ -4,6 +4,7 @@ import { id, input, page, searchQuery } from '../feed.validator.js';
 import { setPostLike } from '../repositories/feed.repository.js';
 import { serialize, slice } from '../feed.dto.js';
 import { emit } from '../../../common/events/domain-events.js';
+import { assertCanPost } from '../../shops/my-shop.service.js';
 export { slice } from '../feed.dto.js';
 export { followingFilter, setPostLike } from '../repositories/feed.repository.js';
 
@@ -28,8 +29,10 @@ export async function getPost(userId: string, postId: string) {
   return serialize(row, userId);
 }
 
+/** Đăng bài: chỉ cửa hàng Đối tác và admin (403 FEED_POST_FORBIDDEN); ai cũng xem, thả tim, bình luận được */
 export async function createPost(userId: string, body: unknown) {
   const data = input(body);
+  await assertCanPost(userId);
   if (data.listingId && !await repository.findVisibleListing(data.listingId)) {
     throw new AppError(404, 'LISTING_NOT_FOUND', 'Listing unavailable');
   }

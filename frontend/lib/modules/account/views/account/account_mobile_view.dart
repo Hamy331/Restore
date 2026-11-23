@@ -20,6 +20,7 @@ import '../my_reviews/my_reviews_view.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/profile_posts.dart';
 import '../../../plans/views/plans/plans_view.dart';
+import '../../../my_shop/views/my_shop/my_shop_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
 import '../../../auth/bloc/auth/auth_bloc.dart';
 import '../../../auth/bloc/auth/auth_event.dart';
@@ -202,9 +203,14 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: _TopAction(
+                                        key: const ValueKey('account-shop'),
                                         icon: AppIcons.store,
-                                        label: l.accCreateStore,
-                                        onTap: () => showComingSoon(context),
+                                        // Chưa lên Cửa hàng: luồng đăng ký; đã có: Quản lý shop
+                                        label: profile?.shopStatus == null
+                                            ? l.accSwitchToShop
+                                            : l.msTitle,
+                                        onTap: () =>
+                                            context.push(MyShopView.path),
                                       ),
                                     ),
                                   ],
@@ -334,6 +340,7 @@ class _TopBar extends StatelessWidget {
 
 class _TopAction extends StatelessWidget {
   const _TopAction({
+    super.key,
     required this.icon,
     required this.label,
     required this.onTap,

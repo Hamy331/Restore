@@ -3,7 +3,6 @@ import { audit } from '../../common/audit/admin-audit.js';
 import { AppError } from '../../common/errors/app-error.js';
 import { emit } from '../../common/events/domain-events.js';
 import { prisma } from '../../lib/prisma.js';
-import { storePackageForUser } from '../commerce/services/quota.service.js';
 import { isMediaUrl } from '../media/media.service.js';
 import { getMyShop } from './my-shop.service.js';
 import { nextCertificateCode } from './shop-review.service.js';
@@ -11,19 +10,16 @@ import type { ShopVerificationBody } from './my-shop.validator.js';
 
 /**
  * Xin xác minh shop (giấy phép kinh doanh), vào hàng chờ admin. Gửi lại sau khi bị từ chối thì ghi đè hồ sơ cũ.
- * Lỗi 404 SHOP_REQUIRED, 403 SHOP_PLAN_REQUIRED, 409 SHOP_NOT_APPROVED | SHOP_ALREADY_VERIFIED | VERIFICATION_PENDING,
- * 400 INVALID_IMAGE_URL
+ * Gửi được ngay sau khi đăng ký (shop đang chờ duyệt) hoặc làm sau; shop bị từ chối thì sửa shop trước.
+ * Lỗi 404 SHOP_REQUIRED, 409 SHOP_NOT_APPROVED | SHOP_ALREADY_VERIFIED | VERIFICATION_PENDING, 400 INVALID_IMAGE_URL
  */
 export async function submitVerification(userId: string, body: ShopVerificationBody, now = new Date()) {
   const shop = await prisma.shop.findUnique({
     where: { ownerId: userId }, select: { id: true, status: true, verificationType: true, verification: { select: { status: true } } },
   });
   if (!shop) throw new AppError(404, 'SHOP_REQUIRED', 'Bạn chưa có trang shop.');
-  if ((await storePackageForUser(prisma, userId, now)).package.tier !== 'PRO') {
-    throw new AppError(403, 'SHOP_PLAN_REQUIRED', 'Chỉ gói Cửa hàng Pro mới xin xác minh được.');
-  }
   if (shop.verificationType) throw new AppError(409, 'SHOP_ALREADY_VERIFIED', 'Shop đã được xác minh.');
-  if (shop.status !== 'APPROVED') throw new AppError(409, 'SHOP_NOT_APPROVED', 'Shop cần được duyệt trước khi xin xác minh.');
+  if (shop.status === 'REJECTED') throw new AppError(409, 'SHOP_NOT_APPROVED', 'Sửa shop theo góp ý của ReStore trước khi xin xác minh.');
   if (shop.verification?.status === 'PENDING') throw new AppError(409, 'VERIFICATION_PENDING', 'Hồ sơ xác minh đang chờ duyệt.');
   if (body.documentUrls.some((url) => !isMediaUrl(url, 'verification') || !url.includes(`/verifications/${userId}_`))) {
     throw new AppError(400, 'INVALID_IMAGE_URL', 'Ảnh giấy tờ phải được tải lên qua /media/images?purpose=verification.', 'documentUrls');
@@ -75,13 +71,16 @@ async function decide(adminId: string, id: string, decision: { type: ShopVerific
       throw new AppError(409, 'VERIFICATION_NOT_PENDING', 'Hồ sơ không còn ở trạng thái chờ duyệt.');
     }
     const { shopId, shop } = await tx.shopVerification.findUniqueOrThrow({
-      where: { id }, select: { shopId: true, shop: { select: { verificationType: true } } },
+      where: { id }, select: { shopId: true, shop: { select: { verificationType: true, status: true } } },
     });
-    // Shop đã được xác minh trực tiếp thì giữ nguyên nhãn và mã cũ
+    // Shop đã được xác minh trực tiếp thì giữ nguyên nhãn và mã cũ. Shop còn chờ duyệt thì duyệt luôn (đã kiểm giấy phép)
     if (approved && !shop.verificationType) {
       await tx.shop.update({
         where: { id: shopId },
-        data: { verificationType: decision.type, verifiedAt: now, certificateCode: await nextCertificateCode(tx, now) },
+        data: {
+          verificationType: decision.type, verifiedAt: now, certificateCode: await nextCertificateCode(tx, now),
+          ...(shop.status === 'PENDING' ? { status: 'APPROVED' as const, reviewedAt: now } : {}),
+        },
       });
     }
     await audit(tx, adminId, approved ? 'SHOP_VERIFY' : 'SHOP_VERIFY_REJECT', 'Shop', shopId,

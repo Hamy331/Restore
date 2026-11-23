@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:restore/core/utils/formatters/time_ago_formatter.dart';
+import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/account/models/profile_models.dart';
 import 'package:restore/modules/account/widgets/profile_header.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
+import 'package:restore/shared/widgets/listing/listing_partner_badge.dart';
 
 const storefrontOrange = Color(0xffcd520d);
 
@@ -14,17 +15,32 @@ String storefrontName(ProfileData p) => [
   p.username,
 ].whereType<String>().firstWhere((s) => s.trim().isNotEmpty, orElse: () => '—');
 
+/// Thời gian đã ở ReStore: "2 năm", "5 tháng", "12 ngày"
+String profileTenure(AppLocalizations l, DateTime joined, [DateTime? now]) {
+  final at = now ?? DateTime.now();
+  final start = joined.toLocal();
+  final months =
+      (at.year - start.year) * 12 +
+      at.month -
+      start.month -
+      (at.day < start.day ? 1 : 0);
+  if (months >= 12) return l.profYears(months ~/ 12);
+  if (months >= 1) return l.profMonths(months);
+  final days = at.difference(start).inDays;
+  return l.profDays(days < 1 ? 1 : days);
+}
+
+/// Đầu trang hồ sơ: ảnh bìa (cửa hàng dùng ảnh bìa shop, người dùng thường là
+/// một màu), avatar ở giữa, tên kèm dấu xác minh và nhãn Đối tác, @username,
+/// điểm đánh giá và thời gian ở ReStore, rồi các nút theo dõi / liên hệ
 class SellerProfileSummary extends StatelessWidget {
   const SellerProfileSummary({
     super.key,
     required this.profile,
     required this.showShopLogo,
     required this.following,
-    required this.followerCount,
     required this.onFollow,
     required this.onReviews,
-    required this.onFollowers,
-    required this.onFollowing,
     this.onCatalog,
     this.onCall,
     this.onChat,
@@ -32,168 +48,161 @@ class SellerProfileSummary extends StatelessWidget {
   final ProfileData profile;
   final bool showShopLogo;
   final bool following;
-  final int followerCount;
-  final VoidCallback? onFollow, onCatalog, onFollowers, onCall;
+  final VoidCallback? onFollow, onCatalog, onCall;
 
   /// Desktop: nút Nhắn tin nằm cạnh nút Gọi trong thẻ (không có thanh dưới)
   final VoidCallback? onChat;
-  final VoidCallback onReviews, onFollowing;
+  final VoidCallback onReviews;
+
+  static const coverHeight = 120.0;
+  static const avatarRadius = 44.0;
 
   @override
   Widget build(BuildContext context) {
     final p = profile, s = p.storefront, l = AppLocalizations.of(context)!;
     final name = storefrontName(p);
-    final avatar = showShopLogo ? s.logo ?? p.avatarUrl : p.avatarUrl;
-    final description = (s.description ?? '').trim().isNotEmpty
-        ? s.description
-        : p.bio;
+    final avatar = s.isShop && (showShopLogo || p.avatarUrl == null)
+        ? s.logo ?? p.avatarUrl
+        : p.avatarUrl;
     final since = p.joined;
-    final active = p.lastActive;
     final theme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (s.cover != null)
-          AspectRatio(aspectRatio: 2.1, child: AppLocalImage(path: s.cover!)),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        SizedBox(
+          height: coverHeight + avatarRadius,
+          child: Stack(
             children: [
-              Row(
-                children: [
-                  ProfileAvatar(
-                    radius: 30,
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: coverHeight,
+                child: s.isShop && s.cover != null
+                    ? AppLocalImage(
+                        key: const ValueKey('profile-cover-image'),
+                        path: s.cover!,
+                      )
+                    : const ColoredBox(
+                        key: ValueKey('profile-cover-plain'),
+                        color: AppColors.primary,
+                      ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    shape: BoxShape.circle,
+                  ),
+                  child: ProfileAvatar(
+                    radius: avatarRadius,
                     url: avatar,
                     initials: ProfileHeader.initials(
-                      showShopLogo ? name : p.fullName,
+                      s.isShop ? name : p.fullName,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: theme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: name),
+                    if (s.verified)
+                      const WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 6),
+                          child: Icon(
+                            AppIcons.verified,
+                            key: ValueKey('profile-verified'),
+                            size: 20,
+                            color: AppColors.actionPrimary,
                           ),
                         ),
-                        if (s.isShop || s.isPro)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 3),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  s.isShop
-                                      ? Icons.storefront_outlined
-                                      : Icons.workspace_premium_outlined,
-                                  size: 16,
-                                  color: storefrontOrange,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  s.isShop ? l.planShop : l.planBasic,
-                                  style: theme.labelMedium?.copyWith(
-                                    color: storefrontOrange,
-                                  ),
-                                ),
-                              ],
-                            ),
+                      ),
+                    if (s.isShop)
+                      const WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 6),
+                          child: ListingPartnerBadge(
+                            key: ValueKey('profile-partner'),
                           ),
-                        if (active != null)
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.circle,
-                                size: 7,
-                                color: p.online ? Colors.green : Colors.grey,
-                              ),
-                              const SizedBox(width: 5),
-                              Flexible(
-                                child: Text(
-                                  '${l.sellerActivity} · ${TimeAgoFormatter.format(active, l)}',
-                                  style: theme.bodySmall,
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
+                        ),
+                      ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+                style: theme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              if (p.username.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    '@${p.username}',
+                    textAlign: TextAlign.center,
+                    style: theme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
+                ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _HeaderStat(
+                      key: const ValueKey('profile-rating'),
+                      onTap: onReviews,
+                      value: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            p.ratingCount > 0
+                                ? p.ratingAverage.toStringAsFixed(1)
+                                : '—',
+                            style: theme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.star_rounded,
+                            color: AppColors.primary,
+                            size: 22,
+                          ),
+                        ],
+                      ),
+                      label: p.ratingCount > 0
+                          ? l.reviewCount(p.ratingCount)
+                          : l.productSellerNoReviews,
+                    ),
+                  ),
+                  if (since != null)
+                    Expanded(
+                      child: _HeaderStat(
+                        key: const ValueKey('profile-tenure'),
+                        value: Text(
+                          profileTenure(l, since),
+                          style: theme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        label: l.profOnRestore,
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(height: 14),
-              Wrap(
-                spacing: 16,
-                runSpacing: 6,
-                children: [
-                  _Stat(l.accListings, s.listings),
-                  _Stat(l.sellerSold, s.sold),
-                  InkWell(
-                    onTap: onFollowers,
-                    child: _Stat(l.accFollowers, followerCount),
-                  ),
-                  InkWell(
-                    onTap: onFollowing,
-                    child: _Stat(l.accFollowing, p.followingCount),
-                  ),
-                ],
-              ),
-              if (since != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    l.productSellerJoined(
-                      DateFormat.yMMM(l.localeName).format(since.toLocal()),
-                    ),
-                    style: theme.bodySmall,
-                  ),
-                ),
-              InkWell(
-                onTap: onReviews,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 9),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.star_rounded,
-                        color: Color(0xffffb000),
-                        size: 20,
-                      ),
-                      const SizedBox(width: 4),
-                      if (p.ratingCount > 0)
-                        Text(
-                          '${p.ratingAverage.toStringAsFixed(1)}  ',
-                          style: theme.titleSmall,
-                        ),
-                      Flexible(
-                        child: Text(
-                          p.ratingCount > 0
-                              ? l.reviewCount(p.ratingCount)
-                              : l.productSellerNoReviews,
-                          style: const TextStyle(
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if ((s.address ?? '').trim().isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.location_on_outlined, size: 19),
-                      const SizedBox(width: 5),
-                      Expanded(child: Text(s.address!)),
-                    ],
-                  ),
-                ),
               if (onFollow != null || onCatalog != null)
                 Row(
                   children: [
@@ -248,29 +257,11 @@ class SellerProfileSummary extends StatelessWidget {
                   ),
                 )
               else if (onCall != null)
-                SizedBox(
-                  width: double.infinity,
-                  child: SellerCallButton(onPressed: onCall!),
-                ),
-              if ((description ?? '').trim().isNotEmpty)
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(top: 12),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xfff6f6f6),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        s.isShop ? l.msDescription : l.accBio,
-                        style: theme.titleSmall,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(description!),
-                    ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: SellerCallButton(onPressed: onCall!),
                   ),
                 ),
             ],
@@ -279,6 +270,38 @@ class SellerProfileSummary extends StatelessWidget {
       ],
     );
   }
+}
+
+class _HeaderStat extends StatelessWidget {
+  const _HeaderStat({
+    super.key,
+    required this.value,
+    required this.label,
+    this.onTap,
+  });
+  final Widget value;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(8),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        children: [
+          value,
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: AppColors.textSecondary),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class SellerCallButton extends StatelessWidget {
@@ -294,23 +317,5 @@ class SellerCallButton extends StatelessWidget {
     onPressed: onPressed,
     icon: const Icon(Icons.phone_in_talk_outlined, size: 18),
     label: Text(AppLocalizations.of(context)!.listingCall),
-  );
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat(this.label, this.count);
-  final String label;
-  final int count;
-  @override
-  Widget build(BuildContext context) => Text.rich(
-    TextSpan(
-      children: [
-        TextSpan(text: '$label: '),
-        TextSpan(
-          text: '$count',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ],
-    ),
   );
 }

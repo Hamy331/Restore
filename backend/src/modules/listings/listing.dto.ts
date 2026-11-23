@@ -80,7 +80,7 @@ export const toRevisionDto = (revision: RevisionRecord) => ({
  * Listing cho app: { id, ownerId, title, description, price (chuỗi số), isNegotiable, condition, status,
  *   originalPrice (giá trước giảm, null = không giảm), allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
  *   categoryId, subcategoryId, category { id, name }, owner { id, fullName, ratingAverage, ratingCount },
- *   isPartner (gói Cửa hàng Pro còn hạn và shop đã duyệt / đã xác minh), shopId (chỉ có khi isPartner: trang shop của người bán),
+ *   isPartner (cửa hàng đã duyệt / đã xác minh, gói nào cũng được), shopId (chỉ có khi isPartner: trang shop của người bán),
  *   viewCount, createdAt, updatedAt, publishedAt, expiresAt, startsAt, displayDays, areaLabel }
  *   (+ paidCredits, paidDays, autoExtend cho chủ tin)
  *
@@ -88,12 +88,9 @@ export const toRevisionDto = (revision: RevisionRecord) => ({
  * areaLabel: "Phường, Tỉnh" để hiện trên thẻ tin.
  */
 export function toListingDto(listing: ListingRecord, owner = false) {
-  const { paidCredits, paidDays, autoExtend, owner: { storeSubscription, shop, ...publicOwner }, ...rest } = listing;
-  const now = new Date();
-  // Đối tác: gói Cửa hàng Pro còn hạn và có trang shop công khai (đã duyệt hoặc đã xác minh), giống điều kiện trang shop
-  const isPartner = storeSubscription?.package.tier === 'PRO' &&
-    storeSubscription.startsAt <= now && now < storeSubscription.endsAt &&
-    !!shop && (shop.status === 'APPROVED' || shop.verificationType !== null);
+  const { paidCredits, paidDays, autoExtend, owner: { storeSubscription: _plan, shop, ...publicOwner }, ...rest } = listing;
+  // Đối tác: đã lên cửa hàng và shop đã duyệt / đã xác minh (không phụ thuộc gói tài khoản), giống điều kiện trang shop
+  const isPartner = !!shop && (shop.status === 'APPROVED' || shop.verificationType !== null);
   const location = owner ? listing.location : publicLocation(listing.location);
   const address = listing.location as { province?: { name?: string }; ward?: { name?: string } } | null;
   // Mọi tin có bán đều cho trả giá: không đọc cột isNegotiable cũ (tin cũ có thể còn false)

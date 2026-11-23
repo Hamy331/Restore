@@ -201,7 +201,7 @@ test('admin listings name the subcategory next to the category', async () => {
   assert.equal(toAdminListing({ id: 'c', subcategoryId: null, category: null }).category, null);
 });
 
-test('listings show the partner badge only for an active Pro plan with a public shop', async () => {
+test('listings show the partner badge for a public shop whatever the account plan', async () => {
   const { toListingDto } = await import('./listing.dto.js');
   const day = 86_400_000;
   const pro = { startsAt: new Date(Date.now() - day), endsAt: new Date(Date.now() + day), package: { tier: 'PRO' } };
@@ -217,7 +217,7 @@ test('listings show the partner badge only for an active Pro plan with a public 
     const dto = listing(pro, shop);
     assert.deepEqual([dto.isPartner, 'shopId' in dto], [false, false], JSON.stringify(shop));
   }
-  assert.equal(listing({ ...pro, package: { tier: 'BASIC' } }, approved).isPartner, false, 'gói Bán chuyên');
-  assert.equal(listing({ ...pro, endsAt: new Date(Date.now() - 1) }, approved).isPartner, false, 'hết hạn');
+  assert.equal(listing({ ...pro, package: { tier: 'BASIC' } }, approved).isPartner, true, 'gói Bán chuyên');
+  assert.equal(listing(null, approved).isPartner, true, 'không có gói');
   assert.equal((listing(null, approved).owner as Record<string, unknown>).shop, undefined, 'không lộ shop trong owner');
 });

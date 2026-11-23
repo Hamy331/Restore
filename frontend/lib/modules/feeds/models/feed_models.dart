@@ -2,16 +2,25 @@ import '../../../core/network/media_url.dart';
 import 'package:equatable/equatable.dart';
 
 class FeedUser extends Equatable {
-  const FeedUser({required this.id, required this.name, this.avatarUrl});
+  const FeedUser({
+    required this.id,
+    required this.name,
+    this.avatarUrl,
+    this.canPost = false,
+  });
   FeedUser.fromJson(Map<String, dynamic> j)
     : id = '${j['id'] ?? ''}',
       name = j['fullName'] as String? ?? '',
-      avatarUrl = resolveMediaUrl(j['avatarUrl'] as String?);
+      avatarUrl = resolveMediaUrl(j['avatarUrl'] as String?),
+      canPost = j['canPost'] == true;
   final String id, name;
   final String? avatarUrl;
 
+  /// Cửa hàng Đối tác và admin mới đăng bài; người khác chỉ xem, thả tim, bình luận
+  final bool canPost;
+
   @override
-  List<Object?> get props => [id, name, avatarUrl];
+  List<Object?> get props => [id, name, avatarUrl, canPost];
 }
 
 class FeedComment extends Equatable {

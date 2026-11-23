@@ -22,6 +22,19 @@ class _Repo extends MockMyShopRepository {
   final updates = <Map<String, dynamic>>[];
   int uploads = 0;
 
+  /// Mã lỗi giả lập khi đăng ký Cửa hàng (VD NOT_ENOUGH_CREDITS)
+  String? createError;
+
+  @override
+  Future<MyShopOverview> create({
+    required String name,
+    String? tagline,
+    String? address,
+  }) async {
+    if (createError != null) throw MyShopException(createError!);
+    return super.create(name: name, tagline: tagline, address: address);
+  }
+
   @override
   Future<MyShopOverview> update(Map<String, dynamic> changes) {
     updates.add(changes);
@@ -128,32 +141,53 @@ Finder _field(String key) => find.descendant(
 void main() {
   _approvedShopTests();
 
-  testWidgets('personal plan sees the Store plan upsell', (tester) async {
-    await _pump(tester, _Repo(const MyShopOverview()));
-    expect(find.text('Trang shop dành cho gói Cửa hàng Pro'), findsOneWidget);
-    await tester.tap(find.text('Xem gói'));
-    await _settle(tester);
-    expect(find.text('plans page'), findsOneWidget);
-  });
-
-  testWidgets('store plan opens a shop then edits it', (tester) async {
-    final repository = _Repo(
-      const MyShopOverview(storePlan: true, canCreate: true),
-    );
+  testWidgets('regular account becomes a shop: intro, benefits, agreement, pay', (
+    tester,
+  ) async {
+    final repository = _Repo(const MyShopOverview(canCreate: true));
     await _pump(tester, repository);
-    expect(find.text('Mở trang shop của bạn'), findsOneWidget);
+    // không cần gói tài khoản: vào thẳng luồng lên Cửa hàng
+    expect(find.text('Chuyển sang tài khoản Cửa hàng'), findsOneWidget);
+    expect(find.text('Bạn cung cấp dịch vụ'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('become-shop-next')));
+    await _settle(tester);
+    expect(find.text('Quyền lợi của tài khoản Cửa hàng'), findsOneWidget);
+    expect(find.text('Đăng bài lên Bảng tin'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('become-shop-switch')));
+    await _settle(tester);
 
-    await tester.tap(find.text('Mở shop'));
+    // thiếu tên và chưa đồng ý hợp đồng thì chưa gửi
+    expect(find.text('Thanh toán 199 xu'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('my-shop-create')));
     await tester.pump();
     expect(find.text('Tên shop từ 2 đến 60 ký tự.'), findsOneWidget);
+    expect(find.text('Bạn cần đồng ý hợp đồng để đăng ký.'), findsOneWidget);
+
+    // xem toàn văn hợp đồng rồi quay lại
+    await tester.tap(find.byKey(const ValueKey('become-shop-terms')));
+    await _settle(tester);
+    expect(find.text('Điều 3. Phí đăng ký'), findsOneWidget);
+    Navigator.of(
+      tester.element(find.byKey(const ValueKey('shop-terms'))),
+    ).pop();
+    await _settle(tester);
 
     await tester.enterText(_field('my-shop-name'), 'Góc Gỗ');
     await tester.enterText(_field('my-shop-address'), 'Quận 3, TP.HCM');
-    await tester.tap(find.text('Mở shop'));
+    await tester.tap(find.byKey(const ValueKey('become-shop-agree')));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('my-shop-create')));
+    await _settle(tester);
+
+    // chúc mừng, mời xác minh (làm sau cũng được)
+    expect(find.byKey(const ValueKey('become-shop-done')), findsOneWidget);
+    expect(find.text('Bạn đã lên Cửa hàng!'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('become-shop-later')));
     await _settle(tester);
     expect(find.text('Thông tin shop'), findsOneWidget);
-    // shop mới mở vào hàng chờ duyệt, chưa có nút xem trang công khai
+    // shop mới vào hàng chờ duyệt, chưa có nút xem trang công khai; xác minh gửi được ngay
     expect(find.text('Shop đang chờ duyệt'), findsOneWidget);
+    expect(find.byKey(const ValueKey('my-shop-verify')), findsOneWidget);
     expect(find.byKey(const ValueKey('my-shop-view-public')), findsNothing);
     // chưa đổi gì thì nút lưu tắt
     await tester.tap(find.text('Lưu thay đổi'));
@@ -175,12 +209,33 @@ void main() {
     await tester.pump(const Duration(seconds: 5));
   });
 
+  testWidgets('not enough credits offers a top-up', (tester) async {
+    final repository = _Repo(const MyShopOverview(canCreate: true))
+      ..createError = 'NOT_ENOUGH_CREDITS';
+    await _pump(tester, repository);
+    await tester.tap(find.byKey(const ValueKey('become-shop-next')));
+    await _settle(tester);
+    await tester.tap(find.byKey(const ValueKey('become-shop-switch')));
+    await _settle(tester);
+    await tester.enterText(_field('my-shop-name'), 'Góc Gỗ');
+    await tester.tap(find.byKey(const ValueKey('become-shop-agree')));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('my-shop-create')));
+    await _settle(tester);
+    expect(
+      find.text('Ví chưa đủ 199 xu. Nạp thêm xu rồi đăng ký lại.'),
+      findsOneWidget,
+    );
+    expect(find.text('Nạp xu'), findsOneWidget);
+    expect(find.byKey(const ValueKey('become-shop-done')), findsNothing);
+    await tester.pump(const Duration(seconds: 5));
+  });
+
   testWidgets('verified shop: name locked, verified card, stats', (
     tester,
   ) async {
     final repository = _Repo(
       MyShopOverview(
-        storePlan: false,
         nameLocked: true,
         stats: const MyShopStats(followerCount: 12, listingCount: 7),
         shop: ShopModel(
@@ -196,7 +251,6 @@ void main() {
     await _pump(tester, repository);
     expect(find.text('Shop đã xác minh'), findsOneWidget);
     expect(find.textContaining('RS-2026-00128'), findsOneWidget);
-    expect(find.text('Gói Cửa hàng Pro đã hết hạn'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
     final name = tester.widget<TextField>(_field('my-shop-name'));
     expect(name.enabled, isFalse);
@@ -218,7 +272,6 @@ void main() {
   ) async {
     final repository = _Repo(
       const MyShopOverview(
-        storePlan: true,
         reviewStatus: 'REJECTED',
         rejectNote: 'Ảnh bìa có logo thương hiệu khác',
         shop: ShopModel(id: 's1', name: 'Góc Gỗ'),
@@ -251,7 +304,6 @@ void main() {
 /// Shop đã duyệt, chưa xác minh: giờ mở cửa và hồ sơ xác minh
 void _approvedShopTests() {
   const approved = MyShopOverview(
-    storePlan: true,
     reviewStatus: 'APPROVED',
     nameLocked: true,
     shop: ShopModel(id: 's1', name: 'Góc Gỗ'),
@@ -347,7 +399,6 @@ void _approvedShopTests() {
       tester,
       _Repo(
         const MyShopOverview(
-          storePlan: true,
           reviewStatus: 'APPROVED',
           verificationStatus: 'REJECTED',
           verificationNote: 'Ảnh giấy phép bị mờ',

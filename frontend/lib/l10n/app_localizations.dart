@@ -947,7 +947,7 @@ abstract class AppLocalizations {
   /// No description provided for @accCreateStore.
   ///
   /// In en, this message translates to:
-  /// **'Create a store'**
+  /// **'Become a Shop'**
   String get accCreateStore;
 
   /// No description provided for @accCoins.
@@ -10747,6 +10747,348 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In {parent}'**
   String searchSubcategorySuggestion(String parent);
+
+  /// No description provided for @bsIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to a Shop account'**
+  String get bsIntroTitle;
+
+  /// No description provided for @bsIntroLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Consider switching if any of these apply to you:'**
+  String get bsIntroLead;
+
+  /// No description provided for @bsIntroResell.
+  ///
+  /// In en, this message translates to:
+  /// **'You buy items to resell them for a regular income or profit'**
+  String get bsIntroResell;
+
+  /// No description provided for @bsIntroNew.
+  ///
+  /// In en, this message translates to:
+  /// **'You take pre-orders, or mostly sell brand-new or many similar items'**
+  String get bsIntroNew;
+
+  /// No description provided for @bsIntroVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'You regularly list or sell large quantities'**
+  String get bsIntroVolume;
+
+  /// No description provided for @bsIntroService.
+  ///
+  /// In en, this message translates to:
+  /// **'You provide services'**
+  String get bsIntroService;
+
+  /// No description provided for @bsIntroBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a registered household business or company'**
+  String get bsIntroBusiness;
+
+  /// No description provided for @bsIntroStore.
+  ///
+  /// In en, this message translates to:
+  /// **'You sell on several platforms or have a physical store'**
+  String get bsIntroStore;
+
+  /// No description provided for @bsIntroAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Find out how it works'**
+  String get bsIntroAction;
+
+  /// No description provided for @bsBenefitsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits of a Shop account'**
+  String get bsBenefitsTitle;
+
+  /// No description provided for @bsBenefitPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own shop page'**
+  String get bsBenefitPageTitle;
+
+  /// No description provided for @bsBenefitPageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A cover photo, logo, address, opening hours and an introduction.'**
+  String get bsBenefitPageBody;
+
+  /// No description provided for @bsBenefitBadgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build trust with the Partner badge'**
+  String get bsBenefitBadgeTitle;
+
+  /// No description provided for @bsBenefitBadgeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The Partner badge shows on your profile and every listing. Verify your business licence to add a tick.'**
+  String get bsBenefitBadgeBody;
+
+  /// No description provided for @bsBenefitFeedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post on the Feed'**
+  String get bsBenefitFeedTitle;
+
+  /// No description provided for @bsBenefitFeedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Share new arrivals and offers with your followers. Other members can only view, react and comment.'**
+  String get bsBenefitFeedBody;
+
+  /// No description provided for @bsAgreeLead.
+  ///
+  /// In en, this message translates to:
+  /// **'By proceeding, you agree to the '**
+  String get bsAgreeLead;
+
+  /// No description provided for @bsTermsLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop Agreement'**
+  String get bsTermsLink;
+
+  /// No description provided for @bsAgreeTail.
+  ///
+  /// In en, this message translates to:
+  /// **' of ReStore.'**
+  String get bsAgreeTail;
+
+  /// No description provided for @bsSwitchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to a Shop account'**
+  String get bsSwitchAction;
+
+  /// No description provided for @bsRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register your shop'**
+  String get bsRegisterTitle;
+
+  /// No description provided for @bsRegisterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Name your shop. ReStore checks the name before your shop goes public.'**
+  String get bsRegisterBody;
+
+  /// No description provided for @bsFeeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration fee'**
+  String get bsFeeTitle;
+
+  /// No description provided for @bsFeeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{fee} credits, paid once from your credit wallet. Account plans (boosts, listing quota) are separate.'**
+  String bsFeeBody(int fee);
+
+  /// No description provided for @bsAgree.
+  ///
+  /// In en, this message translates to:
+  /// **'I have read and agree to the ReStore Shop Agreement'**
+  String get bsAgree;
+
+  /// No description provided for @bsAgreeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to accept the agreement to register.'**
+  String get bsAgreeRequired;
+
+  /// No description provided for @bsPayAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {fee} credits'**
+  String bsPayAction(int fee);
+
+  /// No description provided for @bsNotEnoughCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'You need {fee} credits. Top up and try again.'**
+  String bsNotEnoughCredits(int fee);
+
+  /// No description provided for @bsTopUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Top up'**
+  String get bsTopUp;
+
+  /// No description provided for @bsDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You are now a Shop!'**
+  String get bsDoneTitle;
+
+  /// No description provided for @bsDoneBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop account'**
+  String get bsDoneBadge;
+
+  /// No description provided for @bsDoneFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'New features'**
+  String get bsDoneFeatures;
+
+  /// No description provided for @bsDoneReview.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore is reviewing your shop, usually within one working day. Once approved you get the Partner badge and can post on the Feed.'**
+  String get bsDoneReview;
+
+  /// No description provided for @bsDonePage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a cover photo, logo, address and opening hours to your shop page'**
+  String get bsDonePage;
+
+  /// No description provided for @bsDoneSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Switched to a Shop account'**
+  String get bsDoneSuccess;
+
+  /// No description provided for @bsVerifyAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your licence to get the tick'**
+  String get bsVerifyAction;
+
+  /// No description provided for @bsLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get bsLater;
+
+  /// No description provided for @bsTermsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop Agreement'**
+  String get bsTermsTitle;
+
+  /// No description provided for @bsTermsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String bsTermsVersion(String version);
+
+  /// No description provided for @accSwitchToShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a Shop'**
+  String get accSwitchToShop;
+
+  /// No description provided for @profAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get profAbout;
+
+  /// No description provided for @profOnRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'on ReStore'**
+  String get profOnRestore;
+
+  /// No description provided for @profYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year} other{{count} years}}'**
+  String profYears(int count);
+
+  /// No description provided for @profMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String profMonths(int count);
+
+  /// No description provided for @profDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String profDays(int count);
+
+  /// No description provided for @profPartnerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore Partner'**
+  String get profPartnerTitle;
+
+  /// No description provided for @profPartnerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A shop registered with and approved by ReStore'**
+  String get profPartnerBody;
+
+  /// No description provided for @profVerifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified shop'**
+  String get profVerifiedTitle;
+
+  /// No description provided for @profOfficialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Official brand'**
+  String get profOfficialTitle;
+
+  /// No description provided for @profVerifiedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore has checked the business licence'**
+  String get profVerifiedBody;
+
+  /// No description provided for @profAccountDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Account details'**
+  String get profAccountDetails;
+
+  /// No description provided for @profFollowers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 follower} other{{count} followers}}'**
+  String profFollowers(int count);
+
+  /// No description provided for @profFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following {count}'**
+  String profFollowing(int count);
+
+  /// No description provided for @profSelling.
+  ///
+  /// In en, this message translates to:
+  /// **'{listings} for sale · {sold} sold'**
+  String profSelling(int listings, int sold);
+
+  /// No description provided for @profMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get profMore;
+
+  /// No description provided for @profLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get profLess;
+
+  /// No description provided for @profNoAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'No introduction yet.'**
+  String get profNoAbout;
 }
 
 class _AppLocalizationsDelegate
