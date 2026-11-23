@@ -9,8 +9,7 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/core/utils/formatters/distance_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/modules/location/models/area_option.dart';
-import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/shared/widgets/filter/area_filter_panel.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
@@ -126,7 +125,7 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
   /// Chọn khu vực khác để xem tin quanh đó, hoặc quay về vị trí GPS
   Future<void> _pickArea() async {
     final cubit = context.read<NearbyCubit>();
-    final result = await context.push<AreaPickResult>(AreaSearchView.path);
+    final result = await showAreaPicker(context, allowNationwide: false);
     if (result == null || !mounted) return;
     final area = result.area;
     area == null ? cubit.relocate() : cubit.setArea(area);

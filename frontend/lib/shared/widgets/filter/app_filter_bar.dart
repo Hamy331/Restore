@@ -128,7 +128,7 @@ class AppFilterChip extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       alignment: Alignment.center,
                       decoration: const ShapeDecoration(
-                        color: AppColors.primary,
+                        color: AppColors.actionPrimary,
                         shape: StadiumBorder(),
                       ),
                       child: Text(

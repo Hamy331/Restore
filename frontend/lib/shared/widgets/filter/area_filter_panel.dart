@@ -6,6 +6,8 @@ import 'package:restore/core/utils/helpers/vietnamese_text.dart';
 import 'package:restore/data/models/administrative_unit_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
+import 'package:restore/modules/location/models/area_option.dart';
+import 'package:restore/shared/models/geo_point.dart';
 import 'package:restore/modules/location/repositories/location_repository.dart';
 import 'package:restore/modules/location/utils/listing_area.dart';
 import 'package:restore/shared/models/listing_filter.dart';
@@ -42,16 +44,51 @@ Future<ListingFilter?> showAreaFilterPanel(
   ),
 );
 
-/// Một đơn vị hành chính đã chọn
-typedef _Unit = ({String code, String name});
+/// Chọn khu vực bằng cùng bảng "Khu vực" (thay trang chọn khu vực cũ): trả
+/// [AreaPickResult] như trang cũ để nơi gọi giữ nguyên cách xử lý.
+/// - Áp dụng: khu vực đã chọn (tỉnh / thành hoặc phường / xã)
+/// - Xoá lọc: toàn quốc (chỉ có khi [allowNationwide])
+/// - Dùng vị trí hiện tại: [AreaPickResult.myLocation], nơi gọi tự định vị
+/// Null nếu đóng bảng.
+Future<AreaPickResult?> showAreaPicker(
+  BuildContext anchor, {
+  AreaOption? current,
+  bool allowNationwide = true,
+  LocationRepository? repository,
+}) => showFilterPopover<AreaPickResult>(
+  anchor,
+  width: 380,
+  builder: (_) => _AreaPanel(
+    filter: const ListingFilter().withAreaOption(current),
+    picker: true,
+    allowNationwide: allowNationwide,
+    repository:
+        repository ??
+        (AppEnvironment.useMockData
+            ? MockLocationRepository()
+            : ApiLocationRepository()),
+  ),
+);
+
+/// Một đơn vị hành chính đã chọn ([center] để làm khu vực của cả app)
+typedef _Unit = ({String code, String name, GeoPoint? center});
 
 enum _Step { main, provinces, wards }
 
 class _AreaPanel extends StatefulWidget {
-  const _AreaPanel({required this.filter, required this.repository});
+  const _AreaPanel({
+    required this.filter,
+    required this.repository,
+    this.picker = false,
+    this.allowNationwide = true,
+  });
 
   final ListingFilter filter;
   final LocationRepository repository;
+
+  /// Chọn khu vực (trả [AreaPickResult]) thay vì đổi bộ lọc của trang
+  final bool picker;
+  final bool allowNationwide;
 
   @override
   State<_AreaPanel> createState() => _AreaPanelState();
@@ -64,12 +101,14 @@ class _AreaPanelState extends State<_AreaPanel> {
       : (
           code: widget.filter.provinceCode!,
           name: widget.filter.areaLabel ?? widget.filter.provinceCode!,
+          center: null,
         );
   late _Unit? _ward = widget.filter.wardCode == null
       ? null
       : (
           code: widget.filter.wardCode!,
           name: widget.filter.areaLabel ?? widget.filter.wardCode!,
+          center: null,
         );
   late final _provinces = widget.repository.getProvinces();
   Future<List<AdministrativeUnitModel>>? _wards;
@@ -94,9 +133,33 @@ class _AreaPanelState extends State<_AreaPanel> {
     _step = _Step.main;
   });
 
-  void _apply() {
+  Future<void> _apply() async {
     final ward = _ward;
     final province = _province;
+    if (widget.picker) {
+      final area = await _pickedArea();
+      if (!mounted) return;
+      if (area != null) {
+        Navigator.of(context).pop(AreaPickResult.area(area));
+      } else if (ward == null && province == null) {
+        // Chưa chọn gì mà bấm Áp dụng: như Xoá lọc
+        Navigator.of(context).pop(
+          widget.allowNationwide ? const AreaPickResult.nationwide() : null,
+        );
+      } else {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(
+            content: Text(
+              _t(
+                'Chưa tải được vị trí của khu vực này, thử lại sau.',
+                'Could not load this area, please try again.',
+              ),
+            ),
+          ),
+        );
+      }
+      return;
+    }
     Navigator.of(context).pop(
       ward != null
           ? widget.filter.withArea(ward.code, isWard: true, label: ward.name)
@@ -104,8 +167,40 @@ class _AreaPanelState extends State<_AreaPanel> {
     );
   }
 
+  /// Khu vực đã chọn thành [AreaOption]; toạ độ lấy từ danh sách tỉnh nếu
+  /// chọn bằng chip (chip không kèm toạ độ). Null là chưa chọn gì.
+  Future<AreaOption?> _pickedArea() async {
+    final ward = _ward, province = _province;
+    final unit = ward ?? province;
+    if (unit == null) return null;
+    var center = unit.center;
+    // Danh sách tỉnh không kèm toạ độ: lấy tâm phường đầu tiên của tỉnh như
+    // backend và như khi định vị
+    if (center == null && province != null) {
+      try {
+        final wards = await widget.repository.getWards(province.code);
+        center = wards.firstOrNull?.center;
+      } catch (_) {}
+    }
+    // Không có toạ độ thì không đổi được khu vực (tính khoảng cách cần tâm)
+    if (center == null) return null;
+    return AreaOption(
+      code: unit.code,
+      name: unit.name,
+      level: ward != null
+          ? AdministrativeLevel.ward
+          : AdministrativeLevel.province,
+      center: center,
+      parentName: ward != null ? province?.name : null,
+    );
+  }
+
   /// "Tìm kiếm quanh bạn": khu vực theo vị trí hiện tại (như nút Gần tôi)
   Future<void> _useMyLocation() async {
+    if (widget.picker) {
+      Navigator.of(context).pop(const AreaPickResult.myLocation());
+      return;
+    }
     final userArea = context.read<UserAreaCubit>();
     setState(() => _locating = true);
     await userArea.locate();
@@ -144,7 +239,11 @@ class _AreaPanelState extends State<_AreaPanel> {
     final ward = _ward;
     return FilterPanel(
       title: _t('Khu vực', 'Area'),
-      onClear: () => Navigator.of(context).pop(widget.filter.withArea(null)),
+      onClear: !widget.picker
+          ? () => Navigator.of(context).pop(widget.filter.withArea(null))
+          : widget.allowNationwide
+          ? () => Navigator.of(context).pop(const AreaPickResult.nationwide())
+          : null,
       onApply: _apply,
       child: ListView(
         shrinkWrap: true,
@@ -183,7 +282,7 @@ class _AreaPanelState extends State<_AreaPanel> {
                   label: Text(name),
                   selected: province?.code == code,
                   showCheckmark: false,
-                  selectedColor: AppColors.textPrimary,
+                  selectedColor: AppColors.actionPrimary,
                   labelStyle: TextStyle(
                     color: province?.code == code
                         ? Colors.white
@@ -191,8 +290,9 @@ class _AreaPanelState extends State<_AreaPanel> {
                   ),
                   side: const BorderSide(color: AppColors.border),
                   shape: const StadiumBorder(),
-                  onSelected: (on) =>
-                      _selectProvince(on ? (code: code, name: name) : null),
+                  onSelected: (on) => _selectProvince(
+                    on ? (code: code, name: name, center: null) : null,
+                  ),
                 ),
             ],
           ),
@@ -276,13 +376,14 @@ class _AreaPanelState extends State<_AreaPanel> {
                               ? FontWeight.w700
                               : FontWeight.w400,
                           color: isSelected
-                              ? AppColors.primaryDark
+                              ? AppColors.actionPrimary
                               : AppColors.textPrimary,
                         ),
                       ),
                       onTap: () => onPick((
                         code: item.code,
                         name: item.shortName ?? item.name,
+                        center: item.center,
                       )),
                     );
                   },
