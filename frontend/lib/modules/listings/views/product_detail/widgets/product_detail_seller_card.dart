@@ -8,6 +8,7 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/account/bloc/public_profile/public_profile_cubit.dart';
 import 'package:restore/modules/account/bloc/public_profile/public_profile_state.dart';
 import 'package:restore/modules/account/repositories/profile_repository.dart';
+import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
 import '../../../models/product_detail.dart';
 import 'product_chat_sheet.dart';
@@ -372,6 +373,19 @@ class _SellerState extends State<ProductDetailSellerCard> {
                 onTap: () => _partner(l),
               ),
             ),
+            if (d.listing.shopId case final shopId?)
+              Material(
+                type: MaterialType.transparency,
+                child: ListTile(
+                  key: const ValueKey('seller-open-shop'),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  leading: const Icon(Icons.storefront_outlined),
+                  title: Text(l.trustedShopsViewShop),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push(ShopDetailView.location(shopId)),
+                ),
+              ),
           ],
         ],
       ),
