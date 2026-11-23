@@ -1,7 +1,13 @@
 import 'package:equatable/equatable.dart';
 import '../../models/profile_models.dart';
 
-enum ProfileSaveResult { saved, usernameTaken, invalidUsername, failed }
+enum ProfileSaveResult {
+  saved,
+  usernameTaken,
+  invalidUsername,
+  invalidPhone,
+  failed,
+}
 
 class UserProfileState extends Equatable {
   const UserProfileState({

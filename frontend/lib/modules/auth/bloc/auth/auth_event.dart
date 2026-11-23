@@ -33,11 +33,16 @@ class ProfileIdentityUpdated extends AuthEvent {
     required this.fullName,
     required this.username,
     required this.avatarUrl,
+    this.email,
+    this.phone,
   });
   final String id, fullName, username;
   final String? avatarUrl;
+
+  /// Có [email] thì cập nhật luôn email và số điện thoại ([phone] null là đã xoá)
+  final String? email, phone;
   @override
-  List<Object?> get props => [id, fullName, username, avatarUrl];
+  List<Object?> get props => [id, fullName, username, avatarUrl, email, phone];
 }
 
 /// ApiClient báo refresh token hết hạn hoặc bị thu hồi

@@ -53,6 +53,7 @@ class UserProfileCubit extends Cubit<UserProfileState> {
       final profile = updated.copyWith(
         email: updated.email ?? state.profile?.email,
         phone: updated.phone ?? state.profile?.phone,
+        clearPhone: changes.containsKey('phone') && changes['phone'] == null,
       );
       if (!isClosed) emit(UserProfileState(profile: profile, loading: false));
       return ProfileSaveResult.saved;
@@ -64,9 +65,30 @@ class UserProfileCubit extends Cubit<UserProfileState> {
       return switch (code) {
         'USERNAME_TAKEN' => ProfileSaveResult.usernameTaken,
         'INVALID_USERNAME' => ProfileSaveResult.invalidUsername,
+        'INVALID_PHONE' => ProfileSaveResult.invalidPhone,
         _ => ProfileSaveResult.failed,
       };
     }
+  }
+
+  /// Gửi mã OTP tới [email] mới; trả số giây phải chờ trước khi gửi lại.
+  /// Lỗi (sai mật khẩu, email đã có người dùng...) ném [ProfileUpdateException].
+  Future<int> requestEmailChange(String email, String password) =>
+      _repository.requestEmailChange(email, password);
+
+  /// Nhập đúng [otp] thì đổi email trên hồ sơ đang hiển thị, trả email mới
+  Future<String> verifyEmailChange(String otp) async {
+    final email = await _repository.verifyEmailChange(otp);
+    final profile = state.profile;
+    if (!isClosed && profile != null) {
+      emit(
+        UserProfileState(
+          profile: profile.copyWith(email: email),
+          loading: false,
+        ),
+      );
+    }
+    return email;
   }
 
   /// Tải ảnh đại diện đã cắt lên và trả về URL để lưu cùng các trường khác.

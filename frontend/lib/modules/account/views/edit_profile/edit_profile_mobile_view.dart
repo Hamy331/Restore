@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:restore/core/ui/responsive/responsive_content.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:restore/core/config/dev_plan_override.dart';
-import 'package:restore/data/models/enums/subscription_plan.dart';
-import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
@@ -22,10 +21,23 @@ import '../../models/profile_models.dart';
 import '../../widgets/profile_header.dart';
 import 'edit_profile_view.dart';
 import 'widgets/edit_profile_avatar.dart';
-import 'widgets/edit_profile_field_page.dart';
+import 'widgets/email_change_flow.dart';
 
 /// Khớp `usernamePattern` ở backend (auth.validation.ts).
 final _usernamePattern = RegExp(r'^[a-z0-9._]{3,30}$');
+
+/// Số di động Việt Nam như backend (parsePhone): bỏ khoảng trắng, dấu chấm,
+/// gạch, ngoặc; +84 / 84 thành 0; đủ 10 số bắt đầu 03, 05, 07, 08, 09.
+/// Rỗng trả '' (xoá số), sai định dạng trả null.
+String? normalizePhone(String text) {
+  final digits = text.replaceAll(RegExp(r'[\s.\-()]'), '');
+  if (digits.isEmpty) return '';
+  final local = digits.replaceFirst(
+    RegExp(r'^(\+84|84)(?=[35789]\d{8}$)'),
+    '0',
+  );
+  return RegExp(r'^0[35789]\d{8}$').hasMatch(local) ? local : null;
+}
 
 class EditProfileMobileView extends StatefulWidget {
   const EditProfileMobileView({
@@ -49,6 +61,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   late final _name = TextEditingController(text: _profile?.fullName);
   late final _username = TextEditingController(text: _profile?.username);
   late final _bio = TextEditingController(text: _profile?.bio ?? '');
+  late final _phone = TextEditingController(text: _profile?.phone ?? '');
 
   /// URL ảnh đang có trên server; `null` khi chưa có hoặc người dùng xoá.
   late String? _avatarUrl = _profile?.avatarUrl;
@@ -58,13 +71,14 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   Uint8List? _avatarBytes, _sourceBytes;
   String? _uploadedAvatar;
   bool _saving = false, _loadingAvatar = false, _showErrors = false;
-  String? _usernameError;
+  String? _usernameError, _phoneError;
 
   @override
   void dispose() {
     _name.dispose();
     _username.dispose();
     _bio.dispose();
+    _phone.dispose();
     super.dispose();
   }
 
@@ -133,6 +147,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
 
   bool get _nameValid => _name.text.trim().isNotEmpty;
   bool get _usernameValid => _usernamePattern.hasMatch(_username.text.trim());
+  bool get _phoneValid => normalizePhone(_phone.text) != null;
 
   Future<void> _save() async {
     if (_saving || _loadingAvatar) return;
@@ -141,8 +156,11 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     setState(() {
       _showErrors = true;
       _usernameError = null;
+      _phoneError = null;
+      // Số điện thoại nằm ở phần thu gọn: mở ra để thấy lỗi
+      if (!_phoneValid) _privateOpen = true;
     });
-    if (!_nameValid || !_usernameValid) return;
+    if (!_nameValid || !_usernameValid || !_phoneValid) return;
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _saving = true);
     // Chỉ gửi avatarUrl khi đổi hoặc xoá ảnh: URL đang hiển thị đã được ghép
@@ -153,6 +171,9 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       if (_username.text.trim() != _profile?.username)
         'username': _username.text.trim(),
       if (_bio.text.trim() != (_profile?.bio ?? '')) 'bio': _bio.text.trim(),
+      if (normalizePhone(_phone.text) case final phone?
+          when phone != (_profile?.phone ?? ''))
+        'phone': phone.isEmpty ? null : phone,
     };
     final bytes = _avatarBytes;
     if (bytes != null) {
@@ -188,54 +209,82 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
           _saving = false;
           _usernameError = l.accUsernameInvalid;
         });
+      case ProfileSaveResult.invalidPhone:
+        setState(() {
+          _saving = false;
+          _phoneError = _phoneInvalidText;
+          _privateOpen = true;
+        });
       case ProfileSaveResult.failed:
         setState(() => _saving = false);
         _error(l.accSaveError);
     }
   }
 
-  Future<void> _editField({
-    required TextEditingController controller,
-    required String title,
-    required String fieldKey,
-    required int maxLength,
-    String? hint,
-    String? helper,
-    String? Function(String)? validator,
-    bool multiline = false,
-  }) async {
-    final value = await Navigator.of(context).push<String>(
-      MaterialPageRoute(
-        builder: (_) => EditProfileFieldPage(
-          title: title,
-          value: controller.text,
-          fieldKey: fieldKey,
-          maxLength: maxLength,
-          hint: hint,
-          helper: helper,
-          validator: validator,
-          multiline: multiline,
-        ),
-      ),
-    );
-    if (value == null || !mounted) return;
-    setState(() {
-      controller.text = value;
-      if (controller == _username) _usernameError = null;
-    });
-  }
-
   bool get _hasChanges =>
       _name.text.trim() != (_profile?.fullName ?? '') ||
       _username.text.trim() != (_profile?.username ?? '') ||
       _bio.text.trim() != (_profile?.bio ?? '') ||
+      _phone.text.trim() != (_profile?.phone ?? '') ||
       _avatarBytes != null ||
       _avatarUrl != _profile?.avatarUrl;
+
+  /// Thông tin tài khoản mở sẵn; thông tin riêng tư thu gọn
+  bool _accountOpen = true, _privateOpen = false;
+
+  bool get _vi => Localizations.localeOf(context).languageCode == 'vi';
+
+  String get _phoneInvalidText => _vi
+      ? 'Số điện thoại không hợp lệ (VD 0901234567).'
+      : 'Invalid phone number (e.g. 0901234567).';
+
+  /// Đổi email: bảng 2 bước (email mới + mật khẩu, rồi mã OTP gửi tới email
+  /// mới). Email đổi ngay trên server nên báo luôn cho phần đăng nhập.
+  Future<void> _changeEmail() async {
+    final cubit = context.read<UserProfileCubit>();
+    final email = await showEmailChangeFlow(context, cubit);
+    if (email == null || !mounted) return;
+    final profile = cubit.state.profile;
+    if (profile != null) {
+      try {
+        context.read<AuthBloc>().add(
+          ProfileIdentityUpdated(
+            id: profile.id,
+            fullName: profile.fullName,
+            username: profile.username,
+            avatarUrl: profile.avatarUrl,
+            email: email,
+            phone: profile.phone,
+          ),
+        );
+      } catch (_) {
+        // Trang mở riêng (test) không có AuthBloc
+      }
+    }
+    setState(() {});
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            _vi ? 'Đã đổi email thành $email' : 'Email changed to $email',
+          ),
+        ),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final vi = Localizations.localeOf(context).languageCode == 'vi';
+    String t(String vn, String en) => vi ? vn : en;
     final hasAvatar = _avatarBytes != null || _avatarUrl != null;
+    final usernameError =
+        _usernameError ??
+        (_showErrors && !_usernameValid ? l.accUsernameInvalid : null);
+    final email = context.watch<UserProfileCubit>().state.profile?.email ?? '';
+    final phoneError =
+        _phoneError ?? (_showErrors && !_phoneValid ? _phoneInvalidText : null);
     return PopScope(
       canPop: !_saving,
       child: Scaffold(
@@ -288,112 +337,139 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
             absorbing: _saving,
             child: ListView(
               key: const ValueKey('edit-profile-list'),
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-                  child: EditProfileAvatar(
-                    initials: ProfileHeader.initials(_name.text),
-                    bytes: _avatarBytes,
-                    url: _avatarUrl,
-                    busy: _loadingAvatar,
-                    onPick: _pick,
-                    onAdjust: hasAvatar ? _adjust : null,
-                    onRemove: hasAvatar ? _remove : null,
-                  ),
-                ),
-                _ProfileInfoRow(
-                  fieldKey: 'edit-profile-name-row',
-                  icon: AppIcons.user,
-                  label: l.accDisplayName,
-                  value: _name.text,
-                  placeholder: l.accDisplayNameHint,
-                  error: _showErrors && !_nameValid ? l.accNameRequired : null,
-                  onTap: () => _editField(
-                    controller: _name,
-                    title: l.accDisplayName,
-                    fieldKey: 'edit-profile-name',
-                    maxLength: 80,
-                    hint: l.accDisplayNameHint,
-                    validator: (value) =>
-                        value.isEmpty ? l.accNameRequired : null,
-                  ),
-                ),
-                _ProfileInfoRow(
-                  fieldKey: 'edit-profile-username-row',
-                  icon: AppIcons.followUser,
-                  label: l.accUsername,
-                  value: _username.text.isEmpty ? '' : '@${_username.text}',
-                  placeholder: l.accUsername,
-                  error:
-                      _usernameError ??
-                      (_showErrors && !_usernameValid
-                          ? l.accUsernameInvalid
-                          : null),
-                  onTap: () => _editField(
-                    controller: _username,
-                    title: l.accUsername,
-                    fieldKey: 'edit-profile-username',
-                    maxLength: 30,
-                    helper: l.accUsernameHelper,
-                    validator: (value) => _usernamePattern.hasMatch(value)
-                        ? null
-                        : l.accUsernameInvalid,
-                  ),
-                ),
-                _ProfileInfoRow(
-                  fieldKey: 'edit-profile-bio-row',
-                  icon: AppIcons.edit,
-                  label: l.accBio,
-                  value: _bio.text,
-                  placeholder: l.accBioHint,
-                  onTap: () => _editField(
-                    controller: _bio,
-                    title: l.accBio,
-                    fieldKey: 'edit-profile-bio',
-                    maxLength: 300,
-                    hint: l.accBioHint,
-                    multiline: true,
-                  ),
-                ),
-                _ProfileInfoRow(
-                  fieldKey: 'edit-profile-email-row',
-                  icon: AppIcons.mail,
-                  label: l.email,
-                  value: _profile?.email ?? '',
-                  placeholder: l.accNotProvided,
-                  caption: l.accRegisteredEmailHint,
-                ),
-                _ProfileInfoRow(
-                  fieldKey: 'edit-profile-phone-row',
-                  icon: AppIcons.categoryPhone,
-                  label: l.phone,
-                  value: _profile?.phone ?? '',
-                  placeholder: l.accNotProvided,
-                  caption: l.accContactReadOnly,
-                ),
-                ValueListenableBuilder<SubscriptionPlan>(
-                  valueListenable: DevPlanOverride.plan,
-                  builder: (context, plan, _) => Column(
-                    children: [
-                      _ProfileInfoRow(
-                        fieldKey: 'edit-profile-plan-row',
-                        icon: AppIcons.pro,
-                        label: l.plansCurrent,
-                        value: plan.label(l),
-                        placeholder: '',
+                // Ảnh đại diện
+                _SectionTitle(t('Ảnh đại diện', 'Profile photo')),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    EditProfileAvatar(
+                      initials: ProfileHeader.initials(_name.text),
+                      bytes: _avatarBytes,
+                      url: _avatarUrl,
+                      busy: _loadingAvatar,
+                      onPick: _pick,
+                      onAdjust: hasAvatar ? _adjust : null,
+                      onRemove: hasAvatar ? _remove : null,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            t(
+                              'Ảnh rõ mặt giúp người mua và người bán tin '
+                                  'tưởng nhau hơn.',
+                              'A clear photo of your face helps buyers and '
+                                  'sellers trust each other.',
+                            ),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              height: 1.45,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          OutlinedButton(
+                            key: const ValueKey('edit-profile-upload'),
+                            onPressed: _loadingAvatar ? null : _pick,
+                            child: Text(t('Tải ảnh lên', 'Upload a photo')),
+                          ),
+                        ],
                       ),
-                      if (plan == SubscriptionPlan.shop)
-                        _ProfileInfoRow(
-                          fieldKey: 'edit-profile-shop-row',
-                          icon: AppIcons.shop,
-                          label: l.quickActionShopManage,
-                          value: _profile?.storefront.name ?? '',
-                          placeholder: l.accShopDetailsHint,
-                          onTap: () => context.push(MyShopView.path),
-                        ),
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Thông tin tài khoản (hiện trên hồ sơ công khai)
+                _Section(
+                  key: const ValueKey('edit-profile-account'),
+                  title: t('Thông tin tài khoản', 'Account details'),
+                  icon: Icons.visibility_outlined,
+                  caption: t(
+                    'Hiện trên hồ sơ công khai của bạn',
+                    'This info appears on your public profile',
                   ),
+                  open: _accountOpen,
+                  onToggle: () => setState(() => _accountOpen = !_accountOpen),
+                  children: [
+                    _Field(
+                      fieldKey: 'edit-profile-username',
+                      controller: _username,
+                      label: l.accUsername,
+                      prefix: '@',
+                      maxLength: 30,
+                      helper: l.accUsernameHelper,
+                      error: usernameError,
+                      onChanged: (_) => setState(() => _usernameError = null),
+                    ),
+                    _Field(
+                      fieldKey: 'edit-profile-name',
+                      controller: _name,
+                      label: l.accDisplayName,
+                      hint: l.accDisplayNameHint,
+                      maxLength: 80,
+                      error: _showErrors && !_nameValid
+                          ? l.accNameRequired
+                          : null,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    _Field(
+                      fieldKey: 'edit-profile-bio',
+                      controller: _bio,
+                      label: l.accBio,
+                      hint: l.accBioHint,
+                      maxLength: 300,
+                      showCounter: true,
+                      multiline: true,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Thông tin riêng tư (chỉ mình người dùng thấy)
+                _Section(
+                  key: const ValueKey('edit-profile-private'),
+                  title: t('Thông tin riêng tư', 'Private details'),
+                  icon: AppIcons.lock,
+                  caption: t('Chỉ mình bạn thấy', 'Only you can see this'),
+                  open: _privateOpen,
+                  onToggle: () => setState(() => _privateOpen = !_privateOpen),
+                  children: [
+                    _ReadOnlyRow(
+                      fieldKey: 'edit-profile-email-row',
+                      label: l.email,
+                      value: email.isEmpty
+                          ? l.accNotProvided
+                          : maskEmail(email),
+                      verified: email.isNotEmpty,
+                      caption: t(
+                        'Dùng để đăng nhập. Đổi email cần mã xác nhận gửi tới email mới.',
+                        'Used to sign in. Changing it needs a code sent to the new email.',
+                      ),
+                      action: TextButton(
+                        key: const ValueKey('edit-profile-email-update'),
+                        onPressed: _changeEmail,
+                        child: Text(t('Cập nhật', 'Update')),
+                      ),
+                    ),
+                    _Field(
+                      fieldKey: 'edit-profile-phone',
+                      controller: _phone,
+                      label: l.phone,
+                      hint: t('VD 0901234567', 'e.g. 0901234567'),
+                      maxLength: 16,
+                      keyboardType: TextInputType.phone,
+                      helper: t(
+                        'Người mua gọi cho bạn qua số này khi bạn có tin đang bán.',
+                        'Buyers can call you on this number while you have listings for sale.',
+                      ),
+                      error: phoneError,
+                      onChanged: (_) => setState(() => _phoneError = null),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -404,110 +480,237 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   }
 }
 
-class _ProfileInfoRow extends StatelessWidget {
-  const _ProfileInfoRow({
-    required this.fieldKey,
+/// Che bớt phần trước @ của email: giữ 2 ký tự đầu và 2 ký tự cuối
+/// (VD `22****59@student.edu.vn`), tên quá ngắn thì chỉ giữ ký tự đầu.
+String maskEmail(String email) {
+  final at = email.indexOf('@');
+  if (at <= 0) return email;
+  final name = email.substring(0, at), domain = email.substring(at);
+  if (name.length <= 4) return '${name[0]}***$domain';
+  return '${name.substring(0, 2)}****${name.substring(name.length - 2)}$domain';
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Text(
+    text,
+    style: const TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      color: AppColors.textPrimary,
+    ),
+  );
+}
+
+/// Nhóm thông tin thu gọn / mở ra: tiêu đề, một dòng ghi chú có icon (ai thấy
+/// được) và mũi tên bên phải
+class _Section extends StatelessWidget {
+  const _Section({
+    super.key,
+    required this.title,
     required this.icon,
-    required this.label,
-    required this.value,
-    required this.placeholder,
-    this.caption,
-    this.error,
-    this.onTap,
+    required this.caption,
+    required this.open,
+    required this.onToggle,
+    required this.children,
   });
 
-  final String fieldKey;
+  final String title, caption;
   final IconData icon;
-  final String label, value, placeholder;
-  final String? caption, error;
-  final VoidCallback? onTap;
+  final bool open;
+  final VoidCallback onToggle;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      const SizedBox(
-        height: 6,
-        width: double.infinity,
-        child: ColoredBox(color: Color(0xFFF6F7F9)),
-      ),
-      Material(
-        color: AppColors.surface,
-        child: InkWell(
-          key: ValueKey(fieldKey),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Icon(icon, size: 22, color: const Color(0xFF9CA3AF)),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        value.isEmpty ? placeholder : value,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.45,
-                          color: value.isEmpty
-                              ? const Color(0xFF9CA3AF)
-                              : AppColors.textSecondary,
-                        ),
-                      ),
-                      if (caption != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          caption!,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            height: 1.4,
-                            color: AppColors.textSecondary,
+      InkWell(
+        onTap: onToggle,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SectionTitle(title),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(icon, size: 15, color: AppColors.textSecondary),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            caption,
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                         ),
                       ],
-                      if (error != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          error!,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.error,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Icon(
-                    onTap == null ? AppIcons.lock : AppIcons.chevronRight,
-                    size: 18,
-                    color: const Color(0xFFB6BCC5),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              Icon(
+                open ? Icons.expand_less : Icons.expand_more,
+                color: AppColors.textPrimary,
+              ),
+            ],
           ),
         ),
       ),
+      if (open) ...[const SizedBox(height: 8), ...children],
     ],
+  );
+}
+
+/// Ô nhập có nhãn nổi, viền mảnh, lỗi / gợi ý bên dưới
+class _Field extends StatelessWidget {
+  const _Field({
+    required this.fieldKey,
+    required this.controller,
+    required this.label,
+    required this.maxLength,
+    this.hint,
+    this.prefix,
+    this.helper,
+    this.error,
+    this.showCounter = false,
+    this.multiline = false,
+    this.keyboardType,
+    this.onChanged,
+  });
+
+  final String fieldKey, label;
+  final TextInputType? keyboardType;
+  final TextEditingController controller;
+  final int maxLength;
+  final String? hint, prefix, helper, error;
+  final bool showCounter, multiline;
+  final ValueChanged<String>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    OutlineInputBorder border(Color color) => OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(color: color),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: TextField(
+        key: ValueKey(fieldKey),
+        controller: controller,
+        onChanged: onChanged,
+        maxLength: maxLength,
+        minLines: multiline ? 3 : 1,
+        maxLines: multiline ? 6 : 1,
+        keyboardType: keyboardType,
+        textInputAction: multiline
+            ? TextInputAction.newline
+            : TextInputAction.next,
+        style: const TextStyle(fontSize: 15),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          prefixText: prefix,
+          helperText: error == null ? helper : null,
+          helperMaxLines: 2,
+          errorText: error,
+          errorMaxLines: 2,
+          alignLabelWithHint: multiline,
+          counterText: showCounter ? null : '',
+          filled: false,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 14,
+          ),
+          border: border(AppColors.border),
+          enabledBorder: border(AppColors.border),
+          focusedBorder: border(AppColors.actionPrimary),
+        ),
+      ),
+    );
+  }
+}
+
+/// Dòng chỉ xem (email, số điện thoại tài khoản)
+class _ReadOnlyRow extends StatelessWidget {
+  const _ReadOnlyRow({
+    required this.fieldKey,
+    required this.label,
+    required this.value,
+    this.caption,
+    this.verified = false,
+    this.action,
+  });
+
+  final String fieldKey, label, value;
+  final String? caption;
+  final bool verified;
+
+  /// Nút bên phải dòng (VD Cập nhật email)
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    key: ValueKey(fieldKey),
+    padding: const EdgeInsets.only(bottom: 16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            // Giá trị + dấu xác minh bên trái, nút (nếu có) sát mép phải
+            Expanded(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  if (verified) ...[
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.check_circle_outline,
+                      size: 17,
+                      color: AppColors.success,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            ?action,
+          ],
+        ),
+        if (caption != null) ...[
+          const SizedBox(height: 2),
+          Text(
+            caption!,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ],
+    ),
   );
 }
