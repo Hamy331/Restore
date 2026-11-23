@@ -15,6 +15,7 @@ const listing = {
   status: 'PENDING',
   images: [],
   updatedAt: '2026-11-20T08:00:00Z',
+  flags: [{ code: 'CONTACT', match: '0912 345 678' }],
   owner: {
     fullName: 'Chủ Shop',
     email: 'chu@example.com',
@@ -51,4 +52,14 @@ it('lọc theo gói và tìm theo người đăng gửi đúng tham số', async
   await waitFor(() =>
     expect(call).toHaveBeenLastCalledWith('/admin/listings?page=1&q=chu%40example.com&tier=BASIC&status=PENDING'),
   );
+});
+
+it('tin bị gắn cờ có thẻ, chi tiết nói rõ đoạn bị khớp, lọc chỉ tin bị gắn cờ', async () => {
+  const call = open();
+  expect(await screen.findByText('Có SĐT / liên hệ ngoài')).toBeTruthy();
+  fireEvent.click(screen.getByText('Chỉ tin bị gắn cờ (SĐT, link, hàng cấm)'));
+  await waitFor(() => expect(call).toHaveBeenLastCalledWith('/admin/listings?page=1&q=&flagged=1&status=PENDING'));
+  fireEvent.click(screen.getByRole('button', { name: 'Xem tin' }));
+  expect(await screen.findByText('Tin bị gắn cờ tự động')).toBeTruthy();
+  expect(screen.getByText('“0912 345 678”')).toBeTruthy();
 });

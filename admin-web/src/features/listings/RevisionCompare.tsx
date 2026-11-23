@@ -3,6 +3,7 @@ import { Image, Space, Table, Tag, Typography } from 'antd';
 import { Session } from '../../shared/api/session';
 import { vnd } from '../commerce/PackageFields';
 import { ListingPhoto } from './ListingDetails';
+import type { ContentFlag } from './ContentFlags';
 
 /** Nội dung tin có thể sửa (bản đang hiển thị và bản sửa chờ duyệt có cùng các trường này) */
 export type ListingContent = {
@@ -24,6 +25,8 @@ export type PendingEdit = ListingContent & {
   reviewReason: string | null;
   submittedAt: string;
   updatedAt: string;
+  /** Cờ nội dung tự động của bản sửa */
+  flags?: ContentFlag[];
 };
 
 export const conditionLabel: Record<string, string> = {
