@@ -41,12 +41,20 @@ export function shopNameProblem(value: string): 'PHONE' | 'LINK' | 'WORDING' | n
   return BANNED_WORDS.test(fold(value)) ? 'WORDING' : null;
 }
 
-/** Tạo shop (gói Cửa hàng): name, tagline?, description?, address? */
+/** Phiên bản hợp đồng Cửa hàng hiện hành; đổi nội dung hợp đồng ở app thì tăng số này ở cả hai bên */
+export const SHOP_TERMS_VERSION = '2026-11';
+
+/** Phí đăng ký lên cửa hàng, trả một lần bằng xu (1 xu = 1.000đ) */
+export const SHOP_REGISTRATION_CREDITS = 199;
+
+/** Đăng ký lên cửa hàng: name, tagline?, description?, address?, termsVersion (phải là hợp đồng hiện hành) */
 export const shopCreateBody = strictBody({
   name: name(),
   tagline: optionalStr('tagline', { max: SHOP_LIMITS.tagline }),
   description: optionalStr('description', { max: SHOP_LIMITS.description }),
   address: optionalStr('address', { max: SHOP_LIMITS.address }),
+  termsVersion: z.unknown().transform((value, ctx) =>
+    value === SHOP_TERMS_VERSION ? SHOP_TERMS_VERSION : fail(ctx, 'termsVersion', 'Bạn cần đồng ý hợp đồng Cửa hàng hiện hành.')),
 });
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;

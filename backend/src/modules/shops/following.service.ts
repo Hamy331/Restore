@@ -107,26 +107,21 @@ async function interestByCategory(userId: string) {
 
 /**
  * Gợi ý shop uy tín để theo dõi (trang Đang theo dõi): shop chưa theo dõi, không phải shop của mình.
- * Xếp theo: hợp danh mục mình tương tác nhiều (tin đã lưu, Báo khi có hàng, shop đang theo dõi) → đối tác
- * (shop đang có gói Cửa hàng còn hạn, hoặc thương hiệu chính hãng) → số người theo dõi.
+ * Xếp theo: hợp danh mục mình tương tác nhiều (tin đã lưu, Báo khi có hàng, shop đang theo dõi) → thương hiệu chính hãng
+ * → số người theo dõi. Mọi shop ở đây đều là cửa hàng nên đều có nhãn Đối tác (isPartner).
  * items [Shop + isFollowing + isPartner + reason (MATCHES_INTEREST | PARTNER | POPULAR) + previews (≤ 3 thẻ tin)]
  */
 export async function listSuggestedShops(userId: string, limit: number, now = new Date()) {
   const [shops, interest] = await Promise.all([
     prisma.shop.findMany({
       where: { ...trusted, ownerId: { not: userId }, owner: { status: 'ACTIVE', followers: { none: { followerId: userId } } } },
-      select: {
-        ...shopSelect,
-        owner: { select: { ...shopSelect.owner.select, storeSubscription: { select: { endsAt: true, startsAt: true, package: { select: { tier: true } } } } } },
-      },
+      select: shopSelect,
     }),
     interestByCategory(userId),
   ]);
   const ranked = shops
     .map((shop) => {
-      const sub = shop.owner.storeSubscription;
-      const storePlan = !!sub && sub.package.tier === 'PRO' && sub.startsAt <= now && sub.endsAt > now;
-      const partner = storePlan || shop.verificationType === 'OFFICIAL_BRAND';
+      const partner = shop.verificationType === 'OFFICIAL_BRAND';
       const score = shop.categoryIds.reduce((sum, id) => sum + (interest.get(id) ?? 0), 0);
       return { shop, partner, score };
     })
@@ -138,7 +133,7 @@ export async function listSuggestedShops(userId: string, limit: number, now = ne
     const { score, partner } = ranked[index];
     return {
       ...dto,
-      isPartner: partner,
+      isPartner: true,
       reason: score > 0 ? 'MATCHES_INTEREST' : partner ? 'PARTNER' : 'POPULAR',
       previews: await cards(userId, await shopRepository.findListings({ ...visible, ownerId: dto.ownerId }, PREVIEW_SIZE)),
     };

@@ -1109,6 +1109,11 @@ model Shop {
   rejectNote       String?
   /// Giờ mở cửa theo thứ: [{ day: 1-7 (1 = thứ Hai, 7 = Chủ nhật), open: "08:00", close: "21:00" }]; null = chưa đặt
   openingHours     Json?
+  /// Phiên bản hợp đồng Cửa hàng chủ shop đã đồng ý lúc đăng ký, VD "2026-11"; null = shop cũ, mở trước khi có hợp đồng
+  termsVersion     String?
+  termsAcceptedAt  DateTime?
+  /// Phí đăng ký cửa hàng đã trả (xu)
+  registrationCredits Int?
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
   banners          ShopBanner[]
