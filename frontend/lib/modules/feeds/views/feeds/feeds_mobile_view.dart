@@ -102,7 +102,12 @@ class FeedsMobileView extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    _ComposePrompt(cubit: cubit, me: state.me),
+                                    // Chỉ cửa hàng Đối tác và admin đăng bài; người khác chỉ xem, thả tim, bình luận
+                                    if (state.me?.canPost ?? false)
+                                      _ComposePrompt(
+                                        cubit: cubit,
+                                        me: state.me,
+                                      ),
                                     if (state.posts.isEmpty)
                                       Padding(
                                         padding: const EdgeInsets.all(32),

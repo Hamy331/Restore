@@ -57,6 +57,19 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('only partner shops and admins see the composer', (tester) async {
+    final repository = FakeFeedsRepository()..canPost = false;
+    await tester.pumpWidget(
+      host(const Locale('vi'), FeedsView(repository: repository)),
+    );
+    await tester.pumpAndSettle();
+    final l = AppLocalizations.of(tester.element(find.byType(FeedsView)))!;
+    expect(find.text('Minh Anh'), findsOneWidget);
+    expect(find.text(l.feedCompose), findsNothing);
+    expect(find.text(l.feedAddPhoto), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('search submits, follows the selected tab and clears', (
     tester,
   ) async {
@@ -488,11 +501,14 @@ class FakeFeedsRepository implements FeedsRepository {
   final Map<String, List<FeedComment>> replies = {};
   final List<String> reports = [];
   bool failLike = false, failNextPage = false;
+
+  /// Mặc định "me" là cửa hàng Đối tác (được đăng bài)
+  bool canPost = true;
   int feedLoads = 0, pageSize = 20, _created = 0;
 
   @override
   Future<FeedUser> me() async =>
-      const FeedUser(id: 'me', name: 'Me', avatarUrl: null);
+      FeedUser(id: 'me', name: 'Me', avatarUrl: null, canPost: canPost);
 
   @override
   Future<FeedPage<FeedPost>> posts({

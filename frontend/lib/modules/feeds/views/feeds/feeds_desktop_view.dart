@@ -187,50 +187,52 @@ class _FeedTop extends StatelessWidget {
             tab(l.feedFollowing, state.onlyFollowing, () => cubit.select(true)),
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-          child: Row(
-            children: [
-              FeedAvatar.me(state.me, fallbackName: l.feedYourName, size: 40),
-              const SizedBox(width: 12),
-              Expanded(
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(22),
-                  onTap: () => showFeedComposer(context, cubit),
-                  child: Container(
-                    height: 44,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    alignment: Alignment.centerLeft,
-                    decoration: BoxDecoration(
-                      color: AppColors.fill,
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Text(
-                      l.feedCompose,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: AppColors.textSecondary),
+        // Chỉ cửa hàng Đối tác và admin đăng bài
+        if (state.me?.canPost ?? false)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            child: Row(
+              children: [
+                FeedAvatar.me(state.me, fallbackName: l.feedYourName, size: 40),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(22),
+                    onTap: () => showFeedComposer(context, cubit),
+                    child: Container(
+                      height: 44,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      alignment: Alignment.centerLeft,
+                      decoration: BoxDecoration(
+                        color: AppColors.fill,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Text(
+                        l.feedCompose,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: AppColors.textSecondary),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              TextButton.icon(
-                onPressed: () => showFeedComposer(context, cubit),
-                icon: const Icon(
-                  AppIcons.addPhoto,
-                  size: 18,
-                  color: AppColors.success,
+                const SizedBox(width: 10),
+                TextButton.icon(
+                  onPressed: () => showFeedComposer(context, cubit),
+                  icon: const Icon(
+                    AppIcons.addPhoto,
+                    size: 18,
+                    color: AppColors.success,
+                  ),
+                  label: Text(
+                    l.feedAddPhoto,
+                    style: const TextStyle(color: AppColors.textPrimary),
+                  ),
                 ),
-                label: Text(
-                  l.feedAddPhoto,
-                  style: const TextStyle(color: AppColors.textPrimary),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         const Divider(height: 1, color: AppColors.border),
       ],
     );
@@ -385,16 +387,18 @@ class _RightPanel extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              FilledButton.icon(
-                onPressed: () => showFeedComposer(context, cubit),
-                icon: const Icon(AppIcons.post, size: 18),
-                label: Text(t('Viết bài', 'Write a post')),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.actionPrimary,
-                  minimumSize: const Size(0, 42),
+              if (cubit.state.me?.canPost ?? false) ...[
+                FilledButton.icon(
+                  onPressed: () => showFeedComposer(context, cubit),
+                  icon: const Icon(AppIcons.post, size: 18),
+                  label: Text(t('Viết bài', 'Write a post')),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.actionPrimary,
+                    minimumSize: const Size(0, 42),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
+              ],
               OutlinedButton.icon(
                 onPressed: () => context.push(CreateListingStep.category.path),
                 icon: const Icon(AppIcons.add, size: 18),
