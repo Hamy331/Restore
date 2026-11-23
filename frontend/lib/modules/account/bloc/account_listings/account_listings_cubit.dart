@@ -168,26 +168,6 @@ class AccountListingsCubit extends Cubit<AccountListingsState> {
     if (!isClosed) await load();
   }
 
-  /// Đưa tin chỉ ở Cửa hàng lên trang Listing chính rồi tải lại. Hết suất /
-  /// thiếu xu ném [AccountListingActionException].
-  Future<void> publishToMarketplace(
-    String id, {
-    bool payWithCredits = false,
-  }) async {
-    try {
-      await _repository.publishToMarketplace(
-        id,
-        payWithCredits: payWithCredits,
-      );
-    } on AccountListingActionException {
-      rethrow;
-    } catch (_) {
-      if (!isClosed) emit(state.copyWith(error: AccountListingsError.update));
-      return;
-    }
-    if (!isClosed) await load();
-  }
-
   /// Bật/tắt tự gia hạn rồi tải lại. Lỗi có mã ném
   /// [AccountListingActionException].
   Future<void> setAutoExtend(String id, bool enabled) async {

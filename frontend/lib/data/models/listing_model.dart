@@ -57,9 +57,6 @@ class ListingModel extends Equatable {
   /// Tự gia hạn khi sắp hết hạn (chỉ chủ tin thấy, gói Cửa hàng)
   final bool autoExtend;
 
-  /// Tin chỉ ở trang Cửa hàng (chưa lên trang Listing chính)
-  final bool shopOnly;
-
   /// (đề xuất) Danh mục và thuộc tính theo danh mục (jsonb)
   final String? categoryId;
 
@@ -104,7 +101,6 @@ class ListingModel extends Equatable {
     this.startsAt,
     this.displayDays,
     this.autoExtend = false,
-    this.shopOnly = false,
     this.categoryId,
     this.subcategoryId,
     this.categoryName = '',
@@ -171,7 +167,6 @@ class ListingModel extends Equatable {
       startsAt: DateTime.tryParse('${json['startsAt']}'),
       displayDays: (json['displayDays'] as num?)?.toInt(),
       autoExtend: json['autoExtend'] == true,
-      shopOnly: json['shopOnly'] == true,
       categoryId: json['categoryId'] as String?,
       subcategoryId: json['subcategoryId'] as String?,
       // Tên danh mục từ API là chuỗi hoặc map theo ngôn ngữ {vi, en}
@@ -237,7 +232,6 @@ class ListingModel extends Equatable {
     startsAt,
     displayDays,
     autoExtend,
-    shopOnly,
     categoryId,
     subcategoryId,
     categoryName,

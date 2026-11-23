@@ -56,9 +56,6 @@ class CreateListingState extends Equatable {
   /// trùng tin) không hỏi lại
   final bool flagsAccepted;
 
-  /// Shop Đối tác chọn chỉ đăng lên trang Cửa hàng (xem [shopOnlyAvailable])
-  final bool shopOnly;
-
   /// Bản đã lưu gần nhất (lưu nháp hoặc mở từ danh sách nháp), để biết còn
   /// thay đổi chưa lưu khi thoát. null khi chưa lưu lần nào.
   final ListingDraft? savedDraft;
@@ -116,7 +113,6 @@ class CreateListingState extends Equatable {
     this.contentFlagHits = 0,
     this.contentFlags = const [],
     this.flagsAccepted = false,
-    this.shopOnly = true,
     this.savedDraft,
     this.drafts = const [],
     this.draftsStatus = RequestStatus.idle,
@@ -135,15 +131,6 @@ class CreateListingState extends Equatable {
 
   /// Đang sửa tin đã đăng: không lưu nháp, không đổi thời gian hiển thị
   bool get isEditing => editingListing != null;
-
-  /// Tin mới của shop Đối tác, đúng danh mục shop: được chọn chỉ đăng lên
-  /// trang Cửa hàng
-  bool get shopOnlyAvailable =>
-      !isEditing &&
-      (quota?.shopCategoryIds.contains(draft.categoryId) ?? false);
-
-  /// Tin này sẽ chỉ ở trang Cửa hàng: không giới hạn, không tính hạn mức gói
-  bool get postsShopOnly => shopOnly && shopOnlyAvailable;
 
   /// Đang sửa tin đã duyệt: bản sửa chờ duyệt, tin vẫn hiện bản cũ, không
   /// đổi được chuyên mục; đẩy tin, Hot sale, ưu đãi giữ nguyên
@@ -218,7 +205,6 @@ class CreateListingState extends Equatable {
     int? contentFlagHits,
     List<ContentFlag>? contentFlags,
     bool? flagsAccepted,
-    bool? shopOnly,
     ListingDraft? savedDraft,
     List<ListingModel>? drafts,
     RequestStatus? draftsStatus,
@@ -255,7 +241,6 @@ class CreateListingState extends Equatable {
       contentFlagHits: contentFlagHits ?? this.contentFlagHits,
       contentFlags: contentFlags ?? this.contentFlags,
       flagsAccepted: flagsAccepted ?? this.flagsAccepted,
-      shopOnly: shopOnly ?? this.shopOnly,
       savedDraft: savedDraft ?? this.savedDraft,
       drafts: drafts ?? this.drafts,
       draftsStatus: draftsStatus ?? this.draftsStatus,
@@ -294,7 +279,6 @@ class CreateListingState extends Equatable {
     contentFlagHits,
     contentFlags,
     flagsAccepted,
-    shopOnly,
     savedDraft,
     drafts,
     draftsStatus,

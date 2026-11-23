@@ -131,14 +131,6 @@ class AttributeChanged extends CreateListingEvent {
   List<Object?> get props => [key, value];
 }
 
-/// Shop Đối tác bật / tắt "Chỉ đăng lên trang Cửa hàng"
-class ShopOnlyChanged extends CreateListingEvent {
-  final bool value;
-  const ShopOnlyChanged(this.value);
-  @override
-  List<Object?> get props => [value];
-}
-
 /// Bấm "Tiếp tục" ở bước 2: bật hiển thị lỗi cho các trường còn thiếu
 class BasicInfoSubmitted extends CreateListingEvent {
   const BasicInfoSubmitted();

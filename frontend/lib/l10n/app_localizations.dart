@@ -11075,7 +11075,7 @@ abstract class AppLocalizations {
   /// No description provided for @bsCategoryHint.
   ///
   /// In en, this message translates to:
-  /// **'Shop listings can only be posted in this category. Personal listings can still use any category.'**
+  /// **'What your shop mainly sells. You can still post listings in any category.'**
   String get bsCategoryHint;
 
   /// No description provided for @bsCategoryRequired.
@@ -11083,48 +11083,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a category for your shop'**
   String get bsCategoryRequired;
-
-  /// No description provided for @listingShopOnlyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Where this listing shows'**
-  String get listingShopOnlyTitle;
-
-  /// No description provided for @listingOnMarketplace.
-  ///
-  /// In en, this message translates to:
-  /// **'Also post on the main listings'**
-  String get listingOnMarketplace;
-
-  /// No description provided for @listingShopOnlyBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Only on your shop page: unlimited, and it does not use your plan quota.'**
-  String get listingShopOnlyBody;
-
-  /// No description provided for @listingOnMarketplaceBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Shows on your shop page, home and search; it uses your plan posting quota.'**
-  String get listingOnMarketplaceBody;
-
-  /// No description provided for @accShopOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'Shop page only'**
-  String get accShopOnly;
-
-  /// No description provided for @accToMarketplace.
-  ///
-  /// In en, this message translates to:
-  /// **'Post to main'**
-  String get accToMarketplace;
-
-  /// No description provided for @accOnMarketplaceDone.
-  ///
-  /// In en, this message translates to:
-  /// **'Listing is now on the main listings'**
-  String get accOnMarketplaceDone;
 }
 
 class _AppLocalizationsDelegate

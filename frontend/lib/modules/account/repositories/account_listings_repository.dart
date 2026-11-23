@@ -32,10 +32,6 @@ abstract class AccountListingsRepository {
   /// Bật/tắt tự gia hạn ([AccountListingActionException] khi gói không có)
   Future<void> setAutoExtend(String id, bool enabled);
 
-  /// Đưa tin chỉ ở Cửa hàng lên trang Listing chính: tính hạn mức gói, hết
-  /// suất thì cần [payWithCredits] ([AccountListingActionException])
-  Future<void> publishToMarketplace(String id, {bool payWithCredits = false});
-
   /// Đẩy tin lên đầu: lượt tặng của gói hoặc trả xu. Lỗi 409 ném
   /// [ListingBoostException].
   Future<BoostResult> boost(String id);
@@ -93,7 +89,6 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
             paidCredits: item.paidCredits,
             startsAt: item.startsAt,
             autoExtend: item.autoExtend,
-            shopOnly: item.shopOnly,
             editStatus: item.pendingEdit?.status,
             editReason: item.pendingEdit?.reviewReason,
           ),
@@ -124,16 +119,6 @@ class ApiAccountListingsRepository implements AccountListingsRepository {
   @override
   Future<void> setAutoExtend(String id, bool enabled) =>
       _conflicts(() => _repository.setAutoExtend(id, enabled));
-
-  @override
-  Future<void> publishToMarketplace(String id, {bool payWithCredits = false}) =>
-      _conflicts(
-        () => _repository.setMarketplace(
-          id,
-          true,
-          payWithCredits: payWithCredits,
-        ),
-      );
 
   @override
   Future<BoostResult> boost(String id) => _repository.boost(id);

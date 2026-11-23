@@ -35,100 +35,51 @@ Future<void> showAccountListing(
     if (expired) _toast(messenger, l.accReactivated);
   } on AccountListingActionException catch (error) {
     if (!context.mounted) return;
-    await _onSlotError(
-      context,
-      item,
-      error,
-      retry: () => showAccountListing(context, item, payWithCredits: true),
-    );
-  }
-}
-
-/// Tin chỉ ở trang Cửa hàng: đăng tiếp lên trang Listing chính, tính hạn mức
-/// gói như tin thường (hết suất thì hỏi trả xu như Hiện lại)
-Future<void> publishAccountListingToMarketplace(
-  BuildContext context,
-  AccountListing item, {
-  bool payWithCredits = false,
-}) async {
-  final l = AppLocalizations.of(context)!;
-  final messenger = ScaffoldMessenger.of(context);
-  try {
-    await context.read<AccountListingsCubit>().publishToMarketplace(
-      item.id,
-      payWithCredits: payWithCredits,
-    );
-    _toast(messenger, l.accOnMarketplaceDone);
-  } on AccountListingActionException catch (error) {
-    if (!context.mounted) return;
-    await _onSlotError(
-      context,
-      item,
-      error,
-      retry: () => publishAccountListingToMarketplace(
-        context,
-        item,
-        payWithCredits: true,
-      ),
-    );
-  }
-}
-
-/// Hết suất / thiếu xu khi tin cần suất đăng: sheet hết suất (trả xu, nạp xu,
-/// nâng gói), lỗi khác thì báo
-Future<void> _onSlotError(
-  BuildContext context,
-  AccountListing item,
-  AccountListingActionException error, {
-  required Future<void> Function() retry,
-}) async {
-  if (!context.mounted) return;
-  final cubit = context.read<AccountListingsCubit>();
-  final messenger = ScaffoldMessenger.of(context);
-  final limited =
-      error.code == AccountListingActionException.postingLimitReached ||
-      error.code == AccountListingActionException.notEnoughCredits;
-  final categoryId = item.categoryId;
-  if (!limited || categoryId == null) {
-    _toast(messenger, error.message);
-    return;
-  }
-  final repository = cubit.repository;
-  final PostingQuota quota;
-  final CategoryModel? category;
-  try {
-    (quota, category) = await (
-      repository.postingQuota(),
-      repository.category(categoryId),
-    ).wait;
-  } catch (_) {
-    _toast(messenger, error.message);
-    return;
-  }
-  if (!context.mounted) return;
-  if (category == null) {
-    _toast(messenger, error.message);
-    return;
-  }
-  final action = await showPostingLimitSheet(
-    context,
-    category: category,
-    quota: quota,
-    reactivate: true,
-  );
-  if (!context.mounted) return;
-  switch (action) {
-    case PostingLimitAction.payWithCredits:
-      await retry();
-    case PostingLimitAction.topUp:
-      final price = quota.forCategory(categoryId).extraCredits ?? 0;
-      await context.push(
-        CreditTopupView.location(need: price - quota.walletAvailable),
-      );
-    case PostingLimitAction.upgradePlan:
-      await context.push(PlansView.path);
-    case PostingLimitAction.chooseAnotherCategory || null:
+    final limited =
+        error.code == AccountListingActionException.postingLimitReached ||
+        error.code == AccountListingActionException.notEnoughCredits;
+    final categoryId = item.categoryId;
+    if (!limited || categoryId == null) {
+      _toast(messenger, error.message);
       return;
+    }
+    final repository = cubit.repository;
+    final PostingQuota quota;
+    final CategoryModel? category;
+    try {
+      (quota, category) = await (
+        repository.postingQuota(),
+        repository.category(categoryId),
+      ).wait;
+    } catch (_) {
+      _toast(messenger, error.message);
+      return;
+    }
+    if (!context.mounted) return;
+    if (category == null) {
+      _toast(messenger, error.message);
+      return;
+    }
+    final action = await showPostingLimitSheet(
+      context,
+      category: category,
+      quota: quota,
+      reactivate: true,
+    );
+    if (!context.mounted) return;
+    switch (action) {
+      case PostingLimitAction.payWithCredits:
+        await showAccountListing(context, item, payWithCredits: true);
+      case PostingLimitAction.topUp:
+        final price = quota.forCategory(categoryId).extraCredits ?? 0;
+        await context.push(
+          CreditTopupView.location(need: price - quota.walletAvailable),
+        );
+      case PostingLimitAction.upgradePlan:
+        await context.push(PlansView.path);
+      case PostingLimitAction.chooseAnotherCategory || null:
+        return;
+    }
   }
 }
 

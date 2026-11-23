@@ -287,31 +287,6 @@ class ListingDetailsMobileView extends StatelessWidget {
                   ],
                 ),
               ],
-              // Shop Đối tác: tin chỉ ở trang Cửa hàng (không giới hạn), bật thì
-              // đăng tiếp lên trang Listing chính và tính hạn mức gói
-              if (state.shopOnlyAvailable) ...[
-                const SizedBox(height: 14),
-                ListingDetailsSection(
-                  title: l10n.listingShopOnlyTitle,
-                  children: [
-                    Material(
-                      type: MaterialType.transparency,
-                      child: SwitchListTile.adaptive(
-                        key: const ValueKey('listing-marketplace'),
-                        contentPadding: EdgeInsets.zero,
-                        value: !state.shopOnly,
-                        onChanged: (value) => bloc.add(ShopOnlyChanged(!value)),
-                        title: Text(l10n.listingOnMarketplace),
-                        subtitle: Text(
-                          state.shopOnly
-                              ? l10n.listingShopOnlyBody
-                              : l10n.listingOnMarketplaceBody,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
               // Sửa tin không đổi thời gian hiển thị (muốn thêm ngày thì gia hạn)
               if (!state.isEditing) ...[
                 const SizedBox(height: 14),
