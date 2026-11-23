@@ -22,7 +22,7 @@ export function listingInput(value: unknown, draft = false) {
   const body = value as Record<string, unknown>;
   const allowed = ['title','description','price','condition','categoryId','subcategoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','originalPrice'];
   // Cờ của thao tác đăng (trả xu, vẫn đăng dù trùng, vẫn gửi dù bị gắn cờ nội dung): controller đọc riêng, không thuộc nội dung tin
-  const flags = draft ? [] : ['payWithCredits', 'allowDuplicate', 'acceptFlags'];
+  const flags = draft ? [] : ['payWithCredits', 'allowDuplicate', 'acceptFlags', 'shopOnly'];
   if (Object.keys(body).some((key) => !allowed.includes(key) && !flags.includes(key))) fail('Tin có trường không được hỗ trợ.');
   if (flags.some((key) => body[key] !== undefined && typeof body[key] !== 'boolean')) fail('Dữ liệu tin không hợp lệ.');
   const title = body.title ?? '', description = body.description ?? '';

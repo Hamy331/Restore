@@ -17,10 +17,13 @@ export const allowsDuplicate = (req: AuthRequest) => (req.body as { allowDuplica
 /** Body có acceptFlags: true khi người dùng đã thấy cảnh báo CONTENT_FLAGGED và vẫn muốn gửi duyệt */
 export const acceptsFlags = (req: AuthRequest) => (req.body as { acceptFlags?: unknown } | undefined)?.acceptFlags === true;
 
+/** Body có shopOnly: true khi cửa hàng chỉ đăng tin lên trang Cửa hàng (không lên trang Listing chính) */
+export const shopOnly = (req: AuthRequest) => (req.body as { shopOnly?: unknown } | undefined)?.shopOnly === true;
+
 export async function create(req: AuthRequest, res: Response) {
   const { body } = getInput<ValidatedInput<undefined, undefined, ListingInput>>(res);
   assertNoContentFlags(acceptsFlags(req), body.title, body.description);
-  const listing = await listingService.createListing(req.user!.userId, body, wantsToPay(req), allowsDuplicate(req));
+  const listing = await listingService.createListing(req.user!.userId, body, wantsToPay(req), allowsDuplicate(req), shopOnly(req));
   // Đăng xong thì lưu địa chỉ vào sổ địa chỉ để lần sau chọn lại
   await rememberListingAddress(req.user!.userId, body.location);
   created(res, listing);
@@ -48,6 +51,12 @@ export async function changeStatus(req: AuthRequest, res: Response) {
 export async function extend(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, ExtendInput>>(res);
   ok(res, await listingService.extendListing(req.user!.userId, params.id, body.days));
+}
+
+/** Đưa tin Cửa hàng lên / gỡ khỏi trang Listing chính */
+export async function marketplace(req: AuthRequest, res: Response) {
+  const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, AutoExtendInput>>(res);
+  ok(res, await listingService.setMarketplace(req.user!.userId, params.id, body.enabled, wantsToPay(req)));
 }
 
 export async function autoExtend(req: AuthRequest, res: Response) {

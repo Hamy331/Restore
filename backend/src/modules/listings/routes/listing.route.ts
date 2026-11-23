@@ -148,6 +148,12 @@ listingRouter.post('/:id/extend', manageOwn, validate({ params: listingIdParams,
  *
  * Lỗi 403: AUTO_EXTEND_NOT_AVAILABLE (gói không có tự gia hạn)
  */
+/**
+ * PATCH /listings/:id/marketplace { enabled, payWithCredits? }: tin Cửa hàng lên trang Listing chính (enabled = true,
+ * tính hạn mức gói, hết suất thì 409 POSTING_LIMIT_REACHED) hoặc chỉ ở trang Cửa hàng (false, cần shop Đối tác, đúng danh mục shop).
+ * Tạo tin với shopOnly: true trong body POST /listings để chỉ đăng lên trang Cửa hàng (không giới hạn).
+ */
+listingRouter.patch('/:id/marketplace', manageOwn, validate({ params: listingIdParams, body: autoExtendBody }), notifyViewers, listingController.marketplace);
 listingRouter.patch('/:id/auto-extend', manageOwn, validate({ params: listingIdParams, body: autoExtendBody }), listingController.autoExtend);
 
 /**

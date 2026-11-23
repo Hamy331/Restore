@@ -36,6 +36,7 @@ export const listingSelect = {
   isNegotiable: true,
   ownerId: true, categoryId: true, subcategoryId: true, status: true, updatedAt: true,
   allowSale: true, allowExchange: true, exchangeWish: true, sellerType: true, attributes: true, location: true, reviewReason: true,
+  shopOnly: true,
   condition: true,
   category: { select: { id: true, name: true } },
   images: true,
@@ -88,13 +89,13 @@ export const toRevisionDto = (revision: RevisionRecord) => ({
  * areaLabel: "Phường, Tỉnh" để hiện trên thẻ tin.
  */
 export function toListingDto(listing: ListingRecord, owner = false) {
-  const { paidCredits, paidDays, autoExtend, owner: { storeSubscription: _plan, shop, ...publicOwner }, ...rest } = listing;
+  const { paidCredits, paidDays, autoExtend, shopOnly, owner: { storeSubscription: _plan, shop, ...publicOwner }, ...rest } = listing;
   // Đối tác: đã lên cửa hàng và shop đã duyệt / đã xác minh (không phụ thuộc gói tài khoản), giống điều kiện trang shop
   const isPartner = !!shop && (shop.status === 'APPROVED' || shop.verificationType !== null);
   const location = owner ? listing.location : publicLocation(listing.location);
   const address = listing.location as { province?: { name?: string }; ward?: { name?: string } } | null;
   // Mọi tin có bán đều cho trả giá: không đọc cột isNegotiable cũ (tin cũ có thể còn false)
-  return { ...rest, isNegotiable: listing.allowSale, owner: publicOwner, isPartner, ...(isPartner && { shopId: shop!.id }), ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
+  return { ...rest, ...(shopOnly && { shopOnly }), isNegotiable: listing.allowSale, owner: publicOwner, isPartner, ...(isPartner && { shopId: shop!.id }), ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
     originalPrice: listing.originalPrice?.toString() ?? null, location,
     areaLabel: address ? [address.ward?.name, address.province?.name].filter(Boolean).join(', ') : '' };
 }

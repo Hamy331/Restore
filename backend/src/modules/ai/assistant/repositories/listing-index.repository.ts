@@ -10,6 +10,7 @@ import { SEARCH_LIMITS } from '../../ai.config.js';
 export type ListingSearchInput = { q: string; minPrice?: string; maxPrice?: string; categoryId?: string; brand?: string };
 const filters = (input: ListingSearchInput): Prisma.ListingWhereInput => ({
   ...visible,
+  shopOnly: false,
   price: { ...(input.minPrice ? { gte: new Prisma.Decimal(input.minPrice) } : {}), ...(input.maxPrice ? { lte: new Prisma.Decimal(input.maxPrice) } : {}) },
   ...(input.categoryId ? { categoryId: input.categoryId } : {}),
 });
@@ -19,18 +20,18 @@ export const findCurrentCandidates = (pointIds: string[], model: string, collect
   prisma.aiListingIndex.findMany({ where: { pointId: { in: pointIds }, model, collection, listing: filters(input) }, include: { listing: { select: listingSelect } } });
 
 export const retireHidden = () => prisma.aiListingIndex.deleteMany({ where: {
-  OR: [{ listing: { status: { not: 'AVAILABLE' } } }, { listing: { owner: { status: { not: 'ACTIVE' } } } }],
+  OR: [{ listing: { status: { not: 'AVAILABLE' } } }, { listing: { shopOnly: true } }, { listing: { owner: { status: { not: 'ACTIVE' } } } }],
 } });
 export const pendingListings = (model: string, collection: string, limit: number) => prisma.$queryRaw<{ id: string }[]>`
   SELECT l.id FROM "Listing" l JOIN "User" u ON u.id=l."ownerId"
   LEFT JOIN "AiListingIndex" i ON i."listingId"=l.id
-  WHERE l.status='AVAILABLE' AND u.status='ACTIVE'
+  WHERE l.status='AVAILABLE' AND u.status='ACTIVE' AND l."shopOnly"=false
     AND (i."listingId" IS NULL OR i.model <> ${model} OR i.collection <> ${collection})
   ORDER BY l.id LIMIT ${limit}`;
 
 export async function publishIndex(listingId: string, pointId: string, sourceHash: string, model: string, collection: string) {
   await withQuotaTransaction(async (tx) => {
-    const current = await tx.listing.findFirst({ where: { id: listingId, ...visible }, select: listingSelect });
+    const current = await tx.listing.findFirst({ where: { id: listingId, ...visible, shopOnly: false }, select: listingSelect });
     if (!current || listingHash(current) !== sourceHash) throw new AppError(409, 'LISTING_CHANGED', 'Tin đã thay đổi trong lúc lập chỉ mục.');
     const data = { pointId, sourceHash, model, collection, indexedAt: new Date() };
     await tx.aiListingIndex.upsert({ where: { listingId }, create: { listingId, ...data }, update: data });
