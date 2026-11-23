@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Image, Space, Typography } from 'antd';
+import { Image, Space, Tag, Typography } from 'antd';
 import { Session } from '../../shared/api/session';
 import { MemberLink } from '../members/MemberLink';
 import type { ListingContent, PendingEdit } from './RevisionCompare';
@@ -10,7 +10,13 @@ export type Listing = {
   status: string;
   images: string[];
   updatedAt: string;
-  owner?: { fullName: string; email?: string };
+  owner?: {
+    fullName: string;
+    email?: string;
+    /** Gói đang dùng của người đăng (hết hạn tính là PERSONAL) */
+    planTier?: PlanTier;
+    shop?: { name: string; status: string; verified: boolean } | null;
+  };
   category?: { name: string };
   reviewReason?: string;
   /** Bản sửa của tin đã duyệt (PENDING: chờ duyệt, REJECTED: đã từ chối) */
@@ -18,6 +24,29 @@ export type Listing = {
   /** Nội dung đang hiển thị, có khi tin có bản sửa */
   current?: ListingContent;
 };
+export type PlanTier = 'PERSONAL' | 'BASIC' | 'PRO';
+export const planTiers: Record<PlanTier, { label: string; color: string }> = {
+  PERSONAL: { label: 'Cá nhân', color: 'default' },
+  BASIC: { label: 'Bán chuyên', color: 'blue' },
+  PRO: { label: 'Cửa hàng Pro', color: 'purple' },
+};
+
+/** Gói của người đăng và shop (nếu có): shop uy tín, shop đã duyệt, hoặc shop chưa duyệt */
+export function SellerTags({ owner }: { owner: Listing['owner'] }) {
+  if (!owner?.planTier) return null;
+  const { shop } = owner;
+  return (
+    <Space size={4} wrap>
+      <Tag color={planTiers[owner.planTier].color}>{planTiers[owner.planTier].label}</Tag>
+      {shop && (
+        <Tag color={shop.verified ? 'green' : shop.status === 'APPROVED' ? 'cyan' : 'default'} title={shop.name}>
+          {shop.verified ? 'Shop uy tín' : shop.status === 'APPROVED' ? 'Có shop' : 'Shop chưa duyệt'}
+        </Tag>
+      )}
+    </Space>
+  );
+}
+
 export const listingStatus: Record<string, string> = {
   DRAFT: 'Bản nháp',
   PENDING: 'Chờ duyệt',
@@ -82,6 +111,7 @@ export function ListingDetails({ item, session, summary }: { item: Listing; sess
         )}
         {[item.category?.name, listingStatus[item.status] ?? item.status].map((part) => part && ' · ' + part)}
       </p>
+      <SellerTags owner={item.owner} />
       {!summary && (
         <>
           <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>
