@@ -23,12 +23,14 @@ export function Listings({ session }: { session: Session }) {
     [status, setStatus] = useState(pickFilter(filter || 'PENDING', [...Object.keys(listingStatus), EDIT_FILTER], 'PENDING')),
     [q, setQuery] = useState(''),
     [tier, setTier] = useState(''),
-    [flagged, setFlagged] = useState(false);
+    [flagged, setFlagged] = useState(false),
+    [offender, setOffender] = useState(false);
   const [item, select] = useState<Listing>(),
     [busy, setBusy] = useState(false);
   const params = new URLSearchParams({ page: String(page), q });
   if (tier) params.set('tier', tier);
   if (flagged) params.set('flagged', '1');
+  if (offender) params.set('offender', '1');
   if (status === EDIT_FILTER) params.set('edit', 'PENDING');
   else params.set('status', status);
   const { data, error, reload } = useResource<Page<Listing>>(session, '/admin/listings?' + params);
@@ -92,6 +94,15 @@ export function Listings({ session }: { session: Session }) {
           }}
         >
           Chỉ tin bị gắn cờ (SĐT, link, hàng cấm)
+        </Checkbox>
+        <Checkbox
+          checked={offender}
+          onChange={(e) => {
+            setOffender(e.target.checked);
+            setPage(1);
+          }}
+        >
+          Chỉ người đăng tái phạm (từ 3 lần bị từ chối / gỡ trong 30 ngày)
         </Checkbox>
       </Space>
       {error ? (
