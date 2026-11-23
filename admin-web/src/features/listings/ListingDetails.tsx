@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Image, Space, Tag, Typography } from 'antd';
 import { Session } from '../../shared/api/session';
 import { MemberLink } from '../members/MemberLink';
+import { FlagNotice, type ContentFlag } from './ContentFlags';
 import type { ListingContent, PendingEdit } from './RevisionCompare';
 export type Listing = {
   id: string;
@@ -19,6 +20,8 @@ export type Listing = {
   };
   category?: { name: string };
   reviewReason?: string;
+  /** Cờ nội dung tự động của nội dung đang có (bản sửa có cờ riêng trong pendingEdit.flags) */
+  flags?: ContentFlag[];
   /** Bản sửa của tin đã duyệt (PENDING: chờ duyệt, REJECTED: đã từ chối) */
   pendingEdit?: PendingEdit;
   /** Nội dung đang hiển thị, có khi tin có bản sửa */
@@ -114,6 +117,7 @@ export function ListingDetails({ item, session, summary }: { item: Listing; sess
       <SellerTags owner={item.owner} />
       {!summary && (
         <>
+          <FlagNotice flags={item.flags} />
           <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>
             {item.description}
           </Typography.Paragraph>

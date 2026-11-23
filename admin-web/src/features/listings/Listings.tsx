@@ -1,13 +1,14 @@
 import { useWorkspace } from '../../app/workspace';
 import { pickFilter } from '../../app/route';
 import { useState } from 'react';
-import { Button, Input, Modal, Select, Space, Table, Tag } from 'antd';
+import { Button, Checkbox, Input, Modal, Select, Space, Table, Tag } from 'antd';
 import { Session } from '../../shared/api/session';
 import { useResource, type Page } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { DecisionForm, type Action } from '../moderation/DecisionForm';
 import { ListingDetails, SellerTags, listingStatus, planTiers, type Listing } from './ListingDetails';
 import { RevisionCompare } from './RevisionCompare';
+import { FlagNotice, FlagTags } from './ContentFlags';
 
 /** Giá trị bộ lọc riêng: tin đã duyệt có bản sửa đang chờ duyệt (gửi edit=PENDING thay cho status) */
 const EDIT_FILTER = 'EDIT';
@@ -21,11 +22,13 @@ export function Listings({ session }: { session: Session }) {
   const [page, setPage] = useState(1),
     [status, setStatus] = useState(pickFilter(filter || 'PENDING', [...Object.keys(listingStatus), EDIT_FILTER], 'PENDING')),
     [q, setQuery] = useState(''),
-    [tier, setTier] = useState('');
+    [tier, setTier] = useState(''),
+    [flagged, setFlagged] = useState(false);
   const [item, select] = useState<Listing>(),
     [busy, setBusy] = useState(false);
   const params = new URLSearchParams({ page: String(page), q });
   if (tier) params.set('tier', tier);
+  if (flagged) params.set('flagged', '1');
   if (status === EDIT_FILTER) params.set('edit', 'PENDING');
   else params.set('status', status);
   const { data, error, reload } = useResource<Page<Listing>>(session, '/admin/listings?' + params);
@@ -81,6 +84,15 @@ export function Listings({ session }: { session: Session }) {
             setPage(1);
           }}
         />
+        <Checkbox
+          checked={flagged}
+          onChange={(e) => {
+            setFlagged(e.target.checked);
+            setPage(1);
+          }}
+        >
+          Chỉ tin bị gắn cờ (SĐT, link, hàng cấm)
+        </Checkbox>
       </Space>
       {error ? (
         <Failure error={error} reload={reload} />
@@ -91,7 +103,15 @@ export function Listings({ session }: { session: Session }) {
           dataSource={data?.items}
           scroll={{ x: 650 }}
           columns={[
-            { title: 'Tin đăng', dataIndex: 'title' },
+            {
+              title: 'Tin đăng',
+              render: (_, r) => (
+                <Space orientation="vertical" size={2}>
+                  {r.title}
+                  <FlagTags flags={[r.flags, pendingEdit(r)?.flags]} />
+                </Space>
+              ),
+            },
             {
               title: 'Người đăng',
               render: (_, r) => (
@@ -139,6 +159,7 @@ export function Listings({ session }: { session: Session }) {
           {edit && item.current ? (
             <>
               <ListingDetails session={session} item={item} summary />
+              <FlagNotice flags={edit.flags} title="Bản sửa bị gắn cờ tự động" />
               <RevisionCompare session={session} current={item.current} edit={edit} />
             </>
           ) : (
