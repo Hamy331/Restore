@@ -24,6 +24,10 @@ function corsOptions(): cors.CorsOptions {
 
 export function createApp() {
   const app = express();
+  // Chạy sau proxy / load balancer: đặt TRUST_PROXY (VD 1 = tin một lớp proxy) để req.ip là IP thật
+  // của người dùng, rate limit mới đếm đúng. Để trống khi gọi thẳng vào server.
+  const trustProxy = process.env.TRUST_PROXY?.trim();
+  if (trustProxy) app.set('trust proxy', /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy);
 
   app.use(requestId);
   app.use(cors(corsOptions()));

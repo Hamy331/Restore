@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PERMISSION } from '../../../common/auth/permissions.js';
 import { requirePermission } from '../../../middlewares/auth.middleware.js';
+import { authRateLimits as limit } from '../../../middlewares/rate-limit.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as authController from '../controllers/auth.controller.js';
 import { emailBody, loginBody, otpBody, refreshTokenBody, registerBody, resetPasswordBody } from '../auth.validator.js';
@@ -8,6 +9,8 @@ import { emailBody, loginBody, otpBody, refreshTokenBody, registerBody, resetPas
 /**
  * /api/v1/auth. Lỗi đầu vào trả 422 kèm mã theo trường:
  * INVALID_EMAIL, WEAK_PASSWORD, PASSWORD_REQUIRED, INVALID_USERNAME, INVALID_FULL_NAME, INVALID_OTP_FORMAT, TOKEN_REQUIRED.
+ * Gọi quá nhiều lần (đăng nhập sai, gửi / nhập mã OTP, tạo tài khoản) trả 429 RATE_LIMITED kèm header
+ * Retry-After (giây), xem các mức trong middlewares/rate-limit.middleware.ts.
  */
 const authRouter = Router();
 
@@ -25,7 +28,7 @@ authRouter.get('/me', requirePermission(PERMISSION.PROFILE_READ), authController
  *
  * Trả về: { message, data: { accessToken, refreshToken, user } }
  */
-authRouter.post('/login', validate({ body: loginBody }), authController.login);
+authRouter.post('/login', validate({ body: loginBody }), limit.login, authController.login);
 
 /**
  * Đăng ký, gửi OTP xác minh email
@@ -38,7 +41,7 @@ authRouter.post('/login', validate({ body: loginBody }), authController.login);
  *
  * Trả về: 201 { message, data }
  */
-authRouter.post('/register', validate({ body: registerBody }), authController.register);
+authRouter.post('/register', validate({ body: registerBody }), limit.register, authController.register);
 
 /**
  * Xác minh email bằng OTP đăng ký
@@ -47,7 +50,7 @@ authRouter.post('/register', validate({ body: registerBody }), authController.re
  *  - email: string
  *  - otp: string (6 chữ số)
  */
-authRouter.post('/verify-registration-otp', validate({ body: otpBody }), authController.verifyRegistrationOtp);
+authRouter.post('/verify-registration-otp', validate({ body: otpBody }), limit.verifyOtp, authController.verifyRegistrationOtp);
 
 /**
  * Gửi lại OTP đăng ký
@@ -55,7 +58,7 @@ authRouter.post('/verify-registration-otp', validate({ body: otpBody }), authCon
  * Body:
  *  - email: string
  */
-authRouter.post('/resend-registration-otp', validate({ body: emailBody }), authController.resendRegistrationOtp);
+authRouter.post('/resend-registration-otp', validate({ body: emailBody }), limit.sendOtp, authController.resendRegistrationOtp);
 
 /**
  * Quên mật khẩu: gửi OTP đặt lại (trả cùng một thông báo dù email có tồn tại hay không)
@@ -63,7 +66,7 @@ authRouter.post('/resend-registration-otp', validate({ body: emailBody }), authC
  * Body:
  *  - email: string
  */
-authRouter.post('/forgot-password', validate({ body: emailBody }), authController.forgotPassword);
+authRouter.post('/forgot-password', validate({ body: emailBody }), limit.sendOtp, authController.forgotPassword);
 
 /**
  * Xác minh OTP đặt lại mật khẩu
@@ -74,7 +77,7 @@ authRouter.post('/forgot-password', validate({ body: emailBody }), authControlle
  *
  * Trả về: { data: { resetToken } }
  */
-authRouter.post('/verify-otp', validate({ body: otpBody }), authController.verifyOtp);
+authRouter.post('/verify-otp', validate({ body: otpBody }), limit.verifyOtp, authController.verifyOtp);
 
 /**
  * Đặt mật khẩu mới, thu hồi mọi phiên
@@ -83,7 +86,7 @@ authRouter.post('/verify-otp', validate({ body: otpBody }), authController.verif
  *  - resetToken: string
  *  - newPassword: string (8-72, có chữ hoa, chữ thường, chữ số)
  */
-authRouter.post('/reset-password', validate({ body: resetPasswordBody }), authController.resetPassword);
+authRouter.post('/reset-password', validate({ body: resetPasswordBody }), limit.verifyOtp, authController.resetPassword);
 
 /**
  * Đổi refresh token lấy cặp token mới (refresh token cũ hết hiệu lực)
@@ -91,7 +94,7 @@ authRouter.post('/reset-password', validate({ body: resetPasswordBody }), authCo
  * Body:
  *  - refreshToken: string
  */
-authRouter.post('/refresh', validate({ body: refreshTokenBody }), authController.refresh);
+authRouter.post('/refresh', validate({ body: refreshTokenBody }), limit.token, authController.refresh);
 
 /**
  * Đăng xuất: thu hồi refresh token
@@ -99,6 +102,6 @@ authRouter.post('/refresh', validate({ body: refreshTokenBody }), authController
  * Body:
  *  - refreshToken: string
  */
-authRouter.post('/logout', validate({ body: refreshTokenBody }), authController.logout);
+authRouter.post('/logout', validate({ body: refreshTokenBody }), limit.token, authController.logout);
 
 export default authRouter;
