@@ -27,6 +27,8 @@ export type PendingEdit = ListingContent & {
   updatedAt: string;
   /** Cờ nội dung tự động của bản sửa */
   flags?: ContentFlag[];
+  /** Bản sửa bị gắn cờ lúc gửi: người đăng đã được cảnh báo và vẫn gửi */
+  flagged?: boolean;
 };
 
 export const conditionLabel: Record<string, string> = {

@@ -16,6 +16,7 @@ const listing = {
   images: [],
   updatedAt: '2026-11-20T08:00:00Z',
   flags: [{ code: 'CONTACT', match: '0912 345 678' }],
+  flagged: true,
   owner: {
     fullName: 'Chủ Shop',
     email: 'chu@example.com',
@@ -71,6 +72,8 @@ it('tin bị gắn cờ có thẻ, chi tiết nói rõ đoạn bị khớp, lọ
   fireEvent.click(screen.getByRole('button', { name: 'Xem tin' }));
   expect(await screen.findByText('Tin bị gắn cờ tự động')).toBeTruthy();
   expect(screen.getByText('“0912 345 678”')).toBeTruthy();
+  expect(screen.getByText('Bỏ qua cảnh báo')).toBeTruthy();
+  expect(screen.getByText('Người đăng đã được cảnh báo nhưng vẫn gửi.')).toBeTruthy();
 });
 
 it('người đăng từng vi phạm có thẻ đỏ, chi tiết liệt kê lý do gần đây', async () => {
