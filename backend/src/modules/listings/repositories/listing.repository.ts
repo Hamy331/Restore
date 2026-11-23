@@ -272,3 +272,19 @@ export const findRecentStrikes = (ownerId: string) => prisma.$queryRaw<
   FROM "AdminAudit" a JOIN "Listing" l ON l.id = a."targetId"
   WHERE a."targetType" = 'LISTING' AND l."ownerId" = ${ownerId} AND a.action IN (${Prisma.join(Object.values(STRIKES).flat())})
   ORDER BY a."createdAt" DESC LIMIT 5`;
+
+/**
+ * Giá thường gặp (median) của từng chuyên mục, tính trên tin đã duyệt có giá (đang hiện, đã ẩn, đặt trước, đã bán).
+ * Chuyên mục chưa đủ MIN_SAMPLES tin thì không có trong Map.
+ * ponytail: tính lại mỗi lần mở trang (một truy vấn cho các chuyên mục trên trang); chậm thì lưu sẵn theo ngày.
+ */
+export async function findTypicalPrices(categoryIds: (string | null)[], minSamples: number) {
+  const ids = [...new Set(categoryIds.filter((id): id is string => !!id))];
+  if (!ids.length) return new Map<string, number>();
+  const rows = await prisma.$queryRaw<{ categoryId: string; typical: number }[]>`
+    SELECT "categoryId", percentile_cont(0.5) WITHIN GROUP (ORDER BY price)::float8 AS typical
+    FROM "Listing"
+    WHERE "categoryId" IN (${Prisma.join(ids)}) AND price > 0 AND status IN ('AVAILABLE', 'HIDDEN', 'RESERVED', 'SOLD')
+    GROUP BY "categoryId" HAVING count(*) >= ${minSamples}`;
+  return new Map(rows.map((row) => [row.categoryId, row.typical]));
+}

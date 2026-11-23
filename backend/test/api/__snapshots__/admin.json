@@ -98,7 +98,8 @@
               "id": "furniture",
               "name": "Nội thất, trang trí"
             },
-            "flags": []
+            "flags": [],
+            "priceWarning": null
           }
         ],
         "total": 1,
