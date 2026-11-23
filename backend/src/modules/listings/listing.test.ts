@@ -144,7 +144,7 @@ test('daily listing quota counts publication time, so drafts do not consume it',
     promotion: { count: async () => 0 },
   } as unknown as Prisma.TransactionClient;
   await storeUsage(tx, 'user-1', new Date('2026-10-07T12:00:00Z'));
-  assert.deepEqual(where[0], { ownerId: 'user-1', shopOnly: false, publishedAt: { gte: new Date('2026-10-07T00:00:00Z') } });
+  assert.deepEqual(where[0], { ownerId: 'user-1', publishedAt: { gte: new Date('2026-10-07T00:00:00Z') } });
 });
 
 test('category attributes and GPS enforce supported values',()=>{

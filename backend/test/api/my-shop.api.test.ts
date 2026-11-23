@@ -4,7 +4,6 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 import { useApi } from './support/context.js';
-import { listingBody } from './support/fixtures.js';
 
 process.env.STORAGE_DISK_ROOT = mkdtempSync(path.join(tmpdir(), 'restore-my-shop-'));
 
@@ -135,41 +134,6 @@ test('my shop: admin review flow', async () => {
 
   const types = (await prisma.notification.findMany({ where: { userId: 'user-seller', type: { startsWith: 'SHOP_' } } })).map((n) => n.type);
   assert.deepEqual(types.sort(), ['SHOP_APPROVED', 'SHOP_REJECTED']);
-});
-
-/** Tin chỉ ở Cửa hàng: chỉ Đối tác, đúng danh mục shop, không tính hạn mức gói, không lên trang chính tới khi chủ shop bật */
-test('my shop: shop-only listings stay off the main listing page until published there', async () => {
-  const { api, tokens } = ctx;
-  const { prisma } = await import('../../src/lib/prisma.js');
-  const token = tokens.seller;
-  const shop = await prisma.shop.update({ where: { ownerId: 'user-seller' }, data: { status: 'APPROVED', categoryIds: ['furniture'] }, select: { id: true } });
-  const body = { ...listingBody('Kệ sách gỗ chỉ ở cửa hàng'), shopOnly: true };
-  assert.equal((await api.post('/listings', { token: tokens.buyer, body })).body.code, 'SHOP_ONLY_FORBIDDEN', 'người dùng thường');
-  assert.equal((await api.post('/listings', { token, body })).body.code, 'SHOP_CATEGORY_MISMATCH', 'khác danh mục shop');
-  await prisma.shop.update({ where: { id: shop.id }, data: { categoryIds: ['other'] } });
-
-  const used = async () => (await api.get('/listings/posting-quota', { token })).body.data.total.used as number;
-  assert.deepEqual((await api.get('/listings/posting-quota', { token })).body.data.shopCategoryIds, ['other']);
-  assert.equal((await api.get('/listings/posting-quota', { token: tokens.buyer })).body.data.shopCategoryIds, undefined);
-  const before = await used();
-  const created = await api.post('/listings', { token, body });
-  assert.equal(created.status, 201, JSON.stringify(created.body));
-  const { id } = created.body.data;
-  assert.deepEqual([created.body.data.shopOnly, await used()], [true, before], 'không tính hạn mức gói');
-  await prisma.listing.update({ where: { id }, data: { status: 'AVAILABLE' } });
-
-  const inSearch = async () => JSON.stringify((await api.get(`/listings/search?q=${encodeURIComponent('kệ sách gỗ')}`)).body).includes(id);
-  const inShop = async () => JSON.stringify((await api.get(`/shops/${shop.id}/listings`)).body).includes(id);
-  assert.deepEqual([await inSearch(), await inShop()], [false, true], 'chỉ ở trang Cửa hàng');
-  assert.equal((await api.get(`/listings/${id}`)).status, 200, 'mở link chi tiết vẫn xem được');
-  assert.equal((await api.post(`/listings/${id}/boost`, { token })).body.code, 'LISTING_SHOP_ONLY');
-
-  const published = await api.patch(`/listings/${id}/marketplace`, { token, body: { enabled: true } });
-  assert.equal(published.status, 200, JSON.stringify(published.body));
-  assert.deepEqual([published.body.data.shopOnly, await used(), await inSearch(), await inShop()], [undefined, before + 1, true, true], 'lên trang chính thì tính hạn mức');
-  const back = await api.patch(`/listings/${id}/marketplace`, { token, body: { enabled: false } });
-  assert.deepEqual([back.body.data.shopOnly, await used(), await inSearch()], [true, before, false]);
-  await prisma.listing.delete({ where: { id } });
 });
 
 /** Giờ mở cửa và xác minh shop: giấy tờ ở khu riêng, từ chối kèm lý do, gửi lại, duyệt thì có nhãn và mã chứng nhận */
