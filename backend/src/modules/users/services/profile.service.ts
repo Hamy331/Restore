@@ -29,6 +29,24 @@ const formatProfile = (user: ProfileRow, followingShopCount: number) => ({
   },
 });
 
+/**
+ * Số di động Việt Nam: bỏ khoảng trắng, dấu chấm, gạch, ngoặc; +84 / 84 đổi
+ * thành 0; phải đủ 10 số bắt đầu bằng 03, 05, 07, 08, 09. null / rỗng là xoá số.
+ */
+export function parsePhone(value: unknown): string | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value !== 'string') {
+    throw new AppError(422, 'INVALID_PHONE', 'Số điện thoại không hợp lệ (VD 0901234567).', 'phone');
+  }
+  const digits = value.replace(/[\s.\-()]/g, '');
+  if (!digits) return null;
+  const local = digits.replace(/^(\+84|84)(?=[35789]\d{8}$)/, '0');
+  if (!/^0[35789]\d{8}$/.test(local)) {
+    throw new AppError(422, 'INVALID_PHONE', 'Số điện thoại không hợp lệ (VD 0901234567).', 'phone');
+  }
+  return local;
+}
+
 // [viewerId] khác [id] thì kèm `isFollowing` cho trang hồ sơ công khai.
 export const getProfile = async (id: string, viewerId?: string) => {
   const user = await repository.findProfile(id);
@@ -85,7 +103,7 @@ export const updateProfile = async (id: string, body: unknown) => {
     throw new AppError(422, 'INVALID_PROFILE', 'Thông tin hồ sơ không hợp lệ.');
   }
   const input = body as Record<string, unknown>;
-  const allowed = ['fullName', 'username', 'bio', 'avatarUrl'];
+  const allowed = ['fullName', 'username', 'bio', 'avatarUrl', 'phone'];
   if (!Object.keys(input).length || Object.keys(input).some((key) => !allowed.includes(key))) {
     throw new AppError(422, 'INVALID_PROFILE_FIELDS', 'Hồ sơ chứa trường không hợp lệ.');
   }
@@ -105,9 +123,12 @@ export const updateProfile = async (id: string, body: unknown) => {
     }
     data.avatarUrl = input.avatarUrl as string | null;
   }
+  // Số điện thoại thêm thẳng, không cần xác nhận OTP; null / chuỗi rỗng để xoá
+  if ('phone' in input) data.phone = parsePhone(input.phone);
   try {
     const user = await repository.updateProfile(id, data);
-    return formatProfile(user, await repository.countFollowedShops(id));
+    // Trả kèm email / số điện thoại (chỉ người dùng tự xem) để app cập nhật ngay
+    return { ...formatProfile(user, await repository.countFollowedShops(id)), email: user.email, phone: user.phone };
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       throw new AppError(409, 'USERNAME_TAKEN', 'Tên người dùng đã được sử dụng.', 'username');
