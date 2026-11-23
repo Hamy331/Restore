@@ -111,3 +111,61 @@ test('my shop: admin review flow', async () => {
   const types = (await prisma.notification.findMany({ where: { userId: 'user-seller', type: { startsWith: 'SHOP_' } } })).map((n) => n.type);
   assert.deepEqual(types.sort(), ['SHOP_APPROVED', 'SHOP_REJECTED']);
 });
+
+/** Giờ mở cửa và xác minh shop: giấy tờ ở khu riêng, từ chối kèm lý do, gửi lại, duyệt thì có nhãn và mã chứng nhận */
+test('my shop: opening hours and verification', async () => {
+  const { api, tokens } = ctx;
+  const { prisma } = await import('../../src/lib/prisma.js');
+  const token = tokens.seller;
+  const upload = async (purpose: string) => {
+    const res = await api.post(`/media/images?purpose=${purpose}`, { token, raw: PNG, contentType: 'image/png' });
+    assert.equal(res.status, 201, JSON.stringify(res.body));
+    return res.body.data.imageUrl as string;
+  };
+
+  const hours = [{ day: 6, open: '09:00', close: '17:00' }, { day: 1, open: '08:00', close: '21:00' }];
+  const saved = await api.patch('/shops/me', { token, body: { openingHours: hours } });
+  assert.deepEqual(saved.body.data.shop.openingHours, [hours[1], hours[0]], 'xếp theo thứ');
+  const { id } = saved.body.data.shop;
+  assert.deepEqual((await api.get(`/shops/${id}`)).body.data.openingHours, [hours[1], hours[0]]);
+  assert.equal((await api.patch('/shops/me', { token, body: { openingHours: [{ day: 1, open: '21:00', close: '08:00' }] } })).status, 400);
+  assert.equal((await api.patch('/shops/me', { token, body: { openingHours: null } })).body.data.shop.openingHours, null);
+
+  // giấy tờ: chủ ảnh và admin xem được, người khác và đường công khai thì không
+  const doc = await upload('verification');
+  const file = doc.replace('/api/v1', '');
+  assert.equal((await api.get(file, { token })).status, 200);
+  assert.equal((await api.get(file, { token: tokens.admin })).status, 200);
+  assert.equal((await api.get(file, { token: tokens.buyer })).status, 404);
+  assert.equal((await api.get(file)).status, 401);
+
+  const body = { businessName: 'Hộ kinh doanh Gỗ Việt', taxCode: '0312345678', documentUrls: [doc] };
+  assert.equal((await api.post('/shops/me/verification', { token, body: { ...body, documentUrls: [await upload('shop')] } })).body.code, 'INVALID_IMAGE_URL');
+  assert.equal((await api.post('/shops/me/verification', { token, body: { ...body, taxCode: '123' } })).status, 400);
+  const sent = await api.post('/shops/me/verification', { token, body });
+  assert.equal(sent.status, 200, JSON.stringify(sent.body));
+  assert.equal(sent.body.data.verification.status, 'PENDING');
+  assert.equal((await api.post('/shops/me/verification', { token, body })).body.code, 'VERIFICATION_PENDING');
+
+  assert.equal((await api.get('/admin/shop-verifications', { token })).status, 403);
+  const queue = await api.get('/admin/shop-verifications', { token: tokens.admin });
+  const item = queue.body.data.items.find((row: { shop: { id: string } }) => row.shop.id === id);
+  assert.deepEqual([item?.taxCode, item?.documentUrls, item?.shop.owner.email], ['0312345678', [doc], 'user-seller@restore.test']);
+
+  const rejected = await api.post(`/admin/shop-verifications/${item.id}/reject`, { token: tokens.admin, body: { note: 'Ảnh giấy phép bị mờ' } });
+  assert.deepEqual([rejected.status, rejected.body.data.status], [200, 'REJECTED']);
+  assert.equal((await api.post(`/admin/shop-verifications/${item.id}/approve`, { token: tokens.admin, body: {} })).body.code, 'VERIFICATION_NOT_PENDING');
+  const mine = await api.get('/shops/me', { token });
+  assert.deepEqual([mine.body.data.verification.status, mine.body.data.verification.rejectNote], ['REJECTED', 'Ảnh giấy phép bị mờ']);
+
+  assert.equal((await api.post('/shops/me/verification', { token, body })).body.data.verification.status, 'PENDING', 'gửi lại');
+  const approved = await api.post(`/admin/shop-verifications/${item.id}/approve`, { token: tokens.admin, body: { type: 'CERTIFIED' } });
+  assert.deepEqual([approved.status, approved.body.data.status, approved.body.data.shop.verificationType], [200, 'APPROVED', 'CERTIFIED']);
+  const verified = (await api.get('/shops/me', { token })).body.data.shop;
+  assert.equal(verified.verificationType, 'CERTIFIED');
+  assert.match(verified.certificateCode, /^RS-\d{4}-\d{5}$/);
+  assert.equal((await api.post('/shops/me/verification', { token, body })).body.code, 'SHOP_ALREADY_VERIFIED');
+
+  const types = (await prisma.notification.findMany({ where: { userId: 'user-seller', type: { startsWith: 'SHOP_VERIF' } } })).map((n) => n.type);
+  assert.deepEqual(types.sort(), ['SHOP_VERIFICATION_REJECTED', 'SHOP_VERIFIED']);
+});

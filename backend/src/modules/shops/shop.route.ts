@@ -5,7 +5,7 @@ import { requireJson } from '../../middlewares/require-json.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as followingController from './following.controller.js';
 import * as myShopController from './my-shop.controller.js';
-import { shopCreateBody, shopUpdateBody } from './my-shop.validator.js';
+import { shopCreateBody, shopUpdateBody, shopVerificationBody } from './my-shop.validator.js';
 import { posterRouter } from './poster.route.js';
 import * as shopController from './shop.controller.js';
 import { shopIdParams, shopListingsQuery } from './shop.validator.js';
@@ -36,10 +36,18 @@ shopRouter.post('/me', manageOwn, requireJson, validate({ body: shopCreateBody }
 
 /**
  * Sửa shop. Body (đều không bắt buộc, null = xoá): name, tagline, description, address, logoUrl, coverUrl
- * (ảnh tải lên qua /media/images?purpose=shop), accentColor (#RRGGBB).
+ * (ảnh tải lên qua /media/images?purpose=shop), accentColor (#RRGGBB), openingHours [{ day 1-7, open, close "HH:MM" }].
  * Lỗi 404 SHOP_REQUIRED, 409 SHOP_NAME_LOCKED (shop đã xác minh), 400 INVALID_IMAGE_URL
  */
 shopRouter.patch('/me', manageOwn, requireJson, validate({ body: shopUpdateBody }), myShopController.update);
+
+/**
+ * Xin xác minh shop (giấy phép kinh doanh). Body: businessName, taxCode (10 số, chi nhánh thêm -001),
+ * documentUrls (1-3 ảnh tải lên qua /media/images?purpose=verification). Trả về như GET /shops/me.
+ * Lỗi 404 SHOP_REQUIRED, 403 SHOP_PLAN_REQUIRED, 409 SHOP_NOT_APPROVED | SHOP_ALREADY_VERIFIED | VERIFICATION_PENDING,
+ * 400 INVALID_IMAGE_URL
+ */
+shopRouter.post('/me/verification', manageOwn, requireJson, validate({ body: shopVerificationBody }), myShopController.submitVerification);
 
 /** Người đang theo dõi shop của mình, mới nhất trước. Query page, limit (≤ 50, mặc định 20) */
 shopRouter.get('/me/followers', manageOwn, followingController.myFollowers);

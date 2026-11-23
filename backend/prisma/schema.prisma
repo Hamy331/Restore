@@ -1092,11 +1092,35 @@ model Shop {
   reviewedAt       DateTime?
   /// Lý do admin từ chối; chủ shop sửa rồi lưu là gửi duyệt lại
   rejectNote       String?
+  /// Giờ mở cửa theo thứ: [{ day: 1-7 (1 = thứ Hai, 7 = Chủ nhật), open: "08:00", close: "21:00" }]; null = chưa đặt
+  openingHours     Json?
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
   banners          ShopBanner[]
+  verification     ShopVerification?
 
   @@index([verificationType, verifiedAt])
+  @@index([status, submittedAt])
+}
+
+/// Hồ sơ xin xác minh shop (giấy phép kinh doanh): mỗi shop một hồ sơ, gửi lại thì ghi đè. Duyệt thì shop
+/// có verificationType (hiện ở Shop uy tín). Ảnh giấy tờ ở khu riêng, chỉ chủ shop và admin xem được
+model ShopVerification {
+  id           String     @id @default(uuid())
+  shopId       String     @unique
+  shop         Shop       @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  status       ShopStatus @default(PENDING)
+  /// Tên doanh nghiệp / hộ kinh doanh trên giấy phép
+  businessName String
+  /// Mã số doanh nghiệp / mã số thuế: 10 số, chi nhánh thêm "-001"
+  taxCode      String
+  /// Ảnh giấy phép kinh doanh (1-3 ảnh, /api/v1/media/verifications/...)
+  documentUrls String[]
+  submittedAt  DateTime   @default(now())
+  reviewedAt   DateTime?
+  reviewedById String?
+  rejectNote   String?
+
   @@index([status, submittedAt])
 }
 

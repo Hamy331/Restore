@@ -42,6 +42,9 @@ export type DomainEvents = {
     reason: string | null; note: string | null };
   /** Admin duyệt / từ chối cửa hàng; note = lý do từ chối */
   'shop.reviewed': { ownerId: string; shopId: string; shopName: string; approved: boolean; note: string | null };
+  /** Admin duyệt / từ chối hồ sơ xác minh shop; note = lý do từ chối */
+  'shop.verificationReviewed': { ownerId: string; shopId: string; shopName: string; approved: boolean; note: string | null;
+    certificateCode: string | null };
   /** Tin mới khớp các thông báo "Báo khi có hàng" và đang hiển thị (3.1); mỗi người nhận một dòng (điểm cao nhất) */
   'wantedAlert.matched': ListingRef & { matches: { userId: string; alertId: string; keywords: string }[] };
   /** Tin nhắn chat mới (3.2): chỉ push, không ghi trang Thông báo */

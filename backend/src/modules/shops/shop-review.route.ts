@@ -7,12 +7,13 @@ import { AuthRequest, authorizePermission } from '../../middlewares/auth.middlew
 import { requireJson } from '../../middlewares/require-json.middleware.js';
 import { getInput, validate, ValidatedInput } from '../../middlewares/validate.middleware.js';
 import * as shopReviewService from './shop-review.service.js';
+import * as shopVerificationService from './shop-verification.service.js';
 import { shopIdParams, type ShopIdParams } from './shop.validator.js';
 
 const listQuery = z.object({ status: oneOf('status', ['PENDING', 'APPROVED', 'REJECTED', 'ALL'] as const, 'PENDING') });
 const rejectBody = strictBody({ note: str('note', { max: 300 }) });
 
-/** Duyệt cửa hàng, gắn tại /api/v1/admin (adminRouter đã xác thực token) */
+/** Duyệt cửa hàng và hồ sơ xác minh shop, gắn tại /api/v1/admin (adminRouter đã xác thực token) */
 export const shopReviewAdminRouter = Router();
 const moderate = authorizePermission(PERMISSION.LISTING_MODERATE);
 const shopId = (res: Response) => getInput<ValidatedInput<undefined, ShopIdParams>>(res).params.id;
@@ -37,4 +38,36 @@ shopReviewAdminRouter.post('/shops/:id/reject', moderate, requireJson, validate(
   async (req: AuthRequest, res: Response) => {
     const { params, body } = getInput<ValidatedInput<undefined, ShopIdParams, z.infer<typeof rejectBody>>>(res);
     ok(res, await shopReviewService.rejectShop(req.user!.userId, params.id, body.note));
+  });
+
+const approveVerificationBody = strictBody({
+  type: oneOf('type', ['CERTIFIED', 'OFFICIAL_BRAND'] as const, 'CERTIFIED'),
+});
+
+/**
+ * Hồ sơ xin xác minh shop. Query: status? = PENDING (mặc định) | APPROVED | REJECTED | ALL.
+ * Trả về: { pendingCount, items: [{ id, status, businessName, taxCode, documentUrls (ảnh khu riêng, cần token),
+ *   submittedAt, reviewedAt, rejectNote, shop { id, name, logoUrl, address, status, verificationType, certificateCode,
+ *   owner { id, email, fullName, phone, status } } }] }
+ */
+shopReviewAdminRouter.get('/shop-verifications', moderate, validate({ query: listQuery }), async (_req: AuthRequest, res: Response) => {
+  const { query } = getInput<ValidatedInput<z.infer<typeof listQuery>>>(res);
+  ok(res, await shopVerificationService.adminListVerifications(query.status));
+});
+
+/**
+ * Duyệt hồ sơ: shop nhận nhãn xác minh (type = CERTIFIED mặc định | OFFICIAL_BRAND) và mã chứng nhận, hiện ở Shop uy tín.
+ * Lỗi 404 VERIFICATION_NOT_FOUND, 409 VERIFICATION_NOT_PENDING
+ */
+shopReviewAdminRouter.post('/shop-verifications/:id/approve', moderate, validate({ params: shopIdParams, body: approveVerificationBody }),
+  async (req: AuthRequest, res: Response) => {
+    const { params, body } = getInput<ValidatedInput<undefined, ShopIdParams, z.infer<typeof approveVerificationBody>>>(res);
+    ok(res, await shopVerificationService.approveVerification(req.user!.userId, params.id, body.type));
+  });
+
+/** Từ chối hồ sơ. Body: note (lý do gửi chủ shop, 1-300 ký tự). Chủ shop gửi lại hồ sơ mới được */
+shopReviewAdminRouter.post('/shop-verifications/:id/reject', moderate, requireJson, validate({ params: shopIdParams, body: rejectBody }),
+  async (req: AuthRequest, res: Response) => {
+    const { params, body } = getInput<ValidatedInput<undefined, ShopIdParams, z.infer<typeof rejectBody>>>(res);
+    ok(res, await shopVerificationService.rejectVerification(req.user!.userId, params.id, body.note));
   });
