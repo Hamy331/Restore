@@ -119,13 +119,34 @@ export type ListingDto = ReturnType<typeof toListingDto>;
 export const adminListingSelect = {
   id: true, title: true, description: true, price: true, status: true, images: true, reviewReason: true,
   updatedAt: true, categoryId: true, subcategoryId: true, ownerId: true, condition: true,
-  owner: { select: { id: true, fullName: true, email: true } }, category: { select: { id: true, name: true, metadata: true } },
+  owner: {
+    select: {
+      id: true, fullName: true, email: true,
+      storeSubscription: { select: { startsAt: true, endsAt: true, package: { select: { tier: true } } } },
+      shop: { select: { name: true, status: true, verificationType: true } },
+    },
+  },
+  category: { select: { id: true, name: true, metadata: true } },
 } as const satisfies Prisma.ListingSelect;
 
+type AdminOwnerRecord = Prisma.UserGetPayload<{ select: typeof adminListingSelect.owner.select }>;
+
+/** Người đăng cho trang quản trị: gói đang dùng (hết hạn hoặc chưa bắt đầu tính là Cá nhân) và shop nếu có */
+function toAdminOwner({ storeSubscription: plan, shop, ...owner }: AdminOwnerRecord, now: Date) {
+  const active = plan && plan.startsAt <= now && plan.endsAt > now;
+  return {
+    ...owner, planTier: active ? plan.package.tier : 'PERSONAL',
+    shop: shop && { name: shop.name, status: shop.status, verified: shop.verificationType !== null },
+  };
+}
+
 /** Tin cho trang quản trị: tên danh mục kèm danh mục con ("Điện tử › Điện thoại"), không trả metadata danh mục */
-export function toAdminListing<T extends { subcategoryId: string | null; category: { id: string; name: string; metadata: Prisma.JsonValue } | null }>(
-  { category, ...item }: T) {
+export function toAdminListing<T extends { subcategoryId: string | null; category: { id: string; name: string; metadata: Prisma.JsonValue } | null;
+  owner?: AdminOwnerRecord }>({ category, owner, ...item }: T, now = new Date()) {
   const name = findSubcategory(category?.metadata, item.subcategoryId)?.name as string | { vi?: string } | undefined;
   const sub = typeof name === 'string' ? name : name?.vi;
-  return { ...item, category: category && { id: category.id, name: sub ? `${category.name} › ${sub}` : category.name } };
+  return {
+    ...item, ...(owner && { owner: toAdminOwner(owner, now) }),
+    category: category && { id: category.id, name: sub ? `${category.name} › ${sub}` : category.name },
+  };
 }
