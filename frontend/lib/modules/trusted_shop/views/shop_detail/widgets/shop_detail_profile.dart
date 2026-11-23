@@ -10,6 +10,7 @@ import 'package:restore/shared/widgets/app_local_image.dart';
 import '../../../models/trusted_shop_item.dart';
 import '../../../widgets/shop_follow_button.dart';
 import '../../../widgets/shop_logo.dart';
+import '../../../widgets/shop_opening_status.dart';
 import '../../../widgets/shop_palette.dart';
 import '../../../widgets/shop_stats_row.dart';
 import '../../../widgets/shop_verification_badge.dart';
@@ -130,6 +131,8 @@ class ShopDetailProfile extends StatelessWidget {
                     ),
                   ],
                 ),
+              if (shop.openingHours.isNotEmpty)
+                ShopOpeningStatus(hours: shop.openingHours),
             ],
           ),
           if (shop.tagline.isNotEmpty) ...[
