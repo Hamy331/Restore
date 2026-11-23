@@ -144,7 +144,7 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
           unselectedLabelColor: Colors.black87,
           tabs: [
             Tab(text: l.accListings),
-            Tab(text: l.accActivity),
+            Tab(text: (s?.isShop ?? false) ? l.feedsTitle : l.accActivity),
             Tab(text: l.reviews),
             Tab(text: l.profAbout),
           ],
