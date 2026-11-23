@@ -200,3 +200,24 @@ test('admin listings name the subcategory next to the category', async () => {
   assert.deepEqual(toAdminListing({ id: 'b', subcategoryId: 'gone', category }).category, { id: 'electronics', name: 'Điện tử' });
   assert.equal(toAdminListing({ id: 'c', subcategoryId: null, category: null }).category, null);
 });
+
+test('listings show the partner badge only for an active Pro plan with a public shop', async () => {
+  const { toListingDto } = await import('./listing.dto.js');
+  const day = 86_400_000;
+  const pro = { startsAt: new Date(Date.now() - day), endsAt: new Date(Date.now() + day), package: { tier: 'PRO' } };
+  const listing = (storeSubscription: unknown, shop: unknown) => toListingDto({
+    id: 'l', price: { toString: () => '1' }, originalPrice: null, allowSale: true, location: null,
+    paidCredits: 0, paidDays: 0, autoExtend: false,
+    owner: { id: 'u', fullName: 'A', ratingAverage: 0, ratingCount: 0, storeSubscription, shop },
+  } as unknown as Parameters<typeof toListingDto>[0]);
+  const approved = { id: 's', status: 'APPROVED', verificationType: null };
+  assert.deepEqual([listing(pro, approved).isPartner, listing(pro, approved).shopId], [true, 's']);
+  assert.equal(listing(pro, { id: 's', status: 'PENDING', verificationType: 'CERTIFIED' }).isPartner, true, 'đã xác minh');
+  for (const shop of [null, { id: 's', status: 'PENDING', verificationType: null }, { id: 's', status: 'REJECTED', verificationType: null }]) {
+    const dto = listing(pro, shop);
+    assert.deepEqual([dto.isPartner, 'shopId' in dto], [false, false], JSON.stringify(shop));
+  }
+  assert.equal(listing({ ...pro, package: { tier: 'BASIC' } }, approved).isPartner, false, 'gói Bán chuyên');
+  assert.equal(listing({ ...pro, endsAt: new Date(Date.now() - 1) }, approved).isPartner, false, 'hết hạn');
+  assert.equal((listing(null, approved).owner as Record<string, unknown>).shop, undefined, 'không lộ shop trong owner');
+});

@@ -444,6 +444,12 @@ test('notifications: activity flows between users', async () => {
   assert.equal((await api.get('/feeds/00000000-0000-4000-8000-000000000999', { token: tokens.buyer })).status, 404);
 
   // 3.2 chat: chỉ push cho người còn lại, không ghi trang Thông báo; cùng cuộc trò chuyện dùng chung tag
+  // Tin phải còn đang bán (đèn đã bán ở trên) nên dùng một tin mới đã duyệt, duyệt trước khi bật push
+  const stool = await submitListing('Ghế gỗ thông');
+  await api.post(`/listings/admin/${stool.id}/decision`, { token: tokens.admin, body: { decision: 'APPROVED', updatedAt: stool.updatedAt } });
+  // Thông báo ghi từ đầu test chưa push (push tắt): coi như đã gửi, để lượt gửi hẹn 500 ms không đẩy
+  // chúng vào máy người mua trong lúc đếm push chat (CI chậm thì lượt đó rơi đúng vào cửa sổ đếm)
+  await prisma.notification.updateMany({ where: { pushedAt: null }, data: { pushedAt: new Date() } });
   await prisma.pushDevice.create({ data: { userId: 'user-buyer', token: 'buyer-chat-phone', platform: 'android' } });
   const sent: { token: string; title: string; body: string; data: Record<string, string> }[] = [];
   push.setPushSenderForTest(async (token, message) => {
@@ -453,10 +459,7 @@ test('notifications: activity flows between users', async () => {
   try {
     const conversation = await api.post('/conversations', { token: tokens.seller, body: { recipientId: 'user-buyer' } });
     const conversationId = conversation.body.data.id;
-    // Nhắn từ trang tin (listingId): người nhận là người đăng, cùng cuộc trò chuyện.
-    // Tin phải còn đang bán (đèn đã bán ở trên) nên dùng một tin mới đã duyệt
-    const stool = await submitListing('Ghế gỗ thông');
-    await api.post(`/listings/admin/${stool.id}/decision`, { token: tokens.admin, body: { decision: 'APPROVED', updatedAt: stool.updatedAt } });
+    // Nhắn từ trang tin (listingId): người nhận là người đăng, cùng cuộc trò chuyện
     const fromListing = await api.post('/conversations', { token: tokens.buyer, body: { listingId: stool.id } });
     assert.equal(fromListing.body.data?.id, conversationId);
     const missing = await api.post('/conversations', { token: tokens.buyer, body: { listingId: 'khong-co' } });
