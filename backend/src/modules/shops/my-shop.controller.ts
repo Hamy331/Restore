@@ -3,7 +3,8 @@ import { created, ok } from '../../common/http/response.js';
 import { AuthRequest } from '../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../middlewares/validate.middleware.js';
 import * as myShopService from './my-shop.service.js';
-import type { ShopCreateBody, ShopUpdateBody } from './my-shop.validator.js';
+import type { ShopCreateBody, ShopUpdateBody, ShopVerificationBody } from './my-shop.validator.js';
+import * as shopVerificationService from './shop-verification.service.js';
 
 export async function get(req: AuthRequest, res: Response) {
   ok(res, await myShopService.getMyShop(req.user!.userId));
@@ -17,4 +18,9 @@ export async function create(req: AuthRequest, res: Response) {
 export async function update(req: AuthRequest, res: Response) {
   const { body } = getInput<ValidatedInput<undefined, undefined, ShopUpdateBody>>(res);
   ok(res, await myShopService.updateMyShop(req.user!.userId, body));
+}
+
+export async function submitVerification(req: AuthRequest, res: Response) {
+  const { body } = getInput<ValidatedInput<undefined, undefined, ShopVerificationBody>>(res);
+  ok(res, await shopVerificationService.submitVerification(req.user!.userId, body));
 }

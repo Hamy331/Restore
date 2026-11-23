@@ -37,6 +37,8 @@ export const NOTIFICATION_TYPES = {
   SHOP_POSTER_REJECTED: 'wallet',
   SHOP_APPROVED: 'wallet',
   SHOP_REJECTED: 'wallet',
+  SHOP_VERIFIED: 'wallet',
+  SHOP_VERIFICATION_REJECTED: 'wallet',
   WANTED_ALERT_MATCH: 'activity',
   NEW_FOLLOWER: 'activity',
   LISTING_FAVORITED: 'activity',

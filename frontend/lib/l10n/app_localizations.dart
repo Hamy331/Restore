@@ -5372,6 +5372,30 @@ abstract class AppLocalizations {
   /// **'Products'**
   String get shopProductsLabel;
 
+  /// No description provided for @shopWeekday.
+  ///
+  /// In en, this message translates to:
+  /// **'{day, select, 1{Monday} 2{Tuesday} 3{Wednesday} 4{Thursday} 5{Friday} 6{Saturday} other{Sunday}}'**
+  String shopWeekday(String day);
+
+  /// No description provided for @shopOpenNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Open now · Closes at {time}'**
+  String shopOpenNow(String time);
+
+  /// No description provided for @shopOpensToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed · Opens at {time}'**
+  String shopOpensToday(String time);
+
+  /// No description provided for @shopOpensOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed · Opens {day} at {time}'**
+  String shopOpensOn(String time, String day);
+
   /// No description provided for @shopDescriptionMore.
   ///
   /// In en, this message translates to:
@@ -8789,7 +8813,7 @@ abstract class AppLocalizations {
   /// No description provided for @msUnverifiedBody.
   ///
   /// In en, this message translates to:
-  /// **'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.'**
+  /// **'Your shop isn\'t in Trusted shops yet and posters can\'t run. Send your business licence below to get verified.'**
   String get msUnverifiedBody;
 
   /// No description provided for @msPendingTitle.
@@ -8815,6 +8839,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reason: {reason}. Edit your details and tap Save changes to send it for review again.'**
   String msRejectedBody(String reason);
+
+  /// No description provided for @msHoursSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening hours'**
+  String get msHoursSection;
+
+  /// No description provided for @msHoursHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the days and hours you are open so buyers can see whether your shop is open. Clear all days to hide opening hours.'**
+  String get msHoursHint;
+
+  /// No description provided for @msWeekdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{day, select, 1{Mon} 2{Tue} 3{Wed} 4{Thu} 5{Fri} 6{Sat} other{Sun}}'**
+  String msWeekdayShort(String day);
+
+  /// No description provided for @msHoursOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens'**
+  String get msHoursOpen;
+
+  /// No description provided for @msHoursClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes'**
+  String get msHoursClose;
+
+  /// No description provided for @msHoursInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening time must be before closing time.'**
+  String get msHoursInvalid;
+
+  /// No description provided for @msVerifySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your shop'**
+  String get msVerifySection;
+
+  /// No description provided for @msVerifyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Send your business licence to get the Trusted shop badge and a certificate code. Your shop will then appear in Trusted shops.'**
+  String get msVerifyBody;
+
+  /// No description provided for @msVerifyBusinessName.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered business name'**
+  String get msVerifyBusinessName;
+
+  /// No description provided for @msVerifyBusinessNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Exactly as on the licence'**
+  String get msVerifyBusinessNameHint;
+
+  /// No description provided for @msVerifyBusinessNameInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 2 to 120 characters.'**
+  String get msVerifyBusinessNameInvalid;
+
+  /// No description provided for @msVerifyTaxCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax code'**
+  String get msVerifyTaxCode;
+
+  /// No description provided for @msVerifyTaxCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'10 digits, branches add -001'**
+  String get msVerifyTaxCodeHint;
+
+  /// No description provided for @msVerifyTaxCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'A tax code has 10 digits; branches add -001.'**
+  String get msVerifyTaxCodeInvalid;
+
+  /// No description provided for @msVerifyDocs.
+  ///
+  /// In en, this message translates to:
+  /// **'Business licence photos'**
+  String get msVerifyDocs;
+
+  /// No description provided for @msVerifyDocsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'1-3 clear photos showing all four corners. Only ReStore can see them.'**
+  String get msVerifyDocsHint;
+
+  /// No description provided for @msVerifyDocsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one photo of the licence.'**
+  String get msVerifyDocsRequired;
+
+  /// No description provided for @msVerifyAddDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get msVerifyAddDoc;
+
+  /// No description provided for @msVerifySubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send for verification'**
+  String get msVerifySubmit;
+
+  /// No description provided for @msVerifySent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification request sent.'**
+  String get msVerifySent;
+
+  /// No description provided for @msVerifyPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification in review'**
+  String get msVerifyPendingTitle;
+
+  /// No description provided for @msVerifyPendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ReStore is checking your business licence. This usually takes 1-2 working days.'**
+  String get msVerifyPendingBody;
+
+  /// No description provided for @msVerifyRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification not approved'**
+  String get msVerifyRejectedTitle;
+
+  /// No description provided for @msVerifyRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}. Add the missing documents and send again below.'**
+  String msVerifyRejectedBody(String reason);
 
   /// No description provided for @msPlanExpiredTitle.
   ///
@@ -9745,6 +9913,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your shop \"{name}\" was not approved. Edit your details and save to send it for review again.'**
   String notifShopRejectedBody(String name);
+
+  /// No description provided for @notifShopVerifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shop is verified'**
+  String get notifShopVerifiedTitle;
+
+  /// No description provided for @notifShopVerifiedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" is verified and now appears in Trusted shops.'**
+  String notifShopVerifiedBody(String name);
+
+  /// No description provided for @notifShopVerificationRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification not approved'**
+  String get notifShopVerificationRejectedTitle;
+
+  /// No description provided for @notifShopVerificationRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The verification request for \"{name}\" was not approved. Add the missing documents and send it again.'**
+  String notifShopVerificationRejectedBody(String name);
 
   /// No description provided for @creditBonusSheetTitle.
   ///

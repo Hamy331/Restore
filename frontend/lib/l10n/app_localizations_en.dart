@@ -2985,6 +2985,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopProductsLabel => 'Products';
 
   @override
+  String shopWeekday(String day) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      '1': 'Monday',
+      '2': 'Tuesday',
+      '3': 'Wednesday',
+      '4': 'Thursday',
+      '5': 'Friday',
+      '6': 'Saturday',
+      'other': 'Sunday',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String shopOpenNow(String time) {
+    return 'Open now · Closes at $time';
+  }
+
+  @override
+  String shopOpensToday(String time) {
+    return 'Closed · Opens at $time';
+  }
+
+  @override
+  String shopOpensOn(String time, String day) {
+    return 'Closed · Opens $day at $time';
+  }
+
+  @override
   String get shopDescriptionMore => 'Show more';
 
   @override
@@ -5038,7 +5067,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msUnverifiedBody =>
-      'Your shop isn\'t in Trusted shops yet and posters can\'t run. Contact ReStore to get verified.';
+      'Your shop isn\'t in Trusted shops yet and posters can\'t run. Send your business licence below to get verified.';
 
   @override
   String get msPendingTitle => 'Shop under review';
@@ -5053,6 +5082,96 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String msRejectedBody(String reason) {
     return 'Reason: $reason. Edit your details and tap Save changes to send it for review again.';
+  }
+
+  @override
+  String get msHoursSection => 'Opening hours';
+
+  @override
+  String get msHoursHint =>
+      'Pick the days and hours you are open so buyers can see whether your shop is open. Clear all days to hide opening hours.';
+
+  @override
+  String msWeekdayShort(String day) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      '1': 'Mon',
+      '2': 'Tue',
+      '3': 'Wed',
+      '4': 'Thu',
+      '5': 'Fri',
+      '6': 'Sat',
+      'other': 'Sun',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get msHoursOpen => 'Opens';
+
+  @override
+  String get msHoursClose => 'Closes';
+
+  @override
+  String get msHoursInvalid => 'Opening time must be before closing time.';
+
+  @override
+  String get msVerifySection => 'Verify your shop';
+
+  @override
+  String get msVerifyBody =>
+      'Send your business licence to get the Trusted shop badge and a certificate code. Your shop will then appear in Trusted shops.';
+
+  @override
+  String get msVerifyBusinessName => 'Registered business name';
+
+  @override
+  String get msVerifyBusinessNameHint => 'Exactly as on the licence';
+
+  @override
+  String get msVerifyBusinessNameInvalid => 'Enter 2 to 120 characters.';
+
+  @override
+  String get msVerifyTaxCode => 'Tax code';
+
+  @override
+  String get msVerifyTaxCodeHint => '10 digits, branches add -001';
+
+  @override
+  String get msVerifyTaxCodeInvalid =>
+      'A tax code has 10 digits; branches add -001.';
+
+  @override
+  String get msVerifyDocs => 'Business licence photos';
+
+  @override
+  String get msVerifyDocsHint =>
+      '1-3 clear photos showing all four corners. Only ReStore can see them.';
+
+  @override
+  String get msVerifyDocsRequired => 'Add at least one photo of the licence.';
+
+  @override
+  String get msVerifyAddDoc => 'Add photo';
+
+  @override
+  String get msVerifySubmit => 'Send for verification';
+
+  @override
+  String get msVerifySent => 'Verification request sent.';
+
+  @override
+  String get msVerifyPendingTitle => 'Verification in review';
+
+  @override
+  String get msVerifyPendingBody =>
+      'ReStore is checking your business licence. This usually takes 1-2 working days.';
+
+  @override
+  String get msVerifyRejectedTitle => 'Verification not approved';
+
+  @override
+  String msVerifyRejectedBody(String reason) {
+    return 'Reason: $reason. Add the missing documents and send again below.';
   }
 
   @override
@@ -5631,6 +5750,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String notifShopRejectedBody(String name) {
     return 'Your shop \"$name\" was not approved. Edit your details and save to send it for review again.';
+  }
+
+  @override
+  String get notifShopVerifiedTitle => 'Your shop is verified';
+
+  @override
+  String notifShopVerifiedBody(String name) {
+    return '\"$name\" is verified and now appears in Trusted shops.';
+  }
+
+  @override
+  String get notifShopVerificationRejectedTitle => 'Verification not approved';
+
+  @override
+  String notifShopVerificationRejectedBody(String name) {
+    return 'The verification request for \"$name\" was not approved. Add the missing documents and send it again.';
   }
 
   @override

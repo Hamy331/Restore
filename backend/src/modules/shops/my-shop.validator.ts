@@ -49,9 +49,26 @@ export const shopCreateBody = strictBody({
   address: optionalStr('address', { max: SHOP_LIMITS.address }),
 });
 
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/** Một ngày mở cửa: day 1-7 (1 = thứ Hai, 7 = Chủ nhật), open < close dạng "HH:MM" */
+const openingDay = z.object({ day: z.number().int().min(1).max(7), open: z.string().regex(TIME), close: z.string().regex(TIME) }).strict();
+
+/** Giờ mở cửa: mỗi thứ một khung giờ, xếp theo thứ; null hoặc [] = xoá */
+const openingHours = z.unknown().optional().transform((value, ctx) => {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  const parsed = z.array(openingDay).max(7).safeParse(value);
+  if (!parsed.success) return fail(ctx, 'openingHours', 'openingHours phải là danh sách { day 1-7, open, close "HH:MM" }.');
+  const days = parsed.data;
+  if (new Set(days.map((item) => item.day)).size !== days.length) return fail(ctx, 'openingHours', 'Mỗi thứ chỉ có một khung giờ.');
+  if (days.some((item) => item.open >= item.close)) return fail(ctx, 'openingHours', 'Giờ mở cửa phải trước giờ đóng cửa.');
+  return days.length ? [...days].sort((a, b) => a.day - b.day) : null;
+});
+
 /**
  * Sửa shop: mọi trường không bắt buộc. logoUrl / coverUrl là ảnh tải lên qua /media/images?purpose=shop;
- * accentColor dạng "#RRGGBB". Gửi null hoặc "" để xoá (riêng name không xoá được).
+ * accentColor dạng "#RRGGBB"; openingHours [{ day, open, close }]. Gửi null hoặc "" để xoá (riêng name không xoá được).
  */
 export const shopUpdateBody = strictBody({
   name: z.unknown().optional().transform((value, ctx): string | undefined => {
@@ -65,7 +82,21 @@ export const shopUpdateBody = strictBody({
   logoUrl: clearable('logoUrl', SHOP_LIMITS.url),
   coverUrl: clearable('coverUrl', SHOP_LIMITS.url),
   accentColor: clearable('accentColor', 7, { regex: /^#[0-9A-Fa-f]{6}$/, message: 'accentColor phải có dạng #RRGGBB.' }),
+  openingHours,
 });
 
+/** Mã số doanh nghiệp / mã số thuế: 10 số, chi nhánh thêm "-001" */
+const TAX_CODE = /^\d{10}(-\d{3})?$/;
+
+/** Xin xác minh shop: businessName, taxCode, documentUrls (1-3 ảnh tải lên qua /media/images?purpose=verification) */
+export const shopVerificationBody = strictBody({
+  businessName: str('businessName', { min: 2, max: 120 }),
+  taxCode: str('taxCode', { max: 14 }).refine((value) => TAX_CODE.test(value), {
+    message: 'Mã số thuế gồm 10 số, chi nhánh thêm "-001".', params: { field: 'taxCode' },
+  }),
+  documentUrls: z.array(z.string().max(SHOP_LIMITS.url)).min(1).max(3),
+});
+
+export type ShopVerificationBody = z.infer<typeof shopVerificationBody>;
 export type ShopCreateBody = z.infer<typeof shopCreateBody>;
 export type ShopUpdateBody = z.infer<typeof shopUpdateBody>;

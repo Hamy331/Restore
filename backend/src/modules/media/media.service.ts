@@ -3,8 +3,13 @@ import { AppError } from '../../common/errors/app-error.js';
 import { readThumbnail, type ThumbWidth } from '../../services/image-thumbnail.service.js';
 import { contentTypeOf, getObject, putObject, type StorageArea } from '../../services/storage.service.js';
 
-/** Ảnh người dùng tải lên ngoài tin đăng: ảnh bài viết bảng tin, ảnh đại diện, poster shop. */
-export const MEDIA_AREAS = { feed: 'feeds', avatar: 'avatars', poster: 'posters', shop: 'shops' } as const satisfies Record<string, StorageArea>;
+/** Ảnh người dùng tải lên ngoài tin đăng: ảnh bài viết bảng tin, ảnh đại diện, poster shop, giấy tờ xác minh shop. */
+export const MEDIA_AREAS = {
+  feed: 'feeds', avatar: 'avatars', poster: 'posters', shop: 'shops', verification: 'verifications',
+} as const satisfies Record<string, StorageArea>;
+
+/** Khu riêng: chỉ chủ ảnh và admin duyệt xem được (GET /media/verifications/:name cần token) */
+export const PRIVATE_AREAS: readonly string[] = [MEDIA_AREAS.verification];
 export type MediaPurpose = keyof typeof MEDIA_AREAS;
 type MediaArea = (typeof MEDIA_AREAS)[MediaPurpose];
 
@@ -18,7 +23,7 @@ const NAME = /^[A-Za-z0-9-]{1,64}_[0-9a-f-]{36}\.(jpg|png|webp)$/;
 export function mediaPurpose(value: unknown): MediaPurpose {
   if (value === undefined) return 'feed';
   if (typeof value === 'string' && value in MEDIA_AREAS) return value as MediaPurpose;
-  throw new AppError(400, 'INVALID_PURPOSE', 'purpose must be feed, avatar or poster');
+  throw new AppError(400, 'INVALID_PURPOSE', 'purpose must be feed, avatar, poster, shop or verification');
 }
 
 /** Đuôi file theo magic bytes; không phải JPEG/PNG/WebP thì 415 */

@@ -13,7 +13,7 @@ import path from 'node:path';
 
 /** Thư mục logic: listings = ảnh tin, admin = ảnh nội dung (bìa bài viết),
  *  feeds = ảnh bài viết bảng tin, avatars = ảnh đại diện, posters = poster shop, shops = logo / ảnh bìa shop */
-export type StorageArea = 'listings' | 'admin' | 'feeds' | 'avatars' | 'posters' | 'shops' | 'chat';
+export type StorageArea = 'listings' | 'admin' | 'feeds' | 'avatars' | 'posters' | 'shops' | 'verifications' | 'chat';
 
 export const STORAGE_DRIVERS = ['disk', 'supabase'] as const;
 export type StorageDriver = (typeof STORAGE_DRIVERS)[number];

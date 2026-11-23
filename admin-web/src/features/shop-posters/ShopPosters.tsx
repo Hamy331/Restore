@@ -61,7 +61,7 @@ const tierLabels: Record<string, string> = { PRO: 'Cửa hàng Pro', BASIC: 'Bá
 
 const dateText = (value: string | null) => (value ? new Date(value).toLocaleDateString('vi-VN') : '—');
 
-/** Ảnh poster / shop: file tải lên (/api/v1/media/posters|shops/...) tải qua session; ảnh mẫu trong app không xem được ở web */
+/** Ảnh poster / shop / giấy tờ xác minh: file tải lên (/api/v1/media/...) tải qua session; ảnh mẫu trong app không xem được ở web */
 export function PosterImage({ session, path, alt, width = 200 }: { session: Session; path: string; alt: string; width?: number }) {
   const [src, setSrc] = useState<string>(),
     [failed, setFailed] = useState(false);
@@ -70,9 +70,10 @@ export function PosterImage({ session, path, alt, width = 200 }: { session: Sess
     let blobUrl: string | undefined;
     setFailed(false);
     setSrc(undefined);
-    const media = path.match(/^\/api\/v1\/media\/(posters|shops)\/([^/?#]+)$/);
+    const media = path.match(/^\/api\/v1\/media\/(posters|shops|verifications)\/([^/?#]+)$/);
     if (media) {
-      (media[1] === 'shops' ? session.shopImage(media[2]) : session.posterImage(media[2]))
+      session
+        .uploadedImage(media[1] as 'posters' | 'shops' | 'verifications', media[2])
         .then((blob) => {
           if (!active) return;
           blobUrl = URL.createObjectURL(blob);

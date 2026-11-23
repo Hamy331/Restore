@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:restore/shared/widgets/desktop/desktop_page_title.dart';
 import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
@@ -9,6 +10,7 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/shop_model.dart';
+import 'package:restore/data/models/shop_opening_hours.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/plans/views/plans/plans_view.dart';
 import 'package:restore/modules/shop_posters/views/shop_posters/shop_posters_view.dart';
@@ -28,9 +30,11 @@ import '../../models/my_shop_overview.dart';
 import 'my_shop_view.dart';
 import 'widgets/my_shop_color_field.dart';
 import 'widgets/my_shop_header.dart';
+import 'widgets/my_shop_hours_field.dart';
 import 'widgets/my_shop_section.dart';
 import 'widgets/my_shop_stats.dart';
 import 'widgets/my_shop_status_card.dart';
+import 'widgets/my_shop_verification_form.dart';
 import '../shop_followers/shop_followers_view.dart';
 
 /// Lời báo lỗi theo mã backend khi mở shop / lưu
@@ -39,6 +43,9 @@ String myShopError(AppLocalizations l, String code) => switch (code) {
   'SHOP_PLAN_REQUIRED' => l.msPlanTitle,
   'SHOP_EXISTS' => l.msErrExists,
   'SHOP_NAME_NOT_ALLOWED' => l.msErrNameNotAllowed,
+  'VERIFICATION_PENDING' => l.msVerifyPendingTitle,
+  'SHOP_ALREADY_VERIFIED' => l.msVerifiedTitle,
+  'SHOP_NOT_APPROVED' => l.msPendingTitle,
   'INVALID_IMAGE_URL' || 'INVALID_IMAGE' || 'IMAGE_TOO_LARGE' => l.msErrImage,
   'VALIDATION_ERROR' => l.msNameRequired,
   _ => l.msErrGeneric,
@@ -104,26 +111,26 @@ class _MyShopScaffold extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: AppColors.background,
     appBar: isDesktopLayout(context)
-          ? DesktopSectionBar(title: AppLocalizations.of(context)!.msTitle)
-          : AppBar(
-      backgroundColor: AppColors.background,
-      surfaceTintColor: Colors.transparent,
-      leading: IconButton(
-        tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-        icon: const Icon(AppIcons.back, color: AppColors.textPrimary),
-        onPressed: () => context.pop(),
-      ),
-      centerTitle: true,
-      title: Text(
-        AppLocalizations.of(context)!.msTitle,
-        style: const TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
-        ),
-      ),
-      actions: actions,
-    ),
+        ? DesktopSectionBar(title: AppLocalizations.of(context)!.msTitle)
+        : AppBar(
+            backgroundColor: AppColors.background,
+            surfaceTintColor: Colors.transparent,
+            leading: IconButton(
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              icon: const Icon(AppIcons.back, color: AppColors.textPrimary),
+              onPressed: () => context.pop(),
+            ),
+            centerTitle: true,
+            title: Text(
+              AppLocalizations.of(context)!.msTitle,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            actions: actions,
+          ),
     bottomNavigationBar: bottom,
     body: body,
   );
@@ -266,6 +273,36 @@ class _MyShopEditorState extends State<_MyShopEditor> {
   late final _address = TextEditingController(text: widget.shop.address);
   late String? _accent = widget.shop.accentColor;
 
+  /// Giờ mở cửa: các thứ đã chọn dùng chung một khung giờ (lấy theo ngày đầu)
+  late Set<int> _days = {for (final item in widget.shop.openingHours) item.day};
+  late TimeOfDay _open = _time(widget.shop.openingHours.firstOrNull?.open, 8);
+  late TimeOfDay _close = _time(
+    widget.shop.openingHours.firstOrNull?.close,
+    21,
+  );
+  bool _hoursTouched = false;
+
+  static TimeOfDay _time(String? value, int fallbackHour) {
+    final parts = value?.split(':');
+    if (parts == null || parts.length != 2) {
+      return TimeOfDay(hour: fallbackHour, minute: 0);
+    }
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+  }
+
+  /// Giờ mở cửa sẽ lưu, rỗng = xoá
+  List<ShopOpeningDay> get _hours => [
+    for (final day in _days.toList()..sort())
+      ShopOpeningDay(
+        day: day,
+        open: MyShopHoursField.format(_open),
+        close: MyShopHoursField.format(_close),
+      ),
+  ];
+
+  bool get _hoursValid =>
+      _days.isEmpty || MyShopHoursField.valid(_open, _close);
+
   /// Ảnh trên server (null khi chưa có hoặc người dùng xoá) và ảnh mới đã
   /// cắt chưa lưu kèm ảnh gốc để căn chỉnh lại
   late String? _logoUrl = widget.shop.logoUrl, _coverUrl = widget.shop.coverUrl;
@@ -300,6 +337,10 @@ class _MyShopEditorState extends State<_MyShopEditor> {
       if (_accent != shop.accentColor) 'accentColor': _accent,
       if (_logoBytes == null && _logoUrl != shop.logoUrl) 'logoUrl': null,
       if (_coverBytes == null && _coverUrl != shop.coverUrl) 'coverUrl': null,
+      if (_hoursTouched && !listEquals(_hours, shop.openingHours))
+        'openingHours': _days.isEmpty
+            ? null
+            : [for (final item in _hours) item.toJson()],
     };
   }
 
@@ -309,7 +350,7 @@ class _MyShopEditorState extends State<_MyShopEditor> {
   Future<void> _save() async {
     final l = AppLocalizations.of(context)!;
     setState(() => _showErrors = true);
-    if (!_nameValid) return;
+    if (!_nameValid || !_hoursValid) return;
     final error = await context.read<MyShopCubit>().save(
       _changes,
       logo: _logoBytes,
@@ -321,6 +362,26 @@ class _MyShopEditorState extends State<_MyShopEditor> {
     } else {
       TSnackBarHelper.showError(context, message: myShopError(l, error));
     }
+  }
+
+  Future<bool> _requestVerification(
+    String businessName,
+    String taxCode,
+    List<Uint8List> documents,
+  ) async {
+    final l = AppLocalizations.of(context)!;
+    final error = await context.read<MyShopCubit>().requestVerification(
+      businessName: businessName,
+      taxCode: taxCode,
+      documents: documents,
+    );
+    if (!mounted) return false;
+    if (error == null) {
+      TSnackBarHelper.showSuccess(context, message: l.msVerifySent);
+    } else {
+      TSnackBarHelper.showError(context, message: myShopError(l, error));
+    }
+    return error == null;
   }
 
   Future<void> _editImage(_ShopImage which) async {
@@ -462,7 +523,9 @@ class _MyShopEditorState extends State<_MyShopEditor> {
         primaryLabel: l.msSave,
         primaryIcon: AppIcons.check,
         isLoading: widget.saving,
-        onPrimary: widget.saving || _loadingImage || !_dirty ? null : _save,
+        onPrimary: widget.saving || _loadingImage || !_dirty || !_hoursValid
+            ? null
+            : _save,
       ),
       body: ListView(
         key: const ValueKey('my-shop-list'),
@@ -522,12 +585,31 @@ class _MyShopEditorState extends State<_MyShopEditor> {
             )
           else if (shop.isVerified)
             MyShopStatusCard(
+              key: const ValueKey('my-shop-verified'),
               title: l.msVerifiedTitle,
               body: code == null
                   ? l.msVerifiedBody
                   : '${l.msVerifiedBody} ${l.msCertificate(code)}',
               color: AppColors.success,
               background: AppColors.successBg,
+            )
+          else if (overview.verificationStatus == 'PENDING')
+            MyShopStatusCard(
+              key: const ValueKey('my-shop-verify-pending'),
+              icon: AppIcons.clock,
+              title: l.msVerifyPendingTitle,
+              body: l.msVerifyPendingBody,
+              color: AppColors.info,
+              background: AppColors.infoBg,
+            )
+          else if (overview.verificationStatus == 'REJECTED')
+            MyShopStatusCard(
+              key: const ValueKey('my-shop-verify-rejected'),
+              icon: AppIcons.block,
+              title: l.msVerifyRejectedTitle,
+              body: l.msVerifyRejectedBody(overview.verificationNote ?? ''),
+              color: AppColors.error,
+              background: AppColors.errorBg,
             )
           else
             MyShopStatusCard(
@@ -536,6 +618,12 @@ class _MyShopEditorState extends State<_MyShopEditor> {
               body: l.msUnverifiedBody,
               color: AppColors.info,
               background: AppColors.infoBg,
+            ),
+          if (overview.canRequestVerification)
+            MyShopVerificationForm(
+              saving: widget.saving,
+              picker: widget.picker,
+              onSubmit: _requestVerification,
             ),
           MyShopSection(
             title: l.msInfoSection,
@@ -587,6 +675,28 @@ class _MyShopEditorState extends State<_MyShopEditor> {
                   onChanged: (_) => setState(() {}),
                 ),
               ],
+            ),
+          ),
+          MyShopSection(
+            key: const ValueKey('my-shop-hours'),
+            title: l.msHoursSection,
+            subtitle: l.msHoursHint,
+            child: MyShopHoursField(
+              days: _days,
+              open: _open,
+              close: _close,
+              onDaysChanged: (days) => setState(() {
+                _days = days;
+                _hoursTouched = true;
+              }),
+              onOpenChanged: (time) => setState(() {
+                _open = time;
+                _hoursTouched = true;
+              }),
+              onCloseChanged: (time) => setState(() {
+                _close = time;
+                _hoursTouched = true;
+              }),
             ),
           ),
           MyShopSection(

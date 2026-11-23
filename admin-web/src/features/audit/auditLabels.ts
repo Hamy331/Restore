@@ -28,6 +28,7 @@ export const actions: Record<string, string> = {
   SHOP_APPROVE: 'Duyệt shop',
   SHOP_REJECT: 'Từ chối shop',
   SHOP_VERIFY: 'Xác minh shop',
+  SHOP_VERIFY_REJECT: 'Từ chối hồ sơ xác minh shop',
   SHOP_UNVERIFY: 'Thu hồi xác minh shop',
 };
 export const modules: Record<string, string> = {

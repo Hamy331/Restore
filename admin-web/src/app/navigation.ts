@@ -39,6 +39,9 @@ const ShopPosters = lazy(() =>
 const ShopReviews = lazy(() =>
   import('../features/shop-reviews/ShopReviews').then((m) => ({ default: m.ShopReviews })),
 );
+const ShopVerifications = lazy(() =>
+  import('../features/shop-verifications/ShopVerifications').then((m) => ({ default: m.ShopVerifications })),
+);
 
 import {
   AppstoreOutlined,
@@ -55,6 +58,7 @@ import {
   PictureOutlined,
   NotificationOutlined,
   SolutionOutlined,
+  IdcardOutlined,
 } from '@ant-design/icons';
 
 export const sections = [
@@ -84,6 +88,15 @@ export const sections = [
     detail: 'Duyệt tên, ảnh và mô tả của cửa hàng mới mở trước khi người mua xem được.',
     permission: 'listing:moderate',
     View: ShopReviews,
+  },
+  {
+    key: 'shopVerifications',
+    label: 'Xác minh cửa hàng',
+    group: 'Vận hành',
+    icon: IdcardOutlined,
+    detail: 'Đối chiếu giấy phép kinh doanh để cấp nhãn Shop uy tín cho cửa hàng.',
+    permission: 'listing:moderate',
+    View: ShopVerifications,
   },
   {
     key: 'shopPosters',

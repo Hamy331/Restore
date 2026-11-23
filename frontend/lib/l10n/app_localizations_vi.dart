@@ -2923,6 +2923,35 @@ class AppLocalizationsVi extends AppLocalizations {
   String get shopProductsLabel => 'Sản phẩm';
 
   @override
+  String shopWeekday(String day) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      '1': 'Thứ Hai',
+      '2': 'Thứ Ba',
+      '3': 'Thứ Tư',
+      '4': 'Thứ Năm',
+      '5': 'Thứ Sáu',
+      '6': 'Thứ Bảy',
+      'other': 'Chủ nhật',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String shopOpenNow(String time) {
+    return 'Đang mở cửa · Đóng lúc $time';
+  }
+
+  @override
+  String shopOpensToday(String time) {
+    return 'Đã đóng cửa · Mở lúc $time';
+  }
+
+  @override
+  String shopOpensOn(String time, String day) {
+    return 'Đã đóng cửa · Mở lúc $time $day';
+  }
+
+  @override
   String get shopDescriptionMore => 'Xem thêm';
 
   @override
@@ -4945,7 +4974,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get msUnverifiedBody =>
-      'Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Liên hệ ReStore để được xác minh.';
+      'Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Gửi giấy phép kinh doanh bên dưới để được xác minh.';
 
   @override
   String get msPendingTitle => 'Shop đang chờ duyệt';
@@ -4960,6 +4989,96 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String msRejectedBody(String reason) {
     return 'Lý do: $reason. Sửa thông tin rồi bấm Lưu thay đổi để gửi duyệt lại.';
+  }
+
+  @override
+  String get msHoursSection => 'Giờ mở cửa';
+
+  @override
+  String get msHoursHint =>
+      'Chọn ngày mở cửa và khung giờ, người mua thấy shop đang mở hay đã đóng. Bỏ chọn hết là ẩn giờ mở cửa.';
+
+  @override
+  String msWeekdayShort(String day) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      '1': 'T2',
+      '2': 'T3',
+      '3': 'T4',
+      '4': 'T5',
+      '5': 'T6',
+      '6': 'T7',
+      'other': 'CN',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get msHoursOpen => 'Mở cửa';
+
+  @override
+  String get msHoursClose => 'Đóng cửa';
+
+  @override
+  String get msHoursInvalid => 'Giờ mở cửa phải trước giờ đóng cửa.';
+
+  @override
+  String get msVerifySection => 'Xác minh cửa hàng';
+
+  @override
+  String get msVerifyBody =>
+      'Gửi giấy phép kinh doanh để nhận nhãn Shop uy tín và mã chứng nhận, shop sẽ hiện ở mục Shop uy tín.';
+
+  @override
+  String get msVerifyBusinessName => 'Tên doanh nghiệp / hộ kinh doanh';
+
+  @override
+  String get msVerifyBusinessNameHint => 'Đúng như trên giấy phép';
+
+  @override
+  String get msVerifyBusinessNameInvalid => 'Nhập tên từ 2 đến 120 ký tự.';
+
+  @override
+  String get msVerifyTaxCode => 'Mã số thuế';
+
+  @override
+  String get msVerifyTaxCodeHint => '10 số, chi nhánh thêm -001';
+
+  @override
+  String get msVerifyTaxCodeInvalid =>
+      'Mã số thuế gồm 10 số, chi nhánh thêm -001.';
+
+  @override
+  String get msVerifyDocs => 'Ảnh giấy phép kinh doanh';
+
+  @override
+  String get msVerifyDocsHint =>
+      '1-3 ảnh rõ nét, đủ 4 góc. Chỉ ReStore xem được.';
+
+  @override
+  String get msVerifyDocsRequired => 'Thêm ít nhất 1 ảnh giấy phép.';
+
+  @override
+  String get msVerifyAddDoc => 'Thêm ảnh';
+
+  @override
+  String get msVerifySubmit => 'Gửi xác minh';
+
+  @override
+  String get msVerifySent => 'Đã gửi hồ sơ xác minh.';
+
+  @override
+  String get msVerifyPendingTitle => 'Đang xét hồ sơ xác minh';
+
+  @override
+  String get msVerifyPendingBody =>
+      'ReStore đang đối chiếu giấy phép kinh doanh của shop, thường trong 1-2 ngày làm việc.';
+
+  @override
+  String get msVerifyRejectedTitle => 'Hồ sơ xác minh chưa được duyệt';
+
+  @override
+  String msVerifyRejectedBody(String reason) {
+    return 'Lý do: $reason. Bổ sung giấy tờ rồi gửi lại bên dưới.';
   }
 
   @override
@@ -5536,6 +5655,23 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String notifShopRejectedBody(String name) {
     return 'Cửa hàng \"$name\" chưa được duyệt. Sửa thông tin rồi lưu để gửi duyệt lại.';
+  }
+
+  @override
+  String get notifShopVerifiedTitle => 'Shop đã được xác minh';
+
+  @override
+  String notifShopVerifiedBody(String name) {
+    return 'Shop \"$name\" đã được xác minh và hiện ở mục Shop uy tín.';
+  }
+
+  @override
+  String get notifShopVerificationRejectedTitle =>
+      'Hồ sơ xác minh chưa được duyệt';
+
+  @override
+  String notifShopVerificationRejectedBody(String name) {
+    return 'Hồ sơ xác minh của shop \"$name\" chưa được duyệt. Bổ sung giấy tờ rồi gửi lại.';
   }
 
   @override
