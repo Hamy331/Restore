@@ -9,15 +9,15 @@ import { shopIdParams } from './shop.validator.js';
 
 /**
  * Poster shop của chủ shop, gắn tại /api/v1/shops/me/posters.
- * Gói Cửa hàng: StorePackage.posterActiveLimit poster chạy hoặc chờ duyệt cùng lúc (khung giờ chồng nhau),
- * posterMonthlyLimit poster gửi mỗi tháng; mỗi poster 3-14 ngày, hẹn trước tối đa 14 ngày.
- * Bị từ chối 3 lần trong 30 ngày thì khóa gửi 7 ngày. Chỉ poster đã duyệt, trong khung giờ, của shop đã xác minh
- * và gói còn hạn mới hiện ở trang shop và Shop uy tín.
+ * Cửa hàng Đối tác (đã duyệt / đã xác minh, gói nào cũng được): 2 poster chạy hoặc chờ duyệt cùng lúc (khung giờ chồng nhau),
+ * 4 poster gửi mỗi tháng; mỗi poster 3-14 ngày, hẹn trước tối đa 14 ngày.
+ * Bị từ chối 3 lần trong 30 ngày thì khóa gửi 7 ngày. Chỉ poster đã duyệt, trong khung giờ, của shop Đối tác
+ * mới hiện ở trang shop; Shop uy tín chỉ hiện poster của shop đã xác minh.
  */
 export const posterRouter = Router();
 const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
 
-/** Trả về: { shop, plan { tier, endsAt }, limits { activeLimit, monthlyLimit, usedThisMonth, slotsInUse, minDays, maxDays,
+/** Trả về: { shop, limits { activeLimit, monthlyLimit, usedThisMonth, slotsInUse, minDays, maxDays,
  *  maxLeadDays, cooldownUntil }, posters: [Poster] } */
 posterRouter.get('/', manageOwn, posterController.mine);
 
@@ -27,7 +27,7 @@ posterRouter.get('/', manageOwn, posterController.mine);
  * Body: title (1-80), imageUrl (từ POST /media/images?purpose=poster), listingId? (tin đang bán của mình),
  *   startsAt? (ISO, mặc định bây giờ), days (3-14)
  *
- * Lỗi: 409 SHOP_REQUIRED | POSTER_COOLDOWN {until} | POSTER_MONTHLY_LIMIT | POSTER_SLOT_FULL, 403 POSTER_PLAN_REQUIRED,
+ * Lỗi: 409 SHOP_REQUIRED | POSTER_COOLDOWN {until} | POSTER_MONTHLY_LIMIT | POSTER_SLOT_FULL, 403 POSTER_PARTNER_REQUIRED,
  *   400 POSTER_START_TOO_LATE | INVALID_IMAGE_URL | POSTER_LISTING_INVALID
  */
 posterRouter.post('/', manageOwn, requireJson, validate({ body: posterCreateBody }), posterController.create);

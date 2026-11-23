@@ -2,7 +2,7 @@ import { audit } from '../../common/audit/admin-audit.js';
 import { AppError } from '../../common/errors/app-error.js';
 import { emit } from '../../common/events/domain-events.js';
 import { prisma } from '../../lib/prisma.js';
-import { storePackageForUser, utcMonthStart } from '../commerce/index.js';
+import { utcMonthStart } from '../commerce/index.js';
 import { isMediaUrl } from '../media/media.service.js';
 import * as posterRepository from './poster.repository.js';
 import type { AdminPosterRecord, PosterRecord } from './poster.repository.js';
@@ -24,21 +24,24 @@ export function toPosterDto(poster: PosterRecord, now: Date) {
   };
 }
 
-/** Gói, shop, lượt đã dùng và hạn khóa của chủ shop */
+/** Shop, hạn mức, lượt đã dùng và hạn khóa của chủ shop. Hạn mức chỉ có khi shop là Đối tác (đã duyệt / đã xác minh) */
 async function quota(db: Db, userId: string, now: Date) {
-  const [shop, plan] = await Promise.all([posterRepository.findOwnShop(db, userId), storePackageForUser(db, userId, now)]);
-  const limits = { activeLimit: plan.package.posterActiveLimit, monthlyLimit: plan.package.posterMonthlyLimit };
-  if (!shop) return { shop, plan, limits, usedThisMonth: 0, slotsInUse: 0, cooldownUntil: null };
+  const shop = await posterRepository.findOwnShop(db, userId);
+  const partner = !!shop && (shop.status === 'APPROVED' || shop.verificationType !== null);
+  const limits = partner
+    ? { activeLimit: POSTER_RULES.activeLimit, monthlyLimit: POSTER_RULES.monthlyLimit }
+    : { activeLimit: 0, monthlyLimit: 0 };
+  if (!shop) return { shop, limits, usedThisMonth: 0, slotsInUse: 0, cooldownUntil: null };
   const [usedThisMonth, slotsInUse, rejections] = await Promise.all([
     posterRepository.countCreatedSince(db, shop.id, utcMonthStart(now)),
     posterRepository.countHoldingSlots(db, shop.id, now),
     posterRepository.findRejectionTimes(db, shop.id, new Date(now.getTime() - POSTER_RULES.rejectWindowDays * DAY)),
   ]);
-  return { shop, plan, limits, usedThisMonth, slotsInUse, cooldownUntil: cooldownUntil(rejections, now) };
+  return { shop, limits, usedThisMonth, slotsInUse, cooldownUntil: cooldownUntil(rejections, now) };
 }
 
 /**
- * Trang quản lý poster: { shop { id, name, logoUrl, verified } | null, plan { tier, endsAt },
+ * Trang quản lý poster: { shop { id, name, logoUrl, verified } | null,
  *   limits { activeLimit, monthlyLimit, usedThisMonth, slotsInUse, minDays, maxDays, maxLeadDays, cooldownUntil },
  *   posters [50 poster mới nhất] }
  */
@@ -47,7 +50,6 @@ export async function getMyPosters(userId: string, now = new Date()) {
   const posters = q.shop ? await posterRepository.findPosters(prisma, q.shop.id) : [];
   return {
     shop: q.shop ? { id: q.shop.id, name: q.shop.name, logoUrl: q.shop.logoUrl, verified: q.shop.verificationType !== null } : null,
-    plan: { tier: q.plan.package.tier, endsAt: q.plan.endsAt },
     limits: {
       ...q.limits, usedThisMonth: q.usedThisMonth, slotsInUse: q.slotsInUse,
       minDays: POSTER_RULES.minDays, maxDays: POSTER_RULES.maxDays, maxLeadDays: POSTER_RULES.maxLeadDays,
@@ -57,11 +59,11 @@ export async function getMyPosters(userId: string, now = new Date()) {
   };
 }
 
-/** Kiểm tra quyền gửi: có shop, gói còn cho đăng poster, không bị khóa */
+/** Kiểm tra quyền gửi: có shop, shop là Đối tác, không bị khóa */
 function assertCanSubmit(q: Awaited<ReturnType<typeof quota>>) {
   if (!q.shop) throw new AppError(409, 'SHOP_REQUIRED', 'Bạn cần có trang shop để đăng poster.');
   if (q.limits.activeLimit <= 0) {
-    throw new AppError(403, 'POSTER_PLAN_REQUIRED', 'Chỉ gói Cửa hàng Pro mới đăng được poster.', undefined, { tier: q.plan.package.tier });
+    throw new AppError(403, 'POSTER_PARTNER_REQUIRED', 'Cửa hàng cần được duyệt thành Đối tác để đăng poster.');
   }
   if (q.cooldownUntil) {
     throw new AppError(409, 'POSTER_COOLDOWN', 'Poster bị từ chối nhiều lần, tạm khóa gửi poster.', undefined,
@@ -94,11 +96,11 @@ async function assertListing(db: Db, userId: string, listingId: string | null | 
 
 async function assertSlot(db: Db, shopId: string, activeLimit: number, from: Date, to: Date, exceptId?: string) {
   if (await posterRepository.countOverlapping(db, shopId, from, to, exceptId) >= activeLimit) {
-    throw new AppError(409, 'POSTER_SLOT_FULL', `Gói của bạn chạy tối đa ${activeLimit} poster cùng lúc.`, undefined, { activeLimit });
+    throw new AppError(409, 'POSTER_SLOT_FULL', `Mỗi cửa hàng chạy tối đa ${activeLimit} poster cùng lúc.`, undefined, { activeLimit });
   }
 }
 
-/** Gửi poster mới, vào trạng thái chờ duyệt. Lỗi: SHOP_REQUIRED, POSTER_PLAN_REQUIRED, POSTER_COOLDOWN,
+/** Gửi poster mới, vào trạng thái chờ duyệt. Lỗi: SHOP_REQUIRED, POSTER_PARTNER_REQUIRED, POSTER_COOLDOWN,
  *  POSTER_MONTHLY_LIMIT, POSTER_SLOT_FULL, POSTER_START_TOO_LATE, INVALID_IMAGE_URL, POSTER_LISTING_INVALID */
 export async function createPoster(userId: string, body: PosterCreateBody, now = new Date()) {
   assertOwnImage(userId, body.imageUrl);

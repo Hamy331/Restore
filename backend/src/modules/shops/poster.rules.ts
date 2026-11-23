@@ -1,11 +1,14 @@
 import type { ShopBannerRejectReason } from '@prisma/client';
 
 /**
- * Luật poster shop (số lượng theo gói nằm ở StorePackage.posterActiveLimit / posterMonthlyLimit):
+ * Luật poster shop, cho mọi cửa hàng Đối tác (đã duyệt hoặc đã xác minh), không phụ thuộc gói tài khoản:
+ * chạy hoặc chờ duyệt tối đa 2 poster cùng lúc, gửi tối đa 4 poster mỗi tháng,
  * mỗi poster chạy 3-14 ngày, hẹn ngày bắt đầu trước tối đa 14 ngày,
  * bị từ chối 3 lần trong 30 ngày thì khóa gửi 7 ngày tính từ lần từ chối gần nhất.
  */
 export const POSTER_RULES = {
+  activeLimit: 2,
+  monthlyLimit: 4,
   minDays: 3,
   maxDays: 14,
   maxLeadDays: 14,

@@ -31,7 +31,8 @@ const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
  */
 shopRouter.get('/me', manageOwn, myShopController.get);
 
-/** Mở shop (gói Cửa hàng). Body: name, tagline?, description?, address?. Lỗi 403 SHOP_PLAN_REQUIRED, 409 SHOP_EXISTS */
+/** Đăng ký lên cửa hàng (phí một lần, chờ admin duyệt, gói nào cũng được). Body: name, categoryId, termsVersion,
+ *  tagline?, description?, address?. Lỗi 400 INVALID_CATEGORY | SHOP_NAME_NOT_ALLOWED, NOT_ENOUGH_CREDITS, 409 SHOP_EXISTS */
 shopRouter.post('/me', manageOwn, requireJson, validate({ body: shopCreateBody }), myShopController.create);
 
 /**
@@ -44,7 +45,7 @@ shopRouter.patch('/me', manageOwn, requireJson, validate({ body: shopUpdateBody 
 /**
  * Xin xác minh shop (giấy phép kinh doanh). Body: businessName, taxCode (10 số, chi nhánh thêm -001),
  * documentUrls (1-3 ảnh tải lên qua /media/images?purpose=verification). Trả về như GET /shops/me.
- * Lỗi 404 SHOP_REQUIRED, 403 SHOP_PLAN_REQUIRED, 409 SHOP_NOT_APPROVED | SHOP_ALREADY_VERIFIED | VERIFICATION_PENDING,
+ * Lỗi 404 SHOP_REQUIRED, 409 SHOP_NOT_APPROVED | SHOP_ALREADY_VERIFIED | VERIFICATION_PENDING,
  * 400 INVALID_IMAGE_URL
  */
 shopRouter.post('/me/verification', manageOwn, requireJson, validate({ body: shopVerificationBody }), myShopController.submitVerification);
@@ -69,7 +70,7 @@ shopRouter.get('/following/suggestions', verifyToken, followingController.sugges
 /** Tin mới nhất của các shop mình đang theo dõi (thẻ tin như trang chủ). Query page, limit */
 shopRouter.get('/following/listings', verifyToken, followingController.listings);
 
-/** Poster của shop mình (gói Cửa hàng), xem poster.route.ts */
+/** Poster của shop mình (cửa hàng Đối tác), xem poster.route.ts */
 shopRouter.use('/me/posters', posterRouter);
 
 /** Trả về: Shop + isFollowing. Lỗi 404 SHOP_NOT_FOUND */
