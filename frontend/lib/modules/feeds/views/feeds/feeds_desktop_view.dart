@@ -42,7 +42,8 @@ class FeedsDesktopView extends StatelessWidget {
               builder: (context, constraints) {
                 final width = constraints.crossAxisExtent;
                 final showLeft = width >= 680;
-                final showRight = width >= 1200;
+                // Khung nội dung desktop rộng tối đa 1152 (1200 trừ lề 24 hai bên)
+                final showRight = width >= 1100;
                 return SliverCrossAxisGroup(
                   slivers: [
                     if (showLeft) ...[

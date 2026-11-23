@@ -45,11 +45,12 @@ bool needsBackButton(BuildContext context) {
   return !_desktopSectionRoots.contains(router.state.uri.path);
 }
 
-/// Lề hai bên để nội dung rộng [content] nằm giữa màn hình
+/// Lề hai bên để nội dung nằm giữa màn hình, thẳng mép với đầu trang và chân
+/// trang: khung rộng [content] (mặc định 1200) có lề trong 24 ở mỗi bên.
 double desktopGutter(
   double width, {
   double content = AppDimesions.desktopContentWidth,
-}) => math.max(24, (width - content) / 2);
+}) => math.max(24, (width - content) / 2 + 24);
 
 /// Trang desktop cuộn dọc: nội dung căn giữa trong khung [contentWidth],
 /// nền phủ hết màn hình, footer ở cuối trang.

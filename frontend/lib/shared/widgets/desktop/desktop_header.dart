@@ -11,13 +11,19 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/account/views/account/widgets/account_menu.dart'
+    show confirmLogout;
+import 'package:restore/modules/account/widgets/profile_header.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
+import 'package:restore/modules/notifications/bloc/notification_badge/notification_badge_cubit.dart';
+import 'package:restore/shared/widgets/app_count_badge.dart';
 import 'package:restore/modules/auth/utils/auth_route_guard.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
-import 'package:restore/modules/location/models/area_option.dart';
-import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/shared/widgets/filter/area_filter_panel.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
 import 'package:restore/modules/search/bloc/search_cubit.dart';
@@ -33,10 +39,11 @@ import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
 import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.dart';
 import 'package:restore/shared/utils/filter_categories.dart';
 
-/// Đầu trang web desktop, màu trơn xanh đậm theo logo (bố cục kiểu Amazon):
-/// - Thanh chính xanh đậm: logo, khu vực, ô tìm kiếm, ngôn ngữ, tài khoản,
-///   tin nhắn, nút Đăng tin.
-/// - Thanh phụ xanh sáng hơn: lối tắt tới các trang chính.
+/// Đầu trang web desktop nền trắng (giống đầu trang trên điện thoại), hai hàng:
+/// - Hàng 1: logo, lối tắt (Bảng tin, Hot sale, Shop uy tín), ảnh đại diện +
+///   tên mở menu tài khoản, Tin đã lưu, Thông báo, Tin nhắn, nút Đăng tin.
+/// - Hàng 2: ô tìm kiếm rộng (kèm khung gợi ý), ô khu vực, nút Tìm.
+/// Danh mục không đặt trên đầu trang vì trang chủ đã có hàng danh mục.
 /// Nền trải hết màn hình, nội dung nằm trong khung 1200px ở giữa.
 class DesktopHeader extends StatefulWidget {
   const DesktopHeader({
@@ -63,8 +70,8 @@ class DesktopHeader extends StatefulWidget {
 }
 
 class _DesktopHeaderState extends State<DesktopHeader> {
-  static const _onBar = Colors.white;
-  static const _onNav = Colors.white;
+  static const _onBar = AppColors.textPrimary;
+  static const _onNav = AppColors.textPrimary;
 
   late final _query = TextEditingController(text: widget.listingSearchQuery);
   final _searchFocus = FocusNode();
@@ -256,11 +263,10 @@ class _DesktopHeaderState extends State<DesktopHeader> {
     }
   }
 
-  Future<void> _pickArea() async {
+  /// Bảng Khu vực mở dưới [anchor] (ô khu vực); đổi khu vực của cả app
+  Future<void> _pickArea(BuildContext anchor) async {
     final userArea = context.read<UserAreaCubit>();
-    final result = await context.push<AreaPickResult>(
-      AreaSearchView.location(allowNationwide: true),
-    );
+    final result = await showAreaPicker(anchor, current: userArea.state.area);
     if (result == null) return;
     if (result.nationwide) {
       userArea.selectNationwide();
@@ -294,24 +300,49 @@ class _DesktopHeaderState extends State<DesktopHeader> {
     ),
   );
 
+  /// Nút icon trên thanh chính (Tin đã lưu, Thông báo, Tin nhắn) kèm số
+  /// chưa đọc; chưa đăng nhập thì mở trang đăng nhập
+  Widget _iconAction({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+    int count = 0,
+  }) => _BarButton(
+    tooltip: tooltip,
+    onTap: () => _requireLogin(onTap),
+    child: AppCountBadge(
+      count: count,
+      max: 99,
+      offset: const Offset(6, -4),
+      child: Icon(icon, size: 24, color: _onBar),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final vi = Localizations.localeOf(context).languageCode == 'vi';
     String t(String vn, String en) => vi ? vn : en;
     final user = context.watchUser();
+    NotificationBadgeCubit? notifications;
+    try {
+      notifications = context.read<NotificationBadgeCubit>();
+    } catch (_) {
+      // Màn hình test không cấp cubit: chuông không có số
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Thanh chính
+        // Hàng 1: logo, lối tắt, tài khoản, các nút icon, Đăng tin
         ColoredBox(
-          color: AppHeaderPalette.desktopBar,
+          color: AppColors.surface,
           child: _centered(
-            height: 64,
+            height: 60,
             child: Row(
               children: [
                 _BarButton(
+                  padding: const EdgeInsets.only(right: 8),
                   onTap: () => context.go('/home'),
                   child: Row(
                     children: [
@@ -330,198 +361,64 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.6,
-                          color: _onBar,
+                          color: AppHeaderPalette.top,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 6),
-                // Khu vực đang xem (theo GPS hoặc tự chọn)
-                _BarButton(
-                  onTap: _pickArea,
-                  child: BlocBuilder<UserAreaCubit, UserAreaState>(
-                    builder: (context, area) {
-                      final label = switch (area.status) {
-                        UserAreaStatus.locating => l10n.homeAreaLocating,
-                        UserAreaStatus.nationwide => l10n.areaNationwide,
-                        UserAreaStatus.ready =>
-                          area.area?.displayName ?? l10n.areaNationwide,
-                      };
-                      return Row(
-                        children: [
-                          const Icon(
-                            AppIcons.location,
-                            size: 18,
-                            color: _onBar,
-                          ),
-                          const SizedBox(width: 4),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                t('Khu vực', 'Area'),
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Color(0xE6FFFFFF),
-                                ),
-                              ),
-                              ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 130,
-                                ),
-                                child: Text(
-                                  label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: _onBar,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
+                const SizedBox(width: 16),
+                for (final (label, path, go) in [
+                  (l10n.feedsTitle, '/feeds', true),
+                  (l10n.hotSaleTitle, '/hot-sale', false),
+                  (l10n.homeQuickTrustedShops, '/trusted-shops', false),
+                ])
+                  _NavLink(
+                    label: label,
+                    active:
+                        widget.location == path ||
+                        widget.location.startsWith('$path/'),
+                    onTap: () => go ? context.go(path) : context.push(path),
+                    color: _onNav,
                   ),
+                const Spacer(),
+                _AccountMenu(location: widget.location),
+                const SizedBox(width: 4),
+                _iconAction(
+                  icon: AppIcons.favorite,
+                  tooltip: t('Tin đã lưu', 'Saved'),
+                  onTap: () => context.push('/saved'),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OverlayPortal(
-                    controller: _suggestions,
-                    overlayChildBuilder: _suggestionPanel,
-                    child: CompositedTransformTarget(
-                      link: _suggestLink,
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          _boxWidth = constraints.maxWidth;
-                          return TapRegion(
-                            groupId: _tapGroup,
-                            child: _SearchBox(
-                              controller: _query,
-                              focusNode: _searchFocus,
-                              groupId: _tapGroup,
-                              hint: l10n.homeSearchHint,
-                              onSearch: _search,
-                              onChanged: (text) {
-                                _cubit.queryChanged(text);
-                                _suggestions.show();
-                              },
-                              onEscape: _closeSuggestions,
-                            ),
-                          );
-                        },
-                      ),
+                if (notifications == null)
+                  _iconAction(
+                    icon: AppIcons.notification,
+                    tooltip: t('Thông báo', 'Notifications'),
+                    onTap: () => context.push('/notifications'),
+                  )
+                else
+                  BlocBuilder<NotificationBadgeCubit, int>(
+                    bloc: notifications,
+                    builder: (context, count) => _iconAction(
+                      icon: AppIcons.notification,
+                      tooltip: t('Thông báo', 'Notifications'),
+                      count: user == null ? 0 : count,
+                      onTap: () => context.push('/notifications'),
                     ),
                   ),
+                _iconAction(
+                  icon: AppIcons.chat,
+                  tooltip: l10n.messagesTitle,
+                  count: widget.unreadMessages,
+                  onTap: widget.onMessagesTap,
                 ),
                 const SizedBox(width: 10),
-                _BarButton(
-                  tooltip: t('Đổi ngôn ngữ', 'Change language'),
-                  onTap: () => context.read<LanguageBloc>().add(
-                    ChangeLanguage(Locale(vi ? 'en' : 'vi')),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(AppIcons.globe, size: 17, color: _onBar),
-                      const SizedBox(width: 4),
-                      Text(
-                        vi ? 'VI' : 'EN',
-                        style: const TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: _onBar,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                _BarButton(
-                  onTap: () => user == null
-                      ? context.go(loginPath(from: widget.location))
-                      : context.go('/account'),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 140),
-                        child: Text(
-                          user == null
-                              ? t('Xin chào, đăng nhập', 'Hello, sign in')
-                              : t(
-                                  'Xin chào, ${user.givenName}',
-                                  'Hello, ${user.givenName}',
-                                ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xE6FFFFFF),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        l10n.accountTitle,
-                        style: const TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: _onBar,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                _BarButton(
-                  tooltip: l10n.messagesTitle,
-                  onTap: () => _requireLogin(widget.onMessagesTap),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        child: Icon(AppIcons.chat, size: 25, color: _onBar),
-                      ),
-                      if (widget.unreadMessages > 0)
-                        Positioned(
-                          top: -6,
-                          right: -6,
-                          child: Container(
-                            constraints: const BoxConstraints(minWidth: 18),
-                            height: 18,
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(9),
-                            ),
-                            child: Text(
-                              widget.unreadMessages > 99
-                                  ? '99+'
-                                  : '${widget.unreadMessages}',
-                              style: const TextStyle(
-                                color: AppHeaderPalette.desktopBar,
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: () => _requireLogin(
                     () => context.push(CreateListingStep.category.path),
                   ),
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppHeaderPalette.desktopBar,
+                    backgroundColor: AppColors.actionPrimary,
+                    foregroundColor: AppColors.onAction,
                     minimumSize: const Size(0, 40),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     shape: RoundedRectangleBorder(
@@ -539,37 +436,84 @@ class _DesktopHeaderState extends State<DesktopHeader> {
             ),
           ),
         ),
-        // Thanh phụ: lối tắt
-        ColoredBox(
-          color: AppHeaderPalette.desktopNav,
+        // Hàng 2: ô tìm kiếm rộng, ô khu vực, nút Tìm; kẻ mảnh ngăn với nội dung
+        DecoratedBox(
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            border: Border(bottom: BorderSide(color: AppColors.border)),
+          ),
           child: _centered(
-            height: 38,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (final (label, path, go) in [
-                    (l10n.homeTitle, '/home', true),
-                    (l10n.feedsTitle, '/feeds', true),
-                    (l10n.homeQuickNearby, '/nearby', false),
-                    (l10n.hotSaleTitle, '/hot-sale', false),
-                    (l10n.homeQuickTrustedShops, '/trusted-shops', false),
-                    (l10n.homeQuickWanted, '/wanted-alerts', false),
-                    (l10n.homeQuickFollowing, '/following', false),
-                    (t('Gói thành viên', 'Membership'), '/plans', false),
-                    ('Blog', '/blog', false),
-                    (t('Trợ giúp', 'Help'), '/support', false),
-                  ])
-                    _NavLink(
-                      label: label,
-                      active:
-                          widget.location == path ||
-                          widget.location.startsWith('$path/'),
-                      onTap: () => go ? context.go(path) : context.push(path),
-                      color: _onNav,
+            height: 60,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF2F3F5),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                ],
-              ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OverlayPortal(
+                            controller: _suggestions,
+                            overlayChildBuilder: _suggestionPanel,
+                            child: CompositedTransformTarget(
+                              link: _suggestLink,
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  _boxWidth = constraints.maxWidth;
+                                  return TapRegion(
+                                    groupId: _tapGroup,
+                                    child: _SearchBox(
+                                      controller: _query,
+                                      focusNode: _searchFocus,
+                                      groupId: _tapGroup,
+                                      hint: l10n.homeSearchHint,
+                                      onChanged: (text) {
+                                        _cubit.queryChanged(text);
+                                        _suggestions.show();
+                                      },
+                                      onSearch: _search,
+                                      onEscape: _closeSuggestions,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        const VerticalDivider(
+                          width: 1,
+                          indent: 10,
+                          endIndent: 10,
+                          color: AppColors.border,
+                        ),
+                        _AreaField(onPickArea: _pickArea),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                FilledButton(
+                  onPressed: _search,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.actionPrimary,
+                    foregroundColor: AppColors.onAction,
+                    minimumSize: const Size(96, 44),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  child: Text(t('Tìm', 'Search')),
+                ),
+              ],
             ),
           ),
         ),
@@ -578,12 +522,212 @@ class _DesktopHeaderState extends State<DesktopHeader> {
   }
 }
 
-/// Vùng bấm trên thanh chính: viền trắng mảnh khi rê chuột (như Amazon)
+/// Ảnh đại diện + tên ▾ trên thanh chính: bấm mở menu tài khoản (hồ sơ, ví
+/// xu, gói thành viên, đang theo dõi, báo khi có hàng, ngôn ngữ, đăng xuất).
+/// Chưa đăng nhập thì là nút Đăng nhập.
+class _AccountMenu extends StatelessWidget {
+  const _AccountMenu({required this.location});
+  final String location;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final vi = Localizations.localeOf(context).languageCode == 'vi';
+    String t(String vn, String en) => vi ? vn : en;
+    final user = context.watchUser();
+    if (user == null) {
+      return _BarButton(
+        onTap: () => context.go(loginPath(from: location)),
+        child: Row(
+          children: [
+            const Icon(AppIcons.user, size: 20, color: AppColors.textPrimary),
+            const SizedBox(width: 6),
+            Text(
+              l10n.signIn,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    MenuItemButton item(IconData icon, String label, VoidCallback onTap) =>
+        MenuItemButton(
+          leadingIcon: Icon(icon, size: 20),
+          onPressed: onTap,
+          style: MenuItemButton.styleFrom(
+            minimumSize: const Size(240, 44),
+            textStyle: const TextStyle(fontSize: 14),
+          ),
+          child: Text(label),
+        );
+    return MenuAnchor(
+      alignmentOffset: const Offset(0, 6),
+      style: MenuStyle(
+        backgroundColor: const WidgetStatePropertyAll(AppColors.surface),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(vertical: 6),
+        ),
+      ),
+      menuChildren: [
+        item(
+          AppIcons.user,
+          t('Hồ sơ của tôi', 'My profile'),
+          () => context.push('/users/${user.id}'),
+        ),
+        item(
+          AppIcons.settings,
+          l10n.accountTitle,
+          () => context.go('/account'),
+        ),
+        item(
+          AppIcons.wallet,
+          t('Ví xu', 'Coin wallet'),
+          () => context.push('/credits'),
+        ),
+        item(
+          AppIcons.star,
+          t('Gói thành viên', 'Membership'),
+          () => context.push('/plans'),
+        ),
+        item(
+          AppIcons.following,
+          l10n.homeQuickFollowing,
+          () => context.push('/following'),
+        ),
+        item(
+          AppIcons.notification,
+          l10n.homeQuickWanted,
+          () => context.push('/wanted-alerts'),
+        ),
+        const Divider(height: 9),
+        item(
+          AppIcons.globe,
+          vi ? 'English' : 'Tiếng Việt',
+          () => context.read<LanguageBloc>().add(
+            ChangeLanguage(Locale(vi ? 'en' : 'vi')),
+          ),
+        ),
+        item(AppIcons.logout, l10n.accLogout, () async {
+          if (await confirmLogout(context) && context.mounted) {
+            context.read<AuthBloc>().add(LoggedOut());
+          }
+        }),
+      ],
+      builder: (context, controller, _) => _BarButton(
+        tooltip: l10n.accountTitle,
+        onTap: () => controller.isOpen ? controller.close() : controller.open(),
+        child: Row(
+          children: [
+            ProfileAvatar(
+              radius: 15,
+              url: user.avatarUrl,
+              initials: ProfileHeader.initials(user.fullName),
+            ),
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 120),
+              child: Text(
+                user.givenName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.expand_more,
+              size: 20,
+              color: AppColors.textPrimary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Ô khu vực bên phải ô tìm kiếm: hiện khu vực đang xem, bấm mở bảng
+/// "Khu vực" (cùng bảng với điện thoại) ngay dưới ô
+class _AreaField extends StatelessWidget {
+  const _AreaField({required this.onPickArea});
+  final Future<void> Function(BuildContext anchor) onPickArea;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: () => onPickArea(context),
+        child: SizedBox(
+          width: 240,
+          height: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                const Icon(
+                  AppIcons.location,
+                  size: 18,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: BlocBuilder<UserAreaCubit, UserAreaState>(
+                    builder: (context, state) => Text(
+                      switch (state.status) {
+                        UserAreaStatus.locating => l10n.homeAreaLocating,
+                        UserAreaStatus.nationwide => l10n.areaNationwide,
+                        UserAreaStatus.ready =>
+                          state.area?.displayName ?? l10n.areaNationwide,
+                      },
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+                const Icon(
+                  Icons.expand_more,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Vùng bấm trên thanh chính: nền xám nhạt khi rê chuột
 class _BarButton extends StatefulWidget {
-  const _BarButton({required this.child, required this.onTap, this.tooltip});
+  const _BarButton({
+    required this.child,
+    required this.onTap,
+    this.tooltip,
+    this.padding = const EdgeInsets.symmetric(horizontal: 8),
+  });
   final Widget child;
   final VoidCallback onTap;
   final String? tooltip;
+
+  /// Lề trong; logo không có lề trái để thẳng mép với ô tìm kiếm bên dưới
+  final EdgeInsets padding;
 
   @override
   State<_BarButton> createState() => _BarButtonState();
@@ -602,12 +746,10 @@ class _BarButtonState extends State<_BarButton> {
         onTap: widget.onTap,
         child: Container(
           height: 48,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: widget.padding,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: _hover ? Colors.white : Colors.transparent,
-            ),
+            borderRadius: BorderRadius.circular(8),
+            color: _hover ? AppColors.fill : Colors.transparent,
           ),
           alignment: Alignment.center,
           child: widget.child,
@@ -648,17 +790,17 @@ class _NavLinkState extends State<_NavLink> {
       onTap: widget.onTap,
       child: Container(
         margin: const EdgeInsets.only(right: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(3),
-          border: Border.all(color: _hover ? widget.color : Colors.transparent),
+          borderRadius: BorderRadius.circular(8),
+          color: _hover ? AppColors.fill : Colors.transparent,
         ),
         child: Text(
           widget.label,
           style: TextStyle(
-            fontSize: 13.5,
-            color: widget.color,
-            fontWeight: widget.active ? FontWeight.w800 : FontWeight.w500,
+            fontSize: 14,
+            color: widget.active ? AppColors.actionPrimary : widget.color,
+            fontWeight: widget.active ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
       ),
@@ -688,15 +830,18 @@ class _SearchBox extends StatelessWidget {
   final VoidCallback onEscape;
 
   @override
-  Widget build(BuildContext context) => Container(
-    height: 42,
-    decoration: BoxDecoration(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(8),
-    ),
-    clipBehavior: Clip.antiAlias,
+  Widget build(BuildContext context) => SizedBox(
+    height: 44,
     child: Row(
       children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 14),
+          child: Icon(
+            AppIcons.search,
+            size: 20,
+            color: AppColors.textSecondary,
+          ),
+        ),
         Expanded(
           child: CallbackShortcuts(
             bindings: {
@@ -721,22 +866,7 @@ class _SearchBox extends StatelessWidget {
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14),
-              ),
-            ),
-          ),
-        ),
-        Material(
-          color: const Color(0xFFF3F3F3),
-          child: InkWell(
-            onTap: onSearch,
-            child: const SizedBox(
-              width: 52,
-              height: double.infinity,
-              child: Icon(
-                AppIcons.search,
-                size: 20,
-                color: AppColors.textPrimary,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10),
               ),
             ),
           ),

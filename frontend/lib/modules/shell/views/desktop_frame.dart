@@ -233,7 +233,8 @@ class _NarrowPage extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          // Lề 24 hai bên như đầu trang để mép nội dung thẳng hàng
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: AppColors.surface,
