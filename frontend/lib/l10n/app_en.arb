@@ -2161,6 +2161,13 @@
   "duplicateInactiveMessage": "You have a matching listing that is hidden or expired. Reactivate it to keep its views and saves.",
   "duplicateOpenOld": "See old listing",
   "duplicatePostNew": "Post new anyway",
+  "contentFlagTitle": "This listing may be rejected",
+  "contentFlagMessage": "Your listing has content that is often rejected. Edit it to get approved faster: chat through Restore messages instead of sharing phone numbers or links.",
+  "contentFlagContact": "Phone number / outside contact",
+  "contentFlagLink": "Link",
+  "contentFlagBanned": "Words about banned goods",
+  "contentFlagEdit": "Edit",
+  "contentFlagSendAnyway": "Submit anyway",
   "postingPayReactivateTitle": "Show this listing again for {credits} points",
   "@postingPayReactivateTitle": {
     "placeholders": {

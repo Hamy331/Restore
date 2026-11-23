@@ -5,7 +5,8 @@ import 'package:restore/data/models/listing_model.dart';
 import '../../models/draft_quota.dart';
 import '../../models/listing_draft.dart';
 import '../../models/posting_quota.dart';
-import '../../repositories/listings_repository.dart' show DuplicateListing;
+import '../../repositories/listings_repository.dart'
+    show ContentFlag, DuplicateListing;
 import '../../utils/listing_validator.dart';
 
 enum RequestStatus { idle, loading, success, failure }
@@ -42,8 +43,18 @@ class CreateListingState extends Equatable {
   final int duplicateHits;
   final DuplicateListing? duplicate;
 
-  /// Lần đăng bị chặn vì trùng có kèm trả xu không, để "Vẫn đăng mới" giữ nguyên
+  /// Lần đăng bị chặn vì trùng / bị gắn cờ có kèm trả xu không, để "Vẫn đăng
+  /// mới" / "Vẫn gửi duyệt" giữ nguyên
   final bool duplicatePaid;
+
+  /// Tăng mỗi lần bị chặn vì nội dung bị gắn cờ ([contentFlags]: SĐT, link,
+  /// hàng cấm) để view hỏi sửa lại hay vẫn gửi duyệt
+  final int contentFlagHits;
+  final List<ContentFlag> contentFlags;
+
+  /// Người dùng đã chọn vẫn gửi dù bị gắn cờ: các lần gửi sau (VD sau khi hỏi
+  /// trùng tin) không hỏi lại
+  final bool flagsAccepted;
 
   /// Bản đã lưu gần nhất (lưu nháp hoặc mở từ danh sách nháp), để biết còn
   /// thay đổi chưa lưu khi thoát. null khi chưa lưu lần nào.
@@ -99,6 +110,9 @@ class CreateListingState extends Equatable {
     this.duplicateHits = 0,
     this.duplicate,
     this.duplicatePaid = false,
+    this.contentFlagHits = 0,
+    this.contentFlags = const [],
+    this.flagsAccepted = false,
     this.savedDraft,
     this.drafts = const [],
     this.draftsStatus = RequestStatus.idle,
@@ -188,6 +202,9 @@ class CreateListingState extends Equatable {
     int? duplicateHits,
     DuplicateListing? duplicate,
     bool? duplicatePaid,
+    int? contentFlagHits,
+    List<ContentFlag>? contentFlags,
+    bool? flagsAccepted,
     ListingDraft? savedDraft,
     List<ListingModel>? drafts,
     RequestStatus? draftsStatus,
@@ -221,6 +238,9 @@ class CreateListingState extends Equatable {
       duplicateHits: duplicateHits ?? this.duplicateHits,
       duplicate: duplicate ?? this.duplicate,
       duplicatePaid: duplicatePaid ?? this.duplicatePaid,
+      contentFlagHits: contentFlagHits ?? this.contentFlagHits,
+      contentFlags: contentFlags ?? this.contentFlags,
+      flagsAccepted: flagsAccepted ?? this.flagsAccepted,
       savedDraft: savedDraft ?? this.savedDraft,
       drafts: drafts ?? this.drafts,
       draftsStatus: draftsStatus ?? this.draftsStatus,
@@ -256,6 +276,9 @@ class CreateListingState extends Equatable {
     creditsMissing,
     duplicateHits,
     duplicatePaid,
+    contentFlagHits,
+    contentFlags,
+    flagsAccepted,
     savedDraft,
     drafts,
     draftsStatus,

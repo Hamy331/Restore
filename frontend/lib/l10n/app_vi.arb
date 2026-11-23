@@ -1947,6 +1947,13 @@
   "duplicateInactiveMessage": "Bạn có tin giống vậy đã ẩn hoặc hết hạn. Kích hoạt lại tin cũ để giữ lượt xem và lượt lưu.",
   "duplicateOpenOld": "Xem tin cũ",
   "duplicatePostNew": "Vẫn đăng mới",
+  "contentFlagTitle": "Tin có thể bị từ chối",
+  "contentFlagMessage": "Tin của bạn có nội dung dễ bị từ chối. Sửa lại để được duyệt nhanh hơn: trao đổi qua tin nhắn trong Restore, không ghi số điện thoại hay link.",
+  "contentFlagContact": "Số điện thoại / liên hệ ngoài",
+  "contentFlagLink": "Đường link",
+  "contentFlagBanned": "Từ ngữ về hàng cấm",
+  "contentFlagEdit": "Sửa lại",
+  "contentFlagSendAnyway": "Vẫn gửi duyệt",
   "postingPayReactivateTitle": "Hiện lại tin này với {credits} xu",
   "@postingPayReactivateTitle": {
     "placeholders": {

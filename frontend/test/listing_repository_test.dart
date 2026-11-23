@@ -223,4 +223,68 @@ void main() {
       expect(published.images, hasLength(2));
     },
   );
+
+  test('publish reports flagged content, resend with acceptFlags', () async {
+    final dio = Dio(BaseOptions(baseUrl: 'http://localhost:3000/api/v1'));
+    final bodies = <Object?>[];
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (request, handler) {
+          if (request.path == '/listings') {
+            bodies.add(request.data);
+            final accepted = (request.data as Map)['acceptFlags'] == true;
+            if (!accepted) {
+              handler.reject(
+                DioException(
+                  requestOptions: request,
+                  type: DioExceptionType.badResponse,
+                  response: Response(
+                    requestOptions: request,
+                    statusCode: 409,
+                    data: {
+                      'code': 'CONTENT_FLAGGED',
+                      'details': {
+                        'flags': [
+                          {'code': 'CONTACT', 'match': '0912 345 678'},
+                        ],
+                      },
+                    },
+                  ),
+                ),
+              );
+              return;
+            }
+            handler.resolve(
+              Response(
+                requestOptions: request,
+                statusCode: 201,
+                data: {
+                  'data': {'id': 'new', 'status': 'PENDING', 'images': []},
+                },
+              ),
+            );
+            return;
+          }
+          handler.resolve(
+            Response(requestOptions: request, data: {'success': true}),
+          );
+        },
+      ),
+    );
+    final repository = ApiListingsRepository(dio: dio);
+    const draft = ListingDraft(title: 'Ghế gỗ', description: 'Gọi 0912 345 678');
+    try {
+      await repository.publish(draft, null);
+      fail('Expected CONTENT_FLAGGED');
+    } on ListingSaveException catch (error) {
+      final flags = error.contentFlags!;
+      expect(flags.single.code, 'CONTACT');
+      expect(flags.single.match, '0912 345 678');
+      expect(error.duplicate, isNull);
+    }
+    final published = await repository.publish(draft, null, acceptFlags: true);
+    expect(published.status, ListingStatus.pending);
+    expect((bodies.first as Map).containsKey('acceptFlags'), false);
+    expect((bodies.last as Map)['acceptFlags'], true);
+  });
 }
