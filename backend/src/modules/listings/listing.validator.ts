@@ -412,6 +412,8 @@ export const adminListingQuery = z.record(z.string(), z.unknown()).transform((qu
   tier: query.tier ? choice(query.tier, ['PERSONAL', 'BASIC', 'PRO'] as const) : undefined,
   /** flagged=1: chỉ tin bị gắn cờ nội dung (số điện thoại, link, hàng cấm), tính cả bản sửa chờ duyệt */
   flagged: query.flagged === '1',
+  /** offender=1: chỉ tin của người đăng tái phạm (từ 3 lần bị từ chối / gỡ trong 30 ngày) */
+  offender: query.offender === '1',
   /** edit=PENDING: chỉ tin đã duyệt có bản sửa đang chờ duyệt */
   edit: query.edit ? choice(query.edit, ['PENDING'] as const) : undefined,
   page: page(query.page),

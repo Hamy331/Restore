@@ -191,13 +191,14 @@ function sellerTierWhere(tier: StoreTier, now: Date): Prisma.ListingWhereInput {
   return { owner: { NOT: { storeSubscription: { is: { ...active, package: { tier: { in: ['BASIC', 'PRO'] } } } } } } };
 }
 
-export type AdminListingFilters = { status?: ListingStatus; q?: string; tier?: StoreTier; edit?: 'PENDING'; flagged?: boolean };
+export type AdminListingFilters = { status?: ListingStatus; q?: string; tier?: StoreTier; edit?: 'PENDING'; flagged?: boolean; ownerIds?: string[] };
 
 /** Điều kiện lọc của trang quản trị; flagged: tin hoặc bản sửa chờ duyệt bị gắn cờ lúc gửi duyệt */
-function adminWhere({ status, q, tier, edit, flagged }: AdminListingFilters, now: Date): Prisma.ListingWhereInput {
+function adminWhere({ status, q, tier, edit, flagged, ownerIds }: AdminListingFilters, now: Date): Prisma.ListingWhereInput {
   const contains = { contains: q, mode: 'insensitive' as const };
   return {
     ...(status ? { status } : {}), ...(edit ? { revision: { status: edit } } : {}), 
+    ...(ownerIds ? { ownerId: { in: ownerIds } } : {}),
     ...(flagged ? { AND: [{ OR: [{ flagged: true }, { revision: { status: 'PENDING', flagged: true } }] }] } : {}),
     ...(q ? { OR: [{ title: contains }, { owner: { fullName: contains } }, { owner: { email: contains } }] } : {}),
     ...(tier ? sellerTierWhere(tier, now) : {}),
@@ -225,23 +226,43 @@ export const findOwnerId = (id: string) => prisma.listing.findUnique({ where: { 
 
 /** Quyết định không duyệt (từ nhật ký quản trị, gồm cả trên bản sửa): từ chối, yêu cầu sửa, gỡ tin */
 const STRIKES = { rejected: ['REJECT', 'REJECT_EDIT'], changesRequested: ['REQUEST_CHANGES', 'REQUEST_CHANGES_EDIT'], removed: ['REMOVE'] } as const;
-export type SellerHistory = Record<keyof typeof STRIKES, number>;
+/**
+ * Người đăng tái phạm: từ REPEAT_STRIKES lần bị từ chối / gỡ (không tính yêu cầu sửa) trong REPEAT_DAYS ngày gần nhất.
+ * ponytail: ngưỡng cố định trong code; cần chỉnh theo vận hành thì chuyển vào cấu hình admin.
+ */
+export const REPEAT_STRIKES = 3, REPEAT_DAYS = 30;
+const SERIOUS = [...STRIKES.rejected, ...STRIKES.removed];
+const repeatSince = (now: Date) => new Date(now.getTime() - REPEAT_DAYS * 86_400_000);
+
+/** Số lần theo loại, và recentStrikes: số lần bị từ chối / gỡ trong REPEAT_DAYS ngày gần nhất */
+export type SellerHistory = Record<keyof typeof STRIKES, number> & { recentStrikes: number };
+export const NO_HISTORY: SellerHistory = { rejected: 0, changesRequested: 0, removed: 0, recentStrikes: 0 };
 
 /**
  * Số lần tin của từng người đăng bị từ chối / yêu cầu sửa / gỡ. Người chưa từng bị thì không có trong Map.
  * ponytail: tin đã xoá hẳn thì mất khỏi phép đếm (nhật ký chỉ lưu mã tin); cần đếm cả thì lưu ownerId vào nhật ký.
  */
-export async function findSellerHistory(ownerIds: string[]) {
+export async function findSellerHistory(ownerIds: string[], now = new Date()) {
   if (!ownerIds.length) return new Map<string, SellerHistory>();
   const count = (actions: readonly string[]) => Prisma.sql`count(*) FILTER (WHERE a.action IN (${Prisma.join(actions)}))::int`;
   const rows = await prisma.$queryRaw<({ ownerId: string } & SellerHistory)[]>`
     SELECT l."ownerId", ${count(STRIKES.rejected)} AS rejected, ${count(STRIKES.changesRequested)} AS "changesRequested",
-      ${count(STRIKES.removed)} AS removed
+      ${count(STRIKES.removed)} AS removed,
+      count(*) FILTER (WHERE a.action IN (${Prisma.join(SERIOUS)}) AND a."createdAt" >= ${repeatSince(now)})::int AS "recentStrikes"
     FROM "AdminAudit" a JOIN "Listing" l ON l.id = a."targetId"
     WHERE a."targetType" = 'LISTING' AND l."ownerId" IN (${Prisma.join([...new Set(ownerIds)])})
       AND a.action IN (${Prisma.join(Object.values(STRIKES).flat())})
     GROUP BY l."ownerId"`;
   return new Map(rows.map(({ ownerId, ...history }) => [ownerId, history]));
+}
+
+/** Người đăng tái phạm (xem REPEAT_STRIKES), cho bộ lọc offender của trang quản trị */
+export async function findRepeatOffenders(now = new Date()) {
+  const rows = await prisma.$queryRaw<{ ownerId: string }[]>`
+    SELECT l."ownerId" FROM "AdminAudit" a JOIN "Listing" l ON l.id = a."targetId"
+    WHERE a."targetType" = 'LISTING' AND a.action IN (${Prisma.join(SERIOUS)}) AND a."createdAt" >= ${repeatSince(now)}
+    GROUP BY l."ownerId" HAVING count(*) >= ${REPEAT_STRIKES}`;
+  return rows.map((row) => row.ownerId);
 }
 
 /** 5 quyết định không duyệt gần nhất trên tin của một người đăng, kèm tiêu đề tin và lý do */

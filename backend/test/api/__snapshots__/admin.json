@@ -90,7 +90,8 @@
               "history": {
                 "rejected": 0,
                 "changesRequested": 0,
-                "removed": 0
+                "removed": 0,
+                "recentStrikes": 0
               }
             },
             "category": {
