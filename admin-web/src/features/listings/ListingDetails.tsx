@@ -33,7 +33,9 @@ export type Listing = {
   /** Nội dung đang hiển thị, có khi tin có bản sửa */
   current?: ListingContent;
 };
-export type SellerHistory = { rejected: number; changesRequested: number; removed: number };
+/** recentStrikes: số lần bị từ chối / gỡ trong 30 ngày gần nhất; từ REPEAT_STRIKES là người đăng tái phạm */
+export type SellerHistory = { rejected: number; changesRequested: number; removed: number; recentStrikes?: number };
+export const REPEAT_STRIKES = 3;
 export type PlanTier = 'PERSONAL' | 'BASIC' | 'PRO';
 export const planTiers: Record<PlanTier, { label: string; color: string }> = {
   PERSONAL: { label: 'Cá nhân', color: 'default' },
@@ -54,6 +56,11 @@ export function SellerTags({ owner }: { owner: Listing['owner'] }) {
       {shop && (
         <Tag color={shop.verified ? 'green' : shop.status === 'APPROVED' ? 'cyan' : 'default'} title={shop.name}>
           {shop.verified ? 'Shop uy tín' : shop.status === 'APPROVED' ? 'Có shop' : 'Shop chưa duyệt'}
+        </Tag>
+      )}
+      {(history?.recentStrikes ?? 0) >= REPEAT_STRIKES && (
+        <Tag color="magenta" title={`${history?.recentStrikes} lần bị từ chối / gỡ trong 30 ngày`}>
+          Tái phạm
         </Tag>
       )}
       {strikes.length > 0 && <Tag color="red">Từng {strikes.join(', ')} lần</Tag>}

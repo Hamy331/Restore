@@ -169,11 +169,13 @@ export async function listPending() {
  * và current { title, description, price, ..., images }: nội dung đang hiển thị, để so với bản sửa.
  * flags (và pendingEdit.flags): cờ nội dung tự động (số điện thoại, link, hàng cấm), quét lại theo luật hiện tại.
  * flagged (và pendingEdit.flagged): nội dung bị gắn cờ lúc gửi duyệt, tức người đăng đã được cảnh báo và vẫn gửi.
- * Query flagged: chỉ tin có flagged, tính cả bản sửa đang chờ duyệt. owner.history { rejected, changesRequested, removed }: số lần tin của người đăng
- * bị từ chối / yêu cầu sửa / gỡ.
+ * Query flagged: chỉ tin có flagged, tính cả bản sửa đang chờ duyệt. owner.history { rejected, changesRequested, removed, recentStrikes }: số lần tin của
+ * người đăng bị từ chối / yêu cầu sửa / gỡ, và số lần bị từ chối / gỡ trong 30 ngày (từ 3 là tái phạm).
+ * Query offender: chỉ tin của người đăng tái phạm.
  */
-export async function listForAdmin({ status, q, tier, edit, flagged, page }: AdminListingQuery) {
-  const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit, flagged }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+export async function listForAdmin({ status, q, tier, edit, flagged, offender, page }: AdminListingQuery) {
+  const ownerIds = offender ? await listingRepository.findRepeatOffenders() : undefined;
+  const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit, flagged, ownerIds }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
   const history = await listingRepository.findSellerHistory(rows.map((row) => row.ownerId));
   const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
     ...withHistory(toAdminListing(item), history), flags: contentFlags(item.title, item.description),
@@ -207,11 +209,11 @@ export async function getSellerHistory(id: string) {
   const row = await listingRepository.findOwnerId(id);
   if (!row) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy tin.');
   const [history, recent] = await Promise.all([listingRepository.findSellerHistory([row.ownerId]), listingRepository.findRecentStrikes(row.ownerId)]);
-  return { ...(history.get(row.ownerId) ?? { rejected: 0, changesRequested: 0, removed: 0 }), recent };
+  return { ...(history.get(row.ownerId) ?? listingRepository.NO_HISTORY), recent };
 }
 
 /** Gắn owner.history { rejected, changesRequested, removed }: số lần tin của người đăng không được duyệt / bị gỡ */
 function withHistory<T extends { ownerId: string; owner?: object }>(item: T, history: Map<string, listingRepository.SellerHistory>) {
   return { ...item, ...(item.owner && { owner: { ...item.owner,
-    history: history.get(item.ownerId) ?? { rejected: 0, changesRequested: 0, removed: 0 } } }) };
+    history: history.get(item.ownerId) ?? listingRepository.NO_HISTORY } }) };
 }

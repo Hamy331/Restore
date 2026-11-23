@@ -22,7 +22,7 @@ const listing = {
     email: 'chu@example.com',
     planTier: 'PRO',
     shop: { name: 'Nội Thất', status: 'APPROVED', verified: true },
-    history: { rejected: 2, changesRequested: 0, removed: 1 },
+    history: { rejected: 2, changesRequested: 0, removed: 1, recentStrikes: 3 },
   },
 };
 
@@ -79,6 +79,9 @@ it('tin bị gắn cờ có thẻ, chi tiết nói rõ đoạn bị khớp, lọ
 it('người đăng từng vi phạm có thẻ đỏ, chi tiết liệt kê lý do gần đây', async () => {
   const call = open();
   expect(await screen.findByText('Từng bị từ chối 2, bị gỡ 1 lần')).toBeTruthy();
+  expect(screen.getByText('Tái phạm')).toBeTruthy();
+  fireEvent.click(screen.getByText('Chỉ người đăng tái phạm (từ 3 lần bị từ chối / gỡ trong 30 ngày)'));
+  await waitFor(() => expect(call).toHaveBeenLastCalledWith('/admin/listings?page=1&q=&offender=1&status=PENDING'));
   fireEvent.click(screen.getByRole('button', { name: 'Xem tin' }));
   expect(await screen.findByText(/Ghi số điện thoại/)).toBeTruthy();
   expect(screen.getByText(/Tủ cũ/)).toBeTruthy();

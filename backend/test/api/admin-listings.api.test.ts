@@ -29,7 +29,7 @@ test('admin listings: oldest pending first, seller plan filter and search', asyn
   assert.deepEqual(ids(queue), ['pending-old', 'pending-new'], 'gửi sớm lên trước');
   assert.deepEqual(queue.body.data.items[0].owner, {
     id: 'user-seller', fullName: 'user-seller', email: 'user-seller@restore.test', planTier: 'PRO',
-    shop: { name: 'Nội Thất Test', status: 'APPROVED', verified: true }, history: { rejected: 0, changesRequested: 0, removed: 0 },
+    shop: { name: 'Nội Thất Test', status: 'APPROVED', verified: true }, history: { rejected: 0, changesRequested: 0, removed: 0, recentStrikes: 0 },
   });
   assert.deepEqual(queue.body.data.items[1].owner.planTier, 'PERSONAL');
   assert.equal(queue.body.data.items[1].owner.shop, null);
@@ -88,9 +88,9 @@ test('posting warns about flagged content, admin sees seller history', async () 
   assert.ok(!(await flaggedIds()).includes(id));
 
   const history = async () => (await api.get(`/admin/listings/${id}/seller-history`, admin)).body.data;
-  assert.deepEqual(await history(), { rejected: 0, changesRequested: 0, removed: 0, recent: [] });
+  assert.deepEqual(await history(), { rejected: 0, changesRequested: 0, removed: 0, recentStrikes: 0, recent: [] });
   const pending = (await api.get('/admin/listings?status=PENDING&q=Gh%E1%BA%BF%20g%E1%BB%97', admin)).body.data.items[0];
-  assert.deepEqual(pending.owner.history, { rejected: 0, changesRequested: 0, removed: 0 });
+  assert.deepEqual(pending.owner.history, { rejected: 0, changesRequested: 0, removed: 0, recentStrikes: 0 });
   const rejected = await api.post(`/admin/listings/${id}/decision`, { ...admin,
     body: { action: 'REJECT', reason: 'Ghi số điện thoại trong tin', updatedAt: pending.updatedAt } });
   assert.equal(rejected.status, 200, JSON.stringify(rejected.body));
@@ -100,7 +100,18 @@ test('posting warns about flagged content, admin sees seller history', async () 
   assert.deepEqual(after.recent.map((r: { listingId: string; action: string; reason: string }) => [r.listingId, r.action, r.reason]),
     [[id, 'REJECT', 'Ghi số điện thoại trong tin']]);
   const listed = (await api.get('/admin/listings?status=REJECTED', admin)).body.data.items.find((item: { id: string }) => item.id === id);
-  assert.deepEqual(listed.owner.history, { rejected: 1, changesRequested: 0, removed: 0 });
+  assert.deepEqual(listed.owner.history, { rejected: 1, changesRequested: 0, removed: 0, recentStrikes: 1 });
+
+  // Tái phạm: từ 3 lần bị từ chối / gỡ trong 30 ngày; lần cũ hơn 30 ngày không tính
+  const offenders = async () => (await api.get('/admin/listings?status=REJECTED&offender=1', admin)).body.data.items.map((item: { id: string }) => item.id);
+  const strike = (daysAgo: number) => prisma.adminAudit.create({ data: { actorId: 'user-admin', action: 'REMOVE', targetType: 'LISTING',
+    targetId: id, reason: 'Vi phạm', createdAt: new Date(Date.now() - daysAgo * 86_400_000) } });
+  await strike(40);
+  await strike(2);
+  assert.deepEqual(await offenders(), [], 'mới 2 lần trong 30 ngày');
+  await strike(1);
+  assert.deepEqual(await offenders(), [id]);
+  assert.equal((await history()).recentStrikes, 3);
   assert.equal((await api.get('/admin/listings/missing/seller-history', admin)).status, 404);
   assert.equal((await api.get(`/admin/listings/${id}/seller-history`, { token })).status, 403);
 });
