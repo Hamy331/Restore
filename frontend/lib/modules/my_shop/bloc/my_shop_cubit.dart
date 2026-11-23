@@ -6,6 +6,7 @@ import 'package:restore/core/blocs/safe_emit.dart';
 
 import '../models/my_shop_overview.dart';
 import '../repositories/my_shop_repository.dart';
+import '../utils/shop_session.dart';
 
 enum MyShopStatus { loading, ready, failure }
 
@@ -47,6 +48,7 @@ class MyShopCubit extends Cubit<MyShopState> with SafeEmit<MyShopState> {
     }
     try {
       final overview = await _repository.load();
+      ShopSession.hasShop.value = overview.shop != null;
       emit(MyShopState(status: MyShopStatus.ready, overview: overview));
     } catch (_) {
       emit(
@@ -66,6 +68,7 @@ class MyShopCubit extends Cubit<MyShopState> with SafeEmit<MyShopState> {
     emit(state.copyWith(saving: true));
     try {
       final overview = await work();
+      ShopSession.hasShop.value = overview.shop != null;
       emit(MyShopState(status: MyShopStatus.ready, overview: overview));
       return null;
     } on MyShopException catch (error) {
