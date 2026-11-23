@@ -440,7 +440,8 @@
         "category": {
           "id": "furniture",
           "name": "Nội thất, trang trí"
-        }
+        },
+        "flags": []
       }
     }
   },

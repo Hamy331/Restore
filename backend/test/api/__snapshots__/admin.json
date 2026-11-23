@@ -90,7 +90,8 @@
             "category": {
               "id": "furniture",
               "name": "Nội thất, trang trí"
-            }
+            },
+            "flags": []
           }
         ],
         "total": 1,

@@ -40,6 +40,23 @@ test('admin listings: oldest pending first, seller plan filter and search', asyn
   assert.deepEqual(ids(await api.get('/admin/listings?status=PENDING&q=user-buyer%40restore', admin)), ['pending-new'], 'tìm theo email');
   assert.deepEqual(ids(await api.get('/admin/listings?status=PENDING&q=k%E1%BB%87%20s%C3%A1ch', admin)), ['pending-old'], 'vẫn tìm theo tiêu đề');
 
+  // Cờ nội dung tự động: tin có số điện thoại; tin đã duyệt có bản sửa chứa link
+  await prisma.listing.update({ where: { id: 'pending-new' }, data: { description: 'Liên hệ 0912 345 678 để xem hàng.' } });
+  await prisma.listingRevision.create({ data: {
+    listingId: 'listing-1', status: 'PENDING', submittedAt: new Date(), title: 'Bàn gỗ sồi thật', description: 'Xem thêm ở banghe.vn',
+    price: 1_200_000, condition: 'USED_GOOD', isNegotiable: false, allowSale: true, allowExchange: false, exchangeWish: '',
+    images: [], location: SAIGON,
+  } });
+  const flaggedQueue = await api.get('/admin/listings?status=PENDING', admin);
+  assert.deepEqual(flaggedQueue.body.data.items.find((item: { id: string }) => item.id === 'pending-new').flags,
+    [{ code: 'CONTACT', match: '0912 345 678' }]);
+  assert.deepEqual(flaggedQueue.body.data.items.find((item: { id: string }) => item.id === 'pending-old').flags, []);
+  assert.deepEqual(ids(await api.get('/admin/listings?status=PENDING&flagged=1', admin)), ['pending-new']);
+  const edits = await api.get('/admin/listings?edit=PENDING&flagged=1', admin);
+  assert.deepEqual(ids(edits), ['listing-1'], 'bản sửa chờ duyệt bị gắn cờ cũng được lọc');
+  assert.deepEqual(edits.body.data.items[0].pendingEdit.flags, [{ code: 'LINK', match: 'banghe.vn' }]);
+  assert.deepEqual(edits.body.data.items[0].flags, [], 'nội dung đang hiển thị không có cờ');
+
   // Gói hết hạn thì người đăng tính là Cá nhân
   await prisma.storeSubscription.update({ where: { userId: 'user-seller' }, data: { endsAt: new Date(now - 1000) } });
   assert.deepEqual(ids(await api.get('/admin/listings?status=PENDING&tier=PERSONAL', admin)), ['pending-old', 'pending-new']);

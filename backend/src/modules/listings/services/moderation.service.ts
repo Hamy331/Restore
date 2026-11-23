@@ -5,6 +5,7 @@ import { ADMIN_PAGE_SIZE, changed, text } from '../../../common/validation/admin
 import { storePackageForUser, withQuotaTransaction } from '../../commerce/index.js';
 import { captureListingHold, releaseListingHold } from '../../credits/index.js';
 import { AdminDecisionInput, AdminListingQuery, DecisionInput, toAdminListing, toOwnerListingDto, toRevisionDto } from '../listing.dto.js';
+import { contentFlags } from '../content-flags.js';
 import { removeStoredImages, revisionOnlyImages } from './image.service.js';
 import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
 import { resolveSubcategory } from '../../catalog/category-tree.js';
@@ -166,13 +167,22 @@ export async function listPending() {
  * Mọi tin, lọc trạng thái / tiêu đề / có bản sửa chờ duyệt, 25 tin mỗi trang. Tin đã duyệt có bản sửa thì thêm
  * pendingEdit { status, title, price, ..., updatedAt } (ra quyết định trên bản sửa thì gửi updatedAt của bản sửa)
  * và current { title, description, price, ..., images }: nội dung đang hiển thị, để so với bản sửa.
+ * flags (và pendingEdit.flags): cờ nội dung tự động (số điện thoại, link, hàng cấm); flagged: chỉ tin bị gắn cờ,
+ * tính cả bản sửa đang chờ duyệt.
  */
-export async function listForAdmin({ status, q, tier, edit, page }: AdminListingQuery) {
-  const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+export async function listForAdmin({ status, q, tier, edit, flagged, page }: AdminListingQuery) {
+  const filters = { status, q, tier, edit };
+  const ids = flagged
+    ? (await listingRepository.findAdminContents(filters))
+      .filter(({ title, description, revision }) => contentFlags(title, description).length
+        || (revision?.status === 'PENDING' && contentFlags(revision.title, revision.description).length))
+      .map(({ id }) => id)
+    : undefined;
+  const [rows, total] = await listingRepository.findAdminPage({ ...filters, ids }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
   const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
-    ...toAdminListing(item),
+    ...toAdminListing(item), flags: contentFlags(item.title, item.description),
     ...(revision && {
-      pendingEdit: toRevisionDto(revision),
+      pendingEdit: { ...toRevisionDto(revision), flags: contentFlags(revision.title, revision.description) },
       current: { title: item.title, description: item.description, price: item.price.toString(),
         originalPrice: originalPrice?.toString() ?? null, isNegotiable, condition: item.condition, allowSale, allowExchange,
         exchangeWish, attributes, location, images: item.images },
@@ -191,5 +201,5 @@ export async function adminDecide(actorId: string, id: string, { action, reason,
 /** Tin cho trang quản trị (null nếu không có) */
 export async function getAdminListing(id: string) {
   const row = await listingRepository.findAdminListing(id);
-  return row && toAdminListing(row);
+  return row && { ...toAdminListing(row), flags: contentFlags(row.title, row.description) };
 }

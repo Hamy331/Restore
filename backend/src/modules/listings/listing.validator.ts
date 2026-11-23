@@ -410,6 +410,8 @@ export const adminListingQuery = z.record(z.string(), z.unknown()).transform((qu
   q: query.q ? text(query.q, 'q', 1, 100) : undefined,
   /** Gói đang dùng của người đăng; gói hết hạn tính là PERSONAL */
   tier: query.tier ? choice(query.tier, ['PERSONAL', 'BASIC', 'PRO'] as const) : undefined,
+  /** flagged=1: chỉ tin bị gắn cờ nội dung (số điện thoại, link, hàng cấm), tính cả bản sửa chờ duyệt */
+  flagged: query.flagged === '1',
   /** edit=PENDING: chỉ tin đã duyệt có bản sửa đang chờ duyệt */
   edit: query.edit ? choice(query.edit, ['PENDING'] as const) : undefined,
   page: page(query.page),
