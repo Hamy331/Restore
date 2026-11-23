@@ -5,8 +5,8 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/modules/location/models/area_option.dart';
-import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
+import 'package:restore/shared/widgets/filter/area_filter_panel.dart';
 import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
 import 'package:restore/shared/utils/filter_categories.dart';
 import 'package:restore/shared/widgets/filter/app_listing_filter_sheet.dart';
@@ -90,17 +90,19 @@ class _WantedAlertCreateMobileViewState
     if (filter != null) cubit.applyFilter(filter);
   }
 
-  /// Trang chọn khu vực, có thêm lựa chọn "Toàn quốc"
+  /// Bảng chọn khu vực, có thêm "Toàn quốc" (Xoá lọc)
   Future<void> _pickArea() async {
     final cubit = context.read<WantedAlertCreateCubit>();
-    final result = await context.push<AreaPickResult>(
-      AreaSearchView.location(allowNationwide: true),
-    );
+    final userArea = context.read<UserAreaCubit>();
+    final result = await showAreaPicker(context);
     if (result == null) return;
     if (result.nationwide) {
       cubit.setArea(null);
     } else if (result.area case final area?) {
       cubit.setArea(area);
+    } else if (result.useMyLocation) {
+      await userArea.locate();
+      cubit.setArea(userArea.state.area);
     }
   }
 

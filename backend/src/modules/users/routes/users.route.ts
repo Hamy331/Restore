@@ -7,6 +7,12 @@ import * as profile from '../services/profile.service.js';
 import * as usersService from '../services/users.service.js';
 import * as savedAddresses from '../services/saved-address.service.js';
 import * as recentAreas from '../services/recent-area.service.js';
+import { emailChange } from '../services/email-change.service.js';
+import { emailChangeBody, emailChangeOtpBody } from '../email-change.validator.js';
+import { authRateLimits } from '../../../middlewares/rate-limit.middleware.js';
+import { getInput, validate, type ValidatedInput } from '../../../middlewares/validate.middleware.js';
+
+type EmailChangeInput = { email: string; password: string };
 
 /** /api/v1/users */
 const usersRouter = Router();
@@ -27,6 +33,20 @@ usersRouter.get('/me', requirePermission(PERMISSION.PROFILE_READ), handle(async 
 
 usersRouter.use(verifyToken);
 usersRouter.patch('/me', handle((req) => profile.updateProfile(req.user!.userId, req.body)));
+/**
+ * Đổi email đăng nhập: gửi mã OTP tới email mới (body { email, password }),
+ * rồi xác nhận mã (body { otp }). Rate limit chung với OTP đăng ký / quên mật khẩu.
+ */
+usersRouter.post('/me/email', validate({ body: emailChangeBody }), authRateLimits.sendOtp,
+  (req: AuthRequest, res: Response, next: NextFunction) => {
+    emailChange.request(req.user!.userId, getInput<ValidatedInput<undefined, undefined, EmailChangeInput>>(res).body)
+      .then((data) => ok(res, data), next);
+  });
+usersRouter.post('/me/email/verify', validate({ body: emailChangeOtpBody }), authRateLimits.verifyOtp,
+  (req: AuthRequest, res: Response, next: NextFunction) => {
+    emailChange.verify(req.user!.userId, getInput<ValidatedInput<undefined, undefined, { otp: string }>>(res).body)
+      .then((data) => ok(res, data), next);
+  });
 usersRouter.post('/me/heartbeat', handle((req) => profile.heartbeat(req.user!.userId)));
 /** Sổ địa chỉ để chọn lại khi đăng tin: tối đa 5, mới dùng gần nhất trước */
 usersRouter.get('/me/addresses', handle((req) => savedAddresses.listSavedAddresses(req.user!.userId)));

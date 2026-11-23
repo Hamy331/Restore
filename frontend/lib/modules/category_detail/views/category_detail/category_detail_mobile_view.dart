@@ -143,7 +143,6 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
 
         if (widget.wide) {
           return DesktopPage(
-            contentWidth: 1000,
             onEndReached: _cubit.loadMore,
             slivers: [
               DecoratedSliver(

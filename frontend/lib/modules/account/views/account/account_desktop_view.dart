@@ -80,6 +80,8 @@ class _AccountDesktopViewState extends State<AccountDesktopView> {
         fullName: profile.fullName,
         username: profile.username,
         avatarUrl: profile.avatarUrl,
+        email: profile.email,
+        phone: profile.phone,
       ),
     );
     ScaffoldMessenger.of(context)

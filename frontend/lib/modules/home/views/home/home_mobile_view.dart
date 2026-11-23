@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/config/dev_plan_override.dart';
 import 'package:restore/core/constants/app_colors.dart';
-import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/auth/utils/auth_route_guard.dart';
@@ -12,10 +11,10 @@ import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_state.dart';
-import 'package:restore/modules/location/models/area_option.dart';
-import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/shared/widgets/filter/area_filter_panel.dart';
 import 'package:restore/modules/following/views/following_hub/following_hub_view.dart';
 import 'package:restore/modules/notifications/views/notifications/notifications_view.dart';
+import 'package:restore/modules/saved_listings/views/saved_listings_view.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
@@ -51,38 +50,17 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
   static const double _gridSpacing = 12;
   static const double _sidePadding = 16;
-  static const double _contentRadius = 24;
 
-  static const String _messagesPath = '/messages';
   static const String _nearbyPath = '/nearby';
   static const String _searchPath = '/search';
 
   final _scrollController = ScrollController();
-  final _topBarKey = GlobalKey();
-
-  /// Ô tìm kiếm đã ghim chưa, để dải thanh trạng thái đổi màu theo
-  final _searchPinned = ValueNotifier(false);
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_updateSearchPinned);
-  }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _searchPinned.dispose();
     super.dispose();
   }
-
-  void _updateSearchPinned() {
-    final topBarHeight = _topBarKey.currentContext?.size?.height;
-    if (topBarHeight == null) return;
-    _searchPinned.value = _scrollController.offset >= topBarHeight;
-  }
-
-  void _openMessages() => context.go(_messagesPath);
 
   void _openSearch() => context.push(_searchPath);
 
@@ -91,7 +69,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   void _openCategory(CategoryModel category) =>
       context.push(CategoryDetailView.location(category.id), extra: category);
 
-  /// Tên khu vực trên nút đầu trang: tỉnh theo GPS / tự chọn, không có thì
+  /// Tên khu vực ở cuối ô tìm kiếm: tỉnh theo GPS / tự chọn, không có thì
   /// "Toàn quốc"
   String _areaLabel(AppLocalizations l10n, UserAreaState area) =>
       switch (area.status) {
@@ -103,9 +81,7 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   /// Chọn khu vực khác (có thêm "Toàn quốc")
   Future<void> _pickArea() async {
     final userArea = context.read<UserAreaCubit>();
-    final result = await context.push<AreaPickResult>(
-      AreaSearchView.location(allowNationwide: true),
-    );
+    final result = await showAreaPicker(context, current: userArea.state.area);
     if (result == null) return;
     if (result.nationwide) {
       userArea.selectNationwide();
@@ -118,6 +94,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
 
   /// Khách bấm chuông thì router chuyển sang đăng nhập, xong quay lại đây
   void _openNotifications() => context.push(NotificationsView.path);
+
+  void _openSaved() => context.push(SavedListingsView.path);
 
   /// Mở trang chi tiết; quay lại mà trạng thái lưu tin đã đổi thì cập nhật thẻ
   Future<void> _openDetail(ListingCardItem item) async {
@@ -162,17 +140,8 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       color: AppColors.surface,
       child: Column(
         children: [
-          // Thanh trạng thái cùng màu đầu trang, chuyển trắng khi ô tìm
-          // kiếm đã ghim để hai phần liền nhau
-          ValueListenableBuilder<bool>(
-            valueListenable: _searchPinned,
-            builder: (context, pinned, _) => AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: padding.top,
-              width: double.infinity,
-              color: pinned ? AppColors.surface : AppHeaderPalette.top,
-            ),
-          ),
+          // Thanh trạng thái trắng như đầu trang
+          SizedBox(height: padding.top),
           Expanded(
             child: MediaQuery.removePadding(
               context: context,
@@ -191,52 +160,32 @@ class _HomeMobileViewState extends State<HomeMobileView> {
                         SliverToBoxAdapter(
                           child: ValueListenableBuilder(
                             valueListenable: DevPlanOverride.plan,
-                            builder: (context, plan, _) =>
-                                BlocBuilder<UserAreaCubit, UserAreaState>(
-                                  builder: (context, area) => HomeTopBar(
-                                    key: _topBarKey,
-                                    areaName: _areaLabel(l10n, area),
-                                    plan: plan,
-                                    onAreaTap: _pickArea,
-                                    onPlanTap: DevPlanOverride.enabled
-                                        ? DevPlanOverride.next
-                                        : null,
-                                  ),
-                                ),
+                            builder: (context, plan, _) => HomeTopBar(
+                              plan: plan,
+                              onSavedTap: _openSaved,
+                              onNotificationsTap: _openNotifications,
+                              onPlanTap: DevPlanOverride.enabled
+                                  ? DevPlanOverride.next
+                                  : null,
+                            ),
                           ),
                         ),
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: HomeSearchHeaderDelegate(
-                            hintText: l10n.homeSearchHint,
-                            onTap: _openSearch,
-                            onMessagesTap: _openMessages,
-                            onNotificationsTap: _openNotifications,
+                        BlocBuilder<UserAreaCubit, UserAreaState>(
+                          builder: (context, area) => SliverPersistentHeader(
+                            pinned: true,
+                            delegate: HomeSearchHeaderDelegate(
+                              hintText: l10n.homeSearchHint,
+                              onTap: _openSearch,
+                              areaName: _areaLabel(l10n, area),
+                              areaTooltip: l10n.homeChangeArea,
+                              onAreaTap: _pickArea,
+                            ),
                           ),
                         ),
                         // Kéo xuống để làm mới: viên loading mở ra ngay dưới
                         // ô tìm kiếm, đẩy nội dung xuống thay vì bị che
-                        SliverToBoxAdapter(
-                          child: ColoredBox(
-                            color: AppHeaderPalette.bottom,
-                            child: refreshIndicator,
-                          ),
-                        ),
-                        // Mép trên bo cong của phần nội dung trắng
-                        SliverToBoxAdapter(
-                          child: ColoredBox(
-                            color: AppHeaderPalette.bottom,
-                            child: Container(
-                              height: _contentRadius,
-                              decoration: const BoxDecoration(
-                                color: AppColors.surface,
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(_contentRadius),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        SliverToBoxAdapter(child: refreshIndicator),
+                        const SliverToBoxAdapter(child: SizedBox(height: 8)),
                         ...switch (state.status) {
                           HomeStatus.loading => [
                             const SliverToBoxAdapter(child: HomeSkeleton()),

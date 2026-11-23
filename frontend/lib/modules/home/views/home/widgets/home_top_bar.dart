@@ -3,124 +3,85 @@ import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
-import 'package:restore/shared/widgets/app_image_icon.dart';
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/data/models/enums/subscription_plan.dart';
 import 'package:restore/l10n/app_localizations.dart';
 
-/// Hàng chọn khu vực trên nền xanh, phía trên ô tìm kiếm ghim.
-class HomeTopBar extends StatelessWidget {
-  final String areaName;
-  final SubscriptionPlan plan;
-  final VoidCallback onAreaTap;
+import 'home_header_icon_button.dart';
+import 'home_notification_button.dart';
 
-  /// Nút test đổi gói cạnh nút khu vực, null thì ẩn (khi gọi API thật)
+/// Hàng đầu trang chủ trên nền trắng: logo bên trái, Tin đã lưu và Thông báo
+/// bên phải (Tin nhắn và Tài khoản đã có ở thanh điều hướng dưới đáy). Cuộn
+/// đi khi kéo trang; ô tìm kiếm bên dưới thì ghim lại.
+class HomeTopBar extends StatelessWidget {
+  final SubscriptionPlan plan;
+  final VoidCallback onSavedTap;
+  final VoidCallback onNotificationsTap;
+
+  /// Nút test đổi gói cạnh logo, null thì ẩn (khi gọi API thật)
   final VoidCallback? onPlanTap;
 
   const HomeTopBar({
     super.key,
-    required this.areaName,
     this.plan = SubscriptionPlan.personal,
-    required this.onAreaTap,
+    required this.onSavedTap,
+    required this.onNotificationsTap,
     this.onPlanTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // Nền xanh đậm: icon thanh trạng thái màu sáng
+    final vi = Localizations.localeOf(context).languageCode == 'vi';
+    // Nền trắng: icon thanh trạng thái màu tối
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(color: AppHeaderPalette.top),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: _AreaButton(
-                      areaName: areaName,
-                      tooltip: l10n.homeChangeArea,
-                      onTap: onAreaTap,
-                    ),
-                  ),
-                  if (onPlanTap != null) ...[
-                    const SizedBox(width: 8),
-                    _DevPlanChip(
-                      tag: l10n.devPlanTag,
-                      label: plan.label(l10n),
-                      tooltip: l10n.devPlanSwitchTooltip,
-                      onTap: onPlanTap!,
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Nút khu vực dạng viên thuốc trắng trên nền xanh.
-class _AreaButton extends StatelessWidget {
-  final String areaName;
-  final String tooltip;
-  final VoidCallback onTap;
-
-  const _AreaButton({
-    required this.areaName,
-    required this.tooltip,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
+      value: SystemUiOverlayStyle.dark,
+      child: ColoredBox(
         color: AppColors.surface,
-        shape: StadiumBorder(
-          side: BorderSide(color: AppColors.border.withValues(alpha: 0.7)),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          customBorder: const StadiumBorder(),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppImageIcon(
-                  AppImages.uiIcons.location,
-                  size: 20,
-                  fallback: AppIcons.location,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 6, 8, 2),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  AppImages.appLogos.appLogo,
+                  width: 30,
+                  height: 30,
                 ),
-                const SizedBox(width: 6),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Restore',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                  color: AppHeaderPalette.top,
+                ),
+              ),
+              if (onPlanTap != null) ...[
+                const SizedBox(width: 8),
                 Flexible(
-                  child: Text(
-                    areaName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
+                  child: _DevPlanChip(
+                    tag: l10n.devPlanTag,
+                    label: plan.label(l10n),
+                    tooltip: l10n.devPlanSwitchTooltip,
+                    onTap: onPlanTap!,
                   ),
-                ),
-                const SizedBox(width: 2),
-                const Icon(
-                  AppIcons.chevronDown,
-                  size: 16,
-                  color: AppColors.textPrimary,
                 ),
               ],
-            ),
+              const Spacer(),
+              HomeHeaderIconButton(
+                icon: AppIcons.favorite,
+                tooltip: vi ? 'Tin đã lưu' : 'Saved',
+                onTap: onSavedTap,
+              ),
+              HomeNotificationButton(
+                tooltip: l10n.notifications,
+                onTap: onNotificationsTap,
+              ),
+            ],
           ),
         ),
       ),

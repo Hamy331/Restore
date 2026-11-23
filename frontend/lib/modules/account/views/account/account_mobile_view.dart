@@ -83,6 +83,8 @@ class _AccountMobileViewState extends State<AccountMobileView> {
         fullName: profile.fullName,
         username: profile.username,
         avatarUrl: profile.avatarUrl,
+        email: profile.email,
+        phone: profile.phone,
       ),
     );
     final messenger = ScaffoldMessenger.of(context);

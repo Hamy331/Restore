@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 import { ensureVerifiedEmailSender, getRequiredEnv } from '../config/env.js';
 import { AppError, isAppError } from '../common/errors/app-error.js';
 
-type OtpPurpose = 'register' | 'forgot-password';
+type OtpPurpose = 'register' | 'forgot-password' | 'change-email';
 
 export const sendOtpEmail = async (to: string, otp: string, purpose: OtpPurpose = 'register') => {
   const apiKey = getRequiredEnv('RESEND_API_KEY');
@@ -21,6 +21,12 @@ export const sendOtpEmail = async (to: string, otp: string, purpose: OtpPurpose 
       heading: 'Đặt lại mật khẩu',
       body: 'Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản ReStore. Dưới đây là mã OTP của bạn:',
       note: 'Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.',
+    },
+    'change-email': {
+      subject: 'Xác nhận email mới - ReStore',
+      heading: 'Xác nhận email mới',
+      body: 'Bạn vừa yêu cầu dùng địa chỉ này làm email đăng nhập ReStore. Nhập mã OTP bên dưới để xác nhận:',
+      note: 'Nếu bạn không yêu cầu, vui lòng bỏ qua email này; email tài khoản sẽ không đổi.',
     },
   };
 
@@ -58,4 +64,26 @@ export const sendOtpEmail = async (to: string, otp: string, purpose: OtpPurpose 
     console.error('[Resend] Unexpected OTP delivery error:', error);
     throw new AppError(503, 'EMAIL_DELIVERY_FAILED', 'Không thể gửi email lúc này. Vui lòng thử lại sau.');
   }
+};
+
+/** Báo cho email cũ khi email đăng nhập vừa được đổi sang [newEmail] */
+export const sendEmailChangedNotice = async (oldEmail: string, newEmail: string) => {
+  const resend = new Resend(getRequiredEnv('RESEND_API_KEY'));
+  const fromEmail = ensureVerifiedEmailSender(oldEmail);
+  const { error } = await resend.emails.send({
+    from: `ReStore <${fromEmail}>`,
+    to: [oldEmail],
+    subject: 'Email tài khoản đã được đổi - ReStore',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <h2 style="color: #1E3A8A; text-align: center;">Email tài khoản đã được đổi</h2>
+        <p style="font-size: 16px; color: #333;">Chào bạn,</p>
+        <p style="font-size: 16px; color: #333;">Email đăng nhập tài khoản ReStore của bạn vừa được đổi sang <strong>${newEmail}</strong>. Từ nay hãy đăng nhập bằng email mới.</p>
+        <p style="font-size: 14px; color: #666; margin-top: 30px;">Nếu bạn không thực hiện việc này, hãy liên hệ bộ phận hỗ trợ ReStore ngay.</p>
+        <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
+        <p style="font-size: 12px; color: #999; text-align: center;">© 2026 ReStore. All rights reserved.</p>
+      </div>
+    `,
+  });
+  if (error) throw new AppError(503, 'EMAIL_DELIVERY_FAILED', 'Không thể gửi email lúc này.');
 };

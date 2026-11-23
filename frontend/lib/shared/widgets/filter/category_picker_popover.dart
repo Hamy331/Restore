@@ -76,7 +76,7 @@ class _CategoryPickerState extends State<_CategoryPicker> {
         style: TextStyle(
           fontSize: 15,
           fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-          color: selected ? AppColors.primaryDark : AppColors.textPrimary,
+          color: selected ? AppColors.actionPrimary : AppColors.textPrimary,
         ),
       ),
     ),

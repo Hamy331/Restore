@@ -2,16 +2,35 @@ import 'package:dio/dio.dart';
 import 'package:restore/core/network/api_client.dart';
 import '../models/profile_models.dart';
 
-/// Lỗi khi lưu hồ sơ; [code] là mã lỗi backend (ví dụ `USERNAME_TAKEN`).
+/// Lỗi khi lưu hồ sơ; [code] là mã lỗi backend (ví dụ `USERNAME_TAKEN`),
+/// [message] là câu báo lỗi backend gửi kèm (nếu có).
 class ProfileUpdateException implements Exception {
-  const ProfileUpdateException(this.code);
+  const ProfileUpdateException(this.code, [this.message]);
   final String? code;
+  final String? message;
+}
+
+ProfileUpdateException _profileError(DioException error) {
+  final body = error.response?.data;
+  return body is Map
+      ? ProfileUpdateException(
+          body['code'] as String?,
+          body['error'] as String?,
+        )
+      : const ProfileUpdateException(null);
 }
 
 abstract class ProfileRepository {
   Future<ProfileData> getMe();
   Future<ProfileData> getUser(String id);
   Future<ProfileData> update(Map<String, dynamic> changes);
+
+  /// Gửi mã OTP tới [email] mới (cần mật khẩu hiện tại); trả số giây phải
+  /// chờ trước khi gửi lại mã
+  Future<int> requestEmailChange(String email, String password);
+
+  /// Nhập đúng [otp] thì đổi email, trả email mới
+  Future<String> verifyEmailChange(String otp);
   Future<void> follow(String id);
   Future<void> unfollow(String id);
   Future<({List<FollowUser> items, bool hasMore})> follows(
@@ -57,10 +76,34 @@ class ApiProfileRepository implements ProfileRepository {
         ),
       );
     } on DioException catch (error) {
-      final body = error.response?.data;
-      throw ProfileUpdateException(
-        body is Map ? body['code'] as String? : null,
+      throw _profileError(error);
+    }
+  }
+
+  @override
+  Future<int> requestEmailChange(String email, String password) async {
+    try {
+      final response = await _client.dio.post<Map<String, dynamic>>(
+        '/users/me/email',
+        data: {'email': email, 'password': password},
       );
+      final data = response.data!['data'] as Map;
+      return (data['resendAfterSeconds'] as num?)?.toInt() ?? 60;
+    } on DioException catch (error) {
+      throw _profileError(error);
+    }
+  }
+
+  @override
+  Future<String> verifyEmailChange(String otp) async {
+    try {
+      final response = await _client.dio.post<Map<String, dynamic>>(
+        '/users/me/email/verify',
+        data: {'otp': otp},
+      );
+      return (response.data!['data'] as Map)['email'] as String;
+    } on DioException catch (error) {
+      throw _profileError(error);
     }
   }
 

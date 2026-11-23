@@ -315,7 +315,7 @@ class ListingChipFilterBar extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.primaryDark,
+                                  color: AppColors.actionPrimary,
                                 ),
                               ),
                             ),

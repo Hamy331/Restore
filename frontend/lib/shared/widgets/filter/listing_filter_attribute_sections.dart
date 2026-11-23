@@ -202,7 +202,9 @@ class _OptionField extends StatelessWidget {
           : Colors.white.withValues(alpha: 0.6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: active ? AppColors.primary : AppColors.border),
+        side: BorderSide(
+          color: active ? AppColors.actionPrimary : AppColors.border,
+        ),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),

@@ -26,6 +26,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         'fullName': event.fullName,
         'username': event.username,
         'avatarUrl': event.avatarUrl,
+        if (event.email != null) ...{
+          'email': event.email,
+          'phone': event.phone,
+        },
       });
       emit(AuthAuthenticated(user));
       try {

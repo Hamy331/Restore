@@ -14,8 +14,7 @@ import 'package:restore/modules/category_detail/views/category_detail/category_d
 import 'package:restore/modules/following/views/following_hub/following_hub_view.dart';
 import 'package:restore/modules/hot_sale/views/hot_sale/hot_sale_view.dart';
 import 'package:restore/modules/location/bloc/user_area/user_area_cubit.dart';
-import 'package:restore/modules/location/models/area_option.dart';
-import 'package:restore/modules/location/views/area_search/area_search_view.dart';
+import 'package:restore/shared/widgets/filter/area_filter_panel.dart';
 import 'package:restore/modules/trusted_shop/views/trusted_shops/trusted_shops_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
@@ -82,8 +81,9 @@ class _HomeDesktopViewState extends State<HomeDesktopView> {
 
   Future<void> _pickArea() async {
     final userArea = context.read<UserAreaCubit>();
-    final result = await context.push<AreaPickResult>(
-      AreaSearchView.location(allowNationwide: true),
+    final result = await showAreaPicker(
+      context,
+      current: userArea.state.area,
     );
     if (result == null) return;
     if (result.nationwide) {

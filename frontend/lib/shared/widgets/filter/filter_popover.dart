@@ -169,7 +169,7 @@ class FilterPanel extends StatelessWidget {
                   child: FilledButton(
                     onPressed: onApply,
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: AppColors.actionPrimary,
                       minimumSize: const Size.fromHeight(42),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -322,7 +322,7 @@ class _FilterChoicePanelState<T> extends State<FilterChoicePanel<T>> {
                                           : Icons.radio_button_off),
                                 size: 22,
                                 color: on
-                                    ? AppColors.primary
+                                    ? AppColors.actionPrimary
                                     : AppColors.textSecondary,
                               ),
                             ],
@@ -553,7 +553,7 @@ class _FilterRangeSliderState extends State<FilterRangeSlider> {
             values: _dragging ?? RangeValues(start, end),
             max: last.toDouble(),
             divisions: 100,
-            activeColor: AppColors.primary,
+            activeColor: AppColors.actionPrimary,
             onChanged: (values) => setState(() => _dragging = values),
             onChangeEnd: (values) {
               setState(() => _dragging = null);

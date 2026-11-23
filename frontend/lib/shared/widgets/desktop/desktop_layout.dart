@@ -38,20 +38,19 @@ const _desktopSectionRoots = {
 /// trang gốc của menu) vẫn có nút quay lại để người dùng trở về.
 bool needsBackButton(BuildContext context) {
   if (!isDesktopLayout(context)) return true;
-  if (context.canPop()) return true;
-  try {
-    final path = GoRouterState.of(context).uri.path;
-    return !_desktopSectionRoots.contains(path);
-  } catch (_) {
-    return true;
-  }
+  final router = GoRouter.maybeOf(context);
+  if (router == null || router.canPop()) return true;
+  // A page being removed can still build during a transition. Read the
+  // active path directly instead of walking its nested navigators.
+  return !_desktopSectionRoots.contains(router.state.uri.path);
 }
 
-/// Lề hai bên để nội dung rộng [content] nằm giữa màn hình
+/// Lề hai bên để nội dung nằm giữa màn hình, thẳng mép với đầu trang và chân
+/// trang: khung rộng [content] (mặc định 1200) có lề trong 24 ở mỗi bên.
 double desktopGutter(
   double width, {
   double content = AppDimesions.desktopContentWidth,
-}) => math.max(24, (width - content) / 2);
+}) => math.max(24, (width - content) / 2 + 24);
 
 /// Trang desktop cuộn dọc: nội dung căn giữa trong khung [contentWidth],
 /// nền phủ hết màn hình, footer ở cuối trang.

@@ -78,7 +78,7 @@ export const findFollows = (id: string, viewerId: string, kind: 'followers' | 'f
 };
 
 export const updateProfile = (id: string, data: Prisma.UserUpdateInput) =>
-  prisma.user.update({ where: { id }, data, select: profileSelect });
+  prisma.user.update({ where: { id }, data, select: { ...profileSelect, email: true, phone: true } });
 
 export const touchPresence = (id: string) =>
   prisma.user.update({ where: { id }, data: { lastActiveAt: new Date() }, select: { lastActiveAt: true } });
