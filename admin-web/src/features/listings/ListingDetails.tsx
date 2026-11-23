@@ -4,7 +4,7 @@ import { Session } from '../../shared/api/session';
 import { useResource } from '../../shared/api/useResource';
 import { actions as auditActions } from '../audit/auditLabels';
 import { MemberLink } from '../members/MemberLink';
-import { FlagNotice, type ContentFlag } from './ContentFlags';
+import { FlagNotice, type ContentFlag, type PriceWarning } from './ContentFlags';
 import type { ListingContent, PendingEdit } from './RevisionCompare';
 export type Listing = {
   id: string;
@@ -26,6 +26,8 @@ export type Listing = {
   reviewReason?: string;
   /** Cờ nội dung tự động của nội dung đang có (bản sửa có cờ riêng trong pendingEdit.flags) */
   flags?: ContentFlag[];
+  /** Giá bất thường so với ngưỡng / giá thường gặp của chuyên mục */
+  priceWarning?: PriceWarning | null;
   /** Nội dung bị gắn cờ lúc gửi duyệt: người đăng đã được cảnh báo và vẫn gửi */
   flagged?: boolean;
   /** Bản sửa của tin đã duyệt (PENDING: chờ duyệt, REJECTED: đã từ chối) */
@@ -165,7 +167,7 @@ export function ListingDetails({ item, session, summary }: { item: Listing; sess
       )}
       {!summary && (
         <>
-          <FlagNotice flags={item.flags} ignored={item.flagged} />
+          <FlagNotice flags={item.flags} ignored={item.flagged} price={item.priceWarning} />
           <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>
             {item.description}
           </Typography.Paragraph>

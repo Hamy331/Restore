@@ -122,7 +122,11 @@ export function Listings({ session }: { session: Session }) {
               render: (_, r) => (
                 <Space orientation="vertical" size={2}>
                   {r.title}
-                  <FlagTags flags={[r.flags, pendingEdit(r)?.flags]} ignored={r.flagged || pendingEdit(r)?.flagged} />
+                  <FlagTags
+                    flags={[r.flags, pendingEdit(r)?.flags]}
+                    ignored={r.flagged || pendingEdit(r)?.flagged}
+                    price={pendingEdit(r)?.priceWarning ?? r.priceWarning}
+                  />
                 </Space>
               ),
             },
@@ -178,7 +182,7 @@ export function Listings({ session }: { session: Session }) {
           {edit && item.current ? (
             <>
               <ListingDetails session={session} item={item} summary />
-              <FlagNotice flags={edit.flags} ignored={edit.flagged} title="Bản sửa bị gắn cờ tự động" />
+              <FlagNotice flags={edit.flags} ignored={edit.flagged} price={edit.priceWarning} title="Bản sửa bị gắn cờ tự động" />
               <RevisionCompare session={session} current={item.current} edit={edit} />
             </>
           ) : (
