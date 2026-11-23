@@ -110,11 +110,18 @@ function attributeMatch(filters: AttributeFilter[]) {
 /** Gói người đăng tương ứng với từng lựa chọn "Đăng bởi" */
 const SELLER_TIER: Record<SellerKind, string> = { personal: 'PERSONAL', pro: 'BASIC', partner: 'PRO' };
 
-/** Người đăng thuộc một trong các nhóm đã chọn, theo gói đang hiệu lực (không có gói = Cá nhân) */
+/**
+ * Người đăng thuộc một trong các nhóm đã chọn, theo gói đang hiệu lực (không có gói = Cá nhân).
+ * Đối tác (PRO) còn phải có trang shop công khai như nhãn "Đối tác" trên tin; chưa có thì tính là Bán chuyên.
+ */
 function sellerMatch(sellers: SellerKind[]) {
   if (!sellers.length) return Prisma.sql`TRUE`;
   const tiers = sellers.map((item) => SELLER_TIER[item]);
-  return Prisma.sql`COALESCE(sp.tier::text, 'PERSONAL') = ANY(${tiers}::text[])`;
+  return Prisma.sql`(CASE
+    WHEN sp.tier::text = 'PRO' AND EXISTS (SELECT 1 FROM "Shop" s WHERE s."ownerId" = l."ownerId"
+      AND (s.status = 'APPROVED' OR s."verificationType" IS NOT NULL)) THEN 'PRO'
+    WHEN sp.tier::text = 'PRO' THEN 'BASIC'
+    ELSE COALESCE(sp.tier::text, 'PERSONAL') END) = ANY(${tiers}::text[])`;
 }
 
 /** Khớp một trong các kiểu giao dịch đã chọn: buy = có bán, exchange = cho đổi */
