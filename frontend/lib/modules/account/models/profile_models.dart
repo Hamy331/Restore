@@ -102,8 +102,12 @@ class ProfileData extends Equatable {
     this.joined,
     this.lastActive,
     this.online = false,
+    this.shopStatus,
   });
   final SellerStorefront storefront;
+
+  /// Chỉ có ở /users/me: PENDING | APPROVED | REJECTED, null = chưa lên Cửa hàng
+  final String? shopStatus;
   final DateTime? joined, lastActive;
   final bool online;
   final String id;
@@ -146,6 +150,7 @@ class ProfileData extends Equatable {
     online: json['presence']?['isOnline'] == true,
     isFollowing: json['isFollowing'] == true,
     followingShopCount: (json['followingShopCount'] as num?)?.toInt() ?? 0,
+    shopStatus: json['shopStatus'] as String?,
   );
 
   ProfileData copyWith({
@@ -178,6 +183,7 @@ class ProfileData extends Equatable {
     ratingCount: ratingCount,
     isFollowing: isFollowing ?? this.isFollowing,
     followingShopCount: followingShopCount,
+    shopStatus: shopStatus,
   );
 
   @override
@@ -199,6 +205,7 @@ class ProfileData extends Equatable {
     joined,
     lastActive,
     online,
+    shopStatus,
   ];
 }
 

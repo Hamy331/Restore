@@ -8,8 +8,9 @@ import 'package:restore/data/models/shop_opening_hours.dart';
 import 'package:restore/services/image_upload_service.dart';
 
 import '../models/my_shop_overview.dart';
+import '../models/shop_terms.dart';
 
-/// Lỗi nghiệp vụ backend trả về (SHOP_NAME_LOCKED, SHOP_PLAN_REQUIRED...)
+/// Lỗi nghiệp vụ backend trả về (SHOP_NAME_LOCKED, NOT_ENOUGH_CREDITS...)
 class MyShopException implements Exception {
   const MyShopException(this.code);
 
@@ -27,7 +28,8 @@ abstract class MyShopRepository {
 
   Future<MyShopOverview> load();
 
-  /// Mở shop: name bắt buộc, các trường khác tuỳ chọn
+  /// Lên Cửa hàng: đồng ý Hợp đồng Cửa hàng [shopTermsVersion] và trả phí đăng
+  /// ký bằng xu; name bắt buộc, các trường khác tuỳ chọn
   Future<MyShopOverview> create({
     required String name,
     String? tagline,
@@ -97,6 +99,7 @@ class ApiMyShopRepository implements MyShopRepository {
         'name': name,
         if (tagline != null && tagline.isNotEmpty) 'tagline': tagline,
         if (address != null && address.isNotEmpty) 'address': address,
+        'termsVersion': shopTermsVersion,
       },
     ),
   );
@@ -139,7 +142,7 @@ class ApiMyShopRepository implements MyShopRepository {
   );
 }
 
-/// Dữ liệu trong bộ nhớ: tài khoản gói Cửa hàng đã có shop đã duyệt, chưa xác minh
+/// Dữ liệu trong bộ nhớ: tài khoản đã lên Cửa hàng, shop đã duyệt, chưa xác minh
 class MockMyShopRepository implements MyShopRepository {
   MockMyShopRepository({
     MyShopOverview? initial,
@@ -147,7 +150,6 @@ class MockMyShopRepository implements MyShopRepository {
   }) : _overview =
            initial ??
            const MyShopOverview(
-             storePlan: true,
              reviewStatus: 'APPROVED',
              shop: ShopModel(
                id: 'shop-mock',
@@ -187,10 +189,8 @@ class MockMyShopRepository implements MyShopRepository {
     String? address,
   }) async {
     await _wait();
-    if (!_overview.storePlan) throw const MyShopException('SHOP_PLAN_REQUIRED');
     if (_overview.shop != null) throw const MyShopException('SHOP_EXISTS');
     return _overview = MyShopOverview(
-      storePlan: true,
       reviewStatus: 'PENDING',
       shop: ShopModel(
         id: 'shop-mock',
@@ -225,8 +225,6 @@ class MockMyShopRepository implements MyShopRepository {
           : _overview.rejectNote,
       verificationStatus: _overview.verificationStatus,
       verificationNote: _overview.verificationNote,
-      storePlan: _overview.storePlan,
-      planEndsAt: _overview.planEndsAt,
       nameLocked: _overview.nameLocked,
       stats: _overview.stats,
       shop: ShopModel(
@@ -281,8 +279,6 @@ class MockMyShopRepository implements MyShopRepository {
       reviewStatus: _overview.reviewStatus,
       rejectNote: _overview.rejectNote,
       verificationStatus: 'PENDING',
-      storePlan: _overview.storePlan,
-      planEndsAt: _overview.planEndsAt,
       nameLocked: _overview.nameLocked,
       stats: _overview.stats,
     );

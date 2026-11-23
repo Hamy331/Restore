@@ -31,9 +31,9 @@ class MyShopStats extends Equatable {
   ];
 }
 
-/// `GET /shops/me`: shop của mình (null nếu chưa mở), trạng thái duyệt, gói
-/// Cửa hàng còn hạn không, có được mở shop không, tên có bị khoá (shop đã
-/// duyệt / xác minh) không
+/// `GET /shops/me`: shop của mình (null nếu chưa lên Cửa hàng), trạng thái
+/// duyệt, phí đăng ký, tên có bị khoá (shop đã duyệt / xác minh) không.
+/// Lên Cửa hàng không phụ thuộc gói tài khoản.
 class MyShopOverview extends Equatable {
   const MyShopOverview({
     this.shop,
@@ -41,8 +41,7 @@ class MyShopOverview extends Equatable {
     this.rejectNote,
     this.verificationStatus,
     this.verificationNote,
-    this.storePlan = false,
-    this.planEndsAt,
+    this.registrationFee = 199,
     this.canCreate = false,
     this.nameLocked = false,
     this.stats,
@@ -61,8 +60,9 @@ class MyShopOverview extends Equatable {
 
   /// Lý do admin từ chối hồ sơ xác minh
   final String? verificationNote;
-  final bool storePlan;
-  final DateTime? planEndsAt;
+
+  /// Phí đăng ký lên Cửa hàng (xu, trả một lần)
+  final int registrationFee;
   final bool canCreate;
   final bool nameLocked;
   final MyShopStats? stats;
@@ -82,8 +82,7 @@ class MyShopOverview extends Equatable {
       verificationNote: verification is Map
           ? verification['rejectNote'] as String?
           : null,
-      storePlan: json['storePlan'] == true,
-      planEndsAt: DateTime.tryParse('${json['planEndsAt']}')?.toLocal(),
+      registrationFee: (json['registration']?['fee'] as num?)?.toInt() ?? 199,
       canCreate: json['canCreate'] == true,
       nameLocked: json['nameLocked'] == true,
       stats: stats is Map
@@ -96,11 +95,11 @@ class MyShopOverview extends Equatable {
   bool get isPublic =>
       reviewStatus == 'APPROVED' || (shop?.isVerified ?? false);
 
-  /// Gửi được hồ sơ xác minh: gói Cửa hàng, shop đã duyệt, chưa xác minh và
-  /// không có hồ sơ đang chờ
+  /// Gửi được hồ sơ xác minh: có shop (đang chờ duyệt hoặc đã duyệt, không bị
+  /// từ chối), chưa xác minh và không có hồ sơ đang chờ
   bool get canRequestVerification =>
-      storePlan &&
-      reviewStatus == 'APPROVED' &&
+      shop != null &&
+      reviewStatus != 'REJECTED' &&
       !(shop?.isVerified ?? true) &&
       verificationStatus != 'PENDING';
 
@@ -111,8 +110,7 @@ class MyShopOverview extends Equatable {
     rejectNote,
     verificationStatus,
     verificationNote,
-    storePlan,
-    planEndsAt,
+    registrationFee,
     canCreate,
     nameLocked,
     stats,

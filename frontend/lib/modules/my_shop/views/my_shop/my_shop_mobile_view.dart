@@ -12,14 +12,12 @@ import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/shop_model.dart';
 import 'package:restore/data/models/shop_opening_hours.dart';
 import 'package:restore/l10n/app_localizations.dart';
-import 'package:restore/modules/plans/views/plans/plans_view.dart';
 import 'package:restore/modules/shop_posters/views/shop_posters/shop_posters_view.dart';
 import 'package:restore/modules/trusted_shop/widgets/shop_logo.dart';
 import 'package:restore/services/media_picker_service.dart';
 import 'package:restore/shared/widgets/app_bottom_action_bar.dart';
 import 'package:restore/shared/widgets/app_labeled_text_field.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
-import 'package:restore/shared/widgets/feedback_view.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/image_crop/image_crop.dart';
 import 'package:restore/shared/widgets/image_crop/image_crop_view.dart';
@@ -28,6 +26,7 @@ import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import '../../bloc/my_shop_cubit.dart';
 import '../../models/my_shop_overview.dart';
 import 'my_shop_view.dart';
+import 'widgets/become_shop_flow.dart';
 import 'widgets/my_shop_color_field.dart';
 import 'widgets/my_shop_header.dart';
 import 'widgets/my_shop_hours_field.dart';
@@ -40,7 +39,6 @@ import '../shop_followers/shop_followers_view.dart';
 /// Lời báo lỗi theo mã backend khi mở shop / lưu
 String myShopError(AppLocalizations l, String code) => switch (code) {
   'SHOP_NAME_LOCKED' => l.msNameLocked,
-  'SHOP_PLAN_REQUIRED' => l.msPlanTitle,
   'SHOP_EXISTS' => l.msErrExists,
   'SHOP_NAME_NOT_ALLOWED' => l.msErrNameNotAllowed,
   'VERIFICATION_PENDING' => l.msVerifyPendingTitle,
@@ -83,17 +81,10 @@ class MyShopMobileView extends StatelessWidget {
             imageLoader: imageLoader,
           );
         }
-        if (overview.canCreate) return _CreateShop(saving: state.saving);
-        return _MyShopScaffold(
-          body: FeedbackView(
-            icon: AppIcons.store,
-            title: l.msPlanTitle,
-            message: l.msPlanBody,
-            action: FilledButton(
-              onPressed: () => context.push(PlansView.path),
-              child: Text(l.spSeePlans),
-            ),
-          ),
+        // Chưa lên Cửa hàng: luồng giới thiệu → quyền lợi → đăng ký (không cần gói tài khoản)
+        return BecomeShopFlow(
+          saving: state.saving,
+          fee: overview.registrationFee,
         );
       },
     );
@@ -134,109 +125,6 @@ class _MyShopScaffold extends StatelessWidget {
     bottomNavigationBar: bottom,
     body: body,
   );
-}
-
-/// Chưa có shop nhưng đang dùng gói Cửa hàng: đặt tên để mở shop
-class _CreateShop extends StatefulWidget {
-  const _CreateShop({required this.saving});
-
-  final bool saving;
-
-  @override
-  State<_CreateShop> createState() => _CreateShopState();
-}
-
-class _CreateShopState extends State<_CreateShop> {
-  final _name = TextEditingController();
-  final _tagline = TextEditingController();
-  final _address = TextEditingController();
-  bool _showErrors = false;
-
-  @override
-  void dispose() {
-    _name.dispose();
-    _tagline.dispose();
-    _address.dispose();
-    super.dispose();
-  }
-
-  bool get _nameValid {
-    final length = _name.text.trim().length;
-    return length >= 2 && length <= 60;
-  }
-
-  Future<void> _create() async {
-    final l = AppLocalizations.of(context)!;
-    setState(() => _showErrors = true);
-    if (!_nameValid) return;
-    final error = await context.read<MyShopCubit>().create(
-      name: _name.text.trim(),
-      tagline: _tagline.text.trim(),
-      address: _address.text.trim(),
-    );
-    if (!mounted) return;
-    if (error == null) {
-      TSnackBarHelper.showSuccess(context, message: l.msCreated);
-    } else {
-      TSnackBarHelper.showError(context, message: myShopError(l, error));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return _MyShopScaffold(
-      bottom: AppBottomActionBar(
-        key: const ValueKey('my-shop-create'),
-        primaryLabel: l.msCreateAction,
-        primaryIcon: AppIcons.store,
-        isLoading: widget.saving,
-        onPrimary: widget.saving ? null : _create,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        children: [
-          MyShopSection(
-            title: l.msCreateTitle,
-            subtitle: l.msCreateBody,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppLabeledTextField(
-                  key: const ValueKey('my-shop-name'),
-                  label: l.msName,
-                  isRequired: true,
-                  controller: _name,
-                  maxLength: 60,
-                  hintText: l.msNameHint,
-                  errorText: _showErrors && !_nameValid
-                      ? l.msNameRequired
-                      : null,
-                  onChanged: (_) => setState(() {}),
-                ),
-                const SizedBox(height: 14),
-                AppLabeledTextField(
-                  key: const ValueKey('my-shop-tagline'),
-                  label: l.msTagline,
-                  controller: _tagline,
-                  maxLength: 80,
-                  hintText: l.msTaglineHint,
-                ),
-                const SizedBox(height: 14),
-                AppLabeledTextField(
-                  key: const ValueKey('my-shop-address'),
-                  label: l.msAddress,
-                  controller: _address,
-                  maxLength: 120,
-                  hintText: l.msAddressHint,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 enum _ImageAction { pick, adjust, remove }
@@ -553,18 +441,6 @@ class _MyShopEditorState extends State<_MyShopEditor> {
             ),
             const SizedBox(height: 16),
           ],
-          if (!overview.storePlan)
-            MyShopStatusCard(
-              icon: AppIcons.warning,
-              title: l.msPlanExpiredTitle,
-              body: l.msPlanExpiredBody,
-              color: AppColors.warning,
-              background: AppColors.warningBg,
-              action: TextButton(
-                onPressed: () => context.push(PlansView.path),
-                child: Text(l.spSeePlans),
-              ),
-            ),
           if (overview.reviewStatus == 'PENDING' && !shop.isVerified)
             MyShopStatusCard(
               key: const ValueKey('my-shop-pending'),
@@ -621,6 +497,7 @@ class _MyShopEditorState extends State<_MyShopEditor> {
             ),
           if (overview.canRequestVerification)
             MyShopVerificationForm(
+              key: myShopVerifyKey,
               saving: widget.saving,
               picker: widget.picker,
               onSubmit: _requestVerification,
