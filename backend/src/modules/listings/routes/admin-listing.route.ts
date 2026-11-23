@@ -19,10 +19,21 @@ const moderate = authorizePermission(PERMISSION.LISTING_MODERATE);
  *  - edit?: 'PENDING' - chỉ tin có bản sửa chờ duyệt, gửi sớm trước
  *  - page?: number (mặc định 1)
  *
- * Trả về: { items: [tin kèm owner, category], total, page }
+ * Trả về: { items: [tin kèm owner (planTier, shop, history { rejected, changesRequested, removed }), category], total, page }
  * Tin có bản sửa thêm pendingEdit (nội dung bản sửa, updatedAt của bản sửa) và current (nội dung đang hiển thị để so sánh).
  */
 adminListingRouter.get('/listings', moderate, validate({ query: adminListingQuery }), moderationController.listForAdmin);
+
+/**
+ * Lịch sử vi phạm của người đăng tin (theo nhật ký quản trị, gồm cả quyết định trên bản sửa)
+ *
+ * Path params:
+ *  - id: string - mã tin
+ *
+ * Trả về: { rejected, changesRequested, removed, recent: [{ listingId, title, action, reason, createdAt }] (5 lần gần nhất) }
+ * Lỗi 404: LISTING_NOT_FOUND
+ */
+adminListingRouter.get('/listings/:id/seller-history', moderate, validate({ params: listingIdParams }), moderationController.sellerHistory);
 
 /**
  * Duyệt / từ chối / yêu cầu sửa tin đang chờ, hoặc gỡ tin đang hiển thị; ghi AdminAudit

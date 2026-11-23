@@ -22,6 +22,10 @@ export async function listForAdmin(_req: AuthRequest, res: Response) {
   ok(res, await moderationService.listForAdmin(getInput<ValidatedInput<AdminListingQuery>>(res).query));
 }
 
+export async function sellerHistory(_req: AuthRequest, res: Response) {
+  ok(res, await moderationService.getSellerHistory(getInput<ValidatedInput<undefined, ListingIdParams>>(res).params.id));
+}
+
 export async function adminDecide(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, AdminDecisionInput>>(res);
   ok(res, await moderationService.adminDecide(req.user!.userId, params.id, body));
