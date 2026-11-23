@@ -6,6 +6,7 @@ import type { AutoExtendInput, ExtendInput, FeatureInput, ListingIdParams, Listi
 import { getInsights } from '../services/insights.service.js';
 import * as listingService from '../services/listing.service.js';
 import { rememberListingAddress } from '../../users/index.js';
+import { assertNoContentFlags } from '../content-flags.js';
 
 /** Body có payWithCredits: true khi người dùng đồng ý trả xu cho tin vượt hạn mức */
 export const wantsToPay = (req: AuthRequest) => (req.body as { payWithCredits?: unknown } | undefined)?.payWithCredits === true;
@@ -13,8 +14,12 @@ export const wantsToPay = (req: AuthRequest) => (req.body as { payWithCredits?: 
 /** Body có allowDuplicate: true khi người dùng vẫn muốn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn */
 export const allowsDuplicate = (req: AuthRequest) => (req.body as { allowDuplicate?: unknown } | undefined)?.allowDuplicate === true;
 
+/** Body có acceptFlags: true khi người dùng đã thấy cảnh báo CONTENT_FLAGGED và vẫn muốn gửi duyệt */
+export const acceptsFlags = (req: AuthRequest) => (req.body as { acceptFlags?: unknown } | undefined)?.acceptFlags === true;
+
 export async function create(req: AuthRequest, res: Response) {
   const { body } = getInput<ValidatedInput<undefined, undefined, ListingInput>>(res);
+  assertNoContentFlags(acceptsFlags(req), body.title, body.description);
   const listing = await listingService.createListing(req.user!.userId, body, wantsToPay(req), allowsDuplicate(req));
   // Đăng xong thì lưu địa chỉ vào sổ địa chỉ để lần sau chọn lại
   await rememberListingAddress(req.user!.userId, body.location);
@@ -23,6 +28,7 @@ export async function create(req: AuthRequest, res: Response) {
 
 export async function update(req: AuthRequest, res: Response) {
   const { params, body } = getInput<ValidatedInput<undefined, ListingIdParams, ListingInput>>(res);
+  assertNoContentFlags(acceptsFlags(req), body.title, body.description);
   const listing = await listingService.updateListing(req.user!.userId, params.id, body, wantsToPay(req));
   await rememberListingAddress(req.user!.userId, body.location);
   ok(res, listing);

@@ -23,11 +23,13 @@ abstract class ListingsRepository {
   /// Đăng tin. [payWithCredits]: người dùng đã đồng ý trả xu khi hết suất
   /// miễn phí (backend giữ xu, duyệt thì trừ, từ chối thì hoàn).
   /// [allowDuplicate]: vẫn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn.
+  /// [acceptFlags]: vẫn gửi duyệt dù nội dung bị gắn cờ (SĐT, link, hàng cấm).
   Future<ListingDraft> publish(
     ListingDraft draft,
     CategoryModel? category, {
     bool payWithCredits = false,
     bool allowDuplicate = false,
+    bool acceptFlags = false,
   });
   Future<ListingDraft> getDraft(String id);
 
@@ -283,6 +285,7 @@ class MockListingsRepository implements ListingsRepository {
     CategoryModel? category, {
     bool payWithCredits = false,
     bool allowDuplicate = false,
+    bool acceptFlags = false,
   }) async {
     await Future<void>.delayed(latency);
     // Sửa tin đã duyệt: lưu bản sửa chờ duyệt, tin vẫn giữ bản cũ
@@ -423,6 +426,16 @@ class ListingBoostException implements Exception {
   String toString() => 'ListingBoostException($code)';
 }
 
+/// Đoạn nội dung bị gắn cờ khi đăng (API trả 409 `CONTENT_FLAGGED`):
+/// [code] là CONTACT (SĐT / liên hệ ngoài), LINK hoặc BANNED (hàng cấm)
+class ContentFlag {
+  const ContentFlag({required this.code, required this.match});
+  final String code;
+  final String match;
+
+  static const errorCode = 'CONTENT_FLAGGED';
+}
+
 class DuplicateListing {
   const DuplicateListing({required this.listingId, required this.active});
   final String listingId;
@@ -511,6 +524,22 @@ class ListingSaveException implements Exception {
     );
   }
 
+  /// Nội dung có SĐT, link hoặc từ ngữ hàng cấm (API trả 409
+  /// `CONTENT_FLAGGED`): các đoạn bị khớp, null nếu không phải lỗi này
+  List<ContentFlag>? get contentFlags {
+    if (_conflictCode != ContentFlag.errorCode) return null;
+    final data = (cause as DioException).response?.data as Map;
+    final details = data['details'] is Map ? data['details'] as Map : const {};
+    final flags = details['flags'] is List
+        ? details['flags'] as List
+        : const [];
+    return [
+      for (final flag in flags)
+        if (flag is Map)
+          ContentFlag(code: '${flag['code']}', match: '${flag['match'] ?? ''}'),
+    ];
+  }
+
   /// Đã giữ đủ số tin nháp của gói (API trả 409 `DRAFT_LIMIT_REACHED`)
   bool get isDraftLimitReached {
     if (cause is DraftLimitReachedException) return true;
@@ -590,6 +619,7 @@ class ApiListingsRepository implements ListingsRepository {
     CategoryModel? category, {
     bool payWithCredits = false,
     bool allowDuplicate = false,
+    bool acceptFlags = false,
   }) {
     if (draft.id != null && draft.status == ListingStatus.draft) {
       return _saveDraft(
@@ -598,6 +628,7 @@ class ApiListingsRepository implements ListingsRepository {
         publish: true,
         payWithCredits: payWithCredits,
         allowDuplicate: allowDuplicate,
+        acceptFlags: acceptFlags,
       );
     }
     return _publishListing(
@@ -605,6 +636,7 @@ class ApiListingsRepository implements ListingsRepository {
       category,
       payWithCredits: payWithCredits,
       allowDuplicate: allowDuplicate,
+      acceptFlags: acceptFlags,
     );
   }
 
@@ -613,6 +645,7 @@ class ApiListingsRepository implements ListingsRepository {
     CategoryModel? category, {
     bool payWithCredits = false,
     bool allowDuplicate = false,
+    bool acceptFlags = false,
   }) async {
     var working = draft;
     try {
@@ -620,6 +653,7 @@ class ApiListingsRepository implements ListingsRepository {
         ...draft.toPayload(category: category),
         if (payWithCredits) 'payWithCredits': true,
         if (allowDuplicate) 'allowDuplicate': true,
+        if (acceptFlags) 'acceptFlags': true,
       };
       // Lần đầu: tạo tin mới. Thử lại sau khi tải ảnh lỗi giữa chừng: tin đã
       // tạo rồi nên chỉ cập nhật nội dung (không tạo trùng, không trừ thêm lượt)
@@ -647,6 +681,7 @@ class ApiListingsRepository implements ListingsRepository {
     required bool publish,
     bool payWithCredits = false,
     bool allowDuplicate = false,
+    bool acceptFlags = false,
   }) async {
     var working = draft;
     try {
@@ -681,6 +716,7 @@ class ApiListingsRepository implements ListingsRepository {
           data: {
             if (payWithCredits) 'payWithCredits': true,
             if (allowDuplicate) 'allowDuplicate': true,
+            if (acceptFlags) 'acceptFlags': true,
           },
         ),
       );

@@ -21,11 +21,20 @@ const listing = {
     email: 'chu@example.com',
     planTier: 'PRO',
     shop: { name: 'Nội Thất', status: 'APPROVED', verified: true },
+    history: { rejected: 2, changesRequested: 0, removed: 1 },
   },
 };
 
 function open() {
-  const call = vi.fn().mockResolvedValue({ items: [listing], total: 1 });
+  const call = vi.fn((path: string) =>
+    Promise.resolve(
+      path.endsWith('/seller-history')
+        ? { rejected: 2, changesRequested: 0, removed: 1, recent: [
+            { listingId: 'l0', title: 'Tủ cũ', action: 'REJECT', reason: 'Ghi số điện thoại', createdAt: '2026-11-01T08:00:00Z' },
+          ] }
+        : { items: [listing], total: 1 },
+    ),
+  );
   render(
     <WorkspaceContext.Provider value={{ canOpen: () => true, openSection: () => {}, filter: '' }}>
       <Listings session={{ call } as unknown as Session} />
@@ -62,4 +71,13 @@ it('tin bị gắn cờ có thẻ, chi tiết nói rõ đoạn bị khớp, lọ
   fireEvent.click(screen.getByRole('button', { name: 'Xem tin' }));
   expect(await screen.findByText('Tin bị gắn cờ tự động')).toBeTruthy();
   expect(screen.getByText('“0912 345 678”')).toBeTruthy();
+});
+
+it('người đăng từng vi phạm có thẻ đỏ, chi tiết liệt kê lý do gần đây', async () => {
+  const call = open();
+  expect(await screen.findByText('Từng bị từ chối 2, bị gỡ 1 lần')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Xem tin' }));
+  expect(await screen.findByText(/Ghi số điện thoại/)).toBeTruthy();
+  expect(screen.getByText(/Tủ cũ/)).toBeTruthy();
+  expect(call).toHaveBeenCalledWith('/admin/listings/l1/seller-history');
 });

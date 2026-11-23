@@ -3933,6 +3933,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicatePostNew => 'Post new anyway';
 
   @override
+  String get contentFlagTitle => 'This listing may be rejected';
+
+  @override
+  String get contentFlagMessage =>
+      'Your listing has content that is often rejected. Edit it to get approved faster: chat through Restore messages instead of sharing phone numbers or links.';
+
+  @override
+  String get contentFlagContact => 'Phone number / outside contact';
+
+  @override
+  String get contentFlagLink => 'Link';
+
+  @override
+  String get contentFlagBanned => 'Words about banned goods';
+
+  @override
+  String get contentFlagEdit => 'Edit';
+
+  @override
+  String get contentFlagSendAnyway => 'Submit anyway';
+
+  @override
   String postingPayReactivateTitle(int credits) {
     return 'Show this listing again for $credits points';
   }

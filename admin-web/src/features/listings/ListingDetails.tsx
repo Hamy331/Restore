@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Image, Space, Tag, Typography } from 'antd';
 import { Session } from '../../shared/api/session';
+import { useResource } from '../../shared/api/useResource';
+import { actions as auditActions } from '../audit/auditLabels';
 import { MemberLink } from '../members/MemberLink';
 import { FlagNotice, type ContentFlag } from './ContentFlags';
 import type { ListingContent, PendingEdit } from './RevisionCompare';
@@ -17,6 +19,8 @@ export type Listing = {
     /** Gói đang dùng của người đăng (hết hạn tính là PERSONAL) */
     planTier?: PlanTier;
     shop?: { name: string; status: string; verified: boolean } | null;
+    /** Số lần tin của người đăng bị từ chối / yêu cầu sửa / gỡ (gồm cả bản sửa) */
+    history?: SellerHistory;
   };
   category?: { name: string };
   reviewReason?: string;
@@ -27,6 +31,7 @@ export type Listing = {
   /** Nội dung đang hiển thị, có khi tin có bản sửa */
   current?: ListingContent;
 };
+export type SellerHistory = { rejected: number; changesRequested: number; removed: number };
 export type PlanTier = 'PERSONAL' | 'BASIC' | 'PRO';
 export const planTiers: Record<PlanTier, { label: string; color: string }> = {
   PERSONAL: { label: 'Cá nhân', color: 'default' },
@@ -37,7 +42,10 @@ export const planTiers: Record<PlanTier, { label: string; color: string }> = {
 /** Gói của người đăng và shop (nếu có): shop uy tín, shop đã duyệt, hoặc shop chưa duyệt */
 export function SellerTags({ owner }: { owner: Listing['owner'] }) {
   if (!owner?.planTier) return null;
-  const { shop } = owner;
+  const { shop, history } = owner;
+  const strikes = history
+    ? [history.rejected && `bị từ chối ${history.rejected}`, history.removed && `bị gỡ ${history.removed}`].filter(Boolean)
+    : [];
   return (
     <Space size={4} wrap>
       <Tag color={planTiers[owner.planTier].color}>{planTiers[owner.planTier].label}</Tag>
@@ -46,7 +54,35 @@ export function SellerTags({ owner }: { owner: Listing['owner'] }) {
           {shop.verified ? 'Shop uy tín' : shop.status === 'APPROVED' ? 'Có shop' : 'Shop chưa duyệt'}
         </Tag>
       )}
+      {strikes.length > 0 && <Tag color="red">Từng {strikes.join(', ')} lần</Tag>}
+      {!strikes.length && !!history?.changesRequested && (
+        <Tag color="orange">Từng bị yêu cầu sửa {history.changesRequested} lần</Tag>
+      )}
     </Space>
+  );
+}
+
+type Strike = { listingId: string; title: string; action: string; reason: string; createdAt: string };
+
+/** Các lần gần nhất tin của người đăng không được duyệt, kèm lý do (chỉ tải khi người đăng từng bị) */
+function SellerStrikes({ session, item }: { session: Session; item: Listing }) {
+  const { data } = useResource<{ recent: Strike[] }>(
+    session,
+    '/admin/listings/' + encodeURIComponent(item.id) + '/seller-history',
+  );
+  if (!data?.recent.length) return null;
+  return (
+    <div className="notice">
+      <Typography.Text strong>Lần gần đây người đăng không được duyệt</Typography.Text>
+      <ul style={{ margin: '4px 0 0', paddingInlineStart: 18 }}>
+        {data.recent.map((strike) => (
+          <li key={strike.listingId + strike.createdAt}>
+            {new Date(strike.createdAt).toLocaleDateString('vi-VN')} · {auditActions[strike.action] ?? strike.action}
+            {strike.listingId === item.id ? ' (tin này)' : ` · ${strike.title}`}: {strike.reason}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -115,6 +151,9 @@ export function ListingDetails({ item, session, summary }: { item: Listing; sess
         {[item.category?.name, listingStatus[item.status] ?? item.status].map((part) => part && ' · ' + part)}
       </p>
       <SellerTags owner={item.owner} />
+      {!!(item.owner?.history && Object.values(item.owner.history).some(Boolean)) && (
+        <SellerStrikes session={session} item={item} />
+      )}
       {!summary && (
         <>
           <FlagNotice flags={item.flags} />

@@ -319,7 +319,13 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       return;
     }
 
-    emit(state.copyWith(publishStatus: RequestStatus.loading));
+    final acceptFlags = event.acceptFlags || state.flagsAccepted;
+    emit(
+      state.copyWith(
+        publishStatus: RequestStatus.loading,
+        flagsAccepted: acceptFlags,
+      ),
+    );
     final sent = state.draft;
     try {
       final published = await _repository.publish(
@@ -327,13 +333,31 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         state.category,
         payWithCredits: event.payWithCredits,
         allowDuplicate: event.allowDuplicate,
+        acceptFlags: acceptFlags,
       );
       emit(
-        state.copyWith(draft: published, publishStatus: RequestStatus.success),
+        state.copyWith(
+          draft: published,
+          publishStatus: RequestStatus.success,
+          flagsAccepted: false,
+        ),
       );
       add(const PostingQuotaRequested());
     } on ListingSaveException catch (error) {
       debugPrint('Đăng tin lỗi: $error');
+      final flags = error.contentFlags;
+      if (flags != null) {
+        emit(
+          state.copyWith(
+            draft: _keepProgress(sent, error),
+            publishStatus: RequestStatus.idle,
+            contentFlags: flags,
+            duplicatePaid: event.payWithCredits,
+            contentFlagHits: state.contentFlagHits + 1,
+          ),
+        );
+        return;
+      }
       final duplicate = error.duplicate;
       if (duplicate != null) {
         emit(

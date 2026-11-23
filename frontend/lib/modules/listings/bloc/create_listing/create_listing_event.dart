@@ -147,13 +147,17 @@ class PublishRequested extends CreateListingEvent {
   /// Vẫn đăng mới dù đã có tin giống vậy đã ẩn / hết hạn
   final bool allowDuplicate;
 
+  /// Vẫn gửi duyệt dù nội dung bị gắn cờ (SĐT, link, hàng cấm)
+  final bool acceptFlags;
+
   const PublishRequested({
     this.payWithCredits = false,
     this.allowDuplicate = false,
+    this.acceptFlags = false,
   });
 
   @override
-  List<Object?> get props => [payWithCredits, allowDuplicate];
+  List<Object?> get props => [payWithCredits, allowDuplicate, acceptFlags];
 }
 
 /// Tải danh sách tin nháp; [loadMore] lấy thêm trang sau

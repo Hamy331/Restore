@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { SAIGON } from './support/database.js';
 import { useApi } from './support/context.js';
+import { listingBody } from './support/fixtures.js';
 
 const { ctx } = useApi('admin-listings');
 
@@ -28,7 +29,7 @@ test('admin listings: oldest pending first, seller plan filter and search', asyn
   assert.deepEqual(ids(queue), ['pending-old', 'pending-new'], 'gửi sớm lên trước');
   assert.deepEqual(queue.body.data.items[0].owner, {
     id: 'user-seller', fullName: 'user-seller', email: 'user-seller@restore.test', planTier: 'PRO',
-    shop: { name: 'Nội Thất Test', status: 'APPROVED', verified: true },
+    shop: { name: 'Nội Thất Test', status: 'APPROVED', verified: true }, history: { rejected: 0, changesRequested: 0, removed: 0 },
   });
   assert.deepEqual(queue.body.data.items[1].owner.planTier, 'PERSONAL');
   assert.equal(queue.body.data.items[1].owner.shop, null);
@@ -60,4 +61,38 @@ test('admin listings: oldest pending first, seller plan filter and search', asyn
   // Gói hết hạn thì người đăng tính là Cá nhân
   await prisma.storeSubscription.update({ where: { userId: 'user-seller' }, data: { endsAt: new Date(now - 1000) } });
   assert.deepEqual(ids(await api.get('/admin/listings?status=PENDING&tier=PERSONAL', admin)), ['pending-old', 'pending-new']);
+});
+
+/** Đăng tin có SĐT: cảnh báo trước, vẫn gửi được; admin thấy số lần tin của người đăng bị từ chối / gỡ */
+test('posting warns about flagged content, admin sees seller history', async () => {
+  const { api, tokens } = ctx;
+  const token = tokens.buyer, admin = { token: tokens.admin };
+  const body = { ...listingBody('Ghế gỗ cũ còn tốt'), description: 'Ghế còn chắc, liên hệ zalo 0987 654 321 nhé.' };
+
+  const warned = await api.post('/listings', { token, body });
+  assert.deepEqual([warned.status, warned.body.code], [409, 'CONTENT_FLAGGED']);
+  assert.deepEqual(warned.body.details.flags, [{ code: 'CONTACT', match: '0987 654 321' }]);
+  assert.equal((await api.post('/listings', { token, body: { ...body, acceptFlags: 'yes' } })).status, 400);
+  const sent = await api.post('/listings', { token, body: { ...body, acceptFlags: true } });
+  assert.equal(sent.status, 201, JSON.stringify(sent.body));
+  const id = sent.body.data.id;
+  assert.equal((await api.put(`/listings/${id}`, { token, body })).body.code, 'CONTENT_FLAGGED', 'sửa tin cũng cảnh báo');
+  assert.equal((await api.put(`/listings/${id}`, { token, body: { ...body, description: 'Ghế còn chắc, nhắn tin trong ứng dụng.' } })).status, 200);
+
+  const history = async () => (await api.get(`/admin/listings/${id}/seller-history`, admin)).body.data;
+  assert.deepEqual(await history(), { rejected: 0, changesRequested: 0, removed: 0, recent: [] });
+  const pending = (await api.get('/admin/listings?status=PENDING&q=Gh%E1%BA%BF%20g%E1%BB%97', admin)).body.data.items[0];
+  assert.deepEqual(pending.owner.history, { rejected: 0, changesRequested: 0, removed: 0 });
+  const rejected = await api.post(`/admin/listings/${id}/decision`, { ...admin,
+    body: { action: 'REJECT', reason: 'Ghi số điện thoại trong tin', updatedAt: pending.updatedAt } });
+  assert.equal(rejected.status, 200, JSON.stringify(rejected.body));
+
+  const after = await history();
+  assert.deepEqual([after.rejected, after.changesRequested, after.removed], [1, 0, 0]);
+  assert.deepEqual(after.recent.map((r: { listingId: string; action: string; reason: string }) => [r.listingId, r.action, r.reason]),
+    [[id, 'REJECT', 'Ghi số điện thoại trong tin']]);
+  const listed = (await api.get('/admin/listings?status=REJECTED', admin)).body.data.items.find((item: { id: string }) => item.id === id);
+  assert.deepEqual(listed.owner.history, { rejected: 1, changesRequested: 0, removed: 0 });
+  assert.equal((await api.get('/admin/listings/missing/seller-history', admin)).status, 404);
+  assert.equal((await api.get(`/admin/listings/${id}/seller-history`, { token })).status, 403);
 });

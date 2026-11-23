@@ -15,6 +15,7 @@ import '../../models/create_listing_step.dart';
 import '../../utils/listing_validator.dart';
 import '../../widgets/create_listing_scaffold.dart';
 import '../../widgets/posting_limit_sheet.dart';
+import 'widgets/content_flag_sheet.dart';
 import 'widgets/duplicate_listing_sheet.dart';
 import 'widgets/listing_attribute_field.dart';
 import 'widgets/listing_condition_section.dart';
@@ -169,6 +170,23 @@ class ListingDetailsMobileView extends StatelessWidget {
     }
   }
 
+  /// Nội dung có SĐT, link hoặc từ ngữ hàng cấm: mời sửa lại, hoặc vẫn gửi
+  /// để quản trị viên xem xét
+  Future<void> _onContentFlagged(
+    BuildContext context,
+    CreateListingState state,
+  ) async {
+    final bloc = context.read<CreateListingBloc>();
+    final sendAnyway = await showContentFlagSheet(
+      context,
+      flags: state.contentFlags,
+    );
+    if (!context.mounted || sendAnyway != true) return;
+    bloc.add(
+      PublishRequested(payWithCredits: state.duplicatePaid, acceptFlags: true),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -195,6 +213,11 @@ class ListingDetailsMobileView extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.duplicateHits != current.duplicateHits,
           listener: _onDuplicate,
+        ),
+        BlocListener<CreateListingBloc, CreateListingState>(
+          listenWhen: (previous, current) =>
+              previous.contentFlagHits != current.contentFlagHits,
+          listener: _onContentFlagged,
         ),
         BlocListener<CreateListingBloc, CreateListingState>(
           listenWhen: (previous, current) =>

@@ -228,3 +228,33 @@ export function findAdminPage(filters: AdminListingFilters, skip: number, take: 
 }
 
 export const findAdminListing = (id: string) => prisma.listing.findUnique({ where: { id }, select: adminListingSelect });
+export const findOwnerId = (id: string) => prisma.listing.findUnique({ where: { id }, select: { ownerId: true } });
+
+/** Quyết định không duyệt (từ nhật ký quản trị, gồm cả trên bản sửa): từ chối, yêu cầu sửa, gỡ tin */
+const STRIKES = { rejected: ['REJECT', 'REJECT_EDIT'], changesRequested: ['REQUEST_CHANGES', 'REQUEST_CHANGES_EDIT'], removed: ['REMOVE'] } as const;
+export type SellerHistory = Record<keyof typeof STRIKES, number>;
+
+/**
+ * Số lần tin của từng người đăng bị từ chối / yêu cầu sửa / gỡ. Người chưa từng bị thì không có trong Map.
+ * ponytail: tin đã xoá hẳn thì mất khỏi phép đếm (nhật ký chỉ lưu mã tin); cần đếm cả thì lưu ownerId vào nhật ký.
+ */
+export async function findSellerHistory(ownerIds: string[]) {
+  if (!ownerIds.length) return new Map<string, SellerHistory>();
+  const count = (actions: readonly string[]) => Prisma.sql`count(*) FILTER (WHERE a.action IN (${Prisma.join(actions)}))::int`;
+  const rows = await prisma.$queryRaw<({ ownerId: string } & SellerHistory)[]>`
+    SELECT l."ownerId", ${count(STRIKES.rejected)} AS rejected, ${count(STRIKES.changesRequested)} AS "changesRequested",
+      ${count(STRIKES.removed)} AS removed
+    FROM "AdminAudit" a JOIN "Listing" l ON l.id = a."targetId"
+    WHERE a."targetType" = 'LISTING' AND l."ownerId" IN (${Prisma.join([...new Set(ownerIds)])})
+      AND a.action IN (${Prisma.join(Object.values(STRIKES).flat())})
+    GROUP BY l."ownerId"`;
+  return new Map(rows.map(({ ownerId, ...history }) => [ownerId, history]));
+}
+
+/** 5 quyết định không duyệt gần nhất trên tin của một người đăng, kèm tiêu đề tin và lý do */
+export const findRecentStrikes = (ownerId: string) => prisma.$queryRaw<
+  { listingId: string; title: string; action: string; reason: string; createdAt: Date }[]>`
+  SELECT l.id AS "listingId", l.title, a.action, a.reason, a."createdAt"
+  FROM "AdminAudit" a JOIN "Listing" l ON l.id = a."targetId"
+  WHERE a."targetType" = 'LISTING' AND l."ownerId" = ${ownerId} AND a.action IN (${Prisma.join(Object.values(STRIKES).flat())})
+  ORDER BY a."createdAt" DESC LIMIT 5`;

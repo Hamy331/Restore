@@ -168,7 +168,8 @@ export async function listPending() {
  * pendingEdit { status, title, price, ..., updatedAt } (ra quyết định trên bản sửa thì gửi updatedAt của bản sửa)
  * và current { title, description, price, ..., images }: nội dung đang hiển thị, để so với bản sửa.
  * flags (và pendingEdit.flags): cờ nội dung tự động (số điện thoại, link, hàng cấm); flagged: chỉ tin bị gắn cờ,
- * tính cả bản sửa đang chờ duyệt.
+ * tính cả bản sửa đang chờ duyệt. owner.history { rejected, changesRequested, removed }: số lần tin của người đăng
+ * bị từ chối / yêu cầu sửa / gỡ.
  */
 export async function listForAdmin({ status, q, tier, edit, flagged, page }: AdminListingQuery) {
   const filters = { status, q, tier, edit };
@@ -179,8 +180,9 @@ export async function listForAdmin({ status, q, tier, edit, flagged, page }: Adm
       .map(({ id }) => id)
     : undefined;
   const [rows, total] = await listingRepository.findAdminPage({ ...filters, ids }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+  const history = await listingRepository.findSellerHistory(rows.map((row) => row.ownerId));
   const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
-    ...toAdminListing(item), flags: contentFlags(item.title, item.description),
+    ...withHistory(toAdminListing(item), history), flags: contentFlags(item.title, item.description),
     ...(revision && {
       pendingEdit: { ...toRevisionDto(revision), flags: contentFlags(revision.title, revision.description) },
       current: { title: item.title, description: item.description, price: item.price.toString(),
@@ -201,5 +203,21 @@ export async function adminDecide(actorId: string, id: string, { action, reason,
 /** Tin cho trang quản trị (null nếu không có) */
 export async function getAdminListing(id: string) {
   const row = await listingRepository.findAdminListing(id);
-  return row && { ...toAdminListing(row), flags: contentFlags(row.title, row.description) };
+  if (!row) return row;
+  return { ...withHistory(toAdminListing(row), await listingRepository.findSellerHistory([row.ownerId])),
+    flags: contentFlags(row.title, row.description) };
+}
+
+/** Lịch sử vi phạm của người đăng tin [id]: số lần bị từ chối / yêu cầu sửa / gỡ và 5 lần gần nhất kèm lý do */
+export async function getSellerHistory(id: string) {
+  const row = await listingRepository.findOwnerId(id);
+  if (!row) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy tin.');
+  const [history, recent] = await Promise.all([listingRepository.findSellerHistory([row.ownerId]), listingRepository.findRecentStrikes(row.ownerId)]);
+  return { ...(history.get(row.ownerId) ?? { rejected: 0, changesRequested: 0, removed: 0 }), recent };
+}
+
+/** Gắn owner.history { rejected, changesRequested, removed }: số lần tin của người đăng không được duyệt / bị gỡ */
+function withHistory<T extends { ownerId: string; owner?: object }>(item: T, history: Map<string, listingRepository.SellerHistory>) {
+  return { ...item, ...(item.owner && { owner: { ...item.owner,
+    history: history.get(item.ownerId) ?? { rejected: 0, changesRequested: 0, removed: 0 } } }) };
 }

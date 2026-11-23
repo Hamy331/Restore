@@ -3855,6 +3855,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get duplicatePostNew => 'Vẫn đăng mới';
 
   @override
+  String get contentFlagTitle => 'Tin có thể bị từ chối';
+
+  @override
+  String get contentFlagMessage =>
+      'Tin của bạn có nội dung dễ bị từ chối. Sửa lại để được duyệt nhanh hơn: trao đổi qua tin nhắn trong Restore, không ghi số điện thoại hay link.';
+
+  @override
+  String get contentFlagContact => 'Số điện thoại / liên hệ ngoài';
+
+  @override
+  String get contentFlagLink => 'Đường link';
+
+  @override
+  String get contentFlagBanned => 'Từ ngữ về hàng cấm';
+
+  @override
+  String get contentFlagEdit => 'Sửa lại';
+
+  @override
+  String get contentFlagSendAnyway => 'Vẫn gửi duyệt';
+
+  @override
   String postingPayReactivateTitle(int credits) {
     return 'Hiện lại tin này với $credits xu';
   }

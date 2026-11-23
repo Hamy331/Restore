@@ -435,7 +435,12 @@
           "fullName": "user-seller",
           "email": "user-seller@restore.test",
           "planTier": "PERSONAL",
-          "shop": null
+          "shop": null,
+          "history": {
+            "rejected": 0,
+            "changesRequested": 0,
+            "removed": 0
+          }
         },
         "category": {
           "id": "furniture",

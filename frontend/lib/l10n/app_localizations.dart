@@ -6920,6 +6920,48 @@ abstract class AppLocalizations {
   /// **'Post new anyway'**
   String get duplicatePostNew;
 
+  /// No description provided for @contentFlagTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing may be rejected'**
+  String get contentFlagTitle;
+
+  /// No description provided for @contentFlagMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing has content that is often rejected. Edit it to get approved faster: chat through Restore messages instead of sharing phone numbers or links.'**
+  String get contentFlagMessage;
+
+  /// No description provided for @contentFlagContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number / outside contact'**
+  String get contentFlagContact;
+
+  /// No description provided for @contentFlagLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get contentFlagLink;
+
+  /// No description provided for @contentFlagBanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Words about banned goods'**
+  String get contentFlagBanned;
+
+  /// No description provided for @contentFlagEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get contentFlagEdit;
+
+  /// No description provided for @contentFlagSendAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit anyway'**
+  String get contentFlagSendAnyway;
+
   /// No description provided for @postingPayReactivateTitle.
   ///
   /// In en, this message translates to:
