@@ -29,9 +29,11 @@ abstract class MyShopRepository {
   Future<MyShopOverview> load();
 
   /// Lên Cửa hàng: đồng ý Hợp đồng Cửa hàng [shopTermsVersion] và trả phí đăng
-  /// ký bằng xu; name bắt buộc, các trường khác tuỳ chọn
+  /// ký bằng xu; name và [categoryId] (danh mục duy nhất của tin cửa hàng) bắt
+  /// buộc, các trường khác tuỳ chọn
   Future<MyShopOverview> create({
     required String name,
+    required String categoryId,
     String? tagline,
     String? address,
   });
@@ -90,6 +92,7 @@ class ApiMyShopRepository implements MyShopRepository {
   @override
   Future<MyShopOverview> create({
     required String name,
+    required String categoryId,
     String? tagline,
     String? address,
   }) => _overview(
@@ -97,6 +100,7 @@ class ApiMyShopRepository implements MyShopRepository {
       '/shops/me',
       data: {
         'name': name,
+        'categoryId': categoryId,
         if (tagline != null && tagline.isNotEmpty) 'tagline': tagline,
         if (address != null && address.isNotEmpty) 'address': address,
         'termsVersion': shopTermsVersion,
@@ -185,6 +189,7 @@ class MockMyShopRepository implements MyShopRepository {
   @override
   Future<MyShopOverview> create({
     required String name,
+    required String categoryId,
     String? tagline,
     String? address,
   }) async {

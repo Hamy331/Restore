@@ -42,6 +42,7 @@ class MyShopOverview extends Equatable {
     this.verificationStatus,
     this.verificationNote,
     this.registrationFee = 199,
+    this.registrationCategories = const [],
     this.canCreate = false,
     this.nameLocked = false,
     this.stats,
@@ -63,6 +64,10 @@ class MyShopOverview extends Equatable {
 
   /// Phí đăng ký lên Cửa hàng (xu, trả một lần)
   final int registrationFee;
+
+  /// Danh mục chọn khi đăng ký (chỉ có khi chưa lên Cửa hàng): tin cửa hàng
+  /// chỉ đăng trong danh mục này
+  final List<({String id, String name})> registrationCategories;
   final bool canCreate;
   final bool nameLocked;
   final MyShopStats? stats;
@@ -83,6 +88,11 @@ class MyShopOverview extends Equatable {
           ? verification['rejectNote'] as String?
           : null,
       registrationFee: (json['registration']?['fee'] as num?)?.toInt() ?? 199,
+      registrationCategories: [
+        for (final item
+            in json['registration']?['categories'] as List? ?? const [])
+          if (item is Map) (id: '${item['id']}', name: '${item['name']}'),
+      ],
       canCreate: json['canCreate'] == true,
       nameLocked: json['nameLocked'] == true,
       stats: stats is Map
@@ -111,6 +121,7 @@ class MyShopOverview extends Equatable {
     verificationStatus,
     verificationNote,
     registrationFee,
+    registrationCategories,
     canCreate,
     nameLocked,
     stats,

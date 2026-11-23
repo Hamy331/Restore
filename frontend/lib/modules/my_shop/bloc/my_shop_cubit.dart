@@ -79,10 +79,16 @@ class MyShopCubit extends Cubit<MyShopState> with SafeEmit<MyShopState> {
 
   Future<String?> create({
     required String name,
+    required String categoryId,
     String? tagline,
     String? address,
   }) => _run(
-    () => _repository.create(name: name, tagline: tagline, address: address),
+    () => _repository.create(
+      name: name,
+      categoryId: categoryId,
+      tagline: tagline,
+      address: address,
+    ),
   );
 
   /// Tải logo / ảnh bìa mới (nếu có) rồi lưu các trường đã đổi
