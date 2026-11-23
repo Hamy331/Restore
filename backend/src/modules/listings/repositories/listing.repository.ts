@@ -1,4 +1,4 @@
-import { ListingCondition, ListingStatus, Prisma } from '@prisma/client';
+import { ListingCondition, ListingStatus, Prisma, type StoreTier } from '@prisma/client';
 import { prisma } from '../../../lib/prisma.js';
 import { adminListingSelect, listingSelect, ownerListingSelect, revisionSelect } from '../listing.dto.js';
 
@@ -188,11 +188,27 @@ export const adminCompareSelect = {
  * Danh sách quản trị: lọc trạng thái, tìm trong tiêu đề; cập nhật gần nhất trước.
  * edit = PENDING: chỉ tin có bản sửa chờ duyệt, gửi sớm trước.
  */
-export function findAdminPage({ status, q, edit }: { status?: ListingStatus; q?: string; edit?: 'PENDING' }, skip: number, take: number) {
-  const where: Prisma.ListingWhereInput = { ...(status ? { status } : {}), ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
-    ...(edit ? { revision: { status: edit } } : {}) };
-  const orderBy: Prisma.ListingOrderByWithRelationInput[] = edit
-    ? [{ revision: { submittedAt: 'asc' } }, { id: 'asc' }] : [{ updatedAt: 'desc' }, { id: 'desc' }];
+/** Người đăng đang dùng gói [tier] (gói hết hạn hoặc chưa bắt đầu tính là PERSONAL) */
+function sellerTierWhere(tier: StoreTier, now: Date): Prisma.ListingWhereInput {
+  const active = { startsAt: { lte: now }, endsAt: { gt: now } };
+  if (tier !== 'PERSONAL') return { owner: { storeSubscription: { is: { ...active, package: { tier } } } } };
+  return { owner: { NOT: { storeSubscription: { is: { ...active, package: { tier: { in: ['BASIC', 'PRO'] } } } } } } };
+}
+
+/**
+ * Trang tin cho admin. Hàng chờ (tin chờ duyệt, bản sửa chờ duyệt) xếp gửi sớm trước để tin cũ không bị chìm;
+ * các trạng thái khác mới cập nhật trước. q tìm trong tiêu đề, họ tên hoặc email người đăng.
+ */
+export function findAdminPage({ status, q, tier, edit }: { status?: ListingStatus; q?: string; tier?: StoreTier; edit?: 'PENDING' },
+  skip: number, take: number, now = new Date()) {
+  const contains = { contains: q, mode: 'insensitive' as const };
+  const where: Prisma.ListingWhereInput = {
+    ...(status ? { status } : {}), ...(edit ? { revision: { status: edit } } : {}),
+    ...(q ? { OR: [{ title: contains }, { owner: { fullName: contains } }, { owner: { email: contains } }] } : {}),
+    ...(tier ? sellerTierWhere(tier, now) : {}),
+  };
+  const orderBy: Prisma.ListingOrderByWithRelationInput[] = edit ? [{ revision: { submittedAt: 'asc' } }, { id: 'asc' }]
+    : status === ListingStatus.PENDING ? [{ updatedAt: 'asc' }, { id: 'asc' }] : [{ updatedAt: 'desc' }, { id: 'desc' }];
   return Promise.all([
     prisma.listing.findMany({ where, select: { ...adminListingSelect, ...adminCompareSelect, revision: { select: revisionSelect } },
       orderBy, skip, take }),

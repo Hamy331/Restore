@@ -406,7 +406,10 @@ export const favoritesQuery = pageQuery({ defaultLimit: 20, maxLimit: 100 });
 /** Query GET /admin/listings: status?, q? (1-100 ký tự, tìm trong tiêu đề), page */
 export const adminListingQuery = z.record(z.string(), z.unknown()).transform((query) => ({
   status: query.status ? choice(query.status, Object.values(ListingStatus)) : undefined,
+  /** Tìm trong tiêu đề, họ tên hoặc email người đăng */
   q: query.q ? text(query.q, 'q', 1, 100) : undefined,
+  /** Gói đang dùng của người đăng; gói hết hạn tính là PERSONAL */
+  tier: query.tier ? choice(query.tier, ['PERSONAL', 'BASIC', 'PRO'] as const) : undefined,
   /** edit=PENDING: chỉ tin đã duyệt có bản sửa đang chờ duyệt */
   edit: query.edit ? choice(query.edit, ['PENDING'] as const) : undefined,
   page: page(query.page),

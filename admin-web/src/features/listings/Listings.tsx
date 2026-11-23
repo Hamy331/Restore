@@ -6,7 +6,7 @@ import { Session } from '../../shared/api/session';
 import { useResource, type Page } from '../../shared/api/useResource';
 import { Failure } from '../../shared/ui/Failure';
 import { DecisionForm, type Action } from '../moderation/DecisionForm';
-import { ListingDetails, listingStatus, type Listing } from './ListingDetails';
+import { ListingDetails, SellerTags, listingStatus, planTiers, type Listing } from './ListingDetails';
 import { RevisionCompare } from './RevisionCompare';
 
 /** Giá trị bộ lọc riêng: tin đã duyệt có bản sửa đang chờ duyệt (gửi edit=PENDING thay cho status) */
@@ -20,10 +20,12 @@ export function Listings({ session }: { session: Session }) {
   const { filter } = useWorkspace();
   const [page, setPage] = useState(1),
     [status, setStatus] = useState(pickFilter(filter || 'PENDING', [...Object.keys(listingStatus), EDIT_FILTER], 'PENDING')),
-    [q, setQuery] = useState('');
+    [q, setQuery] = useState(''),
+    [tier, setTier] = useState('');
   const [item, select] = useState<Listing>(),
     [busy, setBusy] = useState(false);
   const params = new URLSearchParams({ page: String(page), q });
+  if (tier) params.set('tier', tier);
   if (status === EDIT_FILTER) params.set('edit', 'PENDING');
   else params.set('status', status);
   const { data, error, reload } = useResource<Page<Listing>>(session, '/admin/listings?' + params);
@@ -55,9 +57,23 @@ export function Listings({ session }: { session: Session }) {
             { value: EDIT_FILTER, label: 'Bản sửa chờ duyệt' },
           ]}
         />
+        <Select
+          aria-label="Gói của người đăng"
+          value={tier}
+          style={{ minWidth: 170 }}
+          onChange={(value) => {
+            setTier(value);
+            setPage(1);
+          }}
+          options={[
+            { value: '', label: 'Mọi gói người đăng' },
+            ...Object.entries(planTiers).map(([value, { label }]) => ({ value, label })),
+          ]}
+        />
         <Input.Search
-          aria-label="Tìm theo tiêu đề"
-          placeholder="Tìm theo tiêu đề"
+          aria-label="Tìm tin hoặc người đăng"
+          placeholder="Tìm tiêu đề, tên hoặc email người đăng"
+          style={{ minWidth: 300 }}
           allowClear
           maxLength={100}
           onSearch={(v) => {
@@ -76,7 +92,15 @@ export function Listings({ session }: { session: Session }) {
           scroll={{ x: 650 }}
           columns={[
             { title: 'Tin đăng', dataIndex: 'title' },
-            { title: 'Người đăng', render: (_, r) => r.owner?.fullName },
+            {
+              title: 'Người đăng',
+              render: (_, r) => (
+                <Space orientation="vertical" size={2}>
+                  {r.owner?.fullName}
+                  <SellerTags owner={r.owner} />
+                </Space>
+              ),
+            },
             {
               title: 'Trạng thái',
               render: (_, r) => (

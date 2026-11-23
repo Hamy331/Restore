@@ -167,8 +167,8 @@ export async function listPending() {
  * pendingEdit { status, title, price, ..., updatedAt } (ra quyết định trên bản sửa thì gửi updatedAt của bản sửa)
  * và current { title, description, price, ..., images }: nội dung đang hiển thị, để so với bản sửa.
  */
-export async function listForAdmin({ status, q, edit, page }: AdminListingQuery) {
-  const [rows, total] = await listingRepository.findAdminPage({ status, q, edit }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+export async function listForAdmin({ status, q, tier, edit, page }: AdminListingQuery) {
+  const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
   const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
     ...toAdminListing(item),
     ...(revision && {

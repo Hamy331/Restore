@@ -433,7 +433,9 @@
         "owner": {
           "id": "user-seller",
           "fullName": "user-seller",
-          "email": "user-seller@restore.test"
+          "email": "user-seller@restore.test",
+          "planTier": "PERSONAL",
+          "shop": null
         },
         "category": {
           "id": "furniture",
