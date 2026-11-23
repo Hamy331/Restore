@@ -89,6 +89,17 @@ class FakeAccountListingsRepository implements AccountListingsRepository {
   Future<void> setAutoExtend(String id, bool enabled) async =>
       autoExtended.add((id, enabled));
 
+  /// Các tin đã đưa lên trang Listing chính
+  final List<String> marketplaced = [];
+
+  @override
+  Future<void> publishToMarketplace(
+    String id, {
+    bool payWithCredits = false,
+  }) async {
+    marketplaced.add(id);
+  }
+
   /// Các lần bật/tắt tự gia hạn: (id, bật)
   final autoExtended = <(String, bool)>[];
 

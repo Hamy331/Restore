@@ -40,13 +40,32 @@ void main() {
     expect(opened, ['301']);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('a shop-only listing offers posting to the main listings', (
+    tester,
+  ) async {
+    final (repository, rowAction, _) = await _pumpAccount(
+      tester,
+      shopOnly: true,
+    );
+    expect(find.text('Chỉ ở trang Cửa hàng'), findsOneWidget);
+    // Đẩy tin / Hot sale chỉ có tác dụng trên trang chính nên không hiện
+    expect(rowAction('Đẩy tin'), findsNothing);
+    final publish = rowAction('Lên trang chính');
+    await tester.scrollUntilVisible(publish, 100);
+    await tester.tap(publish);
+    await tester.pumpAndSettle();
+    expect(repository.marketplaced, ['301']);
+    expect(find.text('Tin đã lên trang Listing chính'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 /// Mở trang Tài khoản với tin '301' đang hiển thị. Trả về repository và hàm
 /// tìm nút trong dòng tin đó theo chữ (null = nút ⋯), và các mã tin đã mở
 /// trang quảng bá.
 Future<(FakeAccountListingsRepository, Finder Function(String?), List<String>)>
-_pumpAccount(WidgetTester tester) async {
+_pumpAccount(WidgetTester tester, {bool shopOnly = false}) async {
   tester.view.physicalSize = const Size(360, 1000);
   tester.view.devicePixelRatio = 1;
   addTearDown(() {
@@ -67,6 +86,7 @@ _pumpAccount(WidgetTester tester) async {
               image: '',
               createdAt: now.subtract(const Duration(days: 3)),
               expiresAt: now.add(const Duration(days: 57)),
+              shopOnly: shopOnly,
             ),
           ],
         )
@@ -133,7 +153,7 @@ _pumpAccount(WidgetTester tester) async {
     (element) => find
         .descendant(
           of: find.byElementPredicate((e) => e == element),
-          matching: find.text('Đẩy tin'),
+          matching: find.text(shopOnly ? 'Lên trang chính' : 'Đẩy tin'),
         )
         .evaluate()
         .isNotEmpty,
