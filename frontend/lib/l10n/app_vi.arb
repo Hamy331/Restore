@@ -2,7 +2,7 @@
   "sellerQuickChat": "Chat nhanh",
   "sellerDeal": "Deal giá",
   "sellerPartnerTitle": "Đối tác ReStore",
-  "sellerPartnerInfo": "Người bán đang sử dụng gói Cửa hàng Pro của ReStore. Bạn có thể hỏi shop về bảo hành và đổi trả cho tin đăng này.",
+  "sellerPartnerInfo": "Đây là cửa hàng đã được ReStore duyệt. Bạn có thể hỏi shop về bảo hành và đổi trả cho tin đăng này.",
   "sellerGotIt": "Đã hiểu",
   "sellerOfferNote": "Để cho mình giá này nhé!",
   "sellerActivity": "Hoạt động",
@@ -1619,7 +1619,7 @@
   },
   "postingRuleFree": "Đăng tin miễn phí. Mỗi tin được kiểm duyệt trước khi hiển thị.",
   "postingRulePersonalUse": "Tài khoản cá nhân dành cho việc bán đồ của chính bạn. Nếu đăng bán nhiều và thường xuyên như kinh doanh, ReStore có thể chuyển bạn sang tài khoản bán chuyên.",
-  "postingRuleBusiness": "Gói Bán chuyên: tối đa {limit} tin mỗi chuyên mục. Gói Cửa hàng Pro có thêm trang cửa hàng riêng.",
+  "postingRuleBusiness": "Gói Bán chuyên: tối đa {limit} tin mỗi chuyên mục.",
   "@postingRuleBusiness": {
     "placeholders": {
       "limit": {
@@ -2097,10 +2097,9 @@
     }
   },
   "plansBenefitPriority": "Ưu tiên hiển thị trong chuyên mục chính",
-  "plansBenefitShopPage": "Trang cửa hàng riêng có ảnh bìa, hiện sau khi ReStore duyệt",
   "plansTaglinePersonal": "Bán đồ của chính bạn, không mất phí",
   "plansTaglineBasic": "Cho người bán thường xuyên, đăng nhiều tin hơn",
-  "plansTaglineShop": "Cho cửa hàng và thương hiệu, có trang riêng",
+  "plansTaglineShop": "Hạn mức đăng tin và lượt đẩy tin cao nhất",
   "plansPriceUnit": "xu / 30 ngày",
   "plansFreeForever": "Miễn phí mãi mãi",
   "plansBuy": "Mua gói",
@@ -2608,12 +2607,11 @@
   "spLoadError": "Không tải được poster",
   "spNoShopTitle": "Bạn chưa có trang shop",
   "spNoShopBody": "Poster hiện ở trang shop và trang Shop uy tín, nên cần có trang shop trước.",
-  "spPlanTitle": "Poster dành cho gói Cửa hàng Pro",
-  "spPlanBody": "Nâng lên gói Cửa hàng Pro để chạy poster ở trang shop và trang Shop uy tín.",
-  "spSeePlans": "Xem gói",
+  "spPartnerTitle": "Poster dành cho cửa hàng Đối tác",
+  "spPartnerBody": "Poster chạy được sau khi ReStore duyệt cửa hàng của bạn thành Đối tác. Xem trạng thái duyệt ở trang Quản lý shop.",
   "spSlots": "Poster cùng lúc",
   "spMonthly": "Đã gửi tháng này",
-  "spUnverified": "Shop chưa được xác minh nên poster đã duyệt chưa hiện công khai.",
+  "spUnverified": "Shop chưa được xác minh nên poster đã duyệt chỉ hiện ở trang shop, chưa lên trang Shop uy tín.",
   "spCooldown": "Bạn bị tạm khóa gửi poster đến {date} vì poster bị từ chối nhiều lần.",
   "@spCooldown": {
     "placeholders": {
@@ -2743,7 +2741,7 @@
   "spErrSlotFull": "Khung giờ này đã đủ số poster chạy cùng lúc. Hãy chọn ngày khác hoặc dừng một poster.",
   "spErrMonthly": "Bạn đã gửi đủ số poster của tháng này.",
   "spErrCooldown": "Bạn đang bị tạm khóa gửi poster.",
-  "spErrPlan": "Chỉ gói Cửa hàng Pro mới đăng được poster.",
+  "spErrPartner": "Cửa hàng cần được duyệt thành Đối tác để đăng poster.",
   "spErrShop": "Bạn cần có trang shop để đăng poster.",
   "spErrListing": "Tin này không còn bán, hãy chọn tin khác.",
   "spErrStartLate": "Chỉ hẹn ngày bắt đầu trước tối đa 14 ngày.",
@@ -2783,8 +2781,6 @@
   "cropTrimOn": "Đã bỏ viền thừa",
   "msTitle": "Quản lý shop",
   "msLoadError": "Chưa tải được thông tin shop",
-  "msPlanTitle": "Trang shop dành cho gói Cửa hàng Pro",
-  "msPlanBody": "Nâng cấp gói Cửa hàng Pro để mở trang shop riêng với logo, ảnh bìa và poster, và có thể được xác minh để lên mục Shop uy tín.",
   "msCreateTitle": "Mở trang shop của bạn",
   "msCreateBody": "Đặt tên shop trước, sau đó bạn thêm logo, ảnh bìa và giới thiệu.",
   "msCreateAction": "Mở shop",

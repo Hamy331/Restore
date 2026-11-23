@@ -14,7 +14,6 @@ import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
-import '../../../plans/views/plans/plans_view.dart';
 import '../../bloc/shop_posters_cubit.dart';
 import '../../models/shop_poster.dart';
 import '../../utils/poster_labels.dart';
@@ -81,19 +80,24 @@ class ShopPostersMobileView extends StatelessWidget {
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: isDesktopLayout(context)
-          ? DesktopSectionBar(title: l.spTitle)
-          : AppBar(
-            backgroundColor: AppColors.background,
-            surfaceTintColor: Colors.transparent,
-            leading: IconButton(
-              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              icon: const Icon(AppIcons.back, color: AppColors.textPrimary),
-              onPressed: () =>
-                  context.canPop() ? context.pop() : context.go('/home'),
-            ),
-            centerTitle: true,
-            title: Text(l.spTitle),
-          ),
+              ? DesktopSectionBar(title: l.spTitle)
+              : AppBar(
+                  backgroundColor: AppColors.background,
+                  surfaceTintColor: Colors.transparent,
+                  leading: IconButton(
+                    tooltip: MaterialLocalizations.of(
+                      context,
+                    ).backButtonTooltip,
+                    icon: const Icon(
+                      AppIcons.back,
+                      color: AppColors.textPrimary,
+                    ),
+                    onPressed: () =>
+                        context.canPop() ? context.pop() : context.go('/home'),
+                  ),
+                  centerTitle: true,
+                  title: Text(l.spTitle),
+                ),
           bottomNavigationBar: canManage
               ? AppBottomActionBar(
                   key: const ValueKey('poster-create'),
@@ -135,11 +139,11 @@ class ShopPostersMobileView extends StatelessWidget {
     if (!overview.limits.allowed) {
       return FeedbackView(
         icon: AppIcons.posterPromo,
-        title: l.spPlanTitle,
-        message: l.spPlanBody,
+        title: l.spPartnerTitle,
+        message: l.spPartnerBody,
         action: FilledButton(
-          onPressed: () => context.push(PlansView.path),
-          child: Text(l.spSeePlans),
+          onPressed: () => context.push(MyShopView.path),
+          child: Text(l.msTitle),
         ),
       );
     }

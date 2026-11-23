@@ -269,7 +269,6 @@ class _PlanList extends StatelessWidget {
         if (package.boostDiscountPercent > 0)
           l10n.plansBenefitBoostDiscount(package.boostDiscountPercent),
         if (package.priorityLevel > 0) l10n.plansBenefitPriority,
-        if (package.plan == SubscriptionPlan.shop) l10n.plansBenefitShopPage,
       ],
       actionLabel: isCurrent
           ? l10n.plansRenew

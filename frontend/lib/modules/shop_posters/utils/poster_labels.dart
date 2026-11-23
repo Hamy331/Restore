@@ -30,7 +30,7 @@ extension PosterLabels on AppLocalizations {
     'POSTER_SLOT_FULL' => spErrSlotFull,
     'POSTER_MONTHLY_LIMIT' => spErrMonthly,
     'POSTER_COOLDOWN' => spErrCooldown,
-    'POSTER_PLAN_REQUIRED' => spErrPlan,
+    'POSTER_PARTNER_REQUIRED' => spErrPartner,
     'SHOP_REQUIRED' => spErrShop,
     'POSTER_LISTING_INVALID' => spErrListing,
     'POSTER_START_TOO_LATE' => spErrStartLate,

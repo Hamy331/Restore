@@ -19,7 +19,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get sellerPartnerInfo =>
-      'Người bán đang sử dụng gói Cửa hàng Pro của ReStore. Bạn có thể hỏi shop về bảo hành và đổi trả cho tin đăng này.';
+      'Đây là cửa hàng đã được ReStore duyệt. Bạn có thể hỏi shop về bảo hành và đổi trả cho tin đăng này.';
 
   @override
   String get sellerGotIt => 'Đã hiểu';
@@ -3060,7 +3060,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String postingRuleBusiness(int limit) {
-    return 'Gói Bán chuyên: tối đa $limit tin mỗi chuyên mục. Gói Cửa hàng Pro có thêm trang cửa hàng riêng.';
+    return 'Gói Bán chuyên: tối đa $limit tin mỗi chuyên mục.';
   }
 
   @override
@@ -3978,10 +3978,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get plansBenefitPriority => 'Ưu tiên hiển thị trong chuyên mục chính';
 
   @override
-  String get plansBenefitShopPage =>
-      'Trang cửa hàng riêng có ảnh bìa, hiện sau khi ReStore duyệt';
-
-  @override
   String get plansTaglinePersonal => 'Bán đồ của chính bạn, không mất phí';
 
   @override
@@ -3989,7 +3985,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Cho người bán thường xuyên, đăng nhiều tin hơn';
 
   @override
-  String get plansTaglineShop => 'Cho cửa hàng và thương hiệu, có trang riêng';
+  String get plansTaglineShop => 'Hạn mức đăng tin và lượt đẩy tin cao nhất';
 
   @override
   String get plansPriceUnit => 'xu / 30 ngày';
@@ -4525,14 +4521,11 @@ class AppLocalizationsVi extends AppLocalizations {
       'Poster hiện ở trang shop và trang Shop uy tín, nên cần có trang shop trước.';
 
   @override
-  String get spPlanTitle => 'Poster dành cho gói Cửa hàng Pro';
+  String get spPartnerTitle => 'Poster dành cho cửa hàng Đối tác';
 
   @override
-  String get spPlanBody =>
-      'Nâng lên gói Cửa hàng Pro để chạy poster ở trang shop và trang Shop uy tín.';
-
-  @override
-  String get spSeePlans => 'Xem gói';
+  String get spPartnerBody =>
+      'Poster chạy được sau khi ReStore duyệt cửa hàng của bạn thành Đối tác. Xem trạng thái duyệt ở trang Quản lý shop.';
 
   @override
   String get spSlots => 'Poster cùng lúc';
@@ -4542,7 +4535,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get spUnverified =>
-      'Shop chưa được xác minh nên poster đã duyệt chưa hiện công khai.';
+      'Shop chưa được xác minh nên poster đã duyệt chỉ hiện ở trang shop, chưa lên trang Shop uy tín.';
 
   @override
   String spCooldown(String date) {
@@ -4759,7 +4752,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get spErrCooldown => 'Bạn đang bị tạm khóa gửi poster.';
 
   @override
-  String get spErrPlan => 'Chỉ gói Cửa hàng Pro mới đăng được poster.';
+  String get spErrPartner =>
+      'Cửa hàng cần được duyệt thành Đối tác để đăng poster.';
 
   @override
   String get spErrShop => 'Bạn cần có trang shop để đăng poster.';
@@ -4881,13 +4875,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get msLoadError => 'Chưa tải được thông tin shop';
-
-  @override
-  String get msPlanTitle => 'Trang shop dành cho gói Cửa hàng Pro';
-
-  @override
-  String get msPlanBody =>
-      'Nâng cấp gói Cửa hàng Pro để mở trang shop riêng với logo, ảnh bìa và poster, và có thể được xác minh để lên mục Shop uy tín.';
 
   @override
   String get msCreateTitle => 'Mở trang shop của bạn';
