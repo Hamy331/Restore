@@ -1,7 +1,9 @@
 import { AppError } from '../../common/errors/app-error.js';
+
 /*
  * Gắn cờ nội dung tin đăng cho admin: chỉ đánh dấu để duyệt kỹ hơn, không tự từ chối tin (người đăng được cảnh báo trước).
- * Quét tiêu đề và mô tả lúc admin mở hàng chờ, nên đổi luật ở đây là áp dụng ngay cho mọi tin.
+ * Cờ hiển thị cho admin quét lại lúc mở hàng chờ (đổi luật là áp dụng ngay); bộ lọc "chỉ tin bị gắn cờ" dùng
+ * cột flagged ghi lúc gửi duyệt, nên đổi luật chỉ áp cho tin gửi sau đó.
  */
 
 export type FlagCode = 'CONTACT' | 'LINK' | 'BANNED';
@@ -47,6 +49,9 @@ export function contentFlags(...texts: (string | null | undefined)[]): ContentFl
   }
   return flags;
 }
+
+/** Nội dung có ít nhất một cờ; lưu vào Listing.flagged / ListingRevision.flagged lúc gửi duyệt */
+export const isFlagged = (title: string, description: string) => contentFlags(title, description).length > 0;
 
 /**
  * Cảnh báo lúc đăng / sửa tin: nội dung bị gắn cờ thì 409 CONTENT_FLAGGED { details: { flags } } để người dùng

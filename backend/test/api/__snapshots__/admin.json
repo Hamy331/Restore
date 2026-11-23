@@ -80,6 +80,7 @@
             "subcategoryId": null,
             "ownerId": "user-seller",
             "condition": "USED_GOOD",
+            "flagged": false,
             "owner": {
               "id": "user-seller",
               "fullName": "user-seller",

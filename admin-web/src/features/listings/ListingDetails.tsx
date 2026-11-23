@@ -26,6 +26,8 @@ export type Listing = {
   reviewReason?: string;
   /** Cờ nội dung tự động của nội dung đang có (bản sửa có cờ riêng trong pendingEdit.flags) */
   flags?: ContentFlag[];
+  /** Nội dung bị gắn cờ lúc gửi duyệt: người đăng đã được cảnh báo và vẫn gửi */
+  flagged?: boolean;
   /** Bản sửa của tin đã duyệt (PENDING: chờ duyệt, REJECTED: đã từ chối) */
   pendingEdit?: PendingEdit;
   /** Nội dung đang hiển thị, có khi tin có bản sửa */
@@ -156,7 +158,7 @@ export function ListingDetails({ item, session, summary }: { item: Listing; sess
       )}
       {!summary && (
         <>
-          <FlagNotice flags={item.flags} />
+          <FlagNotice flags={item.flags} ignored={item.flagged} />
           <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>
             {item.description}
           </Typography.Paragraph>
