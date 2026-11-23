@@ -28,12 +28,21 @@ class _Repo extends MockMyShopRepository {
   @override
   Future<MyShopOverview> create({
     required String name,
+    required String categoryId,
     String? tagline,
     String? address,
   }) async {
     if (createError != null) throw MyShopException(createError!);
-    return super.create(name: name, tagline: tagline, address: address);
+    createdCategory = categoryId;
+    return super.create(
+      name: name,
+      categoryId: categoryId,
+      tagline: tagline,
+      address: address,
+    );
   }
+
+  String? createdCategory;
 
   @override
   Future<MyShopOverview> update(Map<String, dynamic> changes) {
@@ -144,7 +153,15 @@ void main() {
   testWidgets('regular account becomes a shop: intro, benefits, agreement, pay', (
     tester,
   ) async {
-    final repository = _Repo(const MyShopOverview(canCreate: true));
+    final repository = _Repo(
+      const MyShopOverview(
+        canCreate: true,
+        registrationCategories: [
+          (id: 'furniture', name: 'Nội thất'),
+          (id: 'fashion', name: 'Thời trang'),
+        ],
+      ),
+    );
     await _pump(tester, repository);
     // không cần gói tài khoản: vào thẳng luồng lên Cửa hàng
     expect(find.text('Chuyển sang tài khoản Cửa hàng'), findsOneWidget);
@@ -161,6 +178,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('my-shop-create')));
     await tester.pump();
     expect(find.text('Tên shop từ 2 đến 60 ký tự.'), findsOneWidget);
+    expect(find.text('Chọn một danh mục cho cửa hàng'), findsOneWidget);
     expect(find.text('Bạn cần đồng ý hợp đồng để đăng ký.'), findsOneWidget);
 
     // xem toàn văn hợp đồng rồi quay lại
@@ -174,11 +192,18 @@ void main() {
 
     await tester.enterText(_field('my-shop-name'), 'Góc Gỗ');
     await tester.enterText(_field('my-shop-address'), 'Quận 3, TP.HCM');
+    // tin cửa hàng chỉ đăng trong một danh mục
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('shop-category-furniture')),
+    );
+    await tester.tap(find.byKey(const ValueKey('shop-category-furniture')));
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('become-shop-agree')));
     await tester.pump();
     await tester.tap(find.byKey(const ValueKey('my-shop-create')));
     await _settle(tester);
 
+    expect(repository.createdCategory, 'furniture');
     // chúc mừng, mời xác minh (làm sau cũng được)
     expect(find.byKey(const ValueKey('become-shop-done')), findsOneWidget);
     expect(find.text('Bạn đã lên Cửa hàng!'), findsOneWidget);
@@ -210,14 +235,22 @@ void main() {
   });
 
   testWidgets('not enough credits offers a top-up', (tester) async {
-    final repository = _Repo(const MyShopOverview(canCreate: true))
-      ..createError = 'NOT_ENOUGH_CREDITS';
+    final repository = _Repo(
+      const MyShopOverview(
+        canCreate: true,
+        registrationCategories: [(id: 'furniture', name: 'Nội thất')],
+      ),
+    )..createError = 'NOT_ENOUGH_CREDITS';
     await _pump(tester, repository);
     await tester.tap(find.byKey(const ValueKey('become-shop-next')));
     await _settle(tester);
     await tester.tap(find.byKey(const ValueKey('become-shop-switch')));
     await _settle(tester);
     await tester.enterText(_field('my-shop-name'), 'Góc Gỗ');
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('shop-category-furniture')),
+    );
+    await tester.tap(find.byKey(const ValueKey('shop-category-furniture')));
     await tester.tap(find.byKey(const ValueKey('become-shop-agree')));
     await tester.pump();
     await tester.tap(find.byKey(const ValueKey('my-shop-create')));

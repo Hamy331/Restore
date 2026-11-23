@@ -139,8 +139,10 @@ void main() {
       await tester.drag(find.byType(NestedScrollView), const Offset(0, -500));
       await tester.pumpAndSettle();
       expect(find.text('Laptop Dell'), findsOneWidget);
-      expect(find.widgetWithText(Tab, l.accActivity), findsOneWidget);
-      await tester.tap(find.widgetWithText(Tab, l.accActivity));
+      // Cửa hàng: tab bài đăng gọi là Bảng tin
+      final postsTab = shop ? l.feedsTitle : l.accActivity;
+      expect(find.widgetWithText(Tab, postsTab), findsOneWidget);
+      await tester.tap(find.widgetWithText(Tab, postsTab));
       await tester.pumpAndSettle();
       expect(find.text(shop ? 'New stock' : l.feedEmpty), findsOneWidget);
       await tester.tap(find.widgetWithText(Tab, l.reviews));

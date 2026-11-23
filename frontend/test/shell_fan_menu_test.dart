@@ -9,6 +9,7 @@ void main() {
   Future<void> pumpNav(
     WidgetTester tester, {
     required SubscriptionPlan plan,
+    bool hasShop = false,
     required ValueChanged<int> onSelected,
     required ValueChanged<ShellQuickAction> onAction,
   }) async {
@@ -22,7 +23,7 @@ void main() {
           bottomNavigationBar: ShellBottomNav(
             selectedIndex: 0,
             onSelected: onSelected,
-            quickActions: ShellQuickAction.forPlan(plan),
+            quickActions: ShellQuickAction.forAccount(plan, hasShop: hasShop),
             onQuickAction: onAction,
           ),
         ),
@@ -44,26 +45,28 @@ void main() {
     expect(find.text('Poster shop'), findsNothing);
   });
 
-  testWidgets('gói Cửa hàng: xoè menu, chọn Poster shop rồi thu lại', (
-    tester,
-  ) async {
-    ShellQuickAction? picked;
-    await pumpNav(
-      tester,
-      plan: SubscriptionPlan.shop,
-      onSelected: (_) {},
-      onAction: (a) => picked = a,
-    );
-    await tester.tap(find.bySemanticsLabel('Mở menu nhanh'));
-    await tester.pumpAndSettle();
-    expect(find.text('Poster shop'), findsOneWidget);
-    expect(find.text('Quản lý shop'), findsOneWidget);
+  testWidgets(
+    'cửa hàng (gói nào cũng được): xoè menu, chọn Poster shop rồi thu lại',
+    (tester) async {
+      ShellQuickAction? picked;
+      await pumpNav(
+        tester,
+        plan: SubscriptionPlan.personal,
+        hasShop: true,
+        onSelected: (_) {},
+        onAction: (a) => picked = a,
+      );
+      await tester.tap(find.bySemanticsLabel('Mở menu nhanh'));
+      await tester.pumpAndSettle();
+      expect(find.text('Poster shop'), findsOneWidget);
+      expect(find.text('Quản lý shop'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel('Poster shop'));
-    await tester.pumpAndSettle();
-    expect(picked, ShellQuickAction.poster);
-    expect(find.text('Poster shop'), findsNothing);
-  });
+      await tester.tap(find.bySemanticsLabel('Poster shop'));
+      await tester.pumpAndSettle();
+      expect(picked, ShellQuickAction.poster);
+      expect(find.text('Poster shop'), findsNothing);
+    },
+  );
 
   testWidgets('gói Bán chuyên: bấm nền tối thì đóng menu', (tester) async {
     await pumpNav(

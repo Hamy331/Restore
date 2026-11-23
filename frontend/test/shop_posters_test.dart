@@ -90,7 +90,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('non-store plan sees the upgrade prompt', (tester) async {
+  testWidgets('a shop that is not a partner yet is sent to My shop', (
+    tester,
+  ) async {
     await _pump(
       tester,
       ShopPostersView(
@@ -101,8 +103,8 @@ void main() {
         ),
       ),
     );
-    expect(find.text('Poster dành cho gói Cửa hàng'), findsOneWidget);
-    expect(find.text('Xem gói'), findsOneWidget);
+    expect(find.text('Poster dành cho cửa hàng Đối tác'), findsOneWidget);
+    expect(find.text('Quản lý shop'), findsOneWidget);
     expect(find.byKey(const ValueKey('poster-create')), findsNothing);
   });
 

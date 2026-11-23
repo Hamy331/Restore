@@ -12,7 +12,7 @@ export const posterSelect = {
 export type PosterRecord = Prisma.ShopBannerGetPayload<{ select: typeof posterSelect }>;
 
 export const findOwnShop = (db: Db, ownerId: string) =>
-  db.shop.findUnique({ where: { ownerId }, select: { id: true, name: true, logoUrl: true, verificationType: true } });
+  db.shop.findUnique({ where: { ownerId }, select: { id: true, name: true, logoUrl: true, status: true, verificationType: true } });
 
 /** Khóa theo shop trong transaction để hai lần gửi cùng lúc không vượt hạn mức */
 export const lockShop = (db: Db, shopId: string) =>

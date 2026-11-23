@@ -23,9 +23,17 @@ final myShopVerifyKey = GlobalKey(debugLabel: 'my-shop-verify');
 /// đồng, phí xu). Xong thì trang Quản lý shop hiện shop mới và màn hình chúc
 /// mừng mời xác minh giấy phép (làm sau cũng được).
 class BecomeShopFlow extends StatefulWidget {
-  const BecomeShopFlow({super.key, required this.saving, required this.fee});
+  const BecomeShopFlow({
+    super.key,
+    required this.saving,
+    required this.fee,
+    this.categories = const [],
+  });
 
   final bool saving;
+
+  /// Danh mục để chọn: tin của cửa hàng chỉ đăng trong một danh mục
+  final List<({String id, String name})> categories;
 
   /// Phí đăng ký (xu)
   final int fee;
@@ -39,6 +47,7 @@ class _BecomeShopFlowState extends State<BecomeShopFlow> {
   final _tagline = TextEditingController();
   final _address = TextEditingController();
   int _step = 0;
+  String? _categoryId;
   bool _agreed = false;
   bool _showErrors = false;
 
@@ -70,12 +79,13 @@ class _BecomeShopFlowState extends State<BecomeShopFlow> {
   Future<void> _register() async {
     final l = AppLocalizations.of(context)!;
     setState(() => _showErrors = true);
-    if (!_nameValid || !_agreed) return;
+    if (!_nameValid || _categoryId == null || !_agreed) return;
     // Tạo xong trang này bị thay bằng trang Quản lý shop: giữ navigator để
     // hiện màn hình chúc mừng
     final navigator = Navigator.of(context);
     final error = await context.read<MyShopCubit>().create(
       name: _name.text.trim(),
+      categoryId: _categoryId!,
       tagline: _tagline.text.trim(),
       address: _address.text.trim(),
     );
@@ -289,6 +299,39 @@ class _BecomeShopFlowState extends State<BecomeShopFlow> {
               errorText: _showErrors && !_nameValid ? l.msNameRequired : null,
               onChanged: (_) => setState(() {}),
             ),
+            const SizedBox(height: 14),
+            Text(
+              '${l.bsCategory} *',
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l.bsCategoryHint,
+              style: const TextStyle(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final category in widget.categories)
+                  ChoiceChip(
+                    key: ValueKey('shop-category-${category.id}'),
+                    label: Text(category.name),
+                    selected: _categoryId == category.id,
+                    onSelected: (_) =>
+                        setState(() => _categoryId = category.id),
+                  ),
+              ],
+            ),
+            if (_showErrors && _categoryId == null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  l.bsCategoryRequired,
+                  style: const TextStyle(color: AppColors.error, fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 14),
             AppLabeledTextField(
               key: const ValueKey('my-shop-tagline'),

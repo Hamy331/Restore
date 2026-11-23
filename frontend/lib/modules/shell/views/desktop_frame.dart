@@ -10,6 +10,7 @@ import 'package:restore/modules/ai/bloc/ai_assistant_cubit.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
+import 'package:restore/modules/my_shop/utils/shop_session.dart';
 import 'package:restore/modules/plans/utils/plan_session.dart';
 import 'package:restore/shared/widgets/desktop/desktop_header.dart';
 
@@ -84,8 +85,9 @@ class _DesktopFrameState extends State<DesktopFrame> {
   @override
   void initState() {
     super.initState();
-    // Gói thật của tài khoản cho menu nút giữa và lời chào trang chủ
+    // Gói thật và trạng thái cửa hàng của tài khoản cho menu nút giữa
     unawaited(PlanSession.refresh());
+    unawaited(ShopSession.refresh());
     _badges = ShellBadgesCubit(chatRepository: _repository)..refresh();
     _appState = WidgetsBinding.instance.lifecycleState;
     _lifecycle = AppLifecycleListener(

@@ -1,3 +1,4 @@
+import 'package:restore/modules/my_shop/utils/shop_session.dart';
 import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,7 +53,7 @@ class MainShell extends StatelessWidget {
     context.read<ShellBadgesCubit>().refresh();
   }
 
-  /// Nút trong menu xoè của gói tier cao. Đăng tin mở trang đăng, Đẩy tin
+  /// Nút trong menu xoè (gói trả phí / cửa hàng). Đăng tin mở trang đăng, Đẩy tin
   /// mở trang Boost (danh sách tin để quảng bá), Thống kê mở trang Thống kê,
   /// Shop poster mở trang quản lý poster, Quản lý shop mở trang sửa shop.
   void _quickAction(BuildContext context, ShellQuickAction action) {
@@ -105,15 +106,22 @@ class MainShell extends StatelessWidget {
             Positioned.fill(child: aiBubble),
           ],
         ),
-        // Gói lấy từ nút test đổi gói (chưa có API gói đăng ký)
-        bottomNavigationBar: ValueListenableBuilder(
-          valueListenable: DevPlanOverride.plan,
-          builder: (context, plan, _) => BlocBuilder<ShellBadgesCubit, int>(
+        // Gói (đẩy tin, thống kê) và cửa hàng (poster, quản lý shop) là hai
+        // thứ riêng: lên Cửa hàng không cần gói nào
+        bottomNavigationBar: ListenableBuilder(
+          listenable: Listenable.merge([
+            DevPlanOverride.plan,
+            ShopSession.hasShop,
+          ]),
+          builder: (context, _) => BlocBuilder<ShellBadgesCubit, int>(
             builder: (context, unread) => ShellBottomNav(
               selectedIndex: _uiIndex,
               onSelected: (i) => _select(context, i),
               unreadMessages: unread,
-              quickActions: ShellQuickAction.forPlan(plan),
+              quickActions: ShellQuickAction.forAccount(
+                DevPlanOverride.plan.value,
+                hasShop: ShopSession.hasShop.value,
+              ),
               onQuickAction: (action) => _quickAction(context, action),
             ),
           ),
