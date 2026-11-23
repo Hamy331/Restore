@@ -43,6 +43,22 @@ class FakeProfileRepository implements ProfileRepository {
     return _profile;
   }
 
+  /// Mã gửi về email mới, hiệu lực 600 giây; nhập `000000` thì đổi được
+  String? _pendingEmail;
+  @override
+  Future<int> requestEmailChange(String email, String password) async {
+    _pendingEmail = email;
+    return 600;
+  }
+
+  @override
+  Future<String> verifyEmailChange(String otp) async {
+    if (otp != '000000' || _pendingEmail == null) {
+      throw const ProfileUpdateException('INVALID_OTP');
+    }
+    return _pendingEmail!;
+  }
+
   @override
   Future<void> follow(String id) async => _following.add(id);
   @override
