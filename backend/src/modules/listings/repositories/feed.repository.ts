@@ -56,7 +56,7 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
           WHERE p."listingId" = l.id AND p."startsAt" <= ${now}
         ) boosted ON TRUE
         WHERE l.status = 'AVAILABLE'
-          ${filters.ownerId ? Prisma.sql`AND l."ownerId" = ${filters.ownerId}` : Prisma.sql`AND l."shopOnly" = false`}
+          ${filters.ownerId ? Prisma.sql`AND l."ownerId" = ${filters.ownerId}` : Prisma.empty}
           AND (${filters.allowExchange ?? false} = false OR l."allowExchange"=true)
           AND (${filters.verifiedShop ?? false} = false OR EXISTS (
             SELECT 1 FROM "Shop" s WHERE s."ownerId" = l."ownerId" AND s."verificationType" IS NOT NULL))
@@ -197,7 +197,6 @@ export const findFeatured = (now: Date, limit: number, categoryId?: string, skip
   prisma.listing.findMany({
     where: {
       ...visible,
-      shopOnly: false,
       ...(categoryId ? { categoryId } : {}),
       promotions: { some: { startsAt: { lte: now }, endsAt: { gt: now }, package: { kind: 'FEATURED' } } },
     },

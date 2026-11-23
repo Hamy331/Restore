@@ -414,8 +414,6 @@ model Listing {
   allowExchange Boolean          @default(false)
   exchangeWish  String           @default("")
   sellerType    String           @default("PERSONAL")
-  /// Tin chỉ ở trang Cửa hàng (không lên trang chủ / tìm kiếm / AI), không tính hạn mức gói; chỉ shop Đối tác, đúng danh mục shop
-  shopOnly      Boolean          @default(false)
   attributes    Json             @default("{}")
   location      Json?
   reviewReason  String?

@@ -30,10 +30,10 @@ export const findSubscription = (tx: Db, userId: string) =>
 export const findPersonalPackage = (tx: Db) => tx.storePackage.findUnique({ where: { tier: StoreTier.PERSONAL } });
 
 export const countPublishedSince = (tx: Db, ownerId: string, since: Date) =>
-  tx.listing.count({ where: { ownerId, shopOnly: false, publishedAt: { gte: since } } });
+  tx.listing.count({ where: { ownerId, publishedAt: { gte: since } } });
 
 export const countActiveListings = (tx: Db, ownerId: string) =>
-  tx.listing.count({ where: { ownerId, shopOnly: false, status: { in: ['PENDING', 'AVAILABLE', 'RESERVED'] } } });
+  tx.listing.count({ where: { ownerId, status: { in: ['PENDING', 'AVAILABLE', 'RESERVED'] } } });
 
 export const countDrafts = (tx: Db, ownerId: string) =>
   tx.listing.count({ where: { ownerId, status: 'DRAFT' } });

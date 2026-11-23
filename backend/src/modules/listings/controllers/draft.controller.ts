@@ -3,7 +3,7 @@ import { created, noContent, ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
 import type { DraftInput, ListingIdParams } from '../listing.dto.js';
-import { acceptsFlags, allowsDuplicate, shopOnly, wantsToPay } from './listing.controller.js';
+import { acceptsFlags, allowsDuplicate, wantsToPay } from './listing.controller.js';
 import * as draftService from '../services/draft.service.js';
 import { rememberListingAddress } from '../../users/index.js';
 
@@ -19,7 +19,7 @@ export async function update(req: AuthRequest, res: Response) {
 
 export async function publish(req: AuthRequest, res: Response) {
   const { params } = getInput<ValidatedInput<undefined, ListingIdParams>>(res);
-  const listing = await draftService.publishDraft(req.user!.userId, params.id, wantsToPay(req), allowsDuplicate(req), acceptsFlags(req), shopOnly(req));
+  const listing = await draftService.publishDraft(req.user!.userId, params.id, wantsToPay(req), allowsDuplicate(req), acceptsFlags(req));
   // Đăng nháp xong thì lưu địa chỉ của tin vào sổ địa chỉ
   await rememberListingAddress(req.user!.userId, listing.location);
   ok(res, listing);

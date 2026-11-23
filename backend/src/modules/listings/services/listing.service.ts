@@ -34,20 +34,6 @@ export async function requireOwnedListing(tx: Db, id: string, ownerId: string) {
   return listing;
 }
 
-/**
- * Tin chỉ ở Cửa hàng: chủ là shop Đối tác (đã duyệt / đã xác minh) và tin đúng danh mục đã chọn khi đăng ký.
- * Lỗi 403 SHOP_ONLY_FORBIDDEN, 400 SHOP_CATEGORY_MISMATCH
- */
-export async function assertShopListing(tx: Db, ownerId: string, categoryId: string | null) {
-  const shop = await tx.shop.findUnique({ where: { ownerId }, select: { status: true, verificationType: true, categoryIds: true } });
-  if (!shop || (shop.status !== 'APPROVED' && shop.verificationType === null)) {
-    throw new AppError(403, 'SHOP_ONLY_FORBIDDEN', 'Chỉ cửa hàng Đối tác mới đăng tin lên trang Cửa hàng.');
-  }
-  if (!categoryId || !shop.categoryIds.includes(categoryId)) {
-    throw new AppError(400, 'SHOP_CATEGORY_MISMATCH', 'Tin cửa hàng phải thuộc danh mục của shop.', 'categoryId');
-  }
-}
-
 /** Cập nhật tin khi trạng thái vẫn như lúc đọc, nếu không thì 409 LISTING_CHANGED */
 export async function updateOwnedListing(tx: Db, id: string, ownerId: string,
   expectedStatus: ListingStatus, data: Prisma.ListingUncheckedUpdateManyInput) {
@@ -153,18 +139,16 @@ export async function withListingWriteTransaction<T>(work: (tx: Db) => Promise<T
  * Đăng tin mới, chờ duyệt (PENDING). Hết suất miễn phí thì cần [payWithCredits]:
  * xu được giữ ngay, duyệt thì trừ hẳn, từ chối thì hoàn.
  */
-export async function createListing(ownerId: string, data: ListingInput, payWithCredits = false, allowDuplicate = false, shopOnly = false) {
+export async function createListing(ownerId: string, data: ListingInput, payWithCredits = false, allowDuplicate = false) {
   const listing = await withListingWriteTransaction(async (tx) => {
     const now = new Date();
     const category = await assertPublishable(tx, data);
     await assertNotDuplicate(tx, ownerId, data, { allowDuplicate, now });
-    // Tin chỉ ở Cửa hàng không giới hạn, không tính hạn mức gói
-    if (shopOnly) await assertShopListing(tx, ownerId, data.categoryId);
-    const price = shopOnly ? 0 : await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits });
+    const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits });
     await assertOriginalPrice(tx, ownerId, now, data);
     const display = await resolveDisplay(tx, ownerId, now, category, data);
     const created = await listingRepository.createListing(
-      { ...data, ownerId, shopOnly, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price, flagged: isFlagged(data.title, data.description),
+      { ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price, flagged: isFlagged(data.title, data.description),
         displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays }, tx);
     await chargeListing(tx, ownerId, created.id, price, data.title, display);
     return created;
@@ -217,9 +201,8 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
     if (current.paidCredits > 0 && categoryChanged) {
       throw new AppError(409, 'CATEGORY_LOCKED', 'Tin đã trả xu không đổi được chuyên mục.', 'categoryId');
     }
-    if (current.shopOnly && categoryChanged) await assertShopListing(tx, ownerId, data.categoryId);
     let price = 0;
-    if (!current.shopOnly && current.paidCredits === 0 && (categoryChanged || !COUNTED_STATUSES.includes(current.status))) {
+    if (current.paidCredits === 0 && (categoryChanged || !COUNTED_STATUSES.includes(current.status))) {
       price = await assertPostingSlot(tx, ownerId, new Date(), { categoryId: data.categoryId, daily: false, payWithCredits, excludeId: id });
     }
     await updateOwnedListing(tx, id, ownerId, current.status, {
@@ -263,7 +246,7 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
       if (!category) throw new AppError(409, 'INVALID_LISTING', 'Danh mục không còn được sử dụng.');
       if (isExpired(current.expiresAt, now)) {
         // Kích hoạt lại tin hết hạn: tính như đăng mới (còn suất thì miễn phí, hết suất thì trả xu), hiển thị thêm một kỳ
-        const price = current.shopOnly ? 0 : await assertPostingSlot(tx, ownerId, now,
+        const price = await assertPostingSlot(tx, ownerId, now,
           { categoryId: current.categoryId, daily: false, payWithCredits, excludeId: id });
         const { plan } = await displayPricing(tx, ownerId, now);
         await updateOwnedListing(tx, id, ownerId, current.status, {
@@ -273,7 +256,7 @@ export async function changeStatus(ownerId: string, id: string, target: ListingS
         return listingRepository.findSelected(tx, id);
       }
       // Hiện lại tin còn hạn: tin miễn phí cần còn suất, hết suất thì trả xu (tin đã trả xu giữ suất của nó)
-      const price = !current.shopOnly && current.paidCredits === 0
+      const price = current.paidCredits === 0
         ? await assertPostingSlot(tx, ownerId, now, { categoryId: current.categoryId, daily: false, payWithCredits, excludeId: id })
         : 0;
       await updateOwnedListing(tx, id, ownerId, current.status, {
@@ -362,7 +345,6 @@ export async function boostListing(ownerId: string, id: string) {
     if (current.status !== ListingStatus.AVAILABLE) {
       throw new AppError(409, 'LISTING_NOT_BOOSTABLE', 'Chỉ đẩy được tin đang hiển thị.');
     }
-    if (current.shopOnly) throw shopOnlyPromotion();
     const category = current.categoryId ? await listingRepository.findActiveCategory(tx, current.categoryId) : null;
     if (!category) throw new AppError(409, 'INVALID_LISTING', 'Danh mục không còn được sử dụng.');
     const running = await findRunningPromotion(tx, id, 'BUMP', now);
@@ -387,42 +369,12 @@ export async function boostListing(ownerId: string, id: string) {
   return result;
 }
 
-const shopOnlyPromotion = () =>
-  new AppError(409, 'LISTING_SHOP_ONLY', 'Tin chỉ ở trang Cửa hàng. Đăng tin lên trang Listing chính trước khi đẩy tin.');
-
-/**
- * Đưa tin của Cửa hàng lên trang Listing chính (onMarketplace = true) hoặc chỉ để ở trang Cửa hàng (false).
- * Lên trang chính thì tính hạn mức gói như tin thường: hết suất thì trả xu (409 POSTING_LIMIT_REACHED nếu chưa đồng ý).
- * Về chỉ Cửa hàng cần shop Đối tác và đúng danh mục shop; xu đã trả không hoàn.
- */
-export async function setMarketplace(ownerId: string, id: string, onMarketplace: boolean, payWithCredits = false) {
-  const listing = await withQuotaTransaction(async (tx) => {
-    const current = await requireOwnedListing(tx, id, ownerId);
-    if (current.shopOnly !== onMarketplace) return listingRepository.findSelected(tx, id);
-    if (!onMarketplace) {
-      await assertShopListing(tx, ownerId, current.categoryId);
-      await updateOwnedListing(tx, id, ownerId, current.status, { shopOnly: true });
-      return listingRepository.findSelected(tx, id);
-    }
-    // Tin đang chiếm suất (chờ duyệt / đang hiện) cần còn suất; tin đã ẩn thì xét lúc hiện lại
-    const price = current.categoryId && COUNTED_STATUSES.includes(current.status) && current.paidCredits === 0
-      ? await assertPostingSlot(tx, ownerId, new Date(), { categoryId: current.categoryId, daily: false, payWithCredits, excludeId: id })
-      : 0;
-    await updateOwnedListing(tx, id, ownerId, current.status, { shopOnly: false, ...(price > 0 && { paidCredits: price }) });
-    if (current.status === ListingStatus.PENDING) await chargeListing(tx, ownerId, id, price, current.title);
-    else await spendForListing(tx, ownerId, id, price, `Đăng tin lên trang Listing chính · ${current.title}`);
-    return listingRepository.findSelected(tx, id);
-  });
-  return toOwnerListingDto(listing);
-}
-
 /** Tin của chủ đang hiển thị, kèm chuyên mục còn dùng; dùng cho tin ưu tiên */
 async function requireFeaturable(tx: Db, id: string, ownerId: string) {
   const current = await requireOwnedListing(tx, id, ownerId);
   if (current.status !== ListingStatus.AVAILABLE) {
     throw new AppError(409, 'LISTING_NOT_FEATURABLE', 'Chỉ đưa tin đang hiển thị lên Hot sale.');
   }
-  if (current.shopOnly) throw shopOnlyPromotion();
   const category = current.categoryId ? await listingRepository.findActiveCategory(tx, current.categoryId) : null;
   if (!category) throw new AppError(409, 'INVALID_LISTING', 'Danh mục không còn được sử dụng.');
   return { current, category };
@@ -558,16 +510,8 @@ export async function featureListing(ownerId: string, id: string, packageId: str
 }
 
 /** Hạn mức đăng tin cho màn đăng tin */
-/** Hạn mức đăng tin; shop Đối tác có thêm shopCategoryIds (danh mục được đăng tin chỉ ở Cửa hàng, không giới hạn) */
 export const getPostingQuota = (ownerId: string) =>
-  listingRepository.transaction(async (tx) => {
-    const [quota, shop] = await Promise.all([
-      postingQuota(tx, ownerId, new Date()),
-      tx.shop.findUnique({ where: { ownerId }, select: { status: true, verificationType: true, categoryIds: true } }),
-    ]);
-    const partner = !!shop && (shop.status === 'APPROVED' || shop.verificationType !== null);
-    return { ...quota, ...(partner && { shopCategoryIds: shop.categoryIds }) };
-  });
+  listingRepository.transaction((tx) => postingQuota(tx, ownerId, new Date()));
 
 /** Tin của tôi, mới tạo trước */
 export async function listMine(ownerId: string, { page, pageSize, status }: MineQuery) {

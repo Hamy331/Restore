@@ -7,7 +7,7 @@ import { createInput, validateAttributes } from '../listing.validator.js';
 import { resolveSubcategory } from '../../catalog/category-tree.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
-import { assertOriginalPrice, assertPublishable, assertShopListing, requireOwnedListing, resolveDisplay, updateOwnedListing, withListingWriteTransaction } from './listing.service.js';
+import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing, withListingWriteTransaction } from './listing.service.js';
 import { assertNotDuplicate } from './listing-lifecycle.service.js';
 import { assertNoContentFlags, isFlagged } from '../content-flags.js';
 import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
@@ -54,8 +54,7 @@ export async function updateDraft(ownerId: string, id: string, data: DraftInput)
 }
 
 /** Đăng nháp: kiểm tra đủ nội dung như tin mới, cần ít nhất một ảnh, trừ lượt đăng */
-export async function publishDraft(ownerId: string, id: string, payWithCredits = false, allowDuplicate = false, acceptFlags = false,
-  shopOnly = false) {
+export async function publishDraft(ownerId: string, id: string, payWithCredits = false, allowDuplicate = false, acceptFlags = false) {
   const listing = await withListingWriteTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (current.status === ListingStatus.PENDING) return listingRepository.findSelected(tx, id);
@@ -77,11 +76,10 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     const now = new Date();
     assertNoContentFlags(acceptFlags, data.title, data.description);
     await assertNotDuplicate(tx, ownerId, data, { excludeId: id, allowDuplicate, now });
-    if (shopOnly) await assertShopListing(tx, ownerId, data.categoryId);
-    const price = shopOnly ? 0 : await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
+    const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
     await assertOriginalPrice(tx, ownerId, now, data);
     const display = await resolveDisplay(tx, ownerId, now, category, data);
-    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price, shopOnly,
+    await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price,
       condition: data.condition, flagged: isFlagged(data.title, data.description), displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays });
     await chargeListing(tx, ownerId, id, price, data.title, display);
     return listingRepository.findSelected(tx, id);
