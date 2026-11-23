@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { AppError } from '../../common/errors/app-error.js';
-import { assertNoContentFlags, contentFlags } from './content-flags.js';
+import { assertNoContentFlags, contentFlags, setExtraTerms } from './content-flags.js';
 
 const codes = (...texts: string[]) => contentFlags(...texts).map((flag) => flag.code);
 
@@ -39,4 +39,18 @@ test('assertNoContentFlags: chặn tin bị gắn cờ trừ khi người dùng 
     (error: AppError) => error.code === 'CONTENT_FLAGGED' && error.statusCode === 409);
   assert.doesNotThrow(() => assertNoContentFlags(true, 'Bán xe', 'Gọi 0912345678'));
   assert.doesNotThrow(() => assertNoContentFlags(false, 'Bán xe', 'Xe còn tốt'));
+});
+
+test('setExtraTerms: admin-added words join the built-in rules, special characters are literal', () => {
+  assert.deepEqual(codes('Bán đồ chơi', 'Liên hệ qua kakaotalk'), []);
+  setExtraTerms([{ term: 'kakaotalk', code: 'CONTACT' }, { term: 'c++ lậu', code: 'BANNED' }]);
+  try {
+    assert.deepEqual(contentFlags('Bán đồ chơi', 'Liên hệ qua KakaoTalk'), [{ code: 'CONTACT', match: 'KakaoTalk' }]);
+    assert.deepEqual(codes('Sách C++ lậu'), ['BANNED']);
+    assert.deepEqual(codes('Sách Cxx lậu'), [], 'ký tự đặc biệt khớp đúng chữ');
+    assert.deepEqual(codes('Sách kakaotalkvn'), [], 'chỉ khớp nguyên từ');
+  } finally {
+    setExtraTerms([]);
+  }
+  assert.deepEqual(codes('Liên hệ qua kakaotalk'), []);
 });

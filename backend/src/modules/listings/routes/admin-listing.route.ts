@@ -4,7 +4,7 @@ import { authorizePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as moderationController from '../controllers/moderation.controller.js';
 import { notifyViewers } from '../services/listing.events.js';
-import { adminDecisionBody, adminListingQuery, listingIdParams } from '../listing.validator.js';
+import { adminDecisionBody, adminListingQuery, bannedTermBody, bannedTermParams, listingIdParams } from '../listing.validator.js';
 
 /** Quản trị tin, gắn tại /api/v1/admin (adminRouter đã xác thực token) */
 const adminListingRouter = Router();
@@ -53,5 +53,28 @@ adminListingRouter.get('/listings/:id/seller-history', moderate, validate({ para
  */
 adminListingRouter.post('/listings/:id/decision', moderate, validate({ params: listingIdParams, body: adminDecisionBody }),
   notifyViewers, moderationController.adminDecide);
+
+/**
+ * Từ / cụm từ admin thêm vào bộ lọc nội dung tin (ngoài luật có sẵn), mới trước. Khớp nguyên từ, không phân biệt
+ * hoa thường; có dấu và không dấu là hai từ khác nhau. Áp dụng ngay cho tin gửi sau đó (máy chủ khác trễ tối đa 1 phút).
+ *
+ * Trả về: [{ id, term, code: CONTACT | BANNED, createdAt }]
+ */
+adminListingRouter.get('/banned-terms', moderate, moderationController.bannedTerms);
+
+/**
+ * Thêm từ vào bộ lọc; ghi AdminAudit TERM_ADD
+ *
+ * Body: term (2-60 ký tự, lưu chữ thường), code: 'CONTACT' | 'BANNED'
+ * Trả về: 201 { id, term, code, createdAt }
+ * Lỗi: 409 TERM_EXISTS
+ */
+adminListingRouter.post('/banned-terms', moderate, validate({ body: bannedTermBody }), moderationController.addBannedTerm);
+
+/**
+ * Bỏ từ khỏi bộ lọc; ghi AdminAudit TERM_REMOVE. Trả 204
+ * Lỗi: 404 TERM_NOT_FOUND
+ */
+adminListingRouter.delete('/banned-terms/:id', moderate, validate({ params: bannedTermParams }), moderationController.removeBannedTerm);
 
 export default adminListingRouter;

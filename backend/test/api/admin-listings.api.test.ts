@@ -105,7 +105,7 @@ test('posting warns about flagged content, admin sees seller history', async () 
   // Tái phạm: từ 3 lần bị từ chối / gỡ trong 30 ngày; lần cũ hơn 30 ngày không tính
   const offenders = async () => (await api.get('/admin/listings?status=REJECTED&offender=1', admin)).body.data.items.map((item: { id: string }) => item.id);
   const strike = (daysAgo: number) => prisma.adminAudit.create({ data: { actorId: 'user-admin', action: 'REMOVE', targetType: 'LISTING',
-    targetId: id, reason: 'Vi phạm', createdAt: new Date(Date.now() - daysAgo * 86_400_000) } });
+    targetId: id, subjectId: 'user-buyer', reason: 'Vi phạm', createdAt: new Date(Date.now() - daysAgo * 86_400_000) } });
   await strike(40);
   await strike(2);
   assert.deepEqual(await offenders(), [], 'mới 2 lần trong 30 ngày');
@@ -114,4 +114,46 @@ test('posting warns about flagged content, admin sees seller history', async () 
   assert.equal((await history()).recentStrikes, 3);
   assert.equal((await api.get('/admin/listings/missing/seller-history', admin)).status, 404);
   assert.equal((await api.get(`/admin/listings/${id}/seller-history`, { token })).status, 403);
+});
+
+/** Admin thêm từ vào bộ lọc: áp dụng ngay cho tin gửi sau, bỏ từ thì hết bị chặn */
+test('admin banned terms join the content filter', async () => {
+  const { api, tokens } = ctx;
+  const admin = { token: tokens.admin }, token = tokens.buyer;
+  const body = { ...listingBody('Đồng hồ cũ còn chạy'), description: 'Đồng hồ hàng xách tay, kiểu dáng y hệt bản gốc.' };
+
+  assert.equal((await api.get('/admin/banned-terms', { token })).status, 403);
+  const added = await api.post('/admin/banned-terms', { ...admin, body: { term: '  Y  hệt bản gốc ', code: 'BANNED' } });
+  assert.equal(added.status, 201, JSON.stringify(added.body));
+  assert.deepEqual([added.body.data.term, added.body.data.code], ['y hệt bản gốc', 'BANNED']);
+  assert.equal((await api.post('/admin/banned-terms', { ...admin, body: { term: 'Y HỆT BẢN GỐC', code: 'BANNED' } })).body.code, 'TERM_EXISTS');
+  assert.equal((await api.post('/admin/banned-terms', { ...admin, body: { term: 'abc', code: 'LINK' } })).status, 400);
+  assert.deepEqual((await api.get('/admin/banned-terms', admin)).body.data.map((t: { term: string }) => t.term), ['y hệt bản gốc']);
+
+  const warned = await api.post('/listings', { token, body });
+  assert.deepEqual([warned.status, warned.body.details?.flags], [409, [{ code: 'BANNED', match: 'y hệt bản gốc' }]]);
+
+  assert.equal((await api.delete(`/admin/banned-terms/${added.body.data.id}`, admin)).status, 204);
+  assert.equal((await api.delete(`/admin/banned-terms/${added.body.data.id}`, admin)).status, 404);
+  assert.equal((await api.post('/listings', { token, body })).status, 201, 'bỏ từ thì đăng bình thường');
+});
+
+/** Giá bất thường: giá ảo dưới 10.000đ, hoặc dưới 1/10 giá thường gặp của chuyên mục (từ 20 tin có giá) */
+test('admin listings warn about suspicious prices', async () => {
+  const { api, tokens } = ctx;
+  const { prisma } = await import('../../src/lib/prisma.js');
+  const base = { ownerId: 'user-seller', categoryId: 'furniture', description: 'Mô tả sản phẩm dùng để kiểm thử API.',
+    condition: 'USED_GOOD' as const, images: [], location: SAIGON };
+  await prisma.listing.createMany({ data: Array.from({ length: 20 }, (_, i) => ({
+    ...base, id: `typical-${i}`, title: `Sofa mẫu ${i}`, price: 5_000_000, status: 'AVAILABLE' as const })) });
+  await prisma.listing.createMany({ data: [
+    { ...base, id: 'price-lure', title: 'Sofa da giá sốc', price: 300_000, status: 'PENDING' },
+    { ...base, id: 'price-fake', title: 'Sofa giá tượng trưng', price: 1_000, status: 'PENDING' },
+    { ...base, id: 'price-ok', title: 'Sofa vải còn mới', price: 4_000_000, status: 'PENDING' },
+  ] });
+  const items = (await api.get('/admin/listings?status=PENDING&q=sofa', { token: tokens.admin })).body.data.items;
+  const warning = (id: string) => items.find((item: { id: string }) => item.id === id).priceWarning;
+  assert.deepEqual(warning('price-lure'), { reason: 'BELOW_TYPICAL', typical: '5000000' });
+  assert.deepEqual(warning('price-fake'), { reason: 'TOO_LOW' });
+  assert.equal(warning('price-ok'), null);
 });

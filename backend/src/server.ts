@@ -8,6 +8,7 @@ import { startWalletReminderJob } from './jobs/wallet-reminder.job.js';
 
 import { startRagCleanupJob } from './jobs/rag-cleanup.job.js';
 import { startListingAiIndexJob } from './jobs/listing-ai-index.job.js';
+import { startBannedTermsJob } from './modules/listings/index.js';
 
 validateEnvironment();
 startAccountStatusJob();
@@ -16,6 +17,7 @@ startNotificationPushJob();
 startWalletReminderJob();
 startRagCleanupJob();
 startListingAiIndexJob();
+startBannedTermsJob();
 
 const PORT = process.env.PORT || 3000;
 createApp().listen(PORT, () => {

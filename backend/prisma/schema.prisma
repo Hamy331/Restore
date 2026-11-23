@@ -680,6 +680,14 @@ model PromotionOrder {
   @@index([userId, status])
 }
 
+/// Từ / cụm từ admin thêm vào bộ lọc nội dung tin (ngoài luật có sẵn trong code); code: CONTACT | BANNED
+model BannedTerm {
+  id        String   @id @default(uuid())
+  /// Chữ thường, đã trim; khớp nguyên từ, không phân biệt hoa thường
+  term      String   @unique
+  code      String
+  createdAt DateTime @default(now())
+}
 model AdminAudit {
   id String @id @default(uuid())
   actorId String
@@ -689,8 +697,11 @@ model AdminAudit {
   reason String
   before Json?
   after Json?
+  /// Người bị ảnh hưởng (VD chủ tin bị kiểm duyệt): giữ lịch sử vi phạm cả khi tin đã bị xoá
+  subjectId String?
   createdAt DateTime @default(now())
   @@index([targetType, targetId, createdAt])
+  @@index([subjectId, createdAt])
   @@index([createdAt])
 }
 model ConditionPolicy {

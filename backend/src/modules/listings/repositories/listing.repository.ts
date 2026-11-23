@@ -240,35 +240,51 @@ export const NO_HISTORY: SellerHistory = { rejected: 0, changesRequested: 0, rem
 
 /**
  * Số lần tin của từng người đăng bị từ chối / yêu cầu sửa / gỡ. Người chưa từng bị thì không có trong Map.
- * ponytail: tin đã xoá hẳn thì mất khỏi phép đếm (nhật ký chỉ lưu mã tin); cần đếm cả thì lưu ownerId vào nhật ký.
+ * Đếm theo AdminAudit.subjectId (chủ tin lúc kiểm duyệt), nên tin đã bị xoá hẳn vẫn được tính.
  */
 export async function findSellerHistory(ownerIds: string[], now = new Date()) {
   if (!ownerIds.length) return new Map<string, SellerHistory>();
   const count = (actions: readonly string[]) => Prisma.sql`count(*) FILTER (WHERE a.action IN (${Prisma.join(actions)}))::int`;
   const rows = await prisma.$queryRaw<({ ownerId: string } & SellerHistory)[]>`
-    SELECT l."ownerId", ${count(STRIKES.rejected)} AS rejected, ${count(STRIKES.changesRequested)} AS "changesRequested",
+    SELECT a."subjectId" AS "ownerId", ${count(STRIKES.rejected)} AS rejected, ${count(STRIKES.changesRequested)} AS "changesRequested",
       ${count(STRIKES.removed)} AS removed,
       count(*) FILTER (WHERE a.action IN (${Prisma.join(SERIOUS)}) AND a."createdAt" >= ${repeatSince(now)})::int AS "recentStrikes"
-    FROM "AdminAudit" a JOIN "Listing" l ON l.id = a."targetId"
-    WHERE a."targetType" = 'LISTING' AND l."ownerId" IN (${Prisma.join([...new Set(ownerIds)])})
+    FROM "AdminAudit" a
+    WHERE a."targetType" = 'LISTING' AND a."subjectId" IN (${Prisma.join([...new Set(ownerIds)])})
       AND a.action IN (${Prisma.join(Object.values(STRIKES).flat())})
-    GROUP BY l."ownerId"`;
+    GROUP BY a."subjectId"`;
   return new Map(rows.map(({ ownerId, ...history }) => [ownerId, history]));
 }
 
 /** Người đăng tái phạm (xem REPEAT_STRIKES), cho bộ lọc offender của trang quản trị */
 export async function findRepeatOffenders(now = new Date()) {
   const rows = await prisma.$queryRaw<{ ownerId: string }[]>`
-    SELECT l."ownerId" FROM "AdminAudit" a JOIN "Listing" l ON l.id = a."targetId"
-    WHERE a."targetType" = 'LISTING' AND a.action IN (${Prisma.join(SERIOUS)}) AND a."createdAt" >= ${repeatSince(now)}
-    GROUP BY l."ownerId" HAVING count(*) >= ${REPEAT_STRIKES}`;
+    SELECT a."subjectId" AS "ownerId" FROM "AdminAudit" a
+    WHERE a."targetType" = 'LISTING' AND a."subjectId" IS NOT NULL AND a.action IN (${Prisma.join(SERIOUS)}) AND a."createdAt" >= ${repeatSince(now)}
+    GROUP BY a."subjectId" HAVING count(*) >= ${REPEAT_STRIKES}`;
   return rows.map((row) => row.ownerId);
 }
 
-/** 5 quyết định không duyệt gần nhất trên tin của một người đăng, kèm tiêu đề tin và lý do */
+/** 5 quyết định không duyệt gần nhất trên tin của một người đăng, kèm lý do; title null khi tin đã bị xoá */
 export const findRecentStrikes = (ownerId: string) => prisma.$queryRaw<
-  { listingId: string; title: string; action: string; reason: string; createdAt: Date }[]>`
-  SELECT l.id AS "listingId", l.title, a.action, a.reason, a."createdAt"
-  FROM "AdminAudit" a JOIN "Listing" l ON l.id = a."targetId"
-  WHERE a."targetType" = 'LISTING' AND l."ownerId" = ${ownerId} AND a.action IN (${Prisma.join(Object.values(STRIKES).flat())})
+  { listingId: string; title: string | null; action: string; reason: string; createdAt: Date }[]>`
+  SELECT a."targetId" AS "listingId", l.title, a.action, a.reason, a."createdAt"
+  FROM "AdminAudit" a LEFT JOIN "Listing" l ON l.id = a."targetId"
+  WHERE a."targetType" = 'LISTING' AND a."subjectId" = ${ownerId} AND a.action IN (${Prisma.join(Object.values(STRIKES).flat())})
   ORDER BY a."createdAt" DESC LIMIT 5`;
+
+/**
+ * Giá thường gặp (median) của từng chuyên mục, tính trên tin đã duyệt có giá (đang hiện, đã ẩn, đặt trước, đã bán).
+ * Chuyên mục chưa đủ MIN_SAMPLES tin thì không có trong Map.
+ * ponytail: tính lại mỗi lần mở trang (một truy vấn cho các chuyên mục trên trang); chậm thì lưu sẵn theo ngày.
+ */
+export async function findTypicalPrices(categoryIds: (string | null)[], minSamples: number) {
+  const ids = [...new Set(categoryIds.filter((id): id is string => !!id))];
+  if (!ids.length) return new Map<string, number>();
+  const rows = await prisma.$queryRaw<{ categoryId: string; typical: number }[]>`
+    SELECT "categoryId", percentile_cont(0.5) WITHIN GROUP (ORDER BY price)::float8 AS typical
+    FROM "Listing"
+    WHERE "categoryId" IN (${Prisma.join(ids)}) AND price > 0 AND status IN ('AVAILABLE', 'HIDDEN', 'RESERVED', 'SOLD')
+    GROUP BY "categoryId" HAVING count(*) >= ${minSamples}`;
+  return new Map(rows.map((row) => [row.categoryId, row.typical]));
+}

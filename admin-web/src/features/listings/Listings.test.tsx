@@ -17,6 +17,7 @@ const listing = {
   updatedAt: '2026-11-20T08:00:00Z',
   flags: [{ code: 'CONTACT', match: '0912 345 678' }],
   flagged: true,
+  priceWarning: { reason: 'BELOW_TYPICAL', typical: '5000000' },
   owner: {
     fullName: 'Chủ Shop',
     email: 'chu@example.com',
@@ -73,6 +74,8 @@ it('tin bị gắn cờ có thẻ, chi tiết nói rõ đoạn bị khớp, lọ
   expect(await screen.findByText('Tin bị gắn cờ tự động')).toBeTruthy();
   expect(screen.getByText('“0912 345 678”')).toBeTruthy();
   expect(screen.getByText('Bỏ qua cảnh báo')).toBeTruthy();
+  expect(screen.getByText('Giá bất thường')).toBeTruthy();
+  expect(screen.getByText(/Giá thấp hơn nhiều so với giá thường gặp/)).toBeTruthy();
   expect(screen.getByText('Người đăng đã được cảnh báo nhưng vẫn gửi.')).toBeTruthy();
 });
 

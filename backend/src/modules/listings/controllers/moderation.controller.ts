@@ -1,9 +1,10 @@
 import { Response } from 'express';
-import { ok } from '../../../common/http/response.js';
+import { created, noContent, ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
 import type { AdminDecisionInput, AdminListingQuery, DecisionInput, ListingIdParams } from '../listing.dto.js';
 import * as moderationService from '../services/moderation.service.js';
+import * as bannedTermService from '../services/banned-term.service.js';
 
 /** Trả { success: true } không kèm data, như API cũ */
 export async function decide(req: AuthRequest, res: Response) {
@@ -24,6 +25,21 @@ export async function listForAdmin(_req: AuthRequest, res: Response) {
 
 export async function sellerHistory(_req: AuthRequest, res: Response) {
   ok(res, await moderationService.getSellerHistory(getInput<ValidatedInput<undefined, ListingIdParams>>(res).params.id));
+}
+
+export async function bannedTerms(_req: AuthRequest, res: Response) {
+  ok(res, await bannedTermService.listBannedTerms());
+}
+
+export async function addBannedTerm(req: AuthRequest, res: Response) {
+  const { body } = getInput<ValidatedInput<undefined, undefined, { term: string; code: 'CONTACT' | 'BANNED' }>>(res);
+  created(res, await bannedTermService.addBannedTerm(req.user!.userId, body));
+}
+
+export async function removeBannedTerm(req: AuthRequest, res: Response) {
+  const { params } = getInput<ValidatedInput<undefined, { id: string }>>(res);
+  await bannedTermService.removeBannedTerm(req.user!.userId, params.id);
+  noContent(res);
 }
 
 export async function adminDecide(req: AuthRequest, res: Response) {

@@ -6,6 +6,7 @@ import { storePackageForUser, withQuotaTransaction } from '../../commerce/index.
 import { captureListingHold, releaseListingHold } from '../../credits/index.js';
 import { AdminDecisionInput, AdminListingQuery, DecisionInput, toAdminListing, toOwnerListingDto, toRevisionDto } from '../listing.dto.js';
 import { contentFlags, isFlagged } from '../content-flags.js';
+import { MIN_SAMPLES, priceWarning } from '../price-check.js';
 import { removeStoredImages, revisionOnlyImages } from './image.service.js';
 import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
 import { resolveSubcategory } from '../../catalog/category-tree.js';
@@ -64,7 +65,7 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
   changed(await listingRepository.updateWhereVersion(tx, id, item.status, expected,
     { status, reviewReason: action === 'APPROVE' ? null : reason,
       ...(expiresAt ? { expiresAt, startsAt, ...(!scheduled && { publishedAt: now }) } : { paidCredits: 0 }) }));
-  await audit(tx, actorId, action, 'LISTING', id, reason, { status: item.status }, { status });
+  await audit(tx, actorId, action, 'LISTING', id, reason, { status: item.status }, { status }, item.ownerId);
   // Gỡ tin: bản sửa chưa duyệt (nếu có) cũng bỏ
   const removed: string[] = [];
   if (action === 'REMOVE') {
@@ -101,7 +102,7 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
   }
   if (action !== 'APPROVE') {
     changed(await listingRepository.rejectRevision(tx, item.id, expected, reason));
-    await audit(tx, actorId, `${action}_EDIT`, 'LISTING', item.id, reason, { edit: 'PENDING' }, { edit: 'REJECTED' });
+    await audit(tx, actorId, `${action}_EDIT`, 'LISTING', item.id, reason, { edit: 'PENDING' }, { edit: 'REJECTED' }, item.ownerId);
     await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
       image: revision.images[0] ?? item.images[0] ?? null, action, reason, edit: true, scheduled: false });
     return [];
@@ -122,7 +123,7 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
     images: revision.images, flagged: isFlagged(revision.title, revision.description),
   }));
   await audit(tx, actorId, 'APPROVE_EDIT', 'LISTING', item.id, reason,
-    { title: item.title, edit: 'PENDING' }, { title: revision.title, edit: 'APPROVED' });
+    { title: item.title, edit: 'PENDING' }, { title: revision.title, edit: 'APPROVED' }, item.ownerId);
   const priceDrop = item.status === ListingStatus.AVAILABLE && revision.price.lessThan(item.price)
     ? { from: item.price.toFixed(0), to: revision.price.toFixed(0) } : undefined;
   await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
@@ -172,15 +173,20 @@ export async function listPending() {
  * Query flagged: chỉ tin có flagged, tính cả bản sửa đang chờ duyệt. owner.history { rejected, changesRequested, removed, recentStrikes }: số lần tin của
  * người đăng bị từ chối / yêu cầu sửa / gỡ, và số lần bị từ chối / gỡ trong 30 ngày (từ 3 là tái phạm).
  * Query offender: chỉ tin của người đăng tái phạm.
+ * priceWarning (và pendingEdit.priceWarning): null hoặc { reason: TOO_LOW } (dưới 10.000đ) | { reason: BELOW_TYPICAL,
+ * typical } (dưới 1/10 giá thường gặp của chuyên mục, cần từ 20 tin có giá).
  */
 export async function listForAdmin({ status, q, tier, edit, flagged, offender, page }: AdminListingQuery) {
   const ownerIds = offender ? await listingRepository.findRepeatOffenders() : undefined;
   const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit, flagged, ownerIds }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
-  const history = await listingRepository.findSellerHistory(rows.map((row) => row.ownerId));
+  const [history, typical] = await Promise.all([listingRepository.findSellerHistory(rows.map((row) => row.ownerId)),
+    listingRepository.findTypicalPrices(rows.map((row) => row.categoryId), MIN_SAMPLES)]);
   const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
     ...withHistory(toAdminListing(item), history), flags: contentFlags(item.title, item.description),
+    priceWarning: priceWarning(item.price, typical.get(item.categoryId ?? '')),
     ...(revision && {
-      pendingEdit: { ...toRevisionDto(revision), flags: contentFlags(revision.title, revision.description) },
+      pendingEdit: { ...toRevisionDto(revision), flags: contentFlags(revision.title, revision.description),
+        priceWarning: priceWarning(revision.price, typical.get(item.categoryId ?? '')) },
       current: { title: item.title, description: item.description, price: item.price.toString(),
         originalPrice: originalPrice?.toString() ?? null, isNegotiable, condition: item.condition, allowSale, allowExchange,
         exchangeWish, attributes, location, images: item.images },
@@ -200,8 +206,10 @@ export async function adminDecide(actorId: string, id: string, { action, reason,
 export async function getAdminListing(id: string) {
   const row = await listingRepository.findAdminListing(id);
   if (!row) return row;
-  return { ...withHistory(toAdminListing(row), await listingRepository.findSellerHistory([row.ownerId])),
-    flags: contentFlags(row.title, row.description) };
+  const [history, typical] = await Promise.all([listingRepository.findSellerHistory([row.ownerId]),
+    listingRepository.findTypicalPrices([row.categoryId], MIN_SAMPLES)]);
+  return { ...withHistory(toAdminListing(row), history), flags: contentFlags(row.title, row.description),
+    priceWarning: priceWarning(row.price, typical.get(row.categoryId ?? '')) };
 }
 
 /** Lịch sử vi phạm của người đăng tin [id]: số lần bị từ chối / yêu cầu sửa / gỡ và 5 lần gần nhất kèm lý do */

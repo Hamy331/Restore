@@ -30,4 +30,5 @@ export { onListingApproved, onListingModerated } from './services/approval-hooks
 export type { ListingApprovedHook, ListingModeratedHook, ListingModeration } from './services/approval-hooks.js';
 export { default as listingsAdminRouter } from './routes/admin-listing.route.js';
 export { getAdminListing, moderate } from './services/moderation.service.js';
+export { startBannedTermsJob } from './services/banned-term.service.js';
 export { autoExtendDueListings, expireDueListings, publishScheduledListings, remindExpiringListings } from './services/listing-lifecycle.service.js';

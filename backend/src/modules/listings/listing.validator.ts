@@ -2,7 +2,7 @@ import { ListingCondition, ListingStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
 import { choice, object, page, text, version } from '../../common/validation/admin-input.js';
-import { idParam, int, oneOf, pageQuery, parse } from '../../common/validation/schemas.js';
+import { idParam, int, oneOf, pageQuery, parse, str, strictBody } from '../../common/validation/schemas.js';
 import { coordinates, listingLocation } from '../catalog/index.js';
 import type { CategoryAttribute } from '../catalog/category-tree.js';
 import { normalizeTitle } from './listing-lifecycle.js';
@@ -420,6 +420,10 @@ export const adminListingQuery = z.record(z.string(), z.unknown()).transform((qu
 }));
 
 /** Body POST /admin/listings/:id/decision */
+/** Body POST /admin/banned-terms: term (2-60 ký tự), code CONTACT (liên hệ ngoài) | BANNED (hàng cấm) */
+export const bannedTermBody = strictBody({ term: str('term', { min: 2, max: 60 }), code: oneOf('code', ['CONTACT', 'BANNED'] as const) });
+export const bannedTermParams = idParam(64);
+
 export const adminDecisionBody = z.unknown().transform((value) => {
   const body = object(value, ['action', 'reason', 'updatedAt']);
   const action = choice(body.action, MODERATION_ACTIONS);
