@@ -191,25 +191,18 @@ function sellerTierWhere(tier: StoreTier, now: Date): Prisma.ListingWhereInput {
   return { owner: { NOT: { storeSubscription: { is: { ...active, package: { tier: { in: ['BASIC', 'PRO'] } } } } } } };
 }
 
-export type AdminListingFilters = { status?: ListingStatus; q?: string; tier?: StoreTier; edit?: 'PENDING'; ids?: string[] };
+export type AdminListingFilters = { status?: ListingStatus; q?: string; tier?: StoreTier; edit?: 'PENDING'; flagged?: boolean };
 
-/** Điều kiện lọc của trang quản trị; ids: chỉ trong các tin này (VD tin bị gắn cờ) */
-function adminWhere({ status, q, tier, edit, ids }: AdminListingFilters, now: Date): Prisma.ListingWhereInput {
+/** Điều kiện lọc của trang quản trị; flagged: tin hoặc bản sửa chờ duyệt bị gắn cờ lúc gửi duyệt */
+function adminWhere({ status, q, tier, edit, flagged }: AdminListingFilters, now: Date): Prisma.ListingWhereInput {
   const contains = { contains: q, mode: 'insensitive' as const };
   return {
-    ...(status ? { status } : {}), ...(edit ? { revision: { status: edit } } : {}), ...(ids ? { id: { in: ids } } : {}),
+    ...(status ? { status } : {}), ...(edit ? { revision: { status: edit } } : {}), 
+    ...(flagged ? { AND: [{ OR: [{ flagged: true }, { revision: { status: 'PENDING', flagged: true } }] }] } : {}),
     ...(q ? { OR: [{ title: contains }, { owner: { fullName: contains } }, { owner: { email: contains } }] } : {}),
     ...(tier ? sellerTierWhere(tier, now) : {}),
   };
 }
-
-/** Nội dung để gắn cờ (tin và bản sửa) của mọi tin khớp bộ lọc */
-// ponytail: quét cả tập khớp bộ lọc trong bộ nhớ; ổn với hàng chờ vài nghìn tin, lớn hơn thì lưu cờ vào cột lúc đăng / sửa
-export const findAdminContents = (filters: AdminListingFilters, now = new Date()) =>
-  prisma.listing.findMany({
-    where: adminWhere(filters, now),
-    select: { id: true, title: true, description: true, revision: { select: { status: true, title: true, description: true } } },
-  });
 
 /**
  * Trang tin cho admin. Hàng chờ (tin chờ duyệt, bản sửa chờ duyệt) xếp gửi sớm trước để tin cũ không bị chìm;
@@ -221,7 +214,7 @@ export function findAdminPage(filters: AdminListingFilters, skip: number, take: 
   const orderBy: Prisma.ListingOrderByWithRelationInput[] = edit ? [{ revision: { submittedAt: 'asc' } }, { id: 'asc' }]
     : status === ListingStatus.PENDING ? [{ updatedAt: 'asc' }, { id: 'asc' }] : [{ updatedAt: 'desc' }, { id: 'desc' }];
   return Promise.all([
-    prisma.listing.findMany({ where, select: { ...adminListingSelect, ...adminCompareSelect, revision: { select: revisionSelect } },
+    prisma.listing.findMany({ where, select: { ...adminListingSelect, ...adminCompareSelect, revision: { select: { ...revisionSelect, flagged: true } } },
       orderBy, skip, take }),
     prisma.listing.count({ where }),
   ]);

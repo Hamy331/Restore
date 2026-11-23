@@ -21,6 +21,7 @@ import { assertNotDuplicate, spendForListing } from './listing-lifecycle.service
 import { removeStoredImages, revisionOnlyImages } from './image.service.js';
 import { assertPostingSlot, chargeListing, postingQuota } from './posting-quota.service.js';
 import { recordRecentView } from './favorite.service.js';
+import { isFlagged } from '../content-flags.js';
 
 type Viewer = AuthRequest['user'];
 
@@ -147,7 +148,7 @@ export async function createListing(ownerId: string, data: ListingInput, payWith
     await assertOriginalPrice(tx, ownerId, now, data);
     const display = await resolveDisplay(tx, ownerId, now, category, data);
     const created = await listingRepository.createListing(
-      { ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price,
+      { ...data, ownerId, images: [], publishedAt: now, status: ListingStatus.PENDING, paidCredits: price, flagged: isFlagged(data.title, data.description),
         displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays }, tx);
     await chargeListing(tx, ownerId, created.id, price, data.title, display);
     return created;
@@ -182,7 +183,7 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
       await assertPublishable(tx, data);
       await assertOriginalPrice(tx, ownerId, new Date(), data, current);
       await listingRepository.upsertRevision(tx, id, {
-        status: 'PENDING', reviewReason: null, submittedAt: new Date(),
+        status: 'PENDING', reviewReason: null, submittedAt: new Date(), flagged: isFlagged(data.title, data.description),
         title: data.title, description: data.description, price: data.price, originalPrice: data.originalPrice,
         isNegotiable: data.isNegotiable, condition: data.condition, allowSale: data.allowSale,
         allowExchange: data.allowExchange, exchangeWish: data.exchangeWish,
@@ -206,6 +207,7 @@ export async function updateListing(ownerId: string, id: string, data: ListingIn
     }
     await updateOwnedListing(tx, id, ownerId, current.status, {
       ...data, status: ListingStatus.PENDING, reviewReason: null, ...(price > 0 && { paidCredits: price }),
+      flagged: isFlagged(data.title, data.description),
     });
     await chargeListing(tx, ownerId, id, price, data.title);
     return listingRepository.findSelected(tx, id);

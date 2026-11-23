@@ -118,7 +118,7 @@ export type ListingDto = ReturnType<typeof toListingDto>;
 /** Cột tin trả cho trang quản trị (/admin/listings, đối tượng của báo cáo); trả nguyên bản ghi, không qua DTO */
 export const adminListingSelect = {
   id: true, title: true, description: true, price: true, status: true, images: true, reviewReason: true,
-  updatedAt: true, categoryId: true, subcategoryId: true, ownerId: true, condition: true,
+  updatedAt: true, categoryId: true, subcategoryId: true, ownerId: true, condition: true, flagged: true,
   owner: {
     select: {
       id: true, fullName: true, email: true,

@@ -9,7 +9,7 @@ import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
 import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing, withListingWriteTransaction } from './listing.service.js';
 import { assertNotDuplicate } from './listing-lifecycle.service.js';
-import { assertNoContentFlags } from '../content-flags.js';
+import { assertNoContentFlags, isFlagged } from '../content-flags.js';
 import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
 
 /** Số tin nháp đang giữ và giới hạn của gói */
@@ -80,7 +80,7 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     await assertOriginalPrice(tx, ownerId, now, data);
     const display = await resolveDisplay(tx, ownerId, now, category, data);
     await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price,
-      condition: data.condition, displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays });
+      condition: data.condition, flagged: isFlagged(data.title, data.description), displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays });
     await chargeListing(tx, ownerId, id, price, data.title, display);
     return listingRepository.findSelected(tx, id);
   });

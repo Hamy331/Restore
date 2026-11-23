@@ -41,10 +41,10 @@ test('admin listings: oldest pending first, seller plan filter and search', asyn
   assert.deepEqual(ids(await api.get('/admin/listings?status=PENDING&q=user-buyer%40restore', admin)), ['pending-new'], 'tìm theo email');
   assert.deepEqual(ids(await api.get('/admin/listings?status=PENDING&q=k%E1%BB%87%20s%C3%A1ch', admin)), ['pending-old'], 'vẫn tìm theo tiêu đề');
 
-  // Cờ nội dung tự động: tin có số điện thoại; tin đã duyệt có bản sửa chứa link
-  await prisma.listing.update({ where: { id: 'pending-new' }, data: { description: 'Liên hệ 0912 345 678 để xem hàng.' } });
+  // Cờ nội dung tự động: tin có số điện thoại; tin đã duyệt có bản sửa chứa link (flagged: lưu lúc gửi duyệt)
+  await prisma.listing.update({ where: { id: 'pending-new' }, data: { description: 'Liên hệ 0912 345 678 để xem hàng.', flagged: true } });
   await prisma.listingRevision.create({ data: {
-    listingId: 'listing-1', status: 'PENDING', submittedAt: new Date(), title: 'Bàn gỗ sồi thật', description: 'Xem thêm ở banghe.vn',
+    listingId: 'listing-1', status: 'PENDING', submittedAt: new Date(), title: 'Bàn gỗ sồi thật', description: 'Xem thêm ở banghe.vn', flagged: true,
     price: 1_200_000, condition: 'USED_GOOD', isNegotiable: false, allowSale: true, allowExchange: false, exchangeWish: '',
     images: [], location: SAIGON,
   } });
@@ -56,6 +56,7 @@ test('admin listings: oldest pending first, seller plan filter and search', asyn
   const edits = await api.get('/admin/listings?edit=PENDING&flagged=1', admin);
   assert.deepEqual(ids(edits), ['listing-1'], 'bản sửa chờ duyệt bị gắn cờ cũng được lọc');
   assert.deepEqual(edits.body.data.items[0].pendingEdit.flags, [{ code: 'LINK', match: 'banghe.vn' }]);
+  assert.equal(edits.body.data.items[0].pendingEdit.flagged, true);
   assert.deepEqual(edits.body.data.items[0].flags, [], 'nội dung đang hiển thị không có cờ');
 
   // Gói hết hạn thì người đăng tính là Cá nhân
@@ -67,6 +68,7 @@ test('admin listings: oldest pending first, seller plan filter and search', asyn
 test('posting warns about flagged content, admin sees seller history', async () => {
   const { api, tokens } = ctx;
   const token = tokens.buyer, admin = { token: tokens.admin };
+  const { prisma } = await import('../../src/lib/prisma.js');
   const body = { ...listingBody('Ghế gỗ cũ còn tốt'), description: 'Ghế còn chắc, liên hệ zalo 0987 654 321 nhé.' };
 
   const warned = await api.post('/listings', { token, body });
@@ -76,8 +78,14 @@ test('posting warns about flagged content, admin sees seller history', async () 
   const sent = await api.post('/listings', { token, body: { ...body, acceptFlags: true } });
   assert.equal(sent.status, 201, JSON.stringify(sent.body));
   const id = sent.body.data.id;
+  const stored = async () => (await prisma.listing.findUniqueOrThrow({ where: { id } })).flagged;
+  assert.equal(await stored(), true, 'lưu lại là người đăng đã được cảnh báo và vẫn gửi');
+  const flaggedIds = async () => (await api.get('/admin/listings?status=PENDING&flagged=1', admin)).body.data.items.map((item: { id: string }) => item.id);
+  assert.ok((await flaggedIds()).includes(id), 'bộ lọc dùng dấu đã lưu');
   assert.equal((await api.put(`/listings/${id}`, { token, body })).body.code, 'CONTENT_FLAGGED', 'sửa tin cũng cảnh báo');
   assert.equal((await api.put(`/listings/${id}`, { token, body: { ...body, description: 'Ghế còn chắc, nhắn tin trong ứng dụng.' } })).status, 200);
+  assert.equal(await stored(), false, 'sửa hết nội dung bị gắn cờ thì bỏ dấu');
+  assert.ok(!(await flaggedIds()).includes(id));
 
   const history = async () => (await api.get(`/admin/listings/${id}/seller-history`, admin)).body.data;
   assert.deepEqual(await history(), { rejected: 0, changesRequested: 0, removed: 0, recent: [] });

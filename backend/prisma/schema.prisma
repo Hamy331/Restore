@@ -372,6 +372,8 @@ model ListingRevision {
   location      Json?
   images        String[]
   reviewReason  String?
+  /// Nội dung bị gắn cờ (SĐT, link, hàng cấm) lúc gửi duyệt: người đăng đã được cảnh báo và vẫn gửi
+  flagged       Boolean               @default(false)
   submittedAt   DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
 
@@ -431,6 +433,8 @@ model Listing {
   paidDays      Int              @default(0)
   /// Tự gia hạn 30 ngày khi sắp hết hạn (gói có StorePackage.autoExtend)
   autoExtend    Boolean          @default(false)
+  /// Nội dung bị gắn cờ (SĐT, link, hàng cấm) lúc gửi duyệt: người đăng đã được cảnh báo và vẫn gửi
+  flagged       Boolean          @default(false)
   updatedAt     DateTime         @updatedAt
   creditHolds   CreditHold[]
   promotions    Promotion[]

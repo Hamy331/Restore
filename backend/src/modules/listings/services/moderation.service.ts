@@ -5,7 +5,7 @@ import { ADMIN_PAGE_SIZE, changed, text } from '../../../common/validation/admin
 import { storePackageForUser, withQuotaTransaction } from '../../commerce/index.js';
 import { captureListingHold, releaseListingHold } from '../../credits/index.js';
 import { AdminDecisionInput, AdminListingQuery, DecisionInput, toAdminListing, toOwnerListingDto, toRevisionDto } from '../listing.dto.js';
-import { contentFlags } from '../content-flags.js';
+import { contentFlags, isFlagged } from '../content-flags.js';
 import { removeStoredImages, revisionOnlyImages } from './image.service.js';
 import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
 import { resolveSubcategory } from '../../catalog/category-tree.js';
@@ -119,7 +119,7 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
     isNegotiable: revision.isNegotiable, condition: revision.condition, allowSale: revision.allowSale,
     allowExchange: revision.allowExchange, exchangeWish: revision.exchangeWish,
     attributes: revision.attributes as Prisma.InputJsonValue, location: (revision.location ?? Prisma.JsonNull) as Prisma.InputJsonValue,
-    images: revision.images,
+    images: revision.images, flagged: isFlagged(revision.title, revision.description),
   }));
   await audit(tx, actorId, 'APPROVE_EDIT', 'LISTING', item.id, reason,
     { title: item.title, edit: 'PENDING' }, { title: revision.title, edit: 'APPROVED' });
@@ -167,19 +167,13 @@ export async function listPending() {
  * Mọi tin, lọc trạng thái / tiêu đề / có bản sửa chờ duyệt, 25 tin mỗi trang. Tin đã duyệt có bản sửa thì thêm
  * pendingEdit { status, title, price, ..., updatedAt } (ra quyết định trên bản sửa thì gửi updatedAt của bản sửa)
  * và current { title, description, price, ..., images }: nội dung đang hiển thị, để so với bản sửa.
- * flags (và pendingEdit.flags): cờ nội dung tự động (số điện thoại, link, hàng cấm); flagged: chỉ tin bị gắn cờ,
- * tính cả bản sửa đang chờ duyệt. owner.history { rejected, changesRequested, removed }: số lần tin của người đăng
+ * flags (và pendingEdit.flags): cờ nội dung tự động (số điện thoại, link, hàng cấm), quét lại theo luật hiện tại.
+ * flagged (và pendingEdit.flagged): nội dung bị gắn cờ lúc gửi duyệt, tức người đăng đã được cảnh báo và vẫn gửi.
+ * Query flagged: chỉ tin có flagged, tính cả bản sửa đang chờ duyệt. owner.history { rejected, changesRequested, removed }: số lần tin của người đăng
  * bị từ chối / yêu cầu sửa / gỡ.
  */
 export async function listForAdmin({ status, q, tier, edit, flagged, page }: AdminListingQuery) {
-  const filters = { status, q, tier, edit };
-  const ids = flagged
-    ? (await listingRepository.findAdminContents(filters))
-      .filter(({ title, description, revision }) => contentFlags(title, description).length
-        || (revision?.status === 'PENDING' && contentFlags(revision.title, revision.description).length))
-      .map(({ id }) => id)
-    : undefined;
-  const [rows, total] = await listingRepository.findAdminPage({ ...filters, ids }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+  const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit, flagged }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
   const history = await listingRepository.findSellerHistory(rows.map((row) => row.ownerId));
   const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
     ...withHistory(toAdminListing(item), history), flags: contentFlags(item.title, item.description),
