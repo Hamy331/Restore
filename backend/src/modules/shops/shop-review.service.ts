@@ -6,7 +6,8 @@ import { prisma } from '../../lib/prisma.js';
 
 const adminShopSelect = {
   id: true, name: true, tagline: true, description: true, address: true, logoUrl: true, coverUrl: true, accentColor: true,
-  status: true, submittedAt: true, reviewedAt: true, rejectNote: true, verificationType: true, createdAt: true,
+  status: true, submittedAt: true, reviewedAt: true, rejectNote: true, verificationType: true, verifiedAt: true,
+  certificateCode: true, createdAt: true,
   owner: {
     select: {
       id: true, email: true, fullName: true, status: true,
@@ -17,11 +18,11 @@ const adminShopSelect = {
 
 type AdminShopRecord = Prisma.ShopGetPayload<{ select: typeof adminShopSelect }>;
 
-/** Shop cho trang duyệt: thông tin shop + owner { id, email, fullName, status } + verified, planTier, planEndsAt */
+/** Shop cho trang duyệt: thông tin shop + owner { id, email, fullName, status } + verified, verificationType, planTier, planEndsAt */
 function toAdminShopDto({ owner, verificationType, ...shop }: AdminShopRecord, now: Date) {
   const subscription = owner.storeSubscription;
   return {
-    ...shop, verified: verificationType !== null,
+    ...shop, verified: verificationType !== null, verificationType,
     owner: { id: owner.id, email: owner.email, fullName: owner.fullName, status: owner.status },
     planTier: subscription && subscription.endsAt > now ? subscription.package.tier : 'PERSONAL',
     planEndsAt: subscription?.endsAt ?? null,
@@ -69,3 +70,36 @@ export const approveShop = (adminId: string, id: string, now = new Date()) => de
 
 export const rejectShop = (adminId: string, id: string, note: string, now = new Date()) =>
   decide(adminId, id, 'REJECTED', note, now);
+
+/** Mã chứng nhận kế tiếp trong năm, VD "RS-2026-00129" (số 5 chữ số nên so chuỗi cũng đúng thứ tự) */
+async function nextCertificateCode(tx: Prisma.TransactionClient, now: Date) {
+  const prefix = `RS-${now.getUTCFullYear()}-`;
+  const last = await tx.shop.findFirst({
+    where: { certificateCode: { startsWith: prefix } }, orderBy: { certificateCode: 'desc' }, select: { certificateCode: true },
+  });
+  // ponytail: hai admin xác minh cùng lúc có thể ra trùng số; thêm unique index trên certificateCode nếu cần chặt
+  return prefix + String(Number(last?.certificateCode?.slice(prefix.length) ?? 0) + 1).padStart(5, '0');
+}
+
+/**
+ * Xác minh shop đã duyệt (type) để lên "Shop uy tín" với mã chứng nhận, hoặc thu hồi (type null); ghi AdminAudit.
+ * Lỗi 404 SHOP_NOT_FOUND, 409 SHOP_NOT_APPROVED | SHOP_ALREADY_VERIFIED | SHOP_NOT_VERIFIED
+ */
+export function setVerification(adminId: string, id: string, type: 'OFFICIAL_BRAND' | 'CERTIFIED' | null, reason: string,
+  now = new Date()) {
+  return prisma.$transaction(async (tx) => {
+    const shop = await tx.shop.findUnique({ where: { id }, select: { status: true, verificationType: true, certificateCode: true } });
+    if (!shop) throw new AppError(404, 'SHOP_NOT_FOUND', 'Không tìm thấy shop.');
+    if (type && shop.status !== 'APPROVED') throw new AppError(409, 'SHOP_NOT_APPROVED', 'Chỉ xác minh được shop đã duyệt.');
+    if (type && shop.verificationType) throw new AppError(409, 'SHOP_ALREADY_VERIFIED', 'Shop đã được xác minh.');
+    if (!type && !shop.verificationType) throw new AppError(409, 'SHOP_NOT_VERIFIED', 'Shop chưa được xác minh.');
+    const data = type
+      ? { verificationType: type, verifiedAt: now, certificateCode: await nextCertificateCode(tx, now) }
+      : { verificationType: null, verifiedAt: null, certificateCode: null };
+    await tx.shop.update({ where: { id }, data });
+    await audit(tx, adminId, type ? 'SHOP_VERIFY' : 'SHOP_UNVERIFY', 'Shop', id, reason,
+      { verificationType: shop.verificationType, certificateCode: shop.certificateCode },
+      { verificationType: data.verificationType, certificateCode: data.certificateCode });
+    return toAdminShopDto(await tx.shop.findUniqueOrThrow({ where: { id }, select: adminShopSelect }), now);
+  });
+}

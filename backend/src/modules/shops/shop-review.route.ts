@@ -2,7 +2,7 @@ import { Response, Router } from 'express';
 import { z } from 'zod';
 import { PERMISSION } from '../../common/auth/permissions.js';
 import { ok } from '../../common/http/response.js';
-import { oneOf, str, strictBody } from '../../common/validation/schemas.js';
+import { oneOf, optionalStr, str, strictBody } from '../../common/validation/schemas.js';
 import { AuthRequest, authorizePermission } from '../../middlewares/auth.middleware.js';
 import { requireJson } from '../../middlewares/require-json.middleware.js';
 import { getInput, validate, ValidatedInput } from '../../middlewares/validate.middleware.js';
@@ -38,6 +38,28 @@ shopReviewAdminRouter.post('/shops/:id/reject', moderate, requireJson, validate(
   async (req: AuthRequest, res: Response) => {
     const { params, body } = getInput<ValidatedInput<undefined, ShopIdParams, z.infer<typeof rejectBody>>>(res);
     ok(res, await shopReviewService.rejectShop(req.user!.userId, params.id, body.note));
+  });
+
+const verifyBody = strictBody({
+  type: oneOf('type', ['OFFICIAL_BRAND', 'CERTIFIED'] as const),
+  reason: optionalStr('reason', { max: 300 }),
+});
+const unverifyBody = strictBody({ reason: str('reason', { min: 5, max: 300 }) });
+
+/** Xác minh shop đã duyệt: lên "Shop uy tín", cấp mã chứng nhận RS-YYYY-NNNNN; ghi AdminAudit.
+ *  Body: type (OFFICIAL_BRAND | CERTIFIED), reason? (ghi chú). Lỗi 404 SHOP_NOT_FOUND, 409 SHOP_NOT_APPROVED | SHOP_ALREADY_VERIFIED */
+shopReviewAdminRouter.post('/shops/:id/verify', moderate, requireJson, validate({ params: shopIdParams, body: verifyBody }),
+  async (req: AuthRequest, res: Response) => {
+    const { params, body } = getInput<ValidatedInput<undefined, ShopIdParams, z.infer<typeof verifyBody>>>(res);
+    ok(res, await shopReviewService.setVerification(req.user!.userId, params.id, body.type,
+      body.reason ?? 'Đã kiểm tra hồ sơ shop'));
+  });
+
+/** Thu hồi xác minh: shop rời "Shop uy tín", mất mã chứng nhận. Body: reason (5-300). Lỗi 404 SHOP_NOT_FOUND, 409 SHOP_NOT_VERIFIED */
+shopReviewAdminRouter.post('/shops/:id/unverify', moderate, requireJson, validate({ params: shopIdParams, body: unverifyBody }),
+  async (req: AuthRequest, res: Response) => {
+    const { params, body } = getInput<ValidatedInput<undefined, ShopIdParams, z.infer<typeof unverifyBody>>>(res);
+    ok(res, await shopReviewService.setVerification(req.user!.userId, params.id, null, body.reason));
   });
 
 const approveVerificationBody = strictBody({

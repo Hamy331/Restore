@@ -427,6 +427,7 @@
         "reviewReason": null,
         "updatedAt": "<date>",
         "categoryId": "furniture",
+        "subcategoryId": null,
         "ownerId": "user-seller",
         "condition": "USED_GOOD",
         "owner": {

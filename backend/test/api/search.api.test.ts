@@ -14,7 +14,9 @@ test('search: listings ignore accents and need every word', async () => {
   // Phù hợp nhất: tiêu đề bắt đầu bằng từ khoá lên trước
   assert.equal(titles(ban)[0], 'Bàn gỗ sồi thật');
   assert.deepEqual(titles(expect('search ban go', await api.get('/listings/search?q=BAN%20GO'))), ['Bàn gỗ sồi thật']);
-  assert.deepEqual(titles(expect('search den', await api.get('/listings/search?q=%C4%91en'))), ['Đèn bàn học cũ']);
+  // Gõ không dấu thì bỏ dấu cả "đ"; gõ có dấu thì so đúng dấu ("đen" không khớp "Đèn")
+  assert.deepEqual(titles(expect('search den', await api.get('/listings/search?q=den'))), ['Đèn bàn học cũ']);
+  assert.deepEqual(titles(expect('search den accented', await api.get('/listings/search?q=%C4%91en'))), []);
   assert.deepEqual(titles(expect('search exchange', await api.get('/listings/search?q=&deal=exchange'))), ['Ghế xoay văn phòng']);
   assert.equal(expect('search conditions', await api.get('/listings/search?condition=NEW,USED_GOOD&sort=newest')).body.data.length, 3);
   expect('search no match', await api.get('/listings/search?q=zzz'));
@@ -40,7 +42,8 @@ test('search: history, trending and suggestions', async () => {
   const private1 = expect('suggestions private keyword', await api.get('/search/suggestions?q=gh%E1%BA%BF'));
   assert.deepEqual(private1.body.data, ['Ghế xoay văn phòng']);
   await api.get('/listings/search?q=ghe%20XOAY', { token: tokens.seller });
-  const shared = expect('suggestions ghe', await api.get('/search/suggestions?q=gh%E1%BA%BF'));
+  // Gõ không dấu để khớp cả từ khoá "ghe XOAY" (gõ có dấu thì chỉ khớp chữ có dấu)
+  const shared = expect('suggestions ghe', await api.get('/search/suggestions?q=ghe'));
   assert.deepEqual(shared.body.data, ['ghe XOAY', 'Ghế xoay văn phòng']);
   expect('suggestions empty', await api.get('/search/suggestions?q=%20'));
   const trending = expect('trending', await api.get('/search/trending'));
