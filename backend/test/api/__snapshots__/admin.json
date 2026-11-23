@@ -1765,6 +1765,7 @@
             "after": {
               "status": "REJECTED"
             },
+            "subjectId": "user-seller",
             "createdAt": "<date>",
             "actor": {
               "id": "user-admin",
@@ -1813,6 +1814,7 @@
               "extendDiscountPercent": 20,
               "monthlyPromotionQuota": 2
             },
+            "subjectId": null,
             "createdAt": "<date>",
             "actor": {
               "id": "user-admin",
@@ -1829,6 +1831,7 @@
             "reason": "Bán xác",
             "before": null,
             "after": null,
+            "subjectId": null,
             "createdAt": "<date>",
             "actor": {
               "id": "user-admin",
@@ -1875,6 +1878,7 @@
               "freeListingLimit": 2,
               "extraListingCredits": 5
             },
+            "subjectId": null,
             "createdAt": "<date>",
             "actor": {
               "id": "user-admin",
@@ -1891,6 +1895,7 @@
             "reason": "Đồ cổ",
             "before": null,
             "after": null,
+            "subjectId": null,
             "createdAt": "<date>",
             "actor": {
               "id": "user-admin",
@@ -1920,6 +1925,7 @@
               "days": 7,
               "status": "ACTIVE"
             },
+            "subjectId": null,
             "createdAt": "<date>",
             "actor": {
               "id": "user-admin",
@@ -1949,6 +1955,7 @@
               "days": 3,
               "status": "SUSPENDED"
             },
+            "subjectId": null,
             "createdAt": "<date>",
             "actor": {
               "id": "user-admin",
@@ -1978,6 +1985,7 @@
               "days": 7,
               "status": "ACTIVE"
             },
+            "subjectId": null,
             "createdAt": "<date>",
             "actor": {
               "id": "user-admin",

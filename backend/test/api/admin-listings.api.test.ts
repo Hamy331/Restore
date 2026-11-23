@@ -105,7 +105,7 @@ test('posting warns about flagged content, admin sees seller history', async () 
   // Tái phạm: từ 3 lần bị từ chối / gỡ trong 30 ngày; lần cũ hơn 30 ngày không tính
   const offenders = async () => (await api.get('/admin/listings?status=REJECTED&offender=1', admin)).body.data.items.map((item: { id: string }) => item.id);
   const strike = (daysAgo: number) => prisma.adminAudit.create({ data: { actorId: 'user-admin', action: 'REMOVE', targetType: 'LISTING',
-    targetId: id, reason: 'Vi phạm', createdAt: new Date(Date.now() - daysAgo * 86_400_000) } });
+    targetId: id, subjectId: 'user-buyer', reason: 'Vi phạm', createdAt: new Date(Date.now() - daysAgo * 86_400_000) } });
   await strike(40);
   await strike(2);
   assert.deepEqual(await offenders(), [], 'mới 2 lần trong 30 ngày');

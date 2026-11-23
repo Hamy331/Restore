@@ -697,8 +697,11 @@ model AdminAudit {
   reason String
   before Json?
   after Json?
+  /// Người bị ảnh hưởng (VD chủ tin bị kiểm duyệt): giữ lịch sử vi phạm cả khi tin đã bị xoá
+  subjectId String?
   createdAt DateTime @default(now())
   @@index([targetType, targetId, createdAt])
+  @@index([subjectId, createdAt])
   @@index([createdAt])
 }
 model ConditionPolicy {

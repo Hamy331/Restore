@@ -65,7 +65,7 @@ export async function moderate(tx: Prisma.TransactionClient, actorId: string, id
   changed(await listingRepository.updateWhereVersion(tx, id, item.status, expected,
     { status, reviewReason: action === 'APPROVE' ? null : reason,
       ...(expiresAt ? { expiresAt, startsAt, ...(!scheduled && { publishedAt: now }) } : { paidCredits: 0 }) }));
-  await audit(tx, actorId, action, 'LISTING', id, reason, { status: item.status }, { status });
+  await audit(tx, actorId, action, 'LISTING', id, reason, { status: item.status }, { status }, item.ownerId);
   // Gỡ tin: bản sửa chưa duyệt (nếu có) cũng bỏ
   const removed: string[] = [];
   if (action === 'REMOVE') {
@@ -102,7 +102,7 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
   }
   if (action !== 'APPROVE') {
     changed(await listingRepository.rejectRevision(tx, item.id, expected, reason));
-    await audit(tx, actorId, `${action}_EDIT`, 'LISTING', item.id, reason, { edit: 'PENDING' }, { edit: 'REJECTED' });
+    await audit(tx, actorId, `${action}_EDIT`, 'LISTING', item.id, reason, { edit: 'PENDING' }, { edit: 'REJECTED' }, item.ownerId);
     await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
       image: revision.images[0] ?? item.images[0] ?? null, action, reason, edit: true, scheduled: false });
     return [];
@@ -123,7 +123,7 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
     images: revision.images, flagged: isFlagged(revision.title, revision.description),
   }));
   await audit(tx, actorId, 'APPROVE_EDIT', 'LISTING', item.id, reason,
-    { title: item.title, edit: 'PENDING' }, { title: revision.title, edit: 'APPROVED' });
+    { title: item.title, edit: 'PENDING' }, { title: revision.title, edit: 'APPROVED' }, item.ownerId);
   const priceDrop = item.status === ListingStatus.AVAILABLE && revision.price.lessThan(item.price)
     ? { from: item.price.toFixed(0), to: revision.price.toFixed(0) } : undefined;
   await runModeratedHooks(tx, { listingId: item.id, ownerId: item.ownerId, title: revision.title,
