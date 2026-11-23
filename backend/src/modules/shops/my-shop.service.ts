@@ -41,14 +41,19 @@ const findMine = (ownerId: string) => prisma.shop.findUnique({
  * Trang Quản lý shop: { shop (Shop như GET /shops/:id, kể cả khi chưa duyệt) | null,
  *   review { status (PENDING | APPROVED | REJECTED), rejectNote, reviewedAt } | null,
  *   verification { status, rejectNote, submittedAt, reviewedAt } | null (hồ sơ xin xác minh gần nhất),
- *   canCreate (chưa đăng ký cửa hàng), registration { fee (xu), termsVersion } (đăng ký lên cửa hàng),
+ *   canCreate (chưa đăng ký cửa hàng), registration { fee (xu), termsVersion, categories [{ id, name }] (chỉ khi chưa có shop) },
  *   nameLocked (shop đã duyệt / xác minh thì không tự đổi tên),
  *   stats { followerCount, listingCount, runningPosters, pendingPosters } | null }
  */
 export async function getMyShop(userId: string, now = new Date()) {
   const mine = await findMine(userId);
   const base = { registration: { fee: SHOP_REGISTRATION_CREDITS, termsVersion: SHOP_TERMS_VERSION } };
-  if (!mine) return { ...base, shop: null, review: null, verification: null, canCreate: true, nameLocked: false, stats: null };
+  if (!mine) {
+    // Danh mục để chọn khi đăng ký: tin cửa hàng chỉ đăng trong danh mục này
+    const categories = await prisma.category.findMany({ where: { active: true }, select: { id: true, name: true }, orderBy: { name: 'asc' } });
+    return { registration: { ...base.registration, categories }, shop: null, review: null, verification: null,
+      canCreate: true, nameLocked: false, stats: null };
+  }
   const { status, rejectNote, reviewedAt, verification, ...shop } = mine;
   const [listingCount, runningPosters, pendingPosters] = await Promise.all([
     prisma.listing.count({ where: { ...visible, ownerId: userId } }),
@@ -90,11 +95,15 @@ export async function createMyShop(userId: string, body: ShopCreateBody, now = n
     if (await tx.shop.findUnique({ where: { ownerId: userId }, select: { id: true } })) {
       throw new AppError(409, 'SHOP_EXISTS', 'Bạn đã có trang shop.');
     }
+    // Danh mục duy nhất của tin cửa hàng, chọn khi đăng ký
+    if (!await tx.category.findFirst({ where: { id: body.categoryId, active: true }, select: { id: true } })) {
+      throw new AppError(400, 'INVALID_CATEGORY', 'Chọn danh mục hợp lệ cho cửa hàng.', 'categoryId');
+    }
     await spendCredits(tx, { userId, amount: SHOP_REGISTRATION_CREDITS, note: 'Phí đăng ký lên Cửa hàng' });
     await tx.shop.create({
       data: {
         ownerId: userId, name: body.name, tagline: body.tagline ?? '', description: body.description ?? '',
-        address: body.address ?? null, status: 'PENDING', submittedAt: now,
+        address: body.address ?? null, status: 'PENDING', submittedAt: now, categoryIds: [body.categoryId],
         termsVersion: body.termsVersion, termsAcceptedAt: now, registrationCredits: SHOP_REGISTRATION_CREDITS,
       },
     });

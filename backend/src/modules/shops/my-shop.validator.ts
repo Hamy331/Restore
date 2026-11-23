@@ -47,9 +47,10 @@ export const SHOP_TERMS_VERSION = '2026-11';
 /** Phí đăng ký lên cửa hàng, trả một lần bằng xu (1 xu = 1.000đ) */
 export const SHOP_REGISTRATION_CREDITS = 199;
 
-/** Đăng ký lên cửa hàng: name, tagline?, description?, address?, termsVersion (phải là hợp đồng hiện hành) */
+/** Đăng ký lên cửa hàng: name, categoryId (danh mục duy nhất của tin cửa hàng), tagline?, description?, address?, termsVersion (hợp đồng hiện hành) */
 export const shopCreateBody = strictBody({
   name: name(),
+  categoryId: str('categoryId', { max: 100 }),
   tagline: optionalStr('tagline', { max: SHOP_LIMITS.tagline }),
   description: optionalStr('description', { max: SHOP_LIMITS.description }),
   address: optionalStr('address', { max: SHOP_LIMITS.address }),
