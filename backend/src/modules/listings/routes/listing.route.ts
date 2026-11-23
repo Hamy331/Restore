@@ -17,6 +17,7 @@ const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
  *       isNegotiable? (bỏ qua: tin có bán luôn cho trả giá), allowSale?, allowExchange?, exchangeWish?, sellerType?, location, attributes?,
  *       payWithCredits? (true = đồng ý trả xu khi hết suất miễn phí),
  *       allowDuplicate? (true = vẫn đăng mới dù có tin giống vậy đã ẩn / hết hạn),
+ *       acceptFlags? (true = vẫn gửi duyệt dù nội dung bị gắn cờ),
  *       displayDays?, startsAt?, originalPrice? (giá gốc trước giảm, chỉ gói Cửa hàng, phải cao hơn price;
  *       sửa tin thì không cao hơn giá gốc / giá bán cũ: 400 ORIGINAL_PRICE_RAISED { details: { maxOriginalPrice } })
  *
@@ -25,6 +26,8 @@ const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
  *      409 NOT_ENOUGH_CREDITS { details: { required, available, missing } }, 409 DAILY_LISTING_LIMIT,
  *      409 DUPLICATE_LISTING { details: { listingId } } (trùng tin đang hiển thị / chờ duyệt),
  *      409 DUPLICATE_INACTIVE { details: { listingId, expired } } (trùng tin đã ẩn / hết hạn),
+ *      409 CONTENT_FLAGGED { details: { flags: [{ code: CONTACT | LINK | BANNED, match }] } } (có SĐT, link, từ ngữ hàng cấm;
+ *        gửi lại với acceptFlags: true để vẫn gửi duyệt, cũng áp cho PUT /:id và đăng nháp),
  *      403 ORIGINAL_PRICE_NOT_ALLOWED (gói không phải Cửa hàng mà gửi originalPrice)
  */
 listingRouter.post('/', manageOwn, validate({ body: createListingBody }), listingController.create);

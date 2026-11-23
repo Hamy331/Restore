@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { contentFlags } from './content-flags.js';
+import { AppError } from '../../common/errors/app-error.js';
+import { assertNoContentFlags, contentFlags } from './content-flags.js';
 
 const codes = (...texts: string[]) => contentFlags(...texts).map((flag) => flag.code);
 
@@ -31,4 +32,11 @@ test('contentFlags: banned goods as whole words, with or without accents', () =>
 test('contentFlags: one flag per kind, clean text has none', () => {
   assert.deepEqual(codes('Súng nước', 'Zalo 0987654321, xem banghe.vn'), ['CONTACT', 'LINK', 'BANNED']);
   assert.deepEqual(codes('Ghế xoay văn phòng còn mới', null as unknown as string), []);
+});
+
+test('assertNoContentFlags: chặn tin bị gắn cờ trừ khi người dùng đã đồng ý gửi', () => {
+  assert.throws(() => assertNoContentFlags(false, 'Bán xe', 'Gọi 0912345678'),
+    (error: AppError) => error.code === 'CONTENT_FLAGGED' && error.statusCode === 409);
+  assert.doesNotThrow(() => assertNoContentFlags(true, 'Bán xe', 'Gọi 0912345678'));
+  assert.doesNotThrow(() => assertNoContentFlags(false, 'Bán xe', 'Xe còn tốt'));
 });

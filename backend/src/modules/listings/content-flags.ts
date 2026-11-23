@@ -1,5 +1,6 @@
+import { AppError } from '../../common/errors/app-error.js';
 /*
- * Gắn cờ nội dung tin đăng cho admin: chỉ đánh dấu để duyệt kỹ hơn, không tự từ chối tin.
+ * Gắn cờ nội dung tin đăng cho admin: chỉ đánh dấu để duyệt kỹ hơn, không tự từ chối tin (người đăng được cảnh báo trước).
  * Quét tiêu đề và mô tả lúc admin mở hàng chờ, nên đổi luật ở đây là áp dụng ngay cho mọi tin.
  */
 
@@ -45,4 +46,18 @@ export function contentFlags(...texts: (string | null | undefined)[]): ContentFl
     }
   }
   return flags;
+}
+
+/**
+ * Cảnh báo lúc đăng / sửa tin: nội dung bị gắn cờ thì 409 CONTENT_FLAGGED { details: { flags } } để người dùng
+ * tự sửa trước. Người dùng vẫn muốn gửi thì gửi lại với acceptFlags: true, tin vào hàng chờ kèm cờ như cũ.
+ */
+export function assertNoContentFlags(acceptFlags: boolean, title: string, description: string) {
+  if (acceptFlags) return;
+  const flags = contentFlags(title, description);
+  if (flags.length) {
+    throw new AppError(409, 'CONTENT_FLAGGED',
+      'Tin có số điện thoại, đường link hoặc từ ngữ về hàng cấm nên có thể bị từ chối. Sửa lại để được duyệt nhanh hơn.',
+      undefined, { flags });
+  }
 }

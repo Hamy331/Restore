@@ -9,6 +9,7 @@ import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
 import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing, withListingWriteTransaction } from './listing.service.js';
 import { assertNotDuplicate } from './listing-lifecycle.service.js';
+import { assertNoContentFlags } from '../content-flags.js';
 import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
 
 /** Số tin nháp đang giữ và giới hạn của gói */
@@ -53,7 +54,7 @@ export async function updateDraft(ownerId: string, id: string, data: DraftInput)
 }
 
 /** Đăng nháp: kiểm tra đủ nội dung như tin mới, cần ít nhất một ảnh, trừ lượt đăng */
-export async function publishDraft(ownerId: string, id: string, payWithCredits = false, allowDuplicate = false) {
+export async function publishDraft(ownerId: string, id: string, payWithCredits = false, allowDuplicate = false, acceptFlags = false) {
   const listing = await withListingWriteTransaction(async (tx) => {
     const current = await requireOwnedListing(tx, id, ownerId);
     if (current.status === ListingStatus.PENDING) return listingRepository.findSelected(tx, id);
@@ -73,6 +74,7 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     });
     const category = await assertPublishable(tx, data);
     const now = new Date();
+    assertNoContentFlags(acceptFlags, data.title, data.description);
     await assertNotDuplicate(tx, ownerId, data, { excludeId: id, allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
     await assertOriginalPrice(tx, ownerId, now, data);
