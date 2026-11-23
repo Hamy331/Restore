@@ -38,13 +38,11 @@ const _desktopSectionRoots = {
 /// trang gốc của menu) vẫn có nút quay lại để người dùng trở về.
 bool needsBackButton(BuildContext context) {
   if (!isDesktopLayout(context)) return true;
-  if (context.canPop()) return true;
-  try {
-    final path = GoRouterState.of(context).uri.path;
-    return !_desktopSectionRoots.contains(path);
-  } catch (_) {
-    return true;
-  }
+  final router = GoRouter.maybeOf(context);
+  if (router == null || router.canPop()) return true;
+  // A page being removed can still build during a transition. Read the
+  // active path directly instead of walking its nested navigators.
+  return !_desktopSectionRoots.contains(router.state.uri.path);
 }
 
 /// Lề hai bên để nội dung rộng [content] nằm giữa màn hình
