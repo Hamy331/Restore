@@ -9,6 +9,7 @@ import { DecisionForm, type Action } from '../moderation/DecisionForm';
 import { ListingDetails, SellerTags, listingStatus, planTiers, type Listing } from './ListingDetails';
 import { RevisionCompare } from './RevisionCompare';
 import { FlagNotice, FlagTags } from './ContentFlags';
+import { BannedTerms } from './BannedTerms';
 
 /** Giá trị bộ lọc riêng: tin đã duyệt có bản sửa đang chờ duyệt (gửi edit=PENDING thay cho status) */
 const EDIT_FILTER = 'EDIT';
@@ -24,7 +25,8 @@ export function Listings({ session }: { session: Session }) {
     [q, setQuery] = useState(''),
     [tier, setTier] = useState(''),
     [flagged, setFlagged] = useState(false),
-    [offender, setOffender] = useState(false);
+    [offender, setOffender] = useState(false),
+    [terms, setTerms] = useState(false);
   const [item, select] = useState<Listing>(),
     [busy, setBusy] = useState(false);
   const params = new URLSearchParams({ page: String(page), q });
@@ -104,6 +106,7 @@ export function Listings({ session }: { session: Session }) {
         >
           Chỉ người đăng tái phạm (từ 3 lần bị từ chối / gỡ trong 30 ngày)
         </Checkbox>
+        <Button onClick={() => setTerms(true)}>Từ cấm của bộ lọc</Button>
       </Space>
       {error ? (
         <Failure error={error} reload={reload} />
@@ -156,6 +159,11 @@ export function Listings({ session }: { session: Session }) {
             onChange: setPage,
           }}
         />
+      )}
+      {terms && (
+        <Modal open title="Từ cấm của bộ lọc" footer={null} onCancel={() => setTerms(false)}>
+          <BannedTerms session={session} />
+        </Modal>
       )}
       {item && (
         <Modal

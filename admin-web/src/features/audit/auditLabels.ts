@@ -29,11 +29,14 @@ export const actions: Record<string, string> = {
   SHOP_REJECT: 'Từ chối shop',
   SHOP_VERIFY: 'Xác minh shop',
   SHOP_UNVERIFY: 'Thu hồi xác minh shop',
+  TERM_ADD: 'Thêm từ cấm',
+  TERM_REMOVE: 'Bỏ từ cấm',
 };
 export const modules: Record<string, string> = {
   REPORT: 'Báo cáo vi phạm',
   USER: 'Thành viên',
   LISTING: 'Kiểm duyệt tin',
+  BANNED_TERM: 'Từ cấm của bộ lọc',
   STORE_ORDER: 'Đơn cửa hàng',
   STORE_PACKAGE: 'Gói cửa hàng',
   PROMOTION_ORDER: 'Đơn đẩy tin',
