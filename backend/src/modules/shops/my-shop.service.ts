@@ -11,6 +11,24 @@ import {
   SHOP_REGISTRATION_CREDITS, SHOP_TERMS_VERSION, shopNameProblem, type ShopCreateBody, type ShopUpdateBody,
 } from './my-shop.validator.js';
 
+/**
+ * Quyền theo cửa hàng cho tab Tài khoản và Bảng tin: shopStatus (PENDING | APPROVED | REJECTED | null = chưa đăng ký),
+ * isPartner (shop đã duyệt / đã xác minh: có nhãn Đối tác), canPost (đối tác hoặc admin mới đăng bài lên Bảng tin)
+ */
+export async function sellerAccess(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId }, select: { role: true, shop: { select: { status: true, verificationType: true } } },
+  });
+  const isPartner = !!user?.shop && (user.shop.status === 'APPROVED' || user.shop.verificationType !== null);
+  return { shopStatus: user?.shop?.status ?? null, isPartner, canPost: isPartner || user?.role === 'ADMIN' };
+}
+
+/** Bảng tin chỉ cho đối tác và admin đăng bài, người dùng thường chỉ xem, thả tim, bình luận. Lỗi 403 FEED_POST_FORBIDDEN */
+export async function assertCanPost(userId: string) {
+  if ((await sellerAccess(userId)).canPost) return;
+  throw new AppError(403, 'FEED_POST_FORBIDDEN', 'Chỉ cửa hàng đối tác mới đăng bài lên Bảng tin.');
+}
+
 const findMine = (ownerId: string) => prisma.shop.findUnique({
   where: { ownerId },
   select: {

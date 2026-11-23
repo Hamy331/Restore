@@ -5,6 +5,7 @@ import { ok } from '../../../common/http/response.js';
 import { AuthRequest, requirePermission, verifyToken } from '../../../middlewares/auth.middleware.js';
 import * as profile from '../services/profile.service.js';
 import * as usersService from '../services/users.service.js';
+import { sellerAccess } from '../../shops/my-shop.service.js';
 import * as savedAddresses from '../services/saved-address.service.js';
 import * as recentAreas from '../services/recent-area.service.js';
 import { emailChange } from '../services/email-change.service.js';
@@ -24,11 +25,13 @@ const handle = (action: (req: AuthRequest) => Promise<unknown>) =>
 
 /**
  * Hồ sơ người đang đăng nhập: UserProfileDto (trang chủ dùng để chào và hiện
- * avatar) cộng bio, số người theo dõi và trạng thái hoạt động (tab Tài khoản).
+ * avatar) cộng bio, số người theo dõi và trạng thái hoạt động (tab Tài khoản),
+ * shopStatus (PENDING | APPROVED | REJECTED | null = chưa lên cửa hàng), isPartner, canPost (được đăng bài lên Bảng tin).
  */
 usersRouter.get('/me', requirePermission(PERMISSION.PROFILE_READ), handle(async (req) => ({
   ...await usersService.getMyProfile(req.user!.userId),
   ...await profile.getProfile(req.user!.userId),
+  ...await sellerAccess(req.user!.userId),
 })));
 
 usersRouter.use(verifyToken);

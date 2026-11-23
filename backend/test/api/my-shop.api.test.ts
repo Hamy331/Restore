@@ -106,12 +106,27 @@ test('my shop: admin review flow', async () => {
   const resent = await api.patch('/shops/me', { token, body: { coverUrl: null } });
   assert.deepEqual([resent.body.data.review.status, resent.body.data.review.rejectNote], ['PENDING', null], 'sửa là gửi duyệt lại');
 
+  // Bảng tin: shop chờ duyệt chưa phải Đối tác nên chưa đăng bài được
+  const me = async (t: string) => (await api.get('/users/me', { token: t })).body.data;
+  assert.deepEqual([(await me(token)).shopStatus, (await me(token)).canPost], ['PENDING', false]);
+  assert.equal((await api.post('/feeds', { token, body: { text: 'Hàng mới về' } })).body.code, 'FEED_POST_FORBIDDEN');
+
   const approved = await api.post(`/admin/shops/${id}/approve`, { token: tokens.admin });
   assert.deepEqual([approved.status, approved.body.data.status], [200, 'APPROVED']);
   assert.equal((await api.get(`/shops/${id}`, { token: tokens.buyer })).status, 200, 'đã duyệt thì công khai');
   assert.equal((await api.get('/shops/me', { token })).body.data.nameLocked, true);
   assert.equal((await api.patch('/shops/me', { token, body: { name: 'Tên khác' } })).body.code, 'SHOP_NAME_LOCKED');
 
+  // Đối tác và admin đăng bài; người dùng thường chỉ xem, thả tim, bình luận
+  assert.deepEqual([(await me(token)).isPartner, (await me(token)).canPost], [true, true]);
+  const posted = await api.post('/feeds', { token, body: { text: 'Hàng mới về' } });
+  assert.equal(posted.status, 201, JSON.stringify(posted.body));
+  assert.equal((await api.post('/feeds', { token: tokens.admin, body: { text: 'Thông báo' } })).status, 201);
+  assert.equal((await api.post('/feeds', { token: tokens.buyer, body: { text: 'Bán xe' } })).body.code, 'FEED_POST_FORBIDDEN');
+  const postId = posted.body.data.id;
+  assert.equal((await api.put(`/feeds/${postId}/like`, { token: tokens.buyer })).status, 200);
+  assert.equal((await api.post(`/feeds/${postId}/comments`, { token: tokens.buyer, body: { text: 'Còn hàng không?' } })).status, 201);
+  await prisma.feedPost.deleteMany({ where: { authorId: { in: ['user-seller', 'user-admin'] } } });
 
   const types = (await prisma.notification.findMany({ where: { userId: 'user-seller', type: { startsWith: 'SHOP_' } } })).map((n) => n.type);
   assert.deepEqual(types.sort(), ['SHOP_APPROVED', 'SHOP_REJECTED']);
