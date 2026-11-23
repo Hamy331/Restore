@@ -73,7 +73,8 @@ export function SellerTags({ owner }: { owner: Listing['owner'] }) {
   );
 }
 
-type Strike = { listingId: string; title: string; action: string; reason: string; createdAt: string };
+/** title null: tin đã bị xoá */
+type Strike = { listingId: string; title: string | null; action: string; reason: string; createdAt: string };
 
 /** Các lần gần nhất tin của người đăng không được duyệt, kèm lý do (chỉ tải khi người đăng từng bị) */
 function SellerStrikes({ session, item }: { session: Session; item: Listing }) {
@@ -89,7 +90,7 @@ function SellerStrikes({ session, item }: { session: Session; item: Listing }) {
         {data.recent.map((strike) => (
           <li key={strike.listingId + strike.createdAt}>
             {new Date(strike.createdAt).toLocaleDateString('vi-VN')} · {auditActions[strike.action] ?? strike.action}
-            {strike.listingId === item.id ? ' (tin này)' : ` · ${strike.title}`}: {strike.reason}
+            {strike.listingId === item.id ? ' (tin này)' : ` · ${strike.title ?? '(tin đã bị xoá)'}`}: {strike.reason}
           </li>
         ))}
       </ul>
