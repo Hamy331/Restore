@@ -221,36 +221,26 @@ class _Tag extends StatelessWidget {
   final String label;
   final IconData? icon;
 
-  /// Nền nhãn, mặc định trắng mờ
-  final Color? color;
-  final Color textColor;
-
-  const _Tag({
-    required this.label,
-    this.icon,
-    this.color,
-    this.textColor = Colors.white,
-  });
+  const _Tag({required this.label, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return ListingImageOverlay(
-      color: color,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 12, color: textColor),
+              Icon(icon, size: 12, color: Colors.white),
               const SizedBox(width: 3),
             ],
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w700,
-                color: textColor,
+                color: Colors.white,
               ),
             ),
           ],

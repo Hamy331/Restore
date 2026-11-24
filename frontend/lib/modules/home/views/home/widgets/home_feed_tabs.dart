@@ -44,8 +44,9 @@ class _HomeFeedTabsState extends State<HomeFeedTabs> {
   @override
   void didUpdateWidget(HomeFeedTabs oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!widget.expand && oldWidget.selected != widget.selected)
+    if (!widget.expand && oldWidget.selected != widget.selected) {
       _reveal(widget.selected);
+    }
   }
 
   /// Kéo tab vừa chọn vào giữa tầm nhìn (tab ở mép bị che một nửa)

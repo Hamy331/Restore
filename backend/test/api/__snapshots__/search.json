@@ -9,7 +9,6 @@
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -60,20 +59,25 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         },
         {
           "id": "listing-3",
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -124,13 +128,19 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ],
       "pagination": {
@@ -158,7 +168,6 @@
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -209,13 +218,19 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ],
       "pagination": {
@@ -243,7 +258,6 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -294,13 +308,19 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ],
       "pagination": {
@@ -348,7 +368,6 @@
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -399,13 +418,19 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ],
       "pagination": {
@@ -433,7 +458,6 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -484,20 +508,25 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         },
         {
           "id": "listing-2",
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -548,20 +577,25 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         },
         {
           "id": "listing-1",
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -612,13 +646,19 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ],
       "pagination": {

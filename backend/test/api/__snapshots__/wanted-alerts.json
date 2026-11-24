@@ -77,7 +77,6 @@
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -128,14 +127,20 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
           "isFavorite": false,
-          "score": 1
+          "score": 1,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ]
     }
@@ -150,7 +155,6 @@
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -201,21 +205,26 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
           "isFavorite": false,
-          "score": 0.8594
+          "score": 0.8594,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         },
         {
           "id": "listing-3",
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -266,14 +275,20 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
           "isFavorite": false,
-          "score": 0.4306
+          "score": 0.4306,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ]
     }
@@ -541,7 +556,6 @@
           "title": "Ghế công thái học Ergohuman",
           "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
           "price": "250000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "other",
@@ -596,7 +610,9 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
@@ -605,7 +621,11 @@
           "isFavorite": false,
           "score": 0.9107,
           "matchedAt": "<date>",
-          "isNew": true
+          "isNew": true,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ],
       "pagination": {
@@ -646,7 +666,6 @@
           "title": "Ghế công thái học Ergohuman",
           "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
           "price": "250000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "other",
@@ -701,7 +720,9 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
@@ -710,7 +731,11 @@
           "isFavorite": false,
           "score": 0.9107,
           "matchedAt": "<date>",
-          "isNew": false
+          "isNew": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ],
       "pagination": {
