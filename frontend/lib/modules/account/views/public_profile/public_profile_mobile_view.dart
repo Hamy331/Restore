@@ -17,6 +17,7 @@ import 'profile_about.dart';
 import 'seller_activity_preview.dart';
 import 'seller_listings.dart';
 import 'seller_profile_summary.dart';
+import 'shop_poster_strip.dart';
 
 class PublicProfileMobileView extends StatefulWidget {
   const PublicProfileMobileView({
@@ -134,6 +135,10 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
           onReviews: () => _tabs.animateTo(2),
           onCatalog: s!.verified ? () => _catalog(p) : null,
         );
+        // Poster đang chạy của cửa hàng Đối tác, dưới phần đầu trang
+        Widget posters() => s!.isShop
+            ? ShopPosterStrip(key: ValueKey(s.shopId), shopId: s.shopId!)
+            : const SizedBox.shrink();
         TabBar tabBar() => TabBar(
           controller: _tabs,
           indicatorSize: TabBarIndicatorSize.tab,
@@ -239,6 +244,7 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               summary(),
+                              posters(),
                               SellerActivityPreview(
                                 open: () => _tabs.animateTo(1),
                               ),
@@ -257,7 +263,9 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                       // đánh giá + thời gian ở ReStore, rồi tab ghim khi cuộn
                       child: NestedScrollView(
                         headerSliverBuilder: (_, _) => [
-                          SliverToBoxAdapter(child: summary()),
+                          SliverToBoxAdapter(
+                            child: Column(children: [summary(), posters()]),
+                          ),
                           SliverPersistentHeader(
                             pinned: true,
                             delegate: _TabsHeader(tabBar()),
