@@ -2228,18 +2228,6 @@ abstract class AppLocalizations {
   /// **'Tip: clear photos from multiple angles make your listing more trustworthy.'**
   String get photoTip;
 
-  /// No description provided for @salePrice.
-  ///
-  /// In en, this message translates to:
-  /// **'Sale price'**
-  String get salePrice;
-
-  /// No description provided for @priceVndHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter price in VND'**
-  String get priceVndHint;
-
   /// No description provided for @negotiable.
   ///
   /// In en, this message translates to:
@@ -2660,12 +2648,6 @@ abstract class AppLocalizations {
   /// **'{count} {status}'**
   String listingStatusCount(int count, String status);
 
-  /// No description provided for @editAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit'**
-  String get editAction;
-
   /// No description provided for @hideListing.
   ///
   /// In en, this message translates to:
@@ -2756,12 +2738,6 @@ abstract class AppLocalizations {
   /// **'Listing details'**
   String get listingDetailTitle;
 
-  /// No description provided for @listingPreviewTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Listing preview'**
-  String get listingPreviewTitle;
-
   /// No description provided for @galleryPosition.
   ///
   /// In en, this message translates to:
@@ -2821,12 +2797,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose category'**
   String get chooseCategoryTitle;
-
-  /// No description provided for @chooseCategorySubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'What do you want to sell?'**
-  String get chooseCategorySubtitle;
 
   /// No description provided for @categoryElectronicsTitle.
   ///
@@ -2918,18 +2888,6 @@ abstract class AppLocalizations {
   /// **'Condition'**
   String get conditionLabel;
 
-  /// No description provided for @continueBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get continueBtn;
-
-  /// No description provided for @completeListingTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Complete listing'**
-  String get completeListingTitle;
-
   /// No description provided for @saveDraft.
   ///
   /// In en, this message translates to:
@@ -2966,41 +2924,11 @@ abstract class AppLocalizations {
   /// **'Please add at least 1 photo'**
   String get photosRequiredError;
 
-  /// No description provided for @detailedDescriptionLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Detailed description'**
-  String get detailedDescriptionLabel;
-
-  /// No description provided for @listingDescriptionHint.
-  ///
-  /// In en, this message translates to:
-  /// **'- Condition, how long it has been used\n- Included accessories, minor defects if any\n- Reason for selling, delivery method'**
-  String get listingDescriptionHint;
-
-  /// No description provided for @characterCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count}/{max} characters'**
-  String characterCount(int count, int max);
-
-  /// No description provided for @descriptionMinLengthError.
-  ///
-  /// In en, this message translates to:
-  /// **'Description must be at least {min} characters'**
-  String descriptionMinLengthError(int min);
-
   /// No description provided for @listingTitleLabel.
   ///
   /// In en, this message translates to:
   /// **'Listing title'**
   String get listingTitleLabel;
-
-  /// No description provided for @listingTitleHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. Piaggio Vespa Sprint 2024 15,000 km'**
-  String get listingTitleHint;
 
   /// No description provided for @listingTitleMinLengthError.
   ///
@@ -3014,41 +2942,17 @@ abstract class AppLocalizations {
   /// **'Please enter a sale price'**
   String get priceRequiredError;
 
-  /// No description provided for @addressLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Address'**
-  String get addressLabel;
-
-  /// No description provided for @youAreLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'You are'**
-  String get youAreLabel;
-
   /// No description provided for @sellerPersonal.
   ///
   /// In en, this message translates to:
   /// **'Personal'**
   String get sellerPersonal;
 
-  /// No description provided for @sellerBusiness.
-  ///
-  /// In en, this message translates to:
-  /// **'Business'**
-  String get sellerBusiness;
-
   /// No description provided for @detailedInfoTitle.
   ///
   /// In en, this message translates to:
   /// **'Detailed information'**
   String get detailedInfoTitle;
-
-  /// No description provided for @categoryWithName.
-  ///
-  /// In en, this message translates to:
-  /// **'Category: {name}'**
-  String categoryWithName(String name);
 
   /// No description provided for @fieldRequiredError.
   ///
@@ -3086,12 +2990,6 @@ abstract class AppLocalizations {
   /// **'No photos yet'**
   String get noPhotosYet;
 
-  /// No description provided for @stepBasicInfoTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Photos, description & price'**
-  String get stepBasicInfoTitle;
-
   /// No description provided for @takePhoto.
   ///
   /// In en, this message translates to:
@@ -3128,30 +3026,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t publish the listing, please try again'**
   String get publishFailed;
 
-  /// No description provided for @tradeTypeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Trade type'**
-  String get tradeTypeLabel;
-
-  /// No description provided for @tradeSell.
-  ///
-  /// In en, this message translates to:
-  /// **'Sell'**
-  String get tradeSell;
-
-  /// No description provided for @tradeExchange.
-  ///
-  /// In en, this message translates to:
-  /// **'Exchange'**
-  String get tradeExchange;
-
-  /// No description provided for @tradeSellOrExchange.
-  ///
-  /// In en, this message translates to:
-  /// **'Both'**
-  String get tradeSellOrExchange;
-
   /// No description provided for @tradeExchangeAccepted.
   ///
   /// In en, this message translates to:
@@ -3164,35 +3038,11 @@ abstract class AppLocalizations {
   /// **'Want to exchange for'**
   String get exchangeWishLabel;
 
-  /// No description provided for @exchangeWishHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. iPhone 13 or a tablet'**
-  String get exchangeWishHint;
-
   /// No description provided for @selectAddressHint.
   ///
   /// In en, this message translates to:
   /// **'Choose an area'**
   String get selectAddressHint;
-
-  /// No description provided for @stepShortCategory.
-  ///
-  /// In en, this message translates to:
-  /// **'Category'**
-  String get stepShortCategory;
-
-  /// No description provided for @stepShortBasicInfo.
-  ///
-  /// In en, this message translates to:
-  /// **'Basics'**
-  String get stepShortBasicInfo;
-
-  /// No description provided for @stepShortDetails.
-  ///
-  /// In en, this message translates to:
-  /// **'Details'**
-  String get stepShortDetails;
 
   /// No description provided for @stepProgressLabel.
   ///
@@ -3200,22 +3050,10 @@ abstract class AppLocalizations {
   /// **'Step {current}/{total}'**
   String stepProgressLabel(int current, int total);
 
-  /// No description provided for @nextStepLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Next: {name}'**
-  String nextStepLabel(String name);
-
-  /// No description provided for @conditionSectionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Item condition'**
-  String get conditionSectionTitle;
-
   /// No description provided for @conditionNew.
   ///
   /// In en, this message translates to:
-  /// **'New'**
+  /// **'Brand new'**
   String get conditionNew;
 
   /// No description provided for @conditionLikeNew.
@@ -3227,62 +3065,50 @@ abstract class AppLocalizations {
   /// No description provided for @conditionUsedGood.
   ///
   /// In en, this message translates to:
-  /// **'Used - good'**
+  /// **'Lightly used'**
   String get conditionUsedGood;
 
   /// No description provided for @conditionUsedFair.
   ///
   /// In en, this message translates to:
-  /// **'Used - fair'**
+  /// **'Well used'**
   String get conditionUsedFair;
 
   /// No description provided for @conditionForParts.
   ///
   /// In en, this message translates to:
-  /// **'For parts / not working'**
+  /// **'Heavily used'**
   String get conditionForParts;
 
   /// No description provided for @conditionNewDesc.
   ///
   /// In en, this message translates to:
-  /// **'Never used, original packaging'**
+  /// **'Never used. May come with original packaging or tag.'**
   String get conditionNewDesc;
 
   /// No description provided for @conditionLikeNewDesc.
   ///
   /// In en, this message translates to:
-  /// **'Barely used, no visible marks'**
+  /// **'Used once or twice. As good as new.'**
   String get conditionLikeNewDesc;
 
   /// No description provided for @conditionUsedGoodDesc.
   ///
   /// In en, this message translates to:
-  /// **'Works well, minor signs of use'**
+  /// **'Used with care. Flaws, if any, are barely noticeable.'**
   String get conditionUsedGoodDesc;
 
   /// No description provided for @conditionUsedFairDesc.
   ///
   /// In en, this message translates to:
-  /// **'Usable, visible wear or minor faults'**
+  /// **'Has minor flaws or defects.'**
   String get conditionUsedFairDesc;
 
   /// No description provided for @conditionForPartsDesc.
   ///
   /// In en, this message translates to:
-  /// **'Does not work properly'**
+  /// **'Has obvious signs of use or defects.'**
   String get conditionForPartsDesc;
-
-  /// No description provided for @categoryAttributesTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Category details'**
-  String get categoryAttributesTitle;
-
-  /// No description provided for @categoryAttributesHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Fields below depend on the category'**
-  String get categoryAttributesHint;
 
   /// No description provided for @selectOptionHint.
   ///
@@ -3529,6 +3355,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search pre-loved and swap items...'**
   String get homeSearchHint;
+
+  /// No description provided for @searchProductsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search products...'**
+  String get searchProductsHint;
 
   /// No description provided for @homeChangeArea.
   ///
@@ -3986,42 +3818,6 @@ abstract class AppLocalizations {
   /// **'Live updates on'**
   String get productLiveIndicator;
 
-  /// No description provided for @productBuyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Request to buy'**
-  String get productBuyTitle;
-
-  /// No description provided for @productBuySubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'The seller confirms and arranges the handover with you in chat.'**
-  String get productBuySubtitle;
-
-  /// No description provided for @productBuyPriceLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Price'**
-  String get productBuyPriceLabel;
-
-  /// No description provided for @productBuyNoteLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Note for the seller'**
-  String get productBuyNoteLabel;
-
-  /// No description provided for @productBuyNoteHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. I can pick it up this evening'**
-  String get productBuyNoteHint;
-
-  /// No description provided for @productBuySubmit.
-  ///
-  /// In en, this message translates to:
-  /// **'Send request'**
-  String get productBuySubmit;
-
   /// No description provided for @productBuySent.
   ///
   /// In en, this message translates to:
@@ -4321,12 +4117,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Has a trusted shop'**
   String get searchUserHasShop;
-
-  /// No description provided for @searchTabListings.
-  ///
-  /// In en, this message translates to:
-  /// **'Listings'**
-  String get searchTabListings;
 
   /// No description provided for @searchShopStripTitle.
   ///
@@ -5138,24 +4928,6 @@ abstract class AppLocalizations {
   /// **'Official stores of big-name brands'**
   String get trustedShopsFamousSubtitle;
 
-  /// No description provided for @trustedShopsDealsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Luxury for less'**
-  String get trustedShopsDealsTitle;
-
-  /// No description provided for @trustedShopsDealsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Genuine brand products, now on sale'**
-  String get trustedShopsDealsSubtitle;
-
-  /// No description provided for @trustedShopsDealsUpTo.
-  ///
-  /// In en, this message translates to:
-  /// **'Up to -{percent}%'**
-  String trustedShopsDealsUpTo(int percent);
-
   /// No description provided for @trustedShopsNewReleasesTitle.
   ///
   /// In en, this message translates to:
@@ -5198,12 +4970,6 @@ abstract class AppLocalizations {
   /// **'Brands'**
   String get trustedShopsNavFamous;
 
-  /// No description provided for @trustedShopsNavDeals.
-  ///
-  /// In en, this message translates to:
-  /// **'Deals'**
-  String get trustedShopsNavDeals;
-
   /// No description provided for @trustedShopsNavNewReleases.
   ///
   /// In en, this message translates to:
@@ -5233,12 +4999,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See all'**
   String get trustedShopsSeeAll;
-
-  /// No description provided for @trustedShopsOnSaleFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'On sale'**
-  String get trustedShopsOnSaleFilter;
 
   /// No description provided for @shopDetailEventsTitle.
   ///
@@ -5665,12 +5425,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Official'**
   String get trustedShopsFamousEyebrow;
-
-  /// No description provided for @trustedShopsDealsEyebrow.
-  ///
-  /// In en, this message translates to:
-  /// **'On sale'**
-  String get trustedShopsDealsEyebrow;
 
   /// No description provided for @trustedShopsNewReleasesEyebrow.
   ///
@@ -7316,12 +7070,6 @@ abstract class AppLocalizations {
   /// **'Expired {date}'**
   String accExpiredOn(String date);
 
-  /// No description provided for @previewDisplayDays.
-  ///
-  /// In en, this message translates to:
-  /// **'Your listing shows for {days} days after approval. You can extend it near the end, or reactivate it once it expires.'**
-  String previewDisplayDays(int days);
-
   /// No description provided for @hotSaleSubtitle.
   ///
   /// In en, this message translates to:
@@ -7549,36 +7297,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Post with {days} free days'**
   String displayDaysUseFree(int days);
-
-  /// No description provided for @originalPriceLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Original price (before discount)'**
-  String get originalPriceLabel;
-
-  /// No description provided for @originalPricePlaceholder.
-  ///
-  /// In en, this message translates to:
-  /// **'Leave empty if not on sale'**
-  String get originalPricePlaceholder;
-
-  /// No description provided for @originalPriceHint.
-  ///
-  /// In en, this message translates to:
-  /// **'For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.'**
-  String get originalPriceHint;
-
-  /// No description provided for @originalPriceDiscount.
-  ///
-  /// In en, this message translates to:
-  /// **'{percent}% off the original price'**
-  String originalPriceDiscount(int percent);
-
-  /// No description provided for @originalPriceError.
-  ///
-  /// In en, this message translates to:
-  /// **'Original price must be higher than the sale price'**
-  String get originalPriceError;
 
   /// No description provided for @promoTitle.
   ///
@@ -8675,7 +8393,7 @@ abstract class AppLocalizations {
   /// No description provided for @msNameLocked.
   ///
   /// In en, this message translates to:
-  /// **'Verified shops can\'t change their name. Contact ReStore if you need to.'**
+  /// **'Approved shops can\'t change their name. Contact ReStore if you need to.'**
   String get msNameLocked;
 
   /// No description provided for @msTagline.
@@ -8831,7 +8549,7 @@ abstract class AppLocalizations {
   /// No description provided for @msUnverifiedBody.
   ///
   /// In en, this message translates to:
-  /// **'Your shop isn\'t in Trusted shops yet and posters can\'t run. Send your business licence below to get verified.'**
+  /// **'Your shop isn\'t in Trusted shops yet. Send your business licence below to get verified and add a tick.'**
   String get msUnverifiedBody;
 
   /// No description provided for @msPendingTitle.
@@ -9002,18 +8720,6 @@ abstract class AppLocalizations {
   /// **'Reason: {reason}. Add the missing documents and send again below.'**
   String msVerifyRejectedBody(String reason);
 
-  /// No description provided for @msPlanExpiredTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Professional Shop plan expired'**
-  String get msPlanExpiredTitle;
-
-  /// No description provided for @msPlanExpiredBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Your posters are hidden for now. Renew the plan to run them again.'**
-  String get msPlanExpiredBody;
-
   /// No description provided for @msViewPublic.
   ///
   /// In en, this message translates to:
@@ -9029,7 +8735,7 @@ abstract class AppLocalizations {
   /// No description provided for @msPostersBody.
   ///
   /// In en, this message translates to:
-  /// **'Promote your shop with posters on your shop page and Trusted shops.'**
+  /// **'Promote your shop with posters on your shop page. Verified shops also show on Trusted shops.'**
   String get msPostersBody;
 
   /// No description provided for @msSave.
@@ -10820,6 +10526,18 @@ abstract class AppLocalizations {
   /// **'Share new arrivals and offers with your followers. Other members can only view, react and comment.'**
   String get bsBenefitFeedBody;
 
+  /// No description provided for @bsBenefitPosterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop posters'**
+  String get bsBenefitPosterTitle;
+
+  /// No description provided for @bsBenefitPosterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Run up to 2 posters at a time on your shop page, and send 4 a month.'**
+  String get bsBenefitPosterBody;
+
   /// No description provided for @bsAgreeLead.
   ///
   /// In en, this message translates to:
@@ -11065,6 +10783,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No introduction yet.'**
   String get profNoAbout;
+
+  /// No description provided for @itemDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Item details'**
+  String get itemDetailsTitle;
+
+  /// No description provided for @previewPublishTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview & publish'**
+  String get previewPublishTitle;
+
+  /// No description provided for @createListingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get createListingNext;
+
+  /// No description provided for @categorySearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a category'**
+  String get categorySearchHint;
+
+  /// No description provided for @categorySearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching category'**
+  String get categorySearchEmpty;
+
+  /// No description provided for @categoryChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get categoryChange;
+
+  /// No description provided for @listingNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Name your listing'**
+  String get listingNameHint;
+
+  /// No description provided for @conditionChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get conditionChoose;
+
+  /// No description provided for @descriptionOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Optional)'**
+  String get descriptionOptionalLabel;
+
+  /// No description provided for @descriptionStoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Include any other details helpful to buyers. Or share about the story behind this item!'**
+  String get descriptionStoryHint;
+
+  /// No description provided for @multipleUnitsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'I have more than one of the same item'**
+  String get multipleUnitsTitle;
+
+  /// No description provided for @multipleUnitsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t mark listing as reserved when I accept an offer'**
+  String get multipleUnitsSubtitle;
+
+  /// No description provided for @priceSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get priceSectionTitle;
+
+  /// No description provided for @priceForSale.
+  ///
+  /// In en, this message translates to:
+  /// **'For Sale'**
+  String get priceForSale;
+
+  /// No description provided for @priceForFree.
+  ///
+  /// In en, this message translates to:
+  /// **'For Free'**
+  String get priceForFree;
+
+  /// No description provided for @freeThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for reducing waste and sharing joy!'**
+  String get freeThanks;
+
+  /// No description provided for @fixedPriceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed price'**
+  String get fixedPriceTitle;
+
+  /// No description provided for @fixedPriceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyers can only make an offer at your listed price'**
+  String get fixedPriceSubtitle;
+
+  /// No description provided for @meetUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet-up'**
+  String get meetUpTitle;
+
+  /// No description provided for @meetUpLocationCount.
+  ///
+  /// In en, this message translates to:
+  /// **'1 location'**
+  String get meetUpLocationCount;
+
+  /// No description provided for @meetUpYourArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Your area'**
+  String get meetUpYourArea;
+
+  /// No description provided for @meetUpOffNote.
+  ///
+  /// In en, this message translates to:
+  /// **'You and the buyer will agree on delivery in chat.'**
+  String get meetUpOffNote;
+
+  /// No description provided for @meetUpChooseArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your area'**
+  String get meetUpChooseArea;
+
+  /// No description provided for @meetUpEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get meetUpEdit;
+
+  /// No description provided for @priceFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get priceFree;
+
+  /// No description provided for @multipleUnitsTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple available'**
+  String get multipleUnitsTag;
+
+  /// No description provided for @homeTabCertified.
+  ///
+  /// In en, this message translates to:
+  /// **'Certified'**
+  String get homeTabCertified;
+
+  /// No description provided for @homeTabNearMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get homeTabNearMe;
+
+  /// No description provided for @homeTabFreeItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Free items'**
+  String get homeTabFreeItems;
+
+  /// No description provided for @homeTabFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get homeTabFollowing;
+
+  /// No description provided for @homeTabFollowingEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow sellers to see their new listings here'**
+  String get homeTabFollowingEmpty;
+
+  /// No description provided for @vehicleConditionNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get vehicleConditionNew;
+
+  /// No description provided for @vehicleConditionNewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand new, never ridden or only test-driven.'**
+  String get vehicleConditionNewDesc;
+
+  /// No description provided for @vehicleConditionLikeNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearly new'**
+  String get vehicleConditionLikeNew;
+
+  /// No description provided for @vehicleConditionLikeNewDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Very low mileage, runs and looks like new.'**
+  String get vehicleConditionLikeNewDesc;
+
+  /// No description provided for @vehicleConditionUsedGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Used – good'**
+  String get vehicleConditionUsedGood;
+
+  /// No description provided for @vehicleConditionUsedGoodDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs reliably with only minor wear.'**
+  String get vehicleConditionUsedGoodDesc;
+
+  /// No description provided for @vehicleConditionUsedFair.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs minor repairs'**
+  String get vehicleConditionUsedFair;
+
+  /// No description provided for @vehicleConditionUsedFairDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Still runs; has scratches or parts due for service.'**
+  String get vehicleConditionUsedFairDesc;
+
+  /// No description provided for @vehicleConditionForParts.
+  ///
+  /// In en, this message translates to:
+  /// **'Not running / for parts'**
+  String get vehicleConditionForParts;
+
+  /// No description provided for @vehicleConditionForPartsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Doesn\'t run; for restoration or parts.'**
+  String get vehicleConditionForPartsDesc;
 
   /// No description provided for @bsCategory.
   ///

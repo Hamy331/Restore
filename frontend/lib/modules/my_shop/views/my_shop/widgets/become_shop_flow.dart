@@ -258,6 +258,11 @@ class _BecomeShopFlowState extends State<BecomeShopFlow> {
         title: l.bsBenefitFeedTitle,
         body: l.bsBenefitFeedBody,
       ),
+      _Benefit(
+        icon: AppIcons.posterPromo,
+        title: l.bsBenefitPosterTitle,
+        body: l.bsBenefitPosterBody,
+      ),
       const SizedBox(height: 8),
       Text.rich(
         TextSpan(

@@ -1186,12 +1186,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tip: clear photos from multiple angles make your listing more trustworthy.';
 
   @override
-  String get salePrice => 'Sale price';
-
-  @override
-  String get priceVndHint => 'Enter price in VND';
-
-  @override
   String get negotiable => 'Negotiable';
 
   @override
@@ -1412,9 +1406,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get editAction => 'Edit';
-
-  @override
   String get hideListing => 'Hide';
 
   @override
@@ -1465,9 +1456,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listingDetailTitle => 'Listing details';
 
   @override
-  String get listingPreviewTitle => 'Listing preview';
-
-  @override
   String galleryPosition(int current, int total) {
     return '$current / $total';
   }
@@ -1500,9 +1488,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseCategoryTitle => 'Choose category';
-
-  @override
-  String get chooseCategorySubtitle => 'What do you want to sell?';
 
   @override
   String get categoryElectronicsTitle => 'Electronics';
@@ -1554,12 +1539,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get conditionLabel => 'Condition';
 
   @override
-  String get continueBtn => 'Continue';
-
-  @override
-  String get completeListingTitle => 'Complete listing';
-
-  @override
   String get saveDraft => 'Save draft';
 
   @override
@@ -1582,27 +1561,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get photosRequiredError => 'Please add at least 1 photo';
 
   @override
-  String get detailedDescriptionLabel => 'Detailed description';
-
-  @override
-  String get listingDescriptionHint =>
-      '- Condition, how long it has been used\n- Included accessories, minor defects if any\n- Reason for selling, delivery method';
-
-  @override
-  String characterCount(int count, int max) {
-    return '$count/$max characters';
-  }
-
-  @override
-  String descriptionMinLengthError(int min) {
-    return 'Description must be at least $min characters';
-  }
-
-  @override
   String get listingTitleLabel => 'Listing title';
-
-  @override
-  String get listingTitleHint => 'e.g. Piaggio Vespa Sprint 2024 15,000 km';
 
   @override
   String listingTitleMinLengthError(int min) {
@@ -1613,24 +1572,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get priceRequiredError => 'Please enter a sale price';
 
   @override
-  String get addressLabel => 'Address';
-
-  @override
-  String get youAreLabel => 'You are';
-
-  @override
   String get sellerPersonal => 'Personal';
 
   @override
-  String get sellerBusiness => 'Business';
-
-  @override
   String get detailedInfoTitle => 'Detailed information';
-
-  @override
-  String categoryWithName(String name) {
-    return 'Category: $name';
-  }
 
   @override
   String get fieldRequiredError => 'Please fill in this field';
@@ -1650,9 +1595,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPhotosYet => 'No photos yet';
-
-  @override
-  String get stepBasicInfoTitle => 'Photos, description & price';
 
   @override
   String get takePhoto => 'Take a photo';
@@ -1676,37 +1618,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publishFailed => 'Couldn\'t publish the listing, please try again';
 
   @override
-  String get tradeTypeLabel => 'Trade type';
-
-  @override
-  String get tradeSell => 'Sell';
-
-  @override
-  String get tradeExchange => 'Exchange';
-
-  @override
-  String get tradeSellOrExchange => 'Both';
-
-  @override
   String get tradeExchangeAccepted => 'Open to exchange';
 
   @override
   String get exchangeWishLabel => 'Want to exchange for';
 
   @override
-  String get exchangeWishHint => 'e.g. iPhone 13 or a tablet';
-
-  @override
   String get selectAddressHint => 'Choose an area';
-
-  @override
-  String get stepShortCategory => 'Category';
-
-  @override
-  String get stepShortBasicInfo => 'Basics';
-
-  @override
-  String get stepShortDetails => 'Details';
 
   @override
   String stepProgressLabel(int current, int total) {
@@ -1714,48 +1632,36 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String nextStepLabel(String name) {
-    return 'Next: $name';
-  }
-
-  @override
-  String get conditionSectionTitle => 'Item condition';
-
-  @override
-  String get conditionNew => 'New';
+  String get conditionNew => 'Brand new';
 
   @override
   String get conditionLikeNew => 'Like new';
 
   @override
-  String get conditionUsedGood => 'Used - good';
+  String get conditionUsedGood => 'Lightly used';
 
   @override
-  String get conditionUsedFair => 'Used - fair';
+  String get conditionUsedFair => 'Well used';
 
   @override
-  String get conditionForParts => 'For parts / not working';
+  String get conditionForParts => 'Heavily used';
 
   @override
-  String get conditionNewDesc => 'Never used, original packaging';
+  String get conditionNewDesc =>
+      'Never used. May come with original packaging or tag.';
 
   @override
-  String get conditionLikeNewDesc => 'Barely used, no visible marks';
+  String get conditionLikeNewDesc => 'Used once or twice. As good as new.';
 
   @override
-  String get conditionUsedGoodDesc => 'Works well, minor signs of use';
+  String get conditionUsedGoodDesc =>
+      'Used with care. Flaws, if any, are barely noticeable.';
 
   @override
-  String get conditionUsedFairDesc => 'Usable, visible wear or minor faults';
+  String get conditionUsedFairDesc => 'Has minor flaws or defects.';
 
   @override
-  String get conditionForPartsDesc => 'Does not work properly';
-
-  @override
-  String get categoryAttributesTitle => 'Category details';
-
-  @override
-  String get categoryAttributesHint => 'Fields below depend on the category';
+  String get conditionForPartsDesc => 'Has obvious signs of use or defects.';
 
   @override
   String get selectOptionHint => 'Select';
@@ -1891,6 +1797,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeSearchHint => 'Search pre-loved and swap items...';
+
+  @override
+  String get searchProductsHint => 'Search products...';
 
   @override
   String get homeChangeArea => 'Change area';
@@ -2150,25 +2059,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productLiveIndicator => 'Live updates on';
 
   @override
-  String get productBuyTitle => 'Request to buy';
-
-  @override
-  String get productBuySubtitle =>
-      'The seller confirms and arranges the handover with you in chat.';
-
-  @override
-  String get productBuyPriceLabel => 'Price';
-
-  @override
-  String get productBuyNoteLabel => 'Note for the seller';
-
-  @override
-  String get productBuyNoteHint => 'e.g. I can pick it up this evening';
-
-  @override
-  String get productBuySubmit => 'Send request';
-
-  @override
   String get productBuySent =>
       'Purchase request sent. The seller will reply in chat.';
 
@@ -2338,9 +2228,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchUserHasShop => 'Has a trusted shop';
-
-  @override
-  String get searchTabListings => 'Listings';
 
   @override
   String get searchShopStripTitle => 'Matching shops';
@@ -2838,17 +2725,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trustedShopsFamousSubtitle => 'Official stores of big-name brands';
 
   @override
-  String get trustedShopsDealsTitle => 'Luxury for less';
-
-  @override
-  String get trustedShopsDealsSubtitle => 'Genuine brand products, now on sale';
-
-  @override
-  String trustedShopsDealsUpTo(int percent) {
-    return 'Up to -$percent%';
-  }
-
-  @override
   String get trustedShopsNewReleasesTitle => 'Hot new releases';
 
   @override
@@ -2880,9 +2756,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trustedShopsNavFamous => 'Brands';
 
   @override
-  String get trustedShopsNavDeals => 'Deals';
-
-  @override
   String get trustedShopsNavNewReleases => 'New releases';
 
   @override
@@ -2896,9 +2769,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trustedShopsSeeAll => 'See all';
-
-  @override
-  String get trustedShopsOnSaleFilter => 'On sale';
 
   @override
   String get shopDetailEventsTitle => 'Shop events';
@@ -3173,9 +3043,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trustedShopsFamousEyebrow => 'Official';
-
-  @override
-  String get trustedShopsDealsEyebrow => 'On sale';
 
   @override
   String get trustedShopsNewReleasesEyebrow => 'Just launched';
@@ -4181,11 +4048,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String previewDisplayDays(int days) {
-    return 'Your listing shows for $days days after approval. You can extend it near the end, or reactivate it once it expires.';
-  }
-
-  @override
   String get hotSaleSubtitle =>
       'Listings sellers are promoting right now, updated all the time.';
 
@@ -4336,25 +4198,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String displayDaysUseFree(int days) {
     return 'Post with $days free days';
   }
-
-  @override
-  String get originalPriceLabel => 'Original price (before discount)';
-
-  @override
-  String get originalPricePlaceholder => 'Leave empty if not on sale';
-
-  @override
-  String get originalPriceHint =>
-      'For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.';
-
-  @override
-  String originalPriceDiscount(int percent) {
-    return '$percent% off the original price';
-  }
-
-  @override
-  String get originalPriceError =>
-      'Original price must be higher than the sale price';
 
   @override
   String get promoTitle => 'Promote listing';
@@ -4993,7 +4836,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msNameLocked =>
-      'Verified shops can\'t change their name. Contact ReStore if you need to.';
+      'Approved shops can\'t change their name. Contact ReStore if you need to.';
 
   @override
   String get msTagline => 'Short tagline';
@@ -5076,7 +4919,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msUnverifiedBody =>
-      'Your shop isn\'t in Trusted shops yet and posters can\'t run. Send your business licence below to get verified.';
+      'Your shop isn\'t in Trusted shops yet. Send your business licence below to get verified and add a tick.';
 
   @override
   String get msPendingTitle => 'Shop under review';
@@ -5184,13 +5027,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get msPlanExpiredTitle => 'Professional Shop plan expired';
-
-  @override
-  String get msPlanExpiredBody =>
-      'Your posters are hidden for now. Renew the plan to run them again.';
-
-  @override
   String get msViewPublic => 'View shop page';
 
   @override
@@ -5198,7 +5034,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msPostersBody =>
-      'Promote your shop with posters on your shop page and Trusted shops.';
+      'Promote your shop with posters on your shop page. Verified shops also show on Trusted shops.';
 
   @override
   String get msSave => 'Save changes';
@@ -6304,6 +6140,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Share new arrivals and offers with your followers. Other members can only view, react and comment.';
 
   @override
+  String get bsBenefitPosterTitle => 'Shop posters';
+
+  @override
+  String get bsBenefitPosterBody =>
+      'Run up to 2 posters at a time on your shop page, and send 4 a month.';
+
+  @override
   String get bsAgreeLead => 'By proceeding, you agree to the ';
 
   @override
@@ -6473,6 +6316,139 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profNoAbout => 'No introduction yet.';
+
+  @override
+  String get itemDetailsTitle => 'Item details';
+
+  @override
+  String get previewPublishTitle => 'Preview & publish';
+
+  @override
+  String get createListingNext => 'Next';
+
+  @override
+  String get categorySearchHint => 'Search for a category';
+
+  @override
+  String get categorySearchEmpty => 'No matching category';
+
+  @override
+  String get categoryChange => 'Change';
+
+  @override
+  String get listingNameHint => 'Name your listing';
+
+  @override
+  String get conditionChoose => 'Choose';
+
+  @override
+  String get descriptionOptionalLabel => 'Description (Optional)';
+
+  @override
+  String get descriptionStoryHint =>
+      'Include any other details helpful to buyers. Or share about the story behind this item!';
+
+  @override
+  String get multipleUnitsTitle => 'I have more than one of the same item';
+
+  @override
+  String get multipleUnitsSubtitle =>
+      'Don\'t mark listing as reserved when I accept an offer';
+
+  @override
+  String get priceSectionTitle => 'Price';
+
+  @override
+  String get priceForSale => 'For Sale';
+
+  @override
+  String get priceForFree => 'For Free';
+
+  @override
+  String get freeThanks => 'Thank you for reducing waste and sharing joy!';
+
+  @override
+  String get fixedPriceTitle => 'Fixed price';
+
+  @override
+  String get fixedPriceSubtitle =>
+      'Buyers can only make an offer at your listed price';
+
+  @override
+  String get meetUpTitle => 'Meet-up';
+
+  @override
+  String get meetUpLocationCount => '1 location';
+
+  @override
+  String get meetUpYourArea => 'Your area';
+
+  @override
+  String get meetUpOffNote =>
+      'You and the buyer will agree on delivery in chat.';
+
+  @override
+  String get meetUpChooseArea => 'Choose your area';
+
+  @override
+  String get meetUpEdit => 'Edit';
+
+  @override
+  String get priceFree => 'Free';
+
+  @override
+  String get multipleUnitsTag => 'Multiple available';
+
+  @override
+  String get homeTabCertified => 'Certified';
+
+  @override
+  String get homeTabNearMe => 'Near me';
+
+  @override
+  String get homeTabFreeItems => 'Free items';
+
+  @override
+  String get homeTabFollowing => 'Following';
+
+  @override
+  String get homeTabFollowingEmpty =>
+      'Follow sellers to see their new listings here';
+
+  @override
+  String get vehicleConditionNew => 'New';
+
+  @override
+  String get vehicleConditionNewDesc =>
+      'Brand new, never ridden or only test-driven.';
+
+  @override
+  String get vehicleConditionLikeNew => 'Nearly new';
+
+  @override
+  String get vehicleConditionLikeNewDesc =>
+      'Very low mileage, runs and looks like new.';
+
+  @override
+  String get vehicleConditionUsedGood => 'Used – good';
+
+  @override
+  String get vehicleConditionUsedGoodDesc =>
+      'Runs reliably with only minor wear.';
+
+  @override
+  String get vehicleConditionUsedFair => 'Needs minor repairs';
+
+  @override
+  String get vehicleConditionUsedFairDesc =>
+      'Still runs; has scratches or parts due for service.';
+
+  @override
+  String get vehicleConditionForParts => 'Not running / for parts';
+
+  @override
+  String get vehicleConditionForPartsDesc =>
+      'Doesn\'t run; for restoration or parts.';
 
   @override
   String get bsCategory => 'Shop category';
