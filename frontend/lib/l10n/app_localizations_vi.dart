@@ -1152,12 +1152,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Mẹo: ảnh rõ, nhiều góc chụp giúp tin đăng đáng tin hơn.';
 
   @override
-  String get salePrice => 'Giá bán';
-
-  @override
-  String get priceVndHint => 'Nhập giá bằng VND';
-
-  @override
   String get negotiable => 'Có thể thương lượng';
 
   @override
@@ -1377,9 +1371,6 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get editAction => 'Chỉnh sửa';
-
-  @override
   String get hideListing => 'Ẩn tin';
 
   @override
@@ -1428,9 +1419,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get listingDetailTitle => 'Chi tiết tin đăng';
 
   @override
-  String get listingPreviewTitle => 'Xem trước tin đăng';
-
-  @override
   String galleryPosition(int current, int total) {
     return '$current / $total';
   }
@@ -1463,9 +1451,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chooseCategoryTitle => 'Chọn danh mục';
-
-  @override
-  String get chooseCategorySubtitle => 'Bạn muốn đăng bán món đồ gì?';
 
   @override
   String get categoryElectronicsTitle => 'Đồ điện tử';
@@ -1516,12 +1501,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get conditionLabel => 'Tình trạng';
 
   @override
-  String get continueBtn => 'Tiếp tục';
-
-  @override
-  String get completeListingTitle => 'Hoàn thiện tin đăng';
-
-  @override
   String get saveDraft => 'Lưu nháp';
 
   @override
@@ -1544,27 +1523,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get photosRequiredError => 'Vui lòng thêm ít nhất 1 ảnh';
 
   @override
-  String get detailedDescriptionLabel => 'Mô tả chi tiết';
-
-  @override
-  String get listingDescriptionHint =>
-      '- Tình trạng, thời gian đã sử dụng\n- Phụ kiện đi kèm, lỗi nhỏ nếu có\n- Lý do bán, hình thức giao nhận';
-
-  @override
-  String characterCount(int count, int max) {
-    return '$count/$max ký tự';
-  }
-
-  @override
-  String descriptionMinLengthError(int min) {
-    return 'Mô tả cần ít nhất $min ký tự';
-  }
-
-  @override
   String get listingTitleLabel => 'Tiêu đề tin đăng';
-
-  @override
-  String get listingTitleHint => 'VD: Piaggio Vespa Sprint 2024 15.000 km';
 
   @override
   String listingTitleMinLengthError(int min) {
@@ -1575,24 +1534,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get priceRequiredError => 'Vui lòng nhập giá bán';
 
   @override
-  String get addressLabel => 'Địa chỉ';
-
-  @override
-  String get youAreLabel => 'Bạn là';
-
-  @override
   String get sellerPersonal => 'Cá nhân';
 
   @override
-  String get sellerBusiness => 'Bán chuyên';
-
-  @override
   String get detailedInfoTitle => 'Thông tin chi tiết';
-
-  @override
-  String categoryWithName(String name) {
-    return 'Danh mục: $name';
-  }
 
   @override
   String get fieldRequiredError => 'Vui lòng nhập thông tin này';
@@ -1613,9 +1558,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noPhotosYet => 'Chưa có ảnh';
-
-  @override
-  String get stepBasicInfoTitle => 'Ảnh, mô tả & giá bán';
 
   @override
   String get takePhoto => 'Chụp ảnh';
@@ -1639,37 +1581,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get publishFailed => 'Đăng tin thất bại, vui lòng thử lại';
 
   @override
-  String get tradeTypeLabel => 'Hình thức';
-
-  @override
-  String get tradeSell => 'Bán';
-
-  @override
-  String get tradeExchange => 'Trao đổi';
-
-  @override
-  String get tradeSellOrExchange => 'Cả hai';
-
-  @override
   String get tradeExchangeAccepted => 'Nhận trao đổi';
 
   @override
   String get exchangeWishLabel => 'Muốn đổi lấy';
 
   @override
-  String get exchangeWishHint => 'VD: iPhone 13 hoặc máy tính bảng';
-
-  @override
   String get selectAddressHint => 'Chọn khu vực';
-
-  @override
-  String get stepShortCategory => 'Danh mục';
-
-  @override
-  String get stepShortBasicInfo => 'Thông tin';
-
-  @override
-  String get stepShortDetails => 'Chi tiết';
 
   @override
   String stepProgressLabel(int current, int total) {
@@ -1677,50 +1595,36 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String nextStepLabel(String name) {
-    return 'Tiếp theo: $name';
-  }
-
-  @override
-  String get conditionSectionTitle => 'Tình trạng sản phẩm';
-
-  @override
-  String get conditionNew => 'Mới';
+  String get conditionNew => 'Mới tinh';
 
   @override
   String get conditionLikeNew => 'Như mới';
 
   @override
-  String get conditionUsedGood => 'Đã dùng - còn tốt';
+  String get conditionUsedGood => 'Ít sử dụng';
 
   @override
-  String get conditionUsedFair => 'Đã dùng - có hao mòn';
+  String get conditionUsedFair => 'Đã sử dụng';
 
   @override
-  String get conditionForParts => 'Hỏng / bán lấy linh kiện';
+  String get conditionForParts => 'Sử dụng nhiều';
 
   @override
-  String get conditionNewDesc => 'Chưa qua sử dụng, còn nguyên tem hộp';
+  String get conditionNewDesc =>
+      'Chưa qua sử dụng. Có thể còn nguyên hộp hoặc tem.';
 
   @override
-  String get conditionLikeNewDesc => 'Dùng rất ít, không trầy xước';
+  String get conditionLikeNewDesc => 'Mới dùng một, hai lần. Tốt như mới.';
 
   @override
-  String get conditionUsedGoodDesc => 'Hoạt động tốt, có vài vết sử dụng nhỏ';
+  String get conditionUsedGoodDesc =>
+      'Dùng cẩn thận. Lỗi nếu có thì rất khó thấy.';
 
   @override
-  String get conditionUsedFairDesc =>
-      'Vẫn dùng được, có trầy xước hoặc lỗi nhỏ';
+  String get conditionUsedFairDesc => 'Có vài lỗi hoặc khuyết điểm nhỏ.';
 
   @override
-  String get conditionForPartsDesc => 'Không còn hoạt động bình thường';
-
-  @override
-  String get categoryAttributesTitle => 'Thông tin theo danh mục';
-
-  @override
-  String get categoryAttributesHint =>
-      'Các trường bên dưới thay đổi theo danh mục';
+  String get conditionForPartsDesc => 'Có dấu hiệu sử dụng rõ hoặc có lỗi.';
 
   @override
   String get selectOptionHint => 'Chọn';
@@ -1854,6 +1758,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get homeSearchHint => 'Tìm đồ cũ, đồ trao đổi...';
+
+  @override
+  String get searchProductsHint => 'Tìm sản phẩm...';
 
   @override
   String get homeChangeArea => 'Đổi khu vực';
@@ -2113,25 +2020,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get productLiveIndicator => 'Đang cập nhật trực tiếp';
 
   @override
-  String get productBuyTitle => 'Yêu cầu mua';
-
-  @override
-  String get productBuySubtitle =>
-      'Người bán sẽ xác nhận và hẹn giao nhận với bạn qua tin nhắn.';
-
-  @override
-  String get productBuyPriceLabel => 'Giá';
-
-  @override
-  String get productBuyNoteLabel => 'Lời nhắn cho người bán';
-
-  @override
-  String get productBuyNoteHint => 'VD: Mình có thể qua lấy vào tối nay';
-
-  @override
-  String get productBuySubmit => 'Gửi yêu cầu';
-
-  @override
   String get productBuySent =>
       'Đã gửi yêu cầu mua, người bán sẽ phản hồi qua tin nhắn.';
 
@@ -2300,9 +2188,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get searchUserHasShop => 'Có cửa hàng uy tín';
-
-  @override
-  String get searchTabListings => 'Tin đăng';
 
   @override
   String get searchShopStripTitle => 'Cửa hàng phù hợp';
@@ -2782,17 +2667,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Gian hàng chính hãng của các thương hiệu lớn';
 
   @override
-  String get trustedShopsDealsTitle => 'Trải nghiệm hàng hiệu';
-
-  @override
-  String get trustedShopsDealsSubtitle => 'Hàng hiệu chính hãng đang giảm giá';
-
-  @override
-  String trustedShopsDealsUpTo(int percent) {
-    return 'Giảm đến $percent%';
-  }
-
-  @override
   String get trustedShopsNewReleasesTitle => 'Siêu phẩm mới ra mắt';
 
   @override
@@ -2823,9 +2697,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get trustedShopsNavFamous => 'Thương hiệu';
 
   @override
-  String get trustedShopsNavDeals => 'Giảm giá';
-
-  @override
   String get trustedShopsNavNewReleases => 'Mới ra mắt';
 
   @override
@@ -2839,9 +2710,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get trustedShopsSeeAll => 'Xem tất cả';
-
-  @override
-  String get trustedShopsOnSaleFilter => 'Đang giảm giá';
 
   @override
   String get shopDetailEventsTitle => 'Sự kiện của shop';
@@ -3112,9 +2980,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get trustedShopsFamousEyebrow => 'Chính hãng';
-
-  @override
-  String get trustedShopsDealsEyebrow => 'Đang giảm giá';
 
   @override
   String get trustedShopsNewReleasesEyebrow => 'Vừa ra mắt';
@@ -4104,11 +3969,6 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String previewDisplayDays(int days) {
-    return 'Tin hiển thị $days ngày kể từ khi được duyệt. Gần hết hạn bạn có thể gia hạn, hết hạn thì kích hoạt lại.';
-  }
-
-  @override
   String get hotSaleSubtitle =>
       'Tin đang được người bán ưu tiên hiển thị, cập nhật liên tục.';
 
@@ -4258,24 +4118,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String displayDaysUseFree(int days) {
     return 'Đăng với $days ngày miễn phí';
   }
-
-  @override
-  String get originalPriceLabel => 'Giá gốc (trước giảm)';
-
-  @override
-  String get originalPricePlaceholder => 'Để trống nếu không giảm giá';
-
-  @override
-  String get originalPriceHint =>
-      'Dành cho shop: người mua thấy giá gốc gạch ngang và % giảm. Sau khi đăng không sửa tăng được.';
-
-  @override
-  String originalPriceDiscount(int percent) {
-    return 'Giảm $percent% so với giá gốc';
-  }
-
-  @override
-  String get originalPriceError => 'Giá gốc phải cao hơn giá bán';
 
   @override
   String get promoTitle => 'Quảng bá tin';
@@ -4900,7 +4742,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get msNameLocked =>
-      'Shop đã xác minh nên không tự đổi tên được. Liên hệ ReStore nếu cần đổi.';
+      'Shop đã được duyệt nên không tự đổi tên được. Liên hệ ReStore nếu cần đổi.';
 
   @override
   String get msTagline => 'Câu giới thiệu ngắn';
@@ -4983,7 +4825,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get msUnverifiedBody =>
-      'Shop chưa hiện ở mục Shop uy tín và poster chưa chạy được. Gửi giấy phép kinh doanh bên dưới để được xác minh.';
+      'Shop chưa hiện ở mục Shop uy tín. Gửi giấy phép kinh doanh bên dưới để được xác minh và có dấu tick.';
 
   @override
   String get msPendingTitle => 'Shop đang chờ duyệt';
@@ -5091,13 +4933,6 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get msPlanExpiredTitle => 'Gói Cửa hàng Pro đã hết hạn';
-
-  @override
-  String get msPlanExpiredBody =>
-      'Poster của shop đang tạm ẩn. Gia hạn gói để poster chạy lại.';
-
-  @override
   String get msViewPublic => 'Xem trang shop';
 
   @override
@@ -5105,7 +4940,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get msPostersBody =>
-      'Quảng bá shop bằng poster trên trang shop và Shop uy tín.';
+      'Quảng bá shop bằng poster trên trang shop. Shop đã xác minh còn hiện ở Shop uy tín.';
 
   @override
   String get msSave => 'Lưu thay đổi';
@@ -6201,6 +6036,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Giới thiệu hàng mới và khuyến mãi tới người theo dõi. Người dùng thường chỉ xem, thả tim và bình luận.';
 
   @override
+  String get bsBenefitPosterTitle => 'Poster quảng bá shop';
+
+  @override
+  String get bsBenefitPosterBody =>
+      'Chạy tối đa 2 poster cùng lúc trên trang shop, 4 poster mỗi tháng.';
+
+  @override
   String get bsAgreeLead => 'Khi tiếp tục, bạn đồng ý với ';
 
   @override
@@ -6347,6 +6189,139 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profNoAbout => 'Chưa có lời giới thiệu.';
 
   @override
+  String get itemDetailsTitle => 'Thông tin sản phẩm';
+
+  @override
+  String get previewPublishTitle => 'Xem trước & đăng tin';
+
+  @override
+  String get createListingNext => 'Tiếp';
+
+  @override
+  String get categorySearchHint => 'Tìm danh mục';
+
+  @override
+  String get categorySearchEmpty => 'Không tìm thấy danh mục phù hợp';
+
+  @override
+  String get categoryChange => 'Đổi';
+
+  @override
+  String get listingNameHint => 'Đặt tên cho món đồ của bạn';
+
+  @override
+  String get conditionChoose => 'Chọn';
+
+  @override
+  String get descriptionOptionalLabel => 'Mô tả (không bắt buộc)';
+
+  @override
+  String get descriptionStoryHint =>
+      'Thêm chi tiết hữu ích cho người mua, hoặc kể câu chuyện về món đồ này!';
+
+  @override
+  String get multipleUnitsTitle => 'Tôi có nhiều hơn một món giống nhau';
+
+  @override
+  String get multipleUnitsSubtitle =>
+      'Không giữ hàng cho riêng ai khi tôi đồng ý một đề nghị';
+
+  @override
+  String get priceSectionTitle => 'Giá';
+
+  @override
+  String get priceForSale => 'Bán';
+
+  @override
+  String get priceForFree => 'Cho tặng';
+
+  @override
+  String get freeThanks => 'Cảm ơn bạn đã giảm lãng phí và lan tỏa niềm vui!';
+
+  @override
+  String get fixedPriceTitle => 'Giá cố định';
+
+  @override
+  String get fixedPriceSubtitle =>
+      'Người mua chỉ có thể đề nghị đúng giá bạn đăng';
+
+  @override
+  String get meetUpTitle => 'Gặp mặt trực tiếp';
+
+  @override
+  String get meetUpLocationCount => '1 địa điểm';
+
+  @override
+  String get meetUpYourArea => 'Khu vực của bạn';
+
+  @override
+  String get meetUpOffNote =>
+      'Bạn và người mua sẽ thỏa thuận cách giao hàng qua chat.';
+
+  @override
+  String get meetUpChooseArea => 'Chọn khu vực giao dịch';
+
+  @override
+  String get meetUpEdit => 'Sửa';
+
+  @override
+  String get priceFree => 'Miễn phí';
+
+  @override
+  String get multipleUnitsTag => 'Còn nhiều món';
+
+  @override
+  String get homeTabCertified => 'Đã xác minh';
+
+  @override
+  String get homeTabNearMe => 'Gần tôi';
+
+  @override
+  String get homeTabFreeItems => 'Đồ miễn phí';
+
+  @override
+  String get homeTabFollowing => 'Đang theo dõi';
+
+  @override
+  String get homeTabFollowingEmpty =>
+      'Theo dõi người bán để xem tin mới của họ ở đây';
+
+  @override
+  String get vehicleConditionNew => 'Xe mới';
+
+  @override
+  String get vehicleConditionNewDesc =>
+      'Xe mới, chưa lăn bánh hoặc chỉ chạy thử.';
+
+  @override
+  String get vehicleConditionLikeNew => 'Xe lướt';
+
+  @override
+  String get vehicleConditionLikeNewDesc =>
+      'Chạy rất ít, máy và ngoại hình như mới.';
+
+  @override
+  String get vehicleConditionUsedGood => 'Đã sử dụng – tốt';
+
+  @override
+  String get vehicleConditionUsedGoodDesc =>
+      'Vận hành ổn định, chỉ có vết sử dụng nhỏ.';
+
+  @override
+  String get vehicleConditionUsedFair => 'Cần sửa chữa nhẹ';
+
+  @override
+  String get vehicleConditionUsedFairDesc =>
+      'Vẫn chạy được, có trầy xước hoặc vài chi tiết cần bảo dưỡng.';
+
+  @override
+  String get vehicleConditionForParts => 'Hỏng / bán xác';
+
+  @override
+  String get vehicleConditionForPartsDesc =>
+      'Không vận hành được, phù hợp sửa lại hoặc lấy phụ tùng.';
+
+  @override
   String get bsCategory => 'Danh mục cửa hàng';
 
   @override
@@ -6355,4 +6330,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get bsCategoryRequired => 'Chọn một danh mục cho cửa hàng';
+
+  @override
+  String feedShopTag(String name) {
+    return 'Shop · $name';
+  }
+
+  @override
+  String get feedAdminTag => 'Admin ReStore';
 }

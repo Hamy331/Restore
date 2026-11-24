@@ -103,7 +103,7 @@ export const sections = [
     label: 'Duyệt banner shop',
     group: 'Vận hành',
     icon: NotificationOutlined,
-    detail: 'Duyệt poster quảng bá mà shop gói Cửa hàng gửi lên.',
+    detail: 'Duyệt poster quảng bá mà cửa hàng Đối tác gửi lên.',
     permission: 'banner:manage',
     View: ShopPosters,
   },

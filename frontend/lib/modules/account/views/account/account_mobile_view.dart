@@ -71,6 +71,12 @@ class _AccountMobileViewState extends State<AccountMobileView> {
     if (mounted) context.read<UserProfileCubit>().load();
   }
 
+  /// Vừa đăng ký lên Cửa hàng thì nút đổi thành Quản lý shop
+  Future<void> openMyShop() async {
+    await context.push(MyShopView.path);
+    if (mounted) context.read<UserProfileCubit>().load();
+  }
+
   /// Trang chỉnh sửa hồ sơ dùng chung cubit nên lưu xong hồ sơ cập nhật ngay
   Future<void> openEditProfile() async {
     final cubit = context.read<UserProfileCubit>();
@@ -209,8 +215,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                         label: profile?.shopStatus == null
                                             ? l.accSwitchToShop
                                             : l.msTitle,
-                                        onTap: () =>
-                                            context.push(MyShopView.path),
+                                        onTap: openMyShop,
                                       ),
                                     ),
                                   ],

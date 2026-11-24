@@ -26,7 +26,7 @@ shopRouter.get('/trusted/overview', optionalAuth, shopController.overview);
 const manageOwn = requirePermission(PERMISSION.LISTING_MANAGE_OWN);
 
 /**
- * Trang Quản lý shop của chính mình. Trả về: { shop | null, storePlan, planEndsAt, canCreate, nameLocked,
+ * Trang Quản lý shop của chính mình. Trả về: { shop | null, review, verification, canCreate, registration, nameLocked,
  *   stats { followerCount, listingCount, runningPosters, pendingPosters } | null }
  */
 shopRouter.get('/me', manageOwn, myShopController.get);

@@ -2903,7 +2903,7 @@
   "msName": "Shop name",
   "msNameHint": "e.g. Cozy Home Decor",
   "msNameRequired": "Shop name must be 2 to 60 characters.",
-  "msNameLocked": "Verified shops can't change their name. Contact ReStore if you need to.",
+  "msNameLocked": "Approved shops can't change their name. Contact ReStore if you need to.",
   "msTagline": "Short tagline",
   "msTaglineHint": "e.g. Handmade decor, fast local delivery",
   "msDescription": "About the shop",
@@ -2934,7 +2934,7 @@
     }
   },
   "msUnverifiedTitle": "Not verified yet",
-  "msUnverifiedBody": "Your shop isn't in Trusted shops yet and posters can't run. Send your business licence below to get verified.",
+  "msUnverifiedBody": "Your shop isn't in Trusted shops yet. Send your business licence below to get verified and add a tick.",
   "msPendingTitle": "Shop under review",
   "msPendingBody": "ReStore is checking your shop name, images and description. Buyers can see your shop page once it is approved.",
   "msRejectedTitle": "Shop not approved",
@@ -2978,11 +2978,9 @@
       "reason": {"type": "String"}
     }
   },
-  "msPlanExpiredTitle": "Professional Shop plan expired",
-  "msPlanExpiredBody": "Your posters are hidden for now. Renew the plan to run them again.",
   "msViewPublic": "View shop page",
   "msPosters": "Shop posters",
-  "msPostersBody": "Promote your shop with posters on your shop page and Trusted shops.",
+  "msPostersBody": "Promote your shop with posters on your shop page. Verified shops also show on Trusted shops.",
   "msSave": "Save changes",
   "msSaved": "Shop details saved",
   "msErrExists": "You already have a shop page.",
@@ -3625,6 +3623,8 @@
   "bsBenefitBadgeBody": "The Partner badge shows on your profile and every listing. Verify your business licence to add a tick.",
   "bsBenefitFeedTitle": "Post on the Feed",
   "bsBenefitFeedBody": "Share new arrivals and offers with your followers. Other members can only view, react and comment.",
+  "bsBenefitPosterTitle": "Shop posters",
+  "bsBenefitPosterBody": "Run up to 2 posters at a time on your shop page, and send 4 a month.",
   "bsAgreeLead": "By proceeding, you agree to the ",
   "bsTermsLink": "Shop Agreement",
   "bsAgreeTail": " of ReStore.",
@@ -3760,5 +3760,14 @@
   "vehicleConditionForPartsDesc": "Doesn't run; for restoration or parts.",
   "bsCategory": "Shop category",
   "bsCategoryHint": "What your shop mainly sells. You can still post listings in any category.",
-  "bsCategoryRequired": "Choose a category for your shop"
+  "bsCategoryRequired": "Choose a category for your shop",
+  "feedShopTag": "Shop · {name}",
+  "@feedShopTag": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "feedAdminTag": "Admin ReStore"
 }

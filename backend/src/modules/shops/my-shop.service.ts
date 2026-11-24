@@ -49,7 +49,7 @@ export async function getMyShop(userId: string, now = new Date()) {
   const mine = await findMine(userId);
   const base = { registration: { fee: SHOP_REGISTRATION_CREDITS, termsVersion: SHOP_TERMS_VERSION } };
   if (!mine) {
-    // Danh mục để chọn khi đăng ký: tin cửa hàng chỉ đăng trong danh mục này
+    // Danh mục để chọn khi đăng ký: mặt hàng chính của cửa hàng
     const categories = await prisma.category.findMany({ where: { active: true }, select: { id: true, name: true }, orderBy: { name: 'asc' } });
     return { registration: { ...base.registration, categories }, shop: null, review: null, verification: null,
       canCreate: true, nameLocked: false, stats: null };
@@ -95,7 +95,7 @@ export async function createMyShop(userId: string, body: ShopCreateBody, now = n
     if (await tx.shop.findUnique({ where: { ownerId: userId }, select: { id: true } })) {
       throw new AppError(409, 'SHOP_EXISTS', 'Bạn đã có trang shop.');
     }
-    // Danh mục duy nhất của tin cửa hàng, chọn khi đăng ký
+    // Mặt hàng chính của cửa hàng, chọn khi đăng ký
     if (!await tx.category.findFirst({ where: { id: body.categoryId, active: true }, select: { id: true } })) {
       throw new AppError(400, 'INVALID_CATEGORY', 'Chọn danh mục hợp lệ cho cửa hàng.', 'categoryId');
     }
