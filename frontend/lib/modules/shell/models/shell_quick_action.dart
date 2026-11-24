@@ -3,8 +3,9 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/data/models/enums/subscription_plan.dart';
 import 'package:restore/l10n/app_localizations.dart';
 
-/// Nút tròn xoè ra quanh nút giữa thanh điều hướng của tài khoản tier cao.
-/// Gói Cá nhân không có menu này, nút giữa vẫn là dấu + mở luồng đăng tin.
+/// Nút tròn xoè ra quanh nút giữa thanh điều hướng của tài khoản có gói trả
+/// phí hoặc đã lên Cửa hàng. Gói Cá nhân chưa có cửa hàng không có menu này,
+/// nút giữa vẫn là dấu + mở luồng đăng tin.
 enum ShellQuickAction {
   /// Đăng tin bán như nút + thường
   post,
@@ -40,12 +41,16 @@ enum ShellQuickAction {
   /// Nút nổi bật (tô cam) trong menu: quyền lợi chính của gói
   bool get highlighted => this == poster;
 
-  /// Các nút của từng gói, xếp từ trái sang phải trên vòng cung.
+  /// Các nút xếp từ trái sang phải trên vòng cung. Cửa hàng (gói nào cũng
+  /// được) có Poster shop và Quản lý shop; gói trả phí có Đẩy tin, Thống kê.
   /// Danh sách rỗng nghĩa là nút giữa chỉ là dấu + thường.
-  static List<ShellQuickAction> forPlan(SubscriptionPlan plan) =>
-      switch (plan) {
-        SubscriptionPlan.personal => const [],
-        SubscriptionPlan.basic => const [post, boost, stats],
-        SubscriptionPlan.shop => const [post, poster, boost, shopManage],
-      };
+  static List<ShellQuickAction> forAccount(
+    SubscriptionPlan plan, {
+    bool hasShop = false,
+  }) {
+    if (hasShop) return const [post, poster, boost, shopManage];
+    return plan == SubscriptionPlan.personal
+        ? const []
+        : const [post, boost, stats];
+  }
 }

@@ -25,29 +25,33 @@ test('my shop: register as a shop, edit, images, name lock', async () => {
   assert.equal(none.status, 200, JSON.stringify(none.body));
   const { registration } = none.body.data;
   assert.deepEqual([none.body.data.shop, none.body.data.canCreate, registration.fee], [null, true, 199], 'gói Cá nhân vẫn đăng ký được');
+  assert.ok(registration.categories.some((c: { id: string }) => c.id === 'other'), 'có danh mục để chọn');
   assert.equal((await api.get('/shops/me')).status, 401);
   assert.equal((await api.patch('/shops/me', { token, body: { tagline: 'x' } })).body.code, 'SHOP_REQUIRED');
 
   const terms = registration.termsVersion as string;
-  assert.equal((await api.post('/shops/me', { token, body: { name: 'Nội Thất Test' } })).status, 400, 'chưa đồng ý hợp đồng');
-  assert.equal((await api.post('/shops/me', { token, body: { name: 'Nội Thất Test', termsVersion: '2020-01' } })).status, 400, 'hợp đồng cũ');
-  assert.equal((await api.post('/shops/me', { token, body: { name: 'A', termsVersion: terms } })).status, 400, 'tên quá ngắn');
+  const reg = { categoryId: 'other', termsVersion: registration.termsVersion as string };
+  assert.equal((await api.post('/shops/me', { token, body: { name: 'Nội Thất Test', categoryId: 'other' } })).status, 400, 'chưa đồng ý hợp đồng');
+  assert.equal((await api.post('/shops/me', { token, body: { name: 'Nội Thất Test', termsVersion: registration.termsVersion } })).status, 400, 'chưa chọn danh mục');
+  assert.equal((await api.post('/shops/me', { token, body: { name: 'Nội Thất Test', categoryId: 'other', termsVersion: '2020-01' } })).status, 400, 'hợp đồng cũ');
+  assert.equal((await api.post('/shops/me', { token, body: { ...reg, name: 'A' } })).status, 400, 'tên quá ngắn');
   await prisma.creditTransaction.deleteMany({ where: { userId: 'user-seller' } });
-  const broke = await api.post('/shops/me', { token, body: { name: 'Nội Thất Test', termsVersion: terms } });
+  assert.equal((await api.post('/shops/me', { token, body: { ...reg, name: 'Nội Thất Test', categoryId: 'khong-co' } })).body.code, 'INVALID_CATEGORY');
+  const broke = await api.post('/shops/me', { token, body: { ...reg, name: 'Nội Thất Test' } });
   assert.deepEqual([broke.status, broke.body.code, broke.body.details?.required], [409, 'NOT_ENOUGH_CREDITS', 199]);
   assert.equal(await prisma.shop.count({ where: { ownerId: 'user-seller' } }), 0, 'thiếu xu thì không tạo shop');
 
   await prisma.creditTransaction.create({ data: { userId: 'user-seller', type: 'TOPUP', bucket: 'PAID', amount: 250, note: 'test' } });
-  const created = await api.post('/shops/me', { token, body: { name: '  Nội Thất Test ', tagline: 'Gỗ thật', address: 'Quận 1, TP.HCM', termsVersion: terms } });
+  const created = await api.post('/shops/me', { token, body: { ...reg, name: '  Nội Thất Test ', tagline: 'Gỗ thật', address: 'Quận 1, TP.HCM' } });
   assert.equal(created.status, 201, JSON.stringify(created.body));
   const row = await prisma.shop.findUniqueOrThrow({ where: { ownerId: 'user-seller' } });
-  assert.deepEqual([row.termsVersion, !!row.termsAcceptedAt, row.registrationCredits], [terms, true, 199]);
+  assert.deepEqual([row.termsVersion, !!row.termsAcceptedAt, row.registrationCredits, row.categoryIds], [terms, true, 199, ['other']]);
   const spent = await prisma.creditTransaction.aggregate({ where: { userId: 'user-seller' }, _sum: { amount: true } });
   assert.equal(spent._sum.amount, 51, 'trừ 199 xu');
   const shop = created.body.data.shop;
   assert.deepEqual([shop.name, shop.tagline, shop.address, shop.verificationType, created.body.data.nameLocked], ['Nội Thất Test', 'Gỗ thật', 'Quận 1, TP.HCM', null, false]);
   assert.deepEqual(created.body.data.stats, { followerCount: 0, listingCount: created.body.data.stats.listingCount, runningPosters: 0, pendingPosters: 0 });
-  assert.equal((await api.post('/shops/me', { token, body: { name: 'Shop thứ hai', termsVersion: terms } })).body.code, 'SHOP_EXISTS');
+  assert.equal((await api.post('/shops/me', { token, body: { ...reg, name: 'Shop thứ hai' } })).body.code, 'SHOP_EXISTS');
 
   // ảnh của người khác hoặc sai khu thì từ chối
   const other = await upload(tokens.admin);

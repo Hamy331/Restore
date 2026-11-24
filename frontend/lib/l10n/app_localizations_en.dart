@@ -19,7 +19,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sellerPartnerInfo =>
-      'This seller has an active ReStore Professional Shop plan. Ask the shop about warranty and returns for this listing.';
+      'This shop is approved by ReStore. Ask the shop about warranty and returns for this listing.';
 
   @override
   String get sellerGotIt => 'Got it';
@@ -3122,7 +3122,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String postingRuleBusiness(int limit) {
-    return 'Basic plan: up to $limit listings per category. Professional Shop plan: your own shop page.';
+    return 'Basic plan: up to $limit listings per category.';
   }
 
   @override
@@ -4056,10 +4056,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansBenefitPriority => 'Shown first in your main category';
 
   @override
-  String get plansBenefitShopPage =>
-      'Your own shop page with a cover photo, live after ReStore approval';
-
-  @override
   String get plansTaglinePersonal => 'Sell your own things, free of charge';
 
   @override
@@ -4067,7 +4063,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get plansTaglineShop =>
-      'For shops and brands, with a page of their own';
+      'The highest listing limits and the most boosts';
 
   @override
   String get plansPriceUnit => 'points / 30 days';
@@ -4616,14 +4612,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Posters appear on your shop page and on Trusted shops, so you need a shop page first.';
 
   @override
-  String get spPlanTitle => 'Posters are part of the Professional Shop plan';
+  String get spPartnerTitle => 'Posters are for Partner shops';
 
   @override
-  String get spPlanBody =>
-      'Upgrade to the Professional Shop plan to run posters on your shop page and on Trusted shops.';
-
-  @override
-  String get spSeePlans => 'See plans';
+  String get spPartnerBody =>
+      'You can run posters once ReStore approves your shop as a Partner. Check the review status in Manage shop.';
 
   @override
   String get spSlots => 'Posters at once';
@@ -4633,7 +4626,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spUnverified =>
-      'Your shop isn\'t verified yet, so approved posters aren\'t shown publicly.';
+      'Your shop isn\'t verified yet, so approved posters show on your shop page but not on Trusted shops.';
 
   @override
   String spCooldown(String date) {
@@ -4851,7 +4844,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spErrCooldown => 'Sending posters is paused for your shop.';
 
   @override
-  String get spErrPlan => 'Only the Professional Shop plan can run posters.';
+  String get spErrPartner =>
+      'Your shop needs to be approved as a Partner to run posters.';
 
   @override
   String get spErrShop => 'You need a shop page to run posters.';
@@ -4974,13 +4968,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msLoadError => 'Couldn\'t load your shop';
-
-  @override
-  String get msPlanTitle => 'Shop pages come with the Professional Shop plan';
-
-  @override
-  String get msPlanBody =>
-      'Upgrade to the Professional Shop plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.';
 
   @override
   String get msCreateTitle => 'Open your shop page';
@@ -6486,4 +6473,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profNoAbout => 'No introduction yet.';
+
+  @override
+  String get bsCategory => 'Shop category';
+
+  @override
+  String get bsCategoryHint =>
+      'What your shop mainly sells. You can still post listings in any category.';
+
+  @override
+  String get bsCategoryRequired => 'Choose a category for your shop';
 }

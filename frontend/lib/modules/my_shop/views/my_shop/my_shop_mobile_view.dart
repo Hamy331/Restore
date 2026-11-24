@@ -85,6 +85,7 @@ class MyShopMobileView extends StatelessWidget {
         return BecomeShopFlow(
           saving: state.saving,
           fee: overview.registrationFee,
+          categories: overview.registrationCategories,
         );
       },
     );

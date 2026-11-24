@@ -119,7 +119,7 @@ abstract class AppLocalizations {
   /// No description provided for @sellerPartnerInfo.
   ///
   /// In en, this message translates to:
-  /// **'This seller has an active ReStore Professional Shop plan. Ask the shop about warranty and returns for this listing.'**
+  /// **'This shop is approved by ReStore. Ask the shop about warranty and returns for this listing.'**
   String get sellerPartnerInfo;
 
   /// No description provided for @sellerGotIt.
@@ -5573,7 +5573,7 @@ abstract class AppLocalizations {
   /// No description provided for @postingRuleBusiness.
   ///
   /// In en, this message translates to:
-  /// **'Basic plan: up to {limit} listings per category. Professional Shop plan: your own shop page.'**
+  /// **'Basic plan: up to {limit} listings per category.'**
   String postingRuleBusiness(int limit);
 
   /// No description provided for @homeGreetingPro.
@@ -7106,12 +7106,6 @@ abstract class AppLocalizations {
   /// **'Shown first in your main category'**
   String get plansBenefitPriority;
 
-  /// No description provided for @plansBenefitShopPage.
-  ///
-  /// In en, this message translates to:
-  /// **'Your own shop page with a cover photo, live after ReStore approval'**
-  String get plansBenefitShopPage;
-
   /// No description provided for @plansTaglinePersonal.
   ///
   /// In en, this message translates to:
@@ -7127,7 +7121,7 @@ abstract class AppLocalizations {
   /// No description provided for @plansTaglineShop.
   ///
   /// In en, this message translates to:
-  /// **'For shops and brands, with a page of their own'**
+  /// **'The highest listing limits and the most boosts'**
   String get plansTaglineShop;
 
   /// No description provided for @plansPriceUnit.
@@ -7982,23 +7976,17 @@ abstract class AppLocalizations {
   /// **'Posters appear on your shop page and on Trusted shops, so you need a shop page first.'**
   String get spNoShopBody;
 
-  /// No description provided for @spPlanTitle.
+  /// No description provided for @spPartnerTitle.
   ///
   /// In en, this message translates to:
-  /// **'Posters are part of the Professional Shop plan'**
-  String get spPlanTitle;
+  /// **'Posters are for Partner shops'**
+  String get spPartnerTitle;
 
-  /// No description provided for @spPlanBody.
+  /// No description provided for @spPartnerBody.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to the Professional Shop plan to run posters on your shop page and on Trusted shops.'**
-  String get spPlanBody;
-
-  /// No description provided for @spSeePlans.
-  ///
-  /// In en, this message translates to:
-  /// **'See plans'**
-  String get spSeePlans;
+  /// **'You can run posters once ReStore approves your shop as a Partner. Check the review status in Manage shop.'**
+  String get spPartnerBody;
 
   /// No description provided for @spSlots.
   ///
@@ -8015,7 +8003,7 @@ abstract class AppLocalizations {
   /// No description provided for @spUnverified.
   ///
   /// In en, this message translates to:
-  /// **'Your shop isn\'t verified yet, so approved posters aren\'t shown publicly.'**
+  /// **'Your shop isn\'t verified yet, so approved posters show on your shop page but not on Trusted shops.'**
   String get spUnverified;
 
   /// No description provided for @spCooldown.
@@ -8402,11 +8390,11 @@ abstract class AppLocalizations {
   /// **'Sending posters is paused for your shop.'**
   String get spErrCooldown;
 
-  /// No description provided for @spErrPlan.
+  /// No description provided for @spErrPartner.
   ///
   /// In en, this message translates to:
-  /// **'Only the Professional Shop plan can run posters.'**
-  String get spErrPlan;
+  /// **'Your shop needs to be approved as a Partner to run posters.'**
+  String get spErrPartner;
 
   /// No description provided for @spErrShop.
   ///
@@ -8641,18 +8629,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load your shop'**
   String get msLoadError;
-
-  /// No description provided for @msPlanTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Shop pages come with the Professional Shop plan'**
-  String get msPlanTitle;
-
-  /// No description provided for @msPlanBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Upgrade to the Professional Shop plan to open your own shop page with a logo, cover and posters, and get verified for Trusted shops.'**
-  String get msPlanBody;
 
   /// No description provided for @msCreateTitle.
   ///
@@ -11089,6 +11065,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No introduction yet.'**
   String get profNoAbout;
+
+  /// No description provided for @bsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop category'**
+  String get bsCategory;
+
+  /// No description provided for @bsCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What your shop mainly sells. You can still post listings in any category.'**
+  String get bsCategoryHint;
+
+  /// No description provided for @bsCategoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a category for your shop'**
+  String get bsCategoryRequired;
 }
 
 class _AppLocalizationsDelegate
