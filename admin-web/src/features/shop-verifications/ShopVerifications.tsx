@@ -93,7 +93,7 @@ export function ShopVerifications({ session }: { session: Session }) {
             ? pending
               ? `${pending} hồ sơ đang chờ. Đối chiếu tên và mã số thuế với ảnh giấy phép kinh doanh trước khi duyệt.`
               : 'Không còn hồ sơ nào chờ duyệt.'
-            : 'Hồ sơ giấy phép kinh doanh của shop gói Cửa hàng'
+            : 'Hồ sơ giấy phép kinh doanh của cửa hàng'
         }
         action={
           <Segmented

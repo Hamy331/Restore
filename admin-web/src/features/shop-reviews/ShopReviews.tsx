@@ -177,7 +177,7 @@ export function ShopReviews({ session }: { session: Session }) {
                     <span>{shop.owner.fullName}</span>
                     <small>{shop.owner.email}</small>
                     <span>
-                      <Tag color={shop.planTier === 'PRO' ? 'purple' : 'default'}>{tierLabels[shop.planTier] ?? shop.planTier}</Tag>
+                      <Tag color={shop.planTier === 'PRO' ? 'purple' : 'default'}>Gói {tierLabels[shop.planTier] ?? shop.planTier}</Tag>
                       {shop.verified && (
                         <Tag color="green" title={shop.verificationType ? verificationTypes[shop.verificationType] : undefined}>
                           Shop uy tín{shop.certificateCode && ` · ${shop.certificateCode}`}

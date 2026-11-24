@@ -146,7 +146,7 @@ export function ShopPosters({ session }: { session: Session }) {
             ? pending
               ? `${pending} poster đang chờ duyệt. Poster chỉ hiện trên trang shop và mục Shop uy tín sau khi được duyệt.`
               : 'Không còn poster nào chờ duyệt.'
-            : 'Poster quảng bá do shop gói Cửa hàng gửi lên'
+            : 'Poster quảng bá do cửa hàng Đối tác gửi lên'
         }
         action={
           <Segmented
@@ -205,7 +205,7 @@ export function ShopPosters({ session }: { session: Session }) {
                     </span>
                     <span>
                       <Tag color={poster.shop.planTier === 'PRO' ? 'purple' : 'default'}>
-                        {tierLabels[poster.shop.planTier] ?? poster.shop.planTier}
+                        Gói {tierLabels[poster.shop.planTier] ?? poster.shop.planTier}
                       </Tag>
                       {poster.shop.verified ? <Tag color="green">Đã xác minh</Tag> : <Tag color="orange">Chưa xác minh</Tag>}
                     </span>
