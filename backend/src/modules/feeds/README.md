@@ -15,7 +15,7 @@ All routes require Bearer authentication and use `{success:true,data:...}`.
 - DELETE /api/v1/feeds/:id: author only (403 otherwise). GET /api/v1/feeds also accepts authorId=<uuid>.
 - POST /api/v1/media/images?purpose=feed|avatar: raw JPEG/PNG/WebP bytes, Content-Type image/jpeg|image/png|image/webp, <=5MB. Returns {imageUrl} (relative `/api/v1/media/...` path), HTTP 201. GET /api/v1/media/:area/:name returns the file without auth.
 
-Feed items contain id,text,imageUrl,createdAt,author:{id,fullName,avatarUrl},isMine,isFollowingAuthor,likedByMe,likeCount,commentCount,listing:{id,title,price,imageUrl}|null.
+Feed items contain id,text,imageUrl,createdAt,author:{id,fullName,avatarUrl,shop:{id,name}|null (partner shop),isAdmin},isMine,isFollowingAuthor,likedByMe,likeCount,commentCount,listing:{id,title,price,imageUrl}|null.
 Comment items contain id,postId,text,createdAt,author,likedByMe,likeCount.
 Posts/comments from non-ACTIVE authors are excluded. Missing/unavailable posts/comments return 404. Listing cards become null when listing is unavailable or seller inactive. Follow uses existing /users/:id/follow endpoints.
 

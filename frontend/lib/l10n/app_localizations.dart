@@ -11047,6 +11047,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a category for your shop'**
   String get bsCategoryRequired;
+
+  /// No description provided for @feedShopTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop · {name}'**
+  String feedShopTag(String name);
+
+  /// No description provided for @feedAdminTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin ReStore'**
+  String get feedAdminTag;
 }
 
 class _AppLocalizationsDelegate

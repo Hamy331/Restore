@@ -3760,5 +3760,14 @@
   "vehicleConditionForPartsDesc": "Doesn't run; for restoration or parts.",
   "bsCategory": "Shop category",
   "bsCategoryHint": "What your shop mainly sells. You can still post listings in any category.",
-  "bsCategoryRequired": "Choose a category for your shop"
+  "bsCategoryRequired": "Choose a category for your shop",
+  "feedShopTag": "Shop · {name}",
+  "@feedShopTag": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "feedAdminTag": "Admin ReStore"
 }

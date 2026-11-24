@@ -213,6 +213,11 @@ class FeedPostCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (post.author.shopName != null || post.author.isAdmin)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: _AuthorTag(author: post.author),
+                    ),
                   if (post.text.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
@@ -340,6 +345,52 @@ class _LikePill extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Nhãn dưới tên tác giả: "Shop · tên shop" cho cửa hàng Đối tác, "Admin ReStore" cho admin
+class _AuthorTag extends StatelessWidget {
+  const _AuthorTag({required this.author});
+  final FeedUser author;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final shop = author.shopName;
+    final color = shop != null
+        ? const Color(0xFFE8590C)
+        : AppColors.actionPrimary;
+    return Container(
+      key: const ValueKey('feed-author-tag'),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            shop != null ? AppIcons.store : AppIcons.verified,
+            size: 12,
+            color: color,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              shop != null ? l.feedShopTag(shop) : l.feedAdminTag,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -6459,4 +6459,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bsCategoryRequired => 'Choose a category for your shop';
+
+  @override
+  String feedShopTag(String name) {
+    return 'Shop · $name';
+  }
+
+  @override
+  String get feedAdminTag => 'Admin ReStore';
 }

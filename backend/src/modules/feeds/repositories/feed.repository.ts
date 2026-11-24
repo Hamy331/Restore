@@ -7,6 +7,9 @@ export const postInclude = (userId: string) => ({
   author: {
     select: {
       ...author,
+      // nhãn tác giả: cửa hàng Đối tác hoặc admin ReStore
+      role: true,
+      shop: { select: { id: true, name: true, status: true, verificationType: true } },
       followers: { where: { followerId: userId }, select: { followerId: true } },
     },
   },

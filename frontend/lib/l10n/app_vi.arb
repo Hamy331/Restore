@@ -3548,5 +3548,14 @@
   "vehicleConditionForPartsDesc": "Không vận hành được, phù hợp sửa lại hoặc lấy phụ tùng.",
   "bsCategory": "Danh mục cửa hàng",
   "bsCategoryHint": "Mặt hàng chính của cửa hàng. Bạn vẫn đăng tin được ở mọi danh mục.",
-  "bsCategoryRequired": "Chọn một danh mục cho cửa hàng"
+  "bsCategoryRequired": "Chọn một danh mục cho cửa hàng",
+  "feedShopTag": "Shop · {name}",
+  "@feedShopTag": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "feedAdminTag": "Admin ReStore"
 }

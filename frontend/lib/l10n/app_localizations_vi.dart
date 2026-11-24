@@ -6330,4 +6330,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get bsCategoryRequired => 'Chọn một danh mục cho cửa hàng';
+
+  @override
+  String feedShopTag(String name) {
+    return 'Shop · $name';
+  }
+
+  @override
+  String get feedAdminTag => 'Admin ReStore';
 }
