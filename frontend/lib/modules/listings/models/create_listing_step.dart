@@ -1,10 +1,11 @@
 import 'package:restore/l10n/app_localizations.dart';
 
-/// Các bước của luồng đăng tin, thứ tự khai báo chính là thứ tự hiển thị
+/// 3 bước đăng tin, thứ tự khai báo chính là thứ tự hiển thị:
+/// chọn danh mục → thông tin sản phẩm → xem trước & đăng tin
 enum CreateListingStep {
   category('/create-listing/category'),
-  basicInfo('/create-listing/basic-info'),
-  details('/create-listing/details');
+  details('/create-listing/details'),
+  preview('/create-listing/preview');
 
   const CreateListingStep(this.path);
 
@@ -15,21 +16,7 @@ enum CreateListingStep {
 
   String title(AppLocalizations l10n) => switch (this) {
     category => l10n.chooseCategoryTitle,
-    basicInfo => l10n.stepBasicInfoTitle,
-    details => l10n.detailedInfoTitle,
+    details => l10n.itemDetailsTitle,
+    preview => l10n.previewPublishTitle,
   };
-
-  /// Nhãn ngắn hiển thị dưới thanh tiến trình
-  String shortTitle(AppLocalizations l10n) => switch (this) {
-    category => l10n.stepShortCategory,
-    basicInfo => l10n.stepShortBasicInfo,
-    details => l10n.stepShortDetails,
-  };
-
-  static List<String> shortTitles(AppLocalizations l10n) => [
-    for (final step in values) step.shortTitle(l10n),
-  ];
 }
-
-/// Trang xem trước không phải một bước nên khai báo riêng
-const String createListingPreviewPath = '/create-listing/preview';

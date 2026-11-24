@@ -1,10 +1,18 @@
-/// Bộ lọc của danh sách "Tin đăng mới".
+/// Tab của danh sách tin trang chủ, theo thứ tự hiển thị.
 /// [apiValue] gửi lên `GET /listings?filter=`.
 enum HomeListingFilter {
-  forYou('forYou'),
   newest('recent'),
+  forYou('forYou'),
+
+  /// Tin của shop đã xác minh
+  certified('certified'),
   nearby('nearby'),
-  exchange('exchange');
+
+  /// Đồ cho tặng miễn phí
+  free('free'),
+
+  /// Tin của người bán mình đang theo dõi (cần đăng nhập)
+  following('following');
 
   const HomeListingFilter(this.apiValue);
 

@@ -5,13 +5,13 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/repositories/category_repository.dart';
 import 'package:restore/shared/widgets/filter/filter_popover.dart';
 
-/// Danh mục được chọn: [categoryId] null là "Tất cả danh mục",
+/// Danh mục được chọn: [category] null là "Tất cả danh mục",
 /// [subcategoryId] null là "Tất cả `danh mục cha`"
 class CategoryPick {
-  final String? categoryId;
+  final CategoryModel? category;
   final String? subcategoryId;
 
-  const CategoryPick(this.categoryId, [this.subcategoryId]);
+  const CategoryPick(this.category, [this.subcategoryId]);
 }
 
 /// Bảng danh mục khi bấm chip danh mục trên thanh lọc: nút quay
@@ -118,7 +118,7 @@ class _CategoryPickerState extends State<_CategoryPicker> {
                   _row(
                     item.name.of(context),
                     item.id == category?.id,
-                    () => _pick(CategoryPick(item.id)),
+                    () => _pick(CategoryPick(item)),
                   ),
               ],
             );
@@ -127,7 +127,7 @@ class _CategoryPickerState extends State<_CategoryPicker> {
       );
     }
     final name = category.name.of(context);
-    void clear() => _pick(CategoryPick(category.id));
+    void clear() => _pick(CategoryPick(category));
     return FilterPanel(
       title: name,
       onBack: () => setState(() => _all = widget.repository.getCategories()),
@@ -144,7 +144,7 @@ class _CategoryPickerState extends State<_CategoryPicker> {
             _row(
               item.name.of(context),
               item.id == widget.subcategoryId,
-              () => _pick(CategoryPick(category.id, item.id)),
+              () => _pick(CategoryPick(category, item.id)),
             ),
         ],
       ),

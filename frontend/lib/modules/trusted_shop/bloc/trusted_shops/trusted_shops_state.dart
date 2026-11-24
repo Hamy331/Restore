@@ -26,7 +26,6 @@ class TrustedShopsState extends Equatable {
   /// Bộ lọc lưới "Tất cả sản phẩm": danh mục (null là "Tất cả"), chỉ tin
   /// đang giảm giá và cách sắp xếp
   final String? categoryId;
-  final bool onSale;
   final ListingSort sort;
 
   /// Lưới "Tất cả sản phẩm"
@@ -44,7 +43,6 @@ class TrustedShopsState extends Equatable {
     this.status = TrustedShopsStatus.loading,
     this.overview = const TrustedShopsOverview(),
     this.categoryId,
-    this.onSale = false,
     this.sort = ListingSort.newest,
     this.products = const [],
     this.page = 0,
@@ -61,7 +59,6 @@ class TrustedShopsState extends Equatable {
     TrustedShopsStatus? status,
     TrustedShopsOverview? overview,
     String? Function()? categoryId,
-    bool? onSale,
     ListingSort? sort,
     List<ListingCardItem>? products,
     int? page,
@@ -72,7 +69,6 @@ class TrustedShopsState extends Equatable {
     status: status ?? this.status,
     overview: overview ?? this.overview,
     categoryId: categoryId == null ? this.categoryId : categoryId(),
-    onSale: onSale ?? this.onSale,
     sort: sort ?? this.sort,
     products: products ?? this.products,
     page: page ?? this.page,
@@ -86,7 +82,6 @@ class TrustedShopsState extends Equatable {
     status,
     overview,
     categoryId,
-    onSale,
     sort,
     products,
     page,

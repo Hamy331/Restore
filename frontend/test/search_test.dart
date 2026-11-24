@@ -268,7 +268,7 @@ void main() {
     await cubit.close();
   });
 
-  testWidgets('results page switches between listings, shops and users tabs', (
+  testWidgets('results show listing filters and matching shops without tabs', (
     tester,
   ) async {
     final repository = MockSearchRepository(latency: Duration.zero);
@@ -315,26 +315,16 @@ void main() {
       ),
     );
     await tester.pump();
-    // Tab Tin đăng có dải cửa hàng khớp từ khoá
     expect(find.text('Cửa hàng phù hợp'), findsOneWidget);
     expect(find.text('Lọc'), findsOneWidget);
 
-    await tester.tap(find.text('Cửa hàng'));
-    await tester.pump();
-    expect(find.text('Cửa hàng phù hợp'), findsNothing);
-    expect(
-      find.text('Lọc'),
-      findsNothing,
-      reason: 'chỉ tab Tin đăng có bộ lọc',
-    );
+    expect(find.text('Tin đăng'), findsNothing);
+    expect(find.text('Cửa hàng'), findsNothing);
+    expect(find.text('Người dùng'), findsNothing);
+    await tester.tap(find.text('Xem tất cả'));
+    await tester.pumpAndSettle();
     expect(find.textContaining('@kodo.camera ·'), findsOneWidget);
     expect(find.byType(ShopFollowButton), findsWidgets);
-
-    await tester.tap(find.text('Người dùng'));
-    await tester.pump();
-    // Chủ shop không hiện lại ở tab Người dùng
-    expect(find.textContaining('@kodo.camera'), findsNothing);
-    expect(find.textContaining('Không có người dùng nào khớp'), findsOneWidget);
     // Chờ danh mục mẫu (trễ giả lập) tải xong trước khi đóng trang
     await tester.pump(const Duration(seconds: 1));
     await results.close();

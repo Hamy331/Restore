@@ -5,6 +5,7 @@ import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/gallery/app_image_gallery.dart';
 
 import 'product_detail_circle_button.dart';
+import 'product_detail_actions.dart';
 
 /// Ảnh sản phẩm chiếm phần đầu trang, thu lại thành thanh tiêu đề khi cuộn.
 /// Nút quay lại / lưu tin / thêm luôn nổi phía trên ảnh.
@@ -22,6 +23,7 @@ class ProductDetailHeader extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onFavorite;
   final VoidCallback? onMore;
+  final String? listingId;
 
   const ProductDetailHeader({
     super.key,
@@ -33,6 +35,7 @@ class ProductDetailHeader extends StatelessWidget {
     required this.onBack,
     required this.onFavorite,
     this.onMore,
+    this.listingId,
   });
 
   /// Ảnh vuông theo chiều rộng màn hình, giới hạn trên màn hình lớn
@@ -91,6 +94,7 @@ class ProductDetailHeader extends StatelessWidget {
         ),
       ),
       actions: [
+        if (listingId != null) ProductDetailActions(listingId: listingId!),
         if (favorite != null)
           slot(
             ProductDetailCircleButton(

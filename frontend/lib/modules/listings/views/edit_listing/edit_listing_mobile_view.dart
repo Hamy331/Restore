@@ -12,8 +12,8 @@ import '../../bloc/create_listing/create_listing_state.dart';
 import '../../models/create_listing_step.dart';
 import 'package:restore/shared/widgets/app_load_error_view.dart';
 
-/// Tải tin cần sửa; xong thì thay trang này bằng bước 2 (chuyên mục giữ
-/// nguyên nên bỏ qua bước 1), lỗi thì cho thử lại
+/// Tải tin cần sửa; xong thì thay trang này bằng bước Thông tin sản phẩm
+/// (chuyên mục giữ nguyên nên bỏ qua bước 1), lỗi thì cho thử lại
 class EditListingMobileView extends StatefulWidget {
   const EditListingMobileView({super.key, required this.listingId});
 
@@ -42,7 +42,7 @@ class _EditListingMobileViewState extends State<EditListingMobileView> {
           previous.openEditStatus != current.openEditStatus,
       listener: (context, state) {
         if (state.openEditStatus == RequestStatus.success) {
-          context.pushReplacement(CreateListingStep.basicInfo.path);
+          context.pushReplacement(CreateListingStep.details.path);
         }
       },
       builder: (context, state) => AppGlassBackground(

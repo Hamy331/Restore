@@ -51,7 +51,7 @@ class ListingChipFilterBar extends StatelessWidget {
 
   /// Chọn danh mục cha khác. Trang danh mục mở trang của danh mục đó; null
   /// thì đổi ngay trong bộ lọc (trang tìm kiếm), có thêm "Tất cả danh mục"
-  final ValueChanged<String>? onSwitchCategory;
+  final ValueChanged<CategoryModel>? onSwitchCategory;
 
   /// Bấm × trên chip danh mục khi không chọn danh mục con; null là bỏ lọc
   /// danh mục
@@ -107,12 +107,13 @@ class ListingChipFilterBar extends StatelessWidget {
       allowAll: onSwitchCategory == null,
       parentsOnly: !subcategories,
     );
-    if (pick == null) return;
-    final id = pick.categoryId;
+    if (pick == null || !anchor.mounted) return;
+    final selected = pick.category;
+    final id = selected?.id;
     if (id != null && id == category?.id) {
       onChanged(filter.withSubcategory(pick.subcategoryId));
-    } else if (id != null && onSwitchCategory != null) {
-      onSwitchCategory!(id);
+    } else if (selected != null && onSwitchCategory != null) {
+      onSwitchCategory!(selected);
     } else {
       onChanged(filter.withCategory(id));
     }

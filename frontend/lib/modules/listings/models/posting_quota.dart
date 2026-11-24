@@ -154,8 +154,6 @@ class PostingQuota extends Equatable {
   /// Gói tài khoản ở backend: PERSONAL, BASIC (Bán chuyên), PRO (Cửa hàng)
   final String tier;
 
-  /// Chỉ gói Cửa hàng Pro được nhập giá gốc để bán giảm giá
-  bool get canSetOriginalPrice => tier == 'PRO';
 
   const PostingQuota({
     required this.accountType,

@@ -38,12 +38,6 @@ class TrustedShopsCubit extends Cubit<TrustedShopsState> {
     return _reloadProducts(state.copyWith(categoryId: () => categoryId));
   }
 
-  /// Bật / tắt chỉ xem tin đang giảm giá
-  Future<void> setOnSale(bool onSale) {
-    if (onSale == state.onSale) return Future.value();
-    return _reloadProducts(state.copyWith(onSale: onSale));
-  }
-
   Future<void> setSort(ListingSort sort) {
     if (sort == state.sort) return Future.value();
     return _reloadProducts(state.copyWith(sort: sort));
@@ -56,10 +50,7 @@ class TrustedShopsCubit extends Cubit<TrustedShopsState> {
     final requestId = ++_requestId;
     emit(next.copyWith(isLoadingProducts: true, isLoadingMore: false));
     try {
-      final result = await _repository.getListings(
-        state.filter,
-        onSale: state.onSale,
-      );
+      final result = await _repository.getListings(state.filter);
       if (requestId != _requestId) return;
       emit(
         state.copyWith(
@@ -74,7 +65,6 @@ class TrustedShopsCubit extends Cubit<TrustedShopsState> {
         emit(
           state.copyWith(
             categoryId: () => previous.categoryId,
-            onSale: previous.onSale,
             sort: previous.sort,
             isLoadingProducts: false,
           ),
@@ -97,7 +87,6 @@ class TrustedShopsCubit extends Cubit<TrustedShopsState> {
       final result = await _repository.getListings(
         state.filter,
         page: state.page + 1,
-        onSale: state.onSale,
       );
       if (requestId != _requestId) return;
       emit(
@@ -171,7 +160,7 @@ class TrustedShopsCubit extends Cubit<TrustedShopsState> {
     try {
       final (overview, result) = await (
         _repository.getOverview(),
-        _repository.getListings(state.filter, onSale: state.onSale),
+        _repository.getListings(state.filter),
       ).wait;
       if (requestId != _requestId) return;
       emit(

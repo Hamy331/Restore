@@ -1,3 +1,5 @@
+import 'widgets/product_detail_actions.dart';
+import 'widgets/product_detail_circle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -196,6 +198,20 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
     ];
 
     return [
+      SliverToBoxAdapter(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ProductDetailCircleButton(
+              icon: AppIcons.back,
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              onPressed: () =>
+                  context.canPop() ? context.pop() : context.go('/home'),
+            ),
+            ProductDetailActions(listingId: detail.listing.id),
+          ],
+        ),
+      ),
       SliverToBoxAdapter(
         child: _Breadcrumb(
           title: detail.listing.title,

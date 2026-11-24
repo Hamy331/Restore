@@ -72,18 +72,6 @@ export const findListings = (where: Prisma.ListingWhereInput, take: number, skip
 
 export const countListings = (where: Prisma.ListingWhereInput) => prisma.listing.count({ where });
 
-/** Tin đang giảm giá (giá gốc > giá bán) của shop uy tín, giảm nhiều trước */
-export async function findDealIds(limit: number) {
-  const rows = await prisma.$queryRaw<{ id: string }[]>`
-    SELECT l.id FROM "Listing" l
-    JOIN "User" u ON u.id = l."ownerId" AND u.status = 'ACTIVE'
-    JOIN "Shop" s ON s."ownerId" = l."ownerId" AND s."verificationType" IS NOT NULL
-    WHERE l.status = 'AVAILABLE' AND l."originalPrice" > l.price
-    ORDER BY (l."originalPrice" - l.price) / l."originalPrice" DESC, l.id
-    LIMIT ${limit}`;
-  return rows.map((row) => row.id);
-}
-
 /** Danh mục có ít nhất một tin đang bán của shop uy tín */
 export async function findTrustedCategories() {
   const rows = await prisma.listing.groupBy({ by: ['categoryId'], where: trustedListing });

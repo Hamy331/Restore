@@ -5,12 +5,10 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/data/models/category_model.dart';
 import 'package:restore/shared/utils/filter_categories.dart';
 import 'package:restore/modules/category_detail/views/category_detail/category_detail_view.dart';
-import 'package:restore/core/theme/app_header_palette.dart';
-import 'package:restore/l10n/app_localizations.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
 import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.dart';
-import 'package:restore/shared/widgets/search/app_search_header.dart';
-import 'package:restore/shared/widgets/search/app_search_input.dart';
+import 'package:restore/shared/widgets/search/app_listing_search_bar.dart';
 
 import '../../bloc/search_cubit.dart';
 import '../../bloc/search_state.dart';
@@ -30,7 +28,6 @@ class SearchMobileView extends StatefulWidget {
 }
 
 class _SearchMobileViewState extends State<SearchMobileView> {
-  static const double _contentRadius = 24;
   static const String _nearbyPath = '/nearby';
 
   late final _controller = TextEditingController(text: widget.initialQuery);
@@ -114,64 +111,64 @@ class _SearchMobileViewState extends State<SearchMobileView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final cubit = context.read<SearchCubit>();
 
-    return Scaffold(
-      backgroundColor: AppHeaderPalette.bottom,
-      body: Column(
-        children: [
-          AppSearchHeader(
-            onBack: _back,
-            child: AppSearchInput(
-              controller: _controller,
-              focusNode: _focusNode,
-              hintText: l10n.homeSearchHint,
-              autofocus: widget.initialQuery.isEmpty,
-              onChanged: cubit.queryChanged,
-              onSubmitted: _submit,
-            ),
-          ),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(_contentRadius),
-              ),
-              child: ColoredBox(
-                color: AppColors.surface,
-                child: BlocBuilder<SearchCubit, SearchState>(
-                  builder: (context, state) => AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 160),
-                    child: state.isTyping
-                        ? SearchSuggestionList(
-                            key: const ValueKey('suggestions'),
-                            state: state,
-                            onSubmit: _submit,
-                            onFill: _fill,
-                            onRemoveHistory: cubit.removeHistory,
-                            onOpenShop: _openShop,
-                            onOpenUser: _openUser,
-                            categories: matchCategories(
-                              _categories,
-                              state.query,
-                              (name) => name.of(context),
-                            ),
-                            onOpenCategory: _openCategory,
-                          )
-                        : SearchIdleContent(
-                            key: const ValueKey('idle'),
-                            state: state,
-                            onSubmit: _submit,
-                            onNearMe: () => context.push(_nearbyPath),
-                            onRemoveHistory: cubit.removeHistory,
-                            onClearHistory: cubit.clearHistory,
-                          ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: AppColors.surface,
+        body: Column(
+          children: [
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: AppListingSearchBar.editable(
+                  onBack: _back,
+                  onEdit: _focusNode.requestFocus,
+                  input: ListingSearchInput(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    autofocus: widget.initialQuery.isEmpty,
+                    onChanged: cubit.queryChanged,
+                    onSubmitted: _submit,
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: BlocBuilder<SearchCubit, SearchState>(
+                builder: (context, state) => AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 160),
+                  child: state.isTyping
+                      ? SearchSuggestionList(
+                          key: const ValueKey('suggestions'),
+                          state: state,
+                          onSubmit: _submit,
+                          onFill: _fill,
+                          onRemoveHistory: cubit.removeHistory,
+                          onOpenShop: _openShop,
+                          onOpenUser: _openUser,
+                          categories: matchCategories(
+                            _categories,
+                            state.query,
+                            (name) => name.of(context),
+                          ),
+                          onOpenCategory: _openCategory,
+                        )
+                      : SearchIdleContent(
+                          key: const ValueKey('idle'),
+                          state: state,
+                          onSubmit: _submit,
+                          onNearMe: () => context.push(_nearbyPath),
+                          onRemoveHistory: cubit.removeHistory,
+                          onClearHistory: cubit.clearHistory,
+                        ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -12,7 +12,7 @@ const parentOf = (id: string) => LEGACY_PARENT[id] ?? id;
 
 /**
  * Shop uy tín và tài khoản Bán chuyên để test trang Shop uy tín:
- * 20 shop (gói Cửa hàng PRO, đã xác minh, logo + ảnh bìa, 3-4 tin, vài banner đã duyệt, vài tin giảm giá)
+ * 20 shop (gói Cửa hàng PRO, đã xác minh, logo + ảnh bìa, 3-4 tin, vài banner đã duyệt)
  * và 5 tài khoản Bán chuyên (gói BASIC, 1-2 tin). Mật khẩu chung Password@123.
  *
  *   npm run db:seed:shops                 # thêm / cập nhật
@@ -56,7 +56,6 @@ async function upsertListings(ownerName: string, key: string, ward: string, sell
     const data = {
       ownerId, categoryId: mapped.categoryId, subcategoryId: mapped.subcategoryId, title: item.title, description: item.description,
       price: new Prisma.Decimal(item.price),
-      originalPrice: item.originalPrice ? new Prisma.Decimal(item.originalPrice) : null,
       isNegotiable: false, condition: item.condition, status: 'AVAILABLE' as const, reviewReason: null,
       allowSale: true, allowExchange: item.allowExchange ?? false, exchangeWish: item.exchangeWish ?? '',
       sellerType, attributes: mapped.attributes as Prisma.InputJsonObject, location: location as Prisma.InputJsonObject,

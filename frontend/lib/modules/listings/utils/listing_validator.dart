@@ -2,49 +2,50 @@ import 'package:restore/data/models/category_attribute_model.dart';
 import 'package:restore/data/models/category_model.dart';
 import '../models/listing_draft.dart';
 
-/// Các trường có thể báo lỗi ở bước 2
-enum ListingField { photos, description, title, price, originalPrice, location }
+/// Các trường có thể báo lỗi ở bước Thông tin sản phẩm
+enum ListingField { photos, title, condition, price, location }
 
-/// Lỗi của một thuộc tính ở bước 3
+/// Lỗi của một thuộc tính theo danh mục
 enum AttributeError { required, outOfRange }
 
-/// Kiểm tra dữ liệu tin đăng theo từng bước.
+/// Lỗi của tin đang soạn: trường chung và thuộc tính theo danh mục
+class ListingErrors {
+  const ListingErrors({this.fields = const {}, this.attributes = const {}});
+
+  static const ListingErrors none = ListingErrors();
+
+  final Set<ListingField> fields;
+  final Map<String, AttributeError> attributes;
+
+  bool get isEmpty => fields.isEmpty && attributes.isEmpty;
+  bool has(ListingField field) => fields.contains(field);
+}
+
+/// Kiểm tra dữ liệu tin đăng trước khi sang bước xem trước / đăng tin.
 /// Backend cũng kiểm tra lại theo cùng schema thuộc tính.
 class ListingValidator {
   ListingValidator._();
 
-  /// Khoá riêng cho trường Tình trạng (dùng chung mọi danh mục)
-  static const String conditionKey = 'condition';
-
-  static Set<ListingField> basicInfoErrors(ListingDraft draft) => {
-    if (draft.images.isEmpty) ListingField.photos,
-    if (draft.description.trim().length < ListingDraft.minDescriptionLength)
-      ListingField.description,
-    if (draft.title.trim().length < ListingDraft.minTitleLength)
-      ListingField.title,
-    if (draft.tradeType.requiresPrice && (draft.price ?? 0) <= 0)
-      ListingField.price,
-    // Giá gốc (bán giảm giá) có thì phải cao hơn giá bán
-    if (draft.tradeType.requiresPrice &&
-        draft.originalPrice != null &&
-        draft.originalPrice! <= (draft.price ?? 0))
-      ListingField.originalPrice,
-    if (draft.address == null) ListingField.location,
-  };
-
-  /// Lỗi ở bước 3, theo khoá thuộc tính (và [conditionKey])
-  static Map<String, AttributeError> detailErrors(
-    ListingDraft draft,
-    CategoryModel? category,
-  ) => {
-    if ((category?.hasCondition ?? true) && draft.condition == null)
-      conditionKey: AttributeError.required,
-    for (final attribute
-        in category?.attributes ?? const <CategoryAttributeModel>[])
-      if (_errorOf(attribute, draft.attributes[attribute.key])
-          case final error?)
-        attribute.key: error,
-  };
+  static ListingErrors errors(ListingDraft draft, CategoryModel? category) =>
+      ListingErrors(
+        fields: {
+          if (draft.images.isEmpty) ListingField.photos,
+          if (draft.title.trim().length < ListingDraft.minTitleLength)
+            ListingField.title,
+          if ((category?.hasCondition ?? true) && draft.condition == null)
+            ListingField.condition,
+          if (!draft.isFree && (draft.price ?? 0) <= 0) ListingField.price,
+          // Khu vực luôn cần để tin hiện ở "Gần bạn" và bộ lọc khu vực
+          if (draft.address == null) ListingField.location,
+        },
+        attributes: {
+          for (final attribute
+              in category?.attributes ?? const <CategoryAttributeModel>[])
+            if (_errorOf(attribute, draft.attributes[attribute.key])
+                case final error?)
+              attribute.key: error,
+        },
+      );
 
   static AttributeError? _errorOf(
     CategoryAttributeModel attribute,
@@ -60,11 +61,6 @@ class ListingValidator {
     return attribute.isOutOfRange(raw) ? AttributeError.outOfRange : null;
   }
 
-  static bool isBasicInfoValid(ListingDraft draft) =>
-      basicInfoErrors(draft).isEmpty;
-
   static bool isReadyToPublish(ListingDraft draft, CategoryModel? category) =>
-      category != null &&
-      isBasicInfoValid(draft) &&
-      detailErrors(draft, category).isEmpty;
+      category != null && errors(draft, category).isEmpty;
 }

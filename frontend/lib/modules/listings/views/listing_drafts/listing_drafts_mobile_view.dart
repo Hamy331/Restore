@@ -22,7 +22,7 @@ import '../../widgets/draft_sheets.dart';
 import 'widgets/draft_card.dart';
 
 /// Trang Tin nháp: tin đã lưu nháp, vừa sửa trước. Bấm một tin để soạn tiếp
-/// (mở thẳng bước Thông tin cơ bản, hoặc bước chọn danh mục nếu chưa chọn).
+/// (mở thẳng bước Thông tin sản phẩm, hoặc bước chọn danh mục nếu chưa chọn).
 class ListingDraftsMobileView extends StatefulWidget {
   const ListingDraftsMobileView({super.key});
 
@@ -88,7 +88,7 @@ class _ListingDraftsMobileViewState extends State<ListingDraftsMobileView> {
   void _onOpened(CreateListingState state) {
     final next = state.draft.categoryId.isEmpty
         ? CreateListingStep.category
-        : CreateListingStep.basicInfo;
+        : CreateListingStep.details;
     final route = ModalRoute.of(context);
     if (next == CreateListingStep.category && !(route?.isFirst ?? true)) {
       context.pop();

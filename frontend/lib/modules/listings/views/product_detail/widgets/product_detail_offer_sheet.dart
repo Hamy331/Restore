@@ -115,6 +115,8 @@ class _OfferForm extends StatefulWidget {
 }
 
 class _OfferState extends State<_OfferForm> {
+  /// Giá cố định: người mua chỉ đề nghị đúng giá đăng
+  late final bool _fixed = !widget.detail.listing.isNegotiable;
   late final _amount = TextEditingController(text: widget.initial);
   final _note = TextEditingController();
   final _sender = ListingMessageSender();
@@ -124,6 +126,12 @@ class _OfferState extends State<_OfferForm> {
     super.didChangeDependencies();
     if (!_initialized) {
       _note.text = AppLocalizations.of(context)!.sellerOfferNote;
+      if (_fixed) {
+        _amount.text = CurrencyFormatter.formatNumber(
+          widget.detail.listing.price ?? 0,
+          locale: Localizations.localeOf(context).toLanguageTag(),
+        );
+      }
       _initialized = true;
     }
   }
@@ -222,8 +230,9 @@ class _OfferState extends State<_OfferForm> {
                 ),
                 TextField(
                   controller: _amount,
-                  autofocus: true,
+                  autofocus: !_fixed,
                   enabled: !_busy,
+                  readOnly: _fixed,
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     ThousandsSeparatorInputFormatter(locale: locale),
@@ -231,6 +240,7 @@ class _OfferState extends State<_OfferForm> {
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
                     labelText: l.productOfferAmountLabel,
+                    helperText: _fixed ? l.fixedPriceSubtitle : null,
                     suffixText: 'đ',
                     errorText: amount != null && amount > price * 2
                         ? l.productOfferTooHigh
@@ -239,38 +249,41 @@ class _OfferState extends State<_OfferForm> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (final percent in [5, 10, 15])
-                        Padding(
-                          padding: const EdgeInsets.only(right: 6),
-                          child: ActionChip(
-                            label: Text(
-                              '${money((price * (100 - percent) / 100).round())} (-$percent%)',
-                            ),
-                            onPressed: _busy
-                                ? null
-                                : () {
-                                    final text = CurrencyFormatter.formatNumber(
-                                      (price * (100 - percent) / 100).round(),
-                                      locale: locale,
-                                    );
-                                    setState(
-                                      () => _amount.value = TextEditingValue(
-                                        text: text,
-                                        selection: TextSelection.collapsed(
-                                          offset: text.length,
+                if (!_fixed)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (final percent in [5, 10, 15])
+                          Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: ActionChip(
+                              label: Text(
+                                '${money((price * (100 - percent) / 100).round())} (-$percent%)',
+                              ),
+                              onPressed: _busy
+                                  ? null
+                                  : () {
+                                      final text =
+                                          CurrencyFormatter.formatNumber(
+                                            (price * (100 - percent) / 100)
+                                                .round(),
+                                            locale: locale,
+                                          );
+                                      setState(
+                                        () => _amount.value = TextEditingValue(
+                                          text: text,
+                                          selection: TextSelection.collapsed(
+                                            offset: text.length,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
                 if (_failed) Text(l.productActionFailed),
                 const SizedBox(height: 10),
                 FilledButton(

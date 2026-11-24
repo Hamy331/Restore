@@ -10,7 +10,6 @@ export type ListingContent = {
   title: string;
   description: string;
   price: string;
-  originalPrice: string | null;
   isNegotiable: boolean;
   condition: string | null;
   allowSale: boolean;
@@ -57,7 +56,6 @@ const fields: { key: string; label: string; read: (c: ListingContent) => string 
   { key: 'title', label: 'Tiêu đề', read: (c) => c.title },
   { key: 'description', label: 'Mô tả', read: (c) => c.description },
   { key: 'price', label: 'Giá bán', read: (c) => money(c.price) },
-  { key: 'originalPrice', label: 'Giá trước giảm', read: (c) => money(c.originalPrice) },
   { key: 'isNegotiable', label: 'Cho thương lượng', read: (c) => yesNo(c.isNegotiable) },
   { key: 'condition', label: 'Tình trạng', read: (c) => (c.condition ? conditionLabel[c.condition] ?? c.condition : '—') },
   { key: 'mode', label: 'Hình thức', read: mode },

@@ -26,11 +26,9 @@ abstract class TrustedShopRepository {
   Future<TrustedShopsOverview> getOverview();
 
   /// Tin của mọi shop uy tín theo [filter], [page] bắt đầu từ 1.
-  /// [onSale] chỉ lấy tin đang giảm giá.
   Future<PagedResult<ListingCardItem>> getListings(
     ListingFilter filter, {
     int page = 1,
-    bool onSale = false,
   });
 
   Future<TrustedShopItem> getShop(String shopId);
@@ -63,17 +61,12 @@ class MockTrustedShopRepository implements TrustedShopRepository {
   ];
 
   /// Tin mẫu khớp [filter], của shop [shopId] nếu có, đã sắp xếp
-  List<ListingCardItem> _listings(
-    ListingFilter filter, {
-    String? shopId,
-    bool onSale = false,
-  }) {
+  List<ListingCardItem> _listings(ListingFilter filter, {String? shopId}) {
     final matches = <ListingCardItem>[];
     for (final json in TrustedShopMockData.listings(DateTime.now())) {
       if (shopId != null && json['shopId'] != shopId) continue;
       final item = ListingCardItem.fromJson(json);
       if (!filter.matches(item.listing)) continue;
-      if (onSale && item.listing.discountPercent == null) continue;
       matches.add(
         item.copyWith(isFavorite: MockFavoriteStore.contains(item.listing.id)),
       );
@@ -132,14 +125,6 @@ class MockTrustedShopRepository implements TrustedShopRepository {
         if (now.difference(item.shop.verifiedAt ?? epoch).inDays <= 180) item,
     ]..sort((a, b) => b.shop.verifiedAt!.compareTo(a.shop.verifiedAt!));
 
-    final deals =
-        [
-          for (final item in listings)
-            if (item.listing.discountPercent != null) item,
-        ]..sort(
-          (a, b) =>
-              b.listing.discountPercent!.compareTo(a.listing.discountPercent!),
-        );
 
     final listingShop = {
       for (final json in TrustedShopMockData.listings(now))
@@ -166,7 +151,6 @@ class MockTrustedShopRepository implements TrustedShopRepository {
             item,
       ]..sort(byFollowers),
       newShops: newShops,
-      deals: deals.take(8).toList(),
       newReleases: [
         for (final item in listings)
           if (TrustedShopMockData.isNewRelease(item.listing.id))
@@ -193,10 +177,9 @@ class MockTrustedShopRepository implements TrustedShopRepository {
   Future<PagedResult<ListingCardItem>> getListings(
     ListingFilter filter, {
     int page = 1,
-    bool onSale = false,
   }) async {
     await Future<void>.delayed(latency);
-    return _page(_listings(filter, onSale: onSale), page);
+    return _page(_listings(filter), page);
   }
 
   @override
@@ -246,9 +229,9 @@ class MockTrustedShopRepository implements TrustedShopRepository {
 /// Gọi backend (chi tiết trong `backend/docs/trusted-shops.md`):
 /// - `GET /shops/trusted/overview` → `{ data: { stats, categories,
 ///   banners: [ShopBanner + shop], famousShops, newShops: [Shop +
-///   isFollowing], deals: [Listing], newReleases: [Listing + shop],
+///   isFollowing], newReleases: [Listing + shop],
 ///   showcases: [{ shop, listings }] } }`
-/// - `GET /listings?verifiedShop=true&onSale=&categoryId=&sort=&page=&limit=`
+/// - `GET /listings?verifiedShop=true&categoryId=&sort=&page=&limit=`
 /// - `GET /shops/:id` → `{ data: Shop + isFollowing }`
 /// - `GET /shops/:id/banners` → `{ data: [ShopBanner + shop] }`
 /// - `GET /shops/:id/listings?categoryId=&deal=&sort=&minPrice=&maxPrice=
@@ -302,12 +285,8 @@ class ApiTrustedShopRepository implements TrustedShopRepository {
   Future<PagedResult<ListingCardItem>> getListings(
     ListingFilter filter, {
     int page = 1,
-    bool onSale = false,
-  }) => _getPage('/listings', {
-    ...filter.toQuery(),
-    'verifiedShop': true,
-    if (onSale) 'onSale': true,
-  }, page);
+  }) =>
+      _getPage('/listings', {...filter.toQuery(), 'verifiedShop': true}, page);
 
   @override
   Future<TrustedShopItem> getShop(String shopId) async =>

@@ -67,7 +67,10 @@ class MockHomeRepository implements HomeRepository {
       return switch (filter) {
         HomeListingFilter.forYou || HomeListingFilter.newest => true,
         HomeListingFilter.nearby => (item.distanceKm ?? double.infinity) <= 5,
-        HomeListingFilter.exchange => item.listing.allowExchange,
+        HomeListingFilter.certified => item.listing.isPartner,
+        HomeListingFilter.free => item.listing.isFree,
+        // Dữ liệu mẫu không có danh sách theo dõi
+        HomeListingFilter.following => false,
       };
     }).toList();
     if (filter == HomeListingFilter.nearby) {

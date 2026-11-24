@@ -86,6 +86,7 @@ class AppIcons {
   static const IconData priceDown = LucideIcons.trendingDown300;
   static const IconData priceEqual = LucideIcons.equal300;
   static const IconData live = LucideIcons.radio300;
+  static const IconData gift = LucideIcons.gift300;
   static const IconData sale = LucideIcons.badgePercent300;
 
   // Shop uy tín

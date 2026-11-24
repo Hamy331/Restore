@@ -5,8 +5,7 @@ import 'package:restore/modules/trusted_shop/models/trusted_shop_item.dart';
 import 'package:restore/modules/trusted_shop/widgets/shop_logo.dart';
 import 'package:restore/modules/trusted_shop/widgets/shop_verification_badge.dart';
 
-/// Dải ngang "Cửa hàng phù hợp" đầu tab Tin đăng: thẻ nhỏ mỗi shop khớp từ
-/// khoá, "Xem tất cả" chuyển sang tab Cửa hàng
+/// Dải cửa hàng phù hợp với từ khoá trên trang kết quả.
 class SearchResultsShopStrip extends StatelessWidget {
   final List<TrustedShopItem> shops;
   final ValueChanged<TrustedShopItem> onOpen;

@@ -1,3 +1,4 @@
+import 'shop_model.dart';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:equatable/equatable.dart';
@@ -23,9 +24,6 @@ class ListingModel extends Equatable {
   /// Giá VND. Cột Decimal nên API có thể trả về chuỗi hoặc số.
   final int? price;
 
-  /// (đề xuất) Giá gốc trước khi giảm, chỉ có khi tin đang giảm giá
-  /// (lớn hơn [price])
-  final int? originalPrice;
   final bool? _isPartner;
 
   /// Người bán là Đối tác: gói Cửa hàng Pro còn hạn và shop đã duyệt / xác minh
@@ -37,6 +35,18 @@ class ListingModel extends Equatable {
   final ListingStatus status;
   final bool allowSale;
   final bool allowExchange;
+
+  /// Cho tặng miễn phí (giá 0, không nhận trả giá)
+  final bool isFree;
+
+  /// false = giá cố định: người mua chỉ đề nghị đúng giá đăng
+  final bool isNegotiable;
+
+  /// Người bán có nhiều món giống nhau
+  final bool multipleUnits;
+
+  /// Gặp mặt giao dịch tại khu vực của tin
+  final bool meetUp;
   final List<String> images;
   final int viewCount;
   final DateTime? createdAt;
@@ -71,6 +81,10 @@ class ListingModel extends Equatable {
   final GeoPoint? geoPoint;
   final AddressInfo? address;
   final String sellerName;
+  final String? sellerAvatarUrl;
+  final double? sellerRating;
+  final int? sellerSoldCount;
+  final ShopModel? shopSummary;
   final String exchangeWish;
   final String? reviewReason;
   final String sellerType;
@@ -85,13 +99,16 @@ class ListingModel extends Equatable {
     required this.title,
     required this.description,
     this.price,
-    this.originalPrice,
     bool isPartner = false,
     this.shopId,
     this.condition,
     this.status = ListingStatus.available,
     this.allowSale = true,
     this.allowExchange = false,
+    this.isFree = false,
+    this.isNegotiable = true,
+    this.multipleUnits = false,
+    this.meetUp = true,
     this.images = const [],
     this.viewCount = 0,
     this.createdAt,
@@ -110,6 +127,10 @@ class ListingModel extends Equatable {
     this.geoPoint,
     this.address,
     this.sellerName = '',
+    this.sellerAvatarUrl,
+    this.sellerRating,
+    this.sellerSoldCount,
+    this.shopSummary,
     this.exchangeWish = '',
     this.reviewReason,
     this.sellerType = 'PERSONAL',
@@ -119,17 +140,6 @@ class ListingModel extends Equatable {
 
   String? get coverImage => images.isEmpty ? null : images.first;
 
-  /// Phần trăm giảm so với [originalPrice] (làm tròn), null khi không giảm
-  int? get discountPercent {
-    final price = this.price;
-    final originalPrice = this.originalPrice;
-    if (price == null || originalPrice == null || originalPrice <= price) {
-      return null;
-    }
-    final percent = ((1 - price / originalPrice) * 100).round();
-    return percent > 0 ? percent : null;
-  }
-
   static int? _parseMoney(Object? value) =>
       value is num ? value.toInt() : num.tryParse('$value')?.toInt();
 
@@ -138,13 +148,13 @@ class ListingModel extends Equatable {
     String? apiBaseUrl,
   }) {
     final location = json['location'];
+    final owner = json['owner'] as Map?;
     return ListingModel(
       id: '${json['id']}',
       ownerId: '${json['ownerId'] ?? ''}',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       price: _parseMoney(json['price']),
-      originalPrice: _parseMoney(json['originalPrice']),
       isPartner: json['isPartner'] == true,
       shopId: json['shopId'] as String?,
       condition: ListingCondition.fromApi(json['condition'] as String?),
@@ -153,6 +163,10 @@ class ListingModel extends Equatable {
           ListingStatus.available,
       allowSale: json['allowSale'] as bool? ?? true,
       allowExchange: json['allowExchange'] as bool? ?? false,
+      isFree: json['isFree'] == true,
+      isNegotiable: json['isNegotiable'] as bool? ?? true,
+      multipleUnits: json['multipleUnits'] == true,
+      meetUp: json['meetUp'] as bool? ?? true,
       images: [
         for (final image in json['images'] as List? ?? const [])
           '$image'.startsWith('/api/')
@@ -196,7 +210,17 @@ class ListingModel extends Equatable {
               'isGeoPointFromDevice': location['geoSource'] == 'device',
             })
           : null,
-      sellerName: (json['owner'] as Map?)?['fullName'] as String? ?? '',
+      shopSummary: json['shopSummary'] is Map
+          ? ShopModel.fromJson(
+              Map<String, dynamic>.from(json['shopSummary'] as Map),
+            )
+          : null,
+      sellerName: owner?['fullName'] as String? ?? '',
+      sellerAvatarUrl: owner?['avatarUrl'] as String?,
+      sellerRating: ((owner?['ratingCount'] as num?) ?? 0) > 0
+          ? (owner?['ratingAverage'] as num?)?.toDouble()
+          : null,
+      sellerSoldCount: (owner?['soldCount'] as num?)?.toInt(),
       exchangeWish: json['exchangeWish'] as String? ?? '',
       reviewReason: json['reviewReason'] as String?,
       sellerType: json['sellerType'] as String? ?? 'PERSONAL',
@@ -216,13 +240,16 @@ class ListingModel extends Equatable {
     title,
     description,
     price,
-    originalPrice,
     isPartner,
     shopId,
     condition,
     status,
     allowSale,
     allowExchange,
+    isFree,
+    isNegotiable,
+    multipleUnits,
+    meetUp,
     images,
     viewCount,
     createdAt,
@@ -241,6 +268,10 @@ class ListingModel extends Equatable {
     geoPoint,
     address,
     sellerName,
+    sellerAvatarUrl,
+    sellerRating,
+    sellerSoldCount,
+    shopSummary,
     exchangeWish,
     reviewReason,
     sellerType,

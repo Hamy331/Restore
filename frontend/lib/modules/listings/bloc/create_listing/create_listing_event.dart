@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:restore/modules/location/models/address_info.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
-import '../../models/listing_enums.dart';
 
 sealed class CreateListingEvent extends Equatable {
   const CreateListingEvent();
@@ -21,7 +20,10 @@ class PostingQuotaRequested extends CreateListingEvent {
   /// Hoàn thành khi tải xong (kể cả lỗi), để màn chọn chuyên mục chờ hạn
   /// mức mới nhất trước khi cho vào trang tạo tin
   final Completer<void>? done;
-  const PostingQuotaRequested({this.done});
+
+  /// Hạn mức đã tải trong khoảng này thì dùng luôn, không gọi lại API
+  final Duration? maxAge;
+  const PostingQuotaRequested({this.done, this.maxAge});
 }
 
 class CategorySelected extends CreateListingEvent {
@@ -69,11 +71,12 @@ class TitleChanged extends CreateListingEvent {
   List<Object?> get props => [title];
 }
 
-class TradeTypeChanged extends CreateListingEvent {
-  final TradeType tradeType;
-  const TradeTypeChanged(this.tradeType);
+/// Chọn Bán (false) hoặc Cho tặng miễn phí (true)
+class FreeChanged extends CreateListingEvent {
+  final bool isFree;
+  const FreeChanged(this.isFree);
   @override
-  List<Object?> get props => [tradeType];
+  List<Object?> get props => [isFree];
 }
 
 class PriceChanged extends CreateListingEvent {
@@ -83,19 +86,28 @@ class PriceChanged extends CreateListingEvent {
   List<Object?> get props => [price];
 }
 
-/// Giá gốc trước giảm (chỉ gói Cửa hàng), null = không giảm giá
-class OriginalPriceChanged extends CreateListingEvent {
-  final int? originalPrice;
-  const OriginalPriceChanged(this.originalPrice);
+/// Bật / tắt giá cố định (người mua chỉ đề nghị đúng giá đăng)
+class FixedPriceChanged extends CreateListingEvent {
+  final bool fixedPrice;
+  const FixedPriceChanged(this.fixedPrice);
   @override
-  List<Object?> get props => [originalPrice];
+  List<Object?> get props => [fixedPrice];
 }
 
-class ExchangeWishChanged extends CreateListingEvent {
-  final String exchangeWish;
-  const ExchangeWishChanged(this.exchangeWish);
+/// Có nhiều món giống nhau
+class MultipleUnitsChanged extends CreateListingEvent {
+  final bool multipleUnits;
+  const MultipleUnitsChanged(this.multipleUnits);
   @override
-  List<Object?> get props => [exchangeWish];
+  List<Object?> get props => [multipleUnits];
+}
+
+/// Bật / tắt gặp mặt giao dịch
+class MeetUpChanged extends CreateListingEvent {
+  final bool meetUp;
+  const MeetUpChanged(this.meetUp);
+  @override
+  List<Object?> get props => [meetUp];
 }
 
 class AddressChanged extends CreateListingEvent {
@@ -122,7 +134,7 @@ class DisplayDaysChanged extends CreateListingEvent {
   List<Object?> get props => [days, startsAt];
 }
 
-/// Đổi giá trị một thuộc tính theo danh mục (bước 3)
+/// Đổi giá trị một thuộc tính theo danh mục
 class AttributeChanged extends CreateListingEvent {
   final String key;
   final String value;
@@ -131,9 +143,9 @@ class AttributeChanged extends CreateListingEvent {
   List<Object?> get props => [key, value];
 }
 
-/// Bấm "Tiếp tục" ở bước 2: bật hiển thị lỗi cho các trường còn thiếu
-class BasicInfoSubmitted extends CreateListingEvent {
-  const BasicInfoSubmitted();
+/// Bấm "Tiếp" ở bước Thông tin sản phẩm: bật hiển thị lỗi các trường thiếu
+class DetailsSubmitted extends CreateListingEvent {
+  const DetailsSubmitted();
 }
 
 class DraftSaveRequested extends CreateListingEvent {

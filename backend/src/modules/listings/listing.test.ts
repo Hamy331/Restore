@@ -45,9 +45,20 @@ test('listing creation accepts supported fields and rejects invalid or silently 
   assert.equal(result.price,valid.price);
   assert.equal(result.allowSale,true);
   assert.equal(result.allowExchange,false);
-  // Tin có bán luôn cho trả giá, kể cả khi app cũ gửi isNegotiable: false; tin chỉ trao đổi thì không
-  assert.equal(createInput({ ...valid, isNegotiable: false }).isNegotiable, true);
+  // Giá cố định: isNegotiable false được giữ; tin chỉ trao đổi thì không có trả giá
+  assert.equal(result.isNegotiable, true);
+  assert.equal(createInput({ ...valid, isNegotiable: false }).isNegotiable, false);
   assert.equal(createInput({ ...valid, allowSale: false, allowExchange: true, price: '0' }).isNegotiable, false);
+  // Cho tặng: giá 0, không trả giá, không trao đổi
+  const free = createInput({ ...valid, isFree: true, price: '500000', allowExchange: true });
+  assert.deepEqual([free.isFree, free.price, free.isNegotiable, free.allowSale, free.allowExchange],
+    [true, '0', false, true, false]);
+  assert.throws(() => createInput({ ...valid, price: '0' }), { code: 'INVALID_LISTING', field: 'price' });
+  // Mô tả không bắt buộc; cờ mới có mặc định
+  const short = createInput({ ...valid, description: '' });
+  assert.deepEqual([short.description, short.multipleUnits, short.meetUp], ['', false, true]);
+  assert.equal(createInput({ ...valid, multipleUnits: true, meetUp: false }).meetUp, false);
+  assert.throws(() => createInput({ ...valid, meetUp: 'yes' }), { code: 'INVALID_LISTING' });
   assert.equal((result.location as {streetAddress:string}).streetAddress,'Nhà riêng');
   assert.equal((publicLocation(result.location) as unknown as {streetAddress?:string}).streetAddress,undefined);
   assert.throws(() => createInput({ ...valid, price: '1.200.000' }), { code: 'INVALID_LISTING', field: 'price' });
@@ -206,9 +217,9 @@ test('listings show the partner badge for a public shop whatever the account pla
   const day = 86_400_000;
   const pro = { startsAt: new Date(Date.now() - day), endsAt: new Date(Date.now() + day), package: { tier: 'PRO' } };
   const listing = (storeSubscription: unknown, shop: unknown) => toListingDto({
-    id: 'l', price: { toString: () => '1' }, originalPrice: null, allowSale: true, location: null,
+    id: 'l', price: { toString: () => '1' }, allowSale: true, location: null,
     paidCredits: 0, paidDays: 0, autoExtend: false,
-    owner: { id: 'u', fullName: 'A', ratingAverage: 0, ratingCount: 0, storeSubscription, shop },
+    owner: { id: 'u', fullName: 'A', ratingAverage: 0, ratingCount: 0, _count: { listings: 0 }, storeSubscription, shop },
   } as unknown as Parameters<typeof toListingDto>[0]);
   const approved = { id: 's', status: 'APPROVED', verificationType: null };
   assert.deepEqual([listing(pro, approved).isPartner, listing(pro, approved).shopId], [true, 's']);

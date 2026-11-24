@@ -33,9 +33,8 @@ import 'package:restore/modules/listings/repositories/category_repository.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/listings/repositories/listings_repository.dart';
 import 'package:restore/modules/listings/repositories/posting_quota_repository.dart';
-import 'package:restore/modules/listings/views/basic_info/basic_info_view.dart';
 import 'package:restore/modules/listings/views/choose_category/choose_category_view.dart';
-import 'package:restore/modules/listings/views/listing_details/listing_details_view.dart';
+import 'package:restore/modules/listings/views/item_details/item_details_view.dart';
 import 'package:restore/modules/listings/views/listing_preview/listing_preview_view.dart';
 import 'package:restore/modules/listings/views/listing_drafts/listing_drafts_view.dart';
 import 'package:restore/modules/listings/views/edit_listing/edit_listing_view.dart';
@@ -239,17 +238,10 @@ GoRouter createAppRouter(
           ),
         ),
         GoRoute(
-          path: CreateListingStep.basicInfo.path,
-          pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
-            state: state,
-            child: const BasicInfoView(),
-          ),
-        ),
-        GoRoute(
           path: CreateListingStep.details.path,
           pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
             state: state,
-            child: const ListingDetailsView(),
+            child: const ItemDetailsView(),
           ),
         ),
         // Tin nháp: soạn tiếp tin đã lưu (mở từ bước 1 hoặc trang Tài khoản)
@@ -260,7 +252,7 @@ GoRouter createAppRouter(
             child: const ListingDraftsView(),
           ),
         ),
-        // Sửa tin đã đăng: tải tin rồi vào bước 2 (giữ chuyên mục)
+        // Sửa tin đã đăng: tải tin rồi vào bước Thông tin sản phẩm
         GoRoute(
           path: EditListingView.path,
           pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
@@ -269,7 +261,7 @@ GoRouter createAppRouter(
           ),
         ),
         GoRoute(
-          path: createListingPreviewPath,
+          path: CreateListingStep.preview.path,
           pageBuilder: (_, state) => AppPageTransitions.fadeSlide(
             state: state,
             child: const ListingPreviewView(),

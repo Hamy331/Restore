@@ -22,15 +22,8 @@ class HomeSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              for (var i = 0; i < 5; i++) ...[
-                if (i > 0) const Spacer(),
-                block(width: 52, height: 52, radius: 26),
-              ],
-            ],
-          ),
-          const SizedBox(height: 24),
+          AspectRatio(aspectRatio: 2, child: block(height: 0, radius: 18)),
+          const SizedBox(height: 14),
           for (var row = 0; row < 2; row++) ...[
             Row(
               children: [
@@ -42,7 +35,14 @@ class HomeSkeleton extends StatelessWidget {
             const SizedBox(height: 10),
           ],
           const SizedBox(height: 14),
-          AspectRatio(aspectRatio: 2, child: block(height: 0, radius: 18)),
+          Row(
+            children: [
+              for (var i = 0; i < 5; i++) ...[
+                if (i > 0) const Spacer(),
+                block(width: 52, height: 52, radius: 26),
+              ],
+            ],
+          ),
           const SizedBox(height: 24),
           Row(
             children: [

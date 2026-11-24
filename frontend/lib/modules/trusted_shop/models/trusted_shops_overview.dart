@@ -55,9 +55,6 @@ class TrustedShopsOverview extends Equatable {
   /// "Mới gia nhập": shop vừa được xác minh, mới nhất trước
   final List<TrustedShopItem> newShops;
 
-  /// "Trải nghiệm hàng hiệu": sản phẩm của shop uy tín đang giảm giá
-  final List<ListingCardItem> deals;
-
   /// "Siêu phẩm mới ra mắt": sản phẩm mới của các thương hiệu lớn
   final List<ShopProductItem> newReleases;
 
@@ -71,7 +68,6 @@ class TrustedShopsOverview extends Equatable {
     this.banners = const [],
     this.famousShops = const [],
     this.newShops = const [],
-    this.deals = const [],
     this.newReleases = const [],
     this.showcases = const [],
   });
@@ -91,7 +87,6 @@ class TrustedShopsOverview extends Equatable {
       banners: list('banners', ShopBannerItem.fromJson),
       famousShops: list('famousShops', TrustedShopItem.fromJson),
       newShops: list('newShops', TrustedShopItem.fromJson),
-      deals: list('deals', ListingCardItem.fromJson),
       newReleases: list('newReleases', ShopProductItem.fromJson),
       showcases: list('showcases', ShopShowcase.fromJson),
     );
@@ -120,7 +115,6 @@ class TrustedShopsOverview extends Equatable {
         ? item.copyWith(isFavorite: favorite)
         : item;
     return copyWith(
-      deals: [for (final item in deals) update(item)],
       newReleases: [
         for (final product in newReleases)
           product.copyWith(item: update(product.item)),
@@ -137,7 +131,6 @@ class TrustedShopsOverview extends Equatable {
   TrustedShopsOverview copyWith({
     List<TrustedShopItem>? famousShops,
     List<TrustedShopItem>? newShops,
-    List<ListingCardItem>? deals,
     List<ShopProductItem>? newReleases,
     List<ShopShowcase>? showcases,
   }) => TrustedShopsOverview(
@@ -147,7 +140,6 @@ class TrustedShopsOverview extends Equatable {
     banners: banners,
     famousShops: famousShops ?? this.famousShops,
     newShops: newShops ?? this.newShops,
-    deals: deals ?? this.deals,
     newReleases: newReleases ?? this.newReleases,
     showcases: showcases ?? this.showcases,
   );
@@ -160,7 +152,6 @@ class TrustedShopsOverview extends Equatable {
     banners,
     famousShops,
     newShops,
-    deals,
     newReleases,
     showcases,
   ];

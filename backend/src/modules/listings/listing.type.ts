@@ -1,8 +1,11 @@
 import { ListingStatus } from '@prisma/client';
 import type { listingFilters } from './listing.validator.js';
 
-/** Bộ lọc danh sách tin trang chủ */
-export const FEED_FILTERS = ['newest', 'nearby', 'exchange', 'forYou', 'recent'] as const;
+/**
+ * Bộ lọc danh sách tin trang chủ: certified = shop đã xác minh, free = đồ cho tặng,
+ * following = tin của người bán mình đang theo dõi (cần đăng nhập)
+ */
+export const FEED_FILTERS = ['newest', 'nearby', 'exchange', 'forYou', 'recent', 'certified', 'free', 'following'] as const;
 export type FeedFilter = (typeof FEED_FILTERS)[number];
 
 /** Bộ lọc tìm kiếm đã làm sạch */

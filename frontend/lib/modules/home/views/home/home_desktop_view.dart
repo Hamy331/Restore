@@ -31,6 +31,7 @@ import '../../bloc/home_state.dart';
 import '../../models/home_banner.dart';
 import '../../models/home_listing_filter.dart';
 import '../../models/home_quick_action.dart';
+import 'widgets/home_feed_tabs.dart';
 import 'widgets/home_category_photo_grid.dart';
 import 'widgets/home_quick_actions.dart';
 
@@ -70,21 +71,16 @@ class _HomeDesktopViewState extends State<HomeDesktopView> {
   void _openCategory(CategoryModel category) =>
       context.push(CategoryDetailView.location(category.id), extra: category);
 
-  void _onQuickAction(HomeQuickAction action) => context.push(
-    switch (action) {
-      HomeQuickAction.nearby => '/nearby',
-      HomeQuickAction.wantedAlert => WantedAlertsView.path,
-      HomeQuickAction.trustedShops => TrustedShopsView.path,
-      HomeQuickAction.following => FollowingHubView.path,
-    },
-  );
+  void _onQuickAction(HomeQuickAction action) => context.push(switch (action) {
+    HomeQuickAction.nearby => '/nearby',
+    HomeQuickAction.wantedAlert => WantedAlertsView.path,
+    HomeQuickAction.trustedShops => TrustedShopsView.path,
+    HomeQuickAction.following => FollowingHubView.path,
+  });
 
   Future<void> _pickArea() async {
     final userArea = context.read<UserAreaCubit>();
-    final result = await showAreaPicker(
-      context,
-      current: userArea.state.area,
-    );
+    final result = await showAreaPicker(context, current: userArea.state.area);
     if (result == null) return;
     if (result.nationwide) {
       userArea.selectNationwide();
@@ -219,13 +215,25 @@ class _HomeDesktopViewState extends State<HomeDesktopView> {
             ),
           ),
         ),
-      // Tab Dành cho bạn / Gần bạn / Mới nhất (giống "Gợi ý hôm nay")
+      // Tab danh sách tin: Mới nhất, Dành cho bạn, Đã xác minh, Gần tôi...
       SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.only(top: _gap),
-          child: _FeedTabs(
-            selected: state.filter,
-            onSelect: (filter) => _cubit.selectFeed(filter, area.origin),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              border: Border.all(color: AppColors.border),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+            ),
+            child: HomeFeedTabs(
+              expand: true,
+              selected: state.filter,
+              fontSize: 15.5,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              onSelect: (filter) => _cubit.selectFeed(filter, area.origin),
+            ),
           ),
         ),
       ),
@@ -263,7 +271,12 @@ class _HomeDesktopViewState extends State<HomeDesktopView> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40),
                     child: Text(
-                      nearby ? l10n.nearbyEmptyTitle : l10n.homeLatestEmpty,
+                      switch (state.filter) {
+                        HomeListingFilter.nearby => l10n.nearbyEmptyTitle,
+                        HomeListingFilter.following =>
+                          l10n.homeTabFollowingEmpty,
+                        _ => l10n.homeLatestEmpty,
+                      },
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: AppColors.textSecondary),
                     ),
@@ -316,8 +329,9 @@ class _HeroState extends State<_Hero> {
   int _page = 0;
 
   /// Banner phụ bên phải lấy từ cuối danh sách khi có từ 3 banner
-  List<HomeBanner> get _side =>
-      widget.banners.length >= 3 ? widget.banners.sublist(widget.banners.length - 2) : const [];
+  List<HomeBanner> get _side => widget.banners.length >= 3
+      ? widget.banners.sublist(widget.banners.length - 2)
+      : const [];
 
   List<HomeBanner> get _main => widget.banners.length >= 3
       ? widget.banners.sublist(0, widget.banners.length - 2)
@@ -467,60 +481,4 @@ class _Arrow extends StatelessWidget {
       child: SizedBox(width: 36, height: 36, child: Icon(icon, size: 22)),
     ),
   );
-}
-
-class _FeedTabs extends StatelessWidget {
-  const _FeedTabs({required this.selected, required this.onSelect});
-  final HomeListingFilter selected;
-  final ValueChanged<HomeListingFilter> onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.border),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (final (filter, label) in [
-            (HomeListingFilter.forYou, l10n.feedForYou),
-            (HomeListingFilter.nearby, l10n.homeQuickNearby),
-            (HomeListingFilter.newest, l10n.listingSortNewest),
-          ])
-            InkWell(
-              onTap: () => onSelect(filter),
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(34, 16, 34, 13),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: filter == selected
-                          ? AppColors.primary
-                          : Colors.transparent,
-                      width: 3,
-                    ),
-                  ),
-                ),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: filter == selected
-                        ? FontWeight.w700
-                        : FontWeight.w600,
-                    color: filter == selected
-                        ? AppColors.primaryDark
-                        : AppColors.textSecondary,
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
 }

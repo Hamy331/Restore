@@ -35,7 +35,7 @@ const byFollowers = (a: ShopDto, b: ShopDto) => b.followerCount - a.followerCoun
 /**
  * Mọi khu của trang Shop uy tín trừ lưới "Tất cả sản phẩm":
  * stats, categories, banners, famousShops (shop chính hãng nhiều người theo dõi), newShops (xác minh trong 180 ngày),
- * deals (đang giảm giá), newReleases (tin mới của shop chính hãng, kèm shop), showcases (mỗi shop vài tin).
+ * newReleases (tin mới của shop chính hãng, kèm shop), showcases (mỗi shop vài tin).
  */
 export async function overview(viewerId: string | undefined, now = new Date()) {
   const shops = await shopDtos(viewerId, await shopRepository.findTrustedShops());
@@ -43,17 +43,12 @@ export async function overview(viewerId: string | undefined, now = new Date()) {
   const byId = new Map(shops.map((shop) => [shop.id, shop]));
   const official = shops.filter((shop) => shop.verificationType === 'OFFICIAL_BRAND').sort(byFollowers);
 
-  const [listingCount, categories, banners, dealIds, releases] = await Promise.all([
+  const [listingCount, categories, banners, releases] = await Promise.all([
     shopRepository.countListings(shopRepository.trustedListing),
     shopRepository.findTrustedCategories(),
     shopRepository.findActiveBanners(now),
-    shopRepository.findDealIds(10),
     shopRepository.findListings({ ...visible, ownerId: { in: official.map((shop) => shop.ownerId) } }, 8),
   ]);
-  const dealRecords = await shopRepository.findListings({ id: { in: dealIds } }, dealIds.length);
-  const dealOrder = new Map(dealIds.map((id, index) => [id, index]));
-  dealRecords.sort((a, b) => (dealOrder.get(a.id) ?? 0) - (dealOrder.get(b.id) ?? 0));
-
   const showcaseShops = [...shops].sort(byFollowers).filter((shop) => shop.listingCount > 0).slice(0, 12);
   const showcases = await Promise.all(showcaseShops.map(async (shop) => ({
     shop,
@@ -73,7 +68,6 @@ export async function overview(viewerId: string | undefined, now = new Date()) {
       .filter((shop) => shop.verifiedAt && now.getTime() - shop.verifiedAt.getTime() <= NEW_SHOP_DAYS * DAY)
       .sort((a, b) => b.verifiedAt!.getTime() - a.verifiedAt!.getTime())
       .slice(0, 10),
-    deals: await cards(viewerId, dealRecords),
     newReleases: releaseCards.map((card) => ({ ...card, shop: byOwner.get(card.ownerId) })),
     showcases,
   };

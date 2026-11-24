@@ -7,7 +7,6 @@ import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
 /// Các khu của trang Shop uy tín, theo thứ tự từ trên xuống
 enum TrustedShopsSection {
   famous,
-  deals,
   newReleases,
   newShops,
   showcases,
@@ -15,7 +14,6 @@ enum TrustedShopsSection {
 
   String label(AppLocalizations l10n) => switch (this) {
     famous => l10n.trustedShopsNavFamous,
-    deals => l10n.trustedShopsNavDeals,
     newReleases => l10n.trustedShopsNavNewReleases,
     newShops => l10n.trustedShopsNavNewShops,
     showcases => l10n.trustedShopsNavShowcases,

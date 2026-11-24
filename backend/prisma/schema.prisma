@@ -362,8 +362,10 @@ model ListingRevision {
   title         String
   description   String
   price         Decimal
-  originalPrice Decimal?
   isNegotiable  Boolean
+  isFree        Boolean               @default(false)
+  multipleUnits Boolean               @default(false)
+  meetUp        Boolean               @default(true)
   condition     ListingCondition?
   allowSale     Boolean
   allowExchange Boolean
@@ -405,9 +407,14 @@ model Listing {
   title         String
   description   String
   price         Decimal
-  /// Giá gốc trước khi giảm (null = không giảm); > price thì tin hiện ở "Trải nghiệm hàng hiệu"
-  originalPrice Decimal?
+  /// false = giá cố định: người mua chỉ đề nghị đúng giá đăng
   isNegotiable  Boolean          @default(true)
+  /// Cho tặng miễn phí (giá 0, không nhận trả giá)
+  isFree        Boolean          @default(false)
+  /// Người bán có nhiều món giống nhau: nhận đề nghị không giữ hàng cho riêng ai
+  multipleUnits Boolean          @default(false)
+  /// Gặp mặt giao dịch tại khu vực của tin (false = thỏa thuận cách giao qua chat)
+  meetUp        Boolean          @default(true)
   condition     ListingCondition?
   status        ListingStatus    @default(AVAILABLE)
   allowSale     Boolean          @default(true)
@@ -453,6 +460,7 @@ model Listing {
   @@index([categoryId, subcategoryId, status])
   @@index([status, expiresAt])
   @@index([status, startsAt])
+  @@index([isFree, status])
 }
 
 /// Lượt xem tin theo ngày (giờ Việt Nam), cộng cùng lúc với Listing.viewCount; dùng cho trang Thống kê

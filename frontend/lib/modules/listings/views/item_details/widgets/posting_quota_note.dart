@@ -7,10 +7,10 @@ import 'package:restore/shared/widgets/glass/app_glass_container.dart';
 import '../../../models/posting_quota.dart';
 
 /// Số lượt đăng miễn phí còn lại trong chuyên mục đang chọn
-class BasicInfoQuotaNote extends StatelessWidget {
+class PostingQuotaNote extends StatelessWidget {
   final CategoryPostingQuota quota;
 
-  const BasicInfoQuotaNote({super.key, required this.quota});
+  const PostingQuotaNote({super.key, required this.quota});
 
   @override
   Widget build(BuildContext context) {

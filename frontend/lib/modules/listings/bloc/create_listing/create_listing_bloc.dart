@@ -37,11 +37,9 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       (event, emit) =>
           _updateDraft(emit, (draft) => draft.copyWith(title: event.title)),
     );
-    on<TradeTypeChanged>(
-      (event, emit) => _updateDraft(
-        emit,
-        (draft) => draft.copyWith(tradeType: event.tradeType),
-      ),
+    on<FreeChanged>(
+      (event, emit) =>
+          _updateDraft(emit, (draft) => draft.copyWith(isFree: event.isFree)),
     );
     on<PriceChanged>(
       (event, emit) => _updateDraft(
@@ -49,17 +47,21 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         (draft) => draft.copyWith(price: () => event.price),
       ),
     );
-    on<OriginalPriceChanged>(
+    on<FixedPriceChanged>(
       (event, emit) => _updateDraft(
         emit,
-        (draft) => draft.copyWith(originalPrice: () => event.originalPrice),
+        (draft) => draft.copyWith(fixedPrice: event.fixedPrice),
       ),
     );
-    on<ExchangeWishChanged>(
+    on<MultipleUnitsChanged>(
       (event, emit) => _updateDraft(
         emit,
-        (draft) => draft.copyWith(exchangeWish: event.exchangeWish),
+        (draft) => draft.copyWith(multipleUnits: event.multipleUnits),
       ),
+    );
+    on<MeetUpChanged>(
+      (event, emit) =>
+          _updateDraft(emit, (draft) => draft.copyWith(meetUp: event.meetUp)),
     );
     on<AddressChanged>(
       (event, emit) =>
@@ -68,7 +70,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     on<ConditionChanged>(
       (event, emit) => _updateDraft(
         emit,
-        (draft) => draft.copyWith(condition: event.condition),
+        (draft) => draft.copyWith(condition: () => event.condition),
       ),
     );
     on<AttributeChanged>(_onAttributeChanged);
@@ -81,8 +83,8 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         ),
       ),
     );
-    on<BasicInfoSubmitted>(
-      (event, emit) => emit(state.copyWith(showBasicInfoErrors: true)),
+    on<DetailsSubmitted>(
+      (event, emit) => emit(state.copyWith(showErrors: true)),
     );
     on<DraftSaveRequested>(_onDraftSaveRequested);
     on<PublishRequested>(_onPublishRequested);
@@ -122,16 +124,41 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     }
   }
 
+  /// Lần tải hạn mức thành công gần nhất (cho [PostingQuotaRequested.maxAge])
+  DateTime? _quotaLoadedAt;
+
+  /// Lần tải đang chạy: nhiều yêu cầu cùng lúc dùng chung, không gọi API lặp
+  Future<void>? _quotaInFlight;
+
   Future<void> _onPostingQuotaRequested(
     PostingQuotaRequested event,
     Emitter<CreateListingState> emit,
   ) async {
+    try {
+      // Hạn mức vừa tải xong còn mới: dùng luôn (backend vẫn kiểm tra khi đăng)
+      final loadedAt = _quotaLoadedAt;
+      if (event.maxAge != null &&
+          state.quota != null &&
+          loadedAt != null &&
+          DateTime.now().difference(loadedAt) < event.maxAge!) {
+        return;
+      }
+      await (_quotaInFlight ??= _loadQuota(
+        emit,
+      ).whenComplete(() => _quotaInFlight = null));
+    } finally {
+      if (!(event.done?.isCompleted ?? true)) event.done!.complete();
+    }
+  }
+
+  Future<void> _loadQuota(Emitter<CreateListingState> emit) async {
     // Lần đầu mới báo đang tải; tải lại thì giữ hạn mức cũ trên màn hình
     if (state.quotaStatus == RequestStatus.idle) {
       emit(state.copyWith(quotaStatus: RequestStatus.loading));
     }
     try {
       final quota = await _quotaRepository.getQuota();
+      _quotaLoadedAt = DateTime.now();
       // Loại người bán theo tài khoản, không để người dùng tự chọn
       emit(
         state.copyWith(
@@ -145,8 +172,6 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
       if (state.quota == null) {
         emit(state.copyWith(quotaStatus: RequestStatus.failure));
       }
-    } finally {
-      if (!(event.done?.isCompleted ?? true)) event.done!.complete();
     }
   }
 
@@ -165,11 +190,13 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
           categoryId: event.categoryId,
           subcategoryId: event.subcategoryId,
           attributes: const {},
+          // Tình trạng xe khác đồ dùng thường: chọn lại khi đổi danh mục
+          condition: () => null,
           // Mỗi danh mục có số ngày miễn phí / tối đa riêng: chọn lại từ đầu
           displayDays: () => null,
           startsAt: () => null,
         ),
-        showDetailErrors: false,
+        showErrors: false,
       ),
     );
   }
@@ -302,8 +329,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     if (!state.isReadyToPublish) {
       emit(
         state.copyWith(
-          showBasicInfoErrors: true,
-          showDetailErrors: true,
+          showErrors: true,
           invalidPublishAttempts: state.invalidPublishAttempts + 1,
         ),
       );
@@ -436,16 +462,21 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
     emit(state.copyWith(draftsStatus: RequestStatus.loading));
     // Có tin bị xóa trong lúc đang tải thì số liệu trả về đã cũ
     final deletes = _draftDeletes;
-    if (!event.loadMore) {
-      try {
-        final quota = await _repository.draftQuota();
-        if (deletes == _draftDeletes) emit(state.copyWith(draftQuota: quota));
-      } catch (_) {
-        // Không tải được thì vẫn cho lưu, backend sẽ kiểm tra
-      }
+    // Số tin nháp và danh sách nháp tải song song
+    final quotaFuture = event.loadMore
+        ? null
+        : _repository.draftQuota().then<DraftQuota?>(
+            (quota) => quota,
+            // Không tải được thì vẫn cho lưu, backend sẽ kiểm tra
+            onError: (Object _) => null,
+          );
+    final listFuture = _repository.mine(page: page, status: _draftStatus);
+    final quota = await quotaFuture;
+    if (quota != null && deletes == _draftDeletes) {
+      emit(state.copyWith(draftQuota: quota));
     }
     try {
-      final result = await _repository.mine(page: page, status: _draftStatus);
+      final result = await listFuture;
       // Bỏ tin đã xóa: kết quả có thể được gửi về trước khi xóa xong
       final items = result.items.where(
         (item) => !_deletedDraftIds.contains(item.id),
@@ -503,8 +534,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
         state.copyWith(
           draft: draft,
           savedDraft: draft,
-          showBasicInfoErrors: false,
-          showDetailErrors: false,
+          showErrors: false,
           publishStatus: RequestStatus.idle,
           saveDraftStatus: RequestStatus.idle,
           openDraftStatus: RequestStatus.success,
@@ -539,8 +569,7 @@ class CreateListingBloc extends Bloc<CreateListingEvent, CreateListingState>
           draft: draft,
           savedDraft: draft,
           editingListing: listing,
-          showBasicInfoErrors: false,
-          showDetailErrors: false,
+          showErrors: false,
           publishStatus: RequestStatus.idle,
           openEditStatus: RequestStatus.success,
         ),

@@ -11,8 +11,7 @@ import '../../bloc/search_results_state.dart';
 import '../../repositories/search_repository.dart';
 import 'search_results_mobile_view.dart';
 
-/// Route `/search/results?q=`: tin, cửa hàng và người dùng khớp từ khoá
-/// [query] (mỗi loại một tab).
+/// Tin đăng và cửa hàng phù hợp với từ khoá [query].
 /// [fromSearch] true khi mở từ trang tìm kiếm, bấm ô tìm kiếm sẽ quay lại
 /// trang đó thay vì mở trang mới.
 class SearchResultsView extends StatelessWidget {
@@ -51,7 +50,7 @@ class SearchResultsView extends StatelessWidget {
         BlocProvider(
           create: (_) =>
               SearchAccountsCubit(searchRepository: repository, query: query)
-                ..start(),
+                ..reloadShops(),
         ),
       ],
       child: TResponsiveLayout(

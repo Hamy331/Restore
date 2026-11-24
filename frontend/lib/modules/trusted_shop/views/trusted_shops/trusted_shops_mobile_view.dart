@@ -32,7 +32,6 @@ import '../../widgets/trusted_shop_section_header.dart';
 import '../following_shops/following_shops_view.dart';
 import '../shop_detail/shop_detail_view.dart';
 import 'widgets/followed_shops_section.dart';
-import 'widgets/trusted_deals_section.dart';
 import 'widgets/trusted_new_releases.dart';
 import 'widgets/trusted_section_bar.dart';
 import 'widgets/trusted_shop_carousel.dart';
@@ -205,12 +204,6 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
     _openShop(banner.shop.id);
   }
 
-  /// Bật lọc "Đang giảm giá" rồi cuộn tới lưới sản phẩm
-  void _showAllDeals() {
-    context.read<TrustedShopsCubit>().setOnSale(true);
-    _scrollToSection(TrustedShopsSection.allProducts);
-  }
-
   /// Mở trang chi tiết; quay lại mà trạng thái lưu tin đã đổi thì cập nhật thẻ
   Future<void> _openListing(ListingCardItem item) async {
     final id = item.listing.id;
@@ -344,7 +337,6 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
     // Các khu đang có nội dung, theo thứ tự trên trang
     final sections = [
       if (overview.famousShops.isNotEmpty) TrustedShopsSection.famous,
-      if (overview.deals.isNotEmpty) TrustedShopsSection.deals,
       if (overview.newReleases.isNotEmpty) TrustedShopsSection.newReleases,
       if (overview.newShops.isNotEmpty) TrustedShopsSection.newShops,
       if (overview.showcases.isNotEmpty) TrustedShopsSection.showcases,
@@ -388,20 +380,6 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
               shops: overview.famousShops,
               onShopTap: _openShopItem,
               onFollowTap: _toggleFollow,
-            ),
-          ),
-        ),
-      ],
-      if (overview.deals.isNotEmpty) ...[
-        gap(),
-        SliverToBoxAdapter(
-          child: keyed(
-            TrustedShopsSection.deals,
-            TrustedDealsSection(
-              deals: overview.deals,
-              onListingTap: _openListing,
-              onFavoriteTap: cubit.toggleFavorite,
-              onSeeAll: _showAllDeals,
             ),
           ),
         ),
@@ -480,12 +458,6 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
       SliverToBoxAdapter(
         child: AppFilterBar(
           children: [
-            AppFilterChip(
-              label: l10n.trustedShopsOnSaleFilter,
-              icon: AppIcons.sale,
-              selected: state.onSale,
-              onTap: () => cubit.setOnSale(!state.onSale),
-            ),
             AppFilterChip(
               label: l10n.trustedShopsAllCategories,
               icon: AppIcons.category,
