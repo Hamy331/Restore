@@ -7,7 +7,7 @@ import { prisma } from '../../lib/prisma.js';
 const adminShopSelect = {
   id: true, name: true, tagline: true, description: true, address: true, logoUrl: true, coverUrl: true, accentColor: true,
   status: true, submittedAt: true, reviewedAt: true, rejectNote: true, verificationType: true, verifiedAt: true,
-  certificateCode: true, createdAt: true,
+  certificateCode: true, createdAt: true, categoryIds: true,
   owner: {
     select: {
       id: true, email: true, fullName: true, status: true,

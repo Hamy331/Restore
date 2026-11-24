@@ -24,6 +24,7 @@ type Shop = {
   verified: boolean;
   verificationType: VerificationType | null;
   certificateCode: string | null;
+  categoryIds: string[];
   owner: { id: string; email: string; fullName: string; status: string };
   planTier: string;
   planEndsAt: string | null;
@@ -54,6 +55,9 @@ const dateText = (value: string | null) => (value ? new Date(value).toLocaleStri
 export function ShopReviews({ session }: { session: Session }) {
   const [status, setStatus] = useState<ShopStatus | 'ALL'>('PENDING');
   const { data, error, reload } = useResource<Overview>(session, '/admin/shops?status=' + status);
+  // Tên danh mục mặt hàng chính shop chọn lúc đăng ký
+  const catalog = useResource<{ categories: { id: string; name: string }[] }>(session, '/admin/catalog').data;
+  const categoryName = (id: string) => catalog?.categories.find((c) => c.id === id)?.name ?? id;
   const [busy, setBusy] = useState('');
   const [rejecting, setRejecting] = useState<Shop>();
   const [rejectError, setRejectError] = useState('');
@@ -152,6 +156,13 @@ export function ShopReviews({ session }: { session: Session }) {
                 render: (_, shop) => (
                   <Space orientation="vertical" size={2}>
                     <b>{shop.name}</b>
+                    {shop.categoryIds.length > 0 && (
+                      <span>
+                        {shop.categoryIds.map((id) => (
+                          <Tag key={id} color="blue">{categoryName(id)}</Tag>
+                        ))}
+                      </span>
+                    )}
                     {shop.tagline && <span>{shop.tagline}</span>}
                     {shop.description && <small style={{ whiteSpace: 'pre-line' }}>{shop.description}</small>}
                     {shop.address && <small className="muted">{shop.address}</small>}
