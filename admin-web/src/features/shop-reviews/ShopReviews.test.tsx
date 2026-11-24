@@ -22,6 +22,7 @@ const shop = (verified: boolean) => ({
   verified,
   verificationType: verified ? 'CERTIFIED' : null,
   certificateCode: verified ? 'RS-2026-00042' : null,
+  categoryIds: [],
   owner: { id: 'u1', email: 'chu@example.com', fullName: 'Chủ Shop', status: 'ACTIVE' },
   planTier: 'PRO',
   planEndsAt: null,
