@@ -533,8 +533,6 @@
   "newCondition": "New",
   "usedCondition": "Used",
   "photoTip": "Tip: clear photos from multiple angles make your listing more trustworthy.",
-  "salePrice": "Sale price",
-  "priceVndHint": "Enter price in VND",
   "negotiable": "Negotiable",
   "description": "Description",
   "location": "Location",
@@ -615,7 +613,6 @@
       }
     }
   },
-  "editAction": "Edit",
   "hideListing": "Hide",
   "markAsSold": "Mark as sold",
   "deleteListing": "Delete",
@@ -631,7 +628,6 @@
   "messagesTitle": "Messages",
   "messagesPickConversation": "Pick a conversation",
   "listingDetailTitle": "Listing details",
-  "listingPreviewTitle": "Listing preview",
   "galleryPosition": "{current} / {total}",
   "@galleryPosition": {
     "placeholders": {
@@ -652,7 +648,6 @@
   "seeMore": "See more ›",
   "makeOffer": "Make offer",
   "chooseCategoryTitle": "Choose category",
-  "chooseCategorySubtitle": "What do you want to sell?",
   "categoryElectronicsTitle": "Electronics",
   "categoryElectronicsDesc": "Laptops, Cameras, Headphones,...",
   "categoryVehiclesTitle": "Vehicles",
@@ -675,8 +670,6 @@
   "productNameMinLengthError": "Product name must be at least 5 characters",
   "categoryLabel": "Category",
   "conditionLabel": "Condition",
-  "continueBtn": "Continue",
-  "completeListingTitle": "Complete listing",
   "saveDraft": "Save draft",
   "draftSaved": "Draft saved",
   "listingPhotosLabel": "Photos (up to {max} photos)",
@@ -700,29 +693,7 @@
   },
   "coverPhotoBadge": "Cover",
   "photosRequiredError": "Please add at least 1 photo",
-  "detailedDescriptionLabel": "Detailed description",
-  "listingDescriptionHint": "- Condition, how long it has been used\n- Included accessories, minor defects if any\n- Reason for selling, delivery method",
-  "characterCount": "{count}/{max} characters",
-  "@characterCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "descriptionMinLengthError": "Description must be at least {min} characters",
-  "@descriptionMinLengthError": {
-    "placeholders": {
-      "min": {
-        "type": "int"
-      }
-    }
-  },
   "listingTitleLabel": "Listing title",
-  "listingTitleHint": "e.g. Piaggio Vespa Sprint 2024 15,000 km",
   "listingTitleMinLengthError": "Title must be at least {min} characters",
   "@listingTitleMinLengthError": {
     "placeholders": {
@@ -732,26 +703,14 @@
     }
   },
   "priceRequiredError": "Please enter a sale price",
-  "addressLabel": "Address",
-  "youAreLabel": "You are",
   "sellerPersonal": "Personal",
-  "sellerBusiness": "Business",
   "detailedInfoTitle": "Detailed information",
-  "categoryWithName": "Category: {name}",
-  "@categoryWithName": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "fieldRequiredError": "Please fill in this field",
   "fieldSelectRequiredError": "Please select an option",
   "missingRequiredFields": "Please complete all required fields",
   "listingSubmitted": "Your listing has been submitted and is waiting for review",
   "previewNotice": "This is how buyers will see your listing",
   "noPhotosYet": "No photos yet",
-  "stepBasicInfoTitle": "Photos, description & price",
   "takePhoto": "Take a photo",
   "chooseFromGallery": "Choose from gallery",
   "photoLimitReached": "You can add up to {max} photos",
@@ -765,17 +724,9 @@
   "photoPickFailed": "Couldn't open your photos. Please check the app's photo and camera permissions.",
   "draftSaveFailed": "Couldn't save the draft, please try again",
   "publishFailed": "Couldn't publish the listing, please try again",
-  "tradeTypeLabel": "Trade type",
-  "tradeSell": "Sell",
-  "tradeExchange": "Exchange",
-  "tradeSellOrExchange": "Both",
   "tradeExchangeAccepted": "Open to exchange",
   "exchangeWishLabel": "Want to exchange for",
-  "exchangeWishHint": "e.g. iPhone 13 or a tablet",
   "selectAddressHint": "Choose an area",
-  "stepShortCategory": "Category",
-  "stepShortBasicInfo": "Basics",
-  "stepShortDetails": "Details",
   "stepProgressLabel": "Step {current}/{total}",
   "@stepProgressLabel": {
     "placeholders": {
@@ -787,27 +738,16 @@
       }
     }
   },
-  "nextStepLabel": "Next: {name}",
-  "@nextStepLabel": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "conditionSectionTitle": "Item condition",
-  "conditionNew": "New",
+  "conditionNew": "Brand new",
   "conditionLikeNew": "Like new",
-  "conditionUsedGood": "Used - good",
-  "conditionUsedFair": "Used - fair",
-  "conditionForParts": "For parts / not working",
-  "conditionNewDesc": "Never used, original packaging",
-  "conditionLikeNewDesc": "Barely used, no visible marks",
-  "conditionUsedGoodDesc": "Works well, minor signs of use",
-  "conditionUsedFairDesc": "Usable, visible wear or minor faults",
-  "conditionForPartsDesc": "Does not work properly",
-  "categoryAttributesTitle": "Category details",
-  "categoryAttributesHint": "Fields below depend on the category",
+  "conditionUsedGood": "Lightly used",
+  "conditionUsedFair": "Well used",
+  "conditionForParts": "Heavily used",
+  "conditionNewDesc": "Never used. May come with original packaging or tag.",
+  "conditionLikeNewDesc": "Used once or twice. As good as new.",
+  "conditionUsedGoodDesc": "Used with care. Flaws, if any, are barely noticeable.",
+  "conditionUsedFairDesc": "Has minor flaws or defects.",
+  "conditionForPartsDesc": "Has obvious signs of use or defects.",
   "selectOptionHint": "Select",
   "numberRangeError": "Value must be between {min} and {max}",
   "@numberRangeError": {
@@ -873,6 +813,7 @@
   "homeGreeting": "Hi there 👋",
   "homeHeadline": "What are you hunting for today?",
   "homeSearchHint": "Search pre-loved and swap items...",
+  "searchProductsHint": "Search products...",
   "homeChangeArea": "Change area",
   "homeAreaLocating": "Locating...",
   "homeForYouTitle": "Picked for you",
@@ -1042,12 +983,6 @@
   "productLivePriceGeneric": "The seller updated the price, please review before sending.",
   "productLiveInfo": "The seller just edited this listing.",
   "productLiveIndicator": "Live updates on",
-  "productBuyTitle": "Request to buy",
-  "productBuySubtitle": "The seller confirms and arranges the handover with you in chat.",
-  "productBuyPriceLabel": "Price",
-  "productBuyNoteLabel": "Note for the seller",
-  "productBuyNoteHint": "e.g. I can pick it up this evening",
-  "productBuySubmit": "Send request",
   "productBuySent": "Purchase request sent. The seller will reply in chat.",
   "productActionFailed": "Couldn't send. Please try again.",
   "galleryOpenFullscreen": "View photos full screen",
@@ -1159,7 +1094,6 @@
     }
   },
   "searchUserHasShop": "Has a trusted shop",
-  "searchTabListings": "Listings",
   "searchShopStripTitle": "Matching shops",
   "searchShopsEmpty": "No shops match “{query}”",
   "@searchShopsEmpty": {
@@ -1451,16 +1385,6 @@
   "trustedShopsLoadErrorTitle": "Couldn't load trusted shops",
   "trustedShopsFamousTitle": "Famous brands",
   "trustedShopsFamousSubtitle": "Official stores of big-name brands",
-  "trustedShopsDealsTitle": "Luxury for less",
-  "trustedShopsDealsSubtitle": "Genuine brand products, now on sale",
-  "trustedShopsDealsUpTo": "Up to -{percent}%",
-  "@trustedShopsDealsUpTo": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
   "trustedShopsNewReleasesTitle": "Hot new releases",
   "trustedShopsNewReleasesSubtitle": "Fresh launches from famous brands",
   "trustedShopsNewReleaseTag": "Just launched",
@@ -1475,13 +1399,11 @@
   "trustedShopsNewShopsTitle": "New stores",
   "trustedShopsNewShopsSubtitle": "Shops ReStore verified recently",
   "trustedShopsNavFamous": "Brands",
-  "trustedShopsNavDeals": "Deals",
   "trustedShopsNavNewReleases": "New releases",
   "trustedShopsNavNewShops": "New stores",
   "trustedShopsNavShowcases": "By brand",
   "trustedShopsNavAll": "All products",
   "trustedShopsSeeAll": "See all",
-  "trustedShopsOnSaleFilter": "On sale",
   "shopDetailEventsTitle": "Shop events",
   "shopDetailEventsSubtitle": "Promotions approved by ReStore",
   "shopVerificationOfficial": "Official",
@@ -1697,7 +1619,6 @@
   "quickActionStats": "Insights",
   "quickActionShopManage": "Manage shop",
   "trustedShopsFamousEyebrow": "Official",
-  "trustedShopsDealsEyebrow": "On sale",
   "trustedShopsNewReleasesEyebrow": "Just launched",
   "trustedShopsNewShopsEyebrow": "Newly verified",
   "trustedShopsShowcaseEyebrow": "By brand",
@@ -2405,14 +2326,6 @@
       }
     }
   },
-  "previewDisplayDays": "Your listing shows for {days} days after approval. You can extend it near the end, or reactivate it once it expires.",
-  "@previewDisplayDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "hotSaleSubtitle": "Listings sellers are promoting right now, updated all the time.",
   "hotSaleLoadError": "Couldn't load Hot sale listings",
   "hotSaleEmptyTitle": "No Hot sale listings yet",
@@ -2585,18 +2498,6 @@
       }
     }
   },
-  "originalPriceLabel": "Original price (before discount)",
-  "originalPricePlaceholder": "Leave empty if not on sale",
-  "originalPriceHint": "For shops: buyers see the original price struck through and the % off. It cannot be raised after posting.",
-  "originalPriceDiscount": "{percent}% off the original price",
-  "@originalPriceDiscount": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "originalPriceError": "Original price must be higher than the sale price",
   "promoTitle": "Promote listing",
   "promoNotPromotable": "This listing isn't visible, so it can't be promoted. Show it again in Manage listings, then come back.",
   "promoBoostRunning": "At the top of the list until {date}",
@@ -3816,6 +3717,47 @@
   "profMore": "Read more",
   "profLess": "Show less",
   "profNoAbout": "No introduction yet.",
+  "itemDetailsTitle": "Item details",
+  "previewPublishTitle": "Preview & publish",
+  "createListingNext": "Next",
+  "categorySearchHint": "Search for a category",
+  "categorySearchEmpty": "No matching category",
+  "categoryChange": "Change",
+  "listingNameHint": "Name your listing",
+  "conditionChoose": "Choose",
+  "descriptionOptionalLabel": "Description (Optional)",
+  "descriptionStoryHint": "Include any other details helpful to buyers. Or share about the story behind this item!",
+  "multipleUnitsTitle": "I have more than one of the same item",
+  "multipleUnitsSubtitle": "Don't mark listing as reserved when I accept an offer",
+  "priceSectionTitle": "Price",
+  "priceForSale": "For Sale",
+  "priceForFree": "For Free",
+  "freeThanks": "Thank you for reducing waste and sharing joy!",
+  "fixedPriceTitle": "Fixed price",
+  "fixedPriceSubtitle": "Buyers can only make an offer at your listed price",
+  "meetUpTitle": "Meet-up",
+  "meetUpLocationCount": "1 location",
+  "meetUpYourArea": "Your area",
+  "meetUpOffNote": "You and the buyer will agree on delivery in chat.",
+  "meetUpChooseArea": "Choose your area",
+  "meetUpEdit": "Edit",
+  "priceFree": "Free",
+  "multipleUnitsTag": "Multiple available",
+  "homeTabCertified": "Certified",
+  "homeTabNearMe": "Near me",
+  "homeTabFreeItems": "Free items",
+  "homeTabFollowing": "Following",
+  "homeTabFollowingEmpty": "Follow sellers to see their new listings here",
+  "vehicleConditionNew": "New",
+  "vehicleConditionNewDesc": "Brand new, never ridden or only test-driven.",
+  "vehicleConditionLikeNew": "Nearly new",
+  "vehicleConditionLikeNewDesc": "Very low mileage, runs and looks like new.",
+  "vehicleConditionUsedGood": "Used – good",
+  "vehicleConditionUsedGoodDesc": "Runs reliably with only minor wear.",
+  "vehicleConditionUsedFair": "Needs minor repairs",
+  "vehicleConditionUsedFairDesc": "Still runs; has scratches or parts due for service.",
+  "vehicleConditionForParts": "Not running / for parts",
+  "vehicleConditionForPartsDesc": "Doesn't run; for restoration or parts.",
   "bsCategory": "Shop category",
   "bsCategoryHint": "What your shop mainly sells. You can still post listings in any category.",
   "bsCategoryRequired": "Choose a category for your shop"

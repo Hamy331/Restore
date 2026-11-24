@@ -126,19 +126,19 @@ void main() {
 
       await tester.tap(find.text('Tủ lạnh Toshiba cũ'));
       await _settle(tester);
-      expect(_path(router), '/create-listing/basic-info');
+      expect(_path(router), '/create-listing/details');
       // Ô tiêu đề điền sẵn nội dung nháp
       expect(
         find.widgetWithText(TextField, 'Tủ lạnh Toshiba cũ'),
         findsOneWidget,
       );
 
-      // Về bước 1 (không hỏi vì chưa thoát luồng), sửa rồi thoát thì hỏi
-      await tester.tap(find.byIcon(AppIcons.back).first);
+      // Quay lại bước 1 (không hỏi vì chưa thoát luồng)
+      await tester.tap(find.text('Quay lại'));
       await _settle(tester);
       expect(find.text('Lưu tin trước khi thoát?'), findsNothing);
       expect(_path(router), '/create-listing/category');
-      await tester.tap(find.byIcon(AppIcons.back).first);
+      await tester.tap(find.byIcon(AppIcons.close).first);
       await _settle(tester);
       // Vừa mở nháp, chưa sửa gì: thoát luôn
       expect(_path(router), '/home');
@@ -156,12 +156,11 @@ void main() {
     await _settle(tester);
     await tester.tap(find.text('Đồ điện tử').first);
     await _settle(tester);
-    // Ô đầu tiên của bước 2 là mô tả
+    // Ô đầu tiên của bước Thông tin sản phẩm là tiêu đề
     await tester.enterText(find.byType(TextField).first, 'Máy giặt LG 9kg');
     await _settle(tester, 3);
-    await tester.tap(find.byIcon(AppIcons.back).first);
-    await _settle(tester);
-    await tester.tap(find.byIcon(AppIcons.back).first);
+    // Nút X đóng cả luồng: còn nội dung chưa lưu thì hỏi
+    await tester.tap(find.byIcon(AppIcons.close).first);
     await _settle(tester);
     expect(find.text('Lưu tin trước khi thoát?'), findsOneWidget);
 
@@ -173,7 +172,7 @@ void main() {
     );
     final draft = drafts!.items.firstWhere(
       (item) =>
-          item.description == 'Máy giặt LG 9kg' &&
+          item.title == 'Máy giặt LG 9kg' &&
           item.categoryId == 'electronics',
     );
     await tester.runAsync(() => MockListingsRepository().deleteDraft(draft.id));
@@ -195,9 +194,9 @@ void main() {
       await _settle(tester, 3);
       await tester.tap(find.text('Lưu nháp'));
       await tester.pump(const Duration(milliseconds: 100));
-      // Đang lưu: khóa nút quay lại và nội dung form
+      // Đang lưu: khóa nút đóng và nội dung form
       final back = tester.widget<IconButton>(
-        find.widgetWithIcon(IconButton, AppIcons.back).first,
+        find.widgetWithIcon(IconButton, AppIcons.close).first,
       );
       expect(back.onPressed, isNull);
       expect(

@@ -11,7 +11,7 @@ class HomeState extends Equatable {
   final HomeStatus status;
   final HomeListingFilter? _filter;
   final bool? _feedFailed;
-  HomeListingFilter get filter => _filter ?? HomeListingFilter.forYou;
+  HomeListingFilter get filter => _filter ?? HomeListingFilter.newest;
   bool get feedFailed => _feedFailed ?? false;
   final List<HomeBanner> banners;
   final List<CategoryModel> categories;
@@ -27,7 +27,7 @@ class HomeState extends Equatable {
   final bool isLoadingMore;
 
   const HomeState({
-    HomeListingFilter filter = HomeListingFilter.forYou,
+    HomeListingFilter filter = HomeListingFilter.newest,
     bool feedFailed = false,
     this.status = HomeStatus.loading,
     this.banners = const [],

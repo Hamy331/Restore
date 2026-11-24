@@ -7,7 +7,7 @@ import 'package:restore/modules/listings/data/listing_mock_data.dart';
 import 'package:restore/modules/listings/models/listing_draft.dart';
 import 'package:restore/modules/listings/utils/attribute_value_formatter.dart';
 import 'package:restore/modules/listings/utils/listing_validator.dart';
-import 'package:restore/modules/listings/views/listing_details/widgets/listing_attribute_field.dart';
+import 'package:restore/modules/listings/views/item_details/widgets/listing_attribute_field.dart';
 
 CategoryModel _category(String id) => CategoryModel.fromJson(
   ListingMockData.categories.firstWhere((item) => item['id'] == id),
@@ -32,12 +32,12 @@ void main() {
     expect(phones.hasCondition, isTrue);
     const draft = ListingDraft();
     expect(
-      ListingValidator.detailErrors(draft, pets),
-      isNot(contains(ListingValidator.conditionKey)),
+      ListingValidator.errors(draft, pets).fields,
+      isNot(contains(ListingField.condition)),
     );
     expect(
-      ListingValidator.detailErrors(draft, phones),
-      contains(ListingValidator.conditionKey),
+      ListingValidator.errors(draft, phones).fields,
+      contains(ListingField.condition),
     );
     // Đổi từ danh mục khác sang thú cưng: tình trạng cũ không gửi lên
     final payload = const ListingDraft(

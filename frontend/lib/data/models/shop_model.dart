@@ -47,6 +47,7 @@ class ShopModel extends Equatable {
 
   /// Số tin đang bán (AVAILABLE)
   final int listingCount;
+  final int soldCount;
   final DateTime? createdAt;
 
   const ShopModel({
@@ -69,6 +70,7 @@ class ShopModel extends Equatable {
     this.ratingCount = 0,
     this.followerCount = 0,
     this.listingCount = 0,
+    this.soldCount = 0,
     this.createdAt,
   });
 
@@ -98,6 +100,7 @@ class ShopModel extends Equatable {
     ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
     followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
     listingCount: (json['listingCount'] as num?)?.toInt() ?? 0,
+    soldCount: (json['soldCount'] as num?)?.toInt() ?? 0,
     createdAt: DateTime.tryParse('${json['createdAt']}'),
   );
 
@@ -121,6 +124,7 @@ class ShopModel extends Equatable {
     ratingCount: ratingCount,
     followerCount: followerCount ?? this.followerCount,
     listingCount: listingCount,
+    soldCount: soldCount,
     createdAt: createdAt,
   );
 
@@ -145,6 +149,7 @@ class ShopModel extends Equatable {
     ratingCount,
     followerCount,
     listingCount,
+    soldCount,
     createdAt,
   ];
 }

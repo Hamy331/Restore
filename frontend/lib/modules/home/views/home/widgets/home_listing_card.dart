@@ -115,7 +115,9 @@ class HomeListingCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      price == null
+                      listing.isFree
+                          ? l10n.priceFree
+                          : price == null
                           ? l10n.homeExchangeOnly
                           : CurrencyFormatter.formatVnd(price, locale: locale),
                       maxLines: 1,

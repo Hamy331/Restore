@@ -7,7 +7,7 @@ import { createInput, validateAttributes } from '../listing.validator.js';
 import { resolveSubcategory } from '../../catalog/category-tree.js';
 import * as listingRepository from '../repositories/listing.repository.js';
 import { removeStoredImages } from './image.service.js';
-import { assertOriginalPrice, assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing, withListingWriteTransaction } from './listing.service.js';
+import { assertPublishable, requireOwnedListing, resolveDisplay, updateOwnedListing, withListingWriteTransaction } from './listing.service.js';
 import { assertNotDuplicate } from './listing-lifecycle.service.js';
 import { assertNoContentFlags, isFlagged } from '../content-flags.js';
 import { assertPostingSlot, chargeListing } from './posting-quota.service.js';
@@ -63,8 +63,9 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     const location = current.location as Record<string, unknown> | null;
     const data = createInput({
       title: current.title, description: current.description,
-      price: current.price.toString(), originalPrice: current.originalPrice?.toString() ?? null, condition: current.condition,
-      categoryId: current.categoryId, isNegotiable: current.isNegotiable,
+      price: current.price.toString(), condition: current.condition,
+      categoryId: current.categoryId, subcategoryId: current.subcategoryId, isNegotiable: current.isNegotiable,
+      isFree: current.isFree, multipleUnits: current.multipleUnits, meetUp: current.meetUp,
       allowSale: current.allowSale, allowExchange: current.allowExchange,
       exchangeWish: current.exchangeWish, sellerType: current.sellerType, attributes: current.attributes,
       displayDays: current.displayDays, startsAt: current.startsAt?.toISOString() ?? null,
@@ -77,7 +78,6 @@ export async function publishDraft(ownerId: string, id: string, payWithCredits =
     assertNoContentFlags(acceptFlags, data.title, data.description);
     await assertNotDuplicate(tx, ownerId, data, { excludeId: id, allowDuplicate, now });
     const price = await assertPostingSlot(tx, ownerId, now, { categoryId: data.categoryId, daily: true, payWithCredits, excludeId: id });
-    await assertOriginalPrice(tx, ownerId, now, data);
     const display = await resolveDisplay(tx, ownerId, now, category, data);
     await updateOwnedListing(tx, id, ownerId, ListingStatus.DRAFT, { status: ListingStatus.PENDING, publishedAt: now, paidCredits: price,
       condition: data.condition, flagged: isFlagged(data.title, data.description), displayDays: display.displayDays, startsAt: display.startsAt, paidDays: display.paidDays });

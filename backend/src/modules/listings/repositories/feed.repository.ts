@@ -7,8 +7,11 @@ import { visible } from './listing.repository.js';
 import { accented, allTermsIn, folded, searchTerms, type SearchTerm } from './keyword-match.js';
 
 /** Bộ lọc thêm của trang Shop uy tín */
-type ShopFilters = { verifiedShop?: boolean; onSale?: boolean };
-type FeedOptions = ListingFilters & ShopFilters & { ownerId?: string; chronological?: boolean; interestUserId?: string };
+type ShopFilters = { verifiedShop?: boolean };
+/** freeOnly: chỉ đồ cho tặng; followerId: chỉ tin của người bán mà người này theo dõi */
+type FeedOptions = ListingFilters & ShopFilters & {
+  ownerId?: string; chronological?: boolean; interestUserId?: string; freeOnly?: boolean; followerId?: string;
+};
 
 export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boolean };
 
@@ -60,7 +63,9 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
           AND (${filters.allowExchange ?? false} = false OR l."allowExchange"=true)
           AND (${filters.verifiedShop ?? false} = false OR EXISTS (
             SELECT 1 FROM "Shop" s WHERE s."ownerId" = l."ownerId" AND s."verificationType" IS NOT NULL))
-          AND (${filters.onSale ?? false} = false OR l."originalPrice" > l.price)
+          AND (${filters.freeOnly ?? false} = false OR l."isFree" = true)
+          ${filters.followerId !== undefined ? Prisma.sql`AND EXISTS (SELECT 1 FROM "UserFollow" uf
+            WHERE uf."followerId" = ${filters.followerId} AND uf."followingId" = l."ownerId")` : Prisma.empty}
           AND (${filters.nearby?.radius ?? null}::double precision IS NULL OR ${distance} <= ${filters.nearby?.radius ?? null})
           AND ${wordsMatch(searchTerms(filters))}
           AND (${filters.categoryId} = '' OR l."categoryId" = ${filters.categoryId})

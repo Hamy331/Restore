@@ -20,14 +20,15 @@ export function listingInput(value: unknown, draft = false) {
   const fail = (message: string, field?: string): never => { throw new AppError(400, draft ? 'INVALID_DRAFT' : 'INVALID_LISTING', message, field); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('Dữ liệu tin không hợp lệ.');
   const body = value as Record<string, unknown>;
-  const allowed = ['title','description','price','condition','categoryId','subcategoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','originalPrice'];
+  const allowed = ['title','description','price','condition','categoryId','subcategoryId','isNegotiable','allowSale','allowExchange','exchangeWish','sellerType','location','attributes','displayDays','startsAt','isFree','multipleUnits','meetUp'];
   // Cờ của thao tác đăng (trả xu, vẫn đăng dù trùng, vẫn gửi dù bị gắn cờ nội dung): controller đọc riêng, không thuộc nội dung tin
   const flags = draft ? [] : ['payWithCredits', 'allowDuplicate', 'acceptFlags'];
   if (Object.keys(body).some((key) => !allowed.includes(key) && !flags.includes(key))) fail('Tin có trường không được hỗ trợ.');
   if (flags.some((key) => body[key] !== undefined && typeof body[key] !== 'boolean')) fail('Dữ liệu tin không hợp lệ.');
   const title = body.title ?? '', description = body.description ?? '';
   if (typeof title !== 'string' || title.trim().length > 70 || (!draft && title.trim().length < 5)) fail('Tiêu đề cần từ 5 đến 70 ký tự.', 'title');
-  if (typeof description !== 'string' || description.trim().length > 1500 || (!draft && description.trim().length < 10)) fail('Mô tả cần từ 10 đến 1500 ký tự.', 'description');
+  // Mô tả không bắt buộc, tối đa 1500 ký tự
+  if (typeof description !== 'string' || description.trim().length > 1500) fail('Mô tả tối đa 1500 ký tự.', 'description');
   const categoryId = body.categoryId == null || body.categoryId === '' ? null : body.categoryId;
   if ((categoryId !== null && (typeof categoryId !== 'string' || categoryId.length > 100)) || (!draft && !categoryId)) fail('Chọn danh mục hợp lệ.', 'categoryId');
   // Danh mục con: bắt buộc hay không và có thuộc danh mục cha không do assertPublishable xét theo metadata
@@ -36,23 +37,19 @@ export function listingInput(value: unknown, draft = false) {
   const condition = body.condition ?? null;
   // Tình trạng có thể trống (danh mục không hỏi tình trạng, VD thú cưng); bắt buộc hay không do assertPublishable xét theo danh mục
   if (condition !== null && (typeof condition !== 'string' || !Object.values(ListingCondition).includes(condition as ListingCondition))) fail('Tình trạng không hợp lệ.', 'condition');
-  const allowSale = body.allowSale ?? true, allowExchange = body.allowExchange ?? false;
+  // Cờ của tin: cho tặng miễn phí, giá có trả giá được không, có nhiều món giống nhau, gặp mặt giao dịch
+  const isFree = body.isFree ?? false, negotiable = body.isNegotiable ?? true;
+  const multipleUnits = body.multipleUnits ?? false, meetUp = body.meetUp ?? true;
+  if ([isFree, negotiable, multipleUnits, meetUp].some((flag) => typeof flag !== 'boolean')) fail('Dữ liệu tin không hợp lệ.');
+  // Tin cho tặng luôn là tin bán giá 0, không trao đổi
+  const allowSale = isFree ? true : body.allowSale ?? true, allowExchange = isFree ? false : body.allowExchange ?? false;
   if (typeof allowSale !== 'boolean' || typeof allowExchange !== 'boolean' || (!allowSale && !allowExchange)) fail('Chọn bán hoặc trao đổi.');
-  const rawPrice = body.price == null || body.price === '' ? '0' : String(body.price);
+  const rawPrice = isFree || body.price == null || body.price === '' ? '0' : String(body.price);
   if ((typeof body.price !== 'number' && typeof body.price !== 'string' && body.price != null) ||
-      !/^(0|[1-9]\d{0,11})$/.test(rawPrice) || (!draft && allowSale && rawPrice === '0')) fail('Giá VND không hợp lệ.', 'price');
-  // Giá gốc trước giảm (chỉ gói Cửa hàng, xét ở service): null = không giảm; khi đăng phải cao hơn giá bán
-  const rawOriginal = body.originalPrice == null || body.originalPrice === '' ? null : String(body.originalPrice);
-  if ((body.originalPrice != null && typeof body.originalPrice !== 'number' && typeof body.originalPrice !== 'string') ||
-      (rawOriginal !== null && !/^[1-9]\d{0,11}$/.test(rawOriginal))) fail('Giá gốc không hợp lệ.', 'originalPrice');
-  const originalPrice = allowSale ? rawOriginal : null;
-  if (!draft && originalPrice !== null && BigInt(originalPrice) <= BigInt(rawPrice)) {
-    fail('Giá gốc phải cao hơn giá bán.', 'originalPrice');
-  }
+      !/^(0|[1-9]\d{0,11})$/.test(rawPrice) || (!draft && allowSale && !isFree && rawPrice === '0')) fail('Giá VND không hợp lệ.', 'price');
   const exchangeWish = body.exchangeWish ?? '', sellerType = body.sellerType ?? 'PERSONAL';
   if (typeof exchangeWish !== 'string' || exchangeWish.trim().length > 200) fail('Mong muốn trao đổi tối đa 200 ký tự.', 'exchangeWish');
   if (sellerType !== 'PERSONAL' && sellerType !== 'BUSINESS') fail('Loại người bán không hợp lệ.', 'sellerType');
-  // Mọi tin có bán đều cho trả giá: isNegotiable từ app cũ vẫn nhận nhưng bỏ qua
   const attributes = body.attributes ?? {};
   if (!attributes || typeof attributes !== 'object' || Array.isArray(attributes) ||
     Object.keys(attributes).length > 40 || JSON.stringify(attributes).length > 10000) fail('Thuộc tính không hợp lệ.', 'attributes');
@@ -68,7 +65,10 @@ export function listingInput(value: unknown, draft = false) {
   if (rawStart !== null && (!startsAt || Number.isNaN(startsAt.getTime()))) fail('Ngày bắt đầu không hợp lệ.', 'startsAt');
   return { title: (title as string).trim(), description: (description as string).trim(), categoryId: categoryId as string | null,
     subcategoryId: categoryId ? subcategoryId as string | null : null,
-    condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0', originalPrice, isNegotiable: allowSale as boolean,
+    condition: condition as ListingCondition | null, price: allowSale ? rawPrice : '0',
+    // Giá cố định (isNegotiable = false) chỉ có nghĩa với tin bán có giá
+    isNegotiable: (allowSale as boolean) && !isFree && (negotiable as boolean), isFree: isFree as boolean,
+    multipleUnits: multipleUnits as boolean, meetUp: meetUp as boolean,
     allowSale: allowSale as boolean, allowExchange: allowExchange as boolean,
     exchangeWish: allowExchange ? (exchangeWish as string).trim() : '', sellerType: sellerType as string,
     attributes: attributes as Prisma.InputJsonObject,
@@ -366,9 +366,8 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
     ...(raw.ownerId !== undefined ? { ownerId: parse(z.string().trim().min(1).max(100), raw.ownerId) } : {}),
     ...(filter === 'nearby' || (filter !== 'newest' && nearby) ? { nearby } : {}),
     ...(filter === 'exchange' || allowExchange ? { allowExchange: true } : {}),
-    // Trang Shop uy tín: chỉ tin của shop đã xác minh, onSale = đang giảm giá
+    // Trang Shop uy tín: chỉ tin của shop đã xác minh
     ...(raw.verifiedShop === 'true' ? { verifiedShop: true } : {}),
-    ...(raw.onSale === 'true' ? { onSale: true } : {}),
   };
   return { filter, pagination, filters, sort: sort === 'price_asc' || sort === 'price_desc' ? sort : undefined };
 });

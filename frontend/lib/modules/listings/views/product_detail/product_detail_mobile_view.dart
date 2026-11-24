@@ -207,6 +207,7 @@ class _ProductDetailMobileViewState extends State<ProductDetailMobileView> {
                         collapsed: collapsed,
                         isFavorite: null,
                         onBack: _close,
+                        listingId: _cubit.listingId,
                         onFavorite: _save,
                       ),
                     ),

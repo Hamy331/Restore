@@ -1,3 +1,4 @@
+import 'listing_image_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:restore/shared/widgets/listing/listing_partner_badge.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -48,8 +49,6 @@ class AppListingCard extends StatelessWidget {
     final listing = item.listing;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final price = listing.price;
-    final originalPrice = listing.originalPrice;
-    final discount = listing.discountPercent;
     final createdAt = listing.createdAt;
     final distanceKm = showDistance ? item.distanceKm : null;
     final area = distanceKm == null
@@ -96,15 +95,19 @@ class AppListingCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 4,
                       children: [
-                        if (discount != null)
-                          _Tag(
-                            label: '-$discount%',
-                            color: AppColors.error,
-                            textColor: Colors.white,
-                          ),
+                        if (createdAt != null)
+                          _Tag(label: TimeAgoFormatter.format(createdAt, l10n)),
                         if (item.isFeatured)
                           _HotBadge(label: l10n.homeFeaturedTag),
                       ],
+                    ),
+                  ),
+                  Positioned(
+                    right: 8,
+                    bottom: 8,
+                    child: _Tag(
+                      label: '${listing.images.length}',
+                      icon: AppIcons.image,
                     ),
                   ),
                   Positioned(
@@ -143,14 +146,16 @@ class AppListingCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          // Giá bán hiện đủ (tối đa 85% bề ngang), giá gốc
-                          // lấy phần còn lại
                           ConstrainedBox(
                             constraints: BoxConstraints(
-                              maxWidth: constraints.maxWidth * 0.85,
+                              maxWidth:
+                                  constraints.maxWidth *
+                                  (listing.condition == null ? 0.85 : 0.62),
                             ),
                             child: Text(
-                              price == null
+                              listing.isFree
+                                  ? l10n.priceFree
+                                  : price == null
                                   ? l10n.homeExchangeOnly
                                   : CurrencyFormatter.formatVnd(
                                       price,
@@ -162,31 +167,18 @@ class AppListingCard extends StatelessWidget {
                                 fontSize: 15,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.2,
-                                color: discount == null
-                                    ? AppColors.primaryDark
-                                    : AppColors.error,
+                                color: AppColors.primaryDark,
                               ),
                             ),
                           ),
-                          // Giá gốc gạch ngang khi tin đang giảm giá; thẻ
-                          // hẹp không đủ chỗ thì mờ dần ở cuối
-                          if (discount != null && originalPrice != null) ...[
+                          if (listing.condition != null) ...[
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
-                                CurrencyFormatter.formatVnd(
-                                  originalPrice,
-                                  locale: locale,
-                                ),
+                                '· ${listing.condition!.shortLabel(l10n)}',
                                 maxLines: 1,
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: const TextStyle(
-                                  fontSize: 10.5,
-                                  color: AppColors.textSecondary,
-                                  decoration: TextDecoration.lineThrough,
-                                  decorationColor: AppColors.textSecondary,
-                                ),
+                                overflow: TextOverflow.ellipsis,
+                                style: _metaStyle,
                               ),
                             ),
                           ],
@@ -212,16 +204,6 @@ class AppListingCard extends StatelessWidget {
                             style: _metaStyle,
                           ),
                         ),
-                        // Trang theo vị trí ưu tiên khoảng cách + khu vực,
-                        // bỏ thời gian đăng cho khỏi bị cắt chữ
-                        if (createdAt != null && distanceKm == null) ...[
-                          const SizedBox(width: 6),
-                          Text(
-                            TimeAgoFormatter.format(createdAt, l10n),
-                            maxLines: 1,
-                            style: _metaStyle,
-                          ),
-                        ],
                       ],
                     ),
                   ],
@@ -237,31 +219,31 @@ class AppListingCard extends StatelessWidget {
 
 class _Tag extends StatelessWidget {
   final String label;
+  final IconData? icon;
 
-  /// Nền nhãn, mặc định trắng mờ
-  final Color? color;
-  final Color textColor;
-
-  const _Tag({
-    required this.label,
-    this.color,
-    this.textColor = AppColors.textPrimary,
-  });
+  const _Tag({required this.label, this.icon});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: color ?? Colors.white.withValues(alpha: 0.88),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w700,
-          color: textColor,
+    return ListingImageOverlay(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 12, color: Colors.white),
+              const SizedBox(width: 3),
+            ],
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -301,9 +283,7 @@ class _FavoriteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: tooltip,
-      child: Material(
-        color: Colors.white.withValues(alpha: 0.9),
-        shape: const CircleBorder(),
+      child: ListingImageOverlay(
         child: InkWell(
           onTap: onTap,
           customBorder: const CircleBorder(),
@@ -317,7 +297,8 @@ class _FavoriteButton extends StatelessWidget {
                 active ? AppIcons.savedListing : AppIcons.favorite,
                 key: ValueKey(active),
                 size: 16,
-                color: active ? AppColors.error : AppColors.textPrimary,
+                color: active ? AppColors.error : Colors.white,
+                shadows: ListingImageOverlay.shadows,
               ),
             ),
           ),

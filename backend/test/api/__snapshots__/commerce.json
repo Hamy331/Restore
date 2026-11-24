@@ -858,7 +858,6 @@
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -909,20 +908,25 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         },
         {
           "id": "listing-2",
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
-          "originalPrice": null,
           "isNegotiable": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
@@ -973,13 +977,19 @@
             "id": "user-seller",
             "fullName": "user-seller",
             "ratingAverage": 0,
-            "ratingCount": 0
+            "ratingCount": 0,
+            "avatarUrl": null,
+            "soldCount": 0
           },
           "isPartner": false,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false
+          "isFavorite": false,
+          "isFree": false,
+          "meetUp": true,
+          "multipleUnits": false,
+          "shopSummary": null
         }
       ]
     }

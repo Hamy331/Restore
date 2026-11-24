@@ -202,20 +202,6 @@ class TrustedShopMockData {
     ],
   };
 
-  /// Giá gốc của các tin đang giảm giá, theo id tin
-  static const Map<String, int> _originalPrices = {
-    'l7_kodo1': 21990000,
-    'l1_kodo4': 4990000,
-    'l1_kodo6': 19900000,
-    'l2_lumi4': 3190000,
-    'l5_lumi2': 790000,
-    'l7_mirai3': 28900000,
-    'l7_mirai5': 2990000,
-    'l3_mocan1': 3250000,
-    'l6_mocan4': 690000,
-    'l2_gocnha2': 690000,
-  };
-
   /// Tin là sản phẩm vừa ra mắt của thương hiệu, kèm số ngày từ lúc ra mắt
   static const Map<String, int> _newReleaseDays = {
     'l7_kodo5': 2,
@@ -256,7 +242,6 @@ class TrustedShopMockData {
           'title': title,
           'description': '',
           'price': price,
-          'originalPrice': _originalPrices[id],
           'condition': condition,
           'status': 'AVAILABLE',
           'allowSale': true,

@@ -13,7 +13,7 @@ import 'category_detail_mobile_view.dart';
 
 /// Route `/categories/:id`: tin đăng thuộc một danh mục.
 /// [category] là danh mục vừa bấm (tuỳ chọn); thiếu thì trang tự tải.
-class CategoryDetailView extends StatelessWidget {
+class CategoryDetailView extends StatefulWidget {
   final String categoryId;
   final CategoryModel? category;
 
@@ -48,21 +48,57 @@ class CategoryDetailView extends StatelessWidget {
   }
 
   @override
+  State<CategoryDetailView> createState() => _CategoryDetailViewState();
+}
+
+class _CategoryDetailViewState extends State<CategoryDetailView> {
+  late final CategoryDetailCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = CategoryDetailCubit(
+      repository: AppEnvironment.useMockData
+          ? MockCategoryListingsRepository()
+          : ApiCategoryListingsRepository(),
+      categoryId: widget.categoryId,
+      category: widget.category,
+      filter: CategoryDetailState.defaultFilterFor(
+        widget.categoryId,
+      ).withUserArea(context).withSubcategory(widget.subcategoryId),
+    )..start();
+  }
+
+  @override
+  void didUpdateWidget(CategoryDetailView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.categoryId != oldWidget.categoryId) {
+      _cubit.switchCategory(
+        widget.categoryId,
+        widget.category,
+        widget.subcategoryId,
+      );
+    } else if (widget.subcategoryId != oldWidget.subcategoryId) {
+      _cubit.selectSubcategory(widget.subcategoryId);
+    }
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CategoryDetailCubit(
-        repository: AppEnvironment.useMockData
-            ? MockCategoryListingsRepository()
-            : ApiCategoryListingsRepository(),
-        categoryId: categoryId,
-        category: category,
-        filter: CategoryDetailState.defaultFilterFor(
-          categoryId,
-        ).withUserArea(context).withSubcategory(subcategoryId),
-      )..start(),
+    return BlocProvider.value(
+      value: _cubit,
       child: TResponsiveLayout(
-        mobile: CategoryDetailMobileView(fromSearch: fromSearch),
-        desktop: const CategoryDetailMobileView(wide: true),
+        mobile: CategoryDetailMobileView(fromSearch: widget.fromSearch),
+        desktop: CategoryDetailMobileView(
+          wide: true,
+          fromSearch: widget.fromSearch,
+        ),
       ),
     );
   }

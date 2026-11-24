@@ -181,7 +181,8 @@ export async function updateWhereVersion(tx: Db, id: string, status: ListingStat
 
 /** Cột đang hiển thị để so với bản sửa (ngoài adminListingSelect) */
 export const adminCompareSelect = {
-  originalPrice: true, isNegotiable: true, allowSale: true, allowExchange: true, exchangeWish: true, attributes: true, location: true,
+  isNegotiable: true, isFree: true, multipleUnits: true, meetUp: true,
+  allowSale: true, allowExchange: true, exchangeWish: true, attributes: true, location: true,
 } as const satisfies Prisma.ListingSelect;
 
 /** Người đăng đang dùng gói [tier] (gói hết hạn hoặc chưa bắt đầu tính là PERSONAL) */

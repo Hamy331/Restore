@@ -32,8 +32,10 @@ export const listingSelect = {
   title: true,
   description: true,
   price: true,
-  originalPrice: true,
   isNegotiable: true,
+  isFree: true,
+  multipleUnits: true,
+  meetUp: true,
   ownerId: true, categoryId: true, subcategoryId: true, status: true, updatedAt: true,
   allowSale: true, allowExchange: true, exchangeWish: true, sellerType: true, attributes: true, location: true, reviewReason: true,
   condition: true,
@@ -49,9 +51,10 @@ export const listingSelect = {
   paidDays: true,
   autoExtend: true,
   owner: { select: {
-    id: true, fullName: true, ratingAverage: true, ratingCount: true,
+    id: true, fullName: true, avatarUrl: true, ratingAverage: true, ratingCount: true,
     storeSubscription: { select: { startsAt: true, endsAt: true, package: { select: { tier: true } } } },
-    shop: { select: { id: true, status: true, verificationType: true } },
+    shop: { select: { id: true, name: true, logoUrl: true, accentColor: true, status: true, verificationType: true } },
+    _count: { select: { listings: { where: { status: 'SOLD' } } } },
   } },
 } as const;
 
@@ -59,7 +62,8 @@ export type ListingRecord = Prisma.ListingGetPayload<{ select: typeof listingSel
 
 /** Nội dung bản sửa của tin đã duyệt (ListingRevision), chỉ chủ tin và người duyệt thấy */
 export const revisionSelect = {
-  status: true, title: true, description: true, price: true, originalPrice: true, isNegotiable: true, condition: true,
+  status: true, title: true, description: true, price: true, isNegotiable: true,
+  isFree: true, multipleUnits: true, meetUp: true, condition: true,
   allowSale: true, allowExchange: true, exchangeWish: true, attributes: true, location: true, images: true,
   reviewReason: true, submittedAt: true, updatedAt: true,
 } as const satisfies Prisma.ListingRevisionSelect;
@@ -73,12 +77,13 @@ export type OwnerListingRecord = Prisma.ListingGetPayload<{ select: typeof owner
 
 /** Bản sửa cho app: giá dạng chuỗi số như tin */
 export const toRevisionDto = (revision: RevisionRecord) => ({
-  ...revision, price: revision.price.toString(), originalPrice: revision.originalPrice?.toString() ?? null,
+  ...revision, price: revision.price.toString(),
 });
 
 /**
- * Listing cho app: { id, ownerId, title, description, price (chuỗi số), isNegotiable, condition, status,
- *   originalPrice (giá trước giảm, null = không giảm), allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
+ * Listing cho app: { id, ownerId, title, description, price (chuỗi số), isNegotiable (false = giá cố định),
+ *   isFree (cho tặng), multipleUnits (có nhiều món giống nhau), meetUp (gặp mặt giao dịch), condition, status,
+ *   allowSale, allowExchange, exchangeWish, sellerType, attributes, location, images[], reviewReason,
  *   categoryId, subcategoryId, category { id, name }, owner { id, fullName, ratingAverage, ratingCount },
  *   isPartner (cửa hàng đã duyệt / đã xác minh, gói nào cũng được), shopId (chỉ có khi isPartner: trang shop của người bán),
  *   viewCount, createdAt, updatedAt, publishedAt, expiresAt, startsAt, displayDays, areaLabel }
@@ -88,21 +93,26 @@ export const toRevisionDto = (revision: RevisionRecord) => ({
  * areaLabel: "Phường, Tỉnh" để hiện trên thẻ tin.
  */
 export function toListingDto(listing: ListingRecord, owner = false) {
-  const { paidCredits, paidDays, autoExtend, owner: { storeSubscription: _plan, shop, ...publicOwner }, ...rest } = listing;
+  const { paidCredits, paidDays, autoExtend, owner: { storeSubscription: _plan, shop, _count, ...publicOwner }, ...rest } = listing;
   // Đối tác: đã lên cửa hàng và shop đã duyệt / đã xác minh (không phụ thuộc gói tài khoản), giống điều kiện trang shop
   const isPartner = !!shop && (shop.status === 'APPROVED' || shop.verificationType !== null);
   const location = owner ? listing.location : publicLocation(listing.location);
   const address = listing.location as { province?: { name?: string }; ward?: { name?: string } } | null;
-  // Mọi tin có bán đều cho trả giá: không đọc cột isNegotiable cũ (tin cũ có thể còn false)
-  return { ...rest, isNegotiable: listing.allowSale, owner: publicOwner, isPartner, ...(isPartner && { shopId: shop!.id }), ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
-    originalPrice: listing.originalPrice?.toString() ?? null, location,
+  const shopSummary = isPartner ? {
+    id: shop!.id, ownerId: publicOwner.id, name: shop!.name, logoUrl: shop!.logoUrl,
+    accentColor: shop!.accentColor, verificationType: shop!.verificationType,
+    ratingAverage: publicOwner.ratingAverage, ratingCount: publicOwner.ratingCount,
+    soldCount: _count?.listings ?? 0,
+  } : null;
+  return { ...rest, owner: { ...publicOwner, soldCount: _count.listings }, isPartner, ...(isPartner && { shopId: shop!.id }), shopSummary, ...(owner && { paidCredits, paidDays, autoExtend }), price: listing.price.toString(),
+    location,
     areaLabel: address ? [address.ward?.name, address.province?.name].filter(Boolean).join(', ') : '' };
 }
 
 /**
  * Listing cho chủ tin: đủ địa chỉ. Tin đã duyệt có bản sửa thì thêm pendingEdit
- * { status: PENDING | REJECTED, reviewReason, submittedAt, updatedAt, title, description, price, originalPrice,
- *   isNegotiable, condition, allowSale, allowExchange, exchangeWish, attributes, location, images[] }
+ * { status: PENDING | REJECTED, reviewReason, submittedAt, updatedAt, title, description, price,
+ *   isNegotiable, isFree, multipleUnits, meetUp, condition, allowSale, allowExchange, exchangeWish, attributes, location, images[] }
  * (không có bản sửa thì không có trường này).
  */
 export const toOwnerListingDto = (listing: ListingRecord & { revision?: RevisionRecord | null }) => {

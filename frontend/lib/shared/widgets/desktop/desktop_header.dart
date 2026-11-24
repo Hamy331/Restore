@@ -1,3 +1,4 @@
+import 'package:restore/shared/widgets/search/app_listing_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -448,10 +449,10 @@ class _DesktopHeaderState extends State<DesktopHeader> {
               children: [
                 Expanded(
                   child: Container(
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF2F3F5),
-                      borderRadius: BorderRadius.circular(8),
+                    height: AppListingSearchBar.height,
+                    decoration: const ShapeDecoration(
+                      color: AppListingSearchBar.fillColor,
+                      shape: StadiumBorder(),
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: Row(
@@ -471,7 +472,6 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                                       controller: _query,
                                       focusNode: _searchFocus,
                                       groupId: _tapGroup,
-                                      hint: l10n.homeSearchHint,
                                       onChanged: (text) {
                                         _cubit.queryChanged(text);
                                         _suggestions.show();
@@ -813,7 +813,6 @@ class _SearchBox extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.groupId,
-    required this.hint,
     required this.onSearch,
     required this.onChanged,
     required this.onEscape,
@@ -824,14 +823,13 @@ class _SearchBox extends StatelessWidget {
 
   /// Cùng nhóm với khung gợi ý: bấm vào khung không làm ô mất focus
   final Object groupId;
-  final String hint;
   final VoidCallback onSearch;
   final ValueChanged<String> onChanged;
   final VoidCallback onEscape;
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    height: 44,
+    height: AppListingSearchBar.height,
     child: Row(
       children: [
         const Padding(
@@ -847,26 +845,14 @@ class _SearchBox extends StatelessWidget {
             bindings: {
               const SingleActivator(LogicalKeyboardKey.escape): onEscape,
             },
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              groupId: groupId,
-              onChanged: onChanged,
-              onSubmitted: (_) => onSearch(),
-              textInputAction: TextInputAction.search,
-              style: const TextStyle(fontSize: 14),
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-                filled: false,
-                isDense: true,
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: ListingSearchInput(
+                controller: controller,
+                focusNode: focusNode,
+                groupId: groupId,
+                onChanged: onChanged,
+                onSubmitted: (_) => onSearch(),
               ),
             ),
           ),

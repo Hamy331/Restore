@@ -9,6 +9,10 @@ import * as feedRepository from '../repositories/feed.repository.js';
 export const listFeed = (viewerId: string | undefined, { filter, filters, pagination, sort }: FeedQuery, now = new Date()) =>
   rankedPage(viewerId, {
     ...filters, chronological: filter === 'recent', interestUserId: filter === 'forYou' ? viewerId : undefined,
+    ...(filter === 'certified' && { verifiedShop: true }),
+    ...(filter === 'free' && { freeOnly: true }),
+    // Chưa đăng nhập thì không theo dõi ai: danh sách rỗng
+    ...(filter === 'following' && { followerId: viewerId ?? '' }),
   }, pagination, now, sort);
 
 /** Kết quả tìm kiếm: như feed nhưng xếp theo [sort] (mặc định phù hợp nhất) */

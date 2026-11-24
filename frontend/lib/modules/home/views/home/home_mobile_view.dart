@@ -31,6 +31,7 @@ import '../../bloc/home_state.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import '../../models/home_quick_action.dart';
 import 'widgets/home_banner_carousel.dart';
+import 'widgets/home_feed_tabs.dart';
 import 'widgets/home_category_strip.dart';
 import 'widgets/home_quick_actions.dart';
 import 'widgets/home_search_header.dart';
@@ -231,23 +232,25 @@ class _HomeMobileViewState extends State<HomeMobileView> {
     );
 
     return [
+      if (state.banners.isNotEmpty) ...[
+        SliverToBoxAdapter(
+          child: HomeBannerCarousel(
+            banners: state.banners,
+            onTap: (banner) {
+              final route = banner.route;
+              if (route != null) context.push(route);
+            },
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 14)),
+      ],
+      SliverToBoxAdapter(child: HomeQuickActions(onTap: _onQuickAction)),
+      const SliverToBoxAdapter(child: SizedBox(height: 22)),
       SliverToBoxAdapter(
         child: HomeCategoryStrip(
           categories: state.categories,
           onTap: _openCategory,
           onHotSaleTap: _openHotSale,
-        ),
-      ),
-      const SliverToBoxAdapter(child: SizedBox(height: 14)),
-      SliverToBoxAdapter(child: HomeQuickActions(onTap: _onQuickAction)),
-      const SliverToBoxAdapter(child: SizedBox(height: 22)),
-      SliverToBoxAdapter(
-        child: HomeBannerCarousel(
-          banners: state.banners,
-          onTap: (banner) {
-            final route = banner.route;
-            if (route != null) context.push(route);
-          },
         ),
       ),
       if (state.recommended.isNotEmpty) ...[
@@ -266,44 +269,13 @@ class _HomeMobileViewState extends State<HomeMobileView> {
       ],
       const SliverToBoxAdapter(child: SizedBox(height: 8)),
       SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
-          child: Wrap(
-            spacing: 18,
-            children: [
-              for (final (filter, label) in [
-                (HomeListingFilter.forYou, l10n.feedForYou),
-                (HomeListingFilter.nearby, l10n.homeQuickNearby),
-                (HomeListingFilter.newest, l10n.listingSortNewest),
-              ])
-                Semantics(
-                  selected: state.filter == filter,
-                  child: TextButton(
-                    onPressed: () => cubit.selectFeed(filter, area.origin),
-                    style: TextButton.styleFrom(
-                      foregroundColor: state.filter == filter
-                          ? AppColors.textPrimary
-                          : AppColors.textSecondary,
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(0, 36),
-                    ),
-                    child: Text(
-                      label,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: state.filter == filter
-                            ? FontWeight.w700
-                            : FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+        child: HomeFeedTabs(
+          selected: state.filter,
+          onSelect: (filter) => cubit.selectFeed(filter, area.origin),
+          padding: const EdgeInsets.symmetric(horizontal: _sidePadding - 14),
         ),
       ),
-      const SliverToBoxAdapter(child: SizedBox(height: 4)),
+      const SliverToBoxAdapter(child: SizedBox(height: 12)),
       if (nearby && area.origin == null)
         SliverToBoxAdapter(
           child: Center(
@@ -322,7 +294,11 @@ class _HomeMobileViewState extends State<HomeMobileView> {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 32),
             child: Text(
-              nearby ? l10n.nearbyEmptyTitle : l10n.homeLatestEmpty,
+              switch (state.filter) {
+                HomeListingFilter.nearby => l10n.nearbyEmptyTitle,
+                HomeListingFilter.following => l10n.homeTabFollowingEmpty,
+                _ => l10n.homeLatestEmpty,
+              },
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textSecondary),
             ),

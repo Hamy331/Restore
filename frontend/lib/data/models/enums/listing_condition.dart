@@ -39,4 +39,32 @@ enum ListingCondition {
     usedFair => l10n.conditionUsedFairDesc,
     forParts => l10n.conditionForPartsDesc,
   };
+
+  /// Xe cộ (trừ phụ tùng) dùng thang tình trạng riêng: xe mới, xe lướt,
+  /// cần sửa, hỏng... Cùng giá trị API nên bộ lọc tìm kiếm vẫn khớp.
+  static bool usesVehicleScale(String categoryId, String subcategoryId) =>
+      categoryId == 'vehicles' && subcategoryId != 'phu-tung-xe';
+
+  /// Nhãn theo danh mục của tin ([vehicle] = [usesVehicleScale])
+  String labelFor(AppLocalizations l10n, {required bool vehicle}) =>
+      !vehicle
+      ? label(l10n)
+      : switch (this) {
+          newItem => l10n.vehicleConditionNew,
+          likeNew => l10n.vehicleConditionLikeNew,
+          usedGood => l10n.vehicleConditionUsedGood,
+          usedFair => l10n.vehicleConditionUsedFair,
+          forParts => l10n.vehicleConditionForParts,
+        };
+
+  String descriptionFor(AppLocalizations l10n, {required bool vehicle}) =>
+      !vehicle
+      ? description(l10n)
+      : switch (this) {
+          newItem => l10n.vehicleConditionNewDesc,
+          likeNew => l10n.vehicleConditionLikeNewDesc,
+          usedGood => l10n.vehicleConditionUsedGoodDesc,
+          usedFair => l10n.vehicleConditionUsedFairDesc,
+          forParts => l10n.vehicleConditionForPartsDesc,
+        };
 }

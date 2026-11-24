@@ -22,8 +22,9 @@ class CreateListingState extends Equatable {
   /// Trạng thái tải hạn mức (lỗi vẫn cho chọn chuyên mục, backend kiểm tra)
   final RequestStatus quotaStatus;
   final ListingDraft draft;
-  final bool showBasicInfoErrors;
-  final bool showDetailErrors;
+
+  /// Đã bấm Tiếp / Đăng tin khi còn thiếu: hiện lỗi dưới các trường
+  final bool showErrors;
   final RequestStatus saveDraftStatus;
   final RequestStatus publishStatus;
 
@@ -99,8 +100,7 @@ class CreateListingState extends Equatable {
     this.quota,
     this.quotaStatus = RequestStatus.idle,
     this.draft = const ListingDraft(),
-    this.showBasicInfoErrors = false,
-    this.showDetailErrors = false,
+    this.showErrors = false,
     this.saveDraftStatus = RequestStatus.idle,
     this.publishStatus = RequestStatus.idle,
     this.invalidPublishAttempts = 0,
@@ -136,14 +136,12 @@ class CreateListingState extends Equatable {
   /// đổi được chuyên mục; đẩy tin, Hot sale, ưu đãi giữ nguyên
   bool get isEditingApproved => editingListing?.status.isApproved ?? false;
 
-  /// Màn chọn chuyên mục đã tải xong danh mục, hạn mức và tin nháp (thành
-  /// công hay lỗi), để hiện tất cả cùng lúc: không cho chọn chuyên mục khi
-  /// chưa biết chuyên mục nào đã hết suất
-  bool get chooseCategoryReady {
-    bool done(RequestStatus status) =>
-        status == RequestStatus.success || status == RequestStatus.failure;
-    return done(categoriesStatus) && done(quotaStatus) && done(draftsStatus);
-  }
+  /// Màn chọn chuyên mục hiện danh sách ngay khi có danh mục; hạn mức (ổ
+  /// khoá) và thẻ tin nháp hiện thêm khi tải xong. Chạm một chuyên mục lúc
+  /// hạn mức chưa về thì màn hình chờ hạn mức trước khi cho vào trang tạo tin.
+  bool get chooseCategoryReady =>
+      categoriesStatus == RequestStatus.success ||
+      categoriesStatus == RequestStatus.failure;
 
   /// Lưu nháp lần này sẽ tạo thêm một tin nháp (chưa phải nháp đã lưu)
   bool get savingAddsDraft =>
@@ -174,14 +172,11 @@ class CreateListingState extends Equatable {
     return quota?.forCategory(draft.categoryId);
   }
 
-  Set<ListingField> get basicInfoErrors =>
-      showBasicInfoErrors ? ListingValidator.basicInfoErrors(draft) : const {};
+  /// Lỗi đang hiện trên form (rỗng khi chưa bấm Tiếp / Đăng tin)
+  ListingErrors get visibleErrors => showErrors
+      ? ListingValidator.errors(draft, category)
+      : ListingErrors.none;
 
-  Map<String, AttributeError> get detailErrors => showDetailErrors
-      ? ListingValidator.detailErrors(draft, category)
-      : const {};
-
-  bool get isBasicInfoValid => ListingValidator.isBasicInfoValid(draft);
   bool get isReadyToPublish =>
       ListingValidator.isReadyToPublish(draft, category);
 
@@ -191,8 +186,7 @@ class CreateListingState extends Equatable {
     PostingQuota? quota,
     RequestStatus? quotaStatus,
     ListingDraft? draft,
-    bool? showBasicInfoErrors,
-    bool? showDetailErrors,
+    bool? showErrors,
     RequestStatus? saveDraftStatus,
     RequestStatus? publishStatus,
     int? invalidPublishAttempts,
@@ -226,8 +220,7 @@ class CreateListingState extends Equatable {
       quota: quota ?? this.quota,
       quotaStatus: quotaStatus ?? this.quotaStatus,
       draft: draft ?? this.draft,
-      showBasicInfoErrors: showBasicInfoErrors ?? this.showBasicInfoErrors,
-      showDetailErrors: showDetailErrors ?? this.showDetailErrors,
+      showErrors: showErrors ?? this.showErrors,
       saveDraftStatus: saveDraftStatus ?? this.saveDraftStatus,
       publishStatus: publishStatus ?? this.publishStatus,
       invalidPublishAttempts:
@@ -266,8 +259,7 @@ class CreateListingState extends Equatable {
     quota,
     quotaStatus,
     draft,
-    showBasicInfoErrors,
-    showDetailErrors,
+    showErrors,
     saveDraftStatus,
     publishStatus,
     invalidPublishAttempts,

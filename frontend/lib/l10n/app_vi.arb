@@ -526,8 +526,6 @@
   "newCondition": "Mới",
   "usedCondition": "Đã qua sử dụng",
   "photoTip": "Mẹo: ảnh rõ, nhiều góc chụp giúp tin đăng đáng tin hơn.",
-  "salePrice": "Giá bán",
-  "priceVndHint": "Nhập giá bằng VND",
   "negotiable": "Có thể thương lượng",
   "description": "Mô tả",
   "location": "Địa điểm",
@@ -608,7 +606,6 @@
       }
     }
   },
-  "editAction": "Chỉnh sửa",
   "hideListing": "Ẩn tin",
   "markAsSold": "Đánh dấu đã bán",
   "deleteListing": "Xóa tin",
@@ -624,7 +621,6 @@
   "messagesTitle": "Tin nhắn",
   "messagesPickConversation": "Chọn một cuộc trò chuyện",
   "listingDetailTitle": "Chi tiết tin đăng",
-  "listingPreviewTitle": "Xem trước tin đăng",
   "galleryPosition": "{current} / {total}",
   "@galleryPosition": {
     "placeholders": {
@@ -645,7 +641,6 @@
   "seeMore": "Xem thêm ›",
   "makeOffer": "Trả giá",
   "chooseCategoryTitle": "Chọn danh mục",
-  "chooseCategorySubtitle": "Bạn muốn đăng bán món đồ gì?",
   "categoryElectronicsTitle": "Đồ điện tử",
   "categoryElectronicsDesc": "Laptop, Máy ảnh, Tai nghe,...",
   "categoryVehiclesTitle": "Xe cộ",
@@ -668,8 +663,6 @@
   "productNameMinLengthError": "Tên sản phẩm tối thiểu 5 ký tự",
   "categoryLabel": "Danh mục",
   "conditionLabel": "Tình trạng",
-  "continueBtn": "Tiếp tục",
-  "completeListingTitle": "Hoàn thiện tin đăng",
   "saveDraft": "Lưu nháp",
   "draftSaved": "Đã lưu nháp",
   "listingPhotosLabel": "Hình ảnh (Tối đa {max} ảnh)",
@@ -693,29 +686,7 @@
   },
   "coverPhotoBadge": "Bìa",
   "photosRequiredError": "Vui lòng thêm ít nhất 1 ảnh",
-  "detailedDescriptionLabel": "Mô tả chi tiết",
-  "listingDescriptionHint": "- Tình trạng, thời gian đã sử dụng\n- Phụ kiện đi kèm, lỗi nhỏ nếu có\n- Lý do bán, hình thức giao nhận",
-  "characterCount": "{count}/{max} ký tự",
-  "@characterCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "descriptionMinLengthError": "Mô tả cần ít nhất {min} ký tự",
-  "@descriptionMinLengthError": {
-    "placeholders": {
-      "min": {
-        "type": "int"
-      }
-    }
-  },
   "listingTitleLabel": "Tiêu đề tin đăng",
-  "listingTitleHint": "VD: Piaggio Vespa Sprint 2024 15.000 km",
   "listingTitleMinLengthError": "Tiêu đề cần ít nhất {min} ký tự",
   "@listingTitleMinLengthError": {
     "placeholders": {
@@ -725,26 +696,14 @@
     }
   },
   "priceRequiredError": "Vui lòng nhập giá bán",
-  "addressLabel": "Địa chỉ",
-  "youAreLabel": "Bạn là",
   "sellerPersonal": "Cá nhân",
-  "sellerBusiness": "Bán chuyên",
   "detailedInfoTitle": "Thông tin chi tiết",
-  "categoryWithName": "Danh mục: {name}",
-  "@categoryWithName": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "fieldRequiredError": "Vui lòng nhập thông tin này",
   "fieldSelectRequiredError": "Vui lòng chọn một giá trị",
   "missingRequiredFields": "Vui lòng điền đầy đủ các thông tin bắt buộc",
   "listingSubmitted": "Tin đăng của bạn đã được gửi và đang chờ duyệt",
   "previewNotice": "Đây là cách người mua sẽ thấy tin đăng của bạn",
   "noPhotosYet": "Chưa có ảnh",
-  "stepBasicInfoTitle": "Ảnh, mô tả & giá bán",
   "takePhoto": "Chụp ảnh",
   "chooseFromGallery": "Chọn từ thư viện",
   "photoLimitReached": "Bạn chỉ có thể thêm tối đa {max} ảnh",
@@ -758,32 +717,20 @@
   "photoPickFailed": "Không thể mở ảnh. Vui lòng kiểm tra quyền truy cập ảnh và camera của ứng dụng.",
   "draftSaveFailed": "Lưu nháp thất bại, vui lòng thử lại",
   "publishFailed": "Đăng tin thất bại, vui lòng thử lại",
-  "tradeTypeLabel": "Hình thức",
-  "tradeSell": "Bán",
-  "tradeExchange": "Trao đổi",
-  "tradeSellOrExchange": "Cả hai",
   "tradeExchangeAccepted": "Nhận trao đổi",
   "exchangeWishLabel": "Muốn đổi lấy",
-  "exchangeWishHint": "VD: iPhone 13 hoặc máy tính bảng",
   "selectAddressHint": "Chọn khu vực",
-  "stepShortCategory": "Danh mục",
-  "stepShortBasicInfo": "Thông tin",
-  "stepShortDetails": "Chi tiết",
   "stepProgressLabel": "Bước {current}/{total}",
-  "nextStepLabel": "Tiếp theo: {name}",
-  "conditionSectionTitle": "Tình trạng sản phẩm",
-  "conditionNew": "Mới",
+  "conditionNew": "Mới tinh",
   "conditionLikeNew": "Như mới",
-  "conditionUsedGood": "Đã dùng - còn tốt",
-  "conditionUsedFair": "Đã dùng - có hao mòn",
-  "conditionForParts": "Hỏng / bán lấy linh kiện",
-  "conditionNewDesc": "Chưa qua sử dụng, còn nguyên tem hộp",
-  "conditionLikeNewDesc": "Dùng rất ít, không trầy xước",
-  "conditionUsedGoodDesc": "Hoạt động tốt, có vài vết sử dụng nhỏ",
-  "conditionUsedFairDesc": "Vẫn dùng được, có trầy xước hoặc lỗi nhỏ",
-  "conditionForPartsDesc": "Không còn hoạt động bình thường",
-  "categoryAttributesTitle": "Thông tin theo danh mục",
-  "categoryAttributesHint": "Các trường bên dưới thay đổi theo danh mục",
+  "conditionUsedGood": "Ít sử dụng",
+  "conditionUsedFair": "Đã sử dụng",
+  "conditionForParts": "Sử dụng nhiều",
+  "conditionNewDesc": "Chưa qua sử dụng. Có thể còn nguyên hộp hoặc tem.",
+  "conditionLikeNewDesc": "Mới dùng một, hai lần. Tốt như mới.",
+  "conditionUsedGoodDesc": "Dùng cẩn thận. Lỗi nếu có thì rất khó thấy.",
+  "conditionUsedFairDesc": "Có vài lỗi hoặc khuyết điểm nhỏ.",
+  "conditionForPartsDesc": "Có dấu hiệu sử dụng rõ hoặc có lỗi.",
   "selectOptionHint": "Chọn",
   "numberRangeError": "Giá trị phải từ {min} đến {max}",
   "yes": "Có",
@@ -832,6 +779,7 @@
   "homeGreeting": "Chào bạn 👋",
   "homeHeadline": "Hôm nay bạn muốn săn gì?",
   "homeSearchHint": "Tìm đồ cũ, đồ trao đổi...",
+  "searchProductsHint": "Tìm sản phẩm...",
   "homeChangeArea": "Đổi khu vực",
   "homeAreaLocating": "Đang định vị...",
   "homeForYouTitle": "Dành cho bạn",
@@ -1001,12 +949,6 @@
   "productLivePriceGeneric": "Người bán vừa cập nhật giá, bạn xem lại trước khi gửi nhé.",
   "productLiveInfo": "Người bán vừa sửa thông tin tin đăng.",
   "productLiveIndicator": "Đang cập nhật trực tiếp",
-  "productBuyTitle": "Yêu cầu mua",
-  "productBuySubtitle": "Người bán sẽ xác nhận và hẹn giao nhận với bạn qua tin nhắn.",
-  "productBuyPriceLabel": "Giá",
-  "productBuyNoteLabel": "Lời nhắn cho người bán",
-  "productBuyNoteHint": "VD: Mình có thể qua lấy vào tối nay",
-  "productBuySubmit": "Gửi yêu cầu",
   "productBuySent": "Đã gửi yêu cầu mua, người bán sẽ phản hồi qua tin nhắn.",
   "productActionFailed": "Gửi chưa được, vui lòng thử lại.",
   "galleryOpenFullscreen": "Xem ảnh toàn màn hình",
@@ -1118,7 +1060,6 @@
     }
   },
   "searchUserHasShop": "Có cửa hàng uy tín",
-  "searchTabListings": "Tin đăng",
   "searchShopStripTitle": "Cửa hàng phù hợp",
   "searchShopsEmpty": "Không có cửa hàng nào khớp “{query}”",
   "@searchShopsEmpty": {
@@ -1410,16 +1351,6 @@
   "trustedShopsLoadErrorTitle": "Chưa tải được shop uy tín",
   "trustedShopsFamousTitle": "Thương hiệu nổi tiếng",
   "trustedShopsFamousSubtitle": "Gian hàng chính hãng của các thương hiệu lớn",
-  "trustedShopsDealsTitle": "Trải nghiệm hàng hiệu",
-  "trustedShopsDealsSubtitle": "Hàng hiệu chính hãng đang giảm giá",
-  "trustedShopsDealsUpTo": "Giảm đến {percent}%",
-  "@trustedShopsDealsUpTo": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
   "trustedShopsNewReleasesTitle": "Siêu phẩm mới ra mắt",
   "trustedShopsNewReleasesSubtitle": "Sản phẩm vừa ra mắt từ các thương hiệu lớn",
   "trustedShopsNewReleaseTag": "Mới ra mắt",
@@ -1434,13 +1365,11 @@
   "trustedShopsNewShopsTitle": "Cửa hàng mới",
   "trustedShopsNewShopsSubtitle": "Shop vừa được ReStore xác minh",
   "trustedShopsNavFamous": "Thương hiệu",
-  "trustedShopsNavDeals": "Giảm giá",
   "trustedShopsNavNewReleases": "Mới ra mắt",
   "trustedShopsNavNewShops": "Cửa hàng mới",
   "trustedShopsNavShowcases": "Theo nhãn hàng",
   "trustedShopsNavAll": "Tất cả sản phẩm",
   "trustedShopsSeeAll": "Xem tất cả",
-  "trustedShopsOnSaleFilter": "Đang giảm giá",
   "shopDetailEventsTitle": "Sự kiện của shop",
   "shopDetailEventsSubtitle": "Ưu đãi đã được ReStore duyệt",
   "shopVerificationOfficial": "Chính hãng",
@@ -1642,7 +1571,6 @@
   "quickActionStats": "Thống kê",
   "quickActionShopManage": "Quản lý shop",
   "trustedShopsFamousEyebrow": "Chính hãng",
-  "trustedShopsDealsEyebrow": "Đang giảm giá",
   "trustedShopsNewReleasesEyebrow": "Vừa ra mắt",
   "trustedShopsNewShopsEyebrow": "Mới xác minh",
   "trustedShopsShowcaseEyebrow": "Theo nhãn hàng",
@@ -2191,14 +2119,6 @@
       }
     }
   },
-  "previewDisplayDays": "Tin hiển thị {days} ngày kể từ khi được duyệt. Gần hết hạn bạn có thể gia hạn, hết hạn thì kích hoạt lại.",
-  "@previewDisplayDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "hotSaleSubtitle": "Tin đang được người bán ưu tiên hiển thị, cập nhật liên tục.",
   "hotSaleLoadError": "Không tải được tin Hot sale",
   "hotSaleEmptyTitle": "Chưa có tin Hot sale",
@@ -2371,18 +2291,6 @@
       }
     }
   },
-  "originalPriceLabel": "Giá gốc (trước giảm)",
-  "originalPricePlaceholder": "Để trống nếu không giảm giá",
-  "originalPriceHint": "Dành cho shop: người mua thấy giá gốc gạch ngang và % giảm. Sau khi đăng không sửa tăng được.",
-  "originalPriceDiscount": "Giảm {percent}% so với giá gốc",
-  "@originalPriceDiscount": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "originalPriceError": "Giá gốc phải cao hơn giá bán",
   "promoTitle": "Quảng bá tin",
   "promoNotPromotable": "Tin chưa hiển thị nên chưa quảng bá được. Hiện lại tin trong Quản lý tin rồi quay lại đây.",
   "promoBoostRunning": "Đang ở đầu danh sách đến {date}",
@@ -3597,6 +3505,47 @@
   "profMore": "Xem thêm",
   "profLess": "Thu gọn",
   "profNoAbout": "Chưa có lời giới thiệu.",
+  "itemDetailsTitle": "Thông tin sản phẩm",
+  "previewPublishTitle": "Xem trước & đăng tin",
+  "createListingNext": "Tiếp",
+  "categorySearchHint": "Tìm danh mục",
+  "categorySearchEmpty": "Không tìm thấy danh mục phù hợp",
+  "categoryChange": "Đổi",
+  "listingNameHint": "Đặt tên cho món đồ của bạn",
+  "conditionChoose": "Chọn",
+  "descriptionOptionalLabel": "Mô tả (không bắt buộc)",
+  "descriptionStoryHint": "Thêm chi tiết hữu ích cho người mua, hoặc kể câu chuyện về món đồ này!",
+  "multipleUnitsTitle": "Tôi có nhiều hơn một món giống nhau",
+  "multipleUnitsSubtitle": "Không giữ hàng cho riêng ai khi tôi đồng ý một đề nghị",
+  "priceSectionTitle": "Giá",
+  "priceForSale": "Bán",
+  "priceForFree": "Cho tặng",
+  "freeThanks": "Cảm ơn bạn đã giảm lãng phí và lan tỏa niềm vui!",
+  "fixedPriceTitle": "Giá cố định",
+  "fixedPriceSubtitle": "Người mua chỉ có thể đề nghị đúng giá bạn đăng",
+  "meetUpTitle": "Gặp mặt trực tiếp",
+  "meetUpLocationCount": "1 địa điểm",
+  "meetUpYourArea": "Khu vực của bạn",
+  "meetUpOffNote": "Bạn và người mua sẽ thỏa thuận cách giao hàng qua chat.",
+  "meetUpChooseArea": "Chọn khu vực giao dịch",
+  "meetUpEdit": "Sửa",
+  "priceFree": "Miễn phí",
+  "multipleUnitsTag": "Còn nhiều món",
+  "homeTabCertified": "Đã xác minh",
+  "homeTabNearMe": "Gần tôi",
+  "homeTabFreeItems": "Đồ miễn phí",
+  "homeTabFollowing": "Đang theo dõi",
+  "homeTabFollowingEmpty": "Theo dõi người bán để xem tin mới của họ ở đây",
+  "vehicleConditionNew": "Xe mới",
+  "vehicleConditionNewDesc": "Xe mới, chưa lăn bánh hoặc chỉ chạy thử.",
+  "vehicleConditionLikeNew": "Xe lướt",
+  "vehicleConditionLikeNewDesc": "Chạy rất ít, máy và ngoại hình như mới.",
+  "vehicleConditionUsedGood": "Đã sử dụng – tốt",
+  "vehicleConditionUsedGoodDesc": "Vận hành ổn định, chỉ có vết sử dụng nhỏ.",
+  "vehicleConditionUsedFair": "Cần sửa chữa nhẹ",
+  "vehicleConditionUsedFairDesc": "Vẫn chạy được, có trầy xước hoặc vài chi tiết cần bảo dưỡng.",
+  "vehicleConditionForParts": "Hỏng / bán xác",
+  "vehicleConditionForPartsDesc": "Không vận hành được, phù hợp sửa lại hoặc lấy phụ tùng.",
   "bsCategory": "Danh mục cửa hàng",
   "bsCategoryHint": "Mặt hàng chính của cửa hàng. Bạn vẫn đăng tin được ở mọi danh mục.",
   "bsCategoryRequired": "Chọn một danh mục cho cửa hàng"

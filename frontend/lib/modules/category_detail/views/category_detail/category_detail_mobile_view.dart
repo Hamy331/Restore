@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
+import 'package:restore/data/models/category_model.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alert_create/wanted_alert_create_view.dart';
@@ -134,8 +135,13 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
           onBack: _back,
           onFilters: _openFilters,
           onFilterChanged: _cubit.applyFilter,
-          onSwitchCategory: (id) =>
-              context.pushReplacement(CategoryDetailView.location(id)),
+          onSwitchCategory: (category) => context.replace(
+            CategoryDetailView.location(
+              category.id,
+              fromSearch: widget.fromSearch,
+            ),
+            extra: category,
+          ),
           onClearAll: _cubit.clearFilters,
           onSort: _pickSort,
           onGridToggle: () => setState(() => _grid = !_grid),
@@ -372,7 +378,7 @@ class _Header extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onFilters;
   final ValueChanged<ListingFilter> onFilterChanged;
-  final ValueChanged<String> onSwitchCategory;
+  final ValueChanged<CategoryModel> onSwitchCategory;
   final VoidCallback onClearAll;
   final VoidCallback onSort;
   final VoidCallback onGridToggle;

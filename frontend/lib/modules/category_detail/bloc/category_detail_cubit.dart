@@ -38,6 +38,21 @@ class CategoryDetailCubit extends Cubit<CategoryDetailState> {
 
   Future<void> start() => _reload();
 
+  void switchCategory(
+    String id,
+    CategoryModel? category,
+    String? subcategoryId,
+  ) {
+    emit(
+      CategoryDetailState(
+        categoryId: id,
+        category: category,
+        filter: state.filter.withCategory(id).withSubcategory(subcategoryId),
+      ),
+    );
+    _reload();
+  }
+
   /// Kéo để làm mới: giữ danh sách cũ tới khi có dữ liệu mới
   Future<void> refresh() => _reload(showLoading: false);
 

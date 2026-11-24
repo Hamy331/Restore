@@ -13,13 +13,13 @@ import { shopIdParams, shopListingsQuery } from './shop.validator.js';
 /**
  * /api/v1/shops: trang "Shop uy tín" và trang của từng shop. Xem công khai; có token thì tính
  * isFollowing (shop) và isFavorite (tin). Chỉ shop đã xác minh (verificationType khác null) mới hiện.
- * Lưới "Tất cả sản phẩm" dùng GET /listings?verifiedShop=true&onSale=true.
+ * Lưới "Tất cả sản phẩm" dùng GET /listings?verifiedShop=true.
  */
 const shopRouter = Router();
 
 /**
  * Trả về: { stats { shopCount, listingCount }, categories, banners: [ShopBanner + shop], famousShops, newShops,
- *   deals: [Listing], newReleases: [Listing + shop], showcases: [{ shop, listings }] }
+ *   newReleases: [Listing + shop], showcases: [{ shop, listings }] }
  */
 shopRouter.get('/trusted/overview', optionalAuth, shopController.overview);
 

@@ -116,8 +116,9 @@ async function moderateRevision(tx: Prisma.TransactionClient, actorId: string,
     throw new AppError(409, 'INVALID_LISTING', 'Danh mục hoặc tình trạng không còn được sử dụng.');
   }
   changed(await listingRepository.applyRevision(tx, item.id, item.status, expected, {
-    title: revision.title, description: revision.description, price: revision.price, originalPrice: revision.originalPrice,
-    isNegotiable: revision.isNegotiable, condition: revision.condition, allowSale: revision.allowSale,
+    title: revision.title, description: revision.description, price: revision.price,
+    isNegotiable: revision.isNegotiable, isFree: revision.isFree, multipleUnits: revision.multipleUnits, meetUp: revision.meetUp,
+    condition: revision.condition, allowSale: revision.allowSale,
     allowExchange: revision.allowExchange, exchangeWish: revision.exchangeWish,
     attributes: revision.attributes as Prisma.InputJsonValue, location: (revision.location ?? Prisma.JsonNull) as Prisma.InputJsonValue,
     images: revision.images, flagged: isFlagged(revision.title, revision.description),
@@ -154,8 +155,9 @@ export async function listPending() {
       const current = toOwnerListingDto(listing);
       const { status: _status, submittedAt, updatedAt, reviewReason: _reason, ...content } = toRevisionDto(revision!);
       return { ...current, ...content, updatedAt, submittedAt, edit: true,
-        current: { title: current.title, description: current.description, price: current.price, originalPrice: current.originalPrice,
-          isNegotiable: current.isNegotiable, condition: current.condition, allowSale: current.allowSale,
+        current: { title: current.title, description: current.description, price: current.price,
+          isNegotiable: current.isNegotiable, isFree: current.isFree, multipleUnits: current.multipleUnits, meetUp: current.meetUp,
+          condition: current.condition, allowSale: current.allowSale,
           allowExchange: current.allowExchange, exchangeWish: current.exchangeWish, attributes: current.attributes,
           location: current.location, images: current.images } };
     }),
@@ -181,14 +183,15 @@ export async function listForAdmin({ status, q, tier, edit, flagged, offender, p
   const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit, flagged, ownerIds }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
   const [history, typical] = await Promise.all([listingRepository.findSellerHistory(rows.map((row) => row.ownerId)),
     listingRepository.findTypicalPrices(rows.map((row) => row.categoryId), MIN_SAMPLES)]);
-  const items = rows.map(({ revision, originalPrice, isNegotiable, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
+  const items = rows.map(({ revision, isNegotiable, isFree, multipleUnits, meetUp, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
     ...withHistory(toAdminListing(item), history), flags: contentFlags(item.title, item.description),
     priceWarning: priceWarning(item.price, typical.get(item.categoryId ?? '')),
     ...(revision && {
       pendingEdit: { ...toRevisionDto(revision), flags: contentFlags(revision.title, revision.description),
         priceWarning: priceWarning(revision.price, typical.get(item.categoryId ?? '')) },
       current: { title: item.title, description: item.description, price: item.price.toString(),
-        originalPrice: originalPrice?.toString() ?? null, isNegotiable, condition: item.condition, allowSale, allowExchange,
+        isNegotiable, isFree, multipleUnits, meetUp, condition: item.condition,
+        allowSale, allowExchange,
         exchangeWish, attributes, location, images: item.images },
     }),
   }));

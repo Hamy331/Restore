@@ -97,14 +97,14 @@ Future<void> _settle(WidgetTester tester, [int frames = 20]) async {
 
 void main() {
   testWidgets(
-    'sửa tin đã duyệt: mở bước 2 có thông báo, không lưu nháp, thoát thì hỏi bỏ thay đổi',
+    'sửa tin đã duyệt: mở bước Thông tin sản phẩm có thông báo, không lưu nháp, thoát thì hỏi bỏ thay đổi',
     (tester) async {
       final router = await _openSignedIn(tester);
       router.go('/home');
       await _settle(tester);
       router.push('/create-listing/edit/l1');
       await _settle(tester);
-      expect(_path(router), '/create-listing/basic-info');
+      expect(_path(router), '/create-listing/details');
       expect(find.text('Sửa tin đăng'), findsOneWidget);
       expect(
         find.textContaining('Người mua vẫn thấy bản hiện tại'),
@@ -121,7 +121,7 @@ void main() {
       );
 
       // Chưa sửa gì: thoát luôn
-      await tester.tap(find.byIcon(AppIcons.back).first);
+      await tester.tap(find.byIcon(AppIcons.close).first);
       await _settle(tester);
       expect(_path(router), '/home');
 
@@ -133,15 +133,15 @@ void main() {
         'Máy ảnh Canon AE-1 đã sửa',
       );
       await _settle(tester, 3);
-      await tester.tap(find.byIcon(AppIcons.back).first);
+      await tester.tap(find.byIcon(AppIcons.close).first);
       await _settle(tester);
       expect(find.text('Bỏ các thay đổi?'), findsOneWidget);
       expect(find.text('Lưu tin trước khi thoát?'), findsNothing);
       await tester.tap(find.text('Sửa tiếp'));
       await _settle(tester);
-      expect(_path(router), '/create-listing/basic-info');
+      expect(_path(router), '/create-listing/details');
 
-      await tester.tap(find.byIcon(AppIcons.back).first);
+      await tester.tap(find.byIcon(AppIcons.close).first);
       await _settle(tester);
       await tester.tap(find.text('Bỏ thay đổi'));
       await _settle(tester);
