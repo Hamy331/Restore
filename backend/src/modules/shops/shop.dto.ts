@@ -4,7 +4,7 @@ import type { ShopRecord } from './shop.repository.js';
 /**
  * Shop cho app (khớp ShopModel): { id, ownerId, name, tagline, description, logoUrl, coverUrl, accentColor,
  *   verificationType (OFFICIAL_BRAND | CERTIFIED), verifiedAt, certificateCode, categoryIds, address,
- *   openingHours ([{ day 1-7 (1 = thứ Hai), open, close "HH:MM" }] | null),
+ *   openingHours ([{ day 1-7 (1 = thứ Hai), open, close "HH:MM" }] | null), contactPhone, businessEmail, website,
  *   ratingAverage, ratingCount, ownerUsername, followerCount (của chủ shop), listingCount (tin đang bán), createdAt,
  *   isFollowing (đang theo dõi chủ shop) }
  */

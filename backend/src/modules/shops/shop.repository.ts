@@ -10,7 +10,7 @@ import { visible } from '../listings/repositories/listing.repository.js';
 export const shopSelect = {
   id: true, ownerId: true, name: true, tagline: true, description: true, logoUrl: true, coverUrl: true,
   accentColor: true, verificationType: true, verifiedAt: true, certificateCode: true, categoryIds: true,
-  address: true, openingHours: true, createdAt: true,
+  address: true, openingHours: true, contactPhone: true, businessEmail: true, website: true, createdAt: true,
   owner: { select: { ratingAverage: true, ratingCount: true, status: true, username: true, _count: { select: { followers: true } } } },
 } as const satisfies Prisma.ShopSelect;
 

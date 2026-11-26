@@ -1083,7 +1083,7 @@ enum ShopBannerRejectReason {
   OTHER
 }
 
-/// Duyệt cửa hàng (như Chợ Tốt): mở shop hoặc sửa shop bị từ chối thì chờ duyệt.
+/// Duyệt cửa hàng: mở shop hoặc sửa shop bị từ chối thì chờ duyệt.
 /// Chỉ shop đã duyệt (hoặc đã xác minh) mới có trang công khai
 enum ShopStatus {
   PENDING
@@ -1111,6 +1111,10 @@ model Shop {
   categoryIds      String[]
   /// Địa chỉ hiển thị, VD "Quận 1, TP. Hồ Chí Minh"
   address          String?
+  /// Liên hệ công khai ở trang shop (mục Thông tin liên hệ); null = chưa đặt (số điện thoại thì dùng số của chủ shop)
+  contactPhone     String?
+  businessEmail    String?
+  website          String?
   status           ShopStatus            @default(PENDING)
   /// Lần gửi duyệt gần nhất (mở shop, hoặc sửa sau khi bị từ chối); hàng chờ duyệt xếp cũ trước
   submittedAt      DateTime              @default(now())

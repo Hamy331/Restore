@@ -32,7 +32,7 @@ const fold = (input: string) => input.toLowerCase().normalize('NFD').replace(/[�
 const BANNED_WORDS = /\b(so (1|mot)|top 1|no\.? ?1|tot nhat|re nhat|uy tin nhat|chinh hang|admin|restore)\b/;
 
 /**
- * Tên shop bị chặn ngay khi lưu (theo quy định kiểm duyệt cửa hàng của Chợ Tốt): số điện thoại, đường dẫn web,
+ * Tên shop bị chặn ngay khi lưu (theo quy định kiểm duyệt cửa hàng): số điện thoại, đường dẫn web,
  * từ quảng cáo quá mức hoặc mạo danh. Trả về luật vi phạm, null = được. Phần còn lại admin duyệt tay.
  */
 export function shopNameProblem(value: string): 'PHONE' | 'LINK' | 'WORDING' | null {
@@ -92,6 +92,10 @@ export const shopUpdateBody = strictBody({
   coverUrl: clearable('coverUrl', SHOP_LIMITS.url),
   accentColor: clearable('accentColor', 7, { regex: /^#[0-9A-Fa-f]{6}$/, message: 'accentColor phải có dạng #RRGGBB.' }),
   openingHours,
+  // Liên hệ công khai (mục Thông tin doanh nghiệp)
+  contactPhone: clearable('contactPhone', 20, { regex: /^(\+84|0)\d{9,10}$/, message: 'Số điện thoại không hợp lệ (VD 0901234567).' }),
+  businessEmail: clearable('businessEmail', 120, { regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email không hợp lệ.' }),
+  website: clearable('website', SHOP_LIMITS.url, { regex: /^https?:\/\/[^\s.]+\.[^\s]+$/i, message: 'Website phải bắt đầu bằng http:// hoặc https://.' }),
 });
 
 /** Mã số doanh nghiệp / mã số thuế: 10 số, chi nhánh thêm "-001" */
