@@ -186,7 +186,7 @@ class DesktopSeeAll extends StatelessWidget {
     onPressed: onTap,
     iconAlignment: IconAlignment.end,
     style: TextButton.styleFrom(
-      foregroundColor: AppColors.primaryDark,
+      foregroundColor: AppColors.actionPrimary,
       textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
     ),
     icon: const Icon(Icons.chevron_right, size: 18),

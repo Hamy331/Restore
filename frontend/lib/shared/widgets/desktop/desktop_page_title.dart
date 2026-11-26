@@ -231,9 +231,9 @@ class _CrumbState extends State<_Crumb> {
         widget.label,
         style: TextStyle(
           fontSize: widget.fontSize,
-          color: _hover ? AppColors.primaryDark : AppColors.textSecondary,
+          color: _hover ? AppColors.textPrimary : AppColors.textSecondary,
           decoration: _hover ? TextDecoration.underline : null,
-          decorationColor: AppColors.primaryDark,
+          decorationColor: AppColors.textPrimary,
         ),
       ),
     ),

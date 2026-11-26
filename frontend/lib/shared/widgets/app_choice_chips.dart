@@ -72,7 +72,7 @@ class _ChoiceChip extends StatelessWidget {
             color: isSelected ? AppColors.textPrimary : AppGlass.fillStrong,
             borderRadius: _radius,
             border: Border.all(
-              color: isSelected ? AppColors.textPrimary : AppGlass.stroke,
+              color: isSelected ? AppColors.textPrimary : AppColors.border,
             ),
           ),
           child: AnimatedDefaultTextStyle(
