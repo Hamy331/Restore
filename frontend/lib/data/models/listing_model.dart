@@ -17,6 +17,9 @@ import 'package:restore/modules/location/models/address_info.dart';
 /// docs/listing-api-contract.md và để null cho tới khi backend thêm cột.
 class ListingModel extends Equatable {
   final String id;
+
+  /// Mã số ngắn dùng trong URL (`/listings/tên-shortId`); null với dữ liệu cũ
+  final int? shortId;
   final String ownerId;
   final String title;
   final String description;
@@ -95,6 +98,7 @@ class ListingModel extends Equatable {
 
   const ListingModel({
     required this.id,
+    this.shortId,
     required this.ownerId,
     required this.title,
     required this.description,
@@ -151,6 +155,7 @@ class ListingModel extends Equatable {
     final owner = json['owner'] as Map?;
     return ListingModel(
       id: '${json['id']}',
+      shortId: (json['shortId'] as num?)?.toInt(),
       ownerId: '${json['ownerId'] ?? ''}',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
@@ -236,6 +241,7 @@ class ListingModel extends Equatable {
   @override
   List<Object?> get props => [
     id,
+    shortId,
     ownerId,
     title,
     description,

@@ -4,7 +4,7 @@ import { optionalAuth, requirePermission } from '../../../middlewares/auth.middl
 import { validate } from '../../../middlewares/validate.middleware.js';
 import * as listingController from '../controllers/listing.controller.js';
 import { notifyViewers, watchListing } from '../services/listing.events.js';
-import { autoExtendBody, createListingBody, extendBody, featureBody, insightsQuery, listingIdParams, mineQuery, statusBody } from '../listing.validator.js';
+import { autoExtendBody, createListingBody, extendBody, featureBody, insightsQuery, listingIdParams, listingShortIdParams, mineQuery, statusBody } from '../listing.validator.js';
 
 /** Tin đăng của chủ tin và chi tiết tin công khai, gắn tại /api/v1/listings (mount sau cùng vì có GET /:id) */
 const listingRouter = Router();
@@ -204,6 +204,9 @@ listingRouter.get('/:id/events', validate({ params: listingIdParams }), watchLis
  * Path params:
  *  - id: string - mã tin
  */
+/** Mã số ngắn trong URL -> mã tin. Phải khai báo trước GET /:id */
+listingRouter.get('/short/:shortId', validate({ params: listingShortIdParams }), listingController.resolveShortId);
+
 listingRouter.get('/:id', optionalAuth, validate({ params: listingIdParams }), listingController.getById);
 
 export default listingRouter;

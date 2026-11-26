@@ -15,6 +15,9 @@ export const transaction = <T>(work: (tx: Db) => Promise<T>) => prisma.$transact
 
 export const findActiveCategory = (db: Db, id: string) => db.category.findFirst({ where: { id, active: true } });
 
+/** Mã tin (UUID) theo mã số ngắn trong URL */
+export const findIdByShortId = (shortId: number) => prisma.listing.findUnique({ where: { shortId }, select: { id: true } });
+
 export const findCategory = (id: string, db: Db = prisma) => db.category.findUnique({ where: { id } });
 
 export const findConditionPolicy = (db: Db, condition: ListingCondition) =>

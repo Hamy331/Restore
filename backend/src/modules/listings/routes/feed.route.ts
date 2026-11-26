@@ -18,6 +18,7 @@ const feedRouter = Router();
  *  - radiusKm?: number (1-100, mặc định 5) - chỉ dùng với nearby
  *  - q?, categoryId?, condition?, minPrice?, maxPrice? - bộ lọc tìm kiếm
  *  - verifiedShop?: 'true' - chỉ tin của shop uy tín (đã xác minh)
+ *  - sold?: 'true' (kèm ownerId) - tin đã bán của người bán (tab Đã bán ở hồ sơ)
  *
  * Trả về: Listing[] + areaLabel, distanceKm, isFeatured, isFavorite; pagination, meta
  */

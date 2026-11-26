@@ -10,7 +10,8 @@ import { accented, allTermsIn, folded, searchTerms, type SearchTerm } from './ke
 type ShopFilters = { verifiedShop?: boolean };
 /** freeOnly: chỉ đồ cho tặng; followerId: chỉ tin của người bán mà người này theo dõi */
 type FeedOptions = ListingFilters & ShopFilters & {
-  ownerId?: string; chronological?: boolean; interestUserId?: string; freeOnly?: boolean; followerId?: string;
+  /** soldOnly (chỉ dùng kèm ownerId): tin đã bán của người bán, cho trang hồ sơ */
+  ownerId?: string; soldOnly?: boolean; chronological?: boolean; interestUserId?: string; freeOnly?: boolean; followerId?: string;
 };
 
 export type RankedRow = { id: string; distanceKm: number | null; isFeatured: boolean };
@@ -58,7 +59,7 @@ function rankedQuery(filters: FeedOptions, now: Date, sort?: SearchSort) {
           JOIN "PromotionPackage" pp ON pp.id = p."packageId"
           WHERE p."listingId" = l.id AND p."startsAt" <= ${now}
         ) boosted ON TRUE
-        WHERE l.status = 'AVAILABLE'
+        WHERE ${filters.ownerId && filters.soldOnly ? Prisma.sql`l.status = 'SOLD'` : Prisma.sql`l.status = 'AVAILABLE'`}
           ${filters.ownerId ? Prisma.sql`AND l."ownerId" = ${filters.ownerId}` : Prisma.empty}
           AND (${filters.allowExchange ?? false} = false OR l."allowExchange"=true)
           AND (${filters.verifiedShop ?? false} = false OR EXISTS (

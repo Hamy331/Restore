@@ -398,6 +398,8 @@ model Listing {
   aiIndex AiListingIndex?
   feedPosts FeedPost[]
   id            String           @id @default(uuid())
+  /// Mã số ngắn tự tăng dùng trong URL đẹp (/listings/<tên>-<shortId>)
+  shortId       Int              @unique @default(autoincrement())
   ownerId       String
   owner         User             @relation(fields: [ownerId], references: [id])
   categoryId    String?

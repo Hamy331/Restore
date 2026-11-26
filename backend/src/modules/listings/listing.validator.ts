@@ -242,6 +242,9 @@ export function validateAttributes(values: Prisma.InputJsonObject, metadata: unk
 /** Params `:id` = mã tin (không giới hạn độ dài, tin không có thì 404) */
 export const listingIdParams = z.object({ id: z.string() });
 
+/** Params `:shortId` = mã số ngắn của tin trong URL */
+export const listingShortIdParams = z.object({ shortId: z.coerce.number().int().positive().max(2147483647) });
+
 /** Params `:id` cho API lưu tin */
 export const favoriteIdParams = idParam(64);
 
@@ -364,6 +367,8 @@ export const feedQuery = z.record(z.string(), z.unknown()).transform((raw) => {
   const filters = {
     ...search,
     ...(raw.ownerId !== undefined ? { ownerId: parse(z.string().trim().min(1).max(100), raw.ownerId) } : {}),
+    // Trang hồ sơ: tab Đã bán (chỉ có tác dụng kèm ownerId)
+    ...(raw.ownerId !== undefined && raw.sold === 'true' ? { soldOnly: true } : {}),
     ...(filter === 'nearby' || (filter !== 'newest' && nearby) ? { nearby } : {}),
     ...(filter === 'exchange' || allowExchange ? { allowExchange: true } : {}),
     // Trang Shop uy tín: chỉ tin của shop đã xác minh
