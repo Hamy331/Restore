@@ -67,4 +67,22 @@ class ReportRepository {
       },
     );
   }
+
+  /// Báo cáo một người dùng; [reason] là lý do người báo chọn, [evidence] ghi
+  /// rõ hồ sơ bị báo để admin xem xét.
+  Future<void> submitUser({
+    required String userId,
+    required String username,
+    required String reason,
+  }) async {
+    await _dio.post<void>(
+      '/content/reports',
+      data: {
+        'targetType': 'USER',
+        'targetId': userId,
+        'reason': reason,
+        'evidence': 'Hồ sơ người dùng @$username ($userId): $reason',
+      },
+    );
+  }
 }
