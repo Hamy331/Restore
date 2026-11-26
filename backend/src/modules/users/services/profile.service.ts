@@ -59,7 +59,21 @@ export const getProfile = async (id: string, viewerId?: string) => {
   return { ...formatProfile(user, followingShopCount), isFollowing: !!follow };
 };
 
-export async function getPublicProfile(id: string, viewerId: string) {
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Trang hồ sơ mở bằng `/u/@tên-người-dùng`: [idOrHandle] là UUID hoặc tên người
+ * dùng (có hoặc không có `@` đầu), trả về id người dùng.
+ */
+export async function resolveUserId(idOrHandle: string) {
+  if (uuidPattern.test(idOrHandle)) return idOrHandle;
+  const found = await repository.findIdByUsername(idOrHandle.replace(/^@/, '').toLowerCase());
+  if (!found) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
+  return found.id;
+}
+
+export async function getPublicProfile(idOrHandle: string, viewerId: string) {
+  const id = await resolveUserId(idOrHandle);
   const result = await repository.findStorefront(id, viewerId);
   if (!result) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
   const followingShopCount = await repository.countFollowedShops(id);

@@ -12,6 +12,8 @@ class SellerStorefront extends Equatable {
     this.address,
     this.description,
     this.phone,
+    this.businessEmail,
+    this.website,
     this.verified = false,
     this.verificationType,
     this.openingHours = const [],
@@ -22,6 +24,9 @@ class SellerStorefront extends Equatable {
   });
   final String tier;
   final String? shopId, name, logo, cover, address, description, phone;
+
+  /// Liên hệ công khai của shop (mục Thông tin liên hệ)
+  final String? businessEmail, website;
 
   /// CERTIFIED | OFFICIAL_BRAND khi đã xác minh
   final String? verificationType;
@@ -41,6 +46,8 @@ class SellerStorefront extends Equatable {
     address: address,
     description: description,
     phone: phone,
+    businessEmail: businessEmail,
+    website: website,
     verified: verified,
     verificationType: verificationType,
     openingHours: openingHours,
@@ -69,6 +76,8 @@ class SellerStorefront extends Equatable {
       cover: resolveMediaUrl(shop?['coverUrl'] as String?),
       address: shop?['address'] as String?,
       description: shop?['description'] as String?,
+      businessEmail: shop?['businessEmail'] as String?,
+      website: shop?['website'] as String?,
       verified: shop?['verified'] == true,
       verificationType: shop?['verificationType'] as String?,
       openingHours: ShopOpeningDay.listFromJson(shop?['openingHours']),
@@ -87,6 +96,8 @@ class SellerStorefront extends Equatable {
     address,
     description,
     phone,
+    businessEmail,
+    website,
     verified,
     verificationType,
     openingHours,

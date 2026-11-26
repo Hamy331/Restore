@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:device_preview/device_preview.dart';
@@ -43,6 +44,10 @@ bool get _isWebOrDesktop =>
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // URL sạch kiểu domain/home thay vì domain/#/home (chỉ có tác dụng trên web)
+  usePathUrlStrategy();
+  // App mở trang bằng context.push; mặc định go_router không đổi URL khi push
+  GoRouter.optionURLReflectsImperativeAPIs = true;
 
   runApp(
     DevicePreview(

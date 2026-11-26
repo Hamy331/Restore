@@ -1,5 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:restore/core/ui/responsive/responsive_content.dart';
+import 'package:restore/data/models/shop_opening_hours.dart';
+import 'package:restore/modules/my_shop/models/my_shop_overview.dart';
+import 'package:restore/modules/my_shop/repositories/my_shop_repository.dart';
+import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
+import 'package:restore/modules/my_shop/views/my_shop/widgets/my_shop_hours_field.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 import 'package:flutter/services.dart';
@@ -73,12 +79,161 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   bool _saving = false, _loadingAvatar = false, _showErrors = false;
   String? _usernameError, _phoneError;
 
+  // Thông tin doanh nghiệp: chỉ khi đã lên Cửa hàng, tải shop của mình riêng
+  late final bool _isShop = _profile?.shopStatus != null;
+  MyShopOverview? _shop;
+  bool _shopFailed = false;
+  final _contactPhone = TextEditingController(),
+      _businessEmail = TextEditingController(),
+      _website = TextEditingController(),
+      _address = TextEditingController();
+  Set<int> _days = {};
+  TimeOfDay _open = const TimeOfDay(hour: 8, minute: 0),
+      _close = const TimeOfDay(hour: 21, minute: 0);
+  bool _hoursTouched = false, _businessOpen = false;
+  String? _contactPhoneError, _businessEmailError, _websiteError;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isShop) _loadShop();
+  }
+
+  Future<void> _loadShop() async {
+    setState(() => _shopFailed = false);
+    try {
+      final overview = await MyShopRepository().load();
+      if (!mounted) return;
+      final shop = overview.shop;
+      setState(() {
+        _shop = overview;
+        if (shop == null) return;
+        _contactPhone.text = shop.contactPhone ?? '';
+        _businessEmail.text = shop.businessEmail ?? '';
+        _website.text = shop.website ?? '';
+        _address.text = shop.address ?? '';
+        _days = {for (final item in shop.openingHours) item.day};
+        _open = _time(shop.openingHours.firstOrNull?.open, 8);
+        _close = _time(shop.openingHours.firstOrNull?.close, 21);
+      });
+    } catch (_) {
+      if (mounted) setState(() => _shopFailed = true);
+    }
+  }
+
+  static TimeOfDay _time(String? value, int fallbackHour) {
+    final parts = value?.split(':');
+    if (parts == null || parts.length != 2) {
+      return TimeOfDay(hour: fallbackHour, minute: 0);
+    }
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+  }
+
+  List<ShopOpeningDay> get _hours => [
+    for (final day in _days.toList()..sort())
+      ShopOpeningDay(
+        day: day,
+        open: MyShopHoursField.format(_open),
+        close: MyShopHoursField.format(_close),
+      ),
+  ];
+
+  static final _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+
+  /// Website lưu kèm https:// nếu người dùng gõ thiếu
+  static String _withScheme(String text) {
+    final value = text.trim();
+    if (value.isEmpty ||
+        RegExp(r'^https?://', caseSensitive: false).hasMatch(value)) {
+      return value;
+    }
+    return 'https://$value';
+  }
+
+  bool get _contactPhoneValid => normalizePhone(_contactPhone.text) != null;
+  bool get _businessEmailValid =>
+      _businessEmail.text.trim().isEmpty ||
+      _emailPattern.hasMatch(_businessEmail.text.trim());
+  bool get _websiteValid =>
+      _website.text.trim().isEmpty ||
+      RegExp(
+        r'^https?://[^\s.]+\.\S+$',
+        caseSensitive: false,
+      ).hasMatch(_withScheme(_website.text));
+  bool get _hoursValid =>
+      _days.isEmpty || MyShopHoursField.valid(_open, _close);
+  bool get _businessValid =>
+      _contactPhoneValid && _businessEmailValid && _websiteValid && _hoursValid;
+
+  /// Trường doanh nghiệp đã đổi so với shop đang lưu (PATCH /shops/me)
+  Map<String, dynamic> get _shopChanges {
+    final shop = _shop?.shop;
+    if (shop == null) return const {};
+    String? orNull(String text) => text.trim().isEmpty ? null : text.trim();
+    final phone = normalizePhone(_contactPhone.text);
+    final website = orNull(_withScheme(_website.text));
+    return {
+      if (phone != null && (phone.isEmpty ? null : phone) != shop.contactPhone)
+        'contactPhone': phone.isEmpty ? null : phone,
+      if (orNull(_businessEmail.text) != shop.businessEmail)
+        'businessEmail': orNull(_businessEmail.text),
+      if (website != shop.website) 'website': website,
+      if (orNull(_address.text) != shop.address)
+        'address': orNull(_address.text),
+      if (_hoursTouched && !listEquals(_hours, shop.openingHours))
+        'openingHours': _days.isEmpty
+            ? null
+            : [for (final item in _hours) item.toJson()],
+    };
+  }
+
+  /// Kiểm tra mục doanh nghiệp trước khi lưu; sai thì mở mục ra để thấy lỗi
+  bool _checkBusiness() {
+    if (_shop?.shop == null) return true;
+    final vi = _vi;
+    setState(() {
+      _contactPhoneError = _contactPhoneValid ? null : _phoneInvalidText;
+      _businessEmailError = _businessEmailValid
+          ? null
+          : (vi ? 'Email không hợp lệ.' : 'Invalid email.');
+      _websiteError = _websiteValid
+          ? null
+          : (vi
+                ? 'Website không hợp lệ (VD https://shop.vn).'
+                : 'Invalid website (e.g. https://shop.com).');
+      if (!_businessValid) _businessOpen = true;
+    });
+    return _businessValid;
+  }
+
+  /// Lưu mục doanh nghiệp; false nếu lỗi (đã báo)
+  Future<bool> _saveShop(Map<String, dynamic> changes) async {
+    try {
+      final overview = await MyShopRepository().update(changes);
+      if (mounted) setState(() => _shop = overview);
+      return true;
+    } catch (_) {
+      if (mounted) {
+        _error(
+          _vi
+              ? 'Không lưu được thông tin doanh nghiệp, thử lại sau.'
+              : 'Could not save business details, try again.',
+        );
+      }
+      return false;
+    }
+  }
+
   @override
   void dispose() {
     _name.dispose();
     _username.dispose();
     _bio.dispose();
     _phone.dispose();
+    _contactPhone.dispose();
+    _businessEmail.dispose();
+    _website.dispose();
+    _address.dispose();
     super.dispose();
   }
 
@@ -160,9 +315,16 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       // Số điện thoại nằm ở phần thu gọn: mở ra để thấy lỗi
       if (!_phoneValid) _privateOpen = true;
     });
-    if (!_nameValid || !_usernameValid || !_phoneValid) return;
+    final businessOk = _checkBusiness();
+    if (!_nameValid || !_usernameValid || !_phoneValid || !businessOk) return;
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _saving = true);
+    final shopChanges = _shopChanges;
+    if (shopChanges.isNotEmpty && !await _saveShop(shopChanges)) {
+      if (mounted) setState(() => _saving = false);
+      return;
+    }
+    if (!mounted) return;
     // Chỉ gửi avatarUrl khi đổi hoặc xoá ảnh: URL đang hiển thị đã được ghép
     // origin nên không gửi ngược lại server.
     final changes = <String, dynamic>{
@@ -191,7 +353,8 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       changes['avatarUrl'] = null;
     }
     if (changes.isEmpty) {
-      context.pop();
+      // Chỉ đổi thông tin doanh nghiệp: vẫn báo đã lưu
+      context.pop(shopChanges.isNotEmpty ? true : null);
       return;
     }
     final result = await cubit.update(changes);
@@ -227,7 +390,19 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       _bio.text.trim() != (_profile?.bio ?? '') ||
       _phone.text.trim() != (_profile?.phone ?? '') ||
       _avatarBytes != null ||
-      _avatarUrl != _profile?.avatarUrl;
+      _avatarUrl != _profile?.avatarUrl ||
+      _shopDirty;
+
+  /// Có đổi ở mục doanh nghiệp (kể cả đang gõ dở / sai định dạng)
+  bool get _shopDirty {
+    final shop = _shop?.shop;
+    if (shop == null) return false;
+    return _contactPhone.text.trim() != (shop.contactPhone ?? '') ||
+        _businessEmail.text.trim() != (shop.businessEmail ?? '') ||
+        _website.text.trim() != (shop.website ?? '') ||
+        _address.text.trim() != (shop.address ?? '') ||
+        (_hoursTouched && !listEquals(_hours, shop.openingHours));
+  }
 
   /// Thông tin tài khoản mở sẵn; thông tin riêng tư thu gọn
   bool _accountOpen = true, _privateOpen = false;
@@ -271,6 +446,154 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
           ),
         ),
       );
+  }
+
+  /// Mục "Thông tin doanh nghiệp" (chỉ shop): tên + mã số thuế lấy từ hồ sơ
+  /// xác minh (chỉ xem), còn lại là liên hệ công khai sửa được
+  Widget _businessSection(String Function(String, String) t) {
+    final overview = _shop, shop = overview?.shop;
+    final verified = shop?.isVerified ?? false;
+    void clear(VoidCallback reset) => setState(reset);
+    return _Section(
+      key: const ValueKey('edit-profile-business'),
+      title: t('Thông tin doanh nghiệp', 'Business details'),
+      icon: verified
+          ? Icons.visibility_outlined
+          : Icons.visibility_off_outlined,
+      caption: verified
+          ? t(
+              'Hiện ở mục Liên hệ trên trang shop của bạn',
+              'Shown under Contact details on your shop page',
+            )
+          : t(
+              'Người mua chưa thấy thông tin này cho tới khi shop được xác minh',
+              "Buyers can't see these details until your shop is verified",
+            ),
+      open: _businessOpen,
+      onToggle: () => setState(() => _businessOpen = !_businessOpen),
+      children: [
+        if (overview == null)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: _shopFailed
+                  ? TextButton(
+                      onPressed: _loadShop,
+                      child: Text(
+                        t(
+                          'Không tải được thông tin shop. Thử lại',
+                          "Couldn't load your shop. Retry",
+                        ),
+                      ),
+                    )
+                  : const CircularProgressIndicator(),
+            ),
+          )
+        else if (shop != null) ...[
+          if (!verified)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                key: const ValueKey('edit-profile-verify-shop'),
+                style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                onPressed: () => context.push(MyShopView.path),
+                child: Text(t('Xác minh shop', 'Verify your shop')),
+              ),
+            ),
+          _ReadOnlyRow(
+            fieldKey: 'edit-profile-business-name',
+            label: t('Tên doanh nghiệp', 'Company name'),
+            value: overview.businessName ?? t('Chưa có', 'Not provided'),
+            verified: verified && overview.businessName != null,
+          ),
+          _ReadOnlyRow(
+            fieldKey: 'edit-profile-tax-code',
+            label: t(
+              'Mã số doanh nghiệp / mã số thuế',
+              'Business registration number',
+            ),
+            value: overview.taxCode ?? t('Chưa có', 'Not provided'),
+            verified: verified && overview.taxCode != null,
+            caption: t(
+              'Lấy từ hồ sơ xác minh shop. Muốn đổi, gửi lại hồ sơ xác minh.',
+              'From your shop verification. Resubmit verification to change it.',
+            ),
+          ),
+          _Field(
+            fieldKey: 'edit-profile-contact-phone',
+            controller: _contactPhone,
+            label: t('Số điện thoại liên hệ', 'Contact number'),
+            hint: t('VD 0901234567', 'e.g. 0901234567'),
+            maxLength: 16,
+            keyboardType: TextInputType.phone,
+            helper: t(
+              'Trống thì dùng số điện thoại tài khoản.',
+              'Leave empty to use your account phone number.',
+            ),
+            error: _contactPhoneError,
+            onChanged: (_) => clear(() => _contactPhoneError = null),
+          ),
+          _Field(
+            fieldKey: 'edit-profile-business-email',
+            controller: _businessEmail,
+            label: t('Email doanh nghiệp', 'Business email'),
+            hint: 'shop@example.com',
+            maxLength: 120,
+            keyboardType: TextInputType.emailAddress,
+            error: _businessEmailError,
+            onChanged: (_) => clear(() => _businessEmailError = null),
+          ),
+          _Field(
+            fieldKey: 'edit-profile-website',
+            controller: _website,
+            label: t('Website', 'Your website'),
+            hint: 'https://',
+            maxLength: 300,
+            keyboardType: TextInputType.url,
+            error: _websiteError,
+            onChanged: (_) => clear(() => _websiteError = null),
+          ),
+          _Field(
+            fieldKey: 'edit-profile-business-address',
+            controller: _address,
+            label: t('Địa chỉ doanh nghiệp', 'Business address'),
+            hint: t(
+              'VD 12 Lê Lợi, Phường Hải Châu, Đà Nẵng',
+              'e.g. 12 Le Loi, Hai Chau, Da Nang',
+            ),
+            maxLength: 120,
+            onChanged: (_) => setState(() {}),
+          ),
+          Text(
+            t('Giờ mở cửa', 'Operating hours'),
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          MyShopHoursField(
+            key: const ValueKey('edit-profile-hours'),
+            days: _days,
+            open: _open,
+            close: _close,
+            onDaysChanged: (days) => setState(() {
+              _days = days;
+              _hoursTouched = true;
+            }),
+            onOpenChanged: (time) => setState(() {
+              _open = time;
+              _hoursTouched = true;
+            }),
+            onCloseChanged: (time) => setState(() {
+              _close = time;
+              _hoursTouched = true;
+            }),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ],
+    );
   }
 
   @override
@@ -471,6 +794,10 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
                     ),
                   ],
                 ),
+                if (_isShop) ...[
+                  const SizedBox(height: 8),
+                  _businessSection(t),
+                ],
               ],
             ),
           ),

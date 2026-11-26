@@ -33,6 +33,7 @@ import 'widgets/following_shop_filter.dart';
 import 'widgets/following_posts_row.dart';
 import 'widgets/following_section_title.dart';
 import 'widgets/shop_suggestion_card.dart';
+import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 
 class FollowingHubMobileView extends StatelessWidget {
   const FollowingHubMobileView({super.key});
@@ -329,7 +330,14 @@ class FollowingHubMobileView extends StatelessWidget {
       onTap: () => _openShop(context, suggestion.item, suggestion: true),
       onFollowTap: () => cubit.toggleSuggestion(suggestion),
       onListingTap: (item) =>
-          context.push('/listings/${item.listing.id}', extra: item.listing),
+          context.push(
+            ProductDetailView.location(
+              item.listing.id,
+              title: item.listing.title,
+              shortId: item.listing.shortId,
+            ),
+            extra: item.listing,
+          ),
     );
   }
 
@@ -342,7 +350,7 @@ class FollowingHubMobileView extends StatelessWidget {
   }) async {
     final cubit = context.read<FollowingHubCubit>();
     final following = await context.push<bool>(
-      ShopDetailView.location(item.shop.id),
+      ShopDetailView.location(item.shop.id, name: item.shop.name),
       extra: item,
     );
     if (following == null || following == item.isFollowing) return;
@@ -355,7 +363,11 @@ class FollowingHubMobileView extends StatelessWidget {
     final cubit = context.read<FollowingHubCubit>();
     final id = item.listing.id;
     final favorite = await context.push<bool>(
-      '/listings/$id',
+      ProductDetailView.location(
+        id,
+        title: item.listing.title,
+        shortId: item.listing.shortId,
+      ),
       extra: item.listing,
     );
     if (favorite != null) cubit.syncFavorite(id, favorite);

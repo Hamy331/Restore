@@ -1,6 +1,12 @@
-import 'profile_reviews.dart';
+import 'package:restore/modules/content/views/report_user_sheet.dart';
+import 'package:restore/core/routes/profile_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restore/data/models/shop_model.dart';
+import 'package:restore/modules/trusted_shop/repositories/trusted_shop_repository.dart';
+import 'package:restore/modules/trusted_shop/views/shop_detail/shop_detail_view.dart';
+import 'package:restore/modules/trusted_shop/widgets/shop_verification_sheet.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -13,8 +19,7 @@ import '../../bloc/public_profile/public_profile_cubit.dart';
 import '../../bloc/public_profile/public_profile_state.dart';
 import '../../models/profile_models.dart';
 import '../../widgets/profile_posts.dart';
-import 'profile_about.dart';
-import 'seller_activity_preview.dart';
+import '../reviews/seller_reviews_view.dart';
 import 'seller_listings.dart';
 import 'seller_profile_summary.dart';
 import 'shop_poster_strip.dart';
@@ -23,9 +28,7 @@ class PublicProfileMobileView extends StatefulWidget {
   const PublicProfileMobileView({
     super.key,
     this.returnShopFollow = false,
-    this.openReviews = false,
   });
-  final bool openReviews;
   final bool returnShopFollow;
   @override
   State<PublicProfileMobileView> createState() =>
@@ -34,12 +37,9 @@ class PublicProfileMobileView extends StatefulWidget {
 
 class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
     with SingleTickerProviderStateMixin {
-  late final TabController _tabs = TabController(
-    length: 4,
-    initialIndex: widget.openReviews ? 2 : 0,
-    vsync: this,
-  );
-  bool _chatBusy = false;
+  // Chỉ Tin đăng và Bài viết; đánh giá, giới thiệu, liên hệ ở trang riêng
+  late final TabController _tabs = TabController(length: 2, vsync: this);
+  bool _chatBusy = false, _certBusy = false;
   bool? _shopFollowing;
   @override
   void dispose() {
@@ -89,13 +89,37 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
     }
   }
 
-  Future<void> _catalog(ProfileData p) async {
-    final result = await context.push<bool>(
-      '/shops/${p.storefront.shopId}?catalog=1',
-    );
-    if (!mounted || result == null) return;
-    setState(() => _shopFollowing = result);
-    await context.read<PublicProfileCubit>().load();
+  /// Sao chép liên kết trang shop / trang cá nhân (web: kèm tên miền đang chạy)
+  Future<void> _share(ProfileData p) async {
+    final l = AppLocalizations.of(context)!;
+    final shopId = p.storefront.shopId;
+    final path = shopId == null
+        ? profilePath(id: p.id, username: p.username)
+        : ShopDetailView.location(shopId, name: storefrontName(p));
+    final base = Uri.base;
+    final url = base.scheme == 'http' || base.scheme == 'https'
+        ? '${base.origin}$path'
+        : path;
+    await Clipboard.setData(ClipboardData(text: url));
+    if (mounted) {
+      _notice(shopId == null ? l.profProfileLinkCopied : l.profLinkCopied);
+    }
+  }
+
+  /// Bảng chứng nhận của shop (mã, ngày xác minh); tải thông tin shop khi bấm
+  Future<void> _certificate(ProfileData p) async {
+    final shopId = p.storefront.shopId;
+    if (shopId == null || _certBusy) return;
+    _certBusy = true;
+    ShopModel? shop;
+    try {
+      shop = (await ApiTrustedShopRepository().getShop(shopId)).shop;
+    } catch (_) {
+      // Không tải được thì vẫn mở bảng giải thích chung
+    } finally {
+      _certBusy = false;
+    }
+    if (mounted) await showShopVerificationSheet(context, shop: shop);
   }
 
   void _close() {
@@ -120,38 +144,64 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
         final own = p != null && context.currentUser?.id == p.id;
         final phone = s?.phone?.trim();
         final contact = p != null && !own;
-        // Desktop: thẻ hồ sơ cột trái (có sẵn Nhắn tin + Gọi), tab + lưới tin
-        // cột phải, không có thanh nút dưới đáy
+        // Desktop: cùng bố cục với điện thoại (bìa + thẻ + tab), rộng hơn; Nhắn
+        // tin + Gọi nằm trong thẻ, không có thanh nút dưới đáy
         final wide = isDesktopLayout(context);
+        // Điện thoại: ảnh bìa (hoặc nền màu cố định) lên tận mép trên, nút
+        // quay lại nổi trên bìa thay cho thanh tiêu đề
+        final shopCover = p != null && !wide;
         Widget summary() => SellerProfileSummary(
           profile: p!,
           showShopLogo: widget.returnShopFollow,
           following: p.followsSeller,
           onFollow: own ? null : () => _follow(p),
-          onCall: !own && phone != null && phone.isNotEmpty
+          // Điện thoại đã có Nhắn tin + Gọi ở thanh dưới đáy
+          onCall: wide && !own && phone != null && phone.isNotEmpty
               ? () => _call(phone)
               : null,
           onChat: wide && contact && !_chatBusy ? () => _chat(p) : null,
-          onReviews: () => _tabs.animateTo(2),
-          onCatalog: s!.verified ? () => _catalog(p) : null,
+          // Trang đánh giá riêng (thẻ xoay, lời khen, liên hệ): bấm số sao
+          // mở tab Đánh giá, bấm khung hồ sơ hoặc "trên ReStore" mở Giới thiệu
+          onReviews: () => context.push(SellerReviewsView.location(p.id)),
+          onBack: shopCover ? _close : null,
+          onShare: () => _share(p),
+          onAbout: () => context.push(
+            SellerReviewsView.location(p.id, tab: SellerReviewsTab.about),
+          ),
+          onCertificate: s!.verified ? () => _certificate(p) : null,
+          onReport: own
+              ? null
+              : () => reportUser(
+                  context,
+                  userId: p.id,
+                  username: p.username,
+                ),
         );
         // Poster đang chạy của cửa hàng Đối tác, dưới phần đầu trang
+        // Desktop: poster rộng tối đa 560px để không chiếm cả màn hình
         Widget posters() => s!.isShop
-            ? ShopPosterStrip(key: ValueKey(s.shopId), shopId: s.shopId!)
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: wide ? 560 : double.infinity,
+                  ),
+                  child: ShopPosterStrip(
+                    key: ValueKey(s.shopId),
+                    shopId: s.shopId!,
+                  ),
+                ),
+              )
             : const SizedBox.shrink();
         TabBar tabBar() => TabBar(
           controller: _tabs,
           indicatorSize: TabBarIndicatorSize.tab,
-          // 4 tab vừa màn hình hẹp (390px) không cắt chữ
-          labelPadding: const EdgeInsets.symmetric(horizontal: 4),
           indicatorColor: storefrontOrange,
           labelColor: storefrontOrange,
           unselectedLabelColor: Colors.black87,
           tabs: [
             Tab(text: l.accListings),
             Tab(text: (s?.isShop ?? false) ? l.feedsTitle : l.accActivity),
-            Tab(text: l.reviews),
-            Tab(text: l.profAbout),
           ],
         );
         Widget tabs() => TabBarView(
@@ -159,22 +209,15 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
           children: [
             SellerListings(
               userId: p!.id,
-              grid: wide,
+              // Lưới thẻ + tổng số tin + ô tìm + sắp xếp cho mọi người bán
+              grid: true,
+              searchable: true,
+              activeCount: s!.listings,
+              soldCount: s.sold,
               refresh: () async {
                 await Future.wait([cubit.load(), posts.load()]);
               },
-              summary: wide
-                  ? const SizedBox.shrink()
-                  : Column(
-                      children: [
-                        SellerActivityPreview(open: () => _tabs.animateTo(1)),
-                        const Divider(
-                          thickness: 5,
-                          height: 5,
-                          color: Color(0xfff5f5f5),
-                        ),
-                      ],
-                    ),
+              summary: const SizedBox.shrink(),
             ),
             RefreshIndicator(
               onRefresh: posts.load,
@@ -186,16 +229,6 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                 ),
               ),
             ),
-            ProfileReviews(profile: p),
-            ProfileAbout(
-              profile: p,
-              followerCount: s!.verified ? s.shopFollowers : p.followerCount,
-              onFollowers: s.verified
-                  ? null
-                  : () => context.push('/users/${p.id}/follows?tab=followers'),
-              onFollowing: () =>
-                  context.push('/users/${p.id}/follows?tab=following'),
-            ),
           ],
         );
         return PopScope(
@@ -205,19 +238,22 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
           },
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              surfaceTintColor: Colors.transparent,
-              centerTitle: true,
-              leading: BackButton(onPressed: _close),
-              title: Text(
-                p == null ? '' : storefrontName(p),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              // Desktop: tab nằm trên cột phải; điện thoại: tab ghim dưới đầu trang
-              bottom: p == null || !wide ? null : tabBar(),
-            ),
+            appBar: shopCover
+                ? null
+                : AppBar(
+                    backgroundColor: Colors.white,
+                    surfaceTintColor: Colors.transparent,
+                    centerTitle: true,
+                    leading: BackButton(onPressed: _close),
+                    title: Text(
+                      p == null ? '' : storefrontName(p),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    // Desktop: tab nằm trên cột phải; điện thoại: tab ghim dưới đầu trang
+                    // Điện thoại: tab ghim dưới đầu trang; desktop không có tab
+                    bottom: null,
+                  ),
             body: p == null
                 ? Center(
                     child: state.failed
@@ -233,34 +269,11 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                           )
                         : const CircularProgressIndicator(),
                   )
-                : wide
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(
-                        width: 320,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              summary(),
-                              posters(),
-                              SellerActivityPreview(
-                                open: () => _tabs.animateTo(1),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const VerticalDivider(width: 1, color: Color(0xffeeeeee)),
-                      Expanded(child: tabs()),
-                    ],
-                  )
                 : Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 720),
-                      // Bố cục như Carousell: ảnh bìa, avatar giữa, tên + nhãn,
-                      // đánh giá + thời gian ở ReStore, rồi tab ghim khi cuộn
+                      constraints: BoxConstraints(maxWidth: wide ? 1200 : 720),
+                      // Ảnh bìa, thẻ hồ sơ nổi, giới thiệu, poster, rồi tab
+                      // ghim khi cuộn
                       child: NestedScrollView(
                         headerSliverBuilder: (_, _) => [
                           SliverToBoxAdapter(
@@ -268,7 +281,14 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
                           ),
                           SliverPersistentHeader(
                             pinned: true,
-                            delegate: _TabsHeader(tabBar()),
+                            delegate: _TabsHeader(
+                              tabBar(),
+                              // Không có thanh tiêu đề: tab ghim chừa chỗ
+                              // cho thanh trạng thái
+                              top: shopCover
+                                  ? MediaQuery.paddingOf(context).top
+                                  : 0,
+                            ),
                           ),
                         ],
                         body: tabs(),
@@ -338,11 +358,14 @@ class _PublicProfileMobileViewState extends State<PublicProfileMobileView>
 
 /// Thanh tab ghim dưới đầu trang hồ sơ khi cuộn
 class _TabsHeader extends SliverPersistentHeaderDelegate {
-  _TabsHeader(this.bar);
+  _TabsHeader(this.bar, {this.top = 0});
   final TabBar bar;
 
+  /// Khoảng trống phía trên (thanh trạng thái) khi trang không có AppBar
+  final double top;
+
   @override
-  double get minExtent => bar.preferredSize.height + 1;
+  double get minExtent => bar.preferredSize.height + 1 + top;
 
   @override
   double get maxExtent => minExtent;
@@ -353,6 +376,7 @@ class _TabsHeader extends SliverPersistentHeaderDelegate {
         color: Colors.white,
         child: Column(
           children: [
+            SizedBox(height: top),
             bar,
             const Divider(height: 1, color: Color(0xffeeeeee)),
           ],
@@ -360,5 +384,5 @@ class _TabsHeader extends SliverPersistentHeaderDelegate {
       );
 
   @override
-  bool shouldRebuild(_TabsHeader old) => old.bar != bar;
+  bool shouldRebuild(_TabsHeader old) => old.bar != bar || old.top != top;
 }

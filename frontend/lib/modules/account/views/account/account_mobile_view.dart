@@ -1,8 +1,10 @@
+import 'package:restore/core/routes/profile_path.dart';
 import 'package:flutter/material.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_dimesions.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../feeds/bloc/feeds/feeds_cubit.dart';
@@ -15,6 +17,7 @@ import '../../bloc/user_profile/user_profile_state.dart';
 import '../../models/profile_models.dart';
 import './widgets/account_listings.dart';
 import './widgets/account_menu.dart';
+import './widgets/my_account_header.dart';
 import '../edit_profile/edit_profile_view.dart';
 import '../my_reviews/my_reviews_view.dart';
 import '../../widgets/profile_header.dart';
@@ -122,13 +125,16 @@ class _AccountMobileViewState extends State<AccountMobileView> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final userCubit = context.read<UserProfileCubit>();
+    // Tablet (>= 600): rộng hơn, lề lớn hơn và tin đăng chia 2 cột
+    final wide = MediaQuery.sizeOf(context).width >= AppDimesions.mobileWidth;
+    final pad = EdgeInsets.symmetric(horizontal: wide ? 28 : 18);
     return SafeArea(
       bottom: false,
       child: ColoredBox(
         color: AppColors.surface,
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
+            constraints: BoxConstraints(maxWidth: wide ? 960 : 640),
             child: AppPullToRefresh(
               onRefresh: refresh,
               child: NotificationListener<ScrollNotification>(
@@ -137,7 +143,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                      padding: pad,
                       sliver: SliverToBoxAdapter(
                         child: BlocBuilder<UserProfileCubit, UserProfileState>(
                           builder: (context, userState) {
@@ -145,7 +151,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 12),
                                 _TopBar(
                                   onEdit: openEditProfile,
                                   onFollowing: profile == null
@@ -155,7 +161,7 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                           FollowListKind.following,
                                         ),
                                 ),
-                                const SizedBox(height: 26),
+                                const SizedBox(height: 14),
                                 if (userState.failed)
                                   AppLoadErrorView(
                                     title: l.accLoadError,
@@ -163,11 +169,18 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                                     compact: true,
                                   )
                                 else
-                                  ProfileHeader(
+                                  MyAccountHeader(
                                     profile: profile,
+                                    onViewProfile: profile == null
+                                        ? null
+                                        : () => context.push(
+                                            profilePath(
+                                              id: profile.id,
+                                              username: profile.username,
+                                            ),
+                                          ),
                                     onRatingTap: () =>
                                         context.push(MyReviewsView.ratingsPath),
-                                    onAvatarTap: openEditProfile,
                                     onBioTap: openEditProfile,
                                     onFollowingTap: profile == null
                                         ? null
@@ -247,14 +260,17 @@ class _AccountMobileViewState extends State<AccountMobileView> {
                     ),
                     if (section == _Section.listings)
                       SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
+                        padding: pad,
                         sliver:
                             BlocBuilder<
                               AccountListingsCubit,
                               AccountListingsState
                             >(
                               builder: (context, state) => SliverMainAxisGroup(
-                                slivers: accountListingSlivers(state),
+                                slivers: accountListingSlivers(
+                                  state,
+                                  columns: wide ? 2 : 1,
+                                ),
                               ),
                             ),
                       )
@@ -282,42 +298,26 @@ class _TopBar extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return Row(
       children: [
+        Expanded(
+          child: Text(
+            l.myAccount,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontFamily: profileFontFamily,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
         IconButton(
           tooltip: l.accEditPage,
           onPressed: onEdit,
           icon: const Icon(
             AppIcons.edit,
             color: AppColors.textPrimary,
-            size: 25,
-          ),
-        ),
-        const SizedBox(width: 14),
-        Container(
-          width: 30,
-          height: 30,
-          alignment: Alignment.center,
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
-            shape: BoxShape.circle,
-          ),
-          child: const Text(
-            'R',
-            style: TextStyle(
-              fontFamily: profileFontFamily,
-              color: AppColors.surface,
-              fontWeight: FontWeight.w800,
-              fontSize: 19,
-            ),
-          ),
-        ),
-        const Spacer(),
-        IconButton(
-          tooltip: l.accActivity,
-          onPressed: () => showComingSoon(context),
-          icon: const Icon(
-            AppIcons.activity,
-            color: AppColors.textPrimary,
-            size: 25,
+            size: 24,
           ),
         ),
         IconButton(
