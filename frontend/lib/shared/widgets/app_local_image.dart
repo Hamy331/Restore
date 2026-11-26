@@ -39,8 +39,7 @@ class AppLocalImage extends StatelessWidget {
   });
 
   static bool _isOwnServer(String url) =>
-      Uri.tryParse(url)?.origin ==
-      Uri.parse(AppEnvironment.apiBaseUrl).origin;
+      Uri.tryParse(url)?.origin == Uri.parse(AppEnvironment.apiBaseUrl).origin;
 
   static Widget _fadeIn(
     BuildContext _,

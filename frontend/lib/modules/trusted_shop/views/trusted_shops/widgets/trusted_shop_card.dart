@@ -15,11 +15,15 @@ class TrustedShopCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onFollowTap;
 
+  /// Trong lưới (tablet / desktop): thẻ giãn theo ô thay vì rộng cố định
+  final bool expand;
+
   const TrustedShopCard({
     super.key,
     required this.item,
     required this.onTap,
     required this.onFollowTap,
+    this.expand = false,
   });
 
   static const double width = 280;
@@ -36,7 +40,7 @@ class TrustedShopCard extends StatelessWidget {
     final coverUrl = shop.coverUrl;
 
     return SizedBox(
-      width: width,
+      width: expand ? null : width,
       height: height,
       child: Material(
         color: AppColors.surface,

@@ -17,6 +17,7 @@ import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 
 import '../../bloc/hot_sale_cubit.dart';
 import '../../bloc/hot_sale_state.dart';
+import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 
 class HotSaleMobileView extends StatelessWidget {
   const HotSaleMobileView({super.key});
@@ -27,7 +28,11 @@ class HotSaleMobileView extends StatelessWidget {
     final cubit = context.read<HotSaleCubit>();
     final id = item.listing.id;
     final favorite = await context.push<bool>(
-      '/listings/$id',
+      ProductDetailView.location(
+        id,
+        title: item.listing.title,
+        shortId: item.listing.shortId,
+      ),
       extra: item.listing,
     );
     if (favorite != null) cubit.syncFavorite(id, favorite);

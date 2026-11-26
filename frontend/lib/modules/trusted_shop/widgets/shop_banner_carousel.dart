@@ -15,11 +15,22 @@ class ShopBannerCarousel extends StatefulWidget {
   final List<ShopBannerItem> banners;
   final ValueChanged<ShopBannerItem> onTap;
 
+  /// Số banner thấy cùng lúc. Màn rộng (tablet / desktop) hiện 2 banner
+  /// cạnh nhau để mỗi banner vẫn có cỡ như trên điện thoại
+  final int columns;
+
   const ShopBannerCarousel({
     super.key,
     required this.banners,
     required this.onTap,
+    this.columns = 1,
   });
+
+  /// Khoảng cách giữa hai banner cạnh nhau
+  static const double _gap = 12;
+
+  /// Số banner thấy cùng lúc theo bề ngang [width] của khu
+  static int columnsFor(double width) => width >= 600 ? 2 : 1;
 
   /// Giống HomeBanner.aspectRatio để banner shop đặt được ở trang chủ
   static const double aspectRatio = 2;
@@ -36,9 +47,17 @@ class ShopBannerCarousel extends StatefulWidget {
 class _ShopBannerCarouselState extends State<ShopBannerCarousel> {
   static const Duration _interval = Duration(seconds: 5);
 
-  final _controller = PageController();
+  late PageController _controller = _newController();
   Timer? _timer;
   int _page = 0;
+
+  PageController _newController() =>
+      PageController(viewportFraction: 1 / widget.columns);
+
+  /// Số trang cuộn được: mỗi trang đẩy thêm một banner, trang cuối vẫn đủ
+  /// [ShopBannerCarousel.columns] banner trong khung
+  int get _pageCount =>
+      (widget.banners.length - widget.columns + 1).clamp(1, 1 << 20);
 
   @override
   void didChangeDependencies() {
@@ -49,8 +68,17 @@ class _ShopBannerCarouselState extends State<ShopBannerCarousel> {
   @override
   void didUpdateWidget(ShopBannerCarousel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_page >= widget.banners.length) _page = 0;
-    if (oldWidget.banners.length != widget.banners.length) _restartTimer();
+    if (oldWidget.columns != widget.columns) {
+      // Đổi số cột (xoay máy, kéo giãn cửa sổ): dựng lại bộ điều khiển trang
+      _controller.dispose();
+      _controller = _newController();
+      _page = 0;
+    }
+    if (_page >= _pageCount) _page = 0;
+    if (oldWidget.banners.length != widget.banners.length ||
+        oldWidget.columns != widget.columns) {
+      _restartTimer();
+    }
   }
 
   @override
@@ -62,13 +90,13 @@ class _ShopBannerCarouselState extends State<ShopBannerCarousel> {
 
   void _restartTimer() {
     _timer?.cancel();
-    if (widget.banners.length < 2 || MediaQuery.disableAnimationsOf(context)) {
+    if (_pageCount < 2 || MediaQuery.disableAnimationsOf(context)) {
       return;
     }
     _timer = Timer.periodic(_interval, (_) {
       if (!_controller.hasClients) return;
       _controller.animateToPage(
-        (_page + 1) % widget.banners.length,
+        (_page + 1) % _pageCount,
         duration: const Duration(milliseconds: 520),
         curve: Curves.easeOutCubic,
       );
@@ -80,12 +108,23 @@ class _ShopBannerCarouselState extends State<ShopBannerCarousel> {
     final banners = widget.banners;
     if (banners.isEmpty) return const SizedBox.shrink();
 
+    final columns = widget.columns;
+    final pages = _pageCount;
+    // Mỗi banner chừa nửa khoảng cách mỗi bên; lề ngoài bù lại để mép
+    // banner đầu và cuối vẫn thẳng với phần nội dung
+    const halfGap = ShopBannerCarousel._gap / 2;
+    final outer = ShopBannerCarousel._sidePadding - (columns > 1 ? halfGap : 0);
+    final itemPadding = columns > 1
+        ? halfGap
+        : ShopBannerCarousel._sidePadding;
     return LayoutBuilder(
       builder: (context, constraints) => Column(
         children: [
           SizedBox(
             height:
-                (constraints.maxWidth - ShopBannerCarousel._sidePadding * 2) /
+                ((constraints.maxWidth - (columns > 1 ? outer * 2 : 0)) /
+                        columns -
+                    itemPadding * 2) /
                 ShopBannerCarousel.aspectRatio,
             child: NotificationListener<ScrollNotification>(
               // Người dùng tự kéo thì dừng tự chuyển, thả ra chạy lại
@@ -98,28 +137,35 @@ class _ShopBannerCarouselState extends State<ShopBannerCarousel> {
                 }
                 return false;
               },
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: banners.length,
-                onPageChanged: (page) => setState(() => _page = page),
-                itemBuilder: (_, index) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: ShopBannerCarousel._sidePadding,
-                  ),
-                  child: _BannerImage(
-                    item: banners[index],
-                    onTap: () => widget.onTap(banners[index]),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: columns > 1 ? outer : 0,
+                ),
+                child: PageView.builder(
+                  controller: _controller,
+                  // Nhiều banner trong khung: banner đầu sát lề trái, cuộn
+                  // tới cuối thì banner cuối sát lề phải, không chừa ô trống
+                  padEnds: columns == 1,
+                  clipBehavior: Clip.hardEdge,
+                  itemCount: banners.length,
+                  onPageChanged: (page) => setState(() => _page = page),
+                  itemBuilder: (_, index) => Padding(
+                    padding: EdgeInsets.symmetric(horizontal: itemPadding),
+                    child: _BannerImage(
+                      item: banners[index],
+                      onTap: () => widget.onTap(banners[index]),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-          if (banners.length > 1) ...[
+          if (pages > 1) ...[
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (var index = 0; index < banners.length; index++)
+                for (var index = 0; index < pages; index++)
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 260),
                     curve: Curves.easeOutCubic,

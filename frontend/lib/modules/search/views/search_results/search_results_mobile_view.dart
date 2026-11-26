@@ -115,10 +115,10 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
     if (filter != null) cubit.applyFilter(filter);
   }
 
-  Future<void> _pickSort() async {
+  Future<void> _pickSort(BuildContext anchor) async {
     final cubit = context.read<SearchResultsCubit>();
     final sort = await showListingSortSheet(
-      context,
+      anchor,
       selected: cubit.state.filter.sort,
       options: SearchResultsState.sortOptions,
     );
@@ -139,7 +139,7 @@ class _SearchResultsMobileViewState extends State<SearchResultsMobileView> {
   /// Mở trang shop; quay lại mà trạng thái theo dõi đã đổi thì cập nhật
   Future<void> _openShop(TrustedShopItem item) async {
     final following = await context.push<bool>(
-      ShopDetailView.location(item.shop.id),
+      ShopDetailView.location(item.shop.id, name: item.shop.name),
       extra: item,
     );
     if (following == null || !mounted) return;

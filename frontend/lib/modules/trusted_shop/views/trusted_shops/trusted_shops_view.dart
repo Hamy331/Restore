@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restore/core/config/app_environment.dart';
-import 'package:restore/core/ui/layouts/t_responsive_layout.dart';
 
 import '../../bloc/followed_shops/followed_shops_cubit.dart';
 import '../../bloc/trusted_shops/trusted_shops_cubit.dart';
 import '../../repositories/shop_following_repository.dart';
 import '../../repositories/trusted_shop_repository.dart';
-import 'trusted_shops_mobile_view.dart';
+import 'trusted_shops_page.dart';
 
 /// Route `/trusted-shops`: shop đã xác minh (chính hãng hoặc được ReStore
 /// chứng nhận) và sản phẩm của các shop đó, chia thành các khu.
@@ -54,9 +53,8 @@ class TrustedShopsView extends StatelessWidget {
           )..load(),
         ),
       ],
-      child: TResponsiveLayout(
-        mobile: TrustedShopsMobileView(openShopId: openShopId),
-      ),
+      // Một trang tự chia điện thoại / tablet / desktop theo bề ngang
+      child: TrustedShopsPage(openShopId: openShopId),
     );
   }
 }
