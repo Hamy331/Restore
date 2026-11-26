@@ -1,3 +1,4 @@
+import 'package:restore/core/routes/profile_path.dart';
 import 'package:restore/shared/widgets/search/app_listing_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
@@ -19,6 +20,7 @@ import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 import 'package:restore/modules/notifications/bloc/notification_badge/notification_badge_cubit.dart';
+import 'package:restore/modules/notifications/widgets/notifications_dropdown_panel.dart';
 import 'package:restore/shared/widgets/app_count_badge.dart';
 import 'package:restore/modules/auth/utils/auth_route_guard.dart';
 import 'package:restore/modules/listings/models/create_listing_step.dart';
@@ -83,6 +85,11 @@ class _DesktopHeaderState extends State<DesktopHeader> {
   final _suggestLink = LayerLink();
   final _suggestions = OverlayPortalController();
   final _tapGroup = Object();
+
+  /// Khung thông báo thả xuống dưới chuông (thay cho trang riêng trên desktop)
+  final _bellLink = LayerLink();
+  final _bell = OverlayPortalController();
+  final _bellGroup = Object();
   SearchCubit? _searchCubit;
   List<CategoryModel> _categories = const [];
   double _boxWidth = 480;
@@ -150,13 +157,57 @@ class _DesktopHeaderState extends State<DesktopHeader> {
 
   void _openShop(TrustedShopItem item) {
     _closeSuggestions();
-    context.push(ShopDetailView.location(item.shop.id), extra: item);
+    context.push(
+      ShopDetailView.location(item.shop.id, name: item.shop.name),
+      extra: item,
+    );
   }
 
   void _openUser(SearchUserItem user) {
     _closeSuggestions();
-    context.push('/users/${user.id}');
+    context.push(profilePath(id: user.id, username: user.username));
   }
+
+  Widget _bellPanel(BuildContext context) => CompositedTransformFollower(
+    link: _bellLink,
+    targetAnchor: Alignment.bottomRight,
+    followerAnchor: Alignment.topRight,
+    offset: const Offset(0, 8),
+    child: Align(
+      alignment: Alignment.topRight,
+      child: TapRegion(
+        groupId: _bellGroup,
+        onTapOutside: (_) => _bell.hide(),
+        child: Material(
+          color: AppColors.surface,
+          elevation: 10,
+          borderRadius: BorderRadius.circular(16),
+          clipBehavior: Clip.antiAlias,
+          child: NotificationsDropdownPanel(onClose: _bell.hide),
+        ),
+      ),
+    ),
+  );
+
+  /// Chuông: bấm thì thả khung thông báo xuống (chưa đăng nhập thì mở trang
+  /// đăng nhập)
+  Widget _bellAction({required String tooltip, int count = 0}) =>
+      OverlayPortal(
+        controller: _bell,
+        overlayChildBuilder: _bellPanel,
+        child: CompositedTransformTarget(
+          link: _bellLink,
+          child: TapRegion(
+            groupId: _bellGroup,
+            child: _iconAction(
+              icon: AppIcons.notification,
+              tooltip: tooltip,
+              count: count,
+              onTap: _bell.toggle,
+            ),
+          ),
+        ),
+      );
 
   Widget _suggestionPanel(BuildContext context) => CompositedTransformFollower(
     link: _suggestLink,
@@ -391,19 +442,13 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                   onTap: () => context.push('/saved'),
                 ),
                 if (notifications == null)
-                  _iconAction(
-                    icon: AppIcons.notification,
-                    tooltip: t('Thông báo', 'Notifications'),
-                    onTap: () => context.push('/notifications'),
-                  )
+                  _bellAction(tooltip: t('Thông báo', 'Notifications'))
                 else
                   BlocBuilder<NotificationBadgeCubit, int>(
                     bloc: notifications,
-                    builder: (context, count) => _iconAction(
-                      icon: AppIcons.notification,
+                    builder: (context, count) => _bellAction(
                       tooltip: t('Thông báo', 'Notifications'),
                       count: user == null ? 0 : count,
-                      onTap: () => context.push('/notifications'),
                     ),
                   ),
                 _iconAction(
@@ -579,7 +624,7 @@ class _AccountMenu extends StatelessWidget {
         item(
           AppIcons.user,
           t('Hồ sơ của tôi', 'My profile'),
-          () => context.push('/users/${user.id}'),
+          () => context.push(profilePath(id: user.id, username: user.username)),
         ),
         item(
           AppIcons.settings,
