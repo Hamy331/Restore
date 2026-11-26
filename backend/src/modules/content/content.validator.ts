@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { AppError } from '../../common/errors/app-error.js';
 import { boolean, choice, object, page, text, version } from '../../common/validation/admin-input.js';
-import { MEDIA_NAME, MEDIA_PREFIX, POST_STATUSES, REPORT_ACTIONS, REPORT_STATUSES, REPORT_TARGETS, TICKET_STATUSES } from './content.type.js';
+import { MEDIA_NAME, MEDIA_PREFIX, REPORT_ACTIONS, REPORT_STATUSES, REPORT_TARGETS, TICKET_STATUSES } from './content.type.js';
 import { ADMIN_PAGE_SIZE } from '../../common/validation/admin-input.js';
 
 /*
@@ -81,29 +81,7 @@ export const idParams = z.object({ id: z.string() });
 export const slugParams = z.object({ slug: z.string() });
 export const mediaParams = z.object({ filename: z.string() });
 
-/* ---------- Quản trị nội dung (/admin/posts, tickets, knowledge, reports) ---------- */
-
-/**
- * Body POST /admin/posts, PUT /admin/posts/:id.
- * updatedAt để nguyên: chỉ PUT dùng, và chỉ kiểm tra sau khi đã kiểm tra tin liên quan (như API cũ).
- */
-export const postBody = z.unknown().transform((value) => {
-  const body = object(value, ['title', 'slug', 'category', 'content', 'coverUrl', 'listingIds', 'status', 'updatedAt']);
-  const title = text(body.title, 'title', 5, 160), slug = text(body.slug, 'slug', 3, 160);
-  const category = text(body.category, 'category', 2, 100), content = text(body.content, 'content', 20, 50000);
-  if (!/^[a-z0-9-]+$/.test(slug)) throw new AppError(400, 'INVALID_SLUG', 'Slug chỉ gồm chữ thường, số, dấu gạch ngang.');
-  const status = choice(body.status, POST_STATUSES);
-  const coverUrl = body.coverUrl ? text(body.coverUrl, 'coverUrl', 1, 300) : null;
-  if (coverUrl && !(coverUrl.startsWith(MEDIA_PREFIX) && MEDIA_NAME.test(coverUrl.slice(MEDIA_PREFIX.length)))) {
-    throw new AppError(400, 'INVALID_COVER', 'Chọn ảnh bìa đã tải lên hệ thống.');
-  }
-  if (!Array.isArray(body.listingIds) || body.listingIds.length > 10 || body.listingIds.some((id) => typeof id !== 'string' || id.length > 100)) {
-    throw new AppError(400, 'INVALID_LISTINGS', 'Tối đa 10 tin liên quan.');
-  }
-  const listingIds = [...new Set(body.listingIds as string[])];
-  return { data: { title, slug, category, content, coverUrl, listingIds, status }, updatedAt: body.updatedAt };
-});
-
+/* ---------- Quản trị nội dung (tickets, knowledge, reports) ---------- */
 /** Body POST /admin/tickets/:id/reply */
 export const adminTicketReplyBody = z.unknown().transform((value) => {
   const body = object(value, ['content', 'updatedAt']);
@@ -192,4 +170,3 @@ export const adminTicketListQuery = z.record(z.string(), z.unknown()).transform(
   page: page(query.page),
   status: query.status === 'OPEN' || query.status === 'RESOLVED' ? query.status : undefined,
 }));
-export const adminPostListQuery = z.record(z.string(), z.unknown()).transform(query => ({page:page(query.page), withAuthor:query.include === 'author'}));

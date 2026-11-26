@@ -6,7 +6,6 @@ import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getObject, putObject } from '../../../services/storage.service.js';
 import { imageExtension } from '../../listings/index.js';
 import { MEDIA_NAME, MEDIA_PREFIX } from '../content.type.js';
-import * as postRepository from '../repositories/post.repository.js';
 
 /** Ảnh nội dung nằm ở khu 'admin' của storage (ổ đĩa hoặc Supabase Storage, theo STORAGE_DRIVER) */
 const AREA = 'admin';
@@ -19,11 +18,11 @@ export async function upload(contentType: string | undefined, bytes: unknown) {
   return { url: `${MEDIA_PREFIX}${filename}` };
 }
 
-/** Đọc ảnh: ai cũng xem được ảnh bìa của bài đã đăng; ảnh khác chỉ người quản lý nội dung */
+/** Đọc ảnh: chỉ người quản lý nội dung */
 export async function read(viewer: AuthRequest['user'], filename: string) {
   const notFound = () => new AppError(404, 'IMAGE_NOT_FOUND', 'Không có ảnh.');
   if (!MEDIA_NAME.test(filename)) throw notFound();
-  if (!hasPermission(viewer?.role, PERMISSION.CONTENT_MANAGE) && !await postRepository.isPublishedCover(`${MEDIA_PREFIX}${filename}`)) {
+  if (!hasPermission(viewer?.role, PERMISSION.CONTENT_MANAGE)) {
     throw notFound();
   }
   const bytes = await getObject(AREA, filename);

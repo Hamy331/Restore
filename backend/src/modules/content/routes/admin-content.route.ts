@@ -3,10 +3,9 @@ import { PERMISSION } from '../../../common/auth/permissions.js';
 import { authorizePermission } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import {
-  adminPostListQuery, adminReportQuery, adminTicketListQuery, adminTicketReplyBody, idParams, knowledgeBody, pageOnlyQuery, postBody, resolveReportBody, ticketStatusBody, versionBody,
+  adminReportQuery, adminTicketListQuery, adminTicketReplyBody, idParams, knowledgeBody, pageOnlyQuery, resolveReportBody, ticketStatusBody, versionBody,
 } from '../content.validator.js';
 import * as knowledgeController from '../controllers/knowledge.controller.js';
-import * as postController from '../controllers/post.controller.js';
 import * as reportController from '../controllers/report.controller.js';
 import * as ticketController from '../controllers/ticket.controller.js';
 
@@ -18,29 +17,6 @@ import * as ticketController from '../controllers/ticket.controller.js';
 const adminContentRouter = Router();
 const manageContent = authorizePermission(PERMISSION.CONTENT_MANAGE);
 const manageUsers = authorizePermission(PERMISSION.USER_MANAGE);
-
-/* ---------- Bài viết ---------- */
-
-/**
- * Mọi bài viết, cập nhật gần nhất trước
- *
- * Query params:
- *  - page?: number (mặc định 1)
- */
-adminContentRouter.get('/posts', manageContent, validate({ query: adminPostListQuery }), postController.listForAdmin);
-
-/**
- * Tạo bài viết (POST) hoặc sửa bài (PUT /posts/:id)
- *
- * Body:
- *  - title: string (5-160), slug: string (3-160, a-z 0-9 -), category: string (2-100), content: string (20-50000)
- *  - status: 'DRAFT' | 'PUBLISHED' | 'HIDDEN' | 'ARCHIVED'
- *  - coverUrl?: string - ảnh đã tải lên /content/media
- *  - listingIds: string[] (tối đa 10) - tin đang hiển thị
- *  - updatedAt: ISO 8601 - chỉ khi sửa
- */
-adminContentRouter.post('/posts', manageContent, validate({ body: postBody }), postController.create);
-adminContentRouter.put('/posts/:id', manageContent, validate({ params: idParams, body: postBody }), postController.update);
 
 /* ---------- Hỗ trợ ---------- */
 

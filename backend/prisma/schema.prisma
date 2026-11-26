@@ -758,25 +758,6 @@ model ViolationReport {
   @@index([targetType, targetId, status, createdAt])
   @@index([status, reasonCode, createdAt])
 }
-enum PostStatus {
-  DRAFT
-  PUBLISHED
-  HIDDEN
-  ARCHIVED
-}
-model BlogPost {
-  id String @id @default(uuid())
-  title String
-  slug String @unique
-  content String
-  category String
-  coverUrl String?
-  listingIds String[]
-  status PostStatus @default(DRAFT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@index([status, createdAt])
-}
 model SupportTicket {
   id String @id @default(uuid())
   userId String

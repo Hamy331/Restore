@@ -24,15 +24,14 @@ const AREAS: { area: StorageArea; prefix: string; label: string }[] = [
 
 /** Tên file đang được DB dùng, theo khu */
 async function referencedNames() {
-  const [listings, posts] = await Promise.all([
+  const [listings] = await Promise.all([
     prisma.listing.findMany({ select: { images: true } }),
-    prisma.blogPost.findMany({ where: { coverUrl: { not: null } }, select: { coverUrl: true } }),
   ]);
   const pick = (urls: string[], prefix: string) =>
     new Set(urls.filter((url) => url.startsWith(prefix)).map((url) => url.slice(prefix.length)));
   return {
     listings: pick(listings.flatMap((item) => item.images), IMAGE_PREFIX),
-    admin: pick(posts.map((item) => item.coverUrl!), MEDIA_PREFIX),
+    admin: new Set<string>(),
   } satisfies Record<StorageArea, Set<string>>;
 }
 

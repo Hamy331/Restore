@@ -10,7 +10,6 @@ export const REPORT_TARGETS = ['LISTING', 'USER', 'FEED_POST'] as const;
 export type ReportTarget = (typeof REPORT_TARGETS)[number];
 
 
-export const POST_STATUSES = ['DRAFT', 'PUBLISHED', 'HIDDEN', 'ARCHIVED'] as const;
 export const TICKET_STATUSES = ['OPEN', 'RESOLVED'] as const;
 export const REPORT_STATUSES = ['OPEN', 'RESOLVED', 'DISMISSED'] as const;
 

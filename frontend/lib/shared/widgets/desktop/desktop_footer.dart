@@ -78,7 +78,7 @@ class DesktopFooter extends StatelessWidget {
     const chipText = TextStyle(
       fontSize: 11,
       fontWeight: FontWeight.w800,
-      color: AppColors.primaryDark,
+      color: AppColors.textPrimary,
     );
 
     return DecoratedBox(
@@ -102,11 +102,14 @@ class DesktopFooter extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     column(t('Chăm sóc khách hàng', 'Customer service'), [
-                      link(t('Trung tâm trợ giúp', 'Help centre'),
-                          path: '/support'),
-                      link(t('Mua bán an toàn', 'Trading safely'),
-                          path: '/support'),
-                      link(t('Blog Restore', 'Restore blog'), path: '/blog'),
+                      link(
+                        t('Trung tâm trợ giúp', 'Help centre'),
+                        path: '/support',
+                      ),
+                      link(
+                        t('Mua bán an toàn', 'Trading safely'),
+                        path: '/support',
+                      ),
                     ]),
                     column(t('Về Restore', 'About Restore'), [
                       link(t('Gói thành viên', 'Membership'), path: '/plans'),
@@ -122,9 +125,7 @@ class DesktopFooter extends StatelessWidget {
                           chip(Image.asset(AppImages.appLogos.vietQr)),
                           chip(Image.asset(AppImages.appLogos.zaloPay)),
                           chip(const Text('COD', style: chipText)),
-                          chip(
-                            Text(t('Xu', 'Coins'), style: chipText),
-                          ),
+                          chip(Text(t('Xu', 'Coins'), style: chipText)),
                         ],
                       ),
                     ]),
