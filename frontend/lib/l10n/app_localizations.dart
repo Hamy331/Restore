@@ -626,6 +626,12 @@ abstract class AppLocalizations {
   /// **'Report sent. Thank you!'**
   String get feedReported;
 
+  /// No description provided for @reportUserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you reporting this user?'**
+  String get reportUserTitle;
+
   /// No description provided for @feedViewProfile.
   ///
   /// In en, this message translates to:
@@ -11059,6 +11065,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Admin ReStore'**
   String get feedAdminTag;
+
+  /// No description provided for @profSearchListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Search this seller\'s listings'**
+  String get profSearchListings;
+
+  /// No description provided for @profListingsSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings match your search'**
+  String get profListingsSearchEmpty;
+
+  /// No description provided for @profLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop link copied'**
+  String get profLinkCopied;
+
+  /// No description provided for @revViewContact.
+  ///
+  /// In en, this message translates to:
+  /// **'View contact details'**
+  String get revViewContact;
+
+  /// No description provided for @revBackToProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to profile details'**
+  String get revBackToProfile;
+
+  /// No description provided for @revVerifiedBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified business'**
+  String get revVerifiedBusiness;
+
+  /// No description provided for @revOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get revOrders;
+
+  /// No description provided for @revTabContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get revTabContact;
+
+  /// No description provided for @revSortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get revSortNewest;
+
+  /// No description provided for @revSortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest'**
+  String get revSortOldest;
+
+  /// No description provided for @revSortHighest.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest rating'**
+  String get revSortHighest;
+
+  /// No description provided for @revSortLowest.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowest rating'**
+  String get revSortLowest;
+
+  /// No description provided for @revFromBuyer.
+  ///
+  /// In en, this message translates to:
+  /// **'Review from buyer'**
+  String get revFromBuyer;
+
+  /// No description provided for @revFromSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'Review from seller'**
+  String get revFromSeller;
+
+  /// No description provided for @revShowNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Show number'**
+  String get revShowNumber;
+
+  /// No description provided for @revCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get revCopy;
+
+  /// No description provided for @revCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get revCopied;
+
+  /// No description provided for @revZalo.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat on Zalo'**
+  String get revZalo;
+
+  /// No description provided for @revOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Open map'**
+  String get revOpenMap;
+
+  /// No description provided for @revOpenWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Open website'**
+  String get revOpenWebsite;
+
+  /// No description provided for @revOpenDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Open every day'**
+  String get revOpenDaily;
+
+  /// No description provided for @revClosedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed on {days}'**
+  String revClosedOn(String days);
+
+  /// No description provided for @revNoContact.
+  ///
+  /// In en, this message translates to:
+  /// **'This seller hasn\'t added contact details yet'**
+  String get revNoContact;
+
+  /// No description provided for @profAllListings.
+  ///
+  /// In en, this message translates to:
+  /// **'All listings ({count})'**
+  String profAllListings(int count);
+
+  /// No description provided for @profActiveListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Active ({count})'**
+  String profActiveListings(int count);
+
+  /// No description provided for @profSoldListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold ({count})'**
+  String profSoldListings(int count);
+
+  /// No description provided for @profShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get profShare;
+
+  /// No description provided for @profProfileLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile link copied'**
+  String get profProfileLinkCopied;
 }
 
 class _AppLocalizationsDelegate

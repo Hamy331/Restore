@@ -319,6 +319,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedReported => 'Report sent. Thank you!';
 
   @override
+  String get reportUserTitle => 'Why are you reporting this user?';
+
+  @override
   String get feedViewProfile => 'View profile';
 
   @override
@@ -6467,4 +6470,96 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedAdminTag => 'Admin ReStore';
+
+  @override
+  String get profSearchListings => 'Search this seller\'s listings';
+
+  @override
+  String get profListingsSearchEmpty => 'No listings match your search';
+
+  @override
+  String get profLinkCopied => 'Shop link copied';
+
+  @override
+  String get revViewContact => 'View contact details';
+
+  @override
+  String get revBackToProfile => 'Back to profile details';
+
+  @override
+  String get revVerifiedBusiness => 'Verified business';
+
+  @override
+  String get revOrders => 'Orders';
+
+  @override
+  String get revTabContact => 'Contact';
+
+  @override
+  String get revSortNewest => 'Newest';
+
+  @override
+  String get revSortOldest => 'Oldest';
+
+  @override
+  String get revSortHighest => 'Highest rating';
+
+  @override
+  String get revSortLowest => 'Lowest rating';
+
+  @override
+  String get revFromBuyer => 'Review from buyer';
+
+  @override
+  String get revFromSeller => 'Review from seller';
+
+  @override
+  String get revShowNumber => 'Show number';
+
+  @override
+  String get revCopy => 'Copy';
+
+  @override
+  String get revCopied => 'Copied';
+
+  @override
+  String get revZalo => 'Chat on Zalo';
+
+  @override
+  String get revOpenMap => 'Open map';
+
+  @override
+  String get revOpenWebsite => 'Open website';
+
+  @override
+  String get revOpenDaily => 'Open every day';
+
+  @override
+  String revClosedOn(String days) {
+    return 'Closed on $days';
+  }
+
+  @override
+  String get revNoContact => 'This seller hasn\'t added contact details yet';
+
+  @override
+  String profAllListings(int count) {
+    return 'All listings ($count)';
+  }
+
+  @override
+  String profActiveListings(int count) {
+    return 'Active ($count)';
+  }
+
+  @override
+  String profSoldListings(int count) {
+    return 'Sold ($count)';
+  }
+
+  @override
+  String get profShare => 'Share';
+
+  @override
+  String get profProfileLinkCopied => 'Profile link copied';
 }

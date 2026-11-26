@@ -122,6 +122,7 @@
   "feedReportOffensive": "Offensive content",
   "feedReportOther": "Something else",
   "feedReported": "Report sent. Thank you!",
+  "reportUserTitle": "Why are you reporting this user?",
   "feedViewProfile": "View profile",
   "feedLoadMoreError": "Couldn't load more posts.",
   "feedDiscardTitle": "Discard post?",
@@ -3769,5 +3770,61 @@
       }
     }
   },
-  "feedAdminTag": "Admin ReStore"
+  "feedAdminTag": "Admin ReStore",
+  "profSearchListings": "Search this seller's listings",
+  "profListingsSearchEmpty": "No listings match your search",
+  "profLinkCopied": "Shop link copied",
+  "revViewContact": "View contact details",
+  "revBackToProfile": "Back to profile details",
+  "revVerifiedBusiness": "Verified business",
+  "revOrders": "Orders",
+  "revTabContact": "Contact",
+  "revSortNewest": "Newest",
+  "revSortOldest": "Oldest",
+  "revSortHighest": "Highest rating",
+  "revSortLowest": "Lowest rating",
+  "revFromBuyer": "Review from buyer",
+  "revFromSeller": "Review from seller",
+  "revShowNumber": "Show number",
+  "revCopy": "Copy",
+  "revCopied": "Copied",
+  "revZalo": "Chat on Zalo",
+  "revOpenMap": "Open map",
+  "revOpenWebsite": "Open website",
+  "revOpenDaily": "Open every day",
+  "revClosedOn": "Closed on {days}",
+  "@revClosedOn": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "revNoContact": "This seller hasn't added contact details yet",
+  "profAllListings": "All listings ({count})",
+  "@profAllListings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profActiveListings": "Active ({count})",
+  "@profActiveListings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profSoldListings": "Sold ({count})",
+  "@profSoldListings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profShare": "Share",
+  "profProfileLinkCopied": "Profile link copied"
 }
