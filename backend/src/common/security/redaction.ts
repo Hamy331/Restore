@@ -5,6 +5,11 @@ export function redact(text: string): string {
     const secret = process.env[name];
     if (secret && secret.length >= 8) safe = safe.split(secret).join('[REDACTED]');
   }
+  // Cloudinary: cả CLOUDINARY_URL lẫn riêng phần api_secret trong đó
+  const cloudinaryUrl = process.env.CLOUDINARY_URL;
+  for (const secret of [cloudinaryUrl, cloudinaryUrl?.match(/^cloudinary:\/\/[^:]+:([^@]+)@/)?.[1]]) {
+    if (secret && secret.length >= 8) safe = safe.split(secret).join('[REDACTED]');
+  }
   return safe
     .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+/gi, 'Bearer [REDACTED]')
     .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED]')

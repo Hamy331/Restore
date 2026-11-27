@@ -7,7 +7,7 @@ import { getObject, putObject } from '../../../services/storage.service.js';
 import { imageExtension } from '../../listings/index.js';
 import { MEDIA_NAME, MEDIA_PREFIX } from '../content.type.js';
 
-/** Ảnh nội dung nằm ở khu 'admin' của storage (ổ đĩa hoặc Supabase Storage, theo STORAGE_DRIVER) */
+/** Ảnh nội dung nằm ở khu 'admin' của storage (ổ đĩa hoặc Cloudinary, theo STORAGE_DRIVER) */
 const AREA = 'admin';
 
 /** Lưu ảnh bìa (JPEG, PNG, WebP tối đa 5 MB) */
