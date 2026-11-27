@@ -195,8 +195,27 @@ class _CommentsState extends State<_Comments> {
                             ),
                             if (children.isNotEmpty)
                               Padding(
-                                padding: const EdgeInsets.only(left: 56),
+                                // Thẳng với chữ của bình luận (lề 16 + avatar
+                                // 32 + khoảng 10)
+                                padding: const EdgeInsets.only(
+                                  left: 58,
+                                  bottom: 6,
+                                ),
                                 child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                    ),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    visualDensity: VisualDensity.compact,
+                                    foregroundColor: AppColors.textSecondary,
+                                    textStyle: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                   onPressed: () => setState(() {
                                     expanded.contains(root.id)
                                         ? expanded.remove(root.id)
@@ -255,7 +274,7 @@ class _CommentsState extends State<_Comments> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                color: AppColors.primaryDark,
+                                color: AppColors.textPrimary,
                                 fontSize: 12,
                               ),
                             ),
@@ -334,7 +353,7 @@ class _CommentsState extends State<_Comments> {
                           tooltip: l.feedAddPhoto,
                           onPressed: sending || picking ? null : pick,
                           icon: const Icon(Icons.image_outlined),
-                          color: AppColors.primaryDark,
+                          color: AppColors.textPrimary,
                         ),
                         IconButton(
                           tooltip: l.feedSend,
@@ -347,7 +366,7 @@ class _CommentsState extends State<_Comments> {
                           icon: sending
                               ? const AppLoadingIndicator(dotSize: 5)
                               : const Icon(AppIcons.send),
-                          color: AppColors.primaryDark,
+                          color: AppColors.actionPrimary,
                         ),
                       ],
                     ),

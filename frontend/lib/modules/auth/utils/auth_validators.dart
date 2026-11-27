@@ -16,11 +16,19 @@ class AuthValidators {
         : 'Họ tên phải có từ 2 đến 80 ký tự.';
   }
 
+  /// Khớp `USERNAME_PATTERN` ở backend (auth.type.ts): 3-30 ký tự a-z, 0-9,
+  /// `.`, `_`; có ít nhất một chữ cái; dấu chấm không đứng đầu, cuối hoặc hai
+  /// dấu liền nhau.
+  static final usernamePattern = RegExp(
+    r'^(?=.{3,30}$)(?=.*[a-z])(?!\.)(?!.*\.$)(?!.*\.\.)[a-z0-9._]+$',
+  );
+
   static String? username(String? value) {
     final username = value?.trim().toLowerCase() ?? '';
-    return RegExp(r'^[a-z0-9._]{3,30}$').hasMatch(username)
+    return usernamePattern.hasMatch(username)
         ? null
-        : 'Dùng 3-30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.';
+        : 'Dùng 3-30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới, có ít nhất '
+              'một chữ cái; dấu chấm không đứng đầu, cuối hoặc liền nhau.';
   }
 
   static String? password(String? value) {

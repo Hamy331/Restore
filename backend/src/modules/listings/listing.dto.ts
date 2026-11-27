@@ -21,6 +21,7 @@ export type RecommendedQuery = z.output<typeof recommendedQuery>;
 export type SearchQuery = z.output<typeof searchQuery>;
 export type FavoritesQuery = z.output<typeof favoritesQuery>;
 export type ListingIdParams = { id: string };
+export type ListingShortIdParams = { shortId: number };
 export type AdminListingQuery = z.output<typeof adminListingQuery>;
 export type AdminDecisionInput = z.output<typeof adminDecisionBody>;
 
@@ -29,6 +30,7 @@ export type AdminDecisionInput = z.output<typeof adminDecisionBody>;
 /** Các cột của Listing trả về cho app */
 export const listingSelect = {
   id: true,
+  shortId: true,
   title: true,
   description: true,
   price: true,

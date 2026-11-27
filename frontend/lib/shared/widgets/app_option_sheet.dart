@@ -152,13 +152,9 @@ class _OptionTile<T> extends StatelessWidget {
       curve: AppAnimationDurations.enterCurve,
       decoration: BoxDecoration(
         borderRadius: radius,
-        color: isSelected
-            ? AppColors.primarySoft.withValues(alpha: 0.85)
-            : Colors.white.withValues(alpha: 0.5),
+        color: isSelected ? const Color(0xFFF2F3F5) : Colors.white,
         border: Border.all(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.55)
-              : Colors.white.withValues(alpha: 0.9),
+          color: isSelected ? AppColors.textPrimary : const Color(0xFFEDEDED),
         ),
       ),
       child: Material(
@@ -258,16 +254,9 @@ class _OptionCard<T> extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: radius,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withValues(alpha: 0.85),
-            Colors.white.withValues(alpha: 0.45),
-          ],
-        ),
+        color: Colors.white,
         border: Border.all(
-          color: isSelected ? AppColors.primary : Colors.white,
+          color: isSelected ? AppColors.textPrimary : const Color(0xFFEDEDED),
           width: isSelected ? 1.5 : 1,
         ),
       ),
@@ -323,9 +312,7 @@ class _CheckBubble extends StatelessWidget {
       height: 24,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [AppColors.primary, Color(0xFFF08A3C)],
-        ),
+        color: AppColors.textPrimary,
       ),
       child: const Icon(AppIcons.check, size: 14, color: Colors.white),
     );

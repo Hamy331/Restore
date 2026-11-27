@@ -1,3 +1,4 @@
+import 'package:restore/core/routes/profile_path.dart';
 import 'package:flutter/material.dart';
 import 'package:restore/shared/widgets/loading/app_pull_to_refresh.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
@@ -132,7 +133,7 @@ class _FollowList extends StatelessWidget {
                   subtitle: Text('@${user.username}'),
                   onTap: () => user.isMe
                       ? context.go('/account')
-                      : context.push('/users/${user.id}'),
+                      : context.push(profilePath(id: user.id, username: user.username)),
                   trailing: user.isMe
                       ? null
                       : user.isFollowing

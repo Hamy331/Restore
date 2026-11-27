@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
-import 'package:restore/core/theme/app_header_palette.dart';
+import 'package:restore/core/constants/app_dimesions.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/models/listing_card_item.dart';
 import 'package:restore/shared/widgets/feedback_view.dart';
@@ -12,7 +12,8 @@ import 'package:restore/shared/widgets/app_load_error_view.dart';
 import 'package:restore/shared/widgets/filter/app_filter_bar.dart';
 import 'package:restore/shared/widgets/filter/app_listing_sort_sheet.dart';
 import 'package:restore/shared/widgets/filter/listing_filter_labels.dart';
-import 'package:restore/shared/widgets/glass/app_pinned_header_surface.dart';
+import 'package:restore/shared/widgets/app_circle_icon_button.dart';
+import 'package:restore/shared/widgets/app_page_header.dart';
 import 'package:restore/shared/widgets/listing/app_listing_card.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
 import 'package:restore/shared/widgets/listing/app_listing_sliver_grid.dart';
@@ -25,6 +26,7 @@ import '../../bloc/trusted_shops/trusted_shops_state.dart';
 import '../../models/shop_banner_item.dart';
 import '../../models/shop_product_item.dart';
 import '../../models/trusted_shop_item.dart';
+import '../../models/trusted_shops_overview.dart';
 import '../../widgets/shop_banner_carousel.dart';
 import '../../widgets/shop_verification_badge.dart';
 import '../../widgets/shop_verification_sheet.dart';
@@ -36,25 +38,29 @@ import 'widgets/trusted_new_releases.dart';
 import 'widgets/trusted_section_bar.dart';
 import 'widgets/trusted_shop_carousel.dart';
 import 'widgets/trusted_shop_showcase.dart';
-import 'widgets/trusted_shops_header.dart';
 import 'widgets/trusted_shops_skeleton.dart';
 
-class TrustedShopsMobileView extends StatefulWidget {
+class TrustedShopsPage extends StatefulWidget {
   /// Shop cần mở ngay khi vào trang ([TrustedShopsView.openShopId])
   final String? openShopId;
 
-  const TrustedShopsMobileView({super.key, this.openShopId});
+  const TrustedShopsPage({super.key, this.openShopId});
 
   @override
-  State<TrustedShopsMobileView> createState() => _TrustedShopsMobileViewState();
+  State<TrustedShopsPage> createState() => _TrustedShopsPageState();
 }
 
-class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
+class _TrustedShopsPageState extends State<TrustedShopsPage> {
   static const double _sidePadding = 16;
-  static const double _contentRadius = 24;
   static const double _sectionGap = 26;
 
+  /// Cỡ khung nội dung trên desktop, cùng cỡ trang chủ / Feeds
+  static const double _desktopMaxWidth = AppDimesions.desktopContentWidth;
+
   final _scrollController = ScrollController();
+
+  /// Vùng cuộn, làm gốc đo vị trí các khu (không phụ thuộc lề của khung ngoài)
+  final _scrollKey = GlobalKey();
 
   /// Đầu mỗi khu, để thanh mục cuộn tới và biết đang xem khu nào
   final _sectionKeys = {
@@ -65,13 +71,8 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
   TrustedShopsSection? _activeSection;
   bool _activeCheckScheduled = false;
 
-  /// Phần đầu đã ghim (đã cuộn), để dải thanh trạng thái đổi màu theo
-  final _headerPinned = ValueNotifier(false);
-
   /// Đầu trang cuộn đi cùng nội dung, chỉ thanh mục được ghim
   static const double _pinnedHeight = TrustedSectionBarDelegate.height;
-
-  final _headerKey = GlobalKey();
 
   @override
   void initState() {
@@ -88,15 +89,10 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _headerPinned.dispose();
     super.dispose();
   }
 
   void _onScroll() {
-    final headerHeight = _headerKey.currentContext?.size?.height;
-    if (headerHeight != null) {
-      _headerPinned.value = _scrollController.offset >= headerHeight;
-    }
     // Vị trí các khu chỉ đúng sau khi khung hình mới đã dựng xong
     if (_activeCheckScheduled) return;
     _activeCheckScheduled = true;
@@ -110,12 +106,11 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
   /// có trên trang
   double? _sectionTop(TrustedShopsSection section) {
     final target = _sectionKeys[section]?.currentContext?.findRenderObject();
-    final page = context.findRenderObject();
-    if (target is! RenderBox || page is! RenderBox || !target.attached) {
+    final scroll = _scrollKey.currentContext?.findRenderObject();
+    if (target is! RenderBox || scroll is! RenderBox || !target.attached) {
       return null;
     }
-    return target.localToGlobal(Offset.zero, ancestor: page).dy -
-        MediaQuery.paddingOf(context).top;
+    return target.localToGlobal(Offset.zero, ancestor: scroll).dy;
   }
 
   /// Khu đang xem là khu cuối cùng đã cuộn tới sát dưới phần ghim. Đã cuộn
@@ -162,10 +157,10 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
 
   void _showVerificationInfo() => showShopVerificationSheet(context);
 
-  Future<void> _pickSort() async {
+  Future<void> _pickSort(BuildContext anchor) async {
     final cubit = context.read<TrustedShopsCubit>();
     final sort = await showListingSortSheet(
-      context,
+      anchor,
       selected: cubit.state.sort,
       options: TrustedShopsState.sortOptions,
     );
@@ -219,79 +214,97 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
   Widget build(BuildContext context) {
     final cubit = context.read<TrustedShopsCubit>();
     final padding = MediaQuery.paddingOf(context);
+    final width = MediaQuery.sizeOf(context).width;
+    final desktop = width >= AppDimesions.desktopWidth;
+    final tablet = width >= AppDimesions.mobileWidth;
+    // Màn rộng: thêm lề hai bên để nội dung không dính sát mép
+    final gutter = desktop
+        ? 12.0
+        : tablet
+        ? 8.0
+        : 0.0;
 
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: Column(
-        children: [
-          // Thanh trạng thái cùng màu phần đầu, chuyển trắng khi đã cuộn
-          ValueListenableBuilder<bool>(
-            valueListenable: _headerPinned,
-            builder: (context, pinned, _) => AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: padding.top,
-              width: double.infinity,
-              color: pinned
-                  ? AppPinnedHeaderSurface.pinnedColor
-                  : AppHeaderPalette.top,
-            ),
-          ),
-          Expanded(
-            child: MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: BlocBuilder<TrustedShopsCubit, TrustedShopsState>(
-                builder: (context, state) => AppPullToRefresh.inline(
-                  onRefresh: cubit.refresh,
-                  builder: (context, refreshIndicator) => AppLoadMoreListener(
-                    onLoadMore: cubit.loadMore,
-                    child: CustomScrollView(
-                      controller: _scrollController,
-                      // Dựng sẵn các khu phía dưới để thanh mục cuộn tới được
-                      scrollCacheExtent: const ScrollCacheExtent.pixels(3000),
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        SliverToBoxAdapter(
-                          child: TrustedShopsHeader(
-                            key: _headerKey,
-                            onBack: _back,
-                            onInfoTap: _showVerificationInfo,
-                          ),
-                        ),
-                        // Viên loading kéo để làm mới mở ra ngay dưới phần ghim
-                        SliverToBoxAdapter(
-                          child: ColoredBox(
-                            color: AppHeaderPalette.bottom,
-                            child: refreshIndicator,
-                          ),
-                        ),
-                        // Mép trên bo cong của phần nội dung trắng
-                        SliverToBoxAdapter(
-                          child: ColoredBox(
-                            color: AppHeaderPalette.bottom,
-                            child: Container(
-                              height: _contentRadius,
-                              decoration: const BoxDecoration(
-                                color: AppColors.surface,
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(_contentRadius),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        ..._content(state),
-                        SliverToBoxAdapter(
-                          child: SizedBox(height: padding.bottom + 16),
-                        ),
-                      ],
+    final title = AppPageTitleRow(
+      title: AppLocalizations.of(context)!.trustedShopsTitle,
+      subtitle: AppLocalizations.of(context)!.trustedShopsSubtitle,
+      onBack: _back,
+      trailing: AppCircleIconButton(
+        icon: AppIcons.help,
+        tooltip: AppLocalizations.of(context)!.shopVerificationSheetTitle,
+        onTap: _showVerificationInfo,
+      ),
+    );
+
+    final scroll = BlocBuilder<TrustedShopsCubit, TrustedShopsState>(
+      builder: (context, state) => AppPullToRefresh.inline(
+        onRefresh: cubit.refresh,
+        builder: (context, refreshIndicator) => AppLoadMoreListener(
+          onLoadMore: cubit.loadMore,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: gutter),
+            child: CustomScrollView(
+              key: _scrollKey,
+              controller: _scrollController,
+              // Dựng sẵn các khu phía dưới để thanh mục cuộn tới được
+              scrollCacheExtent: const ScrollCacheExtent.pixels(3000),
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                // Điện thoại / tablet: tiêu đề cuộn đi cùng nội dung. Desktop:
+                // tiêu đề cố định phía trên khung (xem bên dưới).
+                if (!desktop)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 6, bottom: 8),
+                      child: title,
                     ),
                   ),
+                // Viên loading kéo để làm mới mở ra ngay dưới tiêu đề
+                SliverToBoxAdapter(child: refreshIndicator),
+                ..._content(state),
+                SliverToBoxAdapter(
+                  child: SizedBox(height: padding.bottom + 16),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (!desktop) {
+      return Scaffold(
+        backgroundColor: AppColors.surface,
+        body: SafeArea(bottom: false, child: scroll),
+      );
+    }
+
+    // Desktop: khối trắng bo góc rộng tối đa 1200px ở giữa như các trang
+    // khác, tiêu đề (không có nút ←) cố định, nội dung cuộn bên dưới
+    return Material(
+      color: AppColors.fill,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _desktopMaxWidth),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Column(
+                  children: [
+                    title,
+                    Expanded(child: scroll),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -348,9 +361,13 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
     return [
       if (overview.banners.isNotEmpty)
         SliverToBoxAdapter(
-          child: ShopBannerCarousel(
-            banners: overview.banners,
-            onTap: _openBanner,
+          child: LayoutBuilder(
+            builder: (context, box) => ShopBannerCarousel(
+              banners: overview.banners,
+              onTap: _openBanner,
+              // Màn rộng: hai banner cạnh nhau, mỗi banner cỡ như điện thoại
+              columns: ShopBannerCarousel.columnsFor(box.maxWidth),
+            ),
           ),
         ),
       SliverPersistentHeader(
@@ -426,16 +443,53 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
           ),
         ),
         gap(12),
-        SliverList.separated(
-          itemCount: overview.showcases.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 14),
-          itemBuilder: (_, index) {
-            final showcase = overview.showcases[index];
-            return TrustedShopShowcaseBlock(
-              showcase: showcase,
-              onShopTap: () => _openShopItem(showcase.shop),
-              onListingTap: _openListing,
-              onFavoriteTap: cubit.toggleFavorite,
+        SliverLayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.crossAxisExtent;
+            final wide = width >= AppDimesions.mobileWidth;
+            // Từ ~720px chia 2 cột, hẹp hơn thì mỗi khối một hàng
+            final columns = width >= 720 ? 2 : 1;
+            Widget block(ShopShowcase showcase, {bool grid = false}) =>
+                TrustedShopShowcaseBlock(
+                  showcase: showcase,
+                  fit: wide,
+                  padding: grid
+                      ? EdgeInsets.zero
+                      : const EdgeInsets.symmetric(horizontal: _sidePadding),
+                  onShopTap: () => _openShopItem(showcase.shop),
+                  onListingTap: _openListing,
+                  onFavoriteTap: cubit.toggleFavorite,
+                );
+            if (columns == 1) {
+              return SliverList.separated(
+                itemCount: overview.showcases.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 14),
+                itemBuilder: (_, index) => block(overview.showcases[index]),
+              );
+            }
+            final rows = (overview.showcases.length / columns).ceil();
+            return SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
+              sliver: SliverList.separated(
+                itemCount: rows,
+                separatorBuilder: (_, _) => const SizedBox(height: 14),
+                itemBuilder: (_, row) => Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var c = 0; c < columns; c++) ...[
+                      if (c > 0) const SizedBox(width: 14),
+                      Expanded(
+                        child: row * columns + c < overview.showcases.length
+                            ? block(
+                                overview.showcases[row * columns + c],
+                                grid: true,
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             );
           },
         ),
@@ -447,10 +501,12 @@ class _TrustedShopsMobileViewState extends State<TrustedShopsMobileView> {
           title: l10n.trustedShopsAllProductsTitle,
           subtitle: l10n.trustedShopsAllProductsSubtitle,
           eyebrow: l10n.trustedShopsAllProductsEyebrow,
-          trailing: AppFilterChip(
-            label: state.sort.label(l10n),
-            hasDropdown: true,
-            onTap: _pickSort,
+          trailing: Builder(
+            builder: (anchor) => AppFilterChip(
+              label: state.sort.label(l10n),
+              hasDropdown: true,
+              onTap: () => _pickSort(anchor),
+            ),
           ),
         ),
       ),

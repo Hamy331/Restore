@@ -1,3 +1,4 @@
+import 'package:restore/core/constants/app_dimesions.dart';
 import 'package:restore/shared/widgets/app_action_buttons.dart';
 import 'dart:math' as math;
 import 'package:dio/dio.dart';
@@ -14,21 +15,44 @@ Future<void> reportListing(BuildContext context, String listingId) async {
     context.push('/login?from=${Uri.encodeComponent(from)}');
     return;
   }
-  final sent = await showModalBottomSheet<bool>(
-    context: context,
-    useRootNavigator: true,
-    isScrollControlled: true,
-    useSafeArea: true,
-    isDismissible: false,
-    enableDrag: false,
-    backgroundColor: Colors.transparent,
-    constraints: const BoxConstraints(maxWidth: 640),
-    builder: (_) => ReportListingSheet(
-      listingId: listingId,
-      initialEmail: user.email,
-      initialPhone: user.phone ?? '',
-    ),
-  );
+  final screen = MediaQuery.sizeOf(context);
+  final sent = screen.width >= AppDimesions.desktopWidth
+      // Desktop: hộp thoại nhỏ giữa màn hình, không phải tờ cao gần hết màn
+      ? await showDialog<bool>(
+          context: context,
+          useRootNavigator: true,
+          barrierDismissible: false,
+          builder: (_) => Dialog(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            insetPadding: const EdgeInsets.all(24),
+            child: SizedBox(
+              width: 440,
+              height: math.min(680, screen.height - 64),
+              child: ReportListingSheet(
+                listingId: listingId,
+                initialEmail: user.email,
+                initialPhone: user.phone ?? '',
+                dialog: true,
+              ),
+            ),
+          ),
+        )
+      : await showModalBottomSheet<bool>(
+          context: context,
+          useRootNavigator: true,
+          isScrollControlled: true,
+          useSafeArea: true,
+          isDismissible: false,
+          enableDrag: false,
+          backgroundColor: Colors.transparent,
+          constraints: const BoxConstraints(maxWidth: 640),
+          builder: (_) => ReportListingSheet(
+            listingId: listingId,
+            initialEmail: user.email,
+            initialPhone: user.phone ?? '',
+          ),
+        );
   if (sent == true && context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppLocalizations.of(context)!.reportSuccess)),
@@ -42,12 +66,17 @@ class ReportListingSheet extends StatefulWidget {
     this.initialEmail = '',
     this.initialPhone = '',
     this.repository,
+    this.dialog = false,
     super.key,
   });
 
   final String listingId;
   final String initialEmail, initialPhone;
   final ReportRepository? repository;
+
+  /// Desktop: hiện trong hộp thoại nhỏ giữa màn hình (bo đủ bốn góc, cao cố
+  /// định) thay vì tờ phủ gần hết màn hình như điện thoại
+  final bool dialog;
 
   @override
   State<ReportListingSheet> createState() => _ReportListingSheetState();
@@ -349,10 +378,12 @@ class _ReportListingSheetState extends State<ReportListingSheet> {
         duration: const Duration(milliseconds: 150),
         padding: EdgeInsets.only(bottom: keyboard),
         child: FractionallySizedBox(
-          heightFactor: .96,
+          heightFactor: widget.dialog ? 1 : .96,
           child: Material(
             color: Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+            borderRadius: widget.dialog
+                ? BorderRadius.circular(20)
+                : const BorderRadius.vertical(top: Radius.circular(26)),
             clipBehavior: Clip.antiAlias,
             child: SafeArea(
               top: false,

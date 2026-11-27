@@ -14,7 +14,6 @@ const Listings = lazy(() =>
 const Reports = lazy(() =>
   import('../features/reports/Reports').then((m) => ({ default: m.Reports })),
 );
-const Posts = lazy(() => import('../features/posts/Posts').then((m) => ({ default: m.Posts })));
 const Tickets = lazy(() =>
   import('../features/support/Tickets').then((m) => ({ default: m.Tickets })),
 );
@@ -51,7 +50,6 @@ import {
   RocketOutlined,
   TeamOutlined,
   ApartmentOutlined,
-  FileTextOutlined,
   CustomerServiceOutlined,
   ReadOutlined,
   HistoryOutlined,
@@ -160,15 +158,6 @@ export const sections = [
     detail: 'Quản lý banner hiển thị trên trang chủ ứng dụng.',
     permission: 'banner:manage',
     View: HomeBanners,
-  },
-  {
-    key: 'posts',
-    label: 'Bài viết',
-    group: 'Nội dung & hỗ trợ',
-    icon: FileTextOutlined,
-    detail: 'Biên tập bài hướng dẫn và tin tức hiển thị cho người dùng.',
-    permission: 'content:manage',
-    View: Posts,
   },
   {
     key: 'tickets',

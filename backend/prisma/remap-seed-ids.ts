@@ -26,7 +26,7 @@ const apply = process.argv.slice(2).includes('--apply');
 const TABLES = [
   'User', 'Shop', 'Listing', 'ShopBanner', 'HomeBanner', 'WantedAlert', 'Promotion', 'PromotionOrder', 'StoreSubscription',
   'StoreOrder', 'FeedPost', 'FeedComment', 'Conversation', 'Message', 'Notification', 'PushDevice', 'SearchHistory',
-  'AdminAudit', 'ViolationReport', 'BlogPost', 'SupportTicket', 'SupportMessage', 'KnowledgeDocument', 'CreditTopupOrder',
+  'AdminAudit', 'ViolationReport', 'SupportTicket', 'SupportMessage', 'KnowledgeDocument', 'CreditTopupOrder',
   'CreditTransaction', 'CreditHold',
 ] as const;
 

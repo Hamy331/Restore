@@ -529,3 +529,10 @@ export async function viewListing(viewer: Viewer, id: string) {
     isOwner: viewer?.userId === listing.ownerId,
   };
 }
+
+/** Đổi mã số ngắn trong URL thành mã tin (UUID); tin không tồn tại thì 404 */
+export async function resolveShortId(shortId: number) {
+  const listing = await listingRepository.findIdByShortId(shortId);
+  if (!listing) throw new AppError(404, 'LISTING_NOT_FOUND', 'Không tìm thấy tin đăng.');
+  return { id: listing.id };
+}

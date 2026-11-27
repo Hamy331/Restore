@@ -37,6 +37,7 @@ import 'widgets/home_quick_actions.dart';
 import 'widgets/home_search_header.dart';
 import 'widgets/home_skeleton.dart';
 import 'widgets/home_top_bar.dart';
+import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 
 class HomeMobileView extends StatefulWidget {
   const HomeMobileView({super.key});
@@ -102,7 +103,11 @@ class _HomeMobileViewState extends State<HomeMobileView> {
   Future<void> _openDetail(ListingCardItem item) async {
     final id = item.listing.id;
     final favorite = await context.push<bool>(
-      '/listings/$id',
+      ProductDetailView.location(
+        id,
+        title: item.listing.title,
+        shortId: item.listing.shortId,
+      ),
       extra: item.listing,
     );
     if (favorite == null || !mounted) return;

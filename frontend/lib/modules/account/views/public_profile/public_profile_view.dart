@@ -14,11 +14,10 @@ class PublicProfileView extends StatelessWidget {
     required this.userId,
     this.repository,
     this.returnShopFollow = false,
-    this.openReviews = false,
     this.feedsRepository,
   });
   final String userId;
-  final bool returnShopFollow, openReviews;
+  final bool returnShopFollow;
   final ProfileRepository? repository;
   final FeedsRepository? feedsRepository;
 
@@ -39,7 +38,6 @@ class PublicProfileView extends StatelessWidget {
     child: TResponsiveLayout(
       mobile: PublicProfileMobileView(
         returnShopFollow: returnShopFollow,
-        openReviews: openReviews,
       ),
     ),
   );

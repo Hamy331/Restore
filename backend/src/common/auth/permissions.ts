@@ -47,7 +47,7 @@ export const PERMISSION = {
   STORE_ORDER_MANAGE: 'store:order-manage',
   /** Quản lý gói và đơn đẩy tin: /promotions/packages, /promotions/admin/orders, /admin/promotion-orders */
   PROMOTION_MANAGE: 'promotion:manage',
-  /** Quản lý nội dung: ảnh bài viết, /admin/posts, /admin/knowledge, /admin/tickets */
+  /** Quản lý nội dung: ảnh bài viết, /admin/knowledge, /admin/tickets */
   CONTENT_MANAGE: 'content:manage',
 } as const;
 

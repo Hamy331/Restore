@@ -1,3 +1,4 @@
+import 'package:restore/core/routes/profile_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -88,13 +89,13 @@ class _SearchMobileViewState extends State<SearchMobileView> {
   /// Mở trang shop từ gợi ý khi đang gõ
   void _openShop(TrustedShopItem item) {
     _focusNode.unfocus();
-    context.push(ShopDetailView.location(item.shop.id), extra: item);
+    context.push(ShopDetailView.location(item.shop.id, name: item.shop.name), extra: item);
   }
 
   /// Mở trang cá nhân từ gợi ý khi đang gõ
   void _openUser(SearchUserItem user) {
     _focusNode.unfocus();
-    context.push('/users/${user.id}');
+    context.push(profilePath(id: user.id, username: user.username));
   }
 
   /// Đưa gợi ý lên ô tìm kiếm để gõ tiếp

@@ -34,6 +34,7 @@ import '../../models/home_quick_action.dart';
 import 'widgets/home_feed_tabs.dart';
 import 'widgets/home_category_photo_grid.dart';
 import 'widgets/home_quick_actions.dart';
+import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 
 /// Trang chủ trên web desktop (bố cục kiểu Shopee): banner lớn + 2 banner
 /// phụ, 4 lối tắt, lưới danh mục, Hot sale, rồi lưới tin theo tab. Nội dung
@@ -53,7 +54,11 @@ class _HomeDesktopViewState extends State<HomeDesktopView> {
   Future<void> _openDetail(ListingCardItem item) async {
     final id = item.listing.id;
     final favorite = await context.push<bool>(
-      '/listings/$id',
+      ProductDetailView.location(
+        id,
+        title: item.listing.title,
+        shortId: item.listing.shortId,
+      ),
       extra: item.listing,
     );
     if (favorite == null || !mounted) return;

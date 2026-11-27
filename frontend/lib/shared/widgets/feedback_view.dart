@@ -30,7 +30,11 @@ class FeedbackView extends StatelessWidget {
             if (image case final image?)
               AppImageIcon(image, size: 72, fallback: icon)
             else
-              Icon(icon, size: 48, color: Theme.of(context).colorScheme.primary),
+              Icon(
+                icon,
+                size: 48,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             const SizedBox(height: 16),
             Text(
               title,

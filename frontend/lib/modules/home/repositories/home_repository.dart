@@ -106,15 +106,23 @@ class ApiHomeRepository implements HomeRepository {
 
   final ApiClient _apiClient;
 
+  /// Tin đang bán của [ownerId]; [query] lọc theo tiêu đề, [sort] theo giá
+  /// (bỏ trống giữ thứ tự mới nhất)
   Future<PagedResult<ListingCardItem>> sellerListings(
     String ownerId,
-    int page,
-  ) async {
+    int page, {
+    String query = '',
+    String? sort,
+    bool sold = false,
+  }) async {
     final json = await _get(
       '/listings',
       query: {
         'ownerId': ownerId,
         'filter': 'recent',
+        if (sold) 'sold': 'true',
+        if (query.trim().isNotEmpty) 'q': query.trim(),
+        if (sort != null) 'sort': sort,
         'page': page,
         'limit': HomeRepository.pageSize,
       },

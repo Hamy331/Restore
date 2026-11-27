@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { created, ok } from '../../../common/http/response.js';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { getInput, ValidatedInput } from '../../../middlewares/validate.middleware.js';
-import type { AutoExtendInput, ExtendInput, FeatureInput, ListingIdParams, ListingInput, MineQuery, StatusInput } from '../listing.dto.js';
+import type { AutoExtendInput, ExtendInput, FeatureInput, ListingIdParams, ListingInput, ListingShortIdParams, MineQuery, StatusInput } from '../listing.dto.js';
 import { getInsights } from '../services/insights.service.js';
 import * as listingService from '../services/listing.service.js';
 import { rememberListingAddress } from '../../users/index.js';
@@ -98,6 +98,12 @@ export async function listMine(req: AuthRequest, res: Response) {
 export async function getMine(req: AuthRequest, res: Response) {
   const { params } = getInput<ValidatedInput<undefined, ListingIdParams>>(res);
   ok(res, await listingService.getMine(req.user!.userId, params.id));
+}
+
+/** Đổi mã số ngắn trong URL thành mã tin (UUID) */
+export async function resolveShortId(_req: AuthRequest, res: Response) {
+  const { params } = getInput<ValidatedInput<undefined, ListingShortIdParams>>(res);
+  ok(res, await listingService.resolveShortId(params.shortId));
 }
 
 export async function getById(req: AuthRequest, res: Response) {

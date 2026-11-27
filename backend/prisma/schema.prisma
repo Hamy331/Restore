@@ -37,6 +37,8 @@ model User {
   password       String?       
   fullName       String
   username       String        @unique
+  /// Lần đổi tên người dùng gần nhất (null: chưa đổi lần nào sau khi đăng ký), dùng để chặn đổi liên tục
+  usernameChangedAt DateTime?
   phone          String?
   avatarUrl      String?
   bio            String?        @db.VarChar(300)
@@ -398,6 +400,8 @@ model Listing {
   aiIndex AiListingIndex?
   feedPosts FeedPost[]
   id            String           @id @default(uuid())
+  /// Mã số ngắn tự tăng dùng trong URL đẹp (/listings/<tên>-<shortId>)
+  shortId       Int              @unique @default(autoincrement())
   ownerId       String
   owner         User             @relation(fields: [ownerId], references: [id])
   categoryId    String?
@@ -756,25 +760,6 @@ model ViolationReport {
   @@index([targetType, targetId, status, createdAt])
   @@index([status, reasonCode, createdAt])
 }
-enum PostStatus {
-  DRAFT
-  PUBLISHED
-  HIDDEN
-  ARCHIVED
-}
-model BlogPost {
-  id String @id @default(uuid())
-  title String
-  slug String @unique
-  content String
-  category String
-  coverUrl String?
-  listingIds String[]
-  status PostStatus @default(DRAFT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@index([status, createdAt])
-}
 model SupportTicket {
   id String @id @default(uuid())
   userId String
@@ -1081,7 +1066,7 @@ enum ShopBannerRejectReason {
   OTHER
 }
 
-/// Duyệt cửa hàng (như Chợ Tốt): mở shop hoặc sửa shop bị từ chối thì chờ duyệt.
+/// Duyệt cửa hàng: mở shop hoặc sửa shop bị từ chối thì chờ duyệt.
 /// Chỉ shop đã duyệt (hoặc đã xác minh) mới có trang công khai
 enum ShopStatus {
   PENDING
@@ -1109,6 +1094,10 @@ model Shop {
   categoryIds      String[]
   /// Địa chỉ hiển thị, VD "Quận 1, TP. Hồ Chí Minh"
   address          String?
+  /// Liên hệ công khai ở trang shop (mục Thông tin liên hệ); null = chưa đặt (số điện thoại thì dùng số của chủ shop)
+  contactPhone     String?
+  businessEmail    String?
+  website          String?
   status           ShopStatus            @default(PENDING)
   /// Lần gửi duyệt gần nhất (mở shop, hoặc sửa sau khi bị từ chối); hàng chờ duyệt xếp cũ trước
   submittedAt      DateTime              @default(now())

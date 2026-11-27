@@ -10,6 +10,7 @@ import '../../../models/shop_product_item.dart';
 import '../../../widgets/shop_logo.dart';
 import '../../../widgets/shop_verification_badge.dart';
 import '../../../widgets/trusted_shop_section_header.dart';
+import 'trusted_shops_responsive.dart';
 
 /// Khu "Siêu phẩm mới ra mắt": tiêu đề và hàng thẻ lớn cuộn ngang, mỗi thẻ
 /// có ảnh to, nhãn "Mới ra mắt", logo + tên thương hiệu, giá và ngày ra mắt
@@ -40,25 +41,57 @@ class TrustedNewReleases extends StatelessWidget {
           accent: accent,
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: _NewReleaseCard.height + 6,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: products.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
-            itemBuilder: (_, index) {
-              final product = products[index];
-              return Align(
-                alignment: Alignment.topCenter,
-                child: _NewReleaseCard(
-                  product: product,
-                  onTap: () => onProductTap(product),
-                  onFavoriteTap: () => onFavoriteTap(product),
+        LayoutBuilder(
+          builder: (context, box) {
+            final columns = shopGridColumns(box.maxWidth - 32, minWidth: 220);
+            // Điện thoại: hàng cuộn ngang. Tablet / desktop: lưới, không cuộn
+            if (columns == null) {
+              return SizedBox(
+                height: _NewReleaseCard.height + 6,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: products.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
+                  itemBuilder: (_, index) {
+                    final product = products[index];
+                    return Align(
+                      alignment: Alignment.topCenter,
+                      child: _NewReleaseCard(
+                        product: product,
+                        onTap: () => onProductTap(product),
+                        onFavoriteTap: () => onFavoriteTap(product),
+                      ),
+                    );
+                  },
                 ),
               );
-            },
-          ),
+            }
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 4),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  mainAxisSpacing: 14,
+                  crossAxisSpacing: 14,
+                  mainAxisExtent: _NewReleaseCard.height,
+                ),
+                itemCount: products.length,
+                itemBuilder: (_, index) {
+                  final product = products[index];
+                  return _NewReleaseCard(
+                    product: product,
+                    expand: true,
+                    onTap: () => onProductTap(product),
+                    onFavoriteTap: () => onFavoriteTap(product),
+                  );
+                },
+              ),
+            );
+          },
         ),
       ],
     );
@@ -74,7 +107,11 @@ class _NewReleaseCard extends StatelessWidget {
     required this.product,
     required this.onTap,
     required this.onFavoriteTap,
+    this.expand = false,
   });
+
+  /// Trong lưới (tablet / desktop): thẻ giãn theo ô thay vì rộng cố định
+  final bool expand;
 
   static const double width = 248;
   static const double height = 300;
@@ -94,7 +131,7 @@ class _NewReleaseCard extends StatelessWidget {
     final type = shop.verificationType;
 
     return SizedBox(
-      width: width,
+      width: expand ? null : width,
       height: height,
       child: Material(
         color: AppColors.surface,

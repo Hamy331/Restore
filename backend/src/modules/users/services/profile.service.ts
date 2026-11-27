@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import * as repository from '../repositories/profile.repository.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { fullName as parseFullName, username as parseUsername } from '../../auth/auth.validator.js';
+import { USERNAME_CHANGE_COOLDOWN_DAYS } from '../../auth/auth.type.js';
 import { publish } from '../../chat/services/chat.events.js';
 import { heartbeat as chatHeartbeat } from '../../chat/services/chat.service.js';
 import { isMediaUrl } from '../../media/media.service.js';
@@ -59,7 +60,24 @@ export const getProfile = async (id: string, viewerId?: string) => {
   return { ...formatProfile(user, followingShopCount), isFollowing: !!follow };
 };
 
-export async function getPublicProfile(id: string, viewerId: string) {
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Trang hồ sơ mở bằng `/u/@tên-người-dùng`: [idOrHandle] là UUID hoặc tên người
+ * dùng (có hoặc không có `@` đầu), trả về id người dùng.
+ */
+export async function resolveUserId(idOrHandle: string) {
+  if (uuidPattern.test(idOrHandle)) return idOrHandle;
+  const isHandle = idOrHandle.startsWith('@');
+  const found = await repository.findIdByUsername(idOrHandle.replace(/^@/, '').toLowerCase());
+  if (found) return found.id;
+  // Id không phải UUID (dữ liệu mẫu) vẫn tra theo id; `@tên` không có thì 404
+  if (isHandle) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
+  return idOrHandle;
+}
+
+export async function getPublicProfile(idOrHandle: string, viewerId: string) {
+  const id = await resolveUserId(idOrHandle);
   const result = await repository.findStorefront(id, viewerId);
   if (!result) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
   const followingShopCount = await repository.countFollowedShops(id);
@@ -98,6 +116,28 @@ export const listFollows = async (
   };
 };
 
+const dayMs = 24 * 60 * 60 * 1000;
+
+/**
+ * Gửi lại đúng tên đang dùng thì bỏ qua (không kiểm luật mới, không tính là đổi).
+ * Tên khác: kiểm luật, và lần đổi trước chưa đủ USERNAME_CHANGE_COOLDOWN_DAYS ngày thì từ chối.
+ */
+async function applyUsernameChange(id: string, value: unknown, data: Prisma.UserUpdateInput) {
+  const current = await repository.findUsernameState(id);
+  if (typeof value === 'string' && value.trim().toLowerCase() === current?.username) return;
+  const username = parseUsername(value);
+  const nextChangeAt = current?.usernameChangedAt
+    ? new Date(current.usernameChangedAt.getTime() + USERNAME_CHANGE_COOLDOWN_DAYS * dayMs)
+    : null;
+  if (nextChangeAt && nextChangeAt > new Date()) {
+    throw new AppError(422, 'USERNAME_CHANGE_TOO_SOON',
+      `Bạn chỉ có thể đổi tên người dùng ${USERNAME_CHANGE_COOLDOWN_DAYS} ngày một lần.`, 'username',
+      { nextChangeAt: nextChangeAt.toISOString() });
+  }
+  data.username = username;
+  data.usernameChangedAt = new Date();
+}
+
 export const updateProfile = async (id: string, body: unknown) => {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     throw new AppError(422, 'INVALID_PROFILE', 'Thông tin hồ sơ không hợp lệ.');
@@ -109,7 +149,7 @@ export const updateProfile = async (id: string, body: unknown) => {
   }
   const data: Prisma.UserUpdateInput = {};
   if ('fullName' in input) data.fullName = parseFullName(input.fullName);
-  if ('username' in input) data.username = parseUsername(input.username);
+  if ('username' in input) await applyUsernameChange(id, input.username, data);
   if ('bio' in input) {
     if (input.bio !== null && (typeof input.bio !== 'string' || input.bio.trim().length > 300)) {
       throw new AppError(422, 'INVALID_BIO', 'Giới thiệu tối đa 300 ký tự.', 'bio');

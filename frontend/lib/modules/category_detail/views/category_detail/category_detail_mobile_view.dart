@@ -30,6 +30,7 @@ import '../../bloc/category_detail_cubit.dart';
 import '../../bloc/category_detail_state.dart';
 import 'category_detail_view.dart';
 import 'package:restore/shared/widgets/filter/listing_chip_filter_bar.dart';
+import 'package:restore/modules/listings/views/product_detail/product_detail_view.dart';
 
 /// Trang tin của một danh mục, trông giống hệt trang kết quả tìm kiếm: cùng
 /// thanh tìm kiếm ghim trên dải xanh (ô hiện tên danh mục), cùng thanh lọc,
@@ -105,9 +106,9 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
     if (filter != null) _cubit.applyFilter(filter);
   }
 
-  Future<void> _pickSort() async {
+  Future<void> _pickSort(BuildContext anchor) async {
     final sort = await showListingSortSheet(
-      context,
+      anchor,
       selected: _cubit.state.filter.sort,
       options: CategoryDetailState.sortOptions,
     );
@@ -117,7 +118,11 @@ class _CategoryDetailMobileViewState extends State<CategoryDetailMobileView> {
   Future<void> _openDetail(ListingCardItem item) async {
     final id = item.listing.id;
     final favorite = await context.push<bool>(
-      '/listings/$id',
+      ProductDetailView.location(
+        id,
+        title: item.listing.title,
+        shortId: item.listing.shortId,
+      ),
       extra: item.listing,
     );
     if (favorite == null || !mounted) return;
@@ -380,7 +385,7 @@ class _Header extends StatelessWidget {
   final ValueChanged<ListingFilter> onFilterChanged;
   final ValueChanged<CategoryModel> onSwitchCategory;
   final VoidCallback onClearAll;
-  final VoidCallback onSort;
+  final ValueChanged<BuildContext> onSort;
   final VoidCallback onGridToggle;
 
   @override

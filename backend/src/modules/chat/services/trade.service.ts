@@ -91,14 +91,21 @@ export async function submitReview(authorId: string, conversationId: string, inp
 }
 
 export async function listReviews(recipientId: string, query: Record<string, unknown>) {
-  const params = z.object({ role: z.enum(['all','seller','buyer']).default('all'), page: z.coerce.number().int().min(1).max(100000).default(1) }).safeParse(query);
+  const params = z.object({ role: z.enum(['all','seller','buyer']).default('all'),
+    sort: z.enum(['newest','oldest','highest','lowest']).default('newest'),
+    page: z.coerce.number().int().min(1).max(100000).default(1) }).safeParse(query);
   if (!params.success) throw new AppError(422,'INVALID_FILTER','Bộ lọc không hợp lệ.');
-  const {role,page} = params.data;
+  const {role,sort,page} = params.data;
+  // sort: mới nhất (mặc định), cũ nhất, điểm cao, điểm thấp; cùng điểm thì mới trước
+  const orderBy: Prisma.TradeReviewOrderByWithRelationInput[] = sort === 'oldest' ? [{createdAt:'asc'},{id:'asc'}]
+    : sort === 'highest' ? [{stars:'desc'},{createdAt:'desc'},{id:'desc'}]
+    : sort === 'lowest' ? [{stars:'asc'},{createdAt:'desc'},{id:'desc'}]
+    : [{createdAt:'desc'},{id:'desc'}];
   const where = {recipientId, ...(role === 'all' ? {} : {fromSeller:role === 'seller'})};
   const [groups, tags, items] = await prisma.$transaction([
     prisma.tradeReview.groupBy({by:['fromSeller'],where:{recipientId},_count:true,_sum:{stars:true}}),
     prisma.$queryRaw<{tag:string,count:number}[]>`SELECT tag,count(*)::int AS count FROM "TradeReview", unnest(tags) AS tag WHERE "recipientId"=${recipientId} GROUP BY tag ORDER BY count DESC,tag`,
-    prisma.tradeReview.findMany({ where, orderBy:[{createdAt:'desc'},{id:'desc'}], skip:(page-1)*20,take:21,
+    prisma.tradeReview.findMany({ where, orderBy, skip:(page-1)*20,take:21,
       select:{id:true,stars:true,comment:true,tags:true,createdAt:true,fromSeller:true,author:{select:{fullName:true,avatarUrl:true}},trade:{select:{title:true,price:true,image:true}}} })
   ],{isolationLevel:'RepeatableRead'});
   const count = groups.reduce((n,g)=>n+g._count,0);

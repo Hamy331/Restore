@@ -28,10 +28,7 @@ bool isPublicAuthPath(String path) => publicAuthPaths.contains(path);
 
 /// Khách chưa đăng nhập vẫn xem được: trang auth, trang chủ, tìm kiếm, chi tiết tin, trang người bán
 bool isPublicRoute(String path) {
-  if (isPublicAuthPath(path) ||
-      path == '/home' ||
-      path == '/search' ||
-      path == '/blog') {
+  if (isPublicAuthPath(path) || path == '/home' || path == '/search') {
     return true;
   }
 

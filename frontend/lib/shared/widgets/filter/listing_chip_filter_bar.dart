@@ -582,7 +582,9 @@ class ListingSortRow extends StatelessWidget {
   });
 
   final ListingSort sort;
-  final VoidCallback onSort;
+
+  /// Nhận context của nút để menu sắp xếp mở ngay dưới nút
+  final ValueChanged<BuildContext> onSort;
   final bool grid;
   final VoidCallback onGridToggle;
 
@@ -595,19 +597,21 @@ class ListingSortRow extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
       child: Row(
         children: [
-          InkWell(
-            onTap: onSort,
-            child: Row(
-              children: [
-                Text(
-                  sort.label(l10n),
-                  style: const TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w700,
+          Builder(
+            builder: (anchor) => InkWell(
+              onTap: () => onSort(anchor),
+              child: Row(
+                children: [
+                  Text(
+                    sort.label(l10n),
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                const Icon(AppIcons.chevronDown, size: 18),
-              ],
+                  const Icon(AppIcons.chevronDown, size: 18),
+                ],
+              ),
             ),
           ),
           const Spacer(),

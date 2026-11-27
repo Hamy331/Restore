@@ -5,6 +5,7 @@ enum ProfileSaveResult {
   saved,
   usernameTaken,
   invalidUsername,
+  usernameChangeTooSoon,
   invalidPhone,
   failed,
 }

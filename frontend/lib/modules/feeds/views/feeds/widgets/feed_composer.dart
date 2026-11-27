@@ -213,7 +213,7 @@ class _ComposerState extends State<_Composer> {
                 children: [
                   IconButton(
                     tooltip: l.feedAddPhoto,
-                    color: AppColors.primaryDark,
+                    color: AppColors.textPrimary,
                     icon: const Icon(AppIcons.image),
                     onPressed: picking ? null : () => pick(MediaSource.gallery),
                   ),

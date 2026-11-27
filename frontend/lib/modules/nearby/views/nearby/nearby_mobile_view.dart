@@ -112,10 +112,10 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
     if (radius != null) cubit.setRadius(radius);
   }
 
-  Future<void> _pickSort() async {
+  Future<void> _pickSort(BuildContext anchor) async {
     final cubit = context.read<NearbyCubit>();
     final sort = await showListingSortSheet(
-      context,
+      anchor,
       selected: cubit.state.filter.sort,
       options: NearbyState.sortOptions,
     );
@@ -278,7 +278,7 @@ class _NearbyMobileViewState extends State<NearbyMobileView> {
               ListingBarChip(
                 label: state.filter.sort.label(l10n),
                 dropdown: true,
-                onTap: (_) => _pickSort(),
+                onTap: _pickSort,
               ),
             ],
           ),

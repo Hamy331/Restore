@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 import 'package:dio/dio.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/network/api_client.dart';
-import '../../../core/config/app_environment.dart';
-import '../../../shared/widgets/app_local_image.dart';
 
 export 'report_listing_sheet.dart' show reportListing;
 
@@ -13,8 +10,7 @@ String _apiMessage(Object e) => e is DioException && e.response?.data is Map
     : 'Không kết nối được máy chủ.';
 
 class CommunityContentView extends StatefulWidget {
-  const CommunityContentView({this.blog = false, super.key});
-  final bool blog;
+  const CommunityContentView({super.key});
   @override
   State<CommunityContentView> createState() => _CommunityContentViewState();
 }
@@ -27,10 +23,10 @@ class _CommunityContentViewState extends State<CommunityContentView> {
   bool _searching = false;
   Future<List<dynamic>> _load() async {
     final response = await ApiClient().dio.get<Map<String, dynamic>>(
-      widget.blog ? '/content/posts' : '/content/tickets',
+      '/content/tickets',
     );
     final data = response.data!['data'];
-    return widget.blog ? List.from(data['items']) : List.from(data);
+    return List.from(data);
   }
 
   void _refresh() => setState(() => _items = _load());
@@ -132,69 +128,6 @@ class _CommunityContentViewState extends State<CommunityContentView> {
     }
   }
 
-  Future<void> _post(String slug) async {
-    try {
-      final data =
-          (await ApiClient().dio.get<Map<String, dynamic>>(
-                '/content/posts/${Uri.encodeComponent(slug)}',
-              )).data!['data']
-              as Map;
-      if (!mounted) return;
-      await showDialog<void>(
-        context: context,
-        builder: (dialog) => Dialog(
-          child: SizedBox(
-            width: 750,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    data['title'],
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  if (data['coverUrl'] != null)
-                    SizedBox(
-                      height: 240,
-                      width: double.infinity,
-                      child: AppLocalImage(
-                        path:
-                            '${Uri.parse(AppEnvironment.apiBaseUrl).origin}${data['coverUrl']}',
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                  SelectableText(data['content']),
-                  const Divider(),
-                  const Text('Sản phẩm liên quan / quảng cáo'),
-                  for (final listing in data['listings'] as List)
-                    ListTile(
-                      title: Text(listing['title']),
-                      subtitle: Text('${listing['price']} đ'),
-                      onTap: () {
-                        Navigator.pop(dialog);
-                        context.push('/listings/${listing['id']}');
-                      },
-                    ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(dialog),
-                    child: const Text('Đóng'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(_apiMessage(e))));
-      }
-    }
-  }
-
   Future<void> _search() async {
     if (_searching) return;
     setState(() {
@@ -217,12 +150,12 @@ class _CommunityContentViewState extends State<CommunityContentView> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(widget.blog ? 'Blog ReStore' : 'Hỗ trợ & câu hỏi thường gặp'),
+      title: const Text('Hỗ trợ & câu hỏi thường gặp'),
     ),
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        if (!widget.blog) ...[
+        ...[
           TextField(
             controller: _question,
             decoration: InputDecoration(
@@ -273,13 +206,11 @@ class _CommunityContentViewState extends State<CommunityContentView> {
                 for (final row in snapshot.data!)
                   Card(
                     child: ListTile(
-                      title: Text(widget.blog ? row['title'] : row['subject']),
+                      title: Text(row['subject']),
                       subtitle: Text(
-                        widget.blog ? row['category'] : row['status'],
+                        row['status'],
                       ),
-                      onTap: () => widget.blog
-                          ? _post(row['slug'])
-                          : _ticket(row as Map),
+                      onTap: () => _ticket(row as Map),
                     ),
                   ),
               ],

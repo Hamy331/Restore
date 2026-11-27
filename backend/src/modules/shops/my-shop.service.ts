@@ -33,14 +33,14 @@ const findMine = (ownerId: string) => prisma.shop.findUnique({
   where: { ownerId },
   select: {
     ...shopSelect, status: true, rejectNote: true, reviewedAt: true,
-    verification: { select: { status: true, rejectNote: true, submittedAt: true, reviewedAt: true } },
+    verification: { select: { status: true, rejectNote: true, submittedAt: true, reviewedAt: true, businessName: true, taxCode: true } },
   },
 });
 
 /**
  * Trang Quản lý shop: { shop (Shop như GET /shops/:id, kể cả khi chưa duyệt) | null,
  *   review { status (PENDING | APPROVED | REJECTED), rejectNote, reviewedAt } | null,
- *   verification { status, rejectNote, submittedAt, reviewedAt } | null (hồ sơ xin xác minh gần nhất),
+ *   verification { status, rejectNote, submittedAt, reviewedAt, businessName, taxCode } | null (hồ sơ xin xác minh gần nhất),
  *   canCreate (chưa đăng ký cửa hàng), registration { fee (xu), termsVersion, categories [{ id, name }] (chỉ khi chưa có shop) },
  *   nameLocked (shop đã duyệt / xác minh thì không tự đổi tên),
  *   stats { followerCount, listingCount, runningPosters, pendingPosters } | null }
@@ -145,6 +145,9 @@ export async function updateMyShop(userId: string, body: ShopUpdateBody, now = n
       coverUrl: body.coverUrl,
       accentColor: body.accentColor,
       openingHours: body.openingHours === null ? Prisma.DbNull : body.openingHours,
+      contactPhone: body.contactPhone,
+      businessEmail: body.businessEmail,
+      website: body.website,
       ...(shop.status === 'REJECTED' ? { status: 'PENDING', submittedAt: now, rejectNote: null, reviewedAt: null } : {}),
     },
   });

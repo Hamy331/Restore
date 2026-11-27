@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/shared/widgets/listing/app_listing_grid_skeleton.dart';
 
+import '../../../widgets/shop_banner_carousel.dart';
 import 'trusted_shop_card.dart';
+import 'trusted_shops_responsive.dart';
 
 /// Khung chờ khi đang tải trang: banner, dải tóm tắt, một hàng thẻ shop và
-/// lưới tin
+/// lưới tin. Chia cột theo bề ngang giống trang thật để không nhảy bố cục.
 class TrustedShopsSkeleton extends StatelessWidget {
   const TrustedShopsSkeleton({super.key});
 
@@ -21,44 +23,66 @@ class TrustedShopsSkeleton extends StatelessWidget {
           ),
         );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    /// Hàng [count] khối cùng cỡ chia đều bề ngang
+    Widget row(int count, {required double height, double radius = 18}) => Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: block(height: 184, radius: 22),
-        ),
-        const SizedBox(height: 14),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: block(height: 40, radius: 16),
-        ),
-        const SizedBox(height: 24),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: block(width: 180, height: 18, radius: 8),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: TrustedShopCard.height,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: 2,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
-            itemBuilder: (_, _) => block(
-              width: TrustedShopCard.width,
-              height: TrustedShopCard.height,
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        const AppListingGridSkeleton(rows: 1),
+        for (var i = 0; i < count; i++) ...[
+          if (i > 0) const SizedBox(width: 12),
+          Expanded(child: block(height: height, radius: radius)),
+        ],
       ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, box) {
+        final bannerColumns = ShopBannerCarousel.columnsFor(box.maxWidth);
+        final shopColumns = shopGridColumns(box.maxWidth - 32, minWidth: 260);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: row(bannerColumns, height: 184, radius: 22),
+            ),
+            const SizedBox(height: 14),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: block(height: 40, radius: 16),
+            ),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: block(width: 180, height: 18, radius: 8),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (shopColumns == null)
+              SizedBox(
+                height: TrustedShopCard.height,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: 2,
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
+                  itemBuilder: (_, _) => block(
+                    width: TrustedShopCard.width,
+                    height: TrustedShopCard.height,
+                  ),
+                ),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: row(shopColumns, height: TrustedShopCard.height),
+              ),
+            const SizedBox(height: 24),
+            const AppListingGridSkeleton(rows: 1),
+          ],
+        );
+      },
     );
   }
 }

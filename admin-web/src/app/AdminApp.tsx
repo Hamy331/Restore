@@ -226,7 +226,7 @@ export function AdminApp() {
             </div>
             <div
               className={
-                ['dashboard', 'reports', 'posts', 'audit', 'members'].includes(active.key)
+                ['dashboard', 'reports', 'audit', 'members'].includes(active.key)
                   ? 'page-sections'
                   : 'panel module-panel'
               }

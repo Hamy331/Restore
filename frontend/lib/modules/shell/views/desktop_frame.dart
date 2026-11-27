@@ -12,6 +12,7 @@ import 'package:restore/modules/chat/repositories/chat_repository.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_view.dart';
 import 'package:restore/modules/my_shop/utils/shop_session.dart';
 import 'package:restore/modules/plans/utils/plan_session.dart';
+import 'package:restore/shared/widgets/desktop/desktop_footer.dart';
 import 'package:restore/shared/widgets/desktop/desktop_header.dart';
 
 import '../bloc/shell_badges_cubit.dart';
@@ -26,13 +27,15 @@ enum DesktopPageKind {
   /// Nhóm Tài khoản: menu trái + nội dung phải
   account,
 
-  /// Trang chưa có bố cục desktop: đặt giữa màn hình, rộng tối đa 960px
+  /// Trang chưa có bố cục desktop: khối trắng ở giữa, cùng bề rộng 1200px
+  /// với đầu trang và chân trang
   narrow,
 }
 
 DesktopPageKind desktopPageKindOf(String path, {String? userId}) {
   if (path == '/home' ||
       path == '/feeds' ||
+      path == '/trusted-shops' ||
       path.startsWith('/categories/') ||
       path.startsWith('/listings/')) {
     return DesktopPageKind.wide;
@@ -166,20 +169,17 @@ class _DesktopFrameState extends State<DesktopFrame> {
             if (!_desktop) return widget.child;
             final location = widget.location;
             final kind = desktopPageKindOf(location, userId: userId);
-            final body = switch (kind) {
+            final page = switch (kind) {
               DesktopPageKind.wide => widget.child,
               DesktopPageKind.account => AccountDesktopShell(
                 location: location,
                 child: widget.child,
               ),
-              DesktopPageKind.narrow => _NarrowPage(
-                maxWidth:
-                    location == '/messages' || location.startsWith('/messages/')
-                    ? AppDimesions.desktopContentWidth
-                    : AppDimesions.desktopNarrowWidth,
-                child: widget.child,
-              ),
+              DesktopPageKind.narrow => _NarrowPage(child: widget.child),
             };
+            // Chân trang cho mọi trang; trang đã tự có chân trang (DesktopPage)
+            // và Tin nhắn (khung chat cao hết màn hình) thì không thêm
+            final body = _hasOwnFooter(location) ? page : _WithFooter(page);
             return Material(
               color: AppColors.fill,
               child: Column(
@@ -221,19 +221,30 @@ class _DesktopFrameState extends State<DesktopFrame> {
   }
 }
 
-/// Trang chưa có bố cục desktop riêng: khối trắng rộng tối đa 960px ở giữa,
-/// hai bên để trống, trang tự cuộn bên trong.
+/// Trang đã tự có chân trang ([DesktopPage]) hoặc cần cao hết màn hình
+bool _hasOwnFooter(String path) =>
+    path == '/home' ||
+    path == '/feeds' ||
+    path.startsWith('/categories/') ||
+    path.startsWith('/listings/') ||
+    path == '/messages' ||
+    path.startsWith('/messages/');
+
+/// Trang chưa có bố cục desktop riêng: khối trắng bo góc ở giữa, cùng bề
+/// rộng 1200px và lề 24 như đầu trang / chân trang để các mép thẳng hàng;
+/// trang tự cuộn bên trong.
 class _NarrowPage extends StatelessWidget {
-  const _NarrowPage({required this.child, required this.maxWidth});
+  const _NarrowPage({required this.child});
   final Widget child;
-  final double maxWidth;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
     color: AppColors.fill,
     child: Center(
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
+        constraints: const BoxConstraints(
+          maxWidth: AppDimesions.desktopContentWidth,
+        ),
         child: Padding(
           // Lề 24 hai bên như đầu trang để mép nội dung thẳng hàng
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -249,6 +260,25 @@ class _NarrowPage extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    ),
+  );
+}
+
+/// Trang cao đúng một màn hình (cuộn bên trong), chân trang nằm ngay dưới:
+/// cuộn hết trang thì tới chân trang
+class _WithFooter extends StatelessWidget {
+  const _WithFooter(this.child);
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) => SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: box.maxHeight, child: child),
+          const DesktopFooter(),
+        ],
       ),
     ),
   );

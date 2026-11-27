@@ -289,6 +289,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get feedReported => 'Đã gửi báo cáo. Cảm ơn bạn!';
 
   @override
+  String get reportUserTitle => 'Vì sao bạn báo cáo người dùng này?';
+
+  @override
   String get feedViewProfile => 'Xem trang cá nhân';
 
   @override
@@ -436,7 +439,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accUsernameInvalid =>
-      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.';
+      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới, có ít nhất một chữ cái; dấu chấm không đứng đầu, cuối hoặc liền nhau.';
+
+  @override
+  String get accUsernameChangeTooSoon =>
+      'Bạn chỉ có thể đổi tên người dùng 14 ngày một lần.';
 
   @override
   String get accUsernameTaken => 'Tên người dùng đã được sử dụng.';
@@ -4683,7 +4690,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accUsernameHelper =>
-      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.';
+      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới. Đổi tối đa 14 ngày một lần.';
 
   @override
   String get accBioHint => 'Vài dòng giới thiệu về bạn hoặc cửa hàng';
@@ -6338,4 +6345,96 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feedAdminTag => 'Admin ReStore';
+
+  @override
+  String get profSearchListings => 'Tìm trong tin của người bán';
+
+  @override
+  String get profListingsSearchEmpty => 'Không có tin nào khớp từ khoá';
+
+  @override
+  String get profLinkCopied => 'Đã sao chép liên kết shop';
+
+  @override
+  String get revViewContact => 'Xem thông tin liên hệ';
+
+  @override
+  String get revBackToProfile => 'Quay lại thông tin hồ sơ';
+
+  @override
+  String get revVerifiedBusiness => 'Doanh nghiệp đã xác minh';
+
+  @override
+  String get revOrders => 'Đơn đã bán';
+
+  @override
+  String get revTabContact => 'Liên hệ';
+
+  @override
+  String get revSortNewest => 'Mới nhất';
+
+  @override
+  String get revSortOldest => 'Cũ nhất';
+
+  @override
+  String get revSortHighest => 'Điểm cao nhất';
+
+  @override
+  String get revSortLowest => 'Điểm thấp nhất';
+
+  @override
+  String get revFromBuyer => 'Đánh giá từ người mua';
+
+  @override
+  String get revFromSeller => 'Đánh giá từ người bán';
+
+  @override
+  String get revShowNumber => 'Hiện số';
+
+  @override
+  String get revCopy => 'Sao chép';
+
+  @override
+  String get revCopied => 'Đã sao chép';
+
+  @override
+  String get revZalo => 'Nhắn Zalo';
+
+  @override
+  String get revOpenMap => 'Mở bản đồ';
+
+  @override
+  String get revOpenWebsite => 'Mở website';
+
+  @override
+  String get revOpenDaily => 'Mở cửa tất cả các ngày';
+
+  @override
+  String revClosedOn(String days) {
+    return 'Nghỉ: $days';
+  }
+
+  @override
+  String get revNoContact => 'Người bán chưa thêm thông tin liên hệ';
+
+  @override
+  String profAllListings(int count) {
+    return 'Tất cả tin đăng ($count)';
+  }
+
+  @override
+  String profActiveListings(int count) {
+    return 'Tin đang hoạt động ($count)';
+  }
+
+  @override
+  String profSoldListings(int count) {
+    return 'Đã bán ($count)';
+  }
+
+  @override
+  String get profShare => 'Chia sẻ';
+
+  @override
+  String get profProfileLinkCopied => 'Đã sao chép liên kết trang cá nhân';
 }

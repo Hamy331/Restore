@@ -201,37 +201,10 @@ class _SheetGlassPainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Colors.white.withValues(alpha: 0.88),
-            Colors.white.withValues(alpha: 0.84),
-          ],
+          // Nền trắng trung tính, không loang màu ấm
+          colors: [Colors.white, Colors.white.withValues(alpha: 0.97)],
         ).createShader(rect),
     );
-
-    void glow(Offset center, double r, Color color) {
-      canvas.drawCircle(
-        center,
-        r,
-        Paint()
-          ..shader = RadialGradient(
-            colors: [color, color.withValues(alpha: 0)],
-          ).createShader(Rect.fromCircle(center: center, radius: r)),
-      );
-    }
-
-    canvas.save();
-    canvas.clipRRect(rrect);
-    glow(
-      Offset(size.width * 0.12, 0),
-      size.width * 0.55,
-      AppColors.primary.withValues(alpha: 0.20),
-    );
-    glow(
-      Offset(size.width * 0.95, size.height * 0.35),
-      size.width * 0.45,
-      const Color(0xFFFF9F7A).withValues(alpha: 0.12),
-    );
-    canvas.restore();
 
     canvas.drawRRect(
       rrect.deflate(0.6),
@@ -338,22 +311,12 @@ class AppGlassIconBadge extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFFF4DC), Color(0xFFFFDDA6)],
-        ),
+        // Nền xám nhạt trung tính (không gradient vàng)
+        color: const Color(0xFFF2F3F5),
         border: Border.all(color: Colors.white, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.18),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Center(
-        child: Icon(icon, size: size * 0.5, color: AppColors.primaryDark),
+        child: Icon(icon, size: size * 0.5, color: AppColors.textPrimary),
       ),
     );
   }

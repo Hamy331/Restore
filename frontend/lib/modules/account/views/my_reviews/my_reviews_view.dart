@@ -12,8 +12,7 @@ import 'package:restore/shared/widgets/app_local_image.dart';
 import 'package:restore/shared/widgets/app_page_header.dart';
 import 'package:restore/shared/widgets/loading/app_loading_indicator.dart';
 
-import '../../models/profile_models.dart';
-import '../public_profile/profile_reviews.dart';
+import '../reviews/seller_reviews_view.dart';
 
 class MyReviewsView extends StatelessWidget {
   const MyReviewsView({
@@ -36,6 +35,9 @@ class MyReviewsView extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final user = context.watchUser();
     if (user == null) return const SizedBox.shrink();
+    // Đánh giá nhận được: cùng trang đánh giá (thẻ xoay + tab) như người khác
+    // xem hồ sơ của mình
+    if (received) return SellerReviewsView(userId: user.id);
 
     return Scaffold(
       body: SafeArea(
@@ -63,25 +65,10 @@ class MyReviewsView extends StatelessWidget {
             // Desktop: tiêu đề đã có đường kẻ riêng
             if (!isDesktopLayout(context)) const Divider(height: 1),
             Expanded(
-              child: received
-                  ? ProfileReviews(
-                      key: ValueKey(user.id),
-                      showTitle: false,
-                      profile: ProfileData(
-                        id: user.id,
-                        fullName: user.fullName,
-                        username: user.username,
-                        avatarUrl: user.avatarUrl,
-                        followerCount: 0,
-                        followingCount: 0,
-                        ratingAverage: user.ratingAverage,
-                        ratingCount: user.ratingCount,
-                      ),
-                    )
-                  : _OutgoingReviews(
-                      key: ValueKey(user.id),
-                      history: transactions,
-                    ),
+              child: _OutgoingReviews(
+                key: ValueKey(user.id),
+                history: transactions,
+              ),
             ),
           ],
         ),

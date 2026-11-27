@@ -48,7 +48,7 @@ class FeedAvatar extends StatelessWidget {
     child: Text(
       name.isEmpty ? '?' : name.characters.first,
       style: TextStyle(
-        color: AppColors.primaryDark,
+        color: AppColors.textPrimary,
         fontSize: size * .4,
         fontWeight: FontWeight.w700,
       ),

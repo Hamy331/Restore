@@ -65,6 +65,7 @@ class UserProfileCubit extends Cubit<UserProfileState> {
       return switch (code) {
         'USERNAME_TAKEN' => ProfileSaveResult.usernameTaken,
         'INVALID_USERNAME' => ProfileSaveResult.invalidUsername,
+        'USERNAME_CHANGE_TOO_SOON' => ProfileSaveResult.usernameChangeTooSoon,
         'INVALID_PHONE' => ProfileSaveResult.invalidPhone,
         _ => ProfileSaveResult.failed,
       };

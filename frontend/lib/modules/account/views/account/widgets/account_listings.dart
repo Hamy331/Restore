@@ -18,7 +18,11 @@ import 'listing_lifecycle_actions.dart';
 import '../../../widgets/profile_header.dart';
 
 /// Các sliver của mục "Tin đăng": tab trạng thái, danh sách và tải thêm.
-List<Widget> accountListingSlivers(AccountListingsState state) => [
+/// [columns] > 1 (tablet): tin đăng xếp thành lưới thay vì một cột kéo giãn.
+List<Widget> accountListingSlivers(
+  AccountListingsState state, {
+  int columns = 1,
+}) => [
   const SliverToBoxAdapter(child: _ListingTabs()),
   const SliverToBoxAdapter(child: SizedBox(height: 10)),
   if (state.loading)
@@ -30,6 +34,23 @@ List<Widget> accountListingSlivers(AccountListingsState state) => [
     )
   else if (state.displayed.isEmpty)
     SliverToBoxAdapter(child: _EmptyListings(status: state.selected))
+  else if (columns > 1)
+    SliverList.builder(
+      itemCount: (state.displayed.length / columns).ceil(),
+      itemBuilder: (_, rowIndex) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var c = 0; c < columns; c++) ...[
+            if (c > 0) const SizedBox(width: 24),
+            Expanded(
+              child: rowIndex * columns + c < state.displayed.length
+                  ? _ListingRow(item: state.displayed[rowIndex * columns + c])
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ],
+      ),
+    )
   else
     SliverList.builder(
       itemCount: state.displayed.length,

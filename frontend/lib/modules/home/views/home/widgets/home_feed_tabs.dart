@@ -87,10 +87,26 @@ class _HomeFeedTabsState extends State<HomeFeedTabs> {
                 children: [for (final tab in tabs) Expanded(child: tab)],
               ),
             )
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: widget.padding,
-              child: Row(children: tabs),
+          // Hẹp (điện thoại): kéo ngang. Rộng hơn tổng cỡ các tab (tablet):
+          // tab dàn đều hết bề ngang thay vì dồn sát trái
+          : LayoutBuilder(
+              builder: (context, box) {
+                final inset = widget.padding.resolve(Directionality.of(context));
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: widget.padding,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: box.maxWidth - inset.horizontal,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: tabs,
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }

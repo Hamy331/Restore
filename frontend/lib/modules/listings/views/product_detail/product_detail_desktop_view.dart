@@ -215,13 +215,28 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
       SliverToBoxAdapter(
         child: _Breadcrumb(
           title: detail.listing.title,
-          categoryName: category?.name.of(context),
-          onCategory: category == null
-              ? null
-              : () => context.push(
+          crumbs: [
+            if (category != null) ...[
+              _Crumb(
+                category.name.of(context),
+                () => context.push(
                   CategoryDetailView.location(category.id),
                   extra: category,
                 ),
+              ),
+              if (category.subcategory != null)
+                _Crumb(
+                  category.subcategory!.name.of(context),
+                  () => context.push(
+                    CategoryDetailView.location(
+                      category.id,
+                      subcategoryId: category.subcategory!.id,
+                    ),
+                    extra: category,
+                  ),
+                ),
+            ],
+          ],
         ),
       ),
       SliverToBoxAdapter(
@@ -337,11 +352,18 @@ class _ProductDetailDesktopViewState extends State<ProductDetailDesktopView> {
   }
 }
 
+class _Crumb {
+  const _Crumb(this.label, this.onTap);
+  final String label;
+  final VoidCallback onTap;
+}
+
 class _Breadcrumb extends StatelessWidget {
-  const _Breadcrumb({this.title, this.categoryName, this.onCategory});
+  const _Breadcrumb({this.title, this.crumbs = const []});
   final String? title;
-  final String? categoryName;
-  final VoidCallback? onCategory;
+
+  /// Các cấp ở giữa, từ danh mục cha tới danh mục con
+  final List<_Crumb> crumbs;
 
   @override
   Widget build(BuildContext context) {
@@ -354,7 +376,7 @@ class _Breadcrumb extends StatelessWidget {
         color: AppColors.textSecondary,
       ),
     );
-    const link = TextStyle(fontSize: 13, color: AppColors.primaryDark);
+    const link = TextStyle(fontSize: 13, color: AppColors.textPrimary);
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Row(
@@ -363,11 +385,11 @@ class _Breadcrumb extends StatelessWidget {
             onTap: () => context.go('/home'),
             child: Text(l10n.homeTitle, style: link),
           ),
-          if (categoryName != null) ...[
+          for (final crumb in crumbs) ...[
             sep,
             InkWell(
-              onTap: onCategory,
-              child: Text(categoryName!, style: link),
+              onTap: crumb.onTap,
+              child: Text(crumb.label, style: link),
             ),
           ],
           if (title != null && title!.isNotEmpty) ...[

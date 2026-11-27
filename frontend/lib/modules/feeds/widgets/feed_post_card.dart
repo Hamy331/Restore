@@ -184,7 +184,7 @@ class FeedPostCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(
-                                  color: AppColors.primaryDark,
+                                  color: AppColors.textPrimary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),

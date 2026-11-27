@@ -157,7 +157,7 @@ class _FeedTop extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: selected ? AppColors.primary : AppColors.border,
+                color: selected ? AppColors.actionPrimary : AppColors.border,
                 width: selected ? 3 : 1,
               ),
             ),
@@ -168,7 +168,7 @@ class _FeedTop extends StatelessWidget {
             style: TextStyle(
               fontSize: 15,
               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              color: selected ? AppColors.primaryDark : AppColors.textSecondary,
+              color: selected ? AppColors.textPrimary : AppColors.textSecondary,
             ),
           ),
         ),
@@ -258,14 +258,14 @@ class _LeftMenu extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
               child: Row(
                 children: [
-                  Icon(icon, size: 19, color: AppColors.primaryDark),
+                  Icon(icon, size: 19, color: AppColors.textPrimary),
                   const SizedBox(width: 12),
                   Text(
                     label,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: on ? FontWeight.w700 : FontWeight.w500,
-                      color: on ? AppColors.primaryDark : AppColors.textPrimary,
+                      color: on ? AppColors.textPrimary : AppColors.textPrimary,
                     ),
                   ),
                 ],
@@ -404,8 +404,8 @@ class _RightPanel extends StatelessWidget {
                 icon: const Icon(AppIcons.add, size: 18),
                 label: Text(t('Đăng tin bán', 'Post a listing')),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primaryDark,
-                  side: const BorderSide(color: AppColors.primary),
+                  foregroundColor: AppColors.textPrimary,
+                  side: const BorderSide(color: AppColors.border),
                   minimumSize: const Size(0, 42),
                 ),
               ),

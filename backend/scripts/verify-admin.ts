@@ -88,14 +88,9 @@ try{
   const upload=await fetch(base+'/content/knowledge/upload?title=Huong%20dan.txt',{method:'POST',headers:{Authorization:`Bearer ${adminToken}`,'Content-Type':'text/plain'},body:'Hướng dẫn kiểm tra sản phẩm trước khi mua.'});assert.equal(upload.status,200);checks++;
   const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6/wAAAABJRU5ErkJggg==','base64');
   const media=await fetch(base+'/content/media',{method:'POST',headers:{Authorization:`Bearer ${adminToken}`,'Content-Type':'image/png'},body:png});const mediaJson=await media.json();assert.equal(media.status,200);files.push(mediaJson.data.url.split('/').at(-1));checks++;
-  const postData={title:'Hướng dẫn mua bàn gỗ',slug:'huong-dan-ban-go',category:'Hướng dẫn',content:'Kiểm tra sản phẩm và giao dịch tại địa điểm công cộng.',coverUrl:mediaJson.data.url,listingIds:[],status:'DRAFT'};
-  const post=await request('/admin/posts','POST',postData);
   const privateMediaUrl=base+mediaJson.data.url.replace('/api/v1/content','/content');
   assert.equal((await fetch(privateMediaUrl)).status,404);checks++;
   assert.equal((await fetch(privateMediaUrl,{headers:{Authorization:`Bearer ${adminToken}`}})).status,200);checks++;
-  await request('/content/posts/huong-dan-ban-go','GET',undefined,'',404);
-  await request(`/admin/posts/${post.id}`,'PUT',{...postData,status:'PUBLISHED',updatedAt:post.updatedAt});
-  assert.equal((await request('/content/posts/huong-dan-ban-go','GET',undefined,'')).title,postData.title);
   const image=await fetch(base+mediaJson.data.url.replace('/api/v1/content','/content'));assert.equal(image.status,200);checks++;
   const order=await request('/stores/orders','POST',{packageId:'basic',categoryId:category.id},sellerToken,201);
   await request(`/admin/catalog/categories/${category.id}`,'PUT',{name:category.name,description:'Tạm dừng trước khi xác nhận',active:false});

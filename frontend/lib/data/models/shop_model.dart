@@ -41,6 +41,9 @@ class ShopModel extends Equatable {
 
   /// Giờ mở cửa theo thứ, rỗng = shop chưa đặt
   final List<ShopOpeningDay> openingHours;
+
+  /// Liên hệ công khai (mục Thông tin doanh nghiệp), null = chưa đặt
+  final String? contactPhone, businessEmail, website;
   final double ratingAverage;
   final int ratingCount;
   final int followerCount;
@@ -66,6 +69,9 @@ class ShopModel extends Equatable {
     this.categoryIds = const [],
     this.address,
     this.openingHours = const [],
+    this.contactPhone,
+    this.businessEmail,
+    this.website,
     this.ratingAverage = 0,
     this.ratingCount = 0,
     this.followerCount = 0,
@@ -96,6 +102,9 @@ class ShopModel extends Equatable {
     ],
     address: json['address'] as String?,
     openingHours: ShopOpeningDay.listFromJson(json['openingHours']),
+    contactPhone: json['contactPhone'] as String?,
+    businessEmail: json['businessEmail'] as String?,
+    website: json['website'] as String?,
     ratingAverage: (json['ratingAverage'] as num?)?.toDouble() ?? 0,
     ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
     followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
@@ -120,6 +129,9 @@ class ShopModel extends Equatable {
     categoryIds: categoryIds,
     address: address,
     openingHours: openingHours,
+    contactPhone: contactPhone,
+    businessEmail: businessEmail,
+    website: website,
     ratingAverage: ratingAverage,
     ratingCount: ratingCount,
     followerCount: followerCount ?? this.followerCount,
@@ -145,6 +157,9 @@ class ShopModel extends Equatable {
     categoryIds,
     address,
     openingHours,
+    contactPhone,
+    businessEmail,
+    website,
     ratingAverage,
     ratingCount,
     followerCount,

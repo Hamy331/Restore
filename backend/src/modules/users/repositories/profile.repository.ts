@@ -29,6 +29,7 @@ export async function findStorefront(id: string, viewerId: string) {
         shop: { select: {
           id: true, name: true, address: true, logoUrl: true, coverUrl: true, description: true,
           verificationType: true, status: true, openingHours: true,
+          contactPhone: true, businessEmail: true, website: true,
         } },
       },
     }),
@@ -45,12 +46,14 @@ export async function findStorefront(id: string, viewerId: string) {
     id: shop.id, name: shop.name, address: shop.address, logoUrl: shop.logoUrl,
     coverUrl: shop.coverUrl, description: shop.description, verified: !!shop.verificationType,
     verificationType: shop.verificationType, openingHours: shop.openingHours,
+    businessEmail: shop.businessEmail, website: shop.website,
     // Theo dõi shop = theo dõi chủ shop: dùng chung số người theo dõi và trạng thái của chủ shop
     followerCount: user._count.followers, isFollowing: user.followers.length > 0,
   } : null;
   const listingCount = count('AVAILABLE');
   return { user, storefront: { tier, shop: branding, listingCount, soldCount: count('SOLD'),
-    phone: listingCount > 0 ? user.phone : null } };
+    // Shop có số liên hệ riêng thì luôn hiện; không thì số của chủ shop khi đang có tin bán
+    phone: branding && shop?.contactPhone ? shop.contactPhone : listingCount > 0 ? user.phone : null } };
 }
 
 export const findFollow = (id: string, viewerId: string) =>
@@ -90,6 +93,9 @@ export const findPeers = (id: string) =>
     select: { userId: true }, distinct: ['userId'],
   });
 
+export const findUsernameState = (id: string) =>
+  prisma.user.findUnique({ where: { id }, select: { username: true, usernameChangedAt: true } });
+
 export const findTarget = (targetId: string) =>
   prisma.user.findUnique({ where: { id: targetId }, select: { id: true, status: true } });
 
@@ -101,3 +107,10 @@ export const upsertFollow = (selfId: string, targetId: string) =>
 
 export const deleteFollow = (selfId: string, targetId: string) =>
   prisma.userFollow.deleteMany({ where: { followerId: selfId, followingId: targetId } });
+
+/** Id của người dùng đang hoạt động theo tên người dùng (không phân biệt hoa thường) */
+export const findIdByUsername = (username: string) =>
+  prisma.user.findFirst({
+    where: { username: { equals: username, mode: 'insensitive' }, status: 'ACTIVE' },
+    select: { id: true },
+  });
