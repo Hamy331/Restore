@@ -139,8 +139,23 @@ class AppTheme {
           iconSize: 18,
         ),
       ),
+      // Nút dạng link dùng chung (AppLinkButton cũng theo kiểu này): chữ đậm
+      // xanh đậm, không nền, bo góc nhẹ khi rê chuột / nhấn. Nút tự đặt
+      // style riêng (VD màu đỏ cho Xoá) vẫn giữ phần mình đặt.
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(textStyle: buttonLabelStyle, iconSize: 18),
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.actionPrimaryDark,
+          disabledForegroundColor: AppColors.textSecondary,
+          textStyle: buttonLabelStyle.copyWith(
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.1,
+          ),
+          iconSize: 18,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          minimumSize: const Size(0, 36),
+          visualDensity: VisualDensity.compact,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
       ),
     );
   }
