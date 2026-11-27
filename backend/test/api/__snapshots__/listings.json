@@ -6,10 +6,14 @@
       "data": [
         {
           "id": "listing-3",
+          "shortId": 3,
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -58,27 +62,28 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         },
         {
           "id": "listing-2",
+          "shortId": 2,
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -127,20 +132,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ],
       "pagination": {
@@ -165,10 +167,14 @@
       "data": [
         {
           "id": "listing-1",
+          "shortId": 1,
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -217,20 +223,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ],
       "pagination": {
@@ -255,10 +258,14 @@
       "data": [
         {
           "id": "listing-3",
+          "shortId": 3,
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -307,20 +314,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ],
       "pagination": {
@@ -345,10 +349,14 @@
       "data": [
         {
           "id": "listing-3",
+          "shortId": 3,
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -397,27 +405,28 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": 0.3584492601997935,
           "isFeatured": true,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         },
         {
           "id": "listing-2",
+          "shortId": 2,
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -466,27 +475,28 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": 0.3584492601997935,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         },
         {
           "id": "listing-1",
+          "shortId": 1,
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -535,20 +545,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": 0.3584492601997935,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ],
       "pagination": {
@@ -582,10 +589,14 @@
       "data": [
         {
           "id": "listing-2",
+          "shortId": 2,
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -634,20 +645,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ],
       "pagination": {
@@ -672,10 +680,14 @@
       "data": [
         {
           "id": "listing-2",
+          "shortId": 2,
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -724,20 +736,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ],
       "pagination": {
@@ -771,10 +780,14 @@
       "data": [
         {
           "id": "listing-3",
+          "shortId": 3,
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -823,27 +836,28 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         },
         {
           "id": "listing-2",
+          "shortId": 2,
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -892,27 +906,28 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         },
         {
           "id": "listing-1",
+          "shortId": 1,
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -961,20 +976,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ],
       "pagination": {
@@ -999,10 +1011,14 @@
       "data": [
         {
           "id": "listing-3",
+          "shortId": 3,
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -1051,20 +1067,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ]
     }
@@ -1075,10 +1088,14 @@
       "success": true,
       "data": {
         "id": "listing-1",
+        "shortId": 1,
         "title": "Bàn gỗ sồi thật",
         "description": "Mô tả sản phẩm dùng để kiểm thử API.",
         "price": "1200000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-seller",
         "categoryId": "furniture",
         "subcategoryId": null,
@@ -1213,12 +1230,13 @@
         "owner": {
           "id": "user-seller",
           "fullName": "user-seller",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
         "seller": {
           "id": "user-seller",
@@ -1236,11 +1254,7 @@
         "sellerPlanTier": null,
         "sellerActiveListings": 3,
         "isFavorite": false,
-        "isOwner": false,
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "isOwner": false
       }
     }
   },
@@ -1310,10 +1324,14 @@
       "data": [
         {
           "id": "listing-1",
+          "shortId": 1,
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -1362,18 +1380,15 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-          "isFavorite": true,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": true
         }
       ],
       "pagination": {
@@ -1398,10 +1413,14 @@
       "data": [
         {
           "id": "listing-3",
+          "shortId": 3,
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -1450,27 +1469,28 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         },
         {
           "id": "listing-2",
+          "shortId": 2,
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -1519,27 +1539,28 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         },
         {
           "id": "listing-1",
+          "shortId": 1,
           "title": "Bàn gỗ sồi thật",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -1588,20 +1609,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": false,
-          "isFavorite": true,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": true
         }
       ],
       "pagination": {
@@ -1653,10 +1671,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Tin tạo qua API thử",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -1708,20 +1730,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -1731,10 +1750,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Tin tạo qua API thử",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -1786,20 +1809,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -1860,10 +1880,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -1918,20 +1942,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -1950,10 +1971,14 @@
       "data": [
         {
           "id": "<uuid>",
+          "shortId": 4,
           "title": "Tin đã sửa qua API",
           "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
           "price": "250000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-buyer",
           "categoryId": "other",
           "subcategoryId": null,
@@ -2008,20 +2033,17 @@
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "paidCredits": 0,
           "paidDays": 0,
           "autoExtend": false,
-          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ]
     }
@@ -2046,10 +2068,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -2125,12 +2151,13 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
         "seller": {
           "id": "user-buyer",
@@ -2148,11 +2175,7 @@
         "sellerPlanTier": null,
         "sellerActiveListings": 1,
         "isFavorite": false,
-        "isOwner": false,
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "isOwner": false
       }
     }
   },
@@ -2170,10 +2193,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -2228,20 +2255,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -2251,10 +2275,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -2309,20 +2337,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -2332,10 +2357,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Tin đã sửa qua API",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -2390,20 +2419,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 1
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -2414,10 +2440,14 @@
       "data": [
         {
           "id": "<uuid>",
+          "shortId": 4,
           "title": "Tin đã sửa qua API",
           "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
           "price": "250000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-buyer",
           "categoryId": "other",
           "subcategoryId": null,
@@ -2472,20 +2502,17 @@
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 1
           },
           "isPartner": false,
+          "shopSummary": null,
           "paidCredits": 0,
           "paidDays": 0,
           "autoExtend": false,
-          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ],
       "pagination": {
@@ -2503,10 +2530,14 @@
       "data": [
         {
           "id": "<uuid>",
+          "shortId": 4,
           "title": "Tin đã sửa qua API",
           "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
           "price": "250000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-buyer",
           "categoryId": "other",
           "subcategoryId": null,
@@ -2561,20 +2592,17 @@
           "owner": {
             "id": "user-buyer",
             "fullName": "user-buyer",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 1
           },
           "isPartner": false,
+          "shopSummary": null,
           "paidCredits": 0,
           "paidDays": 0,
           "autoExtend": false,
-          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
         }
       ],
       "pagination": {
@@ -2591,10 +2619,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 5,
         "title": "Nháp",
         "description": "",
         "price": "0",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": null,
         "subcategoryId": null,
@@ -2619,20 +2651,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 1
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": ""
       }
     }
   },
@@ -2642,10 +2671,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 5,
         "title": "Nháp đã đủ thông tin",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -2697,20 +2730,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 1
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -2729,10 +2759,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 5,
         "title": "Nháp đã đủ thông tin",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -2786,20 +2820,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 1
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },

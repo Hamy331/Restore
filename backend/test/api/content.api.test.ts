@@ -5,25 +5,14 @@ import { PNG } from './support/fixtures.js';
 
 const { ctx, expect } = useApi('content');
 
-test('content: media and blog posts', async () => {
+test('content: media', async () => {
   const { api, tokens } = ctx;
   expect('upload media as user', await api.post('/content/media', { token: tokens.buyer, raw: PNG, contentType: 'image/png' }));
   const media = expect('upload media', await api.post('/content/media', { token: tokens.admin, raw: PNG, contentType: 'image/png' }));
   const coverUrl = media.body.data.url;
   const filename = String(coverUrl).split('/').pop();
-  expect('media before publish (guest)', await api.get(`/content/media/${filename}`));
+  expect('media (guest)', await api.get(`/content/media/${filename}`));
 
-  const post = { title: 'Mẹo mua đồ cũ an toàn', slug: 'meo-mua-do-cu', category: 'Hướng dẫn', content: 'Nội dung bài viết đủ dài để qua kiểm tra.', coverUrl, listingIds: ['listing-1'], status: 'PUBLISHED' };
-  expect('create post invalid slug', await api.post('/admin/posts', { token: tokens.admin, body: { ...post, slug: 'Sai Slug' } }));
-  const created = expect('create post', await api.post('/admin/posts', { token: tokens.admin, body: post }));
-  expect('admin posts', await api.get('/admin/posts', { token: tokens.admin }));
-  expect('update post', await api.put(`/admin/posts/${created.body.data.id}`, { token: tokens.admin, body: { ...post, title: 'Mẹo mua đồ cũ an toàn hơn', updatedAt: created.body.data.updatedAt } }));
-  expect('update post stale', await api.put(`/admin/posts/${created.body.data.id}`, { token: tokens.admin, body: { ...post, updatedAt: created.body.data.updatedAt } }));
-  expect('public posts', await api.get('/content/posts'));
-  expect('public post detail', await api.get('/content/posts/meo-mua-do-cu'));
-  expect('public post missing', await api.get('/content/posts/khong-co'));
-  const image = await api.get(`/content/media/${filename}`);
-  expect('media after publish (guest)', { ...image, body: { bytes: image.status === 200 ? PNG.length : image.body } });
 });
 
 test('content: knowledge base', async () => {

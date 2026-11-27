@@ -3,9 +3,12 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { contentTypeOf, getObject, listDiskObjects, putObject, removeObject, storageDriver, validateStorageEnvironment } from './storage.service.js';
+import {
+  contentTypeOf, deliveryUrl, getObject, putObject, readStored, removeObject, storageDriver, thumbWidth,
+  validateStorageEnvironment,
+} from './storage.service.js';
 
-const ENV_KEYS = ['STORAGE_DRIVER', 'STORAGE_DISK_ROOT', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_STORAGE_BUCKET'];
+const ENV_KEYS = ['STORAGE_DRIVER', 'STORAGE_DISK_ROOT', 'CLOUDINARY_URL', 'CLOUDINARY_ROOT_FOLDER'];
 
 /** Chạy [work] với biến môi trường tạm, trả lại như cũ sau đó */
 async function withEnv(env: Record<string, string>, work: () => Promise<void>) {
@@ -25,27 +28,37 @@ async function withEnv(env: Record<string, string>, work: () => Promise<void>) {
 test('driver defaults to disk and rejects unknown values', async () => {
   await withEnv({}, async () => assert.equal(storageDriver(), 'disk'));
   await withEnv({ STORAGE_DRIVER: 's3' }, async () => assert.throws(storageDriver, /STORAGE_DRIVER/));
-  await withEnv({ STORAGE_DRIVER: 'supabase' }, async () => assert.throws(validateStorageEnvironment, /SUPABASE_URL/));
+  await withEnv({ STORAGE_DRIVER: 'supabase' }, async () => assert.throws(storageDriver, /STORAGE_DRIVER/));
 });
 
-test('contentTypeOf maps image extensions', () => {
+test('contentTypeOf maps image and video extensions', () => {
   assert.equal(contentTypeOf('a.jpg'), 'image/jpeg');
   assert.equal(contentTypeOf('a.png'), 'image/png');
   assert.equal(contentTypeOf('a.webp'), 'image/webp');
+  assert.equal(contentTypeOf('a.mp4'), 'video/mp4');
 });
 
-test('disk driver: put, get, remove; missing file reads as null', async () => {
+test('thumbWidth picks the smallest allowed size that is wide enough', () => {
+  assert.equal(thumbWidth('100'), 240);
+  assert.equal(thumbWidth('240'), 240);
+  assert.equal(thumbWidth('481'), 960);
+  assert.equal(thumbWidth(['300', '900']), 480);
+  for (const value of [undefined, '', '0', '-1', 'abc', '961', '1.5']) assert.equal(thumbWidth(value), null, String(value));
+});
+
+test('disk driver: put, get, remove; no CDN URL; missing file reads as null', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'storage-'));
   try {
     await withEnv({ STORAGE_DISK_ROOT: root }, async () => {
-      assert.deepEqual(await listDiskObjects('listings'), []);
       await putObject('listings', 'a.png', Buffer.from('png'));
-      assert.deepEqual(await listDiskObjects('listings'), ['a.png']);
       assert.equal((await getObject('listings', 'a.png'))?.toString(), 'png');
+      assert.equal(deliveryUrl('listings', 'a.png', 240), null);
+      assert.deepEqual(await readStored('listings', 'a.png'), { bytes: Buffer.from('png'), contentType: 'image/png' });
       await assert.rejects(putObject('listings', 'a.png', Buffer.from('again')), { code: 'EEXIST' });
       await removeObject('listings', 'a.png');
       await removeObject('listings', 'a.png');
       assert.equal(await getObject('listings', 'a.png'), null);
+      assert.equal(await readStored('listings', 'a.png'), null);
       await assert.rejects(async () => getObject('listings', '../secret'), /Invalid storage object name/);
     });
   } finally {
@@ -53,42 +66,16 @@ test('disk driver: put, get, remove; missing file reads as null', async () => {
   }
 });
 
-test('supabase driver calls the Storage REST API with the service key', async () => {
-  const calls: { method: string; url: string; headers: Record<string, string>; body?: unknown }[] = [];
-  const realFetch = globalThis.fetch;
-  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
-    const call = { method: init?.method ?? 'GET', url: String(input), headers: init?.headers as Record<string, string>, body: init?.body };
-    calls.push(call);
-    if (call.method === 'GET' && call.url.endsWith('/missing.jpg')) {
-      return new Response('{"statusCode":"404","error":"not_found","message":"Object not found"}', { status: 400 });
-    }
-    if (call.method === 'GET') return new Response(new Uint8Array([1, 2, 3]));
-    if (call.method === 'POST' && call.url.endsWith('/fail.jpg')) return new Response('boom', { status: 500 });
-    if (call.method === 'POST' && call.url.endsWith('/dup.jpg')) {
-      return new Response('{"statusCode":"409","error":"Duplicate","message":"The resource already exists"}', { status: 400 });
-    }
-    return new Response('{}');
-  }) as typeof fetch;
-  try {
-    await withEnv({ STORAGE_DRIVER: 'supabase', SUPABASE_URL: 'https://p.supabase.co/', SUPABASE_SERVICE_ROLE_KEY: 'key' }, async () => {
-      await putObject('admin', 'x.webp', Buffer.from('w'));
-      assert.deepEqual(await getObject('admin', 'x.webp'), Buffer.from([1, 2, 3]));
-      assert.equal(await getObject('admin', 'missing.jpg'), null);
-      await removeObject('admin', 'x.webp');
-      await assert.rejects(putObject('admin', 'fail.jpg', Buffer.from('f')), /500 boom/);
-      await assert.rejects(putObject('admin', 'dup.jpg', Buffer.from('d')), { code: 'EEXIST' });
-    });
-  } finally {
-    globalThis.fetch = realFetch;
-  }
-  const [put, get, , remove] = calls;
-  assert.equal(put!.method, 'POST');
-  assert.equal(put!.url, 'https://p.supabase.co/storage/v1/object/media/admin/x.webp');
-  assert.equal(put!.headers.Authorization, 'Bearer key');
-  assert.equal(put!.headers['Content-Type'], 'image/webp');
-  assert.equal(put!.headers['x-upsert'], 'false');
-  assert.equal(get!.url, 'https://p.supabase.co/storage/v1/object/media/admin/x.webp');
-  assert.equal(remove!.method, 'DELETE');
-  assert.equal(remove!.url, 'https://p.supabase.co/storage/v1/object/media');
-  assert.deepEqual(JSON.parse(String(remove!.body)), { prefixes: ['admin/x.webp'] });
+test('cloudinary driver: public areas get plain CDN URLs, gated areas get signed URLs', async () => {
+  await withEnv({ STORAGE_DRIVER: 'cloudinary', CLOUDINARY_URL: 'cloudinary://123:secret@demo' }, async () => {
+    validateStorageEnvironment();
+    const avatar = deliveryUrl('avatars', 'u_1.jpg')!;
+    assert.match(avatar, /^https:\/\/res\.cloudinary\.com\/demo\/image\/upload\/(v1\/)?media\/avatars\/u_1\.jpg$/);
+    const thumb = deliveryUrl('feeds', 'u_2.png', 480)!;
+    assert.match(thumb, /\/image\/upload\/c_limit,f_auto,q_auto,w_480\/(v1\/)?media\/feeds\/u_2\.png$/);
+    const listing = deliveryUrl('listings', 'x.webp', 240)!;
+    assert.match(listing, /\/image\/authenticated\/s--[A-Za-z0-9_-]{8}--\/c_limit,f_auto,q_auto,w_240\/(v1\/)?media\/listings\/x\.webp$/);
+    const video = deliveryUrl('chat', 'v.mp4')!;
+    assert.match(video, /\/video\/authenticated\/s--[A-Za-z0-9_-]{8}--\/(v1\/)?media\/chat\/v\.mp4$/);
+  });
 });

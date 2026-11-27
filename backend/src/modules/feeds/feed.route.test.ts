@@ -112,7 +112,7 @@ test('media uploads go to their own area and are named after the uploader',async
   assert.match(avatar,/^\/api\/v1\/media\/avatars\/.+\.png$/);
   assert.ok(isMediaUrl(feed,'feed'));assert.ok(!isMediaUrl(feed,'avatar'));assert.ok(!isMediaUrl('https://evil.example/a.jpg','feed'));
   const [area,name]=feed.split('/').slice(-2);
-  assert.equal((await readMedia(area!,name!)).contentType,'image/jpeg');
+  assert.equal(((await readMedia(area!,name!)) as {contentType:string}).contentType,'image/jpeg');
   await assert.rejects(readMedia('listings',name!),{code:'MEDIA_NOT_FOUND'});
   await assert.rejects(uploadMedia(user,'feed',Buffer.from('not an image')),{code:'INVALID_IMAGE'});
   assert.throws(()=>mediaPurpose('listing'),{code:'INVALID_PURPOSE'});

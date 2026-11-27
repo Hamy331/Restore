@@ -207,10 +207,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Đồng hồ treo tường cũ",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -262,20 +266,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -285,10 +286,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 5,
         "title": "Quạt bàn mini",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -340,20 +345,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -394,10 +396,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 7,
         "title": "Máy may cổ",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -449,20 +455,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 5,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -484,10 +487,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Đồng hồ treo tường cũ",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -541,20 +548,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -577,10 +581,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Đồng hồ treo tường cũ",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -634,20 +642,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 0,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -675,10 +680,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Đồng hồ treo tường cũ",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -732,20 +741,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 5,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -755,10 +761,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Đồng hồ treo tường cũ",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -812,20 +822,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 5,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },
@@ -865,10 +872,14 @@
       "success": true,
       "data": {
         "id": "<uuid>",
+        "shortId": 4,
         "title": "Đồng hồ treo tường cũ",
         "description": "Mô tả đủ dài cho tin đăng thử nghiệm.",
         "price": "250000",
         "isNegotiable": true,
+        "isFree": false,
+        "multipleUnits": false,
+        "meetUp": true,
         "ownerId": "user-buyer",
         "categoryId": "other",
         "subcategoryId": null,
@@ -922,20 +933,17 @@
         "owner": {
           "id": "user-buyer",
           "fullName": "user-buyer",
+          "avatarUrl": null,
           "ratingAverage": 0,
           "ratingCount": 0,
-          "avatarUrl": null,
           "soldCount": 0
         },
         "isPartner": false,
+        "shopSummary": null,
         "paidCredits": 5,
         "paidDays": 0,
         "autoExtend": false,
-        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
-        "isFree": false,
-        "meetUp": true,
-        "multipleUnits": false,
-        "shopSummary": null
+        "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh"
       }
     }
   },

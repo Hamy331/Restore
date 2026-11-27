@@ -2,10 +2,13 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { AppError } from '../../common/errors/app-error.js';
 import { parse } from '../../common/validation/schemas.js';
-import { gatewaySkipped, sandboxEnabled, summarizeWallet, topupCode, vietQrAccount, vietQrImageUrl } from './credit.type.js';
+import { gatewaySkipped, sandboxEnabled, summarizeWallet, topupCode, transferContent, vietQrAccount, vietQrImageUrl } from './credit.type.js';
 import { historyQuery, topupBody } from './credit.validator.js';
 import { createHmac } from 'node:crypto';
-import { extractTopupCode, parseWebhook, sepayWebhookKey, verifyApiKey, verifySignature } from './credit.sepay.js';
+import { extractTopupCode, isExpectedAccount, parseWebhook, sepayWebhookKey, verifyApiKey, verifySignature } from './credit.sepay.js';
+import { paymentEnvironmentProblems } from './credit.config.js';
+import { apiRowToTransfer, formatVnDateTime, parseVnDateTime, sepayApiConfig } from './credit.sepay-api.js';
+import { isSameTransfer } from './credit.sepay.js';
 import { appTransId, buildCreateOrder, hmac, verifyCallback, ZALOPAY_SANDBOX_ENDPOINT, zaloPayConfig, zaloPayEndpoint, appToApp } from './credit.zalopay.js';
 
 const code = (fn: () => unknown) => {
@@ -31,14 +34,81 @@ test('VietQR needs all three env values and encodes amount and content', () => {
   assert.equal(vietQrAccount({ VIETQR_BANK_BIN: '970436' }), null);
   const account = vietQrAccount({ VIETQR_BANK_BIN: '970436', VIETQR_ACCOUNT_NO: '0123', VIETQR_ACCOUNT_NAME: 'RESTORE' })!;
   const url = vietQrImageUrl(account, 100000, 'RS8F2K1X');
-  assert.ok(url.startsWith('https://img.vietqr.io/image/970436-0123-compact2.png?'));
-  assert.ok(url.includes('amount=100000') && url.includes('addInfo=RS8F2K1X'));
+  assert.equal(url, 'https://vietqr.app/img?acc=0123&bank=970436&amount=100000&des=RS8F2K1X&template=compact');
 });
 
-test('sandbox is off in production and in live mode', () => {
-  assert.equal(sandboxEnabled({}), true);
-  assert.equal(sandboxEnabled({ NODE_ENV: 'production' }), false);
+test('VietinBank transfers carry SEVQR before the order code, other banks only the code', () => {
+  assert.equal(transferContent({ bankBin: '970415' }, 'RS8F2K3X'), 'SEVQR RS8F2K3X');
+  assert.equal(transferContent({ bankBin: '970436' }, 'RS8F2K3X'), 'RS8F2K3X');
+  // Ngân hàng có thể bỏ dấu cách: mã đơn vẫn tách được
+  assert.equal(extractTopupCode({ code: null, content: 'SEVQR RS8F2K3X' }), 'RS8F2K3X');
+  assert.equal(extractTopupCode({ code: null, content: 'SEVQRRS8F2K3X' }), 'RS8F2K3X');
+});
+
+test('sandbox needs PAYMENT_MODE=sandbox spelled out and is never on in production', () => {
+  assert.equal(sandboxEnabled({}), false);
+  assert.equal(sandboxEnabled({ PAYMENT_MODE: 'sandbox' }), true);
+  assert.equal(sandboxEnabled({ NODE_ENV: 'production', PAYMENT_MODE: 'sandbox' }), false);
   assert.equal(sandboxEnabled({ PAYMENT_MODE: 'live' }), false);
+});
+
+test('production refuses sandbox payment settings', () => {
+  const ok = {
+    PAYMENT_MODE: 'live', PUBLIC_API_URL: 'https://api.restore.vn',
+    VIETQR_BANK_BIN: '970415', VIETQR_ACCOUNT_NO: '123', VIETQR_ACCOUNT_NAME: 'RESTORE', SEPAY_WEBHOOK_SECRET: 'x'.repeat(64),
+    SEPAY_API_TOKEN: 'token',
+  };
+  assert.deepEqual(paymentEnvironmentProblems(ok), []);
+  assert.equal(paymentEnvironmentProblems({ ...ok, PAYMENT_MODE: '' }).length, 1);
+  assert.equal(paymentEnvironmentProblems({ ...ok, SEPAY_WEBHOOK_SECRET: '' }).length, 1);
+  assert.equal(paymentEnvironmentProblems({ ...ok, SEPAY_API_TOKEN: '' }).length, 1);
+  const sandboxZalo = { ...ok, ZALOPAY_APP_ID: '2554', ZALOPAY_KEY1: 'a', ZALOPAY_KEY2: 'b' };
+  assert.equal(paymentEnvironmentProblems(sandboxZalo).length, 2);
+  assert.deepEqual(paymentEnvironmentProblems({ ...sandboxZalo, ZALOPAY_APP_ID: '9999', ZALOPAY_ENDPOINT: 'https://openapi.zalopay.vn/v2' }), []);
+});
+
+test('live mode turns ZaloPay off instead of using the sandbox gateway or public sandbox keys', () => {
+  const keys = { ZALOPAY_KEY1: 'a', ZALOPAY_KEY2: 'b', PAYMENT_MODE: 'live' };
+  assert.equal(zaloPayConfig({ ...keys, ZALOPAY_APP_ID: '9999' }), null);
+  assert.equal(zaloPayConfig({ ...keys, ZALOPAY_APP_ID: '2554', ZALOPAY_ENDPOINT: 'https://openapi.zalopay.vn/v2' }), null);
+  assert.ok(zaloPayConfig({ ...keys, ZALOPAY_APP_ID: '9999', ZALOPAY_ENDPOINT: 'https://openapi.zalopay.vn/v2' }));
+});
+
+test('SePay API rows become the same transfer shape as webhooks', () => {
+  const row = { id: 'u-1', transaction_date: '2026-11-27 23:24:58', account_number: '0123', transfer_type: 'in',
+    amount_in: 20000, transaction_content: 'SEVQR RS8F2K3X', reference_number: 'SB7C', code: 'RS8F2K3X' };
+  assert.deepEqual(apiRowToTransfer(row), {
+    id: 'api:u-1', transferType: 'in', amount: 20000, code: 'RS8F2K3X', content: 'SEVQR RS8F2K3X',
+    accountNumber: '0123', referenceCode: 'SB7C', transactionDate: '2026-11-27 23:24:58',
+  });
+  assert.equal(apiRowToTransfer({ ...row, amount_in: 0 }), null);
+  assert.equal(sepayApiConfig({}), null);
+  assert.equal(sepayApiConfig({ SEPAY_API_TOKEN: 't' })?.base, 'https://userapi-sandbox.sepay.vn/v2');
+  assert.equal(sepayApiConfig({ SEPAY_API_TOKEN: 't', PAYMENT_MODE: 'live' })?.base, 'https://userapi.sepay.vn/v2');
+});
+
+test('SePay dates are Vietnam time both ways', () => {
+  assert.equal(parseVnDateTime('2026-11-27 23:24:58')?.toISOString(), '2026-11-27T16:24:58.000Z');
+  assert.equal(formatVnDateTime(new Date('2026-11-27T16:24:58Z')), '2026-11-27 23:24:58');
+  assert.equal(parseVnDateTime('not a date'), null);
+});
+
+test('webhook and API records of one transfer are recognised as the same transfer', () => {
+  const saved = { amountVnd: 20000, transactionDate: '2026-11-27 23:24:58', referenceCode: 'SB7C', accountNumber: '0123' };
+  const transfer = { amount: 20000, transactionDate: '2026-11-27 23:24:58', referenceCode: 'SB7C', accountNumber: '0123' };
+  assert.equal(isSameTransfer(saved, transfer), true);
+  assert.equal(isSameTransfer(saved, { ...transfer, referenceCode: null }), true);
+  assert.equal(isSameTransfer(saved, { ...transfer, referenceCode: 'OTHER' }), false);
+  assert.equal(isSameTransfer(saved, { ...transfer, amount: 20001 }), false);
+  assert.equal(isSameTransfer(saved, { ...transfer, transactionDate: '2026-11-27 23:30:00' }), false);
+  assert.equal(isSameTransfer({ ...saved, transactionDate: null }, transfer), false);
+});
+
+test('SePay transfer must land on the configured receiving account', () => {
+  assert.equal(isExpectedAccount('0123456789', '0123456789'), true);
+  assert.equal(isExpectedAccount('9999', '0123456789'), false);
+  assert.equal(isExpectedAccount(null, '0123456789'), true);
+  assert.equal(isExpectedAccount('9999', null), true);
 });
 
 test('topup body checks package and method', () => {
@@ -88,7 +158,7 @@ test('ZaloPay callback is accepted only with a valid key2 signature', () => {
 });
 
 test('debug gateway skip only works while sandbox is on', () => {
-  assert.equal(gatewaySkipped({ PAYMENT_SKIP_GATEWAY: 'true' }), true);
+  assert.equal(gatewaySkipped({ PAYMENT_SKIP_GATEWAY: 'true', PAYMENT_MODE: 'sandbox' }), true);
   assert.equal(gatewaySkipped({ PAYMENT_SKIP_GATEWAY: 'true', PAYMENT_MODE: 'live' }), false);
   assert.equal(gatewaySkipped({}), false);
 });
@@ -127,7 +197,10 @@ test('SePay webhook needs the exact Apikey header', () => {
 
 test('SePay payload is parsed and the topup code found in code or content', () => {
   const sample = { id: 92704, gateway: 'MBBank', code: 'RS8F2K3X', content: 'RS8F2K3X chuyen tien', transferType: 'in', transferAmount: 50000 };
-  assert.deepEqual(parseWebhook(sample), { id: '92704', transferType: 'in', amount: 50000, code: 'RS8F2K3X', content: 'RS8F2K3X chuyen tien' });
+  assert.deepEqual(parseWebhook({ ...sample, accountNumber: '0123', referenceCode: '', transactionDate: '2026-11-27 22:00:00' }), {
+    id: '92704', transferType: 'in', amount: 50000, code: 'RS8F2K3X', content: 'RS8F2K3X chuyen tien',
+    accountNumber: '0123', referenceCode: null, transactionDate: '2026-11-27 22:00:00',
+  });
   assert.equal(parseWebhook({ id: 1, transferAmount: 'abc' }), null);
   assert.equal(parseWebhook(null), null);
   assert.equal(extractTopupCode({ code: null, content: 'MBVCB.123.rs8f2k3x.CT tu 0123' }), 'RS8F2K3X');

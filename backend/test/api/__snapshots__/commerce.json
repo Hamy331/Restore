@@ -855,10 +855,14 @@
       "data": [
         {
           "id": "listing-3",
+          "shortId": 3,
           "title": "Đèn bàn học cũ",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -907,27 +911,28 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         },
         {
           "id": "listing-2",
+          "shortId": 2,
           "title": "Ghế xoay văn phòng",
           "description": "Mô tả sản phẩm dùng để kiểm thử API.",
           "price": "1200000",
           "isNegotiable": true,
+          "isFree": false,
+          "multipleUnits": false,
+          "meetUp": true,
           "ownerId": "user-seller",
           "categoryId": "furniture",
           "subcategoryId": null,
@@ -976,20 +981,17 @@
           "owner": {
             "id": "user-seller",
             "fullName": "user-seller",
+            "avatarUrl": null,
             "ratingAverage": 0,
             "ratingCount": 0,
-            "avatarUrl": null,
             "soldCount": 0
           },
           "isPartner": false,
+          "shopSummary": null,
           "areaLabel": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
           "distanceKm": null,
           "isFeatured": true,
-          "isFavorite": false,
-          "isFree": false,
-          "meetUp": true,
-          "multipleUnits": false,
-          "shopSummary": null
+          "isFavorite": false
         }
       ]
     }
