@@ -87,6 +87,13 @@
       right: 0;
     }
   </style>
+  <style>
+    /* Badge reCAPTCHA (xác minh số điện thoại) che nút góc dưới; màn xác
+       minh đã ghi dòng "protected by reCAPTCHA" thay cho badge */
+    .grecaptcha-badge {
+      visibility: hidden !important;
+    }
+  </style>
   <script id="splash-screen-script">
     function removeSplashFromWeb() {
       document.getElementById("splash")?.remove();

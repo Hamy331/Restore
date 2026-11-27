@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:restore/core/constants/app_colors.dart';
@@ -89,6 +90,7 @@ class _PhoneVerifyFlowState extends State<PhoneVerifyFlow> {
   @override
   void dispose() {
     _timer?.cancel();
+    widget.otp.dispose();
     _phone.dispose();
     _code.dispose();
     super.dispose();
@@ -130,6 +132,10 @@ class _PhoneVerifyFlowState extends State<PhoneVerifyFlow> {
           'Thiết bị này chưa hỗ trợ xác minh. Hãy xác minh trên điện thoại Android hoặc trang web.',
           'Verification is not available here. Use the Android app or the website.',
         ),
+        'timeout' => _t(
+          'Quá lâu chưa gửi được mã. Vui lòng thử lại.',
+          'Sending the code took too long. Please try again.',
+        ),
         'app-not-authorized' => _t(
           'Ứng dụng chưa được cấp quyền gửi mã. Vui lòng thử lại sau.',
           'The app is not allowed to send codes yet. Please try again later.',
@@ -156,6 +162,11 @@ class _PhoneVerifyFlowState extends State<PhoneVerifyFlow> {
     });
     try {
       await action();
+    } on PhoneOtpException catch (error) {
+      // Người dùng tự đóng reCAPTCHA: chỉ trả nút về như cũ, không báo lỗi
+      if (mounted && error.code != 'cancelled') {
+        setState(() => _error = _message(error));
+      }
     } catch (error) {
       if (mounted) setState(() => _error = _message(error));
     } finally {
@@ -254,7 +265,8 @@ class _PhoneVerifyFlowState extends State<PhoneVerifyFlow> {
           key: const ValueKey('phone-verify-close'),
           tooltip: _t('Đóng', 'Close'),
           icon: const Icon(Icons.close),
-          onPressed: _busy ? null : () => Navigator.of(context).pop(),
+          // Luôn đóng được, kể cả khi đang chờ reCAPTCHA / gửi mã
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: SafeArea(
@@ -433,7 +445,15 @@ class _PhoneVerifyFlowState extends State<PhoneVerifyFlow> {
                       _t(
                         'Khi bấm "Nhận mã xác minh", bạn đồng ý để ReStore gửi tin nhắn SMS chứa mã xác minh tới số này.',
                         'By tapping "Get verification code", you allow ReStore to send you an SMS message for verification.',
-                      ),
+                      ) +
+                      // Web ẩn badge reCAPTCHA (để không che nút, xem
+                      // web/index.html) nên phải ghi rõ ở đây
+                      (kIsWeb
+                          ? _t(
+                              ' Trang được bảo vệ bởi reCAPTCHA, áp dụng Chính sách quyền riêng tư và Điều khoản dịch vụ của Google.',
+                              ' This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.',
+                            )
+                          : ''),
                       style: theme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),

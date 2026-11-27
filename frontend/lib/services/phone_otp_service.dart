@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
+import 'recaptcha_guard.dart'
+    if (dart.library.js_interop) 'recaptcha_guard_web.dart';
+
 /// Lỗi khi gửi / nhập OTP số điện thoại; [code] là mã lỗi đã gom nhóm để
 /// hiện câu báo phù hợp.
 class PhoneOtpException implements Exception {
   const PhoneOtpException(this.code);
 
   /// invalid-phone, too-many-requests, invalid-code, expired, unavailable,
-  /// app-not-authorized, failed
+  /// app-not-authorized, cancelled (đóng reCAPTCHA), timeout, failed
   final String code;
 }
 
@@ -25,6 +28,9 @@ abstract class PhoneOtpService {
 
   /// Nhập đúng [code] thì trả ID token
   Future<String> confirm(String code);
+
+  /// Rời màn xác minh: dọn reCAPTCHA (web)
+  void dispose();
 }
 
 class FirebasePhoneOtpService implements PhoneOtpService {
@@ -45,8 +51,7 @@ class FirebasePhoneOtpService implements PhoneOtpService {
     if (!supported) throw const PhoneOtpException('unavailable');
     try {
       if (kIsWeb) {
-        // Firebase tự gắn reCAPTCHA ẩn vào trang trước khi gửi SMS
-        _webConfirmation = await _auth.signInWithPhoneNumber(phoneE164);
+        _webConfirmation = await _sendOnWeb(phoneE164);
         return null;
       }
       final result = Completer<String?>();
@@ -78,6 +83,36 @@ class FirebasePhoneOtpService implements PhoneOtpService {
     } on FirebaseAuthException catch (error) {
       throw _mapError(error);
     }
+  }
+
+  /// Firebase tự gắn reCAPTCHA ẩn vào trang rồi mới gửi SMS. Người dùng đóng
+  /// thử thách thì lời hứa của Firebase không bao giờ xong, nên chạy đua với
+  /// [RecaptchaGuard] để báo 'cancelled' / 'timeout' và dọn reCAPTCHA; lần
+  /// bấm sau Firebase tạo cái mới.
+  Future<ConfirmationResult> _sendOnWeb(String phoneE164) async {
+    clearRecaptcha();
+    final guard = watchRecaptcha();
+    final send = _auth.signInWithPhoneNumber(phoneE164);
+    try {
+      return await Future.any([
+        send,
+        guard.aborted.then<ConfirmationResult>(
+          (reason) => throw PhoneOtpException(reason),
+        ),
+      ]);
+    } catch (_) {
+      // Lời hứa bị bỏ lại có thể báo lỗi muộn: không để thành lỗi chưa bắt
+      send.ignore();
+      clearRecaptcha();
+      rethrow;
+    } finally {
+      guard.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (kIsWeb) clearRecaptcha();
   }
 
   @override
