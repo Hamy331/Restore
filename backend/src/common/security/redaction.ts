@@ -1,7 +1,14 @@
+/** Khoá của cổng thanh toán (SePay, ZaloPay): không bao giờ để lọt vào log */
+const PAYMENT_SECRETS = ['SEPAY_API_TOKEN', 'SEPAY_WEBHOOK_SECRET', 'SEPAY_WEBHOOK_API_KEY', 'ZALOPAY_KEY1', 'ZALOPAY_KEY2'];
+
 /** Best-effort redaction before persistence, provider calls and application logs. */
 export function redact(text: string): string {
   let safe = text;
   for (const name of ['GEMINI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'JWT_SECRET', 'JWT_REFRESH_SECRET', 'DATABASE_URL', 'DIRECT_URL']) {
+    const secret = process.env[name];
+    if (secret && secret.length >= 8) safe = safe.split(secret).join('[REDACTED]');
+  }
+  for (const name of PAYMENT_SECRETS) {
     const secret = process.env[name];
     if (secret && secret.length >= 8) safe = safe.split(secret).join('[REDACTED]');
   }
