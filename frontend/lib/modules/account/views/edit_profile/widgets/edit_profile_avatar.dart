@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_icons.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../shared/widgets/app_action_buttons.dart';
 import '../../../../../shared/widgets/app_local_image.dart';
 import '../../../../../shared/widgets/loading/app_loading_indicator.dart';
 
-/// Ảnh đại diện tròn trên nền trắng; nút bút mở các thao tác ảnh.
+/// Ảnh đại diện tròn ở giữa, bên dưới là link "Đổi ảnh đại diện"; bấm ảnh
+/// hoặc link đều mở các thao tác ảnh. Chưa có ảnh thì hiện hình người xám.
 class EditProfileAvatar extends StatelessWidget {
   const EditProfileAvatar({
     super.key,
@@ -96,67 +98,44 @@ class EditProfileAvatar extends StatelessWidget {
         ? Image.memory(bytes!, fit: BoxFit.cover, gaplessPlayback: true)
         : url != null
         ? AppLocalImage(path: url!, cacheWidth: 400)
-        : Center(
-            child: Text(
-              initials,
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w500,
-                color: AppColors.actionPrimary,
-              ),
-            ),
+        : const Center(
+            child: Icon(Icons.person, size: 64, color: Colors.white),
           );
     return Center(
-      child: Semantics(
-        button: true,
-        label: l.accChangeAvatar,
-        child: Tooltip(
-          message: l.accChangeAvatar,
-          child: GestureDetector(
-            key: const ValueKey('edit-profile-avatar'),
-            onTap: busy ? null : () => _showActions(context),
-            child: SizedBox.square(
-              dimension: size + 12,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: size,
-                    height: size,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFFF5F7FA),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                    ),
-                    child: ClipOval(
-                      child: busy
-                          ? const Center(child: AppLoadingIndicator())
-                          : image,
-                    ),
-                  ),
-                  Positioned(
-                    right: 2,
-                    bottom: 2,
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFF6B7280),
-                        border: Border.all(color: AppColors.surface, width: 3),
-                      ),
-                      child: const Icon(
-                        AppIcons.edit,
-                        size: 15,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Semantics(
+            button: true,
+            label: l.accChangeAvatar,
+            child: GestureDetector(
+              key: const ValueKey('edit-profile-avatar'),
+              onTap: busy ? null : () => _showActions(context),
+              child: Container(
+                width: size,
+                height: size,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFFD9D9D9),
+                ),
+                child: ClipOval(
+                  child: busy
+                      ? const Center(child: AppLoadingIndicator())
+                      : image,
+                ),
               ),
             ),
           ),
-        ),
+          const SizedBox(height: 8),
+          AppLinkButton(
+            key: const ValueKey('edit-profile-upload'),
+            icon: Icons.photo_camera_outlined,
+            label: Localizations.localeOf(context).languageCode == 'vi'
+                ? 'Đổi ảnh đại diện'
+                : 'Change profile photo',
+            onPressed: busy ? null : () => _showActions(context),
+          ),
+        ],
       ),
     );
   }

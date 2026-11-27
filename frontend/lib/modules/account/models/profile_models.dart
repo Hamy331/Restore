@@ -128,8 +128,13 @@ class ProfileData extends Equatable {
     this.lastActive,
     this.online = false,
     this.shopStatus,
+    this.phoneVerified = false,
   });
   final SellerStorefront storefront;
+
+  /// Đã xác minh số điện thoại bằng OTP (badge xác minh; hồ sơ công khai chỉ
+  /// có cờ này, không có số)
+  final bool phoneVerified;
 
   /// Chỉ có ở /users/me: PENDING | APPROVED | REJECTED, null = chưa lên Cửa hàng
   final String? shopStatus;
@@ -176,6 +181,7 @@ class ProfileData extends Equatable {
     isFollowing: json['isFollowing'] == true,
     followingShopCount: (json['followingShopCount'] as num?)?.toInt() ?? 0,
     shopStatus: json['shopStatus'] as String?,
+    phoneVerified: json['phoneVerified'] == true,
   );
 
   ProfileData copyWith({
@@ -190,6 +196,7 @@ class ProfileData extends Equatable {
     SellerStorefront? storefront,
     int? followerCount,
     bool? isFollowing,
+    bool? phoneVerified,
   }) => ProfileData(
     storefront: storefront ?? this.storefront,
     joined: joined,
@@ -209,6 +216,7 @@ class ProfileData extends Equatable {
     isFollowing: isFollowing ?? this.isFollowing,
     followingShopCount: followingShopCount,
     shopStatus: shopStatus,
+    phoneVerified: phoneVerified ?? this.phoneVerified,
   );
 
   @override
@@ -230,6 +238,7 @@ class ProfileData extends Equatable {
     joined,
     lastActive,
     online,
+    phoneVerified,
     shopStatus,
   ];
 }
