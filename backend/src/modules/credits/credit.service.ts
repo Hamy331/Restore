@@ -532,7 +532,7 @@ async function resumeStuckSepayEvents(now: Date) {
   }
 }
 
-/** Cổng thử: giả lập cổng trả kết quả cho đơn của chính mình. Tắt khi production hoặc PAYMENT_MODE=live. */
+/** Cổng thử: giả lập cổng trả kết quả cho đơn của chính mình. Chỉ bật khi PAYMENT_MODE="sandbox" và không phải production. */
 export async function simulateSandbox(userId: string, id: string, result: 'success' | 'fail') {
   if (!sandboxEnabled()) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy.');
   const order = await inTransaction((tx) => ownOrder(tx, userId, id));
