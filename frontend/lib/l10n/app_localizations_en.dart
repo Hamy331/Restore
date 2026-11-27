@@ -469,7 +469,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accUsernameInvalid =>
-      '3–30 characters: lowercase letters, numbers, dots or underscores.';
+      '3–30 characters: lowercase letters, numbers, dots or underscores, with at least one letter. Dots can\'t be first, last or doubled.';
+
+  @override
+  String get accUsernameChangeTooSoon =>
+      'You can only change your username once every 14 days.';
 
   @override
   String get accUsernameTaken => 'This username is already taken.';
@@ -4780,7 +4784,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accUsernameHelper =>
-      '3–30 characters: lowercase letters, numbers, dots or underscores.';
+      '3–30 characters: lowercase letters, numbers, dots or underscores. Can be changed once every 14 days.';
 
   @override
   String get accBioHint => 'A few lines about you or your shop';

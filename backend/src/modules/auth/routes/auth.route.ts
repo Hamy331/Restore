@@ -36,7 +36,7 @@ authRouter.post('/login', validate({ body: loginBody }), limit.login, authContro
  * Body:
  *  - email: string
  *  - password: string (8-72, có chữ hoa, chữ thường, chữ số)
- *  - username: string (3-30, a-z 0-9 . _)
+ *  - username: string (3-30, a-z 0-9 . _, có chữ cái, dấu chấm không ở đầu/cuối/liền nhau)
  *  - fullName: string (2-80)
  *
  * Trả về: 201 { message, data }

@@ -899,8 +899,14 @@ abstract class AppLocalizations {
   /// No description provided for @accUsernameInvalid.
   ///
   /// In en, this message translates to:
-  /// **'3–30 characters: lowercase letters, numbers, dots or underscores.'**
+  /// **'3–30 characters: lowercase letters, numbers, dots or underscores, with at least one letter. Dots can\'t be first, last or doubled.'**
   String get accUsernameInvalid;
+
+  /// No description provided for @accUsernameChangeTooSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'You can only change your username once every 14 days.'**
+  String get accUsernameChangeTooSoon;
 
   /// No description provided for @accUsernameTaken.
   ///
@@ -8285,7 +8291,7 @@ abstract class AppLocalizations {
   /// No description provided for @accUsernameHelper.
   ///
   /// In en, this message translates to:
-  /// **'3–30 characters: lowercase letters, numbers, dots or underscores.'**
+  /// **'3–30 characters: lowercase letters, numbers, dots or underscores. Can be changed once every 14 days.'**
   String get accUsernameHelper;
 
   /// No description provided for @accBioHint.

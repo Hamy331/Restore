@@ -93,6 +93,9 @@ export const findPeers = (id: string) =>
     select: { userId: true }, distinct: ['userId'],
   });
 
+export const findUsernameState = (id: string) =>
+  prisma.user.findUnique({ where: { id }, select: { username: true, usernameChangedAt: true } });
+
 export const findTarget = (targetId: string) =>
   prisma.user.findUnique({ where: { id: targetId }, select: { id: true, status: true } });
 

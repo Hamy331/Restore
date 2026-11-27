@@ -439,7 +439,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accUsernameInvalid =>
-      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.';
+      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới, có ít nhất một chữ cái; dấu chấm không đứng đầu, cuối hoặc liền nhau.';
+
+  @override
+  String get accUsernameChangeTooSoon =>
+      'Bạn chỉ có thể đổi tên người dùng 14 ngày một lần.';
 
   @override
   String get accUsernameTaken => 'Tên người dùng đã được sử dụng.';
@@ -4686,7 +4690,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accUsernameHelper =>
-      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới.';
+      '3–30 ký tự: chữ thường, số, dấu chấm hoặc gạch dưới. Đổi tối đa 14 ngày một lần.';
 
   @override
   String get accBioHint => 'Vài dòng giới thiệu về bạn hoặc cửa hàng';

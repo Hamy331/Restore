@@ -43,7 +43,7 @@ export const username = (value: unknown): string => {
   const result = asString(value).toLowerCase();
   if (!USERNAME_PATTERN.test(result)) {
     throw new AppError(422, 'INVALID_USERNAME',
-      'Tên người dùng phải có 3-30 ký tự và chỉ gồm chữ thường, số, dấu chấm hoặc gạch dưới.', 'username');
+      'Tên người dùng phải có 3-30 ký tự gồm chữ thường, số, dấu chấm hoặc gạch dưới, có ít nhất một chữ cái; dấu chấm không đứng đầu, cuối hoặc liền nhau.', 'username');
   }
   return result;
 };

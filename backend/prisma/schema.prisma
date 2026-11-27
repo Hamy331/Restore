@@ -37,6 +37,8 @@ model User {
   password       String?       
   fullName       String
   username       String        @unique
+  /// Lần đổi tên người dùng gần nhất (null: chưa đổi lần nào sau khi đăng ký), dùng để chặn đổi liên tục
+  usernameChangedAt DateTime?
   phone          String?
   avatarUrl      String?
   bio            String?        @db.VarChar(300)

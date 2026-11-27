@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import * as repository from '../repositories/profile.repository.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { fullName as parseFullName, username as parseUsername } from '../../auth/auth.validator.js';
+import { USERNAME_CHANGE_COOLDOWN_DAYS } from '../../auth/auth.type.js';
 import { publish } from '../../chat/services/chat.events.js';
 import { heartbeat as chatHeartbeat } from '../../chat/services/chat.service.js';
 import { isMediaUrl } from '../../media/media.service.js';
@@ -115,6 +116,28 @@ export const listFollows = async (
   };
 };
 
+const dayMs = 24 * 60 * 60 * 1000;
+
+/**
+ * Gửi lại đúng tên đang dùng thì bỏ qua (không kiểm luật mới, không tính là đổi).
+ * Tên khác: kiểm luật, và lần đổi trước chưa đủ USERNAME_CHANGE_COOLDOWN_DAYS ngày thì từ chối.
+ */
+async function applyUsernameChange(id: string, value: unknown, data: Prisma.UserUpdateInput) {
+  const current = await repository.findUsernameState(id);
+  if (typeof value === 'string' && value.trim().toLowerCase() === current?.username) return;
+  const username = parseUsername(value);
+  const nextChangeAt = current?.usernameChangedAt
+    ? new Date(current.usernameChangedAt.getTime() + USERNAME_CHANGE_COOLDOWN_DAYS * dayMs)
+    : null;
+  if (nextChangeAt && nextChangeAt > new Date()) {
+    throw new AppError(422, 'USERNAME_CHANGE_TOO_SOON',
+      `Bạn chỉ có thể đổi tên người dùng ${USERNAME_CHANGE_COOLDOWN_DAYS} ngày một lần.`, 'username',
+      { nextChangeAt: nextChangeAt.toISOString() });
+  }
+  data.username = username;
+  data.usernameChangedAt = new Date();
+}
+
 export const updateProfile = async (id: string, body: unknown) => {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     throw new AppError(422, 'INVALID_PROFILE', 'Thông tin hồ sơ không hợp lệ.');
@@ -126,7 +149,7 @@ export const updateProfile = async (id: string, body: unknown) => {
   }
   const data: Prisma.UserUpdateInput = {};
   if ('fullName' in input) data.fullName = parseFullName(input.fullName);
-  if ('username' in input) data.username = parseUsername(input.username);
+  if ('username' in input) await applyUsernameChange(id, input.username, data);
   if ('bio' in input) {
     if (input.bio !== null && (typeof input.bio !== 'string' || input.bio.trim().length > 300)) {
       throw new AppError(422, 'INVALID_BIO', 'Giới thiệu tối đa 300 ký tự.', 'bio');

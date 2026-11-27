@@ -35,7 +35,11 @@ usersRouter.get('/me', requirePermission(PERMISSION.PROFILE_READ), handle(async 
 })));
 
 usersRouter.use(verifyToken);
-usersRouter.patch('/me', handle((req) => profile.updateProfile(req.user!.userId, req.body)));
+/**
+ * Sửa hồ sơ. Đổi username: 422 INVALID_USERNAME (sai luật), 409 USERNAME_TAKEN,
+ * 422 USERNAME_CHANGE_TOO_SOON (chưa đủ 14 ngày từ lần đổi trước, details.nextChangeAt).
+ */
+usersRouter.patch('/me',handle((req) => profile.updateProfile(req.user!.userId, req.body)));
 /**
  * Đổi email đăng nhập: gửi mã OTP tới email mới (body { email, password }),
  * rồi xác nhận mã (body { otp }). Rate limit chung với OTP đăng ký / quên mật khẩu.

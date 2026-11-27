@@ -8,6 +8,7 @@ import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
 import 'package:restore/modules/my_shop/views/my_shop/widgets/my_shop_hours_field.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
+import 'package:restore/modules/auth/utils/auth_validators.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -29,8 +30,6 @@ import 'edit_profile_view.dart';
 import 'widgets/edit_profile_avatar.dart';
 import 'widgets/email_change_flow.dart';
 
-/// Khớp `usernamePattern` ở backend (auth.validation.ts).
-final _usernamePattern = RegExp(r'^[a-z0-9._]{3,30}$');
 
 /// Số di động Việt Nam như backend (parsePhone): bỏ khoảng trắng, dấu chấm,
 /// gạch, ngoặc; +84 / 84 thành 0; đủ 10 số bắt đầu 03, 05, 07, 08, 09.
@@ -301,7 +300,10 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     ..showSnackBar(SnackBar(content: Text(message)));
 
   bool get _nameValid => _name.text.trim().isNotEmpty;
-  bool get _usernameValid => _usernamePattern.hasMatch(_username.text.trim());
+  // Tên đang dùng (có thể đặt trước khi có luật mới) không kiểm lại, chỉ kiểm khi đổi
+  bool get _usernameValid =>
+      _username.text.trim() == _profile?.username ||
+      AuthValidators.usernamePattern.hasMatch(_username.text.trim());
   bool get _phoneValid => normalizePhone(_phone.text) != null;
 
   Future<void> _save() async {
@@ -371,6 +373,11 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
         setState(() {
           _saving = false;
           _usernameError = l.accUsernameInvalid;
+        });
+      case ProfileSaveResult.usernameChangeTooSoon:
+        setState(() {
+          _saving = false;
+          _usernameError = l.accUsernameChangeTooSoon;
         });
       case ProfileSaveResult.invalidPhone:
         setState(() {
