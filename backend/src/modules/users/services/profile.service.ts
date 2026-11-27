@@ -67,9 +67,12 @@ const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{1
  */
 export async function resolveUserId(idOrHandle: string) {
   if (uuidPattern.test(idOrHandle)) return idOrHandle;
+  const isHandle = idOrHandle.startsWith('@');
   const found = await repository.findIdByUsername(idOrHandle.replace(/^@/, '').toLowerCase());
-  if (!found) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
-  return found.id;
+  if (found) return found.id;
+  // Id không phải UUID (dữ liệu mẫu) vẫn tra theo id; `@tên` không có thì 404
+  if (isHandle) throw new AppError(404, 'USER_NOT_FOUND', 'Không tìm thấy người dùng.');
+  return idOrHandle;
 }
 
 export async function getPublicProfile(idOrHandle: string, viewerId: string) {
