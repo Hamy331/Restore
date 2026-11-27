@@ -6,6 +6,7 @@ import { USERNAME_CHANGE_COOLDOWN_DAYS } from '../../auth/auth.type.js';
 import { publish } from '../../chat/services/chat.events.js';
 import { heartbeat as chatHeartbeat } from '../../chat/services/chat.service.js';
 import { isMediaUrl } from '../../media/media.service.js';
+import { FirebaseTokenError, verifyFirebaseIdToken, type FirebaseTokenClaims } from '../../../services/firebase-token.service.js';
 
 import { profileSelect } from '../repositories/profile.repository.js';
 import { emit } from '../../../common/events/domain-events.js';
@@ -28,6 +29,8 @@ const formatProfile = (user: ProfileRow, followingShopCount: number) => ({
     isOnline: !!user.lastActiveAt && Date.now() - new Date(user.lastActiveAt).getTime() < onlineThresholdMs,
     lastActiveAt: user.lastActiveAt,
   },
+  /** Đã xác minh số điện thoại bằng OTP (trang công khai chỉ thấy cờ này, không thấy số) */
+  phoneVerified: !!user.phoneVerifiedAt,
 });
 
 /**
@@ -122,8 +125,9 @@ const dayMs = 24 * 60 * 60 * 1000;
  * Gửi lại đúng tên đang dùng thì bỏ qua (không kiểm luật mới, không tính là đổi).
  * Tên khác: kiểm luật, và lần đổi trước chưa đủ USERNAME_CHANGE_COOLDOWN_DAYS ngày thì từ chối.
  */
-async function applyUsernameChange(id: string, value: unknown, data: Prisma.UserUpdateInput) {
-  const current = await repository.findUsernameState(id);
+async function applyUsernameChange(
+  current: Awaited<ReturnType<typeof repository.findEditState>>, value: unknown, data: Prisma.UserUpdateInput,
+) {
   if (typeof value === 'string' && value.trim().toLowerCase() === current?.username) return;
   const username = parseUsername(value);
   const nextChangeAt = current?.usernameChangedAt
@@ -148,8 +152,9 @@ export const updateProfile = async (id: string, body: unknown) => {
     throw new AppError(422, 'INVALID_PROFILE_FIELDS', 'Hồ sơ chứa trường không hợp lệ.');
   }
   const data: Prisma.UserUpdateInput = {};
+  const current = 'username' in input || 'phone' in input ? await repository.findEditState(id) : null;
   if ('fullName' in input) data.fullName = parseFullName(input.fullName);
-  if ('username' in input) await applyUsernameChange(id, input.username, data);
+  if ('username' in input) await applyUsernameChange(current, input.username, data);
   if ('bio' in input) {
     if (input.bio !== null && (typeof input.bio !== 'string' || input.bio.trim().length > 300)) {
       throw new AppError(422, 'INVALID_BIO', 'Giới thiệu tối đa 300 ký tự.', 'bio');
@@ -163,8 +168,14 @@ export const updateProfile = async (id: string, body: unknown) => {
     }
     data.avatarUrl = input.avatarUrl as string | null;
   }
-  // Số điện thoại thêm thẳng, không cần xác nhận OTP; null / chuỗi rỗng để xoá
-  if ('phone' in input) data.phone = parsePhone(input.phone);
+  // Số điện thoại sửa thẳng được (null / chuỗi rỗng để xoá); đổi sang số khác thì mất trạng thái đã xác minh
+  if ('phone' in input) {
+    const phone = parsePhone(input.phone);
+    if (phone !== current?.phone) {
+      data.phone = phone;
+      data.phoneVerifiedAt = null;
+    }
+  }
   try {
     const user = await repository.updateProfile(id, data);
     // Trả kèm email / số điện thoại (chỉ người dùng tự xem) để app cập nhật ngay
@@ -175,6 +186,45 @@ export const updateProfile = async (id: string, body: unknown) => {
     }
     throw error;
   }
+};
+
+/** Token xác minh phải mới (vừa nhập OTP xong), tránh dùng lại token cũ */
+const phoneTokenMaxAgeMs = 10 * 60 * 1000;
+
+/**
+ * App xác minh số qua OTP của Firebase rồi gửi ID token lên. Số lấy từ token (không tin số app gửi),
+ * lưu làm số của tài khoản và đánh dấu đã xác minh. Một số chỉ xác minh cho một tài khoản.
+ */
+export const verifyPhone = async (id: string, body: unknown) => {
+  const idToken = (body as { idToken?: unknown } | null)?.idToken;
+  if (typeof idToken !== 'string' || !idToken || idToken.length > 4096) {
+    throw new AppError(422, 'INVALID_PHONE_TOKEN', 'Thiếu mã xác minh số điện thoại.', 'idToken');
+  }
+  let claims: FirebaseTokenClaims;
+  try {
+    claims = await verifyFirebaseIdToken(idToken);
+  } catch (error) {
+    if (error instanceof FirebaseTokenError && error.reason !== 'invalid') {
+      throw new AppError(503, 'PHONE_VERIFY_UNAVAILABLE', 'Chưa xác minh được số điện thoại lúc này. Vui lòng thử lại sau.');
+    }
+    throw new AppError(422, 'INVALID_PHONE_TOKEN', 'Mã xác minh không hợp lệ hoặc đã hết hạn. Vui lòng gửi lại mã.', 'idToken');
+  }
+  if (claims.firebase?.sign_in_provider !== 'phone' || !claims.phone_number
+      || Date.now() - claims.auth_time * 1000 > phoneTokenMaxAgeMs) {
+    throw new AppError(422, 'INVALID_PHONE_TOKEN', 'Mã xác minh không hợp lệ hoặc đã hết hạn. Vui lòng gửi lại mã.', 'idToken');
+  }
+  let phone: string | null;
+  try {
+    phone = parsePhone(claims.phone_number);
+  } catch {
+    phone = null;
+  }
+  if (!phone) throw new AppError(422, 'INVALID_PHONE', 'Chỉ xác minh được số di động Việt Nam.', 'phone');
+  if (await repository.findOtherVerifiedPhone(id, phone)) {
+    throw new AppError(409, 'PHONE_IN_USE', 'Số điện thoại này đã được xác minh cho tài khoản khác.', 'phone');
+  }
+  const user = await repository.markPhoneVerified(id, phone);
+  return { phone: user.phone, phoneVerified: true, phoneVerifiedAt: user.phoneVerifiedAt };
 };
 
 export const heartbeat = async (id: string) => {

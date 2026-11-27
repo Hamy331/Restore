@@ -54,7 +54,13 @@ usersRouter.post('/me/email/verify', validate({ body: emailChangeOtpBody }), aut
     emailChange.verify(req.user!.userId, getInput<ValidatedInput<undefined, undefined, { otp: string }>>(res).body)
       .then((data) => ok(res, data), next);
   });
-usersRouter.post('/me/heartbeat', handle((req) => profile.heartbeat(req.user!.userId)));
+/**
+ * Xác minh số điện thoại: body { idToken } là ID token Firebase sau khi nhập đúng OTP (Firebase Phone Auth).
+ * Trả { phone, phoneVerified, phoneVerifiedAt }. Lỗi: 422 INVALID_PHONE_TOKEN / INVALID_PHONE,
+ * 409 PHONE_IN_USE (số đã xác minh cho tài khoản khác), 503 PHONE_VERIFY_UNAVAILABLE (chưa cấu hình Firebase).
+ */
+usersRouter.post('/me/phone/verify', authRateLimits.verifyOtp, handle((req) => profile.verifyPhone(req.user!.userId, req.body)));
+usersRouter.post('/me/heartbeat',handle((req) => profile.heartbeat(req.user!.userId)));
 /** Sổ địa chỉ để chọn lại khi đăng tin: tối đa 5, mới dùng gần nhất trước */
 usersRouter.get('/me/addresses', handle((req) => savedAddresses.listSavedAddresses(req.user!.userId)));
 usersRouter.post('/me/addresses', handle((req) => savedAddresses.saveAddress(req.user!.userId, req.body)));

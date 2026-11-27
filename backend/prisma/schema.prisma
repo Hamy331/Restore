@@ -40,6 +40,8 @@ model User {
   /// Lần đổi tên người dùng gần nhất (null: chưa đổi lần nào sau khi đăng ký), dùng để chặn đổi liên tục
   usernameChangedAt DateTime?
   phone          String?
+  /// Lúc xác minh số điện thoại bằng OTP (null: chưa xác minh hoặc đã đổi số sau khi xác minh)
+  phoneVerifiedAt DateTime?
   avatarUrl      String?
   bio            String?        @db.VarChar(300)
   lastActiveAt   DateTime?

@@ -3,7 +3,7 @@ import { prisma } from '../../../lib/prisma.js';
 
 export const profileSelect = {
   id: true, fullName: true, username: true, avatarUrl: true, bio: true, status: true,
-  ratingAverage: true, ratingCount: true, createdAt: true, lastActiveAt: true,
+  ratingAverage: true, ratingCount: true, createdAt: true, lastActiveAt: true, phoneVerifiedAt: true,
   _count: { select: { followers: true, following: true } },
 } satisfies Prisma.UserSelect;
 
@@ -93,8 +93,15 @@ export const findPeers = (id: string) =>
     select: { userId: true }, distinct: ['userId'],
   });
 
-export const findUsernameState = (id: string) =>
-  prisma.user.findUnique({ where: { id }, select: { username: true, usernameChangedAt: true } });
+export const findEditState = (id: string) =>
+  prisma.user.findUnique({ where: { id }, select: { username: true, usernameChangedAt: true, phone: true } });
+
+/** Tài khoản khác (đang hoạt động) đã xác minh số [phone] */
+export const findOtherVerifiedPhone = (id: string, phone: string) =>
+  prisma.user.findFirst({ where: { phone, phoneVerifiedAt: { not: null }, id: { not: id }, status: { not: 'BANNED' } }, select: { id: true } });
+
+export const markPhoneVerified = (id: string, phone: string) =>
+  prisma.user.update({ where: { id }, data: { phone, phoneVerifiedAt: new Date() }, select: { phone: true, phoneVerifiedAt: true } });
 
 export const findTarget = (targetId: string) =>
   prisma.user.findUnique({ where: { id: targetId }, select: { id: true, status: true } });
