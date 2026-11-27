@@ -1,4 +1,4 @@
-import { CreditBucket, CreditTxnType, Prisma, TopupStatus } from '@prisma/client';
+import { CreditBucket, CreditTxnType, Prisma, SepayEventStatus, TopupStatus } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
 
 export type Db = Prisma.TransactionClient;
@@ -72,6 +72,60 @@ export const markOrderPaid = async (tx: Db, id: string, data: { providerTxnId: s
 /** Đổi trạng thái chỉ khi đơn còn PENDING; trả về số dòng đã đổi (0 = người khác đã xử lý) */
 export const decidePending = async (tx: Db, id: string, data: Prisma.CreditTopupOrderUncheckedUpdateInput) =>
   (await tx.creditTopupOrder.updateMany({ where: { id, status: TopupStatus.PENDING }, data })).count;
+
+/**
+ * Ghi nhận một lần SePay báo giao dịch, theo id của SePay. Đã có (SePay gửi lại) thì giữ nguyên bản cũ.
+ * Trả về bản ghi hiện có trong DB.
+ */
+export async function recordSepayEvent(data: Prisma.SepayWebhookEventUncheckedCreateInput) {
+  try {
+    return await prisma.sepayWebhookEvent.create({ data });
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002')) throw error;
+    return prisma.sepayWebhookEvent.findUniqueOrThrow({ where: { id: data.id } });
+  }
+}
+
+/** Chốt kết quả xử lý một giao dịch SePay */
+export const decideSepayEvent = (id: string, data: { status: SepayEventStatus; success: boolean; reason?: string; topupOrderId?: string | null }) =>
+  prisma.sepayWebhookEvent.update({ where: { id }, data });
+
+const fingerprint = { id: true, amountVnd: true, transactionDate: true, referenceCode: true, accountNumber: true } as const;
+
+/** Giao dịch đã trả đơn nạp này (để biết một giao dịch mới có phải chính nó không) */
+export const findPayingEvents = (topupOrderId: string) =>
+  prisma.sepayWebhookEvent.findMany({ where: { topupOrderId, status: SepayEventStatus.PAID }, select: fingerprint });
+
+/** Job đối soát đã xử lý giao dịch API này chưa */
+export const findEventByApiTransaction = (apiTransactionId: string) =>
+  prisma.sepayWebhookEvent.findUnique({ where: { apiTransactionId }, select: { id: true } });
+
+/** Các bản ghi webhook có thể là cùng giao dịch với một dòng API (lọc sơ bằng số tiền, thời điểm, mã tham chiếu) */
+export const findWebhookTwins = (where: { amountVnd: number; transactionDate: string; referenceCode: string | null }) =>
+  prisma.sepayWebhookEvent.findMany({
+    where: { source: 'webhook', apiTransactionId: null, amountVnd: where.amountVnd, transactionDate: where.transactionDate,
+      ...(where.referenceCode ? { referenceCode: where.referenceCode } : {}) },
+    select: fingerprint,
+    take: 5,
+  });
+
+/** Ghi nhớ dòng API ứng với bản ghi webhook đã có, để lần sau bỏ qua */
+export async function linkApiTransaction(eventId: string, apiTransactionId: string) {
+  try {
+    await prisma.sepayWebhookEvent.update({ where: { id: eventId }, data: { apiTransactionId } });
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002')) throw error;
+  }
+}
+
+/** Giao dịch ghi nhận rồi nhưng chưa xử lý xong (lỗi giữa chừng) quá một khoảng thời gian */
+export const findStuckSepayEvents = (before: Date, take = 50) =>
+  prisma.sepayWebhookEvent.findMany({ where: { status: SepayEventStatus.RECEIVED, createdAt: { lt: before } }, orderBy: { createdAt: 'asc' }, take });
+
+export const getSepaySyncCursor = async (id: string) => (await prisma.sepaySyncState.findUnique({ where: { id } }))?.cursor ?? null;
+
+export const saveSepaySyncCursor = (id: string, cursor: string) =>
+  prisma.sepaySyncState.upsert({ where: { id }, create: { id, cursor }, update: { cursor } });
 
 export const createTransactions = (tx: Db, data: Prisma.CreditTransactionUncheckedCreateInput[]) =>
   tx.creditTransaction.createMany({ data });

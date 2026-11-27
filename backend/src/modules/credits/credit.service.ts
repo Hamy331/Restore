@@ -1,4 +1,4 @@
-import { CreditBucket, CreditPayMethod, CreditTxnType, Prisma, TopupStatus } from '@prisma/client';
+import { CreditBucket, CreditPayMethod, CreditTxnType, Prisma, SepayEventStatus, TopupStatus } from '@prisma/client';
 import { AppError } from '../../common/errors/app-error.js';
 import { emit } from '../../common/events/domain-events.js';
 import { prisma } from '../../lib/prisma.js';
@@ -7,9 +7,10 @@ import * as repo from './credit.repository.js';
 import type { HistoryQuery, TopupInput } from './credit.validator.js';
 import {
   BONUS_REMINDER_DAYS, BONUS_TTL_MS, DAY_MS, HISTORY_FILTERS, MAX_PENDING_TOPUPS, PAID_TTL_MS, TOPUP_TTL_MS,
-  gatewaySkipped, sandboxEnabled, summarizeWallet, topupCode, vietQrAccount, vietQrImageUrl,
+  gatewaySkipped, sandboxEnabled, summarizeWallet, topupCode, transferContent, vietQrAccount, vietQrImageUrl,
 } from './credit.type.js';
 import * as sepay from './credit.sepay.js';
+import * as sepayApi from './credit.sepay-api.js';
 import * as zalopay from './credit.zalopay.js';
 
 /**
@@ -81,8 +82,8 @@ function withPayment(order: Order) {
         bankBin: account.bankBin,
         accountNo: account.accountNo,
         accountName: account.accountName,
-        content: order.code,
-        imageUrl: vietQrImageUrl(account, order.amountVnd, order.code),
+        content: transferContent(account, order.code),
+        imageUrl: vietQrImageUrl(account, order.amountVnd, transferContent(account, order.code)),
       },
     },
   };
@@ -102,7 +103,7 @@ export async function createTopup(userId: string, { packageId, method }: TopupIn
   if (method === CreditPayMethod.ZALOPAY && !gateway && !sandboxEnabled()) {
     throw new AppError(503, 'PAYMENT_METHOD_UNAVAILABLE', 'Cổng ZaloPay chưa được cấu hình.', 'method');
   }
-  const order = await inTransaction(async (tx) => {
+  const create = () => inTransaction(async (tx) => {
     const pack = await repo.findActivePackage(tx, packageId);
     if (!pack) throw new AppError(404, 'CREDIT_PACKAGE_NOT_FOUND', 'Gói nạp không tồn tại hoặc đã ngừng bán.');
     await repo.expireStalePending(tx, userId, now);
@@ -120,6 +121,17 @@ export async function createTopup(userId: string, { packageId, method }: TopupIn
       expiresAt: new Date(now.getTime() + TOPUP_TTL_MS),
     });
   });
+  // Mã đơn trùng (rất hiếm, ràng buộc UNIQUE chặn lại): tạo lại với mã mới
+  let order: Order | undefined;
+  for (let attempt = 0; !order; attempt++) {
+    try {
+      order = await create();
+    } catch (error) {
+      const duplicateCode = error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002'
+        && String(error.meta?.target ?? '').includes('code');
+      if (!duplicateCode || attempt >= 2) throw error;
+    }
+  }
   if (!gateway) return withPayment(order);
   try {
     const { appTransId, orderUrl } = await zalopay.createOrder(gateway, {
@@ -344,11 +356,51 @@ export async function zaloPayCallback(body: { data?: unknown; mac?: unknown }) {
 }
 
 /**
- * Webhook SePay khi tài khoản nhận VietQR có tiền vào. Chỉ cộng xu khi đúng API key,
- * nội dung có mã đơn VietQR và số tiền khớp đơn. SePay coi là nhận khi trả 200 + { success: true };
- * lỗi tạm trả 500 để SePay gửi lại. Mỗi giao dịch SePay (id) chỉ cộng một lần.
+ * Webhook SePay khi tài khoản nhận VietQR có tiền vào. Mỗi giao dịch (id của SePay) được ghi vào
+ * SepayWebhookEvent trước khi xử lý, kèm payload gốc để đối soát.
+ *
+ * Webhook bật "Dùng để xác thực thanh toán": success là kết quả thanh toán, không phải "đã nhận".
+ *  - 200 { success: true }  : giao dịch này đã trả đơn nạp (cộng xu).
+ *  - 200 { success: false } : tiền vào nhưng không trả đơn nào (thiếu mã, sai số tiền, sai tài khoản,
+ *                             đơn đã được trả bằng giao dịch khác...). Lưu UNMATCHED / DUPLICATE để người xem và hoàn tiền.
+ *  - 500                     : lỗi tạm (DB...), SePay gửi lại; giao dịch giữ RECEIVED và được xử lý tiếp lần sau.
+ *  - Cùng id gửi lại         : trả đúng kết quả đã chốt lần đầu.
+ * Đơn đã hết hạn / bị huỷ mà tiền vẫn tới đúng số thì vẫn cộng xu (xu là hàng số, không lo hết hàng).
  */
 export type SepayRequest = { authorization: unknown; signature: unknown; timestamp: unknown; rawBody: Buffer | undefined; body: unknown };
+
+type SepayDecision = { status: SepayEventStatus; success: boolean; reason?: string; topupOrderId?: string | null };
+
+/** Quyết định một giao dịch SePay trả đơn nạp nào. Chạy lại nhiều lần cho cùng giao dịch vẫn ra cùng kết quả. */
+async function decideSepayTransfer(transfer: sepay.SepayTransfer): Promise<SepayDecision> {
+  const unmatched = (reason: string, topupOrderId: string | null = null): SepayDecision =>
+    ({ status: SepayEventStatus.UNMATCHED, success: false, reason, topupOrderId });
+  if (transfer.transferType !== 'in') return { status: SepayEventStatus.IGNORED, success: false, reason: 'not incoming' };
+  if (!sepay.isExpectedAccount(transfer.accountNumber, vietQrAccount()?.accountNo)) return unmatched('wrong receiving account');
+  const code = sepay.extractTopupCode(transfer);
+  if (!code) return unmatched('no topup code');
+  const order = await repo.findOrderByCode(prisma, code);
+  if (!order || order.method !== CreditPayMethod.VIETQR) return unmatched('order not found');
+  if (transfer.amount !== order.amountVnd) return unmatched('amount mismatch', order.id);
+
+  const providerTxnId = `SEPAY-${transfer.id}`;
+  try {
+    const { order: paid, credited } = await markPaid(order.id, { providerTxnId, amountVnd: transfer.amount });
+    const paidBy = { status: SepayEventStatus.PAID, success: true, topupOrderId: order.id } as const;
+    // Đã cộng bởi chính giao dịch này (VD lần trước lỗi giữa chừng) vẫn là thành công
+    if (credited || paid.providerTxnId === providerTxnId) return paidBy;
+    // Cùng lần chuyển tiền đã được nguồn kia cộng (webhook ↔ job đối soát): vẫn là thành công, không cộng thêm
+    const payers = await repo.findPayingEvents(order.id);
+    if (payers.some((event) => event.id !== transfer.id && sepay.isSameTransfer(event, transfer))) return paidBy;
+    return { status: SepayEventStatus.DUPLICATE, success: false, reason: 'order already paid by another transfer', topupOrderId: order.id };
+  } catch (error) {
+    if (error instanceof AppError && error.code === 'TOPUP_NOT_PENDING') return unmatched('order can no longer be paid', order.id);
+    if (error instanceof AppError && error.code === 'TOPUP_ALREADY_PROCESSED') {
+      return { status: SepayEventStatus.DUPLICATE, success: false, reason: 'transaction already used', topupOrderId: order.id };
+    }
+    throw error;
+  }
+}
 
 export async function sepayWebhook({ authorization, signature, timestamp, rawBody, body }: SepayRequest) {
   // Có Secret Key thì kiểm chữ ký HMAC (khuyến nghị, chạy được qua SePay CLI), không thì kiểm API Key
@@ -367,30 +419,116 @@ export async function sepayWebhook({ authorization, signature, timestamp, rawBod
   }
   const transfer = sepay.parseWebhook(body);
   if (!transfer) return { status: 400, body: { success: false, message: 'invalid payload' } };
-  // Tiền ra, hoặc chuyển khoản không phải để nạp xu: ghi nhận để SePay không gửi lại
-  const ignore = (reason: string) => {
-    console.info('[credits] SePay ignored', transfer.id, reason);
-    return { status: 200, body: { success: true, message: reason } };
-  };
-  if (transfer.transferType !== 'in') return ignore('not incoming');
-  const code = sepay.extractTopupCode(transfer);
-  if (!code) return ignore('no topup code');
   try {
-    const order = await inTransaction((tx) => repo.findOrderByCode(tx, code));
-    if (!order || order.method !== CreditPayMethod.VIETQR) return ignore(`order not found ${code}`);
-    // Chuyển thiếu/thừa: không tự cộng, cần đối soát tay
-    if (transfer.amount !== order.amountVnd) {
-      console.warn('[credits] SePay amount mismatch', code, transfer.amount, order.amountVnd);
-      return ignore('amount mismatch');
-    }
-    await markPaid(order.id, { providerTxnId: `SEPAY-${transfer.id}`, amountVnd: transfer.amount });
-    return { status: 200, body: { success: true } };
+    const result = await processSepayTransfer(transfer, body, { source: 'webhook' });
+    return { status: 200, body: { success: result.success, ...(result.reason ? { message: result.reason } : {}) } };
   } catch (error) {
-    if (error instanceof AppError && ['TOPUP_ALREADY_PROCESSED', 'TOPUP_NOT_PENDING'].includes(error.code)) {
-      return ignore(error.code);
-    }
-    console.error('[credits] SePay webhook failed', transfer.id, error);
+    console.error('[credits] SePay webhook failed', transfer.id, error instanceof Error ? error.message : error);
     return { status: 500, body: { success: false } };
+  }
+}
+
+/**
+ * Ghi một giao dịch SePay (webhook hoặc API) rồi xử lý. Ghi trước khi xử lý: lỗi giữa chừng thì
+ * lần sau (SePay gửi lại / job đối soát) xử lý tiếp, không mất giao dịch. Giao dịch đã chốt thì trả lại kết quả cũ.
+ */
+async function processSepayTransfer(
+  transfer: sepay.SepayTransfer, payload: unknown, origin: { source: 'webhook' | 'api'; apiTransactionId?: string },
+) {
+  const event = await repo.recordSepayEvent({
+    id: transfer.id,
+    source: origin.source,
+    apiTransactionId: origin.apiTransactionId,
+    transferType: transfer.transferType,
+    amountVnd: transfer.amount,
+    code: transfer.code,
+    accountNumber: transfer.accountNumber,
+    referenceCode: transfer.referenceCode,
+    transactionDate: transfer.transactionDate,
+    payload: payload as Prisma.InputJsonValue,
+  });
+  if (event.status !== SepayEventStatus.RECEIVED) return { status: event.status, success: event.success, reason: event.reason };
+  return decideAndRecord(transfer);
+}
+
+async function decideAndRecord(transfer: sepay.SepayTransfer) {
+  const decision = await decideSepayTransfer(transfer);
+  await repo.decideSepayEvent(transfer.id, decision);
+  // Log chỉ có mã định danh, không có nội dung chuyển khoản / tên / số tài khoản
+  const log = decision.status === SepayEventStatus.PAID || decision.status === SepayEventStatus.IGNORED ? console.info : console.warn;
+  log('[credits] SePay', transfer.id, decision.status, decision.reason ?? '', transfer.code ?? '');
+  return decision;
+}
+
+/** Đối soát chỉ xử lý giao dịch cũ hơn chừng này: giao dịch mới để webhook tới trước */
+const RECONCILE_SETTLE_MS = 5 * 60_000;
+/** Lần chạy đầu tiên (chưa có con trỏ) xét giao dịch trong chừng này ngày gần nhất */
+const RECONCILE_FIRST_RUN_DAYS = 3;
+const SYNC_TRANSACTIONS = 'transactions';
+
+/**
+ * Job đối soát SePay (chạy định kỳ): kéo giao dịch tiền vào mới từ SePay API v2 (since_id), giao dịch nào
+ * webhook chưa báo thì xử lý y như webhook (cộng xu, hoặc lưu UNMATCHED / DUPLICATE để hoàn tiền).
+ * Cùng một lần chuyển tiền không bao giờ cộng hai lần: markPaid chỉ đổi đơn còn chờ, và giao dịch đã có
+ * bản ghi webhook thì chỉ nối lại. Cũng xử lý tiếp các giao dịch đã ghi nhận mà bị lỗi giữa chừng.
+ * Thiếu SEPAY_API_TOKEN thì bỏ qua. Trả về số giao dịch đã xét và số đã cộng xu.
+ */
+export async function reconcileSepayTransactions(now = new Date()) {
+  await resumeStuckSepayEvents(now);
+  const config = sepayApi.sepayApiConfig();
+  if (!config) return { checked: 0, paid: 0 };
+
+  let cursor = await repo.getSepaySyncCursor(SYNC_TRANSACTIONS);
+  const query: Record<string, string> = { transfer_type: 'in', transaction_date_sort: 'asc', per_page: '100',
+    ...(cursor ? { since_id: cursor }
+      : { transaction_date_from: sepayApi.formatVnDateTime(new Date(now.getTime() - RECONCILE_FIRST_RUN_DAYS * DAY_MS)) }) };
+  let checked = 0;
+  let paid = 0;
+  pages: for (let page = 1; ; page++) {
+    const { rows, hasMore } = await sepayApi.listTransactionsPage(config, { ...query, page: String(page) });
+    for (const row of rows) {
+      const bookedAt = sepayApi.parseVnDateTime(row.transaction_date);
+      // Giao dịch quá mới: dừng ở đây, chưa dời con trỏ qua, để webhook tới trước; lần sau xét lại
+      if (bookedAt && now.getTime() - bookedAt.getTime() < RECONCILE_SETTLE_MS) break pages;
+      if (await reconcileApiRow(row) === SepayEventStatus.PAID) paid++;
+      checked++;
+      cursor = row.id;
+    }
+    if (cursor) await repo.saveSepaySyncCursor(SYNC_TRANSACTIONS, cursor);
+    if (!hasMore || rows.length === 0) break;
+    // SePay API giới hạn 3 request/giây
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
+  if (cursor) await repo.saveSepaySyncCursor(SYNC_TRANSACTIONS, cursor);
+  if (paid > 0) console.info('[credits] SePay reconcile recovered', paid, 'payment(s)');
+  return { checked, paid };
+}
+
+/** Một dòng API: bỏ qua nếu đã xử lý (qua webhook hoặc lần trước), còn lại xử lý như webhook */
+async function reconcileApiRow(row: sepayApi.ApiTransaction) {
+  if (await repo.findEventByApiTransaction(row.id)) return null;
+  const transfer = sepayApi.apiRowToTransfer(row);
+  if (!transfer) return null;
+  if (transfer.transactionDate) {
+    const twins = await repo.findWebhookTwins({ amountVnd: transfer.amount, transactionDate: transfer.transactionDate, referenceCode: transfer.referenceCode });
+    const twin = twins.find((event) => sepay.isSameTransfer(event, transfer));
+    if (twin) {
+      await repo.linkApiTransaction(twin.id, row.id);
+      return null;
+    }
+  }
+  const result = await processSepayTransfer(transfer, row, { source: 'api', apiTransactionId: row.id });
+  return result.status;
+}
+
+/** Giao dịch đã ghi nhận nhưng xử lý dở (VD DB lỗi giữa chừng, SePay hết lượt gửi lại): xử lý tiếp */
+async function resumeStuckSepayEvents(now: Date) {
+  for (const event of await repo.findStuckSepayEvents(new Date(now.getTime() - RECONCILE_SETTLE_MS))) {
+    const parsed = event.source === 'api'
+      ? sepayApi.apiRowToTransfer(event.payload as sepayApi.ApiTransaction)
+      : sepay.parseWebhook(event.payload);
+    if (!parsed) continue;
+    await decideAndRecord({ ...parsed, id: event.id });
   }
 }
 
