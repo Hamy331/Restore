@@ -188,17 +188,20 @@ class DesktopFooter extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   child: Row(
                     children: [
-                      Text(
-                        t(
-                          '© 2026 Restore. Mua bán, trao đổi đồ cũ.',
-                          '© 2026 Restore. Buy, sell and swap pre-loved items.',
-                        ),
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          color: AppColors.textSecondary,
+                      // Expanded: khung hẹp thì dòng bản quyền xuống dòng thay vì tràn
+                      Expanded(
+                        child: Text(
+                          t(
+                            '© 2026 Restore. Mua bán, trao đổi đồ cũ.',
+                            '© 2026 Restore. Buy, sell and swap pre-loved items.',
+                          ),
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 16),
                       const Text(
                         'Tiếng Việt · English',
                         style: TextStyle(

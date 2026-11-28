@@ -150,8 +150,10 @@ class _LoginMobileViewState extends State<LoginMobileView> {
                 ),
               ),
               const SizedBox(height: 18),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              // Wrap: màn hẹp / chữ lớn thì "Đăng ký" xuống dòng thay vì tràn
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   const Text(
                     'Chưa có tài khoản?',
