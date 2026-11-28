@@ -5,6 +5,7 @@ import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
+import 'package:restore/data/models/category_model.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/shared/widgets/desktop/desktop_layout.dart';
@@ -70,12 +71,19 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
         categoryId: draft.categoryId,
       );
       if (!mounted) return;
+      final category = _suggestedCategory(suggestion);
       final apply = await showAiSuggestionSheet(
         context,
         suggestion: suggestion,
+        categoryLabel: category == null
+            ? null
+            : [
+                category.name.of(context),
+                ?category.subcategory?.name.of(context),
+              ].join(' › '),
         vehicle: ListingCondition.usesVehicleScale(
-          draft.categoryId,
-          draft.subcategoryId,
+          category?.id ?? draft.categoryId,
+          category?.subcategory?.id ?? draft.subcategoryId,
         ),
       );
       if (apply == true && mounted) _applySuggestion(suggestion);
@@ -98,7 +106,33 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
     }
   }
 
+  /// Danh mục AI chọn khi khác danh mục đang chọn và có trong danh sách của
+  /// app; tin đã đăng không đổi danh mục nên luôn null
+  CategoryModel? _suggestedCategory(ListingAiSuggestion suggestion) {
+    final state = _bloc.state;
+    if (state.isEditing || suggestion.categoryId == null) return null;
+    final subcategoryId = suggestion.subcategoryId ?? '';
+    if (suggestion.categoryId == state.draft.categoryId &&
+        subcategoryId == state.draft.subcategoryId) {
+      return null;
+    }
+    for (final category in state.categories) {
+      if (category.id != suggestion.categoryId) continue;
+      if (category.hasSubcategories &&
+          category.subcategoryOf(subcategoryId) == null) {
+        return null;
+      }
+      return category.withSubcategory(subcategoryId);
+    }
+    return null;
+  }
+
   void _applySuggestion(ListingAiSuggestion suggestion) {
+    // Đổi danh mục trước: đổi danh mục xoá tình trạng và thông tin chi tiết cũ
+    final category = _suggestedCategory(suggestion);
+    if (category != null) {
+      _bloc.add(CategorySelected(category.id, category.subcategory?.id ?? ''));
+    }
     final title = suggestion.title.characters
         .take(ListingDraft.maxTitleLength)
         .toString();
@@ -114,7 +148,8 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
       _bloc.add(DescriptionChanged(description));
     }
     final condition = suggestion.condition;
-    if (condition != null && (_bloc.state.category?.hasCondition ?? true)) {
+    if (condition != null &&
+        ((category ?? _bloc.state.category)?.hasCondition ?? true)) {
       _bloc.add(ConditionChanged(condition));
     }
   }

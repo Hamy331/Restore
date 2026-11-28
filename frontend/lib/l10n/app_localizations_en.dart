@@ -6590,6 +6590,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get aiComposeCategory => 'Category';
+
+  @override
   String get aiComposeApply => 'Use this';
 
   @override

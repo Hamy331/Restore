@@ -3841,6 +3841,7 @@
       }
     }
   },
+  "aiComposeCategory": "Category",
   "aiComposeApply": "Use this",
   "aiComposeUnavailable": "Writing with AI isn't available right now.",
   "aiComposeFailed": "AI couldn't write a suggestion. Please try again."

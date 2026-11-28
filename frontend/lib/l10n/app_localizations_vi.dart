@@ -6461,6 +6461,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get aiComposeCategory => 'Danh mục';
+
+  @override
   String get aiComposeApply => 'Dùng nội dung này';
 
   @override
