@@ -92,6 +92,19 @@ class UserProfileCubit extends Cubit<UserProfileState> {
     return email;
   }
 
+  /// Đã xác minh [phone] bằng OTP: cập nhật số và trạng thái trên hồ sơ đang
+  /// hiển thị
+  void markPhoneVerified(String phone) {
+    final profile = state.profile;
+    if (isClosed || profile == null) return;
+    emit(
+      UserProfileState(
+        profile: profile.copyWith(phone: phone, phoneVerified: true),
+        loading: false,
+      ),
+    );
+  }
+
   /// Tải ảnh đại diện đã cắt lên và trả về URL để lưu cùng các trường khác.
   Future<String> uploadAvatar(Uint8List bytes) =>
       (_uploader ?? ImageUploadService()).uploadBytes(

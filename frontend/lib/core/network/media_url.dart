@@ -8,7 +8,7 @@ String? resolveMediaUrl(String? url, {String? apiBaseUrl}) {
   return '${Uri.parse(apiBaseUrl ?? AppEnvironment.apiBaseUrl).origin}$url';
 }
 
-/// Các cỡ thumbnail backend tạo sẵn (`?w=`), xem image-thumbnail.service.ts
+/// Các cỡ ảnh thu nhỏ backend nhận (`?w=`), xem THUMB_WIDTHS trong storage.service.ts
 const thumbnailWidths = [240, 480, 960];
 
 /// URL thumbnail WebP của ảnh do server lưu, đủ cho bề ngang giải mã [width]

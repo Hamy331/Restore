@@ -170,6 +170,52 @@ class _ButtonContent extends StatelessWidget {
   }
 }
 
+/// Nút dạng link (chữ đậm màu xanh, không nền) cho thao tác phụ nằm trong nội
+/// dung: "Đổi ảnh đại diện", "Thêm số", "Cập nhật", "Lên Cửa hàng"... Có
+/// [icon] nhỏ phía trước nếu cần; nền xanh nhạt bo góc khi rê chuột / nhấn.
+class AppLinkButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+
+  const AppLinkButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final style = TextButton.styleFrom(
+      foregroundColor: AppColors.actionPrimaryDark,
+      disabledForegroundColor: AppColors.textSecondary,
+      overlayColor: AppColors.actionPrimary,
+      backgroundColor: Colors.transparent,
+      textStyle: const TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.1,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      minimumSize: const Size(0, 36),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.compact,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      iconSize: 18,
+    );
+    final text = Text(label, maxLines: 1, overflow: TextOverflow.ellipsis);
+    return icon == null
+        ? TextButton(onPressed: onPressed, style: style, child: text)
+        : TextButton.icon(
+            onPressed: onPressed,
+            style: style,
+            icon: Icon(icon),
+            label: text,
+          );
+  }
+}
+
 class AppCompactActionButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;

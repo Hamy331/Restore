@@ -40,6 +40,8 @@ model User {
   /// Lần đổi tên người dùng gần nhất (null: chưa đổi lần nào sau khi đăng ký), dùng để chặn đổi liên tục
   usernameChangedAt DateTime?
   phone          String?
+  /// Lúc xác minh số điện thoại bằng OTP (null: chưa xác minh hoặc đã đổi số sau khi xác minh)
+  phoneVerifiedAt DateTime?
   avatarUrl      String?
   bio            String?        @db.VarChar(300)
   lastActiveAt   DateTime?
@@ -980,8 +982,60 @@ model CreditTopupOrder {
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
   transactions  CreditTransaction[]
+  sepayEvents   SepayWebhookEvent[]
 
   @@index([userId, status])
+}
+
+enum SepayEventStatus {
+  /// Đã ghi nhận, đang xử lý (hoặc xử lý dở vì lỗi tạm, lần gửi lại sẽ xử lý tiếp)
+  RECEIVED
+  /// Giao dịch này đã trả đơn nạp và cộng xu
+  PAID
+  /// Tiền vào nhưng không trả được đơn nào: thiếu mã, sai số tiền, sai tài khoản, đơn không tồn tại. Cần người xem / hoàn tiền
+  UNMATCHED
+  /// Đơn đã được trả bằng giao dịch khác: khách trả lần 2, cần hoàn tiền
+  DUPLICATE
+  /// Không phải tiền vào, không liên quan nạp xu
+  IGNORED
+}
+
+/// Mỗi giao dịch SePay đã xử lý: báo qua webhook, hoặc job đối soát tìm thấy qua API (webhook bị lỡ).
+/// Bản ghi đối soát, giữ cả payload gốc. Chỉ admin / DB đọc
+model SepayWebhookEvent {
+  /// webhook: id giao dịch trong webhook (ổn định qua các lần gửi lại). API: "api:" + UUID giao dịch
+  id              String            @id
+  /// webhook | api (job đối soát)
+  source          String            @default("webhook")
+  /// UUID giao dịch trong SePay API v2 (khác id của webhook), để job đối soát không xử lý lại
+  apiTransactionId String?          @unique
+  status          SepayEventStatus  @default(RECEIVED)
+  /// Kết quả đã trả cho SePay (success), lần gửi lại trả đúng kết quả này
+  success         Boolean           @default(false)
+  reason          String?
+  transferType    String
+  amountVnd       Int
+  code            String?
+  accountNumber   String?
+  /// Mã tham chiếu của ngân hàng (không duy nhất), dùng khi tra soát với ngân hàng
+  referenceCode   String?
+  transactionDate String?
+  topupOrderId    String?
+  topupOrder      CreditTopupOrder? @relation(fields: [topupOrderId], references: [id], onDelete: SetNull)
+  payload         Json
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([status, createdAt])
+  @@index([topupOrderId])
+  @@index([referenceCode, amountVnd])
+}
+
+/// Trạng thái job đối soát SePay: con trỏ (UUID giao dịch API cuối cùng đã đọc)
+model SepaySyncState {
+  id        String   @id
+  cursor    String?
+  updatedAt DateTime @updatedAt
 }
 
 /// Sổ cái xu: chỉ thêm, không sửa, không xoá

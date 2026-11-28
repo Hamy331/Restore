@@ -8,6 +8,11 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 
 export const ZALOPAY_SANDBOX_ENDPOINT = 'https://sb-openapi.zalopay.vn/v2';
 
+/** App sandbox mà ZaloPay công bố key trong repo mẫu: ai cũng ký được callback, không bao giờ dùng với tiền thật */
+export const ZALOPAY_SANDBOX_APP_IDS = new Set(['553', '2553', '2554']);
+
+const isLive = (env: NodeJS.ProcessEnv) => env.PAYMENT_MODE?.trim() === 'live';
+
 export type ZaloPayConfig = {
   appId: string; key1: string; key2: string; endpoint: string;
   callbackUrl?: string; redirectUrl: string; methods: string[];
@@ -19,13 +24,16 @@ export function zaloPayConfig(env: NodeJS.ProcessEnv = process.env): ZaloPayConf
   const key1 = env.ZALOPAY_KEY1?.trim();
   const key2 = env.ZALOPAY_KEY2?.trim();
   if (!appId || !key1 || !key2) return null;
+  const endpoint = zaloPayEndpoint(env);
+  // Chế độ live mà vẫn là cổng sandbox hoặc app sandbox công khai: tắt ZaloPay thay vì nhận tiền giả / callback giả
+  if (isLive(env) && (endpoint === ZALOPAY_SANDBOX_ENDPOINT || ZALOPAY_SANDBOX_APP_IDS.has(appId))) return null;
   // Chuỗi rỗng ("" trong .env) coi như chưa đặt
   const apiBase = env.PUBLIC_API_URL?.trim().replace(/\/+$/, '') || undefined;
   return {
     appId,
     key1,
     key2,
-    endpoint: zaloPayEndpoint(env),
+    endpoint,
     // ZaloPay chỉ gọi được callback tới địa chỉ public (VD ngrok). Chạy localhost thì app tự hỏi trạng thái.
     callbackUrl: apiBase ? `${apiBase}/api/v1/payments/zalopay/callback` : undefined,
     // Trang ZaloPay chuyển khách về sau khi trả; mặc định là trang báo kết quả của backend
@@ -44,7 +52,7 @@ export function zaloPayConfig(env: NodeJS.ProcessEnv = process.env): ZaloPayConf
 export function zaloPayEndpoint(env: NodeJS.ProcessEnv = process.env) {
   const configured = env.ZALOPAY_ENDPOINT?.trim().replace(/\/+$/, '');
   if (!configured) return ZALOPAY_SANDBOX_ENDPOINT;
-  if (env.PAYMENT_MODE?.trim() !== 'live' && configured !== ZALOPAY_SANDBOX_ENDPOINT) {
+  if (!isLive(env) && configured !== ZALOPAY_SANDBOX_ENDPOINT) {
     console.warn('[credits] ZALOPAY_ENDPOINT bị bỏ qua vì PAYMENT_MODE khác "live", dùng cổng sandbox');
     return ZALOPAY_SANDBOX_ENDPOINT;
   }

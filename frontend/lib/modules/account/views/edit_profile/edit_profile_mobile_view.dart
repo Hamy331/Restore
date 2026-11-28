@@ -29,20 +29,13 @@ import '../../widgets/profile_header.dart';
 import 'edit_profile_view.dart';
 import 'widgets/edit_profile_avatar.dart';
 import 'widgets/email_change_flow.dart';
+import 'widgets/phone_verify_flow.dart';
+import 'package:restore/core/routes/profile_path.dart';
+import 'package:restore/core/utils/helpers/phone_number.dart';
+import 'package:restore/services/phone_otp_service.dart';
 
-
-/// Số di động Việt Nam như backend (parsePhone): bỏ khoảng trắng, dấu chấm,
-/// gạch, ngoặc; +84 / 84 thành 0; đủ 10 số bắt đầu 03, 05, 07, 08, 09.
-/// Rỗng trả '' (xoá số), sai định dạng trả null.
-String? normalizePhone(String text) {
-  final digits = text.replaceAll(RegExp(r'[\s.\-()]'), '');
-  if (digits.isEmpty) return '';
-  final local = digits.replaceFirst(
-    RegExp(r'^(\+84|84)(?=[35789]\d{8}$)'),
-    '0',
-  );
-  return RegExp(r'^0[35789]\d{8}$').hasMatch(local) ? local : null;
-}
+export 'package:restore/core/utils/helpers/phone_number.dart'
+    show normalizePhone;
 
 class EditProfileMobileView extends StatefulWidget {
   const EditProfileMobileView({
@@ -66,7 +59,6 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   late final _name = TextEditingController(text: _profile?.fullName);
   late final _username = TextEditingController(text: _profile?.username);
   late final _bio = TextEditingController(text: _profile?.bio ?? '');
-  late final _phone = TextEditingController(text: _profile?.phone ?? '');
 
   /// URL ảnh đang có trên server; `null` khi chưa có hoặc người dùng xoá.
   late String? _avatarUrl = _profile?.avatarUrl;
@@ -76,7 +68,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   Uint8List? _avatarBytes, _sourceBytes;
   String? _uploadedAvatar;
   bool _saving = false, _loadingAvatar = false, _showErrors = false;
-  String? _usernameError, _phoneError;
+  String? _usernameError;
 
   // Thông tin doanh nghiệp: chỉ khi đã lên Cửa hàng, tải shop của mình riêng
   late final bool _isShop = _profile?.shopStatus != null;
@@ -89,7 +81,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   Set<int> _days = {};
   TimeOfDay _open = const TimeOfDay(hour: 8, minute: 0),
       _close = const TimeOfDay(hour: 21, minute: 0);
-  bool _hoursTouched = false, _businessOpen = false;
+  bool _hoursTouched = false, _businessOpen = true;
   String? _contactPhoneError, _businessEmailError, _websiteError;
 
   @override
@@ -228,7 +220,6 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     _name.dispose();
     _username.dispose();
     _bio.dispose();
-    _phone.dispose();
     _contactPhone.dispose();
     _businessEmail.dispose();
     _website.dispose();
@@ -304,7 +295,6 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   bool get _usernameValid =>
       _username.text.trim() == _profile?.username ||
       AuthValidators.usernamePattern.hasMatch(_username.text.trim());
-  bool get _phoneValid => normalizePhone(_phone.text) != null;
 
   Future<void> _save() async {
     if (_saving || _loadingAvatar) return;
@@ -313,12 +303,9 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     setState(() {
       _showErrors = true;
       _usernameError = null;
-      _phoneError = null;
-      // Số điện thoại nằm ở phần thu gọn: mở ra để thấy lỗi
-      if (!_phoneValid) _privateOpen = true;
     });
     final businessOk = _checkBusiness();
-    if (!_nameValid || !_usernameValid || !_phoneValid || !businessOk) return;
+    if (!_nameValid || !_usernameValid || !businessOk) return;
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _saving = true);
     final shopChanges = _shopChanges;
@@ -335,9 +322,6 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       if (_username.text.trim() != _profile?.username)
         'username': _username.text.trim(),
       if (_bio.text.trim() != (_profile?.bio ?? '')) 'bio': _bio.text.trim(),
-      if (normalizePhone(_phone.text) case final phone?
-          when phone != (_profile?.phone ?? ''))
-        'phone': phone.isEmpty ? null : phone,
     };
     final bytes = _avatarBytes;
     if (bytes != null) {
@@ -379,13 +363,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
           _saving = false;
           _usernameError = l.accUsernameChangeTooSoon;
         });
-      case ProfileSaveResult.invalidPhone:
-        setState(() {
-          _saving = false;
-          _phoneError = _phoneInvalidText;
-          _privateOpen = true;
-        });
-      case ProfileSaveResult.failed:
+      case ProfileSaveResult.invalidPhone || ProfileSaveResult.failed:
         setState(() => _saving = false);
         _error(l.accSaveError);
     }
@@ -395,7 +373,6 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       _name.text.trim() != (_profile?.fullName ?? '') ||
       _username.text.trim() != (_profile?.username ?? '') ||
       _bio.text.trim() != (_profile?.bio ?? '') ||
-      _phone.text.trim() != (_profile?.phone ?? '') ||
       _avatarBytes != null ||
       _avatarUrl != _profile?.avatarUrl ||
       _shopDirty;
@@ -419,6 +396,93 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   String get _phoneInvalidText => _vi
       ? 'Số điện thoại không hợp lệ (VD 0901234567).'
       : 'Invalid phone number (e.g. 0901234567).';
+
+  /// Thêm, đổi hoặc xác minh số điện thoại: chỉ lưu số đã xác minh bằng OTP
+  /// (lưu ngay, không cần bấm Lưu thay đổi). [phone] là số điền sẵn.
+  Future<void> _verifyPhone(String? phone) async {
+    final otp = FirebasePhoneOtpService();
+    if (!otp.supported) {
+      _error(
+        _vi
+            ? 'Hãy xác minh số điện thoại trên ứng dụng Android hoặc trang web.'
+            : 'Verify your phone number in the Android app or on the website.',
+      );
+      return;
+    }
+    final cubit = context.read<UserProfileCubit>();
+    final verified = await showPhoneVerifyFlow(context, cubit, phone, otp: otp);
+    if (verified == null || !mounted) return;
+    setState(() {});
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            _vi ? 'Đã xác minh số $verified' : 'Verified $verified',
+          ),
+        ),
+      );
+  }
+
+  /// Dòng số điện thoại (như dòng email): chưa có số thì nút Thêm số; có số
+  /// thì hiện số, dấu đã xác minh và nút Cập nhật (chưa xác minh thì Xác minh)
+  Widget _phoneRow(
+    ProfileData? live,
+    AppLocalizations l,
+    String Function(String, String) t,
+  ) {
+    final phone = live?.phone ?? '';
+    final verified = live?.phoneVerified == true;
+    if (phone.isEmpty) {
+      return Padding(
+        key: const ValueKey('edit-profile-phone-row'),
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l.phone,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Transform.translate(
+              // Chữ nút thẳng mép trái với nhãn phía trên
+              offset: const Offset(-8, 0),
+              child: AppLinkButton(
+                key: const ValueKey('edit-profile-phone-add'),
+                icon: Icons.add,
+                label: t('Thêm số điện thoại', 'Add number'),
+                onPressed: _saving ? null : () => _verifyPhone(null),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return _ReadOnlyRow(
+      fieldKey: 'edit-profile-phone-row',
+      label: l.phone,
+      value: phone,
+      verified: verified,
+      caption: verified
+          ? t(
+              'Người mua gọi cho bạn qua số này khi bạn có tin đang bán.',
+              'Buyers can call you on this number while you have listings for sale.',
+            )
+          : t(
+              'Chưa xác minh. Xác minh để nhận huy hiệu đã xác minh.',
+              'Not verified. Verify to get the verified badge.',
+            ),
+      action: AppLinkButton(
+        key: const ValueKey('edit-profile-phone-update'),
+        label: verified ? t('Cập nhật', 'Update') : t('Xác minh', 'Verify'),
+        onPressed: _saving ? null : () => _verifyPhone(phone),
+      ),
+    );
+  }
 
   /// Đổi email: bảng 2 bước (email mới + mật khẩu, rồi mã OTP gửi tới email
   /// mới). Email đổi ngay trên server nên báo luôn cho phần đăng nhập.
@@ -455,11 +519,15 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       );
   }
 
-  /// Mục "Thông tin doanh nghiệp" (chỉ shop): tên + mã số thuế lấy từ hồ sơ
-  /// xác minh (chỉ xem), còn lại là liên hệ công khai sửa được
+  /// Mục "Thông tin doanh nghiệp" luôn hiện. Chưa lên Cửa hàng: chỉ có lời
+  /// giới thiệu và nút Lên Cửa hàng. Shop: tên + mã số thuế lấy từ hồ sơ xác
+  /// minh (chỉ xem), còn lại là liên hệ công khai sửa được
   Widget _businessSection(String Function(String, String) t) {
     final overview = _shop, shop = overview?.shop;
     final verified = shop?.isVerified ?? false;
+    // Chưa lên Cửa hàng: vẫn hiện đủ các trường nhưng khoá lại
+    final locked = !_isShop;
+    final notProvided = t('Chưa có', 'Not provided');
     void clear(VoidCallback reset) => setState(reset);
     return _Section(
       key: const ValueKey('edit-profile-business'),
@@ -467,7 +535,12 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       icon: verified
           ? Icons.visibility_outlined
           : Icons.visibility_off_outlined,
-      caption: verified
+      caption: locked
+          ? t(
+              'Lên Cửa hàng để điền và hiện thông tin này cho người mua',
+              'Become a Shop to fill in and show these details to buyers',
+            )
+          : verified
           ? t(
               'Hiện ở mục Liên hệ trên trang shop của bạn',
               'Shown under Contact details on your shop page',
@@ -479,39 +552,54 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       open: _businessOpen,
       onToggle: () => setState(() => _businessOpen = !_businessOpen),
       children: [
-        if (overview == null)
+        if (!locked && overview == null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Center(
               child: _shopFailed
-                  ? TextButton(
-                      onPressed: _loadShop,
-                      child: Text(
-                        t(
-                          'Không tải được thông tin shop. Thử lại',
-                          "Couldn't load your shop. Retry",
-                        ),
+                  ? AppLinkButton(
+                      icon: Icons.refresh,
+                      label: t(
+                        'Không tải được thông tin shop. Thử lại',
+                        "Couldn't load your shop. Retry",
                       ),
+                      onPressed: _loadShop,
                     )
                   : const CircularProgressIndicator(),
             ),
           )
-        else if (shop != null) ...[
-          if (!verified)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton(
-                key: const ValueKey('edit-profile-verify-shop'),
-                style: TextButton.styleFrom(padding: EdgeInsets.zero),
+        else if (locked || shop != null) ...[
+          if (locked)
+            _Notice(
+              icon: Icons.storefront_outlined,
+              text: t(
+                'Bạn chưa có Cửa hàng. Lên Cửa hàng để điền các thông tin này.',
+                "You don't have a shop yet. Become a Shop to fill these in.",
+              ),
+              action: AppLinkButton(
+                key: const ValueKey('edit-profile-become-shop'),
+                label: AppLocalizations.of(context)!.accCreateStore,
                 onPressed: () => context.push(MyShopView.path),
-                child: Text(t('Xác minh shop', 'Verify your shop')),
+              ),
+            )
+          else if (!verified)
+            _Notice(
+              icon: Icons.verified_outlined,
+              text: t(
+                'Xác minh shop để người mua thấy các thông tin này.',
+                'Verify your shop so buyers can see these details.',
+              ),
+              action: AppLinkButton(
+                key: const ValueKey('edit-profile-verify-shop'),
+                label: t('Xác minh shop', 'Verify your shop'),
+                onPressed: () => context.push(MyShopView.path),
               ),
             ),
           _ReadOnlyRow(
             fieldKey: 'edit-profile-business-name',
             label: t('Tên doanh nghiệp', 'Company name'),
-            value: overview.businessName ?? t('Chưa có', 'Not provided'),
-            verified: verified && overview.businessName != null,
+            value: overview?.businessName ?? notProvided,
+            verified: verified && overview?.businessName != null,
           ),
           _ReadOnlyRow(
             fieldKey: 'edit-profile-tax-code',
@@ -519,15 +607,18 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
               'Mã số doanh nghiệp / mã số thuế',
               'Business registration number',
             ),
-            value: overview.taxCode ?? t('Chưa có', 'Not provided'),
-            verified: verified && overview.taxCode != null,
-            caption: t(
-              'Lấy từ hồ sơ xác minh shop. Muốn đổi, gửi lại hồ sơ xác minh.',
-              'From your shop verification. Resubmit verification to change it.',
-            ),
+            value: overview?.taxCode ?? notProvided,
+            verified: verified && overview?.taxCode != null,
+            caption: locked
+                ? null
+                : t(
+                    'Lấy từ hồ sơ xác minh shop. Muốn đổi, gửi lại hồ sơ xác minh.',
+                    'From your shop verification. Resubmit verification to change it.',
+                  ),
           ),
           _Field(
             fieldKey: 'edit-profile-contact-phone',
+            enabled: !locked,
             controller: _contactPhone,
             label: t('Số điện thoại liên hệ', 'Contact number'),
             hint: t('VD 0901234567', 'e.g. 0901234567'),
@@ -542,6 +633,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
           ),
           _Field(
             fieldKey: 'edit-profile-business-email',
+            enabled: !locked,
             controller: _businessEmail,
             label: t('Email doanh nghiệp', 'Business email'),
             hint: 'shop@example.com',
@@ -552,6 +644,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
           ),
           _Field(
             fieldKey: 'edit-profile-website',
+            enabled: !locked,
             controller: _website,
             label: t('Website', 'Your website'),
             hint: 'https://',
@@ -562,6 +655,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
           ),
           _Field(
             fieldKey: 'edit-profile-business-address',
+            enabled: !locked,
             controller: _address,
             label: t('Địa chỉ doanh nghiệp', 'Business address'),
             hint: t(
@@ -579,24 +673,36 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
             ),
           ),
           const SizedBox(height: 8),
-          MyShopHoursField(
-            key: const ValueKey('edit-profile-hours'),
-            days: _days,
-            open: _open,
-            close: _close,
-            onDaysChanged: (days) => setState(() {
-              _days = days;
-              _hoursTouched = true;
-            }),
-            onOpenChanged: (time) => setState(() {
-              _open = time;
-              _hoursTouched = true;
-            }),
-            onCloseChanged: (time) => setState(() {
-              _close = time;
-              _hoursTouched = true;
-            }),
-          ),
+          if (locked)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                notProvided,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            )
+          else
+            MyShopHoursField(
+              key: const ValueKey('edit-profile-hours'),
+              days: _days,
+              open: _open,
+              close: _close,
+              onDaysChanged: (days) => setState(() {
+                _days = days;
+                _hoursTouched = true;
+              }),
+              onOpenChanged: (time) => setState(() {
+                _open = time;
+                _hoursTouched = true;
+              }),
+              onCloseChanged: (time) => setState(() {
+                _close = time;
+                _hoursTouched = true;
+              }),
+            ),
           const SizedBox(height: 8),
         ],
       ],
@@ -612,9 +718,8 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     final usernameError =
         _usernameError ??
         (_showErrors && !_usernameValid ? l.accUsernameInvalid : null);
-    final email = context.watch<UserProfileCubit>().state.profile?.email ?? '';
-    final phoneError =
-        _phoneError ?? (_showErrors && !_phoneValid ? _phoneInvalidText : null);
+    final liveProfile = context.watch<UserProfileCubit>().state.profile;
+    final email = liveProfile?.email ?? '';
     return PopScope(
       canPop: !_saving,
       child: Scaffold(
@@ -669,48 +774,15 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
               key: const ValueKey('edit-profile-list'),
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               children: [
-                // Ảnh đại diện
-                _SectionTitle(t('Ảnh đại diện', 'Profile photo')),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    EditProfileAvatar(
-                      initials: ProfileHeader.initials(_name.text),
-                      bytes: _avatarBytes,
-                      url: _avatarUrl,
-                      busy: _loadingAvatar,
-                      onPick: _pick,
-                      onAdjust: hasAvatar ? _adjust : null,
-                      onRemove: hasAvatar ? _remove : null,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            t(
-                              'Ảnh rõ mặt giúp người mua và người bán tin '
-                                  'tưởng nhau hơn.',
-                              'A clear photo of your face helps buyers and '
-                                  'sellers trust each other.',
-                            ),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              height: 1.45,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          OutlinedButton(
-                            key: const ValueKey('edit-profile-upload'),
-                            onPressed: _loadingAvatar ? null : _pick,
-                            child: Text(t('Tải ảnh lên', 'Upload a photo')),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                // Ảnh đại diện ở giữa, link đổi ảnh bên dưới
+                EditProfileAvatar(
+                  initials: ProfileHeader.initials(_name.text),
+                  bytes: _avatarBytes,
+                  url: _avatarUrl,
+                  busy: _loadingAvatar,
+                  onPick: _pick,
+                  onAdjust: hasAvatar ? _adjust : null,
+                  onRemove: hasAvatar ? _remove : null,
                 ),
                 const SizedBox(height: 24),
                 // Thông tin tài khoản (hiện trên hồ sơ công khai)
@@ -731,7 +803,11 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
                       label: l.accUsername,
                       prefix: '@',
                       maxLength: 30,
-                      helper: l.accUsernameHelper,
+                      helper:
+                          '${t('Hồ sơ công khai', 'Public profile')}: '
+                          '${kIsWeb ? Uri.base.origin : ''}'
+                          '${profilePath(id: _profile?.id ?? '', username: _username.text.trim())}\n'
+                          '${l.accUsernameHelper}',
                       error: usernameError,
                       onChanged: (_) => setState(() => _usernameError = null),
                     ),
@@ -779,32 +855,17 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
                         'Dùng để đăng nhập. Đổi email cần mã xác nhận gửi tới email mới.',
                         'Used to sign in. Changing it needs a code sent to the new email.',
                       ),
-                      action: TextButton(
+                      action: AppLinkButton(
                         key: const ValueKey('edit-profile-email-update'),
+                        label: t('Cập nhật', 'Update'),
                         onPressed: _changeEmail,
-                        child: Text(t('Cập nhật', 'Update')),
                       ),
                     ),
-                    _Field(
-                      fieldKey: 'edit-profile-phone',
-                      controller: _phone,
-                      label: l.phone,
-                      hint: t('VD 0901234567', 'e.g. 0901234567'),
-                      maxLength: 16,
-                      keyboardType: TextInputType.phone,
-                      helper: t(
-                        'Người mua gọi cho bạn qua số này khi bạn có tin đang bán.',
-                        'Buyers can call you on this number while you have listings for sale.',
-                      ),
-                      error: phoneError,
-                      onChanged: (_) => setState(() => _phoneError = null),
-                    ),
+                    _phoneRow(liveProfile, l, t),
                   ],
                 ),
-                if (_isShop) ...[
-                  const SizedBox(height: 8),
-                  _businessSection(t),
-                ],
+                const SizedBox(height: 8),
+                _businessSection(t),
               ],
             ),
           ),
@@ -822,6 +883,42 @@ String maskEmail(String email) {
   final name = email.substring(0, at), domain = email.substring(at);
   if (name.length <= 4) return '${name[0]}***$domain';
   return '${name.substring(0, 2)}****${name.substring(name.length - 2)}$domain';
+}
+
+/// Ô nhắc nền xanh nhạt đầu mục: icon, lời nhắc và nút link
+class _Notice extends StatelessWidget {
+  const _Notice({required this.icon, required this.text, required this.action});
+  final IconData icon;
+  final String text;
+  final Widget action;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    margin: const EdgeInsets.only(bottom: 16),
+    padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
+    decoration: BoxDecoration(
+      color: AppColors.actionSoft,
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Row(
+      children: [
+        Icon(icon, size: 22, color: AppColors.actionPrimaryDark),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              height: 1.4,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+        const SizedBox(width: 4),
+        action,
+      ],
+    ),
+  );
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -921,9 +1018,11 @@ class _Field extends StatelessWidget {
     this.multiline = false,
     this.keyboardType,
     this.onChanged,
+    this.enabled = true,
   });
 
   final String fieldKey, label;
+  final bool enabled;
   final TextInputType? keyboardType;
   final TextEditingController controller;
   final int maxLength;
@@ -942,6 +1041,7 @@ class _Field extends StatelessWidget {
       child: TextField(
         key: ValueKey(fieldKey),
         controller: controller,
+        enabled: enabled,
         onChanged: onChanged,
         maxLength: maxLength,
         minLines: multiline ? 3 : 1,
@@ -956,7 +1056,7 @@ class _Field extends StatelessWidget {
           hintText: hint,
           prefixText: prefix,
           helperText: error == null ? helper : null,
-          helperMaxLines: 2,
+          helperMaxLines: 4,
           errorText: error,
           errorMaxLines: 2,
           alignLabelWithHint: multiline,

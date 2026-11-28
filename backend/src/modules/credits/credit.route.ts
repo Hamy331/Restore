@@ -57,7 +57,7 @@ creditRouter.get('/topups/:id', buyer, validate({ params: idParams }), creditCon
 creditRouter.post('/topups/:id/cancel', buyer, validate({ params: idParams }), creditController.cancelTopup);
 
 /**
- * Cổng thử: giả lập kết quả trả tiền. Chỉ có khi không phải production và PAYMENT_MODE khác "live".
+ * Cổng thử: giả lập kết quả trả tiền. Chỉ có khi không phải production và PAYMENT_MODE="sandbox" được đặt rõ.
  *
  * Body:
  *  - result: success | fail

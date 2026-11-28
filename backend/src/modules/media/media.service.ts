@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { AppError } from '../../common/errors/app-error.js';
-import { readThumbnail, type ThumbWidth } from '../../services/image-thumbnail.service.js';
-import { contentTypeOf, getObject, putObject, type StorageArea } from '../../services/storage.service.js';
+import {
+  contentTypeOf, getObject, putObject, readStored, type StorageArea, type ThumbWidth,
+} from '../../services/storage.service.js';
 
 /** Ảnh người dùng tải lên ngoài tin đăng: ảnh bài viết bảng tin, ảnh đại diện, poster shop, giấy tờ xác minh shop. */
 export const MEDIA_AREAS = {
@@ -51,15 +52,18 @@ export function isMediaUrl(url: unknown, purpose: MediaPurpose): boolean {
   return NAME.test(url.slice(`${MEDIA_PREFIX}${MEDIA_AREAS[purpose]}/`.length));
 }
 
-/** File ảnh; có [width] thì trả thumbnail WebP (không tạo được thì trả ảnh gốc) */
+/** File ảnh: URL CDN (có [width] thì bản thu nhỏ) hoặc byte ảnh (driver disk) */
 export async function readMedia(area: string, name: string, width: ThumbWidth | null = null) {
-  if (!(Object.values(MEDIA_AREAS) as string[]).includes(area) || !NAME.test(name)) {
-    throw new AppError(404, 'MEDIA_NOT_FOUND', 'Không tìm thấy ảnh.');
-  }
-  if (width) {
-    const thumb = await readThumbnail(area as MediaArea, name, width, () => getObject(area as MediaArea, name));
-    if (thumb) return { bytes: thumb, contentType: 'image/webp' };
-  }
+  const notFound = () => new AppError(404, 'MEDIA_NOT_FOUND', 'Không tìm thấy ảnh.');
+  if (!(Object.values(MEDIA_AREAS) as string[]).includes(area) || !NAME.test(name)) throw notFound();
+  const file = await readStored(area as MediaArea, name, width);
+  if (!file) throw notFound();
+  return file;
+}
+
+/** Byte ảnh khu riêng (giấy tờ xác minh): server tự gửi, không lộ URL lưu trữ */
+export async function readPrivateMedia(area: string, name: string) {
+  if (!PRIVATE_AREAS.includes(area) || !NAME.test(name)) throw new AppError(404, 'MEDIA_NOT_FOUND', 'Không tìm thấy ảnh.');
   const bytes = await getObject(area as MediaArea, name);
   if (!bytes) throw new AppError(404, 'MEDIA_NOT_FOUND', 'Không tìm thấy ảnh.');
   return { bytes, contentType: contentTypeOf(name) };

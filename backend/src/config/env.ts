@@ -1,4 +1,5 @@
 import { AppError } from '../common/errors/app-error.js';
+import { paymentEnvironmentProblems } from '../modules/credits/credit.config.js';
 import { validateStorageEnvironment } from '../services/storage.service.js';
 
 export const getRequiredEnv = (name: string): string => {
@@ -29,6 +30,8 @@ export const validateEnvironment = () => {
     assertStrongSecret('JWT_REFRESH_SECRET');
     assertStrongSecret('JWT_RESET_SECRET');
     assertStrongSecret('OTP_SECRET');
+    const payment = paymentEnvironmentProblems();
+    if (payment.length) throw new Error(`Cấu hình thanh toán production chưa đúng:\n - ${payment.join('\n - ')}`);
   } else {
     getRequiredEnv('JWT_SECRET');
   }

@@ -3,8 +3,9 @@ import { hasPermission, PERMISSION } from '../../common/auth/permissions.js';
 import { AppError } from '../../common/errors/app-error.js';
 import { created } from '../../common/http/response.js';
 import { AuthRequest, verifyToken } from '../../middlewares/auth.middleware.js';
-import { thumbWidth } from '../../services/image-thumbnail.service.js';
-import { MEDIA_AREAS, mediaPurpose, PRIVATE_AREAS, readMedia, uploadMedia } from './media.service.js';
+import { sendStored } from '../../common/http/stored-file.js';
+import { thumbWidth } from '../../services/storage.service.js';
+import { MEDIA_AREAS, mediaPurpose, PRIVATE_AREAS, readMedia, readPrivateMedia, uploadMedia } from './media.service.js';
 
 /** /api/v1/media: ảnh bài viết bảng tin và ảnh đại diện (lưu qua storage.service) */
 export const mediaRouter = Router();
@@ -35,24 +36,23 @@ mediaRouter.get(`/${MEDIA_AREAS.verification}/:name`, verifyToken, async (req: A
     if (!name.startsWith(`${userId}_`) && !hasPermission(role, PERMISSION.LISTING_MODERATE)) {
       throw new AppError(404, 'MEDIA_NOT_FOUND', 'Không tìm thấy ảnh.');
     }
-    const { bytes, contentType } = await readMedia(MEDIA_AREAS.verification, name, thumbWidth(req.query.w));
+    const { bytes, contentType } = await readPrivateMedia(MEDIA_AREAS.verification, name);
     res.setHeader('Cache-Control', 'private, no-store');
     res.type(contentType).send(bytes);
   } catch (error) { next(error); }
 });
 
 /**
- * File ảnh. Ảnh bài viết và ảnh đại diện ai cũng xem được; tên file là UUID
- * nên không đoán được và có thể cache lâu.
+ * File ảnh. Ảnh bài viết, ảnh đại diện, shop, poster ai cũng xem được; tên file là UUID
+ * nên không đoán được và có thể cache lâu. Lưu trên Cloudinary thì chuyển hướng 302 sang CDN.
  *
- * Query: w? = bề ngang cần hiển thị; trả thumbnail WebP cỡ 240 | 480 | 960 nhỏ nhất đủ rộng
+ * Query: w? = bề ngang cần hiển thị; trả bản thu nhỏ cỡ 240 | 480 | 960 nhỏ nhất đủ rộng
  * (lớn hơn 960 hoặc không gửi: ảnh gốc)
  */
 mediaRouter.get('/:area/:name', async (req, res, next) => {
   try {
     if (PRIVATE_AREAS.includes(req.params.area)) throw new AppError(404, 'MEDIA_NOT_FOUND', 'Không tìm thấy ảnh.');
-    const { bytes, contentType } = await readMedia(req.params.area, req.params.name, thumbWidth(req.query.w));
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.type(contentType).send(bytes);
+    const file = await readMedia(req.params.area, req.params.name, thumbWidth(req.query.w));
+    sendStored(res, file, 'public, max-age=31536000, immutable');
   } catch (error) { next(error); }
 });

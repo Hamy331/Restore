@@ -407,6 +407,8 @@ class _VietQrPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final qr = order.vietQr;
+    // Nội dung chuyển khoản do backend tạo (VD VietinBank cần "SEVQR <mã đơn>"); thiếu thì dùng mã đơn
+    final transferNote = qr != null && qr.content.isNotEmpty ? qr.content : order.code;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -435,6 +437,9 @@ class _VietQrPanel extends StatelessWidget {
                     ? Image.network(
                         qr.imageUrl,
                         fit: BoxFit.contain,
+                        // Web: máy chủ ảnh VietQR không gửi header CORS nên tải bằng fetch bị chặn.
+                        // Hiển thị luôn bằng thẻ <img> của trình duyệt (không cần CORS). App mobile không bị ảnh hưởng.
+                        webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
                         errorBuilder: (_, _, _) => const Icon(
                           AppIcons.imageBroken,
                           color: AppColors.textSecondary,
@@ -501,9 +506,9 @@ class _VietQrPanel extends StatelessWidget {
               ],
               _InfoRow(
                 label: l10n.creditTransferContent,
-                value: order.code,
+                value: transferNote,
                 highlight: true,
-                onCopy: () => _copy(context, order.code),
+                onCopy: () => _copy(context, transferNote),
               ),
             ],
           ),

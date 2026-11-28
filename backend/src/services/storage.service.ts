@@ -1,22 +1,29 @@
-import { mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { Readable } from 'node:stream';
+import { v2 as cloudinary, type UploadApiOptions } from 'cloudinary';
 
 /**
- * Lưu file (ảnh tin, ảnh nội dung). Hai driver, chọn bằng STORAGE_DRIVER:
- *  - disk (mặc định): <STORAGE_DISK_ROOT | ./uploads>/<area>/<name>
- *  - supabase: bucket SUPABASE_STORAGE_BUCKET (mặc định "media"), object <area>/<name>.
- *    Bucket để private; server dùng service role key và tự trả ảnh qua API
- *    (/listings/media/:filename, /content/media/:filename) sau khi kiểm tra quyền xem.
+ * Lưu file người dùng tải lên. Hai driver, chọn bằng STORAGE_DRIVER:
+ *  - disk (mặc định, máy dev / test): <STORAGE_DISK_ROOT | ./uploads>/<area>/<name>
+ *  - cloudinary: asset <CLOUDINARY_ROOT_FOLDER | media>/<area>/<tên không đuôi>, cấu hình bằng CLOUDINARY_URL.
+ *    Khu công khai (bảng tin, avatar, shop, poster) để kiểu "upload"; khu cần kiểm quyền để kiểu
+ *    "authenticated" (URL phải có chữ ký do server tạo).
  *
- * Module nghiệp vụ chỉ gọi putObject / getObject / removeObject, không biết file nằm ở đâu.
+ * Module nghiệp vụ chỉ gọi putObject / getObject / removeObject / deliveryUrl, không biết file nằm ở đâu.
+ * Đọc ảnh: có deliveryUrl (Cloudinary) thì route chuyển hướng sang CDN, VPS không phải gửi byte ảnh;
+ * không có (disk) thì route tự gửi file.
  */
 
-/** Thư mục logic: listings = ảnh tin, admin = ảnh nội dung (bìa bài viết),
- *  feeds = ảnh bài viết bảng tin, avatars = ảnh đại diện, posters = poster shop, shops = logo / ảnh bìa shop */
+/** Thư mục logic: listings = ảnh tin, admin = ảnh nội dung, feeds = ảnh bảng tin, avatars = ảnh đại diện,
+ *  posters = poster shop, shops = logo / ảnh bìa shop, verifications = giấy tờ xác minh, chat = tệp trong chat */
 export type StorageArea = 'listings' | 'admin' | 'feeds' | 'avatars' | 'posters' | 'shops' | 'verifications' | 'chat';
 
-export const STORAGE_DRIVERS = ['disk', 'supabase'] as const;
+export const STORAGE_DRIVERS = ['disk', 'cloudinary'] as const;
 export type StorageDriver = (typeof STORAGE_DRIVERS)[number];
+
+/** Khu ai cũng xem được: URL CDN không cần chữ ký */
+const PUBLIC_AREAS: readonly StorageArea[] = ['feeds', 'avatars', 'posters', 'shops'];
 
 const CONTENT_TYPES: Record<string, string> = { '.mp4': 'video/mp4', '.mov': 'video/quicktime', '.webm': 'video/webm', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
 
@@ -33,6 +40,24 @@ export function storageDriver(): StorageDriver {
 /** Tên file chỉ gồm chữ, số, '.', '-', '_' (không cho thoát khỏi thư mục) */
 function assertName(name: string) {
   if (!/^[A-Za-z0-9._-]+$/.test(name) || name.startsWith('.')) throw new Error(`Invalid storage object name: ${name}`);
+}
+
+/** Lỗi "đã có file", cùng mã EEXIST cho mọi driver */
+const alreadyExists = (key: string) => Object.assign(new Error(`Storage object already exists: ${key}`), { code: 'EEXIST' });
+
+/* ---------- Cỡ ảnh thu nhỏ ---------- */
+
+/** Các cỡ ảnh thu nhỏ app xin qua `?w=` (frontend: media_url.dart) */
+export const THUMB_WIDTHS = [240, 480, 960] as const;
+export type ThumbWidth = (typeof THUMB_WIDTHS)[number];
+
+/** `?w=` → cỡ nhỏ nhất đủ rộng; không gửi, sai hoặc lớn hơn 960 thì null (ảnh gốc) */
+export function thumbWidth(value: unknown): ThumbWidth | null {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (typeof raw !== 'string' || !/^\d{1,5}$/.test(raw)) return null;
+  const width = Number(raw);
+  if (width <= 0) return null;
+  return THUMB_WIDTHS.find((size) => size >= width) ?? null;
 }
 
 /* ---------- disk ---------- */
@@ -59,126 +84,138 @@ const disk = {
       if (error.code !== 'ENOENT') throw error;
     });
   },
+  url: (): string | null => null,
 };
 
-/* ---------- Supabase Storage (REST API, không cần SDK) ---------- */
+/* ---------- Cloudinary ---------- */
 
-function supabaseConfig() {
-  const url = process.env.SUPABASE_URL?.trim().replace(/\/+$/, '');
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  if (!url || !key) throw new Error('STORAGE_DRIVER=supabase needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
-  return { url, key, bucket: process.env.SUPABASE_STORAGE_BUCKET?.trim() || 'media' };
-}
+let configuredFrom: string | null = null;
 
-/**
- * Header xác thực Supabase. Secret key kiểu mới (`sb_secret_...`) không phải JWT nên chỉ gửi qua `apikey`;
- * service_role key kiểu cũ (JWT, bị Supabase bỏ đầu năm 2027) gửi cả `Authorization`.
- */
-export const authHeaders = (key: string): Record<string, string> =>
-  key.startsWith('sb_') ? { apikey: key } : { Authorization: `Bearer ${key}`, apikey: key };
-
-async function supabaseRequest(method: string, objectPath: string, init: { body?: BodyInit; headers?: Record<string, string> } = {}) {
-  const { url, key, bucket } = supabaseConfig();
-  return fetch(`${url}/storage/v1/object/${bucket}${objectPath}`, {
-    method,
-    body: init.body,
-    headers: { ...authHeaders(key), ...init.headers },
-  });
-}
-
-/** Supabase trả 404, hoặc 400 kèm statusCode "404" / not_found, khi object không có */
-async function isNotFound(response: Response) {
-  if (response.status === 404) return true;
-  if (response.status !== 400) return false;
-  const body = await response.clone().text();
-  return /not[_ ]found|"404"/i.test(body);
-}
-
-/** Supabase trả 409, hoặc 400 kèm statusCode "409" / Duplicate, khi object đã có */
-async function isDuplicate(response: Response) {
-  if (response.status === 409) return true;
-  if (response.status !== 400) return false;
-  return /duplicate|"409"/i.test(await response.clone().text());
-}
-
-/** Lỗi "đã có file" cùng mã EEXIST với driver disk */
-const alreadyExists = (key: string) => Object.assign(new Error(`Storage object already exists: ${key}`), { code: 'EEXIST' });
-
-async function failure(action: string, key: string, response: Response) {
-  return new Error(`Supabase Storage ${action} ${key} failed: ${response.status} ${await response.text()}`);
-}
-
-const supabase = {
-  async put(area: StorageArea, name: string, bytes: Buffer) {
-    const key = `${area}/${name}`;
-    const response = await supabaseRequest('POST', `/${key}`, {
-      body: new Uint8Array(bytes),
-      headers: { 'Content-Type': contentTypeOf(name), 'x-upsert': 'false', 'Cache-Control': 'no-store' },
+/** Cấu hình SDK từ CLOUDINARY_URL = cloudinary://<api_key>:<api_secret>@<cloud_name> */
+function cloudinaryReady() {
+  const raw = process.env.CLOUDINARY_URL?.trim();
+  if (!raw) throw new Error('STORAGE_DRIVER=cloudinary needs CLOUDINARY_URL.');
+  if (configuredFrom !== raw) {
+    let url: URL;
+    try {
+      url = new URL(raw);
+    } catch {
+      throw new Error('CLOUDINARY_URL must look like cloudinary://<api_key>:<api_secret>@<cloud_name>.');
+    }
+    if (url.protocol !== 'cloudinary:' || !url.hostname || !url.username || !url.password) {
+      throw new Error('CLOUDINARY_URL must look like cloudinary://<api_key>:<api_secret>@<cloud_name>.');
+    }
+    cloudinary.config({
+      cloud_name: url.hostname, api_key: decodeURIComponent(url.username),
+      api_secret: decodeURIComponent(url.password), secure: true, analytics: false,
     });
-    if (response.ok) return;
-    if (await isDuplicate(response)) throw alreadyExists(key);
-    throw await failure('upload', key, response);
+    configuredFrom = raw;
+  }
+  return cloudinary;
+}
+
+/** Vị trí asset của file <area>/<name> trên Cloudinary */
+function asset(area: StorageArea, name: string) {
+  const { name: base, ext } = path.parse(name);
+  const root = process.env.CLOUDINARY_ROOT_FOLDER?.trim() || 'media';
+  return {
+    publicId: `${root}/${area}/${base}`,
+    folder: `${root}/${area}`,
+    format: ext.slice(1).toLowerCase(),
+    resourceType: contentTypeOf(name).startsWith('video/') ? 'video' as const : 'image' as const,
+    type: PUBLIC_AREAS.includes(area) ? 'upload' as const : 'authenticated' as const,
+  };
+}
+
+/** Ảnh lưu tối đa 2000px cạnh dài; Cloudinary mã hoá lại nên bỏ luôn EXIF / GPS của ảnh gốc */
+const IMAGE_INCOMING = [{ width: 2000, height: 2000, crop: 'limit' }];
+
+const cloud = {
+  async put(area: StorageArea, name: string, bytes: Buffer) {
+    const a = asset(area, name);
+    const options: UploadApiOptions = {
+      public_id: a.publicId, asset_folder: a.folder, resource_type: a.resourceType, type: a.type,
+      overwrite: false, unique_filename: false, use_filename: false,
+      ...(a.resourceType === 'image' ? { transformation: IMAGE_INCOMING } : {}),
+    };
+    const result = await new Promise<Record<string, unknown>>((resolve, reject) => {
+      const upload = cloudinaryReady().uploader.upload_stream(options, (error, response) =>
+        error || !response ? reject(error ?? new Error('Cloudinary upload failed')) : resolve(response as Record<string, unknown>));
+      Readable.from(bytes).pipe(upload);
+    });
+    if (result.existing === true) throw alreadyExists(`${area}/${name}`);
   },
   async get(area: StorageArea, name: string) {
-    const key = `${area}/${name}`;
-    const response = await supabaseRequest('GET', `/${key}`);
-    if (response.ok) return Buffer.from(await response.arrayBuffer());
-    if (await isNotFound(response)) return null;
-    throw await failure('download', key, response);
+    const response = await fetch(cloud.originalUrl(area, name));
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`Cloudinary download ${area}/${name} failed: ${response.status}`);
+    return Buffer.from(await response.arrayBuffer());
   },
   async remove(area: StorageArea, name: string) {
-    const key = `${area}/${name}`;
-    const response = await supabaseRequest('DELETE', '', {
-      body: JSON.stringify({ prefixes: [key] }),
-      headers: { 'Content-Type': 'application/json' },
+    const a = asset(area, name);
+    const result = await cloudinaryReady().uploader.destroy(a.publicId, {
+      resource_type: a.resourceType, type: a.type, invalidate: true,
+    }) as { result?: string };
+    if (result.result !== 'ok' && result.result !== 'not found') {
+      throw new Error(`Cloudinary delete ${area}/${name} failed: ${result.result}`);
+    }
+  },
+  originalUrl: (area: StorageArea, name: string) => cloud.url(area, name, null),
+  /** URL CDN; có [width] thì là bản thu nhỏ (định dạng / chất lượng tự chọn theo trình duyệt) */
+  url(area: StorageArea, name: string, width: ThumbWidth | null) {
+    const a = asset(area, name);
+    return cloudinaryReady().url(a.publicId, {
+      resource_type: a.resourceType, type: a.type, format: a.format, sign_url: a.type === 'authenticated', secure: true,
+      ...(width && a.resourceType === 'image'
+        ? { transformation: [{ width, crop: 'limit', fetch_format: 'auto', quality: 'auto' }] }
+        : {}),
     });
-    if (!response.ok && !await isNotFound(response)) throw await failure('delete', key, response);
   },
 };
 
-type Driver = {
-  put(area: StorageArea, name: string, bytes: Buffer): Promise<void>;
-  get(area: StorageArea, name: string): Promise<Buffer | null>;
-  remove(area: StorageArea, name: string): Promise<void>;
-};
-
-/** Hai driver, gọi thẳng (không theo STORAGE_DRIVER) khi cần chép giữa chúng, VD scripts/migrate-images.ts */
-export const drivers: Record<StorageDriver, Driver> = { disk, supabase };
-
 /* ---------- API dùng chung ---------- */
+
+const driver = () => (storageDriver() === 'cloudinary' ? cloud : disk);
 
 /** Lưu file mới; trùng tên thì lỗi code EEXIST (tên luôn là UUID nên thực tế không xảy ra) */
 export function putObject(area: StorageArea, name: string, bytes: Buffer): Promise<void> {
   assertName(name);
-  return drivers[storageDriver()].put(area, name, bytes);
+  return driver().put(area, name, bytes);
 }
 
 /** Đọc file; null nếu không có */
 export function getObject(area: StorageArea, name: string): Promise<Buffer | null> {
   assertName(name);
-  return drivers[storageDriver()].get(area, name);
+  return driver().get(area, name);
 }
 
 /** Xóa file; không có thì bỏ qua */
 export function removeObject(area: StorageArea, name: string) {
   assertName(name);
-  return drivers[storageDriver()].remove(area, name);
+  return driver().remove(area, name);
 }
 
-/** Tên file trong một khu của ổ đĩa (để chép đi nơi khác); thư mục chưa có thì rỗng */
-export async function listDiskObjects(area: StorageArea): Promise<string[]> {
-  try {
-    return (await readdir(path.dirname(diskPath(area, 'x')), { withFileTypes: true }))
-      .filter((entry) => entry.isFile() && /^[A-Za-z0-9._-]+$/.test(entry.name) && !entry.name.startsWith('.'))
-      .map((entry) => entry.name)
-      .sort();
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
-    throw error;
-  }
+/**
+ * URL CDN để chuyển hướng tới (đã kiểm quyền xong), [width] là cỡ thu nhỏ; null khi driver không có CDN (disk).
+ * Khu "authenticated" có chữ ký nên không tự đổi được cỡ / định dạng.
+ */
+export function deliveryUrl(area: StorageArea, name: string, width: ThumbWidth | null = null): string | null {
+  assertName(name);
+  return driver().url(area, name, width);
 }
 
-/** Kiểm tra cấu hình lúc khởi động (hoặc trước khi chép lên Supabase) */
-export function validateStorageEnvironment(driver: StorageDriver = storageDriver()) {
-  if (driver === 'supabase') supabaseConfig();
+/** Kiểm tra cấu hình lúc khởi động */
+export function validateStorageEnvironment(current: StorageDriver = storageDriver()) {
+  if (current === 'cloudinary') cloudinaryReady();
+}
+
+/** File đọc để trả cho app: URL CDN để chuyển hướng tới, hoặc byte file (driver disk) */
+export type StoredFile = { url: string } | { bytes: Buffer; contentType: string };
+
+/** Đọc file để trả cho app (đã kiểm quyền xong); null nếu không có */
+export async function readStored(area: StorageArea, name: string, width: ThumbWidth | null = null): Promise<StoredFile | null> {
+  const url = deliveryUrl(area, name, width);
+  if (url) return { url };
+  const bytes = await getObject(area, name);
+  return bytes ? { bytes, contentType: contentTypeOf(name) } : null;
 }

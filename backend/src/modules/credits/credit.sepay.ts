@@ -49,7 +49,13 @@ export function describeAuthHeader(header: unknown) {
   return `scheme "${scheme}", value length ${rest.join(' ').length}`;
 }
 
-export type SepayTransfer = { id: string; transferType: string; amount: number; code: string | null; content: string };
+export type SepayTransfer = {
+  id: string; transferType: string; amount: number; code: string | null; content: string;
+  accountNumber: string | null; referenceCode: string | null; transactionDate: string | null;
+};
+
+/** Chuỗi không rỗng, hoặc null (SePay có thể gửi null, "" hoặc 0 cho trường trống) */
+const text = (value: unknown) => (typeof value === 'string' || typeof value === 'number') && String(value).trim() ? String(value).trim() : null;
 
 /** Lấy các trường cần dùng từ body webhook; sai kiểu thì null */
 export function parseWebhook(body: unknown): SepayTransfer | null {
@@ -64,7 +70,33 @@ export function parseWebhook(body: unknown): SepayTransfer | null {
     amount,
     code: typeof b.code === 'string' && b.code ? b.code : null,
     content: typeof b.content === 'string' ? b.content : '',
+    accountNumber: text(b.accountNumber),
+    referenceCode: text(b.referenceCode),
+    transactionDate: text(b.transactionDate),
   };
+}
+
+/** Những gì đã lưu của một giao dịch, đủ để so với giao dịch khác */
+export type TransferFingerprint = { amountVnd: number; transactionDate: string | null; referenceCode: string | null; accountNumber: string | null };
+
+/**
+ * Hai bản ghi có phải cùng một lần chuyển tiền không (VD webhook và job đối soát cùng thấy một giao dịch).
+ * id của webhook và của API khác nhau nên so số tiền, thời điểm, mã tham chiếu ngân hàng và tài khoản.
+ */
+export function isSameTransfer(saved: TransferFingerprint, transfer: Pick<SepayTransfer, 'amount' | 'transactionDate' | 'referenceCode' | 'accountNumber'>) {
+  if (saved.amountVnd !== transfer.amount) return false;
+  if (!saved.transactionDate || saved.transactionDate !== transfer.transactionDate) return false;
+  if (saved.referenceCode && transfer.referenceCode && saved.referenceCode !== transfer.referenceCode) return false;
+  if (saved.accountNumber && transfer.accountNumber && saved.accountNumber !== transfer.accountNumber) return false;
+  return true;
+}
+
+/**
+ * Tiền phải vào đúng tài khoản nhận VietQR. Chưa cấu hình tài khoản hoặc SePay không gửi số tài khoản thì không chặn.
+ */
+export function isExpectedAccount(accountNumber: string | null, expected: string | null | undefined) {
+  if (!expected || !accountNumber) return true;
+  return accountNumber.replace(/\s+/g, '') === expected.replace(/\s+/g, '');
 }
 
 /** Mã đơn nạp RS + 6 ký tự (xem topupCode). Ngân hàng hay viết hoa và dính chữ nên tìm cả trong nội dung */

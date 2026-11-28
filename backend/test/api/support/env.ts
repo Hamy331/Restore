@@ -23,6 +23,8 @@ Object.assign(process.env, {
   OTP_SECRET: 'test-otp-secret-test-otp-secret-123456',
   RESEND_API_KEY: 're_test',
   EMAIL_FROM: 'no-reply@restore.test',
+  // Bật cổng thử (giả lập kết quả trả tiền) cho test thanh toán; không gọi cổng thật nào
+  PAYMENT_MODE: 'sandbox',
 });
 
 export const TEST_DATABASE_URL = url;

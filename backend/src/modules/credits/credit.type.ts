@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import { CreditBucket, CreditTxnType } from '@prisma/client';
 
 /** Đơn nạp chờ trả quá 15 phút thì hết hạn */
@@ -32,10 +33,14 @@ export function summarizeWallet(sums: BucketSum[], nextBonusExpiry: Date | null,
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-/** Mã đơn ngắn để ghi vào nội dung chuyển khoản, VD RS8F2K1X (bỏ 0/O/1/I dễ nhầm) */
-export function topupCode(random: () => number = Math.random) {
+/**
+ * Mã đơn ngắn để ghi vào nội dung chuyển khoản, VD RS8F2K1X (bỏ 0/O/1/I dễ nhầm).
+ * Khớp cấu trúc mã thanh toán trên SePay: tiền tố RS, 6 ký tự số và chữ. Dùng số ngẫu nhiên mật mã.
+ * random(n) trả về số nguyên trong [0, n).
+ */
+export function topupCode(random: (max: number) => number = randomInt) {
   let code = 'RS';
-  for (let i = 0; i < 6; i++) code += CODE_ALPHABET[Math.floor(random() * CODE_ALPHABET.length)];
+  for (let i = 0; i < 6; i++) code += CODE_ALPHABET[random(CODE_ALPHABET.length)];
   return code;
 }
 
@@ -49,18 +54,40 @@ export function vietQrAccount(env: NodeJS.ProcessEnv = process.env): VietQrAccou
   return bankBin && accountNo && accountName ? { bankBin, accountNo, accountName } : null;
 }
 
-/** Ảnh mã VietQR miễn phí của img.vietqr.io, đã điền số tiền và nội dung */
-export function vietQrImageUrl(account: VietQrAccount, amountVnd: number, content: string) {
-  const query = new URLSearchParams({ amount: String(amountVnd), addInfo: content, accountName: account.accountName });
-  return `https://img.vietqr.io/image/${encodeURIComponent(account.bankBin)}-${encodeURIComponent(account.accountNo)}-compact2.png?${query}`;
+/** BIN của VietinBank trong danh sách ngân hàng VietQR (https://vietqr.app/banks.json) */
+export const VIETINBANK_BIN = '970415';
+
+/**
+ * Nội dung chuyển khoản cho đơn nạp: mã đơn đứng đầu để ngân hàng có cắt bớt cũng không mất mã.
+ * VietinBank (tài khoản cá nhân / hộ kinh doanh) bắt buộc có chuỗi SEVQR, thiếu thì SePay không nhận được
+ * giao dịch: https://developer.sepay.vn/vi/tien-ich-khac/tao-qr-code#quy-tac-tao-vietqr-theo-ngan-hang-ma-sepay-ho-tro
+ */
+export function transferContent(account: Pick<VietQrAccount, 'bankBin'>, code: string) {
+  return account.bankBin === VIETINBANK_BIN ? `SEVQR ${code}` : code;
 }
 
 /**
- * Cổng thử (giả lập kết quả trả tiền) chỉ bật ngoài production và khi PAYMENT_MODE khác "live".
- * Không bao giờ có tiền thật đi qua đây.
+ * Ảnh mã VietQR của SePay (vietqr.app), đã điền số tiền và nội dung (mã đơn).
+ * bank nhận mã BIN; template "compact" = bố cục gọn kèm logo NAPAS/VietQR và ngân hàng.
+ * Tham số: https://developer.sepay.vn/vi/tien-ich-khac/tao-qr-code#cau-truc-link-nhung
+ */
+export function vietQrImageUrl(account: VietQrAccount, amountVnd: number, content: string) {
+  const query = new URLSearchParams({
+    acc: account.accountNo,
+    bank: account.bankBin,
+    amount: String(amountVnd),
+    des: content,
+    template: 'compact',
+  });
+  return `https://vietqr.app/img?${query}`;
+}
+
+/**
+ * Cổng thử (giả lập kết quả trả tiền) chỉ bật khi PAYMENT_MODE="sandbox" được đặt rõ và không phải production.
+ * Thiếu PAYMENT_MODE thì tắt (an toàn khi deploy quên biến). Không bao giờ có tiền thật đi qua đây.
  */
 export const sandboxEnabled = (env: NodeJS.ProcessEnv = process.env) =>
-  env.NODE_ENV !== 'production' && (env.PAYMENT_MODE ?? 'sandbox') !== 'live';
+  env.NODE_ENV !== 'production' && env.PAYMENT_MODE?.trim() === 'sandbox';
 
 /**
  * Chế độ debug: bỏ qua cổng thật (ZaloPay), đơn tạo xong chỉ trả bằng nút giả lập.

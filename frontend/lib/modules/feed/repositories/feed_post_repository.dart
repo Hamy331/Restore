@@ -36,7 +36,7 @@ class MockFeedPostRepository implements FeedPostRepository {
 /// Gọi backend (cần đăng nhập):
 /// - `GET /feed/composer-options` → `{ data: PostComposerOptions }`
 /// - `POST /feed/posts` body [PostDraft.toJson] → `{ data: { id } }`.
-///   Ảnh tải lên kho ảnh (Supabase Storage) trước rồi gửi URL trong `photos`.
+///   Ảnh tải lên kho ảnh (Cloudinary) trước rồi gửi URL trong `photos`.
 class ApiFeedPostRepository implements FeedPostRepository {
   ApiFeedPostRepository({ApiClient? apiClient})
     : _apiClient = apiClient ?? ApiClient();

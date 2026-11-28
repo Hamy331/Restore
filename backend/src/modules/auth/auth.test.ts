@@ -32,7 +32,7 @@ const EXPECTED: Record<string, [unknown, unknown][]> = {
   register: [
     [{  }, { "error": { "statusCode": 422, "code": "INVALID_EMAIL", "message": "Email chưa đúng định dạng.", "field": "email" } }],
     [{ "email": "a@b.co", "password": "weak" }, { "error": { "statusCode": 422, "code": "WEAK_PASSWORD", "message": "Mật khẩu phải có 8-72 ký tự, gồm chữ hoa, chữ thường và chữ số.", "field": "password" } }],
-    [{ "email": "a@b.co", "password": "Strong123" }, { "error": { "statusCode": 422, "code": "INVALID_USERNAME", "message": "Tên người dùng phải có 3-30 ký tự và chỉ gồm chữ thường, số, dấu chấm hoặc gạch dưới.", "field": "username" } }],
+    [{ "email": "a@b.co", "password": "Strong123" }, { "error": { "statusCode": 422, "code": "INVALID_USERNAME", "message": "Tên người dùng phải có 3-30 ký tự gồm chữ thường, số, dấu chấm hoặc gạch dưới, có ít nhất một chữ cái; dấu chấm không đứng đầu, cuối hoặc liền nhau.", "field": "username" } }],
     [{ "email": "a@b.co", "password": "Strong123", "username": "Ab_c.1" }, { "error": { "statusCode": 422, "code": "INVALID_FULL_NAME", "message": "Họ tên phải có từ 2 đến 80 ký tự.", "field": "fullName" } }],
     [{ "email": "a@b.co", "password": "Strong123", "username": "abc", "fullName": " A " }, { "error": { "statusCode": 422, "code": "INVALID_FULL_NAME", "message": "Họ tên phải có từ 2 đến 80 ký tự.", "field": "fullName" } }],
     [{ "email": "A@B.CO", "password": "Strong123", "username": "User.Name", "fullName": "  Nguyễn   Văn  A " }, { "ok": { "email": "a@b.co", "password": "Strong123", "username": "user.name", "fullName": "Nguyễn Văn A" } }],
