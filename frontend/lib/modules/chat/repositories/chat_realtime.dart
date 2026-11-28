@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:restore/core/network/api_client.dart';
 
@@ -14,6 +15,10 @@ class ChatRealtime {
   static final instance = ChatRealtime._();
   final _events = StreamController<ChatEvent>.broadcast();
   Stream<ChatEvent> get events => _events.stream;
+
+  /// Giả lập sự kiện từ server trong test (không có socket thật)
+  @visibleForTesting
+  void debugEmit(ChatEvent event) => _events.add(event);
   io.Socket? _socket;
   Timer? _retry;
   int _attempt = 0;

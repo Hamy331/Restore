@@ -12,18 +12,29 @@ class ConversationsCubit extends Cubit<ConversationsState> {
   final _buffer = <ChatEvent>[];
   bool _reload = false;
 
+  /// Danh sách đang hiển thị: chỉ tải lại khi đang hiển thị
+  bool _visible = false;
+
+  /// Cần tải lại từ server (chưa tải lần nào, hoặc đã lỡ sự kiện khi mất kết nối)
+  bool _stale = true;
+
   void search(String query) => emit(state.copyWith(searchQuery: query));
+
+  /// Hiển thị danh sách. Giữ dữ liệu khi mở lại; chỉ tải lại khi dữ liệu cũ.
   void start() {
-    if (_events != null || isClosed) return;
-    _events = _repository.events().listen((e) {
-      if (e.type == 'sync') {
-        invalidate();
-        return;
-      }
-      if (_loading != null) _buffer.add(e);
-      _apply(e);
-    });
-    unawaited(load());
+    if (isClosed) return;
+    _visible = true;
+    _events ??= _repository.events().listen(_onEvent);
+    if (_stale || state.failed) unawaited(load());
+  }
+
+  void _onEvent(ChatEvent e) {
+    if (e.type == 'sync') {
+      invalidate();
+      return;
+    }
+    if (_loading != null) _buffer.add(e);
+    _apply(e);
   }
 
   void _apply(ChatEvent e) {
@@ -48,14 +59,13 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     emit(state.copyWith(conversations: rows));
   }
 
-  Future<void> pause() async {
-    final sub = _events;
-    _events = null;
-    await sub?.cancel();
-  }
+  /// Ẩn danh sách: vẫn nhận sự kiện realtime để danh sách luôn mới, nhưng
+  /// không gọi server; sự kiện `sync` lúc ẩn được bù khi [start] lại.
+  Future<void> pause() async => _visible = false;
 
   void invalidate() {
-    if (_events == null) return;
+    _stale = true;
+    if (!_visible || isClosed) return;
     if (_loading != null) {
       _reload = true;
       return;
@@ -74,6 +84,7 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     try {
       final rows = await _repository.listConversations();
       if (isClosed) return;
+      _stale = false;
       emit(state.copyWith(conversations: rows, loading: false, failed: false));
       for (final e in _buffer) {
         _apply(e);
@@ -87,7 +98,9 @@ class ConversationsCubit extends Cubit<ConversationsState> {
 
   @override
   Future<void> close() async {
-    await pause();
+    _visible = false;
+    await _events?.cancel();
+    _events = null;
     return super.close();
   }
 }
