@@ -6,7 +6,7 @@ export const MEDIA_NAME = /^[0-9a-f-]{36}\.(jpg|png|webp)$/;
 export const PAGE_SIZE = 20;
 
 /** Đối tượng có thể bị báo cáo từ ứng dụng người dùng */
-export const REPORT_TARGETS = ['LISTING', 'USER', 'FEED_POST'] as const;
+export const REPORT_TARGETS = ['LISTING', 'USER', 'FEED_POST', 'REVIEW'] as const;
 export type ReportTarget = (typeof REPORT_TARGETS)[number];
 
 
@@ -19,3 +19,5 @@ export type ReportAction = (typeof REPORT_ACTIONS)[number];
 export const LISTING_REPORT_ACTIONS: readonly ReportAction[] = ['DISMISS', 'KEEP', 'REMOVE'];
 export const USER_REPORT_ACTIONS: readonly ReportAction[] = ['DISMISS', 'WARN', 'SUSPEND', 'BAN'];
 export const FEED_POST_REPORT_ACTIONS: readonly ReportAction[] = ['DISMISS', 'REMOVE'];
+/** Báo cáo đánh giá: bỏ qua, giữ, hoặc gỡ (điểm trung bình tính lại) */
+export const REVIEW_REPORT_ACTIONS: readonly ReportAction[] = ['DISMISS', 'KEEP', 'REMOVE'];

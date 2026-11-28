@@ -15,7 +15,7 @@ reportRouter.get('/reports/reasons', submit, reportController.listReasons);
  * Báo cáo tin đang hiển thị, thành viên hoặc bài viết bảng tin. Không tự báo cáo mình; mỗi đối tượng một báo cáo đang mở
  *
  * Body:
- *  - targetType: 'LISTING' | 'USER' | 'FEED_POST'
+ *  - targetType: 'LISTING' | 'USER' | 'FEED_POST' | 'REVIEW'
  *  - targetId: string
  *  - reason: string (5-300)
  *  - evidence: string (5-4000)
