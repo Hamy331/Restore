@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../../lib/prisma.js';
 import { AppError } from '../../../common/errors/app-error.js';
+import { openOffer } from '../services/trade.rules.js';
 
 const previewSelect = { id: true, title: true, images: true, price: true, allowSale: true } as const;
 export const listingPreview = (listing: Prisma.ListingGetPayload<{ select: typeof previewSelect }>) => ({
@@ -25,15 +26,20 @@ const messageSelect = {
 const productContext = {
   id: true,
   listing: {
-    select: {
-      ...previewSelect,
-      ownerId: true,
-      status: true,
-      _count: { select: { conversations: { where: { trade: { isNot: null } } } } },
-    },
+    select: { ...previewSelect, ownerId: true, status: true },
+  },
+  // Đề nghị mới nhất của hội thoại (tin + người mua)
+  offers: {
+    orderBy: { createdAt: 'desc' },
+    take: 1,
+    select: { id: true, amount: true, status: true, expiresAt: true, createdAt: true, buyerId: true },
   },
   trade: {
-    select: { title: true, sellerId: true, confirmedAt: true, reviews: { select: { authorId: true } } },
+    select: {
+      title: true, sellerId: true, buyerId: true, price: true, acceptedAt: true,
+      reviewDeadline: true, revealAt: true, closedAt: true,
+      reviews: { select: { authorId: true, publishedAt: true, stars: true, comment: true, tags: true } },
+    },
   },
 } as const;
 const threadSelect = {
@@ -180,10 +186,14 @@ export async function createMessage(
     if (contextId) {
       const listing = await tx.listing.findFirst({
         where: { conversations: { some: { id: contextId, threadId: root } }, status: 'AVAILABLE' },
-        select: previewSelect,
+        select: { ...previewSelect, ownerId: true, status: true },
       });
       if (!listing) throw new AppError(409, 'LISTING_UNAVAILABLE', 'Tin đăng không còn khả dụng.');
-      preview = { ...listingPreview(listing), ...(offerPrice && { offerPrice }) };
+      // Tin trả giá: tạo đề nghị PENDING, thẻ tin nhắn mang offerId để app hiện trạng thái
+      const offerId = offerPrice
+        ? await openOffer(tx, { contextId, buyerId: senderId, amount: offerPrice, listing })
+        : undefined;
+      preview = { ...listingPreview(listing), ...(offerPrice && { offerPrice, offerId }) };
     }
     const conversationId = contextId ?? root;
     const message = await tx.message.create({

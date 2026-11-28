@@ -7,6 +7,7 @@ import { startAccountStatusJob } from './jobs/account-status.job.js';
 import { startListingExpiryJob } from './jobs/listing-expiry.job.js';
 import { startNotificationPushJob } from './jobs/notification-push.job.js';
 import { startWalletReminderJob } from './jobs/wallet-reminder.job.js';
+import { startTradeJob } from './jobs/trade.job.js';
 
 import { startRagCleanupJob } from './jobs/rag-cleanup.job.js';
 import { startListingAiIndexJob } from './jobs/listing-ai-index.job.js';
@@ -17,6 +18,7 @@ startAccountStatusJob();
 startListingExpiryJob();
 startNotificationPushJob();
 startWalletReminderJob();
+startTradeJob();
 startRagCleanupJob();
 startListingAiIndexJob();
 startBannedTermsJob();

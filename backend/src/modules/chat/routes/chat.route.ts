@@ -22,7 +22,7 @@ router.post('/', controller.startConversation);
 router.get('/:id', controller.getConversation);
 router.get('/:id/messages', controller.listMessages);
 router.post('/:id/messages', limitSends, controller.sendMessage);
-router.post('/:id/trade', controller.tradeAction);
+router.post('/:id/offers/:offerId', controller.offerAction);
 router.post('/:id/review', controller.review);
 router.post('/:id/read', controller.markRead);
 export default router;

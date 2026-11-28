@@ -1,4 +1,4 @@
-import { listMyReviews, listReviews } from '../../chat/services/trade.service.js';
+import { listMyReviews, listReviews, replyToReview } from '../../chat/services/trade.service.js';
 import { Router, Response, NextFunction } from 'express';
 import { PERMISSION } from '../../../common/auth/permissions.js';
 import { ok } from '../../../common/http/response.js';
@@ -79,6 +79,8 @@ usersRouter.delete('/me/recent-areas/:code', async (req: AuthRequest, res: Respo
   try { await recentAreas.deleteRecentArea(req.user!.userId, req.params.code as string); res.status(204).end(); } catch (error) { next(error); }
 });
 usersRouter.get('/me/reviews', handle(req => listMyReviews(req.user!.userId, req.query)));
+/** Người được đánh giá phản hồi công khai một lần: { text } */
+usersRouter.post('/me/reviews/:reviewId/reply', handle(req => replyToReview(req.user!.userId, req.params.reviewId as string, req.body)));
 usersRouter.get('/:id', handle((req) => profile.getPublicProfile(req.params.id as string, req.user!.userId)));
 usersRouter.get('/:id/reviews', handle(req => listReviews(req.params.id as string, req.query)));
 usersRouter.get('/:id/followers', handle((req) =>

@@ -4,7 +4,8 @@ import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import * as chat from '../services/chat.service.js';
 import { emit } from '../../../common/events/domain-events.js';
 
-import { changeTrade, submitReview } from '../services/trade.service.js';
+import { respondOffer, submitReview } from '../services/trade.service.js';
+import { parseId } from '../chat.validator.js';
 
 const handle =
   (action: (req: AuthRequest) => Promise<unknown>, status = 200) =>
@@ -29,8 +30,9 @@ export const preferences = handle(async (req) => {
   return data;
 });
 
-export const tradeAction = handle((req) =>
-  changeTrade(req.user!.userId, parseConversationId(req.params.id), req.body?.action),
+/** Người bán chấp nhận / từ chối, người mua thu hồi một đề nghị: { action: accept | reject | cancel } */
+export const offerAction = handle((req) =>
+  respondOffer(req.user!.userId, parseId(req.params.offerId, 'offerId'), req.body?.action),
 );
 export const review = handle((req) =>
   submitReview(req.user!.userId, parseConversationId(req.params.id), req.body),

@@ -260,6 +260,7 @@ model Conversation {
   listingId String?
   listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
   trade ListingTrade?
+  offers Offer[]
   id        String @id @default(uuid())
   pairKey   String @unique
   createdAt DateTime @default(now())
@@ -269,34 +270,100 @@ model Conversation {
   @@index([listingId])
 }
 
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+  EXPIRED
+}
+
+/// Đề nghị giá của người mua trên một tin, trong hội thoại của tin đó (conversationId = cặp tin + người mua).
+/// Mỗi hội thoại chỉ có một đề nghị PENDING (partial unique index trong migration).
+model Offer {
+  id             String        @id @default(uuid())
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  listingId      String
+  listing        Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyerId        String
+  sellerId       String
+  amount         Decimal
+  /// Giá niêm yết lúc gửi đề nghị
+  listedPrice    Decimal
+  status         OfferStatus   @default(PENDING)
+  /// Người bán không phản hồi trước thời điểm này thì đề nghị hết hiệu lực
+  expiresAt      DateTime
+  respondedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  trade          ListingTrade?
+
+  @@index([conversationId, createdAt])
+  @@index([listingId, status])
+  @@index([buyerId, createdAt])
+  @@index([status, expiresAt])
+}
+
+/// Thỏa thuận: người bán đã chấp nhận một đề nghị. Mở quyền đánh giá hai chiều trong 30 ngày;
+/// đánh giá đầu tiên mở thêm 7 ngày chờ bên còn lại, rồi công khai (double-blind).
+/// Một tin có thể có nhiều thỏa thuận (mỗi người mua một hội thoại).
 model ListingTrade {
-  conversationId String @id
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  listingId String @unique
-  sellerId String
-  buyerId String
-  title String
-  price Decimal
-  image String?
-  confirmedAt DateTime?
-  reviews TradeReview[]
+  conversationId String        @id
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  offerId        String?       @unique
+  offer          Offer?        @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  listingId      String
+  sellerId       String
+  buyerId        String
+  title          String
+  /// Giá đã thống nhất
+  price          Decimal
+  /// Giá niêm yết lúc chấp nhận
+  listedPrice    Decimal?
+  image          String?
+  acceptedAt     DateTime      @default(now())
+  /// Hạn gửi đánh giá đầu tiên (acceptedAt + 30 ngày)
+  reviewDeadline DateTime
+  /// Đánh giá đầu tiên + 7 ngày: tới lúc này đánh giá được công khai dù bên kia chưa gửi
+  revealAt       DateTime?
+  /// Lượt đánh giá đã đóng (đã công khai hoặc hết hạn mà không ai đánh giá)
+  closedAt       DateTime?
+  reviews        TradeReview[]
+
+  @@index([listingId])
+  @@index([sellerId, acceptedAt])
+  @@index([buyerId, acceptedAt])
+  @@index([closedAt, revealAt])
+  @@index([closedAt, reviewDeadline])
 }
 
 model TradeReview {
-  id String @id @default(uuid())
+  id             String       @id @default(uuid())
   conversationId String
-  trade ListingTrade @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
-  authorId String
-  author User @relation("Author", fields: [authorId], references: [id], onDelete: Cascade)
-  recipientId String
-  recipient User @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
-  fromSeller Boolean
-  stars Int
-  comment String @default("") @db.VarChar(500)
-  tags String[] @default([])
-  createdAt DateTime @default(now())
+  trade          ListingTrade @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
+  authorId       String
+  author         User         @relation("Author", fields: [authorId], references: [id], onDelete: Cascade)
+  recipientId    String
+  recipient      User         @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  fromSeller     Boolean
+  stars          Int
+  comment        String       @default("") @db.VarChar(500)
+  tags           String[]     @default([])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+  /// null: còn giữ kín (chờ bên kia hoặc chờ đủ 7 ngày); chỉ tính vào điểm khi đã công khai
+  publishedAt    DateTime?
+  /// Phản hồi công khai một lần của người được đánh giá
+  reply          String?      @db.VarChar(500)
+  repliedAt      DateTime?
+  /// Admin gỡ sau báo cáo: không hiển thị, không tính điểm
+  removedAt      DateTime?
+  removedReason  String?      @db.VarChar(500)
+
   @@unique([conversationId, authorId])
   @@index([recipientId, createdAt])
+  @@index([recipientId, publishedAt])
 }
 
 model ConversationMember {
@@ -460,6 +527,7 @@ model Listing {
   /// Bản sửa đang chờ duyệt lại (chỉ tin đã duyệt: đang hiển thị / đã ẩn)
   revision      ListingRevision?
   deal          ListingDeal?
+  offers        Offer[]
 
   @@index([ownerId, publishedAt])
   @@index([ownerId, categoryId, status])

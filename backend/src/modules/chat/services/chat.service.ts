@@ -5,6 +5,7 @@ import { AppError } from '../../../common/errors/app-error.js';
 
 import { prisma } from '../../../lib/prisma.js';
 import { parseId } from '../chat.validator.js';
+import { effectiveOfferStatus, reviewDeadline } from './trade.rules.js';
 
 
 export const startConversation = async (selfId: string, body: unknown) => {
@@ -42,29 +43,49 @@ function listingContext(context: Thread['contexts'][number] | undefined | null, 
   if (!context) return null;
   const { trade, listing } = context;
   if (!listing && !trade) return null;
+  const now = new Date();
+  const latest = context.offers[0];
+  const offerStatus = latest ? effectiveOfferStatus(latest, now) : null;
+  const pending = offerStatus === 'PENDING';
+  const forSale = !!listing && listing.status === 'AVAILABLE' && listing.allowSale;
+  const mine = trade?.reviews.find((r) => r.authorId === selfId);
+  const other = trade?.reviews.find((r) => r.authorId !== selfId);
+  const deadline = trade ? reviewDeadline(trade) : null;
   return {
     contextId: context.id,
     ...(listing && {
       product: repository.listingPreview(listing),
-      // Mọi tin có bán đều trả giá được (không còn tuỳ chọn "có thể thương lượng")
-      canOffer:
-        listing.ownerId !== selfId &&
-        listing.status === 'AVAILABLE' &&
-        listing.allowSale &&
-        !trade,
+      // Người mua trả giá được khi tin còn bán, chưa thống nhất và không có đề nghị đang chờ
+      canOffer: listing.ownerId !== selfId && forSale && !trade && !pending,
     }),
     title: trade?.title ?? listing!.title,
     seller: (trade?.sellerId ?? listing?.ownerId) === selfId,
-    stage: trade
-      ? trade.confirmedAt
-        ? 'complete'
-        : 'pending'
-      : listing?.allowSale &&
-          !listing._count.conversations &&
-          ['AVAILABLE', 'HIDDEN', 'SOLD'].includes(listing.status)
-        ? 'open'
-        : 'closed',
-    reviewed: trade?.reviews.some((r) => r.authorId === selfId) ?? false,
+    // open: có thể trả giá · offer: có đề nghị đang chờ · agreed: đã thống nhất · closed: tin hết bán
+    stage: trade ? 'agreed' : pending ? 'offer' : forSale ? 'open' : 'closed',
+    offer: latest
+      ? {
+          id: latest.id,
+          amount: latest.amount.toString(),
+          status: offerStatus,
+          expiresAt: latest.expiresAt,
+          createdAt: latest.createdAt,
+        }
+      : null,
+    agreement: trade
+      ? {
+          price: trade.price.toString(),
+          acceptedAt: trade.acceptedAt,
+          deadline,
+          // Đã công khai hoặc hết hạn: không gửi / sửa được nữa
+          closed: !!trade.closedAt || deadline! <= now,
+          published: !!mine?.publishedAt,
+          // Chỉ nội dung đánh giá của chính mình (để sửa trước khi công khai)
+          mine: mine ? { stars: mine.stars, comment: mine.comment, tags: mine.tags } : null,
+          // Bên kia đã đánh giá (không lộ nội dung khi chưa công khai)
+          otherReviewed: !!other,
+        }
+      : null,
+    reviewed: !!mine,
   };
 }
 
@@ -93,12 +114,8 @@ async function summaries(selfId: string, threads: Thread[]) {
       otherUser: { ...peer.user, isOnline: !row.members.some(m => m.blocked) && isOnline(peer.user.id) },
       lastMessage: latest.get(stat?.latest ?? 0) ?? null,
       unreadCount: stat?.unread ?? 0,
-      // Nhãn "Đang thương lượng": đã trả giá trên tin này, tin còn bán và chưa chốt giao dịch
-      negotiating:
-        !!context?.product &&
-        row.contexts[0]?.listing?.status === 'AVAILABLE' &&
-        !row.contexts[0]?.trade &&
-        !!stat?.offers?.includes(context.contextId),
+      // Nhãn "Đang thương lượng": tin còn bán và có đề nghị đang chờ người bán phản hồi
+      negotiating: context?.stage === 'offer',
       // Người kia đã đọc tới tin nào: tin của mình có sequence <= số này là "Đã xem"
       otherReadSequence: peer.lastReadSequence,
     };
