@@ -11276,6 +11276,12 @@ abstract class AppLocalizations {
   /// **'This item may not be allowed on ReStore: {reason}'**
   String aiComposeProhibited(String reason);
 
+  /// No description provided for @aiComposeCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get aiComposeCategory;
+
   /// No description provided for @aiComposeApply.
   ///
   /// In en, this message translates to:

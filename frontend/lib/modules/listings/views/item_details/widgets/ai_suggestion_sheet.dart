@@ -7,11 +7,13 @@ import 'package:restore/shared/widgets/glass/app_glass_sheet.dart';
 import '../../../repositories/listing_ai_repository.dart';
 
 /// Gợi ý AI soạn từ ảnh bìa: xem trước tiêu đề, tình trạng, mô tả, kèm cảnh
-/// báo khi AI nghi hàng cấm. Trả về true khi người dùng muốn dùng gợi ý.
+/// báo khi AI nghi hàng cấm. [categoryLabel]: danh mục AI chọn (null khi giữ
+/// nguyên danh mục). Trả về true khi người dùng muốn dùng gợi ý.
 Future<bool?> showAiSuggestionSheet(
   BuildContext context, {
   required ListingAiSuggestion suggestion,
   required bool vehicle,
+  String? categoryLabel,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final condition = suggestion.condition;
@@ -63,6 +65,10 @@ Future<bool?> showAiSuggestionSheet(
                   color: AppColors.textPrimary,
                 ),
               ),
+            if (categoryLabel != null) ...[
+              const SizedBox(height: 4),
+              Text('${l10n.aiComposeCategory}: $categoryLabel', style: body),
+            ],
             if (condition != null) ...[
               const SizedBox(height: 4),
               Text(

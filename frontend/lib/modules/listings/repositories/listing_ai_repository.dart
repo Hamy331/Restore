@@ -7,13 +7,16 @@ import 'package:restore/data/models/enums/listing_condition.dart';
 import 'listings_repository.dart'
     show ApiListingsRepository, ListingImageException, ListingImageProblem;
 
-/// Gợi ý AI soạn từ ảnh bìa. [prohibited]: AI nghi món là hàng cấm giao dịch,
+/// Gợi ý AI soạn từ ảnh bìa. [categoryId] / [subcategoryId]: danh mục AI chọn
+/// (null khi không chắc). [prohibited]: AI nghi món là hàng cấm giao dịch,
 /// [reason] nói vì sao. Chỉ là gợi ý, người bán tự sửa lại.
 class ListingAiSuggestion {
   const ListingAiSuggestion({
     required this.title,
     required this.description,
     required this.condition,
+    this.categoryId,
+    this.subcategoryId,
     required this.prohibited,
     required this.reason,
   });
@@ -23,6 +26,8 @@ class ListingAiSuggestion {
         title: '${json['title'] ?? ''}'.trim(),
         description: '${json['description'] ?? ''}'.trim(),
         condition: ListingCondition.fromApi(json['condition'] as String?),
+        categoryId: json['categoryId'] as String?,
+        subcategoryId: json['subcategoryId'] as String?,
         prohibited: json['prohibited'] == true,
         reason: '${json['reason'] ?? ''}'.trim(),
       );
@@ -30,6 +35,8 @@ class ListingAiSuggestion {
   final String title;
   final String description;
   final ListingCondition? condition;
+  final String? categoryId;
+  final String? subcategoryId;
   final bool prohibited;
   final String reason;
 }

@@ -6,7 +6,8 @@ import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import { prisma } from '../../../lib/prisma.js';
 import { putObject, readStored, removeObject, type ThumbWidth } from '../../../services/storage.service.js';
 import { configuredProvider } from '../../ai/assistant/services/gemini.provider.js';
-import { inspectListing } from '../ai-inspection.js';
+import { subcategoriesOf } from '../../catalog/category-tree.js';
+import { inspectListing, type CategoryChoice } from '../ai-inspection.js';
 import { IMAGE_EDITABLE, IMAGE_NAME, IMAGE_PREFIX, MAX_IMAGE_BYTES, MAX_IMAGES } from '../listing.type.js';
 import { orderedImages } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
@@ -26,17 +27,31 @@ export function imageExtension(contentType: unknown, bytes: unknown): string {
   throw new AppError(400, 'INVALID_IMAGE', 'Chỉ nhận ảnh JPEG, PNG hoặc WebP hợp lệ.');
 }
 
+/** Tên tiếng Việt của danh mục con (metadata lưu chuỗi hoặc { vi, en }) */
+const viName = (name: unknown, fallback: string) =>
+  typeof name === 'string' ? name : (name as { vi?: string } | null)?.vi ?? fallback;
+
+/** Danh mục đang mở để AI chọn: "cha/con" (hoặc "cha" khi chưa chia con) */
+async function categoryChoices(): Promise<CategoryChoice[]> {
+  const rows = await prisma.category.findMany({ where: { active: true }, select: { id: true, name: true, metadata: true } });
+  return rows.flatMap(({ id, name, metadata }) => {
+    const subs = subcategoriesOf(metadata);
+    return subs.length ? subs.map((sub) => ({ key: `${id}/${sub.id}`, label: `${name} › ${viName(sub.name, sub.id)}` })) : [{ key: id, label: name }];
+  });
+}
+
 /**
- * AI soạn tiêu đề / mô tả / tình trạng từ một ảnh (ảnh bìa) và xem món có phải hàng cấm không; không lưu gì.
+ * AI soạn tiêu đề / mô tả / tình trạng và chọn danh mục (categoryId, subcategoryId; null khi không chắc) từ một ảnh
+ * (ảnh bìa), đồng thời xem món có phải hàng cấm không; không lưu gì.
  * 503 AI_NOT_CONFIGURED khi chưa bật AI, 503 AI_NO_ANSWER khi AI trả lời hỏng.
  */
 export async function composeFromImage(contentType: string | undefined, bytes: unknown, categoryId?: string) {
   imageExtension(contentType, bytes);
   const provider = configuredProvider();
-  const category = categoryId
-    ? (await prisma.category.findUnique({ where: { id: categoryId }, select: { name: true } }))?.name : null;
+  const categories = await categoryChoices();
+  const category = categories.find((c) => c.key === categoryId || c.key.startsWith(`${categoryId}/`))?.label.split(' › ')[0] ?? null;
   const result = await inspectListing(provider, [{ mimeType: contentType!, data: bytes as Buffer }], { category },
-    AbortSignal.timeout(45_000));
+    AbortSignal.timeout(45_000), categories);
   if (!result) throw new AppError(503, 'AI_NO_ANSWER', 'AI chưa soạn được nội dung. Bạn thử lại nhé.');
   return result;
 }

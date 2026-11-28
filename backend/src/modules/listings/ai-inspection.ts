@@ -4,7 +4,7 @@ import { redactValue } from '../../common/security/redaction.js';
 import type { GeminiProvider } from '../ai/assistant/services/gemini.provider.js';
 
 /*
- * AI xem ảnh tin đăng: gợi ý tiêu đề / mô tả / tình trạng cho người bán, và đánh giá món có phải hàng cấm không.
+ * AI xem ảnh tin đăng: gợi ý tiêu đề / mô tả / tình trạng / danh mục cho người bán, và đánh giá món có phải hàng cấm không.
  * Chỉ là gợi ý: người bán tự sửa nội dung, admin tự quyết định duyệt; AI không bao giờ tự từ chối tin.
  */
 
@@ -20,49 +20,63 @@ Return JSON only:
 - description: 2-5 short Vietnamese sentences describing only what is visible: type, color, material, visible wear or damage, included parts. Do not invent specifications, age, origin or warranty. No phone numbers, links or prices.
 - condition: NEW, LIKE_NEW, USED_GOOD, USED_FAIR or FOR_PARTS judged from visible wear; UNKNOWN if unclear.
 - prohibited: true if the item shown or described cannot be traded on the marketplace: drugs or stimulants (including laughing gas), alcoholic drinks, tobacco, cigars or vapes, weapons, ammunition, explosives or fireworks, counterfeit branded goods, wild animals or their parts, prescription medicine, identity documents, bank cards or bank accounts, adult content, gambling items. Otherwise false. Empty containers and furniture such as wine glasses or wine cabinets are allowed.
-- reason: when prohibited, one short Vietnamese sentence naming what was seen; otherwise an empty string.`;
+- reason: when prohibited, one short Vietnamese sentence naming what was seen; otherwise an empty string.
+- category (only when a category list is given): the key of the category that best fits the item shown, UNKNOWN if none fits.`;
 
-/** Schema Gemini (responseJsonSchema) */
-const SCHEMA = {
-  type: 'object',
-  properties: {
+/** Danh mục AI được chọn: key "danhMucCha/danhMucCon" (hoặc "danhMucCha" khi chưa chia con), label để AI đọc */
+export type CategoryChoice = { key: string; label: string };
+
+/** Schema Gemini (responseJsonSchema); có danh sách danh mục thì thêm trường category */
+function schemaFor(categories: CategoryChoice[]) {
+  const properties: Record<string, object> = {
     title: { type: 'string' },
     description: { type: 'string' },
     condition: { type: 'string', enum: CONDITIONS },
     prohibited: { type: 'boolean' },
     reason: { type: 'string' },
-  },
-  required: ['title', 'description', 'condition', 'prohibited', 'reason'],
-} as const;
+  };
+  if (categories.length) properties.category = { type: 'string', enum: [...categories.map((c) => c.key), 'UNKNOWN'] };
+  return { type: 'object', properties, required: Object.keys(properties) };
+}
 
 const answer = z.object({
   title: z.string(), description: z.string(), condition: z.enum(CONDITIONS), prohibited: z.boolean(), reason: z.string(),
+  category: z.string().optional(),
 });
 
 export type ListingInspection = {
   title: string; description: string; condition: ListingCondition | null; prohibited: boolean; reason: string;
+  /** Chỉ có khi gửi danh sách danh mục; null khi AI không chắc */
+  categoryId: string | null; subcategoryId: string | null;
 };
 
 /**
- * Gửi ảnh (tối đa AI_MAX_IMAGES) và nội dung đã có cho AI. null khi AI trả lời hỏng;
- * Gemini chặn vì nội dung nhạy cảm thì coi là nghi hàng cấm. Lỗi nhà cung cấp (hạn mức, mạng) ném AppError.
+ * Gửi ảnh (tối đa AI_MAX_IMAGES) và nội dung đã có cho AI; có [categories] thì AI chọn thêm danh mục trong danh sách đó.
+ * null khi AI trả lời hỏng; Gemini chặn vì nội dung nhạy cảm thì coi là nghi hàng cấm.
+ * Lỗi nhà cung cấp (hạn mức, mạng) ném AppError.
  */
 export async function inspectListing(provider: GeminiProvider, images: { mimeType: string; data: Buffer }[],
-  context: { category?: string | null; title?: string; description?: string }, signal: AbortSignal): Promise<ListingInspection | null> {
+  context: { category?: string | null; title?: string; description?: string }, signal: AbortSignal,
+  categories: CategoryChoice[] = []): Promise<ListingInspection | null> {
   const parts = [
     ...images.slice(0, AI_MAX_IMAGES).map(({ mimeType, data }) => ({ inlineData: { mimeType, data: data.toString('base64') } })),
     { text: JSON.stringify(redactValue(context)) },
+    ...(categories.length ? [{ text: `Category list (key: label):\n${categories.map((c) => `${c.key}: ${c.label}`).join('\n')}` }] : []),
   ];
-  const result = await provider.generateJson(SYSTEM, parts, SCHEMA, signal);
+  const result = await provider.generateJson(SYSTEM, parts, schemaFor(categories), signal);
   if (!result) return null;
   if (result.blocked) {
-    return { title: '', description: '', condition: null, prohibited: true, reason: 'AI từ chối xem vì nội dung có thể nhạy cảm.' };
+    return { title: '', description: '', condition: null, prohibited: true, reason: 'AI từ chối xem vì nội dung có thể nhạy cảm.',
+      categoryId: null, subcategoryId: null };
   }
   const parsed = answer.safeParse(result.value);
   if (!parsed.success) return null;
-  const { title, description, condition, prohibited, reason } = parsed.data;
+  const { title, description, condition, prohibited, reason, category } = parsed.data;
+  // Chỉ nhận key có trong danh sách đã gửi
+  const [categoryId, subcategoryId] = categories.some((c) => c.key === category) ? category!.split('/') : [];
   return {
     title: title.trim().slice(0, 100), description: description.trim().slice(0, 1500),
     condition: condition === 'UNKNOWN' ? null : condition, prohibited, reason: prohibited ? reason.trim().slice(0, 200) : '',
+    categoryId: categoryId ?? null, subcategoryId: subcategoryId ?? null,
   };
 }
