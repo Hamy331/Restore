@@ -6437,4 +6437,35 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profProfileLinkCopied => 'Đã sao chép liên kết trang cá nhân';
+
+  @override
+  String get aiComposeButton => 'Soạn bằng AI';
+
+  @override
+  String get aiComposeLoading => 'AI đang xem ảnh…';
+
+  @override
+  String get aiComposeHint =>
+      'Ảnh bìa được gửi cho dịch vụ AI (Google Gemini) để gợi ý tiêu đề và mô tả.';
+
+  @override
+  String get aiComposeTitle => 'Gợi ý từ AI';
+
+  @override
+  String get aiComposeNote =>
+      'AI có thể nhầm. Bạn kiểm tra và sửa lại trước khi đăng.';
+
+  @override
+  String aiComposeProhibited(String reason) {
+    return 'Món này có thể thuộc hàng cấm giao dịch: $reason';
+  }
+
+  @override
+  String get aiComposeApply => 'Dùng nội dung này';
+
+  @override
+  String get aiComposeUnavailable => 'Tính năng soạn bằng AI chưa được bật.';
+
+  @override
+  String get aiComposeFailed => 'AI chưa soạn được nội dung. Bạn thử lại nhé.';
 }

@@ -3827,5 +3827,21 @@
     }
   },
   "profShare": "Share",
-  "profProfileLinkCopied": "Profile link copied"
+  "profProfileLinkCopied": "Profile link copied",
+  "aiComposeButton": "Write with AI",
+  "aiComposeLoading": "AI is looking at your photo…",
+  "aiComposeHint": "Your cover photo is sent to an AI service (Google Gemini) to suggest a title and description.",
+  "aiComposeTitle": "AI suggestion",
+  "aiComposeNote": "AI can make mistakes. Check and edit the details before posting.",
+  "aiComposeProhibited": "This item may not be allowed on ReStore: {reason}",
+  "@aiComposeProhibited": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "aiComposeApply": "Use this",
+  "aiComposeUnavailable": "Writing with AI isn't available right now.",
+  "aiComposeFailed": "AI couldn't write a suggestion. Please try again."
 }

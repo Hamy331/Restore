@@ -3587,5 +3587,14 @@
   "profActiveListings": "Tin đang hoạt động ({count})",
   "profSoldListings": "Đã bán ({count})",
   "profShare": "Chia sẻ",
-  "profProfileLinkCopied": "Đã sao chép liên kết trang cá nhân"
+  "profProfileLinkCopied": "Đã sao chép liên kết trang cá nhân",
+  "aiComposeButton": "Soạn bằng AI",
+  "aiComposeLoading": "AI đang xem ảnh…",
+  "aiComposeHint": "Ảnh bìa được gửi cho dịch vụ AI (Google Gemini) để gợi ý tiêu đề và mô tả.",
+  "aiComposeTitle": "Gợi ý từ AI",
+  "aiComposeNote": "AI có thể nhầm. Bạn kiểm tra và sửa lại trước khi đăng.",
+  "aiComposeProhibited": "Món này có thể thuộc hàng cấm giao dịch: {reason}",
+  "aiComposeApply": "Dùng nội dung này",
+  "aiComposeUnavailable": "Tính năng soạn bằng AI chưa được bật.",
+  "aiComposeFailed": "AI chưa soạn được nội dung. Bạn thử lại nhé."
 }
