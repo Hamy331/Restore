@@ -19,9 +19,16 @@ class LiveChatConversationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) =>
-        ConversationCubit(repository ?? ApiChatRepository(), conversationId)
-          ..start(),
+    create: (providerContext) => ConversationCubit(
+      repository ?? ApiChatRepository(),
+      conversationId,
+      visible: () =>
+          providerContext.mounted &&
+          (ModalRoute.of(providerContext)?.isCurrent ?? true) &&
+          (WidgetsBinding.instance.lifecycleState == null ||
+              WidgetsBinding.instance.lifecycleState ==
+                  AppLifecycleState.resumed),
+    )..start(),
     child: LiveChatConversationMobileView(onBack: onBack),
   );
 }

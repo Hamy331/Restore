@@ -6,6 +6,7 @@ import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/constants/app_images.dart' show AppImages;
 import 'package:restore/core/theme/app_header_palette.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/policies/views/policies_view.dart';
 
 /// Chân trang web desktop: nền trắng trải hết màn hình, nội dung 1200px
 /// ở giữa (liên kết hỗ trợ, thanh toán, mạng xã hội, tải ứng dụng).
@@ -108,7 +109,25 @@ class DesktopFooter extends StatelessWidget {
                       ),
                       link(
                         t('Mua bán an toàn', 'Trading safely'),
-                        path: '/support',
+                        path: PoliciesView.sectionPath('safety'),
+                      ),
+                    ]),
+                    column(t('Chính sách', 'Policies'), [
+                      link(
+                        t('Chính sách Restore', 'Restore policies'),
+                        path: PoliciesView.path,
+                      ),
+                      link(
+                        t('Quy định trả giá', 'Offer rules'),
+                        path: PoliciesView.sectionPath('offers'),
+                      ),
+                      link(
+                        t('Chính sách đánh giá', 'Review policy'),
+                        path: PoliciesView.sectionPath('reviews'),
+                      ),
+                      link(
+                        t('Báo cáo và kiểm duyệt', 'Reporting'),
+                        path: PoliciesView.sectionPath('reports'),
                       ),
                     ]),
                     column(t('Về Restore', 'About Restore'), [
@@ -169,17 +188,20 @@ class DesktopFooter extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   child: Row(
                     children: [
-                      Text(
-                        t(
-                          '© 2026 Restore. Mua bán, trao đổi đồ cũ.',
-                          '© 2026 Restore. Buy, sell and swap pre-loved items.',
-                        ),
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          color: AppColors.textSecondary,
+                      // Expanded: khung hẹp thì dòng bản quyền xuống dòng thay vì tràn
+                      Expanded(
+                        child: Text(
+                          t(
+                            '© 2026 Restore. Mua bán, trao đổi đồ cũ.',
+                            '© 2026 Restore. Buy, sell and swap pre-loved items.',
+                          ),
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 16),
                       const Text(
                         'Tiếng Việt · English',
                         style: TextStyle(

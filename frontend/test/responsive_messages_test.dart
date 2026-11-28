@@ -11,6 +11,7 @@ import 'package:restore/modules/auth/bloc/auth/auth_bloc.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_event.dart';
 import 'package:restore/modules/auth/repositories/auth_repository.dart';
 import 'package:restore/modules/chat/bloc/conversations/conversations_cubit.dart';
+import 'package:restore/modules/chat/repositories/chat_realtime.dart';
 import 'package:restore/modules/chat/views/conversation/live_chat_conversation_mobile_view.dart';
 import 'package:restore/modules/chat/views/messages/live_messages_mobile_view.dart';
 import 'package:restore/modules/chat/widgets/desktop_conversation_list.dart';
@@ -195,6 +196,8 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await settleRoute(tester);
+    // Mở lại app: socket kết nối lại và báo `sync`, danh sách tải lại đúng một lần
+    ChatRealtime.instance.debugEmit(const ChatEvent('sync'));
     await tester.pump(const Duration(seconds: 13));
     await tester.pump();
     expect(inboxLoads, loadsBeforeWaiting + 1);

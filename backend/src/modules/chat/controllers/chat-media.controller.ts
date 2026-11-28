@@ -9,7 +9,7 @@ import { putObject, getObject, removeObject, contentTypeOf } from '../../../serv
 import { imageExtension } from '../../media/media.service.js';
 import { parseId } from '../chat.validator.js';
 import * as chat from '../repositories/chat.repository.js';
-import { publish } from '../services/chat.events.js';
+import { publishChange } from '../services/chat.service.js';
 
 export function attachmentExtension(bytes: Buffer) {
   if (!Buffer.isBuffer(bytes) || bytes.length === 0)
@@ -61,10 +61,10 @@ export async function sendMedia(req: AuthRequest, res: Response, next: NextFunct
       if (await checkRetry()) return;
       throw error;
     }
-    publish(
+    publishChange(
       (await chat.findMembers(root)).map((m) => m.userId),
-      'message',
-      message,
+      'message.created', root,
+      { message },
     );
     res.status(201).json({ success: true, data: message });
   } catch (error) {

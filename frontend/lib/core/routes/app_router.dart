@@ -16,6 +16,7 @@ import 'package:restore/modules/account/views/my_reviews/my_reviews_view.dart';
 import 'package:restore/modules/account/views/public_profile/public_profile_entry.dart';
 import 'package:restore/modules/account/views/reviews/seller_reviews_view.dart';
 import 'package:restore/modules/account/views/account/account_view.dart';
+import 'package:restore/modules/policies/views/policies_view.dart';
 import 'package:restore/modules/account/bloc/user_profile/user_profile_cubit.dart';
 import 'package:restore/modules/account/views/edit_profile/edit_profile_view.dart';
 import 'package:restore/modules/my_shop/views/my_shop/my_shop_view.dart';
@@ -364,6 +365,13 @@ GoRouter createAppRouter(
                 ),
         ),
         // Chi tiết sản phẩm; extra là ListingModel của thẻ vừa bấm (tuỳ chọn)
+        // Chính sách Restore; ?section=<id> cuộn tới mục (VD reviews)
+        GoRoute(
+          path: PoliciesView.path,
+          parentNavigatorKey: _frameNavigatorKey,
+          builder: (_, state) =>
+              PoliciesView(section: state.uri.queryParameters['section']),
+        ),
         GoRoute(
           path: '/settings',
           parentNavigatorKey: _frameNavigatorKey,

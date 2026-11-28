@@ -15,7 +15,7 @@ export type Report = {
   reporterId: string;
   reporter?: { fullName: string; email: string } | null;
   targetId: string;
-  targetType: 'USER' | 'LISTING' | 'FEED_POST';
+  targetType: 'USER' | 'LISTING' | 'FEED_POST' | 'REVIEW';
   reason: string;
   evidence: string;
   contactPhone?: string | null;
@@ -34,7 +34,23 @@ type ReportedFeedPost = {
   updatedAt: string;
   author: { id: string; fullName: string; email?: string; status: string };
 };
-type Target = Listing | ReportedUser | ReportedFeedPost;
+type ReviewParty = { id: string; fullName: string; email: string; status: string };
+type ReportedReview = {
+  id: string;
+  stars: number;
+  comment: string;
+  tags: string[];
+  fromSeller: boolean;
+  publishedAt: string | null;
+  removedAt: string | null;
+  removedReason: string | null;
+  reply: string | null;
+  updatedAt: string;
+  author: ReviewParty;
+  recipient: ReviewParty;
+  trade: { title: string; price: string };
+};
+type Target = Listing | ReportedUser | ReportedFeedPost | ReportedReview;
 
 function FeedPostImage({ session, url }: { session: Session; url: string }) {
   const [src, setSrc] = useState('');
@@ -79,6 +95,11 @@ export function Review({
     }
   } else if (report.targetType === 'FEED_POST') {
     if (target.data) actions.push('REMOVE');
+  } else if (report.targetType === 'REVIEW') {
+    if (target.data && 'stars' in target.data) {
+      actions.push('KEEP');
+      if (!target.data.removedAt) actions.push('REMOVE');
+    }
   } else if (target.data && 'email' in target.data && target.data.status !== 'UNVERIFIED') {
     actions.push('WARN');
     if (target.data.status !== 'BANNED') actions.push('SUSPEND', 'BAN');
@@ -121,6 +142,30 @@ export function Review({
         <>
           {target.data === null ? (
             <Alert title="Đối tượng đã bị xóa." type="warning" />
+          ) : 'stars' in target.data ? (
+            <>
+              <p>
+                <strong>Người viết</strong> ·{' '}
+                <MemberLink person={target.data.author} /> · {memberStatus[target.data.author.status] ?? target.data.author.status}
+              </p>
+              <p>
+                <strong>Người được đánh giá</strong> ·{' '}
+                <MemberLink person={target.data.recipient} /> ({target.data.fromSeller ? 'người mua' : 'người bán'})
+              </p>
+              <p>
+                <strong>Giao dịch</strong> · {target.data.trade.title}
+              </p>
+              <p>
+                <strong>{'★'.repeat(target.data.stars)}{'☆'.repeat(5 - target.data.stars)}</strong>
+                {target.data.publishedAt && <> · công khai {new Date(target.data.publishedAt).toLocaleString('vi-VN')}</>}
+              </p>
+              <p className="post-preview">{target.data.comment || 'Không có nhận xét.'}</p>
+              {target.data.tags.length > 0 && <p>Tiêu chí · {target.data.tags.join(', ')}</p>}
+              {target.data.reply && <p>Phản hồi của người được đánh giá · {target.data.reply}</p>}
+              {target.data.removedAt && (
+                <Alert title={'Đã gỡ: ' + (target.data.removedReason ?? '')} type="warning" />
+              )}
+            </>
           ) : 'images' in target.data ? (
             <ListingDetails session={session} item={target.data} />
           ) : 'text' in target.data ? (

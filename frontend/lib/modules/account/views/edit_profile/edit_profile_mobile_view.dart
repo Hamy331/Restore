@@ -19,6 +19,7 @@ import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../services/media_picker_service.dart';
 import '../../../../shared/widgets/app_action_buttons.dart';
+import '../../../../shared/widgets/app_option_sheet.dart';
 
 import '../../../../shared/widgets/image_crop/image_crop.dart';
 import '../../../../shared/widgets/image_crop/image_crop_view.dart';
@@ -28,6 +29,7 @@ import '../../models/profile_models.dart';
 import '../../widgets/profile_header.dart';
 import 'edit_profile_view.dart';
 import 'widgets/edit_profile_avatar.dart';
+import 'widgets/edit_profile_banner.dart';
 import 'widgets/email_change_flow.dart';
 import 'widgets/phone_verify_flow.dart';
 import 'package:restore/core/routes/profile_path.dart';
@@ -36,6 +38,8 @@ import 'package:restore/services/phone_otp_service.dart';
 
 export 'package:restore/core/utils/helpers/phone_number.dart'
     show normalizePhone;
+
+enum _CoverAction { pick, adjust, remove }
 
 class EditProfileMobileView extends StatefulWidget {
   const EditProfileMobileView({
@@ -78,6 +82,10 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       _businessEmail = TextEditingController(),
       _website = TextEditingController(),
       _address = TextEditingController();
+  // Ảnh bìa: chỉ Cửa hàng đổi được (lưu cùng shop qua PATCH /shops/me)
+  String? _coverUrl, _uploadedCover;
+  Uint8List? _coverBytes, _coverSource;
+  bool _loadingCover = false;
   Set<int> _days = {};
   TimeOfDay _open = const TimeOfDay(hour: 8, minute: 0),
       _close = const TimeOfDay(hour: 21, minute: 0);
@@ -99,6 +107,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       setState(() {
         _shop = overview;
         if (shop == null) return;
+        _coverUrl = shop.coverUrl;
         _contactPhone.text = shop.contactPhone ?? '';
         _businessEmail.text = shop.businessEmail ?? '';
         _website.text = shop.website ?? '';
@@ -200,8 +209,24 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
   /// Lưu mục doanh nghiệp; false nếu lỗi (đã báo)
   Future<bool> _saveShop(Map<String, dynamic> changes) async {
     try {
-      final overview = await MyShopRepository().update(changes);
-      if (mounted) setState(() => _shop = overview);
+      final repository = MyShopRepository();
+      final body = {...changes};
+      final cover = _coverBytes;
+      if (cover != null) {
+        _uploadedCover ??= await repository.uploadImage(cover);
+        body['coverUrl'] = _uploadedCover;
+      } else if (_coverUrl == null && _shop?.shop?.coverUrl != null) {
+        body['coverUrl'] = null;
+      }
+      if (body.isEmpty) return true;
+      final overview = await repository.update(body);
+      if (mounted) {
+        setState(() {
+          _shop = overview;
+          _coverUrl = overview.shop?.coverUrl;
+          _coverBytes = _coverSource = _uploadedCover = null;
+        });
+      }
       return true;
     } catch (_) {
       if (mounted) {
@@ -308,8 +333,9 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     if (!_nameValid || !_usernameValid || !businessOk) return;
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _saving = true);
-    final shopChanges = _shopChanges;
-    if (shopChanges.isNotEmpty && !await _saveShop(shopChanges)) {
+    final shopChanges = _shopChanges, coverChanged = _coverDirty;
+    if ((shopChanges.isNotEmpty || coverChanged) &&
+        !await _saveShop(shopChanges)) {
       if (mounted) setState(() => _saving = false);
       return;
     }
@@ -340,7 +366,7 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
     }
     if (changes.isEmpty) {
       // Chỉ đổi thông tin doanh nghiệp: vẫn báo đã lưu
-      context.pop(shopChanges.isNotEmpty ? true : null);
+      context.pop(shopChanges.isNotEmpty || coverChanged ? true : null);
       return;
     }
     final result = await cubit.update(changes);
@@ -377,11 +403,133 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
       _avatarUrl != _profile?.avatarUrl ||
       _shopDirty;
 
+  /// Ảnh bìa shop vừa chọn mới hoặc vừa xoá (chưa lưu)
+  bool get _coverDirty =>
+      _coverBytes != null ||
+      (_coverUrl == null && _shop?.shop?.coverUrl != null);
+
+  String _t(String vn, String en) => _vi ? vn : en;
+
+  /// Bấm ảnh bìa: Cửa hàng đổi / căn chỉnh / xoá; người dùng thường được nhắc
+  /// rằng ảnh bìa chỉ dành cho Cửa hàng
+  Future<void> _onBannerTap() async {
+    if (_saving) return;
+    if (!_isShop) {
+      final goShop = await showAppOptionSheet<bool>(
+        context,
+        title: _t('Ảnh bìa dành cho Cửa hàng', 'Cover photo is for Shops'),
+        subtitle: _t(
+          'Tài khoản thường dùng bìa mặc định. Lên Cửa hàng để đặt ảnh bìa riêng.',
+          'Regular accounts use the default cover. Become a Shop to set your own.',
+        ),
+        icon: Icons.storefront_outlined,
+        options: [
+          AppSheetOption(
+            true,
+            AppLocalizations.of(context)!.accCreateStore,
+            icon: Icons.storefront_outlined,
+          ),
+        ],
+      );
+      if (goShop == true && mounted) context.push(MyShopView.path);
+      return;
+    }
+    if (_shop?.shop == null) {
+      if (_shopFailed) await _loadShop();
+      return;
+    }
+    final l = AppLocalizations.of(context)!;
+    final hasCover = _coverBytes != null || _coverUrl != null;
+    final action = hasCover
+        ? await showAppOptionSheet<_CoverAction>(
+            context,
+            title: l.msChangeCover,
+            options: [
+              AppSheetOption(
+                _CoverAction.pick,
+                l.msImageNew,
+                icon: AppIcons.addPhoto,
+              ),
+              AppSheetOption(
+                _CoverAction.adjust,
+                l.msImageAdjust,
+                icon: AppIcons.zoomIn,
+              ),
+              AppSheetOption(
+                _CoverAction.remove,
+                l.msImageRemove,
+                icon: AppIcons.delete,
+              ),
+            ],
+          )
+        : _CoverAction.pick;
+    if (!mounted || action == null) return;
+    switch (action) {
+      case _CoverAction.pick:
+        await _pickCover();
+      case _CoverAction.adjust:
+        await _adjustCover();
+      case _CoverAction.remove:
+        setState(() => _coverUrl = _coverBytes = _coverSource = null);
+    }
+  }
+
+  Future<void> _pickCover() async {
+    setState(() => _loadingCover = true);
+    try {
+      final paths = await (widget.picker ?? MediaPickerService()).pickImages(
+        source: MediaSource.gallery,
+        limit: 1,
+      );
+      if (paths.isEmpty || !mounted) return;
+      final source = await XFile(paths.first).readAsBytes();
+      if (mounted) await _cropCover(source);
+    } on PlatformException {
+      // người dùng từ chối quyền truy cập ảnh: giữ nguyên
+    } catch (_) {
+      if (mounted) _error(AppLocalizations.of(context)!.feedPhotoError);
+    } finally {
+      if (mounted) setState(() => _loadingCover = false);
+    }
+  }
+
+  Future<void> _adjustCover() async {
+    var source = _coverSource;
+    final url = _coverUrl;
+    if (source == null && url != null) {
+      setState(() => _loadingCover = true);
+      try {
+        source = await widget.avatarLoader(url);
+      } catch (_) {
+        if (mounted) _error(AppLocalizations.of(context)!.cropLoadError);
+      }
+      if (!mounted) return;
+      setState(() => _loadingCover = false);
+    }
+    if (source != null) await _cropCover(source);
+  }
+
+  Future<void> _cropCover(Uint8List source) async {
+    final cropped = await ImageCropView.open(
+      context,
+      source,
+      frame: CropFrame.shopCover,
+      title: AppLocalizations.of(context)!.msCoverCropTitle,
+    );
+    if (cropped == null || !mounted) return;
+    setState(() {
+      _coverBytes = cropped;
+      _coverSource = source;
+      _uploadedCover = null;
+    });
+  }
+
   /// Có đổi ở mục doanh nghiệp (kể cả đang gõ dở / sai định dạng)
   bool get _shopDirty {
     final shop = _shop?.shop;
     if (shop == null) return false;
-    return _contactPhone.text.trim() != (shop.contactPhone ?? '') ||
+    return _coverDirty ||
+        _contactPhone.text.trim() != (shop.contactPhone ?? '') ||
         _businessEmail.text.trim() != (shop.businessEmail ?? '') ||
         _website.text.trim() != (shop.website ?? '') ||
         _address.text.trim() != (shop.address ?? '') ||
@@ -774,15 +922,26 @@ class _EditProfileMobileViewState extends State<EditProfileMobileView> {
               key: const ValueKey('edit-profile-list'),
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               children: [
-                // Ảnh đại diện ở giữa, link đổi ảnh bên dưới
-                EditProfileAvatar(
-                  initials: ProfileHeader.initials(_name.text),
-                  bytes: _avatarBytes,
-                  url: _avatarUrl,
-                  busy: _loadingAvatar,
-                  onPick: _pick,
-                  onAdjust: hasAvatar ? _adjust : null,
-                  onRemove: hasAvatar ? _remove : null,
+                // Ảnh bìa (chỉ Cửa hàng đổi được); ảnh đại diện đè lên mép dưới
+                EditProfileBanner(
+                  editable: _isShop,
+                  url: _coverUrl,
+                  bytes: _coverBytes,
+                  busy:
+                      _loadingCover ||
+                      (_isShop && _shop == null && !_shopFailed),
+                  onTap: _onBannerTap,
+                  changeLabel: l.msChangeCover,
+                  lockedLabel: t('Chỉ dành cho Cửa hàng', 'Shops only'),
+                  avatar: EditProfileAvatar(
+                    initials: ProfileHeader.initials(_name.text),
+                    bytes: _avatarBytes,
+                    url: _avatarUrl,
+                    busy: _loadingAvatar,
+                    onPick: _pick,
+                    onAdjust: hasAvatar ? _adjust : null,
+                    onRemove: hasAvatar ? _remove : null,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 // Thông tin tài khoản (hiện trên hồ sơ công khai)

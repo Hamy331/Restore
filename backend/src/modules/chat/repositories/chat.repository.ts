@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../../lib/prisma.js';
 import { AppError } from '../../../common/errors/app-error.js';
+import { openOffer } from '../services/trade.rules.js';
 
 const previewSelect = { id: true, title: true, images: true, price: true, allowSale: true } as const;
 export const listingPreview = (listing: Prisma.ListingGetPayload<{ select: typeof previewSelect }>) => ({
@@ -25,22 +26,27 @@ const messageSelect = {
 const productContext = {
   id: true,
   listing: {
-    select: {
-      ...previewSelect,
-      ownerId: true,
-      status: true,
-      _count: { select: { conversations: { where: { trade: { isNot: null } } } } },
-    },
+    select: { ...previewSelect, ownerId: true, status: true },
+  },
+  // Đề nghị mới nhất của hội thoại (tin + người mua)
+  offers: {
+    orderBy: { createdAt: 'desc' },
+    take: 1,
+    select: { id: true, amount: true, status: true, expiresAt: true, createdAt: true, buyerId: true },
   },
   trade: {
-    select: { title: true, sellerId: true, confirmedAt: true, reviews: { select: { authorId: true } } },
+    select: {
+      title: true, sellerId: true, buyerId: true, price: true, acceptedAt: true,
+      reviewDeadline: true, revealAt: true, closedAt: true,
+      reviews: { select: { authorId: true, publishedAt: true, stars: true, comment: true, tags: true } },
+    },
   },
 } as const;
 const threadSelect = {
   id: true,
   createdAt: true,
   updatedAt: true,
-  members: { select: { userId: true, blocked: true, lastReadSequence: true, user: { select: userSelect } } },
+  members: { select: { userId: true, hidden: true, blocked: true, lastReadSequence: true, user: { select: userSelect } } },
   contexts: { orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }], take: 1, select: productContext },
 } satisfies Prisma.ConversationSelect;
 
@@ -116,16 +122,28 @@ export async function threadStats(userId: string, ids?: string[]) {
     GROUP BY coalesce(c."threadId",c.id)`;
 }
 
+export async function totalUnread(userId: string) {
+  const [row] = await prisma.$queryRaw<{ count: number }[]>`
+    SELECT count(*)::int AS count
+    FROM "ConversationMember" cm
+    JOIN "Conversation" c ON c.id = cm."conversationId"
+    JOIN "ConversationMember" root ON root."conversationId" = coalesce(c."threadId", c.id)
+      AND root."userId" = cm."userId" AND root.hidden = false
+    JOIN "Message" m ON m."conversationId" = c.id AND m.sequence > cm."lastReadSequence"
+    WHERE cm."userId" = ${userId} AND m."senderId" <> cm."userId"`;
+  return row;
+}
 export const latestMessages = (sequences: number[]) =>
   prisma.message.findMany({ where: { sequence: { in: sequences } }, select: messageSelect });
-export const findMessages = (id: string, limit: number, before?: number, mediaOnly = false) =>
+export const findMessages = (id: string, limit: number, before?: number, mediaOnly = false, after?: number) =>
   prisma.message.findMany({
     where: {
       conversation: inThread(id),
       ...(before && { sequence: { lt: before } }),
+      ...(after !== undefined && { sequence: { gt: after } }),
       ...(mediaOnly && { mediaName: { not: null } }),
     },
-    orderBy: { sequence: 'desc' },
+    orderBy: { sequence: after === undefined ? 'desc' : 'asc' },
     take: limit + 1,
     select: messageSelect,
   });
@@ -168,10 +186,14 @@ export async function createMessage(
     if (contextId) {
       const listing = await tx.listing.findFirst({
         where: { conversations: { some: { id: contextId, threadId: root } }, status: 'AVAILABLE' },
-        select: previewSelect,
+        select: { ...previewSelect, ownerId: true, status: true },
       });
       if (!listing) throw new AppError(409, 'LISTING_UNAVAILABLE', 'Tin đăng không còn khả dụng.');
-      preview = { ...listingPreview(listing), ...(offerPrice && { offerPrice }) };
+      // Tin trả giá: tạo đề nghị PENDING, thẻ tin nhắn mang offerId để app hiện trạng thái
+      const offerId = offerPrice
+        ? await openOffer(tx, { contextId, buyerId: senderId, amount: offerPrice, listing })
+        : undefined;
+      preview = { ...listingPreview(listing), ...(offerPrice && { offerPrice, offerId }) };
     }
     const conversationId = contextId ?? root;
     const message = await tx.message.create({

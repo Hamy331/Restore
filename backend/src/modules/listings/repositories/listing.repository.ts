@@ -99,7 +99,7 @@ export async function updateImagesIfUnchanged(id: string, ownerId: string, curre
 
 /** Tin chứa ảnh [url], để kiểm tra ai được xem ảnh */
 export const isReviewedThumbnail = async (ownerId: string, image: string) =>
-  !!await prisma.listingTrade.findFirst({ where: { sellerId: ownerId, image, confirmedAt: { not: null }, reviews: { some: {} } },
+  !!await prisma.listingTrade.findFirst({ where: { sellerId: ownerId, image, reviews: { some: { publishedAt: { not: null }, removedAt: null } } },
     select: { conversationId: true } });
 
 export const findByImage = (url: string) =>

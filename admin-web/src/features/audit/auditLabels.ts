@@ -49,5 +49,6 @@ export const modules: Record<string, string> = {
   KNOWLEDGE: 'Kho tri thức',
   HOME_BANNER: 'Banner',
   FEED_POST: 'Bài viết bảng tin',
+  REVIEW: 'Đánh giá',
   Shop: 'Duyệt shop',
 };

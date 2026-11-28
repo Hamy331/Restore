@@ -1,3 +1,4 @@
+import { disconnectSession } from '../../chat/services/chat.events.js';
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Role } from '@prisma/client';
@@ -29,13 +30,14 @@ const matchesHash = (token: string, storedHash: string) => {
   return candidate.length === stored.length && timingSafeEqual(candidate, stored);
 };
 
-const signAccessToken = (user: AuthUser) =>
+const signAccessToken = (user: AuthUser, sessionId: string) =>
   jwt.sign(
     {
       email: user.email,
       role: user.role,
       authVersion: user.authVersion,
       type: 'access',
+      sessionId,
     },
     getRequiredEnv('JWT_SECRET'),
     {
@@ -85,7 +87,7 @@ export const issueAuthTokens = async (user: AuthUser) => {
     expiresAt: refresh.expiresAt,
   });
   return {
-    accessToken: signAccessToken(user),
+    accessToken: signAccessToken(user, refresh.sessionId),
     refreshToken: refresh.token,
     expiresIn: ACCESS_TTL_SECONDS,
   };
@@ -114,8 +116,9 @@ export const rotateRefreshToken = async (token: string) => {
     tokenHash: refresh.tokenHash,
     expiresAt: refresh.expiresAt,
   });
+  disconnectSession(session.id);
   return {
-    accessToken: signAccessToken(user),
+    accessToken: signAccessToken(user, refresh.sessionId),
     refreshToken: refresh.token,
     expiresIn: ACCESS_TTL_SECONDS,
   };
@@ -124,7 +127,10 @@ export const rotateRefreshToken = async (token: string) => {
 export const revokeRefreshToken = async (token: string) => {
   try {
     const payload = verifyTypedToken(token, getSecuritySecret('JWT_REFRESH_SECRET'), 'refresh');
-    if (payload.jti) await repository.revokeSession(payload.jti);
+    if (payload.jti) {
+      await repository.revokeSession(payload.jti);
+      disconnectSession(payload.jti);
+    }
   } catch {
     // Logout is idempotent; local credentials will still be cleared by the client.
   }
@@ -134,6 +140,8 @@ export const verifyAccessToken = (token: string) => {
   const payload = verifyTypedToken(token, getRequiredEnv('JWT_SECRET'), 'access');
   return {
     userId: payload.sub!,
+    exp: payload.exp,
+    sessionId: typeof payload.sessionId === 'string' ? payload.sessionId : undefined,
     email: payload.email,
     role: payload.role,
     authVersion: payload.authVersion,

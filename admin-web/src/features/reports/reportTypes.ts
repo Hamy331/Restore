@@ -11,7 +11,7 @@ export type ReasonConfig = {
 };
 
 export type ReportGroup = {
-  targetType: 'LISTING' | 'USER' | 'FEED_POST';
+  targetType: 'LISTING' | 'USER' | 'FEED_POST' | 'REVIEW';
   targetId: string;
   reportCount: number;
   oldestAt: string;

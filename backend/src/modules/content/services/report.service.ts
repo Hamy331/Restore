@@ -1,3 +1,4 @@
+import { disconnectUser } from '../../chat/services/chat.events.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { audit } from '../../../common/audit/admin-audit.js';
 import { changed, integer, version } from '../../../common/validation/admin-input.js';
@@ -10,10 +11,12 @@ import {
   removeFeedPostForAdmin,
 } from '../../feeds/index.js';
 import type { AdminReportQuery, PageQuery, ReportInput, ResolveReportInput } from '../content.dto.js';
+import { findReportableReview, getAdminReview, removeReviewForAdmin } from '../../chat/index.js';
 import {
   FEED_POST_REPORT_ACTIONS,
   LISTING_REPORT_ACTIONS,
   PAGE_SIZE,
+  REVIEW_REPORT_ACTIONS,
   USER_REPORT_ACTIONS,
 } from '../content.type.js';
 import * as reportRepository from '../repositories/report.repository.js';
@@ -27,12 +30,14 @@ export function create(reporterId: string, input: ReportInput) {
       ? await reportRepository.findUserMember(tx, targetId)
       : targetType === 'LISTING'
         ? await reportRepository.findAvailableListing(tx, targetId)
-        : await findReportableFeedPost(tx, targetId);
+        : targetType === 'REVIEW'
+          ? await findReportableReview(tx, targetId)
+          : await findReportableFeedPost(tx, targetId);
     if (!target) throw new AppError(404, 'TARGET_NOT_FOUND', 'Đối tượng không tồn tại.');
     if (
       (targetType === 'USER' && targetId === reporterId) ||
       (targetType === 'LISTING' && (target as { ownerId?: string }).ownerId === reporterId) ||
-      (targetType === 'FEED_POST' && (target as { authorId?: string }).authorId === reporterId)
+      ((targetType === 'FEED_POST' || targetType === 'REVIEW') && (target as { authorId?: string }).authorId === reporterId)
     ) {
       throw new AppError(400, 'INVALID_REPORT', 'Không tự báo cáo mình.');
     }
@@ -77,7 +82,9 @@ export function resolve(actorId: string, id: string, { action, reason, expected,
         ? USER_REPORT_ACTIONS
         : report.targetType === 'FEED_POST'
           ? FEED_POST_REPORT_ACTIONS
-          : null;
+          : report.targetType === 'REVIEW'
+            ? REVIEW_REPORT_ACTIONS
+            : null;
     if (!allowed || !allowed.includes(action)) {
       throw new AppError(400, 'INVALID_DECISION', 'Hành động không phù hợp đối tượng.');
     }
@@ -87,12 +94,19 @@ export function resolve(actorId: string, id: string, { action, reason, expected,
     if (action === 'REMOVE' && report.targetType === 'FEED_POST') {
       await removeFeedPostForAdmin(tx, actorId, report.targetId, reason, version(targetUpdatedAt));
     }
+    if (action === 'REMOVE' && report.targetType === 'REVIEW') {
+      await removeReviewForAdmin(tx, report.targetId, reason, version(targetUpdatedAt));
+      await audit(tx, actorId, 'REMOVE', 'REVIEW', report.targetId, reason);
+    }
     if (action === 'WARN' || action === 'SUSPEND' || action === 'BAN') {
       await sanctionUser(tx, actorId, report.targetId, action, reason, integer(days ?? 7, 1, 365), version(targetUpdatedAt));
     }
     changed(await reportRepository.closeWhereVersion(tx, report.id, expected,
       { status: action === 'DISMISS' ? 'DISMISSED' : 'RESOLVED', decision: action, resolution: reason }));
     await audit(tx, actorId, action, 'REPORT', report.id, reason);
+    return report.targetId;
+  }).then(target => {
+    if (action === 'SUSPEND' || action === 'BAN') disconnectUser(target);
     return { updated: true };
   });
 }
@@ -103,5 +117,6 @@ export async function getTarget(id: string) {
   if (report.targetType === 'USER') return getAdminUser(report.targetId);
   if (report.targetType === 'LISTING') return getAdminListing(report.targetId);
   if (report.targetType === 'FEED_POST') return getAdminReportTarget(report.targetId);
+  if (report.targetType === 'REVIEW') return getAdminReview(report.targetId);
   return null;
 }

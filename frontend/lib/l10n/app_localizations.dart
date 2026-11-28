@@ -1058,6 +1058,12 @@ abstract class AppLocalizations {
   /// **'Help'**
   String get accHelp;
 
+  /// No description provided for @accPolicies.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore policies'**
+  String get accPolicies;
+
   /// No description provided for @accFeedback.
   ///
   /// In en, this message translates to:
@@ -3755,7 +3761,7 @@ abstract class AppLocalizations {
   /// No description provided for @productOfferTooHigh.
   ///
   /// In en, this message translates to:
-  /// **'Your offer can be at most twice the asking price'**
+  /// **'Your offer cannot be higher than the asking price'**
   String get productOfferTooHigh;
 
   /// No description provided for @productOfferSubmit.
@@ -10217,7 +10223,7 @@ abstract class AppLocalizations {
   /// No description provided for @tradeFriendly.
   ///
   /// In en, this message translates to:
-  /// **'Friendly communication'**
+  /// **'Helpful attitude'**
   String get tradeFriendly;
 
   /// No description provided for @tradePunctual.
@@ -10261,6 +10267,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm'**
   String get tradeConfirm;
+
+  /// No description provided for @offerPendingBuyer.
+  ///
+  /// In en, this message translates to:
+  /// **'Your offer: {price} · waiting for the seller'**
+  String offerPendingBuyer(String price);
+
+  /// No description provided for @offerPendingSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} offered {price}'**
+  String offerPendingSeller(String name, String price);
+
+  /// No description provided for @offerExpiresAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {time}'**
+  String offerExpiresAt(String time);
+
+  /// No description provided for @offerAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get offerAccept;
+
+  /// No description provided for @offerReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get offerReject;
+
+  /// No description provided for @offerWithdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get offerWithdraw;
+
+  /// No description provided for @offerAcceptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept the {price} offer?'**
+  String offerAcceptTitle(String price);
+
+  /// No description provided for @offerAcceptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore records the agreement and opens reviews for both of you. The listing stays up; mark it as Sold when you run out.'**
+  String get offerAcceptBody;
+
+  /// No description provided for @offerRejectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline the {price} offer?'**
+  String offerRejectTitle(String price);
+
+  /// No description provided for @offerWithdrawTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw your {price} offer?'**
+  String offerWithdrawTitle(String price);
+
+  /// No description provided for @offerStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller declined {price}. You can offer another price.'**
+  String offerStatusRejected(String price);
+
+  /// No description provided for @offerStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'The {price} offer was withdrawn.'**
+  String offerStatusCancelled(String price);
+
+  /// No description provided for @offerStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'The {price} offer expired.'**
+  String offerStatusExpired(String price);
+
+  /// No description provided for @offerAgreed.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreed at {price}'**
+  String offerAgreed(String price);
+
+  /// No description provided for @reviewOpenUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Review before {date}'**
+  String reviewOpenUntil(String date);
+
+  /// No description provided for @reviewOtherDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has reviewed you. Send yours before {date} to publish both.'**
+  String reviewOtherDone(String name, String date);
+
+  /// No description provided for @reviewWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Review sent. It goes public when {name} reviews or on {date}.'**
+  String reviewWaiting(String name, String date);
+
+  /// No description provided for @reviewEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit review'**
+  String get reviewEdit;
+
+  /// No description provided for @reviewPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews are public'**
+  String get reviewPublished;
+
+  /// No description provided for @reviewClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'The review window has closed'**
+  String get reviewClosed;
+
+  /// No description provided for @reviewPendingPublish.
+  ///
+  /// In en, this message translates to:
+  /// **'Not public yet'**
+  String get reviewPendingPublish;
+
+  /// No description provided for @reviewRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed for breaking the rules'**
+  String get reviewRemoved;
+
+  /// No description provided for @reviewHiddenNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews stay hidden until both of you send one, or 7 days after the first. You can edit yours until then.'**
+  String get reviewHiddenNote;
+
+  /// No description provided for @reviewDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Due: {date}'**
+  String reviewDeadline(String date);
+
+  /// No description provided for @reviewOtherReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'They have reviewed you'**
+  String get reviewOtherReviewed;
+
+  /// No description provided for @reviewTagCommunication.
+  ///
+  /// In en, this message translates to:
+  /// **'Good communication'**
+  String get reviewTagCommunication;
+
+  /// No description provided for @reviewTagAsDescribed.
+  ///
+  /// In en, this message translates to:
+  /// **'Item as described'**
+  String get reviewTagAsDescribed;
+
+  /// No description provided for @reviewTagKeptDeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept the deal'**
+  String get reviewTagKeptDeal;
+
+  /// No description provided for @reviewTagPaidAsAgreed.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid as agreed'**
+  String get reviewTagPaidAsAgreed;
+
+  /// No description provided for @reviewTagPolite.
+  ///
+  /// In en, this message translates to:
+  /// **'Polite'**
+  String get reviewTagPolite;
+
+  /// No description provided for @reviewReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get reviewReply;
+
+  /// No description provided for @reviewReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Public reply, can only be sent once'**
+  String get reviewReplyHint;
+
+  /// No description provided for @reviewReplyFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply from {name}'**
+  String reviewReplyFrom(String name);
+
+  /// No description provided for @reviewReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report review'**
+  String get reviewReport;
+
+  /// No description provided for @reviewReportFake.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake review or no real trade'**
+  String get reviewReportFake;
+
+  /// No description provided for @reviewReportPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Shares personal information'**
+  String get reviewReportPrivate;
 
   /// No description provided for @reportReasonsChanged.
   ///

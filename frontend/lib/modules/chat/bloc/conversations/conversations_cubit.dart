@@ -1,87 +1,106 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../models/chat_models.dart';
 import '../../repositories/chat_repository.dart';
 import 'conversations_state.dart';
 
-/// Danh sách cuộc trò chuyện; tải lại khi có sự kiện realtime và định kỳ
-/// [refreshInterval] để bù khi mất kết nối SSE.
 class ConversationsCubit extends Cubit<ConversationsState> {
-  ConversationsCubit(
-    this._repository, {
-    this.refreshInterval = const Duration(seconds: 12),
-  }) : super(const ConversationsState());
-
+  ConversationsCubit(this._repository) : super(const ConversationsState());
   final ChatRepository _repository;
-  final Duration refreshInterval;
-  StreamSubscription<String>? _events;
-  Timer? _timer;
-  Future<void>? _inFlight;
-  DateTime? _lastLoadedAt;
-  bool _dirty = true;
+  StreamSubscription<ChatEvent>? _events;
+  Future<void>? _loading;
+  final _buffer = <ChatEvent>[];
+  bool _reload = false;
 
-  void search(String query) {
-    if (isClosed || query == state.searchQuery) return;
-    emit(state.copyWith(searchQuery: query));
-  }
+  /// Danh sách đang hiển thị: chỉ tải lại khi đang hiển thị
+  bool _visible = false;
 
-  /// Chỉ chạy khi danh sách đang hiển thị. Giữ dữ liệu khi mở lại.
+  /// Cần tải lại từ server (chưa tải lần nào, hoặc đã lỡ sự kiện khi mất kết nối)
+  bool _stale = true;
+
+  void search(String query) => emit(state.copyWith(searchQuery: query));
+
+  /// Hiển thị danh sách. Giữ dữ liệu khi mở lại; chỉ tải lại khi dữ liệu cũ.
   void start() {
-    if (isClosed || _timer != null) return;
-    _timer = Timer.periodic(refreshInterval, (_) => unawaited(load()));
-    _events = _repository.events().listen((event) {
-      if (event == 'message' || event == 'read') invalidate();
-    }, onError: (Object _) {});
-    final lastLoaded = _lastLoadedAt;
-    if (_dirty ||
-        state.failed ||
-        lastLoaded == null ||
-        DateTime.now().difference(lastLoaded) >= refreshInterval) {
-      unawaited(load());
-    }
+    if (isClosed) return;
+    _visible = true;
+    _events ??= _repository.events().listen(_onEvent);
+    if (_stale || state.failed) unawaited(load());
   }
 
-  Future<void> pause() async {
-    _timer?.cancel();
-    _timer = null;
-    final events = _events;
-    _events = null;
-    await events?.cancel();
+  void _onEvent(ChatEvent e) {
+    if (e.type == 'sync') {
+      invalidate();
+      return;
+    }
+    if (_loading != null) _buffer.add(e);
+    _apply(e);
   }
+
+  void _apply(ChatEvent e) {
+    final rows = List.of(state.conversations);
+    if (e.type == 'presence') {
+      emit(
+        state.copyWith(
+          conversations: rows.map((c) => c.presence(e.data)).toList(),
+        ),
+      );
+      return;
+    }
+    final raw = e.data['summary'];
+    if (raw is! Map) return;
+    final summary = ChatConversation.fromJson(Map.from(raw));
+    final index = rows.indexWhere((c) => c.id == summary.id);
+    if (index >= 0) rows.removeAt(index);
+    if (raw['hidden'] != true) {
+      final bump = e.data['message'] != null || index < 0;
+      rows.insert(bump ? 0 : index, summary);
+    }
+    emit(state.copyWith(conversations: rows));
+  }
+
+  /// Ẩn danh sách: vẫn nhận sự kiện realtime để danh sách luôn mới, nhưng
+  /// không gọi server; sự kiện `sync` lúc ẩn được bù khi [start] lại.
+  Future<void> pause() async => _visible = false;
 
   void invalidate() {
-    _dirty = true;
-    if (_timer != null) unawaited(load());
+    _stale = true;
+    if (!_visible || isClosed) return;
+    if (_loading != null) {
+      _reload = true;
+      return;
+    }
+    unawaited(load());
   }
 
-  Future<void> load() {
-    if (isClosed) return Future.value();
-    return _inFlight ??= _fetch().whenComplete(() {
-      _inFlight = null;
-      if (_dirty && _timer != null) unawaited(load());
-    });
-  }
-
+  Future<void> load() => _loading ??= _fetch().whenComplete(() {
+    _loading = null;
+    if (_reload && !isClosed) {
+      _reload = false;
+      invalidate();
+    }
+  });
   Future<void> _fetch() async {
-    _dirty = false;
     try {
-      final items = await _repository.listConversations();
-      if (!isClosed) {
-        _lastLoadedAt = DateTime.now();
-        emit(
-          state.copyWith(conversations: items, loading: false, failed: false),
-        );
+      final rows = await _repository.listConversations();
+      if (isClosed) return;
+      _stale = false;
+      emit(state.copyWith(conversations: rows, loading: false, failed: false));
+      for (final e in _buffer) {
+        _apply(e);
       }
     } catch (_) {
-      if (!isClosed) {
-        emit(state.copyWith(loading: false, failed: true));
-      }
+      if (!isClosed) emit(state.copyWith(loading: false, failed: true));
+    } finally {
+      _buffer.clear();
     }
   }
 
   @override
   Future<void> close() async {
-    final paused = pause();
-    await super.close();
-    await paused;
+    _visible = false;
+    await _events?.cancel();
+    _events = null;
+    return super.close();
   }
 }

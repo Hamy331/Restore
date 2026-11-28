@@ -114,9 +114,11 @@ class EditProfileAvatar extends StatelessWidget {
               child: Container(
                 width: size,
                 height: size,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFFD9D9D9),
+                  color: const Color(0xFFD9D9D9),
+                  // viền cùng màu nền trang để tách khỏi ảnh bìa phía sau
+                  border: Border.all(color: AppColors.surface, width: 4),
                 ),
                 child: ClipOval(
                   child: busy

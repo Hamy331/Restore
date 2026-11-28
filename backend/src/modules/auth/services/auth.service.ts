@@ -1,3 +1,4 @@
+import { disconnectUser } from '../../chat/services/chat.events.js';
 import { createHmac, randomInt, timingSafeEqual } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import { OtpPurpose, User } from '@prisma/client';
@@ -198,6 +199,7 @@ export const resetPassword = async (resetToken: string, newPassword: string) => 
   }
   const password = await bcrypt.hash(newPassword, 12);
   await repository.updatePasswordAndRevokeSessions(user.id, password);
+  disconnectUser(user.id);
   return { message: 'Đổi mật khẩu thành công.' };
 };
 

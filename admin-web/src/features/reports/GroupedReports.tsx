@@ -83,7 +83,7 @@ export function GroupedReports({ session, reasons, revision, review }: {
     }} style={{ gap: 12, marginBottom: 20, alignItems: 'flex-start' }}>
       <Form.Item name="targetType" label="Đối tượng">
         <Select allowClear placeholder="Tất cả" style={{ width: 160 }} options={[
-          { value: 'LISTING', label: 'Tin đăng' }, { value: 'USER', label: 'Thành viên' }, { value: 'FEED_POST', label: 'Bài viết bảng tin' },
+          { value: 'LISTING', label: 'Tin đăng' }, { value: 'USER', label: 'Thành viên' }, { value: 'FEED_POST', label: 'Bài viết bảng tin' }, { value: 'REVIEW', label: 'Đánh giá' },
         ]} />
       </Form.Item>
       <Form.Item name="reason" label="Lý do">
@@ -121,7 +121,7 @@ export function GroupedReports({ session, reasons, revision, review }: {
       locale={{ emptyText: 'Không có báo cáo khớp bộ lọc.' }}
       columns={[
         { title: 'Tin / đối tượng bị báo cáo', render: (_, row) => <>
-          <strong>{row.listing?.title ?? (row.targetType === 'USER' ? 'Thành viên' : row.targetType === 'FEED_POST' ? 'Bài viết bảng tin' : 'Tin không còn tồn tại')}</strong>
+          <strong>{row.listing?.title ?? (row.targetType === 'USER' ? 'Thành viên' : row.targetType === 'FEED_POST' ? 'Bài viết bảng tin' : row.targetType === 'REVIEW' ? 'Đánh giá' : 'Tin không còn tồn tại')}</strong>
           <div><Typography.Text type="secondary" copyable>{row.targetId}</Typography.Text></div>
         </> },
         { title: 'Số báo cáo khớp', dataIndex: 'reportCount', width: 140 },

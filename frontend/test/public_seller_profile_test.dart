@@ -109,7 +109,7 @@ void main() {
         shop ? findsOneWidget : findsNothing,
       );
       expect(find.byKey(const ValueKey('profile-cover-plain')), findsOneWidget);
-      expect(find.text('@lan'), findsOneWidget);
+      expect(find.text('@lan'), shop ? findsNothing : findsOneWidget);
       expect(find.byKey(const ValueKey('profile-tenure')), findsOneWidget);
       expect(find.text(shop ? 'Lan Store' : 'Lan'), findsWidgets);
       expect(
@@ -145,22 +145,11 @@ void main() {
       await tester.tap(find.widgetWithText(Tab, postsTab));
       await tester.pumpAndSettle();
       expect(find.text(shop ? 'New stock' : l.feedEmpty), findsOneWidget);
-      await tester.tap(find.widgetWithText(Tab, l.reviews));
-      await tester.pumpAndSettle();
-      expect(find.text(l.sellerRatingsTitle), findsOneWidget);
-      expect(find.text('4.5'), findsWidgets);
-      await tester.tap(find.widgetWithText(Tab, l.profAbout));
-      await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('profile-about')), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('about-partner')),
-        shop ? findsOneWidget : findsNothing,
-      );
-      expect(
-        find.byKey(const ValueKey('about-verified')),
-        shop ? findsOneWidget : findsNothing,
-      );
-      expect(find.text(l.profSelling(1, 0)), findsOneWidget);
+      // Hồ sơ chỉ còn Tin đăng và Bài viết; đánh giá, giới thiệu, liên hệ
+      // nằm ở trang đánh giá riêng
+      expect(find.widgetWithText(Tab, l.reviews), findsNothing);
+      expect(find.widgetWithText(Tab, l.profAbout), findsNothing);
+      expect(find.byType(Tab), findsNWidgets(2));
       expect(tester.takeException(), isNull);
     });
   }

@@ -1,13 +1,12 @@
 import { Prisma } from '@prisma/client';
-import { connectedUserIds } from './chat.events.js';
+import { connectedUserIds, isOnline, publish } from './chat.events.js';
 import * as repository from '../repositories/chat.repository.js';
 import { AppError } from '../../../common/errors/app-error.js';
 
 import { prisma } from '../../../lib/prisma.js';
 import { parseId } from '../chat.validator.js';
+import { effectiveOfferStatus, reviewDeadline } from './trade.rules.js';
 
-const online = (lastActiveAt: Date | null) =>
-  !!lastActiveAt && Date.now() - lastActiveAt.getTime() < 2 * 60 * 1000;
 
 export const startConversation = async (selfId: string, body: unknown) => {
   const input = body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
@@ -44,29 +43,49 @@ function listingContext(context: Thread['contexts'][number] | undefined | null, 
   if (!context) return null;
   const { trade, listing } = context;
   if (!listing && !trade) return null;
+  const now = new Date();
+  const latest = context.offers[0];
+  const offerStatus = latest ? effectiveOfferStatus(latest, now) : null;
+  const pending = offerStatus === 'PENDING';
+  const forSale = !!listing && listing.status === 'AVAILABLE' && listing.allowSale;
+  const mine = trade?.reviews.find((r) => r.authorId === selfId);
+  const other = trade?.reviews.find((r) => r.authorId !== selfId);
+  const deadline = trade ? reviewDeadline(trade) : null;
   return {
     contextId: context.id,
     ...(listing && {
       product: repository.listingPreview(listing),
-      // Mọi tin có bán đều trả giá được (không còn tuỳ chọn "có thể thương lượng")
-      canOffer:
-        listing.ownerId !== selfId &&
-        listing.status === 'AVAILABLE' &&
-        listing.allowSale &&
-        !trade,
+      // Người mua trả giá được khi tin còn bán, chưa thống nhất và không có đề nghị đang chờ
+      canOffer: listing.ownerId !== selfId && forSale && !trade && !pending,
     }),
     title: trade?.title ?? listing!.title,
     seller: (trade?.sellerId ?? listing?.ownerId) === selfId,
-    stage: trade
-      ? trade.confirmedAt
-        ? 'complete'
-        : 'pending'
-      : listing?.allowSale &&
-          !listing._count.conversations &&
-          ['AVAILABLE', 'HIDDEN', 'SOLD'].includes(listing.status)
-        ? 'open'
-        : 'closed',
-    reviewed: trade?.reviews.some((r) => r.authorId === selfId) ?? false,
+    // open: có thể trả giá · offer: có đề nghị đang chờ · agreed: đã thống nhất · closed: tin hết bán
+    stage: trade ? 'agreed' : pending ? 'offer' : forSale ? 'open' : 'closed',
+    offer: latest
+      ? {
+          id: latest.id,
+          amount: latest.amount.toString(),
+          status: offerStatus,
+          expiresAt: latest.expiresAt,
+          createdAt: latest.createdAt,
+        }
+      : null,
+    agreement: trade
+      ? {
+          price: trade.price.toString(),
+          acceptedAt: trade.acceptedAt,
+          deadline,
+          // Đã công khai hoặc hết hạn: không gửi / sửa được nữa
+          closed: !!trade.closedAt || deadline! <= now,
+          published: !!mine?.publishedAt,
+          // Chỉ nội dung đánh giá của chính mình (để sửa trước khi công khai)
+          mine: mine ? { stars: mine.stars, comment: mine.comment, tags: mine.tags } : null,
+          // Bên kia đã đánh giá (không lộ nội dung khi chưa công khai)
+          otherReviewed: !!other,
+        }
+      : null,
+    reviewed: !!mine,
   };
 }
 
@@ -89,17 +108,14 @@ async function summaries(selfId: string, threads: Thread[]) {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       ...(context && { listingContext: context }),
+      hidden: row.members.some(m => m.userId === selfId && m.hidden),
       blockedByMe: row.members.some((m) => m.userId === selfId && m.blocked),
       blocked: row.members.some((m) => m.blocked),
-      otherUser: { ...peer.user, isOnline: online(peer.user.lastActiveAt) },
+      otherUser: { ...peer.user, isOnline: !row.members.some(m => m.blocked) && isOnline(peer.user.id) },
       lastMessage: latest.get(stat?.latest ?? 0) ?? null,
       unreadCount: stat?.unread ?? 0,
-      // Nhãn "Đang thương lượng": đã trả giá trên tin này, tin còn bán và chưa chốt giao dịch
-      negotiating:
-        !!context?.product &&
-        row.contexts[0]?.listing?.status === 'AVAILABLE' &&
-        !row.contexts[0]?.trade &&
-        !!stat?.offers?.includes(context.contextId),
+      // Nhãn "Đang thương lượng": tin còn bán và có đề nghị đang chờ người bán phản hồi
+      negotiating: context?.stage === 'offer',
       // Người kia đã đọc tới tin nào: tin của mình có sequence <= số này là "Đã xem"
       otherReadSequence: peer.lastReadSequence,
     };
@@ -122,7 +138,9 @@ export const listMessages = async (selfId: string, id: string, query: Record<str
   const root = await repository.threadFor(id, selfId);
   const limit = query.limit === undefined ? 30 : Number(query.limit);
   const before = query.before === undefined ? undefined : Number(query.before);
+  const after = typeof query.after === 'string' && /^\d+$/.test(query.after) ? Number(query.after) : query.after === undefined ? undefined : NaN;
   if (
+    (after !== undefined && (!Number.isSafeInteger(after) || after < 0 || before !== undefined)) ||
     !Number.isInteger(limit) ||
     limit < 1 ||
     limit > 100 ||
@@ -130,11 +148,13 @@ export const listMessages = async (selfId: string, id: string, query: Record<str
   ) {
     throw new AppError(422, 'INVALID_PAGINATION', 'Tham số phân trang không hợp lệ.');
   }
-  const rows = await repository.findMessages(root, limit, before, query.media === '1');
+  const rows = await repository.findMessages(root, limit, before, query.media === '1', after);
   return {
-    items: rows.slice(0, limit).reverse(),
+    items: after === undefined ? rows.slice(0, limit).reverse() : rows.slice(0, limit),
     hasMore: rows.length > limit,
-    nextBefore: rows.length > limit ? rows[limit - 1].sequence : null,
+    ...(after === undefined
+      ? { nextBefore: rows.length > limit ? rows[limit - 1].sequence : null }
+      : { nextAfter: rows.length > limit ? rows[limit - 1].sequence : null }),
   };
 };
 
@@ -252,9 +272,7 @@ export async function discussed(userId: string, id: string) {
 }
 export const markRead = async (selfId: string, id: string, through?: number) =>
   repository.markRead(await repository.threadFor(id, selfId), selfId, through);
-export const unreadCount = async (selfId: string) => ({
-  count: (await repository.threadStats(selfId)).reduce((n, s) => n + s.unread, 0),
-});
+export const unreadCount = repository.totalUnread;
 
 export const conversationMembers = async (id: string) => repository.findMembers(id);
 
@@ -266,3 +284,18 @@ export const heartbeat = async (userId: string) => {
   ]);
   return { peers: peers.map((peer) => peer.userId), lastActiveAt: user.lastActiveAt };
 };
+
+// Serialize snapshots per recipient: a later badge update must not arrive first.
+const deliveries = new Map<string, Promise<void>>();
+export function publishChange(ids: string[], event: string, root: string, data: Record<string, unknown>) {
+  for (const id of new Set(ids)) {
+    if (!isOnline(id)) continue;
+    const delivery = (deliveries.get(id) ?? Promise.resolve()).then(async () => {
+      const [summary, unread] = await Promise.all([getConversation(id, root), unreadCount(id)]);
+      publish([id], event, { ...data, threadId: root, summary, totalUnread: unread.count });
+    }).catch(() => { publish([id], 'sync', {}); });
+    deliveries.set(id, delivery);
+    void delivery.finally(() => { if (deliveries.get(id) === delivery) deliveries.delete(id); });
+  }
+}
+export const threadFor = repository.threadFor;

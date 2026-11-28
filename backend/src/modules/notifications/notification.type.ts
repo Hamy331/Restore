@@ -49,6 +49,12 @@ export const NOTIFICATION_TYPES = {
   FEED_POST_COMMENTED: 'activity',
   FEED_COMMENT_REPLIED: 'activity',
   FEED_COMMENT_LIKED: 'activity',
+  OFFER_ACCEPTED: 'activity',
+  OFFER_REJECTED: 'activity',
+  REVIEW_WAITING: 'activity',
+  REVIEW_PUBLISHED: 'activity',
+  REVIEW_REMINDER: 'activity',
+  REVIEW_REMOVED: 'system',
   SYSTEM: 'system',
 } as const satisfies Record<string, NotificationGroup>;
 

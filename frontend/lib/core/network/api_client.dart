@@ -45,10 +45,7 @@ class ApiClient {
               request.headers['Authorization'] != null;
           if (!canRefresh) return handler.next(error);
 
-          final pendingRefresh = _refreshFuture ??= _refreshTokens();
-          final result = await pendingRefresh;
-          if (identical(_refreshFuture, pendingRefresh)) _refreshFuture = null;
-          if (result != _RefreshResult.refreshed) return handler.next(error);
+          if (!await refreshSession()) return handler.next(error);
 
           request.extra['authRetried'] = true;
           request.headers['Authorization'] =
@@ -107,8 +104,14 @@ class ApiClient {
   }
 
   /// Làm mới phiên ngay (dùng khi mở app mà chỉ còn refresh token)
-  Future<bool> refreshSession() async =>
-      await _refreshTokens() == _RefreshResult.refreshed;
+  Future<bool> refreshSession() async {
+    final pending = _refreshFuture ??= _refreshTokens();
+    try {
+      return await pending == _RefreshResult.refreshed;
+    } finally {
+      if (identical(pending, _refreshFuture)) _refreshFuture = null;
+    }
+  }
 }
 
 enum _RefreshResult { refreshed, rejected, offline }

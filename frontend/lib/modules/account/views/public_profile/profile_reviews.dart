@@ -6,7 +6,11 @@ import 'package:restore/core/network/media_url.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/core/utils/formatters/time_ago_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/chat/widgets/review_stars.dart';
+import 'package:restore/modules/chat/widgets/trade_panel.dart'
+    show tradeErrorText;
+import 'package:restore/modules/content/repositories/report_repository.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
 import 'package:restore/shared/widgets/app_dropdown_menu.dart';
 import 'package:restore/shared/widgets/app_option_sheet.dart';
@@ -36,6 +40,11 @@ const _tagStyles = <String, (IconData, Color)>{
   'accurate': (Icons.fact_check_outlined, Color(0xff7048e8)),
   'quality': (Icons.workspace_premium_outlined, Color(0xffd6336c)),
   'fairPrice': (Icons.sell_outlined, Color(0xff2f9e44)),
+  'communication': (Icons.forum_outlined, Color(0xff1971c2)),
+  'asDescribed': (Icons.fact_check_outlined, Color(0xff7048e8)),
+  'keptDeal': (Icons.handshake_outlined, Color(0xff0e7c70)),
+  'paidAsAgreed': (Icons.payments_outlined, Color(0xff2f9e44)),
+  'polite': (Icons.sentiment_satisfied_alt_outlined, Color(0xffe8590c)),
 };
 
 /// Tab Đánh giá: chip Tất cả / Từ người mua / Từ người bán, khối tổng quan
@@ -154,6 +163,9 @@ class _ProfileReviewsState extends State<ProfileReviews>
               return ReviewCard(
                 key: ValueKey(rows[index - 1]['id']),
                 row: rows[index - 1],
+                ownerName: widget.profile.fullName,
+                isOwner: context.currentUser?.id == widget.profile.id,
+                onChanged: () => fetch(reset: true),
               );
             }
             if (busy) {
@@ -380,8 +392,108 @@ class _TagBadge extends StatelessWidget {
 /// Một đánh giá: người viết, sao · "Đánh giá từ người mua/bán" · thời gian,
 /// nội dung, lời khen, món đồ đã giao dịch
 class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key, required this.row});
+  const ReviewCard({
+    super.key,
+    required this.row,
+    this.ownerName = '',
+    this.isOwner = false,
+    this.onChanged,
+  });
   final Map row;
+
+  /// Tên chủ hồ sơ (người được đánh giá), hiện ở phần phản hồi
+  final String ownerName;
+
+  /// Chủ hồ sơ đang xem: được phản hồi một lần; người khác: được báo cáo
+  final bool isOwner;
+  final VoidCallback? onChanged;
+
+  Future<void> _reply(BuildContext context) async {
+    final l = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
+    final text = await showDialog<String>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: Text(l.reviewReply),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 500,
+          maxLines: 4,
+          decoration: InputDecoration(hintText: l.reviewReplyHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialog),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialog, controller.text.trim()),
+            child: Text(l.reviewReply),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (text == null || text.isEmpty || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ApiClient().dio.post(
+        '/users/me/reviews/${Uri.encodeComponent('${row['id']}')}/reply',
+        data: {'text': text},
+      );
+      onChanged?.call();
+    } catch (error) {
+      messenger.showSnackBar(SnackBar(content: Text(tradeErrorText(error, l))));
+    }
+  }
+
+  Future<void> _report(BuildContext context) async {
+    final l = AppLocalizations.of(context)!;
+    if (context.currentUser == null) return;
+    final reason = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: AppColors.surface,
+      constraints: const BoxConstraints(maxWidth: 520),
+      builder: (sheet) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
+            child: Text(
+              l.reviewReport,
+              style: Theme.of(sheet).textTheme.titleMedium,
+            ),
+          ),
+          for (final reason in [
+            l.reviewReportFake,
+            l.feedReportOffensive,
+            l.reviewReportPrivate,
+            l.feedReportSpam,
+            l.feedReportOther,
+          ])
+            ListTile(
+              title: Text(reason),
+              onTap: () => Navigator.pop(sheet, reason),
+            ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+    if (reason == null || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ReportRepository().submitReview(
+        reviewId: '${row['id']}',
+        reason: reason,
+      );
+      messenger.showSnackBar(SnackBar(content: Text(l.feedReported)));
+    } catch (error) {
+      messenger.showSnackBar(SnackBar(content: Text(tradeErrorText(error, l))));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -421,6 +533,13 @@ class ReviewCard extends StatelessWidget {
                   ),
                 ),
               ),
+              if (!isOwner && context.currentUser != null)
+                IconButton(
+                  tooltip: l.reviewReport,
+                  icon: const Icon(AppIcons.report, size: 18),
+                  color: AppColors.textSecondary,
+                  onPressed: () => _report(context),
+                ),
             ],
           ),
           const SizedBox(height: 8),
@@ -466,6 +585,40 @@ class ReviewCard extends StatelessWidget {
               ],
             ),
           ],
+          if ((row['reply'] as String?)?.trim() case final reply?
+              when reply.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.fill,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l.reviewReplyFrom(ownerName),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(reply, style: const TextStyle(fontSize: 14)),
+                ],
+              ),
+            ),
+          ] else if (isOwner)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => _reply(context),
+                icon: const Icon(AppIcons.chat, size: 16),
+                label: Text(l.reviewReply),
+              ),
+            ),
           const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(

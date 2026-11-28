@@ -7,6 +7,7 @@ import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
 import 'package:restore/modules/auth/bloc/auth/auth_context.dart';
 import 'package:restore/modules/chat/widgets/review_stars.dart';
+import 'package:restore/modules/chat/models/chat_models.dart' show ReviewDraft;
 import 'package:restore/modules/chat/widgets/trade_panel.dart';
 import 'package:restore/shared/widgets/app_local_image.dart';
 import 'package:restore/shared/widgets/app_page_header.dart';
@@ -146,12 +147,16 @@ class _OutgoingReviewsState extends State<_OutgoingReviews> {
   }
 
   Future<void> _review(_ReviewItem item) async {
+    final review = item.review;
     final sent = await TradeReviewForm.show(
       context,
       conversationId: item.conversationId,
       title: item.title,
       recipientName: item.recipientName,
       isSeller: item.isSeller,
+      initial: review == null
+          ? null
+          : ReviewDraft(review.stars.round(), review.comment, review.tags),
     );
     if (sent == true && mounted) await _load(reset: true);
   }
@@ -238,6 +243,9 @@ class _ReviewItem {
     required this.isSeller,
     required this.date,
     required this.review,
+    this.deadline,
+    this.closed = false,
+    this.otherReviewed = false,
   });
 
   factory _ReviewItem.fromJson(Map<String, dynamic> json) {
@@ -250,14 +258,19 @@ class _ReviewItem {
       recipientName: json['recipientName'] as String?,
       isSeller: json['isSeller'] == true,
       date: DateTime.tryParse(
-        (review?['createdAt'] ?? json['confirmedAt']).toString(),
-      ),
+        (review?['createdAt'] ?? json['acceptedAt']).toString(),
+      )?.toLocal(),
+      deadline: DateTime.tryParse('${json['deadline']}')?.toLocal(),
+      closed: json['closed'] == true,
+      otherReviewed: json['otherReviewed'] == true,
       review: review == null
           ? null
           : (
               stars: (review['stars'] as num).toDouble(),
               comment: review['comment'] as String,
               tags: (review['tags'] as List).cast<String>(),
+              published: review['publishedAt'] != null,
+              removed: review['removed'] == true,
             ),
     );
   }
@@ -267,7 +280,48 @@ class _ReviewItem {
   final String? image, recipientName;
   final bool isSeller;
   final DateTime? date;
-  final ({double stars, String comment, List<String> tags})? review;
+
+  /// Hạn gửi / sửa đánh giá
+  final DateTime? deadline;
+
+  /// Đã công khai hoặc hết hạn
+  final bool closed;
+
+  /// Bên kia đã đánh giá mình (chưa thấy nội dung)
+  final bool otherReviewed;
+  final ({
+    double stars,
+    String comment,
+    List<String> tags,
+    bool published,
+    bool removed,
+  })?
+  review;
+
+  /// Đã gửi, chưa công khai và còn hạn: được sửa
+  bool get editable => review != null && !review!.published && !closed;
+}
+
+/// Trạng thái đánh giá của một giao dịch: chờ công khai / đã công khai /
+/// bị gỡ / hạn còn lại / đối phương đã đánh giá / hết hạn
+String? _status(AppLocalizations l, _ReviewItem item) {
+  String date(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+  final review = item.review, deadline = item.deadline;
+  if (review != null) {
+    if (review.removed) return l.reviewRemoved;
+    if (review.published) return l.reviewPublished;
+    if (item.closed) return l.reviewPublished;
+    return deadline == null
+        ? l.reviewPendingPublish
+        : '${l.reviewPendingPublish} · ${l.reviewDeadline(date(deadline))}';
+  }
+  if (item.closed) return l.reviewClosed;
+  final parts = [
+    if (item.otherReviewed) l.reviewOtherReviewed,
+    if (deadline != null) l.reviewDeadline(date(deadline)),
+  ];
+  return parts.isEmpty ? null : parts.join(' · ');
 }
 
 class _ReviewCard extends StatelessWidget {
@@ -340,6 +394,10 @@ class _ReviewCard extends StatelessWidget {
                 style: theme.textTheme.bodySmall,
               ),
             ],
+            if (_status(l, item) case final status?) ...[
+              const SizedBox(height: 6),
+              Text(status, style: theme.textTheme.bodySmall),
+            ],
             if (item.review case final review?) ...[
               const SizedBox(height: 8),
               ReviewStars(review.stars),
@@ -357,7 +415,15 @@ class _ReviewCard extends StatelessWidget {
                         Chip(label: Text(label)),
                   ],
                 ),
-            ] else
+              if (item.editable)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: onReview,
+                    child: Text(l.reviewEdit),
+                  ),
+                ),
+            ] else if (!item.closed)
               Align(
                 alignment: Alignment.centerRight,
                 child: FilledButton(

@@ -26,9 +26,12 @@ const guestOnlyAuthPaths = {
 
 bool isPublicAuthPath(String path) => publicAuthPaths.contains(path);
 
-/// Khách chưa đăng nhập vẫn xem được: trang auth, trang chủ, tìm kiếm, chi tiết tin, trang người bán
+/// Khách chưa đăng nhập vẫn xem được: trang auth, trang chủ, tìm kiếm, chi tiết tin, trang người bán, chính sách
 bool isPublicRoute(String path) {
-  if (isPublicAuthPath(path) || path == '/home' || path == '/search') {
+  if (isPublicAuthPath(path) ||
+      path == '/home' ||
+      path == '/search' ||
+      path == '/policies') {
     return true;
   }
 
