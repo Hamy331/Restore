@@ -13,6 +13,7 @@ import '../../my_reviews/my_reviews_view.dart';
 import 'package:restore/modules/saved_listings/views/saved_listings_view.dart';
 import 'package:restore/modules/wanted_alert/views/wanted_alerts/wanted_alerts_view.dart';
 import '../../../../plans/views/plans/plans_view.dart';
+import '../../../../policies/views/policies_view.dart';
 
 /// Báo tính năng chưa có màn hình; giữ nút theo thiết kế Figma.
 void showComingSoon(BuildContext context) =>
@@ -119,6 +120,11 @@ void showAccountMenu(BuildContext context) {
                           onTap: () => open('/settings'),
                         ),
                         _MenuItem(AppIcons.help, l.accHelp, onTap: soon),
+                        _MenuItem(
+                          AppIcons.shield,
+                          l.accPolicies,
+                          onTap: () => open(PoliciesView.path),
+                        ),
                         _MenuItem(AppIcons.chat, l.accFeedback, onTap: soon),
                       ],
                     ),
