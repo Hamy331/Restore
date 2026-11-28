@@ -3,7 +3,10 @@ import { randomUUID } from 'node:crypto';
 import { hasPermission, PERMISSION } from '../../../common/auth/permissions.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import type { AuthRequest } from '../../../middlewares/auth.middleware.js';
+import { prisma } from '../../../lib/prisma.js';
 import { putObject, readStored, removeObject, type ThumbWidth } from '../../../services/storage.service.js';
+import { configuredProvider } from '../../ai/assistant/services/gemini.provider.js';
+import { inspectListing } from '../ai-inspection.js';
 import { IMAGE_EDITABLE, IMAGE_NAME, IMAGE_PREFIX, MAX_IMAGE_BYTES, MAX_IMAGES } from '../listing.type.js';
 import { orderedImages } from '../listing.validator.js';
 import * as listingRepository from '../repositories/listing.repository.js';
@@ -21,6 +24,21 @@ export function imageExtension(contentType: unknown, bytes: unknown): string {
   if (contentType === 'image/png' && content.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) return 'png';
   if (contentType === 'image/webp' && content.toString('ascii', 0, 4) === 'RIFF' && content.toString('ascii', 8, 12) === 'WEBP') return 'webp';
   throw new AppError(400, 'INVALID_IMAGE', 'Chỉ nhận ảnh JPEG, PNG hoặc WebP hợp lệ.');
+}
+
+/**
+ * AI soạn tiêu đề / mô tả / tình trạng từ một ảnh (ảnh bìa) và xem món có phải hàng cấm không; không lưu gì.
+ * 503 AI_NOT_CONFIGURED khi chưa bật AI, 503 AI_NO_ANSWER khi AI trả lời hỏng.
+ */
+export async function composeFromImage(contentType: string | undefined, bytes: unknown, categoryId?: string) {
+  imageExtension(contentType, bytes);
+  const provider = configuredProvider();
+  const category = categoryId
+    ? (await prisma.category.findUnique({ where: { id: categoryId }, select: { name: true } }))?.name : null;
+  const result = await inspectListing(provider, [{ mimeType: contentType!, data: bytes as Buffer }], { category },
+    AbortSignal.timeout(45_000));
+  if (!result) throw new AppError(503, 'AI_NO_ANSWER', 'AI chưa soạn được nội dung. Bạn thử lại nhé.');
+  return result;
 }
 
 /** Xóa file của các URL ảnh tin (bỏ qua URL lạ hoặc file đã mất) */
