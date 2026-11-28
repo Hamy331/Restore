@@ -6566,4 +6566,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profProfileLinkCopied => 'Profile link copied';
+
+  @override
+  String get aiComposeButton => 'Write with AI';
+
+  @override
+  String get aiComposeLoading => 'AI is looking at your photo…';
+
+  @override
+  String get aiComposeHint =>
+      'Your cover photo is sent to an AI service (Google Gemini) to suggest a title and description.';
+
+  @override
+  String get aiComposeTitle => 'AI suggestion';
+
+  @override
+  String get aiComposeNote =>
+      'AI can make mistakes. Check and edit the details before posting.';
+
+  @override
+  String aiComposeProhibited(String reason) {
+    return 'This item may not be allowed on ReStore: $reason';
+  }
+
+  @override
+  String get aiComposeApply => 'Use this';
+
+  @override
+  String get aiComposeUnavailable =>
+      'Writing with AI isn\'t available right now.';
+
+  @override
+  String get aiComposeFailed =>
+      'AI couldn\'t write a suggestion. Please try again.';
 }

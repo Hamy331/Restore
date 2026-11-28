@@ -13,6 +13,12 @@ export async function add(req: AuthRequest, res: Response) {
   created(res, await imageService.addImage(req.user!.userId, params.id, contentType, req.body));
 }
 
+export async function compose(req: AuthRequest, res: Response) {
+  const { query } = getInput<ValidatedInput<{ categoryId?: string }>>(res);
+  const contentType = req.headers['content-type']?.split(';')[0];
+  ok(res, await imageService.composeFromImage(contentType, req.body, query.categoryId));
+}
+
 export async function reorder(req: AuthRequest, res: Response) {
   const { params } = getInput<ValidatedInput<undefined, ListingIdParams>>(res);
   ok(res, await imageService.reorderImages(req.user!.userId, params.id, req.body));

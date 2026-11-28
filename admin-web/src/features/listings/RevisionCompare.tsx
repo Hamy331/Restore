@@ -3,7 +3,7 @@ import { Image, Space, Table, Tag, Typography } from 'antd';
 import { Session } from '../../shared/api/session';
 import { vnd } from '../commerce/PackageFields';
 import { ListingPhoto } from './ListingDetails';
-import type { ContentFlag, PriceWarning } from './ContentFlags';
+import type { AiReview, ContentFlag, PriceWarning } from './ContentFlags';
 
 /** Nội dung tin có thể sửa (bản đang hiển thị và bản sửa chờ duyệt có cùng các trường này) */
 export type ListingContent = {
@@ -29,6 +29,8 @@ export type PendingEdit = ListingContent & {
   priceWarning?: PriceWarning | null;
   /** Bản sửa bị gắn cờ lúc gửi: người đăng đã được cảnh báo và vẫn gửi */
   flagged?: boolean;
+  /** AI xem ảnh và nội dung bản sửa lúc chờ duyệt */
+  aiReview?: AiReview | null;
 };
 
 export const conditionLabel: Record<string, string> = {

@@ -81,6 +81,7 @@
             "ownerId": "user-seller",
             "condition": "USED_GOOD",
             "flagged": false,
+            "aiReview": null,
             "owner": {
               "id": "user-seller",
               "fullName": "user-seller",

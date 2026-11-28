@@ -11239,6 +11239,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile link copied'**
   String get profProfileLinkCopied;
+
+  /// No description provided for @aiComposeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Write with AI'**
+  String get aiComposeButton;
+
+  /// No description provided for @aiComposeLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is looking at your photo…'**
+  String get aiComposeLoading;
+
+  /// No description provided for @aiComposeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cover photo is sent to an AI service (Google Gemini) to suggest a title and description.'**
+  String get aiComposeHint;
+
+  /// No description provided for @aiComposeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI suggestion'**
+  String get aiComposeTitle;
+
+  /// No description provided for @aiComposeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'AI can make mistakes. Check and edit the details before posting.'**
+  String get aiComposeNote;
+
+  /// No description provided for @aiComposeProhibited.
+  ///
+  /// In en, this message translates to:
+  /// **'This item may not be allowed on ReStore: {reason}'**
+  String aiComposeProhibited(String reason);
+
+  /// No description provided for @aiComposeApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this'**
+  String get aiComposeApply;
+
+  /// No description provided for @aiComposeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing with AI isn\'t available right now.'**
+  String get aiComposeUnavailable;
+
+  /// No description provided for @aiComposeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'AI couldn\'t write a suggestion. Please try again.'**
+  String get aiComposeFailed;
 }
 
 class _AppLocalizationsDelegate

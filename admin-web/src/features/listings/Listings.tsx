@@ -26,6 +26,7 @@ export function Listings({ session }: { session: Session }) {
     [tier, setTier] = useState(''),
     [flagged, setFlagged] = useState(false),
     [offender, setOffender] = useState(false),
+    [ai, setAi] = useState(false),
     [terms, setTerms] = useState(false);
   const [item, select] = useState<Listing>(),
     [busy, setBusy] = useState(false);
@@ -33,6 +34,7 @@ export function Listings({ session }: { session: Session }) {
   if (tier) params.set('tier', tier);
   if (flagged) params.set('flagged', '1');
   if (offender) params.set('offender', '1');
+  if (ai) params.set('ai', '1');
   if (status === EDIT_FILTER) params.set('edit', 'PENDING');
   else params.set('status', status);
   const { data, error, reload } = useResource<Page<Listing>>(session, '/admin/listings?' + params);
@@ -106,6 +108,15 @@ export function Listings({ session }: { session: Session }) {
         >
           Chỉ người đăng tái phạm (từ 3 lần bị từ chối / gỡ trong 30 ngày)
         </Checkbox>
+        <Checkbox
+          checked={ai}
+          onChange={(e) => {
+            setAi(e.target.checked);
+            setPage(1);
+          }}
+        >
+          Chỉ tin AI nghi hàng cấm
+        </Checkbox>
         <Button onClick={() => setTerms(true)}>Từ cấm của bộ lọc</Button>
       </Space>
       {error ? (
@@ -126,6 +137,7 @@ export function Listings({ session }: { session: Session }) {
                     flags={[r.flags, pendingEdit(r)?.flags]}
                     ignored={r.flagged || pendingEdit(r)?.flagged}
                     price={pendingEdit(r)?.priceWarning ?? r.priceWarning}
+                    ai={pendingEdit(r)?.aiReview ?? r.aiReview}
                   />
                 </Space>
               ),
@@ -182,7 +194,13 @@ export function Listings({ session }: { session: Session }) {
           {edit && item.current ? (
             <>
               <ListingDetails session={session} item={item} summary />
-              <FlagNotice flags={edit.flags} ignored={edit.flagged} price={edit.priceWarning} title="Bản sửa bị gắn cờ tự động" />
+              <FlagNotice
+                flags={edit.flags}
+                ignored={edit.flagged}
+                price={edit.priceWarning}
+                ai={edit.aiReview}
+                title="Bản sửa bị gắn cờ tự động"
+              />
               <RevisionCompare session={session} current={item.current} edit={edit} />
             </>
           ) : (

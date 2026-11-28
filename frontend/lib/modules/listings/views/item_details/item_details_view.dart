@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restore/core/config/app_environment.dart';
 import 'package:restore/core/constants/app_colors.dart';
+import 'package:restore/core/constants/app_icons.dart';
 import 'package:restore/core/utils/helpers/t_snackbar_helper.dart';
 import 'package:restore/data/models/enums/listing_condition.dart';
 import 'package:restore/l10n/app_localizations.dart';
@@ -11,9 +13,11 @@ import '../../bloc/create_listing/create_listing_event.dart';
 import '../../bloc/create_listing/create_listing_state.dart';
 import '../../models/create_listing_step.dart';
 import '../../models/listing_draft.dart';
+import '../../repositories/listing_ai_repository.dart';
 import '../../utils/listing_validator.dart';
 import '../../widgets/create_listing_scaffold.dart';
 import '../../widgets/edit_listing_notice.dart';
+import 'widgets/ai_suggestion_sheet.dart';
 import 'widgets/listing_attribute_field.dart';
 import 'widgets/listing_category_summary.dart';
 import 'widgets/listing_condition_field.dart';
@@ -26,7 +30,10 @@ import 'widgets/posting_quota_note.dart';
 /// Bước 2: ảnh, tiêu đề, tình trạng, thông tin theo danh mục (cũng là bộ
 /// lọc khi tìm kiếm), mô tả, giá (bán / cho tặng) và khu vực gặp mặt
 class ItemDetailsView extends StatefulWidget {
-  const ItemDetailsView({super.key});
+  const ItemDetailsView({super.key, this.ai});
+
+  /// AI soạn tin từ ảnh bìa (mặc định gọi API thật)
+  final ListingAiRepository? ai;
 
   @override
   State<ItemDetailsView> createState() => _ItemDetailsViewState();
@@ -39,11 +46,77 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
     text: _bloc.state.draft.description,
   );
 
+  late final ListingAiRepository _ai = widget.ai ?? ListingAiRepository();
+  bool _composing = false;
+
   @override
   void dispose() {
     _title.dispose();
     _description.dispose();
     super.dispose();
+  }
+
+  /// AI xem ảnh bìa, gợi ý tiêu đề / mô tả / tình trạng; người dùng xem trước
+  /// rồi mới điền vào form
+  Future<void> _composeWithAi() async {
+    final l10n = AppLocalizations.of(context)!;
+    final draft = _bloc.state.draft;
+    if (_composing || draft.images.isEmpty) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _composing = true);
+    try {
+      final suggestion = await _ai.compose(
+        draft.images.first,
+        categoryId: draft.categoryId,
+      );
+      if (!mounted) return;
+      final apply = await showAiSuggestionSheet(
+        context,
+        suggestion: suggestion,
+        vehicle: ListingCondition.usesVehicleScale(
+          draft.categoryId,
+          draft.subcategoryId,
+        ),
+      );
+      if (apply == true && mounted) _applySuggestion(suggestion);
+    } on ListingAiException catch (error) {
+      if (!mounted) return;
+      TSnackBarHelper.showError(
+        context,
+        message: switch (error.code) {
+          'AI_NOT_CONFIGURED' => l10n.aiComposeUnavailable,
+          'RATE_LIMITED' => error.message ?? l10n.aiComposeFailed,
+          _ => l10n.aiComposeFailed,
+        },
+      );
+    } on Exception {
+      if (mounted) {
+        TSnackBarHelper.showError(context, message: l10n.aiComposeFailed);
+      }
+    } finally {
+      if (mounted) setState(() => _composing = false);
+    }
+  }
+
+  void _applySuggestion(ListingAiSuggestion suggestion) {
+    final title = suggestion.title.characters
+        .take(ListingDraft.maxTitleLength)
+        .toString();
+    final description = suggestion.description.characters
+        .take(ListingDraft.maxDescriptionLength)
+        .toString();
+    if (title.isNotEmpty) {
+      _title.text = title;
+      _bloc.add(TitleChanged(title));
+    }
+    if (description.isNotEmpty) {
+      _description.text = description;
+      _bloc.add(DescriptionChanged(description));
+    }
+    final condition = suggestion.condition;
+    if (condition != null && (_bloc.state.category?.hasCondition ?? true)) {
+      _bloc.add(ConditionChanged(condition));
+    }
   }
 
   void _onNext() {
@@ -119,6 +192,10 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                   ? l10n.photosRequiredError
                   : null,
             ),
+            if (draft.images.isNotEmpty && !AppEnvironment.useMockData) ...[
+              const SizedBox(height: 12),
+              _AiComposeButton(busy: _composing, onPressed: _composeWithAi),
+            ],
             const SizedBox(height: 24),
             ListingLabeledField(
               label: l10n.listingTitleLabel,
@@ -218,6 +295,40 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
           ],
         );
       },
+    );
+  }
+}
+
+/// "Soạn bằng AI" dưới phần ảnh, kèm ghi chú ảnh bìa được gửi cho AI
+class _AiComposeButton extends StatelessWidget {
+  const _AiComposeButton({required this.busy, required this.onPressed});
+
+  final bool busy;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        OutlinedButton.icon(
+          onPressed: busy ? null : onPressed,
+          icon: busy
+              ? const SizedBox.square(
+                  dimension: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(AppIcons.sparkle),
+          label: Text(busy ? l10n.aiComposeLoading : l10n.aiComposeButton),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.actionPrimary,
+            minimumSize: const Size.fromHeight(48),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(l10n.aiComposeHint, style: ListingFormStyle.subtitle),
+      ],
     );
   }
 }

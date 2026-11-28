@@ -773,7 +773,7 @@ class ApiListingsRepository implements ListingsRepository {
         data: bytes,
         // Ảnh vài MB qua mạng chậm cần lâu hơn timeout mặc định (10 giây)
         options: Options(
-          contentType: _imageContentType(bytes),
+          contentType: imageContentType(bytes),
           sendTimeout: _uploadTimeout,
           receiveTimeout: _uploadTimeout,
         ),
@@ -790,7 +790,8 @@ class ApiListingsRepository implements ListingsRepository {
 
   static const Duration _uploadTimeout = Duration(seconds: 60);
 
-  static String _imageContentType(Uint8List bytes) =>
+  /// Content-Type theo byte đầu ảnh (JPEG, PNG, WebP); ảnh khác thì báo lỗi
+  static String imageContentType(Uint8List bytes) =>
       bytes.length >= 3 && bytes[0] == 255 && bytes[1] == 216 && bytes[2] == 255
       ? 'image/jpeg'
       : bytes.length >= 8 &&

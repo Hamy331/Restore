@@ -308,6 +308,9 @@ export function orderedImages(body: unknown, current: string[]): string[] {
 /** Params `:filename` của ảnh tin */
 export const mediaParams = z.object({ filename: z.string() });
 
+/** Query POST /listings/ai/compose: categoryId? (danh mục đã chọn, để AI viết đúng loại hàng) */
+export const aiComposeQuery = z.object({ categoryId: z.string().trim().min(1).max(64).optional() });
+
 function positiveInteger(value: unknown, fallback: number, max: number): number {
   if (value === undefined) return fallback;
   const parsed = typeof value === 'string' && /^[1-9]\d*$/.test(value) ? Number(value) : NaN;
@@ -418,6 +421,8 @@ export const adminListingQuery = z.record(z.string(), z.unknown()).transform((qu
   flagged: query.flagged === '1',
   /** offender=1: chỉ tin của người đăng tái phạm (từ 3 lần bị từ chối / gỡ trong 30 ngày) */
   offender: query.offender === '1',
+  /** ai=1: chỉ tin AI nghi là hàng cấm (xem ảnh và nội dung lúc chờ duyệt), tính cả bản sửa chờ duyệt */
+  ai: query.ai === '1',
   /** edit=PENDING: chỉ tin đã duyệt có bản sửa đang chờ duyệt */
   edit: query.edit ? choice(query.edit, ['PENDING'] as const) : undefined,
   page: page(query.page),

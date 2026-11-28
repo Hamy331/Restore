@@ -195,15 +195,24 @@ function sellerTierWhere(tier: StoreTier, now: Date): Prisma.ListingWhereInput {
   return { owner: { NOT: { storeSubscription: { is: { ...active, package: { tier: { in: ['BASIC', 'PRO'] } } } } } } };
 }
 
-export type AdminListingFilters = { status?: ListingStatus; q?: string; tier?: StoreTier; edit?: 'PENDING'; flagged?: boolean; ownerIds?: string[] };
+/** aiReview AI nghi là hàng cấm */
+const SUSPECT = { path: ['verdict'], equals: 'SUSPECT' } satisfies Prisma.JsonNullableFilter;
 
-/** Điều kiện lọc của trang quản trị; flagged: tin hoặc bản sửa chờ duyệt bị gắn cờ lúc gửi duyệt */
-function adminWhere({ status, q, tier, edit, flagged, ownerIds }: AdminListingFilters, now: Date): Prisma.ListingWhereInput {
+export type AdminListingFilters = { status?: ListingStatus; q?: string; tier?: StoreTier; edit?: 'PENDING'; flagged?: boolean; ai?: boolean; ownerIds?: string[] };
+
+/**
+ * Điều kiện lọc của trang quản trị; flagged: tin hoặc bản sửa chờ duyệt bị gắn cờ lúc gửi duyệt;
+ * ai: tin hoặc bản sửa chờ duyệt AI nghi là hàng cấm
+ */
+function adminWhere({ status, q, tier, edit, flagged, ai, ownerIds }: AdminListingFilters, now: Date): Prisma.ListingWhereInput {
   const contains = { contains: q, mode: 'insensitive' as const };
+  const marks: Prisma.ListingWhereInput[] = [];
+  if (flagged) marks.push({ OR: [{ flagged: true }, { revision: { status: 'PENDING', flagged: true } }] });
+  if (ai) marks.push({ OR: [{ aiReview: SUSPECT }, { revision: { status: 'PENDING', aiReview: SUSPECT } }] });
   return {
     ...(status ? { status } : {}), ...(edit ? { revision: { status: edit } } : {}), 
     ...(ownerIds ? { ownerId: { in: ownerIds } } : {}),
-    ...(flagged ? { AND: [{ OR: [{ flagged: true }, { revision: { status: 'PENDING', flagged: true } }] }] } : {}),
+    ...(marks.length ? { AND: marks } : {}),
     ...(q ? { OR: [{ title: contains }, { owner: { fullName: contains } }, { owner: { email: contains } }] } : {}),
     ...(tier ? sellerTierWhere(tier, now) : {}),
   };
@@ -219,7 +228,7 @@ export function findAdminPage(filters: AdminListingFilters, skip: number, take: 
   const orderBy: Prisma.ListingOrderByWithRelationInput[] = edit ? [{ revision: { submittedAt: 'asc' } }, { id: 'asc' }]
     : status === ListingStatus.PENDING ? [{ updatedAt: 'asc' }, { id: 'asc' }] : [{ updatedAt: 'desc' }, { id: 'desc' }];
   return Promise.all([
-    prisma.listing.findMany({ where, select: { ...adminListingSelect, ...adminCompareSelect, revision: { select: { ...revisionSelect, flagged: true } } },
+    prisma.listing.findMany({ where, select: { ...adminListingSelect, ...adminCompareSelect, revision: { select: { ...revisionSelect, flagged: true, aiReview: true } } },
       orderBy, skip, take }),
     prisma.listing.count({ where }),
   ]);
