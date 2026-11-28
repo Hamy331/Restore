@@ -18,6 +18,14 @@ const priceText = (warning: PriceWarning) =>
     ? 'Giá dưới 10.000đ, dễ là giá ảo để câu khách'
     : `Giá thấp hơn nhiều so với giá thường gặp của chuyên mục (khoảng ${vnd(warning.typical)})`;
 
+/**
+ * AI xem ảnh và nội dung lúc chờ duyệt (khi backend bật AI): SUSPECT = nghi hàng cấm, kèm lý do.
+ * Chỉ để tham khảo, AI có thể nhầm. null: chưa xem hoặc nội dung vừa đổi, đang chờ xem lại.
+ */
+export type AiReview = { verdict: 'OK' | 'SUSPECT' | 'UNKNOWN'; reason: string; checkedAt: string };
+
+const aiText = (review: AiReview) => `AI xem ảnh nghi là hàng cấm: ${review.reason || 'không nêu lý do'} (AI có thể nhầm)`;
+
 const IGNORED = 'Người đăng đã được cảnh báo nhưng vẫn gửi';
 
 /**
@@ -28,15 +36,23 @@ export function FlagTags({
   flags,
   ignored,
   price,
+  ai,
 }: {
   flags: (ContentFlag[] | undefined)[];
   ignored?: boolean;
   price?: PriceWarning | null;
+  ai?: AiReview | null;
 }) {
   const codes = [...new Set(flags.flatMap((list) => list ?? []).map((flag) => flag.code))];
-  if (!codes.length && !ignored && !price) return null;
+  const suspect = ai?.verdict === 'SUSPECT';
+  if (!codes.length && !ignored && !price && !suspect) return null;
   return (
     <Space size={4} wrap>
+      {suspect && (
+        <Tag color="magenta" title={aiText(ai)}>
+          AI nghi hàng cấm
+        </Tag>
+      )}
       {price && (
         <Tag color="gold" title={priceText(price)}>
           Giá bất thường
@@ -61,14 +77,17 @@ export function FlagNotice({
   flags,
   ignored,
   price,
+  ai,
   title = 'Tin bị gắn cờ tự động',
 }: {
   flags?: ContentFlag[];
   ignored?: boolean;
   price?: PriceWarning | null;
+  ai?: AiReview | null;
   title?: string;
 }) {
-  if (!flags?.length && !ignored && !price) return null;
+  const suspect = ai?.verdict === 'SUSPECT';
+  if (!flags?.length && !ignored && !price && !suspect) return null;
   return (
     <Alert
       type="warning"
@@ -76,6 +95,7 @@ export function FlagNotice({
       title={title}
       description={
         <ul style={{ margin: 0, paddingInlineStart: 18 }}>
+          {suspect && <li>{aiText(ai)}.</li>}
           {ignored && <li>{IGNORED}.</li>}
           {price && <li>{priceText(price)}.</li>}
           {flags?.map((flag) => (
