@@ -380,6 +380,8 @@ model ListingRevision {
   reviewReason  String?
   /// Nội dung bị gắn cờ (SĐT, link, hàng cấm) lúc gửi duyệt: người đăng đã được cảnh báo và vẫn gửi
   flagged       Boolean               @default(false)
+  /// Kết quả AI xem ảnh và nội dung lúc chờ duyệt: { hash, verdict OK | SUSPECT | UNKNOWN, reason, checkedAt }; hash khác nội dung hiện tại thì xem lại
+  aiReview      Json?
   submittedAt   DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
 
@@ -448,6 +450,8 @@ model Listing {
   autoExtend    Boolean          @default(false)
   /// Nội dung bị gắn cờ (SĐT, link, hàng cấm) lúc gửi duyệt: người đăng đã được cảnh báo và vẫn gửi
   flagged       Boolean          @default(false)
+  /// Kết quả AI xem ảnh và nội dung lúc chờ duyệt: { hash, verdict OK | SUSPECT | UNKNOWN, reason, checkedAt }; hash khác nội dung hiện tại thì xem lại
+  aiReview      Json?
   updatedAt     DateTime         @updatedAt
   creditHolds   CreditHold[]
   promotions    Promotion[]

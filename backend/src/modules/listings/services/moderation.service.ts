@@ -8,6 +8,7 @@ import { AdminDecisionInput, AdminListingQuery, DecisionInput, toAdminListing, t
 import { contentFlags, isFlagged } from '../content-flags.js';
 import { MIN_SAMPLES, priceWarning } from '../price-check.js';
 import { removeStoredImages, revisionOnlyImages } from './image.service.js';
+import { aiReviewFor } from './ai-review.service.js';
 import { approvalWindow, categoryHasCondition } from '../listing-lifecycle.js';
 import { resolveSubcategory } from '../../catalog/category-tree.js';
 import { freeDaysFor } from '../display-pricing.js';
@@ -175,19 +176,21 @@ export async function listPending() {
  * Query flagged: chỉ tin có flagged, tính cả bản sửa đang chờ duyệt. owner.history { rejected, changesRequested, removed, recentStrikes }: số lần tin của
  * người đăng bị từ chối / yêu cầu sửa / gỡ, và số lần bị từ chối / gỡ trong 30 ngày (từ 3 là tái phạm).
  * Query offender: chỉ tin của người đăng tái phạm.
+ * aiReview (và pendingEdit.aiReview): null (chưa xem / đang xem lại) hoặc { verdict: OK | SUSPECT | UNKNOWN, reason, checkedAt }:
+ * AI xem ảnh và nội dung lúc chờ duyệt (khi bật AI). Query ai: chỉ tin AI nghi là hàng cấm.
  * priceWarning (và pendingEdit.priceWarning): null hoặc { reason: TOO_LOW } (dưới 10.000đ) | { reason: BELOW_TYPICAL,
  * typical } (dưới 1/10 giá thường gặp của chuyên mục, cần từ 20 tin có giá).
  */
-export async function listForAdmin({ status, q, tier, edit, flagged, offender, page }: AdminListingQuery) {
+export async function listForAdmin({ status, q, tier, edit, flagged, ai, offender, page }: AdminListingQuery) {
   const ownerIds = offender ? await listingRepository.findRepeatOffenders() : undefined;
-  const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit, flagged, ownerIds }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
+  const [rows, total] = await listingRepository.findAdminPage({ status, q, tier, edit, flagged, ai, ownerIds }, (page - 1) * ADMIN_PAGE_SIZE, ADMIN_PAGE_SIZE);
   const [history, typical] = await Promise.all([listingRepository.findSellerHistory(rows.map((row) => row.ownerId)),
     listingRepository.findTypicalPrices(rows.map((row) => row.categoryId), MIN_SAMPLES)]);
   const items = rows.map(({ revision, isNegotiable, isFree, multipleUnits, meetUp, allowSale, allowExchange, exchangeWish, attributes, location, ...item }) => ({
     ...withHistory(toAdminListing(item), history), flags: contentFlags(item.title, item.description),
-    priceWarning: priceWarning(item.price, typical.get(item.categoryId ?? '')),
+    priceWarning: priceWarning(item.price, typical.get(item.categoryId ?? '')), aiReview: aiReviewFor(item),
     ...(revision && {
-      pendingEdit: { ...toRevisionDto(revision), flags: contentFlags(revision.title, revision.description),
+      pendingEdit: { ...toRevisionDto(revision), flags: contentFlags(revision.title, revision.description), aiReview: aiReviewFor(revision),
         priceWarning: priceWarning(revision.price, typical.get(item.categoryId ?? '')) },
       current: { title: item.title, description: item.description, price: item.price.toString(),
         isNegotiable, isFree, multipleUnits, meetUp, condition: item.condition,
@@ -212,7 +215,7 @@ export async function getAdminListing(id: string) {
   const [history, typical] = await Promise.all([listingRepository.findSellerHistory([row.ownerId]),
     listingRepository.findTypicalPrices([row.categoryId], MIN_SAMPLES)]);
   return { ...withHistory(toAdminListing(row), history), flags: contentFlags(row.title, row.description),
-    priceWarning: priceWarning(row.price, typical.get(row.categoryId ?? '')) };
+    priceWarning: priceWarning(row.price, typical.get(row.categoryId ?? '')), aiReview: aiReviewFor(row) };
 }
 
 /** Lịch sử vi phạm của người đăng tin [id]: số lần bị từ chối / yêu cầu sửa / gỡ và 5 lần gần nhất kèm lý do */

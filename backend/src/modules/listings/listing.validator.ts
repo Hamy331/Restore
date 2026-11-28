@@ -421,6 +421,8 @@ export const adminListingQuery = z.record(z.string(), z.unknown()).transform((qu
   /** edit=PENDING: chỉ tin đã duyệt có bản sửa đang chờ duyệt */
   edit: query.edit ? choice(query.edit, ['PENDING'] as const) : undefined,
   page: page(query.page),
+  /** ai=1: chỉ tin AI nghi là hàng cấm (xem ảnh và nội dung lúc chờ duyệt), tính cả bản sửa chờ duyệt */
+  ai: query.ai === '1',
 }));
 
 /** Body POST /admin/listings/:id/decision */
