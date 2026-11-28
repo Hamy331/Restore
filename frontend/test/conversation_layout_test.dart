@@ -29,16 +29,19 @@ class _LayoutRepository extends MockChatRepository {
       );
 
   @override
-  Future<List<ChatMessage>> getMessages(String id, {int? before}) async =>
-      List.generate(
-        count,
-        (index) => ChatMessage(
-          id: 'message-$index',
-          senderId: 'seller',
-          text: 'Message $index',
-          createdAt: DateTime(2026, 11, 19, 12, index),
-        ),
-      );
+  Future<List<ChatMessage>> getMessages(
+    String id, {
+    int? before,
+    int? after,
+  }) async => List.generate(
+    count,
+    (index) => ChatMessage(
+      id: 'message-$index',
+      senderId: 'seller',
+      text: 'Message $index',
+      createdAt: DateTime(2026, 11, 19, 12, index),
+    ),
+  );
 }
 
 Future<void> _open(WidgetTester tester, int count, double width) async {

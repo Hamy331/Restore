@@ -1,3 +1,4 @@
+import 'package:fake_async/fake_async.dart';
 import 'dart:async';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
@@ -180,7 +181,7 @@ void main() {
     expect(cubit.state.loading, isFalse);
     expect(cubit.state.conversations.single.id, 'c1');
     final loads = repository.listCalls;
-    repository.events$.add('message');
+    repository.events$.add(const ChatEvent('sync'));
     await pumpEventQueue();
     expect(repository.listCalls, loads + 1);
     await cubit.close();
@@ -200,7 +201,68 @@ void main() {
       await cubit.load();
       expect(cubit.state.failed, isFalse);
       expect(cubit.state.selfId, 'me');
-      expect(repository.reads, 1);
+      expect(repository.reads, 0);
+      await cubit.close();
+    },
+  );
+
+  test('idle chat and inbox perform no polling for ten minutes', () {
+    fakeAsync((clock) {
+      final repo = _FakeChatRepository();
+      final chat = ConversationCubit(repo, 'c1')..start();
+      final inbox = ConversationsCubit(repo)..start();
+      clock.flushMicrotasks();
+      expect(repo.cursors, [null]);
+      expect(repo.listCalls, 1);
+      clock.elapse(const Duration(minutes: 10));
+      expect(repo.cursors, [null]);
+      expect(repo.listCalls, 1);
+      unawaited(inbox.close());
+      unawaited(chat.close());
+      clock.flushMicrotasks();
+    });
+  });
+
+  test(
+    'reconnect pages forward without losing a live message received during catch-up',
+    () async {
+      final repo = _FakeChatRepository();
+      ChatMessage saved(int seq) => ChatMessage(
+        id: 'm$seq',
+        sequence: seq,
+        senderId: 'shop',
+        text: 'item',
+        createdAt: DateTime(2026),
+      );
+      repo.messages.add(saved(10));
+      final cubit = ConversationCubit(repo, 'c1')..start();
+      await pumpEventQueue();
+      repo.messages.addAll(List.generate(65, (i) => saved(12 + i * 2)));
+      final gate = Completer<void>();
+      repo.gate = gate;
+      repo.events$.add(const ChatEvent('sync'));
+      await pumpEventQueue();
+      final extra = ChatEvent('message.created', {
+        'threadId': 'c1',
+        'message': {
+          'id': 'm150',
+          'senderId': 'shop',
+          'sequence': 150,
+          'text': 'new',
+          'createdAt': '2026-01-01T00:00:00Z',
+        },
+      });
+      repo.events$.add(extra);
+      await pumpEventQueue();
+      gate.complete();
+      await pumpEventQueue();
+      final expected = [10, ...List.generate(65, (i) => 12 + i * 2), 150];
+      expect(cubit.state.messages.map((m) => m.sequence), expected);
+      expect(repo.cursors, [null, 10, 70, 130]);
+      repo.events$.add(extra);
+      await pumpEventQueue();
+      expect(cubit.state.messages.map((m) => m.sequence), expected);
+      expect(repo.cursors.length, 4);
       await cubit.close();
     },
   );
@@ -216,7 +278,7 @@ void main() {
     repository.failSend = true;
     expect(await cubit.send('Lỗi'), isFalse);
     expect(cubit.state.sendFailed, isTrue);
-    expect(cubit.state.sending, isFalse);
+    expect(cubit.state.messages.last.delivery, startsWith('Lỗi'));
     await cubit.close();
   });
 
@@ -248,10 +310,12 @@ void main() {
 }
 
 class _FakeChatRepository implements ChatRepository {
-  final events$ = StreamController<String>.broadcast();
+  final events$ = StreamController<ChatEvent>.broadcast();
   final _other = const ChatPerson(id: 'u1', fullName: 'Minh Anh');
   final List<ChatMessage> messages = [];
   ChatTrade? trade;
+  final cursors = <int?>[];
+  Completer<void>? gate;
   bool failMessages = false, failSend = false;
   int listCalls = 0, reads = 0;
 
@@ -277,9 +341,16 @@ class _FakeChatRepository implements ChatRepository {
   @override
   Future<ChatConversation> getConversation(String id) async => _conversation;
   @override
-  Future<List<ChatMessage>> getMessages(String id, {int? before}) async {
+  Future<List<ChatMessage>> getMessages(
+    String id, {
+    int? before,
+    int? after,
+  }) async {
+    cursors.add(after);
     if (failMessages) throw Exception('offline');
-    return List.of(messages);
+    if (after == null) return List.of(messages);
+    if (gate != null) await gate!.future;
+    return messages.where((m) => (m.sequence ?? 0) > after).take(30).toList();
   }
 
   @override
@@ -304,5 +375,5 @@ class _FakeChatRepository implements ChatRepository {
   @override
   Future<void> markRead(String id, {int? through}) async => reads++;
   @override
-  Stream<String> events() => events$.stream;
+  Stream<ChatEvent> events() => events$.stream;
 }
