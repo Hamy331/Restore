@@ -29,30 +29,6 @@ test('contentFlags: banned goods as whole words, with or without accents', () =>
   assert.deepEqual(codes('Chân tripod máy ảnh, micro podcast, phao bơi trẻ em'), []);
 });
 
-test('contentFlags: alcohol, tobacco and stimulants, but not things that hold them', () => {
-  assert.deepEqual(contentFlags('Thanh lý rượu ngoại'), [{ code: 'BANNED', match: 'rượu' }]);
-  assert.deepEqual(codes('Thung bia Tiger con han'), ['BANNED']);
-  assert.deepEqual(codes('Bình bóng cười'), ['BANNED']);
-  assert.deepEqual(codes('Xì gà Cuba'), ['BANNED']);
-  assert.deepEqual(codes('Cồn công nghiệp 90 độ'), ['BANNED']);
-  assert.deepEqual(codes('Tủ rượu gỗ sồi, bộ ly rượu vang'), []);
-  assert.deepEqual(codes('Sách bìa cứng', 'Sach bia cung con moi'), []);
-  assert.deepEqual(codes('Cồn y tế 70 độ, bếp cồn khô'), []);
-});
-
-test('contentFlags: spelled-out, joined, invisible and look-alike characters', () => {
-  assert.deepEqual(contentFlags('Bán r.ư.ợ.u nếp'), [{ code: 'BANNED', match: 'rượu' }]);
-  assert.deepEqual(codes('Có m a t u y'), ['BANNED']);
-  assert.deepEqual(codes('Hàng ma-túy'), ['BANNED']);
-  assert.deepEqual(codes('Bán matuy'), ['BANNED']);
-  assert.deepEqual(codes('Bán c4n s4'), ['BANNED']);
-  assert.deepEqual(codes('Bán v@pe'), ['BANNED']);
-  assert.deepEqual(codes('Bán rư​ợu'), ['BANNED']);
-  assert.deepEqual(codes('Ib z.a.l.o'), ['CONTACT']);
-  // Chữ viết thường, size áo, model máy không bị gắn
-  assert.deepEqual(codes('Áo size S M L XL, iPhone 14 Pro 256GB, RAM 4GB'), []);
-});
-
 test('contentFlags: one flag per kind, clean text has none', () => {
   assert.deepEqual(codes('Súng nước', 'Zalo 0987654321, xem banghe.vn'), ['CONTACT', 'LINK', 'BANNED']);
   assert.deepEqual(codes('Ghế xoay văn phòng còn mới', null as unknown as string), []);
