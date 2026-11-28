@@ -51,7 +51,7 @@ imageRouter.post(
 );
 
 /**
- * AI soạn nội dung tin từ một ảnh (ảnh bìa) và xem món có phải hàng cấm không; không lưu gì.
+ * AI soạn nội dung tin và chọn danh mục từ một ảnh (ảnh bìa), xem món có phải hàng cấm không; không lưu gì.
  * Chỉ là gợi ý cho người bán sửa lại. 20 lần / giờ mỗi người.
  *
  * Header: Content-Type: image/jpeg | image/png | image/webp, body là byte ảnh (tối đa 5 MB)
@@ -60,6 +60,7 @@ imageRouter.post(
  *  - categoryId?: string - danh mục đã chọn, để AI viết đúng loại hàng
  *
  * Trả về: { title, description, condition (NEW | LIKE_NEW | USED_GOOD | USED_FAIR | FOR_PARTS | null),
+ *   categoryId, subcategoryId (danh mục AI chọn trong các danh mục đang mở; null khi không chắc),
  *   prohibited (AI nghi là hàng cấm), reason (lý do khi prohibited, còn lại rỗng) }
  * Lỗi: 503 AI_NOT_CONFIGURED (chưa bật AI), 503 AI_NO_ANSWER / AI_UNAVAILABLE / AI_PROVIDER_RATE_LIMIT, 429 khi dùng quá nhiều
  */
