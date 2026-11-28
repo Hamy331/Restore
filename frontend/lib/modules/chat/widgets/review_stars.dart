@@ -1,9 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:restore/l10n/app_localizations.dart';
 
+/// Tiêu chí khi người mua đánh giá người bán
+const sellerReviewTags = [
+  'communication',
+  'asDescribed',
+  'punctual',
+  'keptDeal',
+  'friendly',
+];
+
+/// Tiêu chí khi người bán đánh giá người mua
+const buyerReviewTags = [
+  'communication',
+  'punctual',
+  'keptDeal',
+  'paidAsAgreed',
+  'polite',
+];
+
+/// Nhãn của mọi tiêu chí, kể cả tiêu chí cũ còn trong đánh giá trước đây
 Map<String, String> reviewTags(AppLocalizations l) => {
-  'friendly': l.tradeFriendly,
+  'communication': l.reviewTagCommunication,
+  'asDescribed': l.reviewTagAsDescribed,
   'punctual': l.tradePunctual,
+  'keptDeal': l.reviewTagKeptDeal,
+  'friendly': l.tradeFriendly,
+  'paidAsAgreed': l.reviewTagPaidAsAgreed,
+  'polite': l.reviewTagPolite,
   'reliable': l.tradeReliable,
   'accurate': l.tradeAccurate,
   'quality': l.tradeQuality,

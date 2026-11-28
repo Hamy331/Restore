@@ -68,6 +68,22 @@ class ReportRepository {
     );
   }
 
+  /// Báo cáo một đánh giá vi phạm (giả, xúc phạm, lộ thông tin cá nhân...)
+  Future<void> submitReview({
+    required String reviewId,
+    required String reason,
+  }) async {
+    await _dio.post<void>(
+      '/content/reports',
+      data: {
+        'targetType': 'REVIEW',
+        'targetId': reviewId,
+        'reason': reason,
+        'evidence': 'Đánh giá $reviewId: $reason',
+      },
+    );
+  }
+
   /// Báo cáo một người dùng; [reason] là lý do người báo chọn, [evidence] ghi
   /// rõ hồ sơ bị báo để admin xem xét.
   Future<void> submitUser({

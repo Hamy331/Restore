@@ -3,6 +3,8 @@ import 'package:restore/core/constants/app_colors.dart';
 import 'package:restore/core/utils/formatters/currency_formatter.dart';
 import 'package:restore/core/utils/formatters/thousands_separator_input_formatter.dart';
 import 'package:restore/l10n/app_localizations.dart';
+import 'package:restore/modules/chat/widgets/trade_panel.dart'
+    show tradeErrorText;
 import 'package:restore/shared/widgets/app_local_image.dart';
 import '../../../models/product_detail.dart';
 import 'product_chat_sheet.dart';
@@ -120,7 +122,8 @@ class _OfferState extends State<_OfferForm> {
   late final _amount = TextEditingController(text: widget.initial);
   final _note = TextEditingController();
   final _sender = ListingMessageSender();
-  bool _initialized = false, _busy = false, _failed = false;
+  bool _initialized = false, _busy = false;
+  String? _error;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -153,7 +156,7 @@ class _OfferState extends State<_OfferForm> {
     final valid =
         amount != null &&
         amount > 0 &&
-        amount <= price * 2 &&
+        amount <= price &&
         _note.text.trim().isNotEmpty;
     String money(int n) => CurrencyFormatter.formatVnd(n, locale: locale);
     return PopScope(
@@ -242,7 +245,7 @@ class _OfferState extends State<_OfferForm> {
                     labelText: l.productOfferAmountLabel,
                     helperText: _fixed ? l.fixedPriceSubtitle : null,
                     suffixText: 'đ',
-                    errorText: amount != null && amount > price * 2
+                    errorText: amount != null && amount > price
                         ? l.productOfferTooHigh
                         : null,
                     border: const OutlineInputBorder(),
@@ -284,7 +287,8 @@ class _OfferState extends State<_OfferForm> {
                       ],
                     ),
                   ),
-                if (_failed) Text(l.productActionFailed),
+                if (_error case final error?)
+                  Text(error, style: const TextStyle(color: AppColors.error)),
                 const SizedBox(height: 10),
                 FilledButton(
                   style: FilledButton.styleFrom(
@@ -296,7 +300,7 @@ class _OfferState extends State<_OfferForm> {
                       : () async {
                           setState(() {
                             _busy = true;
-                            _failed = false;
+                            _error = null;
                           });
                           try {
                             final id = await _sender.send(
@@ -305,10 +309,10 @@ class _OfferState extends State<_OfferForm> {
                               offerPrice: amount,
                             );
                             if (context.mounted) Navigator.pop(context, id);
-                          } catch (_) {
+                          } catch (error) {
                             if (mounted) {
                               setState(() {
-                                _failed = true;
+                                _error = tradeErrorText(error, l);
                                 _busy = false;
                               });
                             }

@@ -553,6 +553,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accHelp => 'Help';
 
   @override
+  String get accPolicies => 'Restore policies';
+
+  @override
   String get accFeedback => 'Send feedback';
 
   @override
@@ -2017,7 +2020,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get productOfferTooHigh =>
-      'Your offer can be at most twice the asking price';
+      'Your offer cannot be higher than the asking price';
 
   @override
   String get productOfferSubmit => 'Send offer';
@@ -5965,7 +5968,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tradeMore => 'Show more';
 
   @override
-  String get tradeFriendly => 'Friendly communication';
+  String get tradeFriendly => 'Helpful attitude';
 
   @override
   String get tradePunctual => 'On time';
@@ -5988,6 +5991,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tradeConfirm => 'Confirm';
+
+  @override
+  String offerPendingBuyer(String price) {
+    return 'Your offer: $price · waiting for the seller';
+  }
+
+  @override
+  String offerPendingSeller(String name, String price) {
+    return '$name offered $price';
+  }
+
+  @override
+  String offerExpiresAt(String time) {
+    return 'Expires $time';
+  }
+
+  @override
+  String get offerAccept => 'Accept';
+
+  @override
+  String get offerReject => 'Decline';
+
+  @override
+  String get offerWithdraw => 'Withdraw';
+
+  @override
+  String offerAcceptTitle(String price) {
+    return 'Accept the $price offer?';
+  }
+
+  @override
+  String get offerAcceptBody =>
+      'Restore records the agreement and opens reviews for both of you. The listing stays up; mark it as Sold when you run out.';
+
+  @override
+  String offerRejectTitle(String price) {
+    return 'Decline the $price offer?';
+  }
+
+  @override
+  String offerWithdrawTitle(String price) {
+    return 'Withdraw your $price offer?';
+  }
+
+  @override
+  String offerStatusRejected(String price) {
+    return 'The seller declined $price. You can offer another price.';
+  }
+
+  @override
+  String offerStatusCancelled(String price) {
+    return 'The $price offer was withdrawn.';
+  }
+
+  @override
+  String offerStatusExpired(String price) {
+    return 'The $price offer expired.';
+  }
+
+  @override
+  String offerAgreed(String price) {
+    return 'Agreed at $price';
+  }
+
+  @override
+  String reviewOpenUntil(String date) {
+    return 'Review before $date';
+  }
+
+  @override
+  String reviewOtherDone(String name, String date) {
+    return '$name has reviewed you. Send yours before $date to publish both.';
+  }
+
+  @override
+  String reviewWaiting(String name, String date) {
+    return 'Review sent. It goes public when $name reviews or on $date.';
+  }
+
+  @override
+  String get reviewEdit => 'Edit review';
+
+  @override
+  String get reviewPublished => 'Reviews are public';
+
+  @override
+  String get reviewClosed => 'The review window has closed';
+
+  @override
+  String get reviewPendingPublish => 'Not public yet';
+
+  @override
+  String get reviewRemoved => 'Removed for breaking the rules';
+
+  @override
+  String get reviewHiddenNote =>
+      'Reviews stay hidden until both of you send one, or 7 days after the first. You can edit yours until then.';
+
+  @override
+  String reviewDeadline(String date) {
+    return 'Due: $date';
+  }
+
+  @override
+  String get reviewOtherReviewed => 'They have reviewed you';
+
+  @override
+  String get reviewTagCommunication => 'Good communication';
+
+  @override
+  String get reviewTagAsDescribed => 'Item as described';
+
+  @override
+  String get reviewTagKeptDeal => 'Kept the deal';
+
+  @override
+  String get reviewTagPaidAsAgreed => 'Paid as agreed';
+
+  @override
+  String get reviewTagPolite => 'Polite';
+
+  @override
+  String get reviewReply => 'Reply';
+
+  @override
+  String get reviewReplyHint => 'Public reply, can only be sent once';
+
+  @override
+  String reviewReplyFrom(String name) {
+    return 'Reply from $name';
+  }
+
+  @override
+  String get reviewReport => 'Report review';
+
+  @override
+  String get reviewReportFake => 'Fake review or no real trade';
+
+  @override
+  String get reviewReportPrivate => 'Shares personal information';
 
   @override
   String get reportReasonsChanged =>

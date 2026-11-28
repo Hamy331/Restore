@@ -522,6 +522,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get accHelp => 'Trợ giúp';
 
   @override
+  String get accPolicies => 'Chính sách Restore';
+
+  @override
   String get accFeedback => 'Đóng góp ý kiến';
 
   @override
@@ -1978,7 +1981,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get productOfferTooHigh =>
-      'Giá đề nghị không được vượt quá 2 lần giá đang bán';
+      'Giá đề nghị không được cao hơn giá đang bán';
 
   @override
   String get productOfferSubmit => 'Gửi đề nghị';
@@ -5860,7 +5863,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get tradeMore => 'Xem thêm';
 
   @override
-  String get tradeFriendly => 'Giao tiếp thân thiện';
+  String get tradeFriendly => 'Thái độ nhiệt tình';
 
   @override
   String get tradePunctual => 'Đúng hẹn';
@@ -5883,6 +5886,146 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get tradeConfirm => 'Xác nhận';
+
+  @override
+  String offerPendingBuyer(String price) {
+    return 'Đề nghị của bạn: $price · chờ người bán phản hồi';
+  }
+
+  @override
+  String offerPendingSeller(String name, String price) {
+    return '$name đề nghị $price';
+  }
+
+  @override
+  String offerExpiresAt(String time) {
+    return 'Hết hiệu lực lúc $time';
+  }
+
+  @override
+  String get offerAccept => 'Chấp nhận';
+
+  @override
+  String get offerReject => 'Từ chối';
+
+  @override
+  String get offerWithdraw => 'Thu hồi';
+
+  @override
+  String offerAcceptTitle(String price) {
+    return 'Chấp nhận đề nghị $price?';
+  }
+
+  @override
+  String get offerAcceptBody =>
+      'Restore ghi nhận thỏa thuận và mở quyền đánh giá cho cả hai bên. Tin vẫn tiếp tục hiển thị, hãy đánh dấu Đã bán khi hết hàng.';
+
+  @override
+  String offerRejectTitle(String price) {
+    return 'Từ chối đề nghị $price?';
+  }
+
+  @override
+  String offerWithdrawTitle(String price) {
+    return 'Thu hồi đề nghị $price?';
+  }
+
+  @override
+  String offerStatusRejected(String price) {
+    return 'Người bán đã từ chối $price. Bạn có thể gửi giá khác.';
+  }
+
+  @override
+  String offerStatusCancelled(String price) {
+    return 'Đã thu hồi đề nghị $price.';
+  }
+
+  @override
+  String offerStatusExpired(String price) {
+    return 'Đề nghị $price đã hết hiệu lực.';
+  }
+
+  @override
+  String offerAgreed(String price) {
+    return 'Đã thống nhất $price';
+  }
+
+  @override
+  String reviewOpenUntil(String date) {
+    return 'Đánh giá trước $date';
+  }
+
+  @override
+  String reviewOtherDone(String name, String date) {
+    return '$name đã đánh giá bạn. Gửi đánh giá trước $date để cùng công khai.';
+  }
+
+  @override
+  String reviewWaiting(String name, String date) {
+    return 'Đã gửi đánh giá. Công khai khi $name đánh giá hoặc vào $date.';
+  }
+
+  @override
+  String get reviewEdit => 'Sửa đánh giá';
+
+  @override
+  String get reviewPublished => 'Đánh giá đã công khai';
+
+  @override
+  String get reviewClosed => 'Đã hết hạn đánh giá';
+
+  @override
+  String get reviewPendingPublish => 'Chờ công khai';
+
+  @override
+  String get reviewRemoved => 'Đã bị gỡ do vi phạm chính sách';
+
+  @override
+  String get reviewHiddenNote =>
+      'Đánh giá được giữ kín cho đến khi cả hai cùng gửi, hoặc sau 7 ngày kể từ đánh giá đầu tiên. Bạn có thể sửa trước khi công khai.';
+
+  @override
+  String reviewDeadline(String date) {
+    return 'Hạn: $date';
+  }
+
+  @override
+  String get reviewOtherReviewed => 'Đối phương đã đánh giá bạn';
+
+  @override
+  String get reviewTagCommunication => 'Giao tiếp tốt';
+
+  @override
+  String get reviewTagAsDescribed => 'Sản phẩm đúng mô tả';
+
+  @override
+  String get reviewTagKeptDeal => 'Giữ đúng thỏa thuận';
+
+  @override
+  String get reviewTagPaidAsAgreed => 'Thanh toán đúng cam kết';
+
+  @override
+  String get reviewTagPolite => 'Thái độ lịch sự';
+
+  @override
+  String get reviewReply => 'Phản hồi';
+
+  @override
+  String get reviewReplyHint => 'Phản hồi công khai, chỉ gửi được một lần';
+
+  @override
+  String reviewReplyFrom(String name) {
+    return 'Phản hồi của $name';
+  }
+
+  @override
+  String get reviewReport => 'Báo cáo đánh giá';
+
+  @override
+  String get reviewReportFake => 'Đánh giá giả hoặc không có giao dịch thật';
+
+  @override
+  String get reviewReportPrivate => 'Lộ thông tin cá nhân';
 
   @override
   String get reportReasonsChanged =>
