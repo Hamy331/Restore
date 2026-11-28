@@ -76,10 +76,6 @@ model User {
   creditTopups   CreditTopupOrder[]
   creditTransactions CreditTransaction[]
   creditHolds    CreditHold[]
-  receivedReviews UserReview[] @relation("ReviewTarget")
-  writtenReviews UserReview[] @relation("ReviewAuthor")
-  dealsAsCounterparty ListingDeal[] @relation("DealCounterparty")
-  dealsAsSeller ListingDeal[] @relation("DealSeller")
 
   followers      UserFollow[]  @relation("FollowedUser")
   following      UserFollow[]  @relation("FollowingUser")
@@ -526,7 +522,6 @@ model Listing {
   posters       ShopBanner[]
   /// Bản sửa đang chờ duyệt lại (chỉ tin đã duyệt: đang hiển thị / đã ẩn)
   revision      ListingRevision?
-  deal          ListingDeal?
   offers        Offer[]
 
   @@index([ownerId, publishedAt])
@@ -579,38 +574,6 @@ model ListingFavorite {
   createdAt DateTime @default(now())
   @@id([userId, listingId])
   @@index([listingId])
-}
-
-/// Retained for compatibility with the seller_reviews migration.
-/// Marketplace reviews use ListingTrade and TradeReview.
-model ListingDeal {
-  id             String   @id @default(uuid())
-  listingId      String   @unique
-  sellerId       String
-  counterpartyId String
-  completedAt    DateTime @default(now())
-  listing        Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  seller         User     @relation("DealSeller", fields: [sellerId], references: [id], onDelete: Cascade)
-  counterparty   User     @relation("DealCounterparty", fields: [counterpartyId], references: [id], onDelete: Cascade)
-  reviews        UserReview[]
-
-  @@index([counterpartyId, completedAt])
-}
-
-model UserReview {
-  id         String      @id @default(uuid())
-  listingId  String
-  reviewerId String
-  targetId   String
-  rating     Int
-  comment    String?     @db.VarChar(1000)
-  createdAt  DateTime    @default(now())
-  reviewer   User        @relation("ReviewAuthor", fields: [reviewerId], references: [id], onDelete: Cascade)
-  target     User        @relation("ReviewTarget", fields: [targetId], references: [id], onDelete: Cascade)
-  deal       ListingDeal @relation(fields: [listingId], references: [listingId], onDelete: Cascade)
-
-  @@unique([listingId, reviewerId])
-  @@index([targetId, createdAt])
 }
 
 model Category {
