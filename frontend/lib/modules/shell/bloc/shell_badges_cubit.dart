@@ -8,11 +8,17 @@ class ShellBadgesCubit extends Cubit<int> {
     : _chatRepository = chatRepository,
       super(0) {
     _events = chatRepository.events().listen((event) {
-      if (event == 'message' || event == 'read') unawaited(refresh());
+      final count = event.data['totalUnread'];
+      if (count is int) {
+        _revision++;
+        emit(count);
+      }
+      if (event.type == 'sync') unawaited(refresh());
     }, onError: (Object _) {});
   }
 
-  StreamSubscription<String>? _events;
+  int _revision = 0;
+  StreamSubscription<ChatEvent>? _events;
 
   @override
   Future<void> close() async {
@@ -24,9 +30,10 @@ class ShellBadgesCubit extends Cubit<int> {
 
   /// Lỗi mạng thì giữ số cũ, huy hiệu không quan trọng tới mức báo lỗi
   Future<void> refresh() async {
+    final revision = ++_revision;
     try {
       final count = await _chatRepository.getUnreadCount();
-      if (!isClosed) emit(count);
+      if (!isClosed && revision == _revision) emit(count);
     } catch (_) {}
   }
 }

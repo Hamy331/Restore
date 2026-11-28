@@ -40,7 +40,7 @@ const threadSelect = {
   id: true,
   createdAt: true,
   updatedAt: true,
-  members: { select: { userId: true, blocked: true, lastReadSequence: true, user: { select: userSelect } } },
+  members: { select: { userId: true, hidden: true, blocked: true, lastReadSequence: true, user: { select: userSelect } } },
   contexts: { orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }], take: 1, select: productContext },
 } satisfies Prisma.ConversationSelect;
 
@@ -116,16 +116,28 @@ export async function threadStats(userId: string, ids?: string[]) {
     GROUP BY coalesce(c."threadId",c.id)`;
 }
 
+export async function totalUnread(userId: string) {
+  const [row] = await prisma.$queryRaw<{ count: number }[]>`
+    SELECT count(*)::int AS count
+    FROM "ConversationMember" cm
+    JOIN "Conversation" c ON c.id = cm."conversationId"
+    JOIN "ConversationMember" root ON root."conversationId" = coalesce(c."threadId", c.id)
+      AND root."userId" = cm."userId" AND root.hidden = false
+    JOIN "Message" m ON m."conversationId" = c.id AND m.sequence > cm."lastReadSequence"
+    WHERE cm."userId" = ${userId} AND m."senderId" <> cm."userId"`;
+  return row;
+}
 export const latestMessages = (sequences: number[]) =>
   prisma.message.findMany({ where: { sequence: { in: sequences } }, select: messageSelect });
-export const findMessages = (id: string, limit: number, before?: number, mediaOnly = false) =>
+export const findMessages = (id: string, limit: number, before?: number, mediaOnly = false, after?: number) =>
   prisma.message.findMany({
     where: {
       conversation: inThread(id),
       ...(before && { sequence: { lt: before } }),
+      ...(after !== undefined && { sequence: { gt: after } }),
       ...(mediaOnly && { mediaName: { not: null } }),
     },
-    orderBy: { sequence: 'desc' },
+    orderBy: { sequence: after === undefined ? 'desc' : 'asc' },
     take: limit + 1,
     select: messageSelect,
   });

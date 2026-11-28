@@ -2,7 +2,6 @@ import { parseConversationId } from '../chat.validator.js';
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from '../../../middlewares/auth.middleware.js';
 import * as chat from '../services/chat.service.js';
-import { publish, subscribe } from '../services/chat.events.js';
 import { emit } from '../../../common/events/domain-events.js';
 
 import { changeTrade, submitReview } from '../services/trade.service.js';
@@ -21,12 +20,12 @@ export const products = handle((req) => chat.discussed(req.user!.userId, parseCo
 export const preferences = handle(async (req) => {
   const id = parseConversationId(req.params.id);
   const data = await chat.setPreference(req.user!.userId, id, req.body ?? {});
-  const members = await chat.conversationMembers(id);
-  publish(
-    members.map((m) => m.userId),
-    'message',
-    { conversationId: id },
-  );
+  const root = await chat.threadFor(id, req.user!.userId);
+  const members = await chat.conversationMembers(root);
+  for (const member of members) {
+    chat.publishChange([member.userId], 'conversation.updated', root,
+      member.userId === req.user!.userId ? data : {});
+  }
   return data;
 });
 
@@ -38,26 +37,6 @@ export const review = handle((req) =>
 );
 
 export const unreadCount = handle((req) => chat.unreadCount(req.user!.userId));
-
-export const heartbeat = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  try {
-    const result = await chat.heartbeat(req.user!.userId);
-    const presence = { userId: req.user!.userId, isOnline: true, lastActiveAt: result.lastActiveAt };
-    publish(result.peers, 'presence', presence);
-    res.json({ success: true, data: presence });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const events = (req: AuthRequest, res: Response) => {
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache, no-transform');
-  res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();
-  res.write(': connected\n\n');
-  subscribe(req.user!.userId, res);
-};
 
 export const listConversations = handle((req) => chat.listConversations(req.user!.userId));
 
@@ -76,12 +55,9 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
     const id = parseConversationId(req.params.id);
     const result = await chat.sendMessage(req.user!.userId, id, req.body);
     if (result.created) {
-      const members = await chat.conversationMembers(id);
-      publish(
-        members.map((member) => member.userId),
-        'message',
-        result.message,
-      );
+      const root = await chat.threadFor(id, req.user!.userId);
+      const members = await chat.conversationMembers(root);
+      chat.publishChange(members.map(m => m.userId), 'message.created', root, { message: result.message });
     }
     res.status(result.created ? 201 : 200).json({ success: true, data: result.message });
     // 3.2: push cho người còn lại (sau khi đã trả lời, lỗi push không ảnh hưởng tin nhắn)
@@ -103,10 +79,11 @@ export const markRead = async (req: AuthRequest, res: Response, next: NextFuncti
       id,
       Number.isSafeInteger(through) && through >= 0 ? through : undefined,
     );
-    publish([req.user!.userId], 'read', { conversationId: id, ...result });
+    const root = await chat.threadFor(id, req.user!.userId);
+    chat.publishChange([req.user!.userId], 'read', root, result);
     // Người còn lại thấy tin của họ chuyển sang "Đã xem"
-    const peers = (await chat.conversationMembers(id)).map((m) => m.userId).filter((userId) => userId !== req.user!.userId);
-    if (peers.length) publish(peers, 'seen', { conversationId: id, ...result });
+    const peers = (await chat.conversationMembers(root)).map((m) => m.userId).filter((userId) => userId !== req.user!.userId);
+    if (peers.length) chat.publishChange(peers, 'seen', root, result);
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);

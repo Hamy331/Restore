@@ -8,7 +8,6 @@ class ConversationState extends Equatable {
     this.selfId,
     this.loading = true,
     this.failed = false,
-    this.sending = false,
     this.sendFailed = false,
     this.hasOlder = false,
   });
@@ -17,7 +16,7 @@ class ConversationState extends Equatable {
 
   /// Id của người dùng hiện tại, để căn tin của mình sang phải.
   final String? selfId;
-  final bool loading, failed, sending;
+  final bool loading, failed;
 
   /// Lần gửi gần nhất bị lỗi; không giữ qua các lần emit sau.
   final bool sendFailed, hasOlder;
@@ -30,7 +29,6 @@ class ConversationState extends Equatable {
     String? selfId,
     bool? loading,
     bool? failed,
-    bool? sending,
     bool sendFailed = false,
     bool? hasOlder,
   }) => ConversationState(
@@ -39,7 +37,6 @@ class ConversationState extends Equatable {
     selfId: selfId ?? this.selfId,
     loading: loading ?? this.loading,
     failed: failed ?? this.failed,
-    sending: sending ?? this.sending,
     sendFailed: sendFailed,
     hasOlder: hasOlder ?? this.hasOlder,
   );
@@ -51,7 +48,6 @@ class ConversationState extends Equatable {
     selfId,
     loading,
     failed,
-    sending,
     sendFailed,
     hasOlder,
   ];

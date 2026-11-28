@@ -49,6 +49,14 @@ class _LiveChatConversationMobileViewState
   ChatProduct? quoted;
   final focus = FocusNode();
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (ModalRoute.isCurrentOf(context) ?? true) {
+      context.read<ConversationCubit>().markVisible();
+    }
+  }
+
   void notice(String value) => ScaffoldMessenger.of(
     context,
   ).showSnackBar(SnackBar(content: Text(value)));
@@ -179,23 +187,21 @@ class _LiveChatConversationMobileViewState
 
   Future<void> send() async {
     final cubit = context.read<ConversationCubit>();
-    if (uploading ||
-        cubit.state.sending ||
-        cubit.state.conversation?.blocked == true) {
+    if (uploading || cubit.state.conversation?.blocked == true) {
       return;
     }
     final file = attachment;
     if (file != null) {
       setState(() => uploading = true);
       try {
-        await ApiChatRepository().upload(
+        final message = await ApiChatRepository().upload(
           cubit.conversationId,
           attachmentId!,
           await file.readAsBytes(),
         );
         if (!mounted) return;
         setState(() => attachment = null);
-        await cubit.load(silent: true);
+        cubit.acceptMessage(message);
       } catch (error) {
         if (mounted) {
           notice(
@@ -211,11 +217,11 @@ class _LiveChatConversationMobileViewState
     }
     if (!mounted) return;
     final text = composer.text;
-    if (text.trim().isNotEmpty &&
-        await cubit.send(text, listingId: quoted?.id) &&
-        mounted) {
-      if (composer.text == text) composer.clear();
+    if (text.trim().isNotEmpty) {
+      final listingId = quoted?.id;
+      composer.clear();
       setState(() => quoted = null);
+      await cubit.send(text, listingId: listingId);
     }
     if (scrollController.hasClients) scrollController.jumpTo(0);
   }
@@ -399,7 +405,9 @@ class _LiveChatConversationMobileViewState
                                 thread: cubit.conversationId,
                                 mine: state.isMine(message),
                                 // Tin cuối mình gửi: Đã gửi / Đã xem
-                                seen: message.id == lastMine?.id
+                                seen:
+                                    message.delivery == null &&
+                                        message.id == lastMine?.id
                                     ? (message.sequence ?? 0) <=
                                           (state
                                                   .conversation
@@ -460,8 +468,7 @@ class _LiveChatConversationMobileViewState
                         PopupMenuButton<String>(
                           icon: const Icon(Icons.add_circle_outline),
                           tooltip: 'Đính kèm',
-                          enabled:
-                              !uploading && !state.sending && person != null,
+                          enabled: !uploading && person != null,
                           onSelected: choose,
                           itemBuilder: (_) => const [
                             PopupMenuItem(
@@ -504,10 +511,7 @@ class _LiveChatConversationMobileViewState
                         ),
                         IconButton(
                           tooltip: 'Gửi tin nhắn',
-                          onPressed:
-                              state.sending || uploading || person == null
-                              ? null
-                              : send,
+                          onPressed: uploading || person == null ? null : send,
                           icon: uploading
                               ? const SizedBox.square(
                                   dimension: 18,
@@ -608,6 +612,13 @@ class _MessageBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            if (message.delivery case final status?)
+              TextButton(
+                onPressed: message.retryable
+                    ? () => context.read<ConversationCubit>().retry(message.id)
+                    : null,
+                child: Text(status),
+              ),
             if (message.product case final product?) ...[
               ChatProductPreview(
                 product: product,

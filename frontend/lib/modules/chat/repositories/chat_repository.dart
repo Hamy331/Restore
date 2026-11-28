@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
+import 'chat_realtime.dart';
+export 'chat_realtime.dart' show ChatEvent;
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:restore/core/network/media_url.dart';
@@ -20,7 +21,7 @@ abstract class ChatRepository {
   Future<String> startConversation(String recipientId);
   Future<List<ChatConversation>> listConversations();
   Future<ChatConversation> getConversation(String id);
-  Future<List<ChatMessage>> getMessages(String id, {int? before});
+  Future<List<ChatMessage>> getMessages(String id, {int? before, int? after});
   Future<ChatMessage> sendMessage(
     String id,
     String clientId,
@@ -32,7 +33,7 @@ abstract class ChatRepository {
 
   /// Tên sự kiện realtime (`message`, `presence`…); huỷ lắng nghe sẽ đóng
   /// kết nối.
-  Stream<String> events();
+  Stream<ChatEvent> events();
 }
 
 /// Dữ liệu mẫu, khớp với danh sách cuộc trò chuyện mẫu ở MessagesView
@@ -77,8 +78,11 @@ class MockChatRepository implements ChatRepository {
   Future<ChatConversation> getConversation(String id) async => _conversation;
 
   @override
-  Future<List<ChatMessage>> getMessages(String id, {int? before}) async =>
-      before == null ? List.of(_messages) : [];
+  Future<List<ChatMessage>> getMessages(
+    String id, {
+    int? before,
+    int? after,
+  }) async => before == null && after == null ? List.of(_messages) : [];
 
   @override
   Future<ChatMessage> sendMessage(
@@ -102,11 +106,9 @@ class MockChatRepository implements ChatRepository {
   Future<void> markRead(String id, {int? through}) async {}
 
   @override
-  Stream<String> events() => const Stream.empty();
+  Stream<ChatEvent> events() => const Stream.empty();
 }
 
-/// Gọi backend `/conversations`; sự kiện realtime qua SSE
-/// `/conversations/events`.
 class ApiChatRepository implements ChatRepository {
   ApiChatRepository({ApiClient? apiClient})
     : _apiClient = apiClient ?? ApiClient();
@@ -142,43 +144,7 @@ class ApiChatRepository implements ChatRepository {
   }
 
   @override
-  Stream<String> events() {
-    final cancelToken = CancelToken();
-    late final StreamController<String> controller;
-    StreamSubscription<String>? lines;
-    controller = StreamController<String>(
-      onListen: () async {
-        try {
-          final response = await _apiClient.dio.get<ResponseBody>(
-            '/conversations/events',
-            cancelToken: cancelToken,
-            options: Options(
-              responseType: ResponseType.stream,
-              receiveTimeout: Duration.zero,
-            ),
-          );
-          lines = response.data!.stream
-              .cast<List<int>>()
-              .transform(utf8.decoder)
-              .transform(const LineSplitter())
-              .where((line) => line.startsWith('event:'))
-              .map((line) => line.substring(6).trim())
-              .listen(
-                controller.add,
-                onError: controller.addError,
-                onDone: controller.close,
-              );
-        } catch (error) {
-          if (!cancelToken.isCancelled) controller.addError(error);
-        }
-      },
-      onCancel: () async {
-        cancelToken.cancel();
-        await lines?.cancel();
-      },
-    );
-    return controller.stream;
-  }
+  Stream<ChatEvent> events() => ChatRealtime.instance.events;
 
   @override
   Future<int> getUnreadCount() async {
@@ -218,12 +184,14 @@ class ApiChatRepository implements ChatRepository {
   Future<List<ChatMessage>> getMessages(
     String id, {
     int? before,
+    int? after,
     bool mediaOnly = false,
   }) async {
     final response = await _apiClient.dio.get<Map<String, dynamic>>(
       '/conversations/$id/messages',
       queryParameters: {
         if (before != null) 'before': before,
+        if (after != null) 'after': after,
         if (mediaOnly) 'media': '1',
       },
     );
@@ -264,8 +232,12 @@ class ApiChatRepository implements ChatRepository {
         data: {if (through != null) 'through': through},
       );
 
-  Future<void> upload(String id, String clientId, Uint8List bytes) async {
-    await _apiClient.dio.post(
+  Future<ChatMessage> upload(
+    String id,
+    String clientId,
+    Uint8List bytes,
+  ) async {
+    final response = await _apiClient.dio.post(
       '/conversations/$id/media',
       queryParameters: {'clientId': clientId},
       data: bytes,
@@ -274,6 +246,7 @@ class ApiChatRepository implements ChatRepository {
         sendTimeout: const Duration(minutes: 2),
       ),
     );
+    return ChatMessage.fromJson(Map.from(response.data['data'] as Map));
   }
 
   Future<Uri> mediaLink(String id, String messageId) async {

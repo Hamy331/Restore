@@ -7,18 +7,22 @@ class ChatPerson extends Equatable {
     required this.fullName,
     this.avatarUrl,
     this.lastActiveAt,
+    this.online,
   });
   final String id;
   final String fullName;
   final String? avatarUrl;
   final DateTime? lastActiveAt;
 
+  final bool? online;
   bool get isOnline =>
-      lastActiveAt != null &&
-      DateTime.now().difference(lastActiveAt!).inSeconds < 120;
+      online ??
+      (lastActiveAt != null &&
+          DateTime.now().difference(lastActiveAt!).inSeconds < 120);
 
   factory ChatPerson.fromJson(Map<String, dynamic> json) => ChatPerson(
     id: json['id'] as String,
+    online: json['isOnline'] as bool?,
     fullName: json['fullName'] as String? ?? '',
     avatarUrl: resolveMediaUrl(json['avatarUrl'] as String?),
     lastActiveAt: DateTime.tryParse(
@@ -27,7 +31,7 @@ class ChatPerson extends Equatable {
   );
 
   @override
-  List<Object?> get props => [id, fullName, avatarUrl, lastActiveAt];
+  List<Object?> get props => [id, fullName, avatarUrl, lastActiveAt, online];
 }
 
 class ChatProduct extends Equatable {
@@ -61,9 +65,14 @@ class ChatMessage extends Equatable {
     this.product,
     this.mediaName,
     this.sequence,
+    this.clientId,
+    this.delivery,
+    this.retryable = false,
   });
   final String? mediaName;
   final int? sequence;
+  final String? clientId, delivery;
+  final bool retryable;
   bool get isVideo =>
       const ['mp4', 'mov', 'webm'].contains(mediaName?.split('.').last);
   final String id;
@@ -79,6 +88,7 @@ class ChatMessage extends Equatable {
     product: ChatProduct.fromJson(json['listingPreview']),
     mediaName: json['mediaName'] as String?,
     sequence: json['sequence'] as int?,
+    clientId: json['clientId'] as String?,
     createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
   );
 
@@ -91,6 +101,9 @@ class ChatMessage extends Equatable {
     product,
     mediaName,
     sequence,
+    clientId,
+    delivery,
+    retryable,
   ];
 }
 
@@ -155,6 +168,34 @@ class ChatConversation extends Equatable {
   final ChatMessage? lastMessage;
   final ChatTrade? trade;
   final bool blocked, blockedByMe;
+
+  ChatConversation updated({ChatPerson? person, ChatTrade? selectedTrade}) =>
+      ChatConversation(
+        id: id,
+        otherUser: person ?? otherUser,
+        unreadCount: unreadCount,
+        lastMessage: lastMessage,
+        trade: selectedTrade ?? trade,
+        blocked: blocked,
+        blockedByMe: blockedByMe,
+        otherReadSequence: otherReadSequence,
+        negotiating: negotiating,
+      );
+
+  ChatConversation presence(Map<String, dynamic> data) {
+    if (otherUser.id != data['userId']) return this;
+    return updated(
+      person: ChatPerson(
+        id: otherUser.id,
+        fullName: otherUser.fullName,
+        avatarUrl: otherUser.avatarUrl,
+        online: data['isOnline'] == true,
+        lastActiveAt: DateTime.tryParse(
+          data['lastActiveAt']?.toString() ?? '',
+        )?.toLocal(),
+      ),
+    );
+  }
 
   factory ChatConversation.fromJson(Map<String, dynamic> json) =>
       ChatConversation(

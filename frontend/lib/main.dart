@@ -18,7 +18,7 @@ import 'modules/auth/bloc/auth/auth_state.dart';
 import 'modules/ai/bloc/ai_assistant_cubit.dart';
 import 'modules/auth/bloc/auth/auth_event.dart';
 import 'modules/auth/repositories/auth_repository.dart';
-import 'modules/chat/widgets/presence_reporter.dart';
+import 'modules/chat/widgets/chat_connection.dart';
 import 'modules/location/bloc/user_area/user_area_cubit.dart';
 import 'modules/location/repositories/location_repository.dart';
 import 'modules/notifications/bloc/notification_badge/notification_badge_cubit.dart';
@@ -173,7 +173,7 @@ class _MyAppState extends State<MyApp> {
           },
           child: PushNotificationListener(
             router: _router,
-            child: PresenceReporter(
+            child: ChatConnection(
               child: ScreenUtilInit(
                 designSize: const Size(375, 812),
                 minTextAdapt: true,

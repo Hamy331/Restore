@@ -1,3 +1,4 @@
+import { disconnectUser } from '../../chat/services/chat.events.js';
 import { ADMIN_PAGE_SIZE } from '../../../common/validation/admin-input.js';
 import { ROLE_PERMISSIONS } from '../../../common/auth/permissions.js';
 import { withQuotaTransaction } from '../../commerce/index.js';
@@ -40,5 +41,8 @@ export function act(actorId: string, id: string, { action, reason, days, expecte
   return withQuotaTransaction(async (tx) => {
     await sanctionUser(tx, actorId, id, action, reason, days, expected);
     return { updated: true };
+  }).then(result => {
+    if (action !== 'WARN') disconnectUser(id);
+    return result;
   });
 }

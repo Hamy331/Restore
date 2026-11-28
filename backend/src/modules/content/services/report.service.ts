@@ -1,3 +1,4 @@
+import { disconnectUser } from '../../chat/services/chat.events.js';
 import { AppError } from '../../../common/errors/app-error.js';
 import { audit } from '../../../common/audit/admin-audit.js';
 import { changed, integer, version } from '../../../common/validation/admin-input.js';
@@ -93,6 +94,9 @@ export function resolve(actorId: string, id: string, { action, reason, expected,
     changed(await reportRepository.closeWhereVersion(tx, report.id, expected,
       { status: action === 'DISMISS' ? 'DISMISSED' : 'RESOLVED', decision: action, resolution: reason }));
     await audit(tx, actorId, action, 'REPORT', report.id, reason);
+    return report.targetId;
+  }).then(target => {
+    if (action === 'SUSPEND' || action === 'BAN') disconnectUser(target);
     return { updated: true };
   });
 }

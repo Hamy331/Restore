@@ -1,13 +1,11 @@
 import { Prisma } from '@prisma/client';
-import { connectedUserIds } from './chat.events.js';
+import { connectedUserIds, isOnline, publish } from './chat.events.js';
 import * as repository from '../repositories/chat.repository.js';
 import { AppError } from '../../../common/errors/app-error.js';
 
 import { prisma } from '../../../lib/prisma.js';
 import { parseId } from '../chat.validator.js';
 
-const online = (lastActiveAt: Date | null) =>
-  !!lastActiveAt && Date.now() - lastActiveAt.getTime() < 2 * 60 * 1000;
 
 export const startConversation = async (selfId: string, body: unknown) => {
   const input = body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
@@ -89,9 +87,10 @@ async function summaries(selfId: string, threads: Thread[]) {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       ...(context && { listingContext: context }),
+      hidden: row.members.some(m => m.userId === selfId && m.hidden),
       blockedByMe: row.members.some((m) => m.userId === selfId && m.blocked),
       blocked: row.members.some((m) => m.blocked),
-      otherUser: { ...peer.user, isOnline: online(peer.user.lastActiveAt) },
+      otherUser: { ...peer.user, isOnline: !row.members.some(m => m.blocked) && isOnline(peer.user.id) },
       lastMessage: latest.get(stat?.latest ?? 0) ?? null,
       unreadCount: stat?.unread ?? 0,
       // Nhãn "Đang thương lượng": đã trả giá trên tin này, tin còn bán và chưa chốt giao dịch
@@ -122,7 +121,9 @@ export const listMessages = async (selfId: string, id: string, query: Record<str
   const root = await repository.threadFor(id, selfId);
   const limit = query.limit === undefined ? 30 : Number(query.limit);
   const before = query.before === undefined ? undefined : Number(query.before);
+  const after = typeof query.after === 'string' && /^\d+$/.test(query.after) ? Number(query.after) : query.after === undefined ? undefined : NaN;
   if (
+    (after !== undefined && (!Number.isSafeInteger(after) || after < 0 || before !== undefined)) ||
     !Number.isInteger(limit) ||
     limit < 1 ||
     limit > 100 ||
@@ -130,11 +131,13 @@ export const listMessages = async (selfId: string, id: string, query: Record<str
   ) {
     throw new AppError(422, 'INVALID_PAGINATION', 'Tham số phân trang không hợp lệ.');
   }
-  const rows = await repository.findMessages(root, limit, before, query.media === '1');
+  const rows = await repository.findMessages(root, limit, before, query.media === '1', after);
   return {
-    items: rows.slice(0, limit).reverse(),
+    items: after === undefined ? rows.slice(0, limit).reverse() : rows.slice(0, limit),
     hasMore: rows.length > limit,
-    nextBefore: rows.length > limit ? rows[limit - 1].sequence : null,
+    ...(after === undefined
+      ? { nextBefore: rows.length > limit ? rows[limit - 1].sequence : null }
+      : { nextAfter: rows.length > limit ? rows[limit - 1].sequence : null }),
   };
 };
 
@@ -252,9 +255,7 @@ export async function discussed(userId: string, id: string) {
 }
 export const markRead = async (selfId: string, id: string, through?: number) =>
   repository.markRead(await repository.threadFor(id, selfId), selfId, through);
-export const unreadCount = async (selfId: string) => ({
-  count: (await repository.threadStats(selfId)).reduce((n, s) => n + s.unread, 0),
-});
+export const unreadCount = repository.totalUnread;
 
 export const conversationMembers = async (id: string) => repository.findMembers(id);
 
@@ -266,3 +267,18 @@ export const heartbeat = async (userId: string) => {
   ]);
   return { peers: peers.map((peer) => peer.userId), lastActiveAt: user.lastActiveAt };
 };
+
+// Serialize snapshots per recipient: a later badge update must not arrive first.
+const deliveries = new Map<string, Promise<void>>();
+export function publishChange(ids: string[], event: string, root: string, data: Record<string, unknown>) {
+  for (const id of new Set(ids)) {
+    if (!isOnline(id)) continue;
+    const delivery = (deliveries.get(id) ?? Promise.resolve()).then(async () => {
+      const [summary, unread] = await Promise.all([getConversation(id, root), unreadCount(id)]);
+      publish([id], event, { ...data, threadId: root, summary, totalUnread: unread.count });
+    }).catch(() => { publish([id], 'sync', {}); });
+    deliveries.set(id, delivery);
+    void delivery.finally(() => { if (deliveries.get(id) === delivery) deliveries.delete(id); });
+  }
+}
+export const threadFor = repository.threadFor;
